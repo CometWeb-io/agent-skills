@@ -10,7 +10,7 @@ Private canonical monorepo for Comet-owned agent skills used across ChatGPT, Cod
 
 | Skill | Version | Role |
 | --- | ---: | --- |
-| `cometweb-context` | 1.0.0 | Fresh, provenance-aware CometWeb context gateway |
+| `cometweb-context` | 1.1.0 | Fresh, provenance-aware CometWeb context gateway |
 | `skill-orchestrator` | 1.1.1 | Single-thread multi-skill router with optional context preflight |
 | `skill-orchestrator-multiagent` | 1.1.0 | Isolated subagent-per-skill router with context preflight |
 | `evidence-researcher` | 2.0.0 | Auditable evidence, provenance, falsifier, freshness, and contradiction layer |
