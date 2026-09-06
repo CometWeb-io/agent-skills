@@ -1,0 +1,12 @@
+# Relative paths below COMETWEB_ROOT. One repo per line.
+products/insight
+products/pen
+products/extensions
+platforms/cometweb-io
+platforms/betterwebhub
+platforms/seoinsight
+platforms/agent-skills
+platforms/rankproof
+<COMETWEB_INTERNAL_ROOT>/main
+<COMETWEB_GTM_ROOT>
+<COMETWEB_NAUKA_ROOT>
