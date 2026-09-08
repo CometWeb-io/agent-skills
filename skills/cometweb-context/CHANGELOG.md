@@ -1,5 +1,12 @@
 # Changelog — cometweb-context
 
+## [1.2.3] - 2026-09-08
+
+### Changed
+- Envelope kernel rejects fallback access promoted to system_of_record without authority_gap.
+- Confidential fact statements capped at 800 chars (no raw dumps).
+- Behavior evals: every assertion has an executable handler (no pass-through theatre).
+
 ## [1.2.2] - 2026-09-08
 
 ### Changed

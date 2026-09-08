@@ -40,6 +40,24 @@ jobs:
           python3 tooling/run_behavior_evals.py
           python3 tooling/run_blind_eval_harness.py --write-report
 
+      - name: CW-AIP envelope validator
+        run: |
+          python3 tooling/validate_envelope.py fixtures/cwaip-v2/evidence-final.json --final
+          python3 -c '
+          import json, sys
+          from pathlib import Path
+          sys.path.insert(0, "tooling")
+          from validate_envelope import validate_envelope
+          data = json.loads(Path("fixtures/cwaip-v2/evidence-final.json").read_text())
+          data["payload_hash"] = "pending"
+          try:
+              validate_envelope(data, final=True)
+          except ValueError:
+              print("OK: --final rejects pending")
+          else:
+              raise SystemExit("FAIL: pending accepted under --final")
+          '
+
       - name: Public mirror dry-run
         run: python3 tooling/publish_public_dry_run.py
 

@@ -113,3 +113,28 @@ def test_rejects_bad_core_protocol():
     }
     with pytest.raises(ValueError):
         mod.validate_envelope(envelope)
+
+
+def test_rejects_hash_mismatch():
+    payload = _evidence_payload()
+    envelope = {
+        "id": "ev-1",
+        "type": "EvidenceEnvelope",
+        "producer": "evidence-researcher",
+        "producer_version": "1.0.2",
+        "protocol_version": "2.0",
+        "subject": "pricing",
+        "generated_at": "2026-09-08T12:00:00Z",
+        "as_of": "2026-09-08T12:00:00Z",
+        "sensitivity": "internal",
+        "dependencies": [],
+        "payload": payload,
+        "payload_hash": "sha256:" + ("ab" * 32),
+    }
+    with pytest.raises(ValueError, match="payload_hash mismatch"):
+        mod.validate_envelope(envelope, final=True)
+
+
+def test_fixture_file_validates():
+    path = Path(__file__).resolve().parents[2] / "fixtures" / "cwaip-v2" / "evidence-final.json"
+    mod.validate_envelope(json.loads(path.read_text()), final=True)

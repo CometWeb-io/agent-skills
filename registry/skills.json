@@ -168,7 +168,7 @@
     },
     {
       "id": "cometweb-context",
-      "version": "1.2.2",
+      "version": "1.2.3",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "foundation",

@@ -1,0 +1,46 @@
+{
+  "id": "ev-fixture-1",
+  "type": "EvidenceEnvelope",
+  "producer": "evidence-researcher",
+  "producer_version": "1.0.2",
+  "protocol_version": "2.0",
+  "subject": "pricing",
+  "generated_at": "2026-09-08T12:00:00Z",
+  "as_of": "2026-09-08T12:00:00Z",
+  "sensitivity": "internal",
+  "dependencies": [],
+  "payload": {
+    "schema": "cometweb.evidence/v2",
+    "research_contract": "pricing",
+    "mode": "QUICK",
+    "as_of": "2026-09-08T12:00:00Z",
+    "material_claims": [
+      {
+        "claim_id": "c1",
+        "text": "x",
+        "epistemic_kind": "FACT",
+        "status": "VERIFIED",
+        "materiality": "supporting"
+      }
+    ],
+    "sources": [
+      {
+        "source_id": "s1"
+      }
+    ],
+    "evidence_edges": [
+      {
+        "edge_id": "e1",
+        "claim_id": "c1",
+        "source_id": "s1",
+        "direction": "SUPPORT",
+        "admission": "ACCEPTED"
+      }
+    ],
+    "gaps": [],
+    "contradictions": [],
+    "readiness": "READY",
+    "evidence_pack_hash": "abc"
+  },
+  "payload_hash": "sha256:15e6be038a17e86ebe68cc72550bb9d1d2e1ebdf51d19971d9bbe51c7735183b"
+}

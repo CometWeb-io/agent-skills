@@ -132,6 +132,18 @@ def validate_semantics(data: dict[str, Any]) -> None:
         effective = source.get("effective_at")
         if effective is not None and not _is_iso_datetime(effective):
             fail(f"sources[{index}] effective_at must be ISO-8601 or null")
+        # Fallback access must not be silently promoted to system_of_record.
+        if source.get("authority") == "system_of_record" and source.get("access") == "fallback":
+            gaps = data.get("gaps") or []
+            has_gap = any(
+                isinstance(g, dict) and g.get("kind") == "authority_gap" and g.get("missing_authority")
+                for g in gaps
+            )
+            if not has_gap:
+                fail(
+                    f"sources[{index}] fallback access cannot be system_of_record "
+                    "without an authority_gap"
+                )
 
     known = set(source_ids)
     fact_ids: set[str] = set()
@@ -144,7 +156,8 @@ def validate_semantics(data: dict[str, Any]) -> None:
         if fid in fact_ids:
             fail(f"duplicate fact_id: {fid}")
         fact_ids.add(fid)
-        if not isinstance(fact.get("statement"), str):
+        statement = fact.get("statement")
+        if not isinstance(statement, str):
             fail(f"facts[{index}] statement must be a string")
         source_refs = fact.get("source_ids")
         if not isinstance(source_refs, list) or not source_refs:
@@ -156,6 +169,9 @@ def validate_semantics(data: dict[str, Any]) -> None:
             fail(f"facts[{index}] invalid confidence")
         if fact.get("sensitivity") not in SENSITIVITY:
             fail(f"facts[{index}] invalid sensitivity")
+        # Prevent "raw dump" theatre: confidential statements stay short summaries.
+        if fact.get("sensitivity") == "confidential" and len(statement) > 800:
+            fail(f"facts[{index}] confidential statement exceeds summary limit (800 chars)")
 
     for index, conflict in enumerate(data.get("conflicts") or []):
         if not isinstance(conflict, dict):

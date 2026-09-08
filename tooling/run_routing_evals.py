@@ -20,8 +20,8 @@ def load_signals() -> dict[str, list[tuple[int, str]]]:
     for skill in data["skills"]:
         sid = skill["id"]
         raw = skill.get("routing_signals") or []
-        if not raw and skill.get("trigger_examples"):
-            raw = [[10, re.escape(ex.casefold()[:64])] for ex in skill["trigger_examples"][:5]]
+        if not raw and not skill.get("alias_of"):
+            raise AssertionError(f"{sid}: registry.routing_signals is empty (no soft fallback)")
         signals[sid] = [(int(weight), str(pattern)) for weight, pattern in raw]
     return signals
 

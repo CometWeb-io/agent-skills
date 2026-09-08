@@ -109,10 +109,25 @@ def main() -> None:
         if not entry.get("alias_of"):
             if not entry.get("owns"):
                 fail(f"{sid}: registry.owns must be non-empty")
+            if not entry.get("does_not_own"):
+                fail(f"{sid}: registry.does_not_own must be non-empty")
             if not entry.get("trigger_examples"):
                 fail(f"{sid}: registry.trigger_examples must be non-empty")
+            if not entry.get("negative_trigger_examples"):
+                fail(f"{sid}: registry.negative_trigger_examples must be non-empty")
             if not entry.get("routing_signals"):
                 fail(f"{sid}: registry.routing_signals must be non-empty")
+        elif entry.get("alias_of") and not entry.get("routing_signals"):
+            fail(f"{sid}: alias must still declare routing_signals")
+
+        suite = entry.get("eval_suite")
+        if suite:
+            suite_path = ROOT / suite / "suite.json"
+            if not suite_path.is_file():
+                fail(f"{sid}: eval_suite path missing suite.json ({suite})")
+        # Foundation context skill must keep executable behavior suite wired
+        if sid == "cometweb-context" and suite != "evals/behavior/cometweb-context":
+            fail(f"{sid}: eval_suite must be evals/behavior/cometweb-context")
 
         version_file = (skill_dir / "VERSION").read_text(encoding="utf-8").strip()
         if entry.get("version") != version_file:

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Operator-run blind/baseline behavior eval harness (skeleton).
+"""Operator-run blind/baseline behavior eval harness (skeleton for LLM runs).
 
-Does not call LLMs in CI. Records fixture expectations and optional comparison
-artifacts under dist/eval-reports/<skill>/<version>/.
+CI executable behavior is tooling/run_behavior_evals.py.
+This harness only records fixture inventories / optional baseline deltas under
+dist/eval-reports/ — it does not call LLMs.
 """
 from __future__ import annotations
 
