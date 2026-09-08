@@ -1,0 +1,12 @@
+---
+description: Voice-preserving prose editing (PL/EN). Not AI-detector bypass or authorship fraud claims.
+alwaysApply: false
+---
+
+When the user asks to **humanize**, remove AI tells, deep/strong rewrite, or clean invisible
+Unicode in prose/Markdown — load `ai-humanize`.
+
+Run `scripts/layer_a_clean.py` and `scripts/rewrite_guard.py` when executing rewrites.
+Never promise detector defeat, watermark removal, or human authorship without evidence.
+
+Do not use for unrelated copywriting or as substitute for Evidence Researcher / Council decisions.

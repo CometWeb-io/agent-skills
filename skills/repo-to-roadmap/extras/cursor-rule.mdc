@@ -1,0 +1,13 @@
+---
+description: Whole-project baseline to evidence-based roadmap. Use for analyze entire repo, co zostało do wdrożenia, roadmap to target state — not weekly ops or RC gates.
+alwaysApply: false
+---
+
+When the user asks to analyze the **whole repo/project**, build or update a **roadmap
+from scratch**, map topology/gaps to a **target state** (e.g. PAID_PRODUCTION,
+client-ready), or refresh a roadmap after major changes — load `repo-to-roadmap`.
+
+Do **not** use for: weekly "what next?" (`product-operator`), pinned release-candidate
+GO/NO_GO (`release-readiness`), or narrow code review.
+
+Run `scripts/roadmap_kernel.py` when validating roadmap JSON invariants.

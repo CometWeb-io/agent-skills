@@ -1,0 +1,14 @@
+---
+description: Temporal competitor monitoring — snapshots, deltas, events. Not one-time teardown or static dossier only.
+alwaysApply: false
+---
+
+When the user asks to **monitor competitors over time**, detect **what changed** since last
+scan, maintain watchlist/digest, or verify competitor claims with evidence — load
+`competitive-intelligence`.
+
+Separate Observation → State → Delta → Implication. Run `scripts/ci_kernel.py` for
+snapshot validation, diff, and scoring.
+
+For external **pattern extraction** to implement (`product-teardown`) or one-off deep profile
+without temporal ops, route elsewhere.

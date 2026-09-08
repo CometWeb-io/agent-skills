@@ -1,0 +1,12 @@
+interface:
+  display_name: AI Council
+  short_description: Material high-stakes multi-domain decisions with explicit Council invocation
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: false

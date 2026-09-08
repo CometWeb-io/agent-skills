@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.1",
+  "target": "http://localhost:3000/billing",
+  "mode": "area",
+  "depth": "standard",
+  "confidence": "high",
+  "verdict": "ship_with_fixes",
+  "validator": "pending",
+  "capabilities": {
+    "profile": "hybrid",
+    "browser": true,
+    "source": true,
+    "screenshots": true,
+    "console": true,
+    "network": true,
+    "filesystem": true,
+    "codeExecution": true
+  },
+  "environment": {"kind": "local", "mutationPolicy": "safe-test-only"},
+  "scope": {
+    "in": ["/billing"],
+    "out": ["/marketing"],
+    "viewports": ["1280x800", "390x844"],
+    "persona": "signed-in owner",
+    "covered": ["/billing"],
+    "skipped": []
+  },
+  "counts": {"blocker": 0, "major": 1, "minor": 0, "nit": 0, "needsRepro": 0, "recommendations": 0},
+  "findings": [
+    {
+      "id": "F-001",
+      "kind": "defect",
+      "severity": "major",
+      "confidence": "high",
+      "title": "Invoice badge says 4 while the table contains 3 invoices",
+      "where": {"route": "/billing", "viewport": "1280x800", "persona": "owner"},
+      "repro": ["Open /billing", "Compare the nav badge with the visible invoice rows"],
+      "expected": "The invoice count should match the represented invoice set.",
+      "expectedBasis": ["observed-consistency", "arithmetic"],
+      "actual": "The badge shows 4 while the table and footer show 3.",
+      "evidence": ["E-001"],
+      "impact": "The owner sees contradictory billing state and cannot trust the navigation count.",
+      "rootCause": "unknown"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-001",
+      "type": "screenshot",
+      "location": "F-001-badge-count.png",
+      "supports": ["F-001"],
+      "redacted": "yes"
+    }
+  ],
+  "coverage": {
+    "totalInScope": 12,
+    "tested": 9,
+    "sampled": 2,
+    "policyBlocked": 1,
+    "environmentBlocked": 0,
+    "unreachable": 0,
+    "samplingRule": "One representative row action per invoice state; all primary actions tested."
+  },
+  "contradictionMatrix": [],
+  "outOfScope": [],
+  "recommendedNextAudit": "Re-run billing after the count source is corrected."
+}

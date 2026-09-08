@@ -1,0 +1,10 @@
+interface:
+  display_name: Product Operator
+  short_description: Weekly product control loop on existing roadmap/state — what to build, verify, or stop now
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  allow_implicit_invocation: true

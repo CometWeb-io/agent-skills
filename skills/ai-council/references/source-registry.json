@@ -1,0 +1,19 @@
+{
+  "version": "5.0",
+  "verified_on": "2026-08-24",
+  "discovery_only": true,
+  "runtime_priority": ["live primary source", "Notion Council Source Registry", "this bootstrap file"],
+  "sources": [
+    {"claim_type":"law_regulation","jurisdiction":"EU","name":"EU AI Act - EUR-Lex","root":"https://eur-lex.europa.eu/eli/reg/2024/1689/oj","authority":"official_legislation"},
+    {"claim_type":"regulatory_guidance","jurisdiction":"EU","name":"European Commission AI Act guidance","root":"https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai","authority":"official_guidance"},
+    {"claim_type":"official_technical_docs","jurisdiction":"US/global","name":"NIST AI RMF","root":"https://www.nist.gov/itl/ai-risk-management-framework","authority":"official_government_guidance"},
+    {"claim_type":"official_technical_docs","jurisdiction":"US/global","name":"NIST AIRC","root":"https://airc.nist.gov/","authority":"official_government_guidance"},
+    {"claim_type":"security_advisory","jurisdiction":"global","name":"OWASP GenAI","root":"https://genai.owasp.org/","authority":"security_guidance"},
+    {"claim_type":"security_advisory","jurisdiction":"US/global","name":"CISA KEV","root":"https://www.cisa.gov/known-exploited-vulnerabilities-catalog","authority":"cisa_kev"},
+    {"claim_type":"security_advisory","jurisdiction":"US/global","name":"NIST NVD","root":"https://nvd.nist.gov/","authority":"nvd_or_cve_authority"},
+    {"claim_type":"regulatory_guidance","jurisdiction":"EU","name":"EDPB","root":"https://www.edpb.europa.eu/","authority":"regulator"},
+    {"claim_type":"regulatory_guidance","jurisdiction":"PL/EU","name":"UODO","root":"https://uodo.gov.pl/","authority":"regulator"},
+    {"claim_type":"regulatory_guidance","jurisdiction":"PL/EU","name":"UOKiK","root":"https://uokik.gov.pl/","authority":"regulator"},
+    {"claim_type":"law_regulation","jurisdiction":"PL","name":"Dziennik Ustaw RP","root":"https://dziennikustaw.gov.pl/","authority":"official_legislation"}
+  ]
+}

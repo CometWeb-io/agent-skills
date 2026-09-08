@@ -1,0 +1,13 @@
+---
+description: Build Evidence Packs for claim verification. Upstream of decisions — never issues GO/NO_GO alone.
+alwaysApply: false
+---
+
+When the user needs **fact-checking**, **due diligence**, **Evidence Packs**, falsifier
+passes, source lineage, contradiction resolution, or reusable evidence for another
+skill — load `evidence-researcher`.
+
+Separate Claim ≠ Source ≠ Evidence. FACT vs INFERENCE. Do **not** make final business
+or release decisions here — hand off to AI Council, Product Operator, or Release Readiness.
+
+Run `scripts/evidence_kernel.py` for ledger validation when JSON is present.

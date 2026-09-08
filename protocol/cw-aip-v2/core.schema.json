@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/v2/core.schema.json",
+  "title": "CW-AIP v2 Core Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "type",
+    "producer",
+    "producer_version",
+    "protocol_version",
+    "subject",
+    "generated_at",
+    "as_of",
+    "sensitivity",
+    "dependencies",
+    "payload",
+    "payload_hash"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "type": {
+      "type": "string",
+      "enum": [
+        "ContextEnvelope",
+        "EvidenceEnvelope",
+        "FindingEnvelope",
+        "DecisionEnvelope",
+        "RoadmapEnvelope",
+        "ReleaseEnvelope",
+        "SpecialistHandoff",
+        "ArtifactEnvelope",
+        "SnapshotMetadata"
+      ]
+    },
+    "producer": { "type": "string", "minLength": 1 },
+    "producer_version": { "type": "string", "minLength": 1 },
+    "protocol_version": { "const": "2.0" },
+    "subject": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "as_of": { "type": "string", "minLength": 1 },
+    "sensitivity": {
+      "type": "string",
+      "enum": ["public", "internal", "confidential", "restricted"]
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "payload": { "type": "object" },
+    "payload_hash": {
+      "type": "string",
+      "pattern": "^(sha256:)?[a-fA-F0-9]{64}$|^pending$"
+    }
+  }
+}

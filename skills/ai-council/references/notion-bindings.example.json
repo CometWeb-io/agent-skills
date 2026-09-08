@@ -1,0 +1,18 @@
+{
+  "version": "5.0",
+  "hub_url": "https://www.notion.so/YOUR_WORKSPACE/Council-Hub-PAGE_ID",
+  "collections": {
+    "decisions": "collection://YOUR_DECISIONS_ID",
+    "expert_votes": "collection://YOUR_EXPERT_VOTES_ID",
+    "experiments": "collection://YOUR_EXPERIMENTS_ID",
+    "assumptions": "collection://YOUR_ASSUMPTIONS_ID",
+    "evidence": "collection://YOUR_EVIDENCE_ID",
+    "framework_uses": "collection://YOUR_FRAMEWORK_USES_ID",
+    "process_memory": "collection://YOUR_PROCESS_MEMORY_ID",
+    "decision_reviews": "collection://YOUR_DECISION_REVIEWS_ID",
+    "watch_dependencies": "collection://YOUR_WATCH_DEPENDENCIES_ID",
+    "forecasts": "collection://YOUR_FORECASTS_ID",
+    "source_registry": "collection://YOUR_SOURCE_REGISTRY_ID"
+  },
+  "notes": "Preferred path: ~/.config/cometweb/ai-council-notion.json (chmod 600). Optional override: references/notion-bindings.local.json in a clone (gitignored). Never commit real IDs."
+}

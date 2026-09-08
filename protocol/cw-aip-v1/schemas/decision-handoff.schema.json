@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/decision-handoff.schema.json",
+  "title": "CW-AIP DecisionHandoff payload",
+  "allOf": [
+    { "$ref": "envelope.core.schema.json" },
+    {
+      "type": "object",
+      "properties": {
+        "type": { "const": "DecisionHandoff" },
+        "payload": {
+          "type": "object",
+          "required": ["verdict"],
+          "properties": {
+            "verdict": {
+              "type": "string",
+              "description": "Skill-local verdict enum, e.g. GO | NO_GO | DEFER or Council decision"
+            },
+            "blockers": { "type": "array", "items": { "type": "string" } },
+            "controls": { "type": "array", "items": { "type": "string" } },
+            "release_candidate": { "type": "string" },
+            "environment": { "type": "string" }
+          }
+        }
+      }
+    }
+  ]
+}

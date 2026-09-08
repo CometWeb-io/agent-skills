@@ -1,5 +1,14 @@
 # Changelog — cometweb-context
 
+## [1.2.0] - 2026-09-08
+
+### Changed
+- Strict JSON Schema + semantic ContextEnvelope validator.
+- repo_snapshot path redaction by default; remote ahead/behind freshness fields.
+- Operational First Principles / D-xxx bindings deferred to source registry.
+- OpenAI agent metadata: default_prompt + ./assets icon paths.
+
+
 ## [1.1.0] - 2026-09-07
 
 ### Changed

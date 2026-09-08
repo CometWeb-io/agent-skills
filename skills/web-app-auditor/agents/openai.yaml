@@ -1,0 +1,11 @@
+interface:
+  display_name: Web App Auditor
+  short_description: Evidence-driven web app QA with safe click-through and data verification
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - atlas
+  allow_implicit_invocation: true

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/evidence-envelope.schema.json",
+  "title": "CW-AIP EvidenceEnvelope payload",
+  "allOf": [
+    { "$ref": "envelope.core.schema.json" },
+    {
+      "type": "object",
+      "properties": {
+        "type": { "const": "EvidenceEnvelope" },
+        "payload": {
+          "type": "object",
+          "required": ["research_contract", "material_claims", "evidence_pack_hash"],
+          "properties": {
+            "research_contract": { "type": "string" },
+            "material_claims": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["claim_id", "text", "epistemic_kind", "status"],
+                "properties": {
+                  "claim_id": { "type": "string" },
+                  "text": { "type": "string" },
+                  "epistemic_kind": { "enum": ["FACT", "INFERENCE"] },
+                  "status": { "type": "string" }
+                }
+              }
+            },
+            "gaps": { "type": "array", "items": { "type": "string" } },
+            "contradictions": { "type": "array", "items": { "type": "string" } },
+            "evidence_pack_hash": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/envelope.core.schema.json",
+  "title": "CW-AIP Core Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "type",
+    "producer",
+    "protocol_version",
+    "subject",
+    "as_of"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "type": {
+      "type": "string",
+      "enum": [
+        "ArtifactEnvelope",
+        "EvidenceEnvelope",
+        "FindingEnvelope",
+        "DecisionHandoff",
+        "SpecialistHandoff",
+        "SnapshotMetadata"
+      ]
+    },
+    "producer": { "type": "string", "minLength": 1 },
+    "protocol_version": { "const": "1.0" },
+    "subject": { "type": "string", "minLength": 1 },
+    "as_of": { "type": "string", "minLength": 1 },
+    "source": { "type": "string" },
+    "locator": { "type": "string" },
+    "claim": { "type": "string" },
+    "authority": {
+      "type": "string",
+      "enum": ["PRIMARY", "DERIVATIVE", "HEURISTIC", "USER_ASSERTED", "UNKNOWN"]
+    },
+    "freshness": {
+      "type": "string",
+      "enum": [
+        "CURRENT",
+        "STALE",
+        "UNKNOWN",
+        "NOT_YET_EFFECTIVE",
+        "SUPERSEDED"
+      ]
+    },
+    "confidence": {
+      "oneOf": [
+        { "type": "number", "minimum": 0, "maximum": 1 },
+        { "type": "string", "minLength": 1 }
+      ]
+    },
+    "status": { "type": "string" },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "payload": { "type": "object" }
+  }
+}

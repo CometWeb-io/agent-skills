@@ -1,0 +1,708 @@
+{
+  "version": "3.0.0",
+  "profiles": {
+    "balanced": {
+      "foundation": 25,
+      "relevance": 25,
+      "authority": 20,
+      "geo": 20,
+      "aeo": 10
+    },
+    "classic-search": {
+      "foundation": 30,
+      "relevance": 30,
+      "authority": 25,
+      "geo": 10,
+      "aeo": 5
+    },
+    "ai-first": {
+      "foundation": 20,
+      "relevance": 20,
+      "authority": 20,
+      "geo": 30,
+      "aeo": 10
+    }
+  },
+  "tiers": [
+    {
+      "min": 0,
+      "max": 34.999,
+      "label": "Critical"
+    },
+    {
+      "min": 35,
+      "max": 54.999,
+      "label": "Fragile"
+    },
+    {
+      "min": 55,
+      "max": 69.999,
+      "label": "Competent"
+    },
+    {
+      "min": 70,
+      "max": 84.999,
+      "label": "Strong"
+    },
+    {
+      "min": 85,
+      "max": 100,
+      "label": "Maxxed"
+    }
+  ],
+  "gates": {
+    "SITEWIDE_NOINDEX": {
+      "maxx_cap": 25,
+      "foundation_cap": 20,
+      "allowed_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ],
+      "requires_nonpass_check_ids": [
+        "FND-01"
+      ]
+    },
+    "SITEWIDE_SEARCH_DISALLOW": {
+      "maxx_cap": 25,
+      "foundation_cap": 20,
+      "allowed_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ],
+      "requires_nonpass_check_ids": [
+        "FND-04"
+      ]
+    },
+    "CRITICAL_PAGES_NOINDEX": {
+      "maxx_cap": 45,
+      "foundation_cap": 45,
+      "allowed_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ],
+      "requires_nonpass_check_ids": [
+        "FND-01"
+      ]
+    },
+    "CRITICAL_PAGES_NON_200": {
+      "maxx_cap": 45,
+      "foundation_cap": 45,
+      "allowed_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ],
+      "requires_nonpass_check_ids": [
+        "FND-02"
+      ]
+    },
+    "CONTENT_UNAVAILABLE_TO_SEARCH_FETCH": {
+      "maxx_cap": 55,
+      "foundation_cap": 50,
+      "allowed_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ],
+      "requires_nonpass_check_ids": [
+        "FND-06"
+      ]
+    }
+  },
+  "checks": [
+    {
+      "id": "FND-01",
+      "pillar": "foundation",
+      "weight": 1.5,
+      "name": "Critical-page index eligibility",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "FND-02",
+      "pillar": "foundation",
+      "weight": 1.25,
+      "name": "HTTP status and redirect integrity",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "FND-03",
+      "pillar": "foundation",
+      "weight": 1.0,
+      "name": "Canonical consistency",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "FND-04",
+      "pillar": "foundation",
+      "weight": 1.0,
+      "name": "Robots and crawl directives",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "FND-05",
+      "pillar": "foundation",
+      "weight": 0.75,
+      "name": "Sitemap and discovery hygiene",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "FND-06",
+      "pillar": "foundation",
+      "weight": 1.25,
+      "name": "Critical content retrievability/rendering",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "FND-07",
+      "pillar": "foundation",
+      "weight": 0.75,
+      "name": "Mobile/responsive baseline",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "FND-08",
+      "pillar": "foundation",
+      "weight": 1.0,
+      "name": "Performance evidence and CWV health",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "FND-09",
+      "pillar": "foundation",
+      "weight": 0.5,
+      "name": "Internationalization/hreflang when applicable",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "REL-01",
+      "pillar": "relevance",
+      "weight": 0.75,
+      "name": "Title and main-title clarity",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "REL-02",
+      "pillar": "relevance",
+      "weight": 1.5,
+      "name": "Primary intent satisfaction",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "REL-03",
+      "pillar": "relevance",
+      "weight": 1.5,
+      "name": "Unique non-commodity value",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "REL-04",
+      "pillar": "relevance",
+      "weight": 1.25,
+      "name": "Topical/task completeness",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "REL-05",
+      "pillar": "relevance",
+      "weight": 1.0,
+      "name": "Internal contextual discovery",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "REL-06",
+      "pillar": "relevance",
+      "weight": 1.0,
+      "name": "Duplication/cannibalization control",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "REL-07",
+      "pillar": "relevance",
+      "weight": 0.75,
+      "name": "Accuracy and freshness where material",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "REL-08",
+      "pillar": "relevance",
+      "weight": 0.5,
+      "name": "Useful media/data support",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AUT-01",
+      "pillar": "authority",
+      "weight": 1.0,
+      "name": "Publisher/business transparency",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AUT-02",
+      "pillar": "authority",
+      "weight": 1.25,
+      "name": "Authorship/provenance where useful",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AUT-03",
+      "pillar": "authority",
+      "weight": 1.5,
+      "name": "First-hand expertise or defensible evidence",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AUT-04",
+      "pillar": "authority",
+      "weight": 1.0,
+      "name": "Entity identity consistency",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AUT-05",
+      "pillar": "authority",
+      "weight": 1.0,
+      "name": "External reputation and mentions",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AUT-06",
+      "pillar": "authority",
+      "weight": 1.0,
+      "name": "Reference/backlink quality",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AUT-07",
+      "pillar": "authority",
+      "weight": 1.5,
+      "name": "YMYL trust safeguards when applicable",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "GEO-01",
+      "pillar": "geo",
+      "weight": 1.25,
+      "name": "Public/indexable source availability",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "GEO-02",
+      "pillar": "geo",
+      "weight": 1.5,
+      "name": "Citation-worthy original information",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "GEO-03",
+      "pillar": "geo",
+      "weight": 1.25,
+      "name": "Attributable claims and source clarity",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "GEO-04",
+      "pillar": "geo",
+      "weight": 1.0,
+      "name": "Entity disambiguation for retrieval",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "GEO-05",
+      "pillar": "geo",
+      "weight": 0.75,
+      "name": "Freshness and maintained facts",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "GEO-06",
+      "pillar": "geo",
+      "weight": 1.0,
+      "name": "ChatGPT Search discovery control",
+      "na_policy": "surface",
+      "aggregation": "single_or_distribution",
+      "surface": "chatgpt-search",
+      "platform_source_group": "openai_search",
+      "requires_fresh_policy": true,
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "GEO-07",
+      "pillar": "geo",
+      "weight": 0.75,
+      "name": "Claude search/retrieval controls",
+      "na_policy": "surface",
+      "aggregation": "single_or_distribution",
+      "surface": "claude-search",
+      "platform_source_group": "anthropic_crawlers",
+      "requires_fresh_policy": true,
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "GEO-08",
+      "pillar": "geo",
+      "weight": 0.75,
+      "name": "Perplexity discovery/retrieval controls",
+      "na_policy": "surface",
+      "aggregation": "single_or_distribution",
+      "surface": "perplexity-search",
+      "platform_source_group": "perplexity_crawlers",
+      "requires_fresh_policy": true,
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "GEO-09",
+      "pillar": "geo",
+      "weight": 1.0,
+      "name": "Google generative Search eligibility",
+      "na_policy": "surface",
+      "aggregation": "single_or_distribution",
+      "surface": "google-ai-search",
+      "platform_source_group": "google_ai_search",
+      "requires_fresh_policy": true,
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "GEO-10",
+      "pillar": "geo",
+      "weight": 0.75,
+      "name": "Bing/Copilot discovery eligibility",
+      "na_policy": "surface",
+      "aggregation": "single_or_distribution",
+      "surface": "bing-copilot",
+      "platform_source_group": "microsoft_ai_search",
+      "requires_fresh_policy": true,
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AEO-01",
+      "pillar": "aeo",
+      "weight": 1.5,
+      "name": "Answer-first clarity",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AEO-02",
+      "pillar": "aeo",
+      "weight": 1.0,
+      "name": "Question/section discoverability where natural",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AEO-03",
+      "pillar": "aeo",
+      "weight": 1.0,
+      "name": "Lists/tables/steps for extractable tasks",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AEO-04",
+      "pillar": "aeo",
+      "weight": 1.0,
+      "name": "Definitions/comparisons are concise and complete",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AEO-05",
+      "pillar": "aeo",
+      "weight": 0.75,
+      "name": "Useful visible FAQ/Q&A where warranted",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    },
+    {
+      "id": "AEO-06",
+      "pillar": "aeo",
+      "weight": 0.75,
+      "name": "Supported structured data when eligible",
+      "na_policy": "conditional",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ],
+      "platform_source_group": "google_structured_data",
+      "requires_fresh_policy": true,
+      "freshness_trigger_surfaces": [
+        "google-ai-search"
+      ]
+    },
+    {
+      "id": "AEO-07",
+      "pillar": "aeo",
+      "weight": 0.75,
+      "name": "Snippet/preview controls do not suppress intended answers",
+      "na_policy": "never",
+      "aggregation": "single_or_distribution",
+      "required_target_evidence_classes": [
+        "E2_SITE_DIRECT",
+        "E3_REPRODUCIBLE_TEST",
+        "E4_CONNECTED_DATA"
+      ]
+    }
+  ],
+  "evidence_classes": {
+    "E1_FIRST_PARTY_LIVE": 1.0,
+    "E2_SITE_DIRECT": 1.0,
+    "E3_REPRODUCIBLE_TEST": 0.85,
+    "E4_CONNECTED_DATA": 0.85,
+    "E5_SECONDARY_RESEARCH": 0.6,
+    "E6_HEURISTIC": 0.4,
+    "E7_EXPERIMENTAL": 0.2
+  },
+  "surfaces": [
+    "chatgpt-search",
+    "claude-search",
+    "perplexity-search",
+    "google-ai-search",
+    "bing-copilot"
+  ],
+  "default_surfaces": [
+    "chatgpt-search",
+    "claude-search",
+    "perplexity-search",
+    "google-ai-search",
+    "bing-copilot"
+  ],
+  "coverage_rules": {
+    "withhold_below": 50.0,
+    "provisional_below": 75.0
+  },
+  "site_archetypes": [
+    "saas",
+    "ecommerce",
+    "local",
+    "publisher",
+    "docs",
+    "marketplace",
+    "ymyl",
+    "multilingual",
+    "other"
+  ]
+}

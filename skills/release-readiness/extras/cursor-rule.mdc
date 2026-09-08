@@ -1,0 +1,15 @@
+---
+description: Pinned release candidate + environment → GO / GO_WITH_CONTROLS / NO_GO / DEFER. Score never overrides binding gates.
+alwaysApply: false
+---
+
+When the user names a **build, RC, artifact, commit, or deploy target** and asks if it
+is **ready for production**, run a **release gate**, or needs GO/NO_GO/DEFER — load
+`release-readiness`.
+
+Requires identifiable **release candidate** and **environment**. Run
+`scripts/readiness_engine.py` and `scripts/bootstrap_manifest.py` when manifest JSON
+is available.
+
+Do not use for whole-project gap roadmaps (`repo-to-roadmap`) or weekly prioritization
+(`product-operator`). Verdict is assessment evidence, not deploy authorization.

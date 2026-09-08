@@ -1,0 +1,12 @@
+interface:
+  display_name: Repo to Roadmap
+  short_description: First-time or delta whole-project baseline → evidence-based roadmap (not weekly ops or RC gates)
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

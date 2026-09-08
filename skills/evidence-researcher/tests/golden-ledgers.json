@@ -1,0 +1,45 @@
+{
+  "schema_version": "2.0",
+  "cases": [
+    {
+      "id": "current_plus_stale_support",
+      "expected": "READY",
+      "purpose": "A stale accepted secondary source must not invalidate a claim that also has current authoritative accepted support."
+    },
+    {
+      "id": "critical_unresolved_contradiction",
+      "expected": "BLOCKED_BY_CONTRADICTION",
+      "purpose": "A critical unresolved contradiction must block readiness."
+    },
+    {
+      "id": "live_source_not_reverified",
+      "expected": "REFRESH_REQUIRED",
+      "purpose": "Material live-verification classes require run-specific inspection."
+    },
+    {
+      "id": "inference_marked_verified",
+      "expected": "INVALID",
+      "purpose": "Inference cannot masquerade as a verified fact."
+    },
+    {
+      "id": "contradiction_flag_without_log",
+      "expected": "INVALID",
+      "purpose": "Contradiction coverage requires an auditable falsifier search record."
+    },
+    {
+      "id": "duplicate_source_lineage",
+      "expected": "WARNING",
+      "purpose": "Duplicate fingerprints or conflicting independence groups must be surfaced."
+    },
+    {
+      "id": "dependency_cycle",
+      "expected": "INVALID",
+      "purpose": "Claim dependency graph must remain acyclic."
+    },
+    {
+      "id": "v1_migration",
+      "expected": "MIGRATED_WITH_REVIEW",
+      "purpose": "Migration must preserve provenance while exposing unreconstructable falsifier history."
+    }
+  ]
+}

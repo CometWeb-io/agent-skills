@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "competitor_id": "acme",
+  "competitor_name": "Acme",
+  "captured_at": "2026-08-25T10:00:00Z",
+  "state": {
+    "positioning": {"headline": "Ship faster", "target_segments": ["SMB", "Enterprise"]},
+    "product": {"capabilities": ["Audit", "Reports", "AI Assistant"]},
+    "pricing": {"currency": "USD", "tiers": {"pro_monthly": 49}},
+    "company": {"hiring_signals": ["sales"]}
+  },
+  "evidence": [
+    {
+      "evidence_id": "ev-new-pricing",
+      "field_path": "state.pricing.tiers.pro_monthly",
+      "source": "https://acme.example/pricing",
+      "source_class": "A_FIRST_PARTY",
+      "observed_at": "2026-08-25T09:55:00Z",
+      "last_verified_at": "2026-08-25T09:55:00Z",
+      "direct": true
+    }
+  ]
+}

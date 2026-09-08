@@ -1,0 +1,12 @@
+---
+description: Support → incident → engineering loop. Not shadow CRM or generic project management.
+alwaysApply: false
+---
+
+When the user asks about **support queue**, customer cases, incidents, churn signals,
+support→engineering handoffs, or RESOLVED vs VERIFIED customer outcomes — load `customer-ops`.
+
+Run `scripts/customer_ops_kernel.py` when case JSON is available. Merged PR ≠ resolved customer problem.
+
+Do not use for design partner prospecting (`design-partner-finder`) or product roadmap control
+(`product-operator`).

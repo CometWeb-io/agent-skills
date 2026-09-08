@@ -1,0 +1,13 @@
+---
+description: Weekly product control loop — next actions from reconciled GitHub/Notion state. Not from-scratch roadmaps or release gates.
+alwaysApply: false
+---
+
+When the user asks what to **build/fix/verify next**, what changed since last review,
+whether roadmap matches repo, BLOCKER/VERIFY NOW items, or what to **stop** doing —
+load `product-operator`.
+
+Requires **existing** roadmap or product state. For first-time whole-project baseline
+use `repo-to-roadmap`. For pinned RC production gate use `release-readiness`.
+
+Lifecycle: Intent → Planned → Implemented → Verified → Shipped → Outcome (never collapse).

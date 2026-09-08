@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.1",
+  "target": "https://example.com",
+  "mode": "flow",
+  "depth": "forensic",
+  "confidence": "high",
+  "verdict": "ship",
+  "capabilities": {
+    "profile": "source",
+    "browser": false,
+    "source": true,
+    "screenshots": false,
+    "console": false,
+    "network": false,
+    "filesystem": true,
+    "codeExecution": true
+  },
+  "environment": {"kind": "production", "mutationPolicy": "safe-test-only"},
+  "scope": {"in": ["checkout"], "out": [], "viewports": [], "persona": "anon", "covered": [], "skipped": []},
+  "counts": {"blocker": 0, "major": 0, "minor": 0, "nit": 0, "needsRepro": 0, "recommendations": 0},
+  "findings": [],
+  "evidence": [],
+  "coverage": {"totalInScope": 2, "tested": 1, "sampled": 1, "policyBlocked": 0, "environmentBlocked": 0, "unreachable": 0, "samplingRule": "sample"}
+}

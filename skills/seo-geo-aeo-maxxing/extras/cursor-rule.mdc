@@ -1,0 +1,13 @@
+---
+description: SEO/GEO/AEO audit with closed check registry, mechanical scoring, freshness gates — not generic SEO checklist.
+alwaysApply: false
+---
+
+When the user asks for SEO, GEO, AEO, indexability, SERP/AI visibility audit on a **specific
+site/URL** — load `seo-geo-aeo-maxxing`.
+
+Run registry tools when available:
+`check_freshness.py --strict`, `build_audit_template.py`, `score_maxx.py`.
+Separate readiness score from observed visibility. Never invent rankings or traffic.
+
+Do not use for whole-product roadmap (`repo-to-roadmap`) or live click-through QA (`web-app-auditor`).

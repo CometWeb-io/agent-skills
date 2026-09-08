@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "audit-report.schema.json",
+  "title": "WebAppAuditorReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "target", "mode", "depth", "confidence", "verdict",
+    "capabilities", "environment", "scope", "counts", "findings", "evidence",
+    "coverage"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "1.1"},
+    "target": {"type": "string", "minLength": 1},
+    "mode": {"enum": ["page", "area", "crawl", "flow", "data", "visual", "regression", "a11y"]},
+    "depth": {"enum": ["recon", "standard", "forensic"]},
+    "confidence": {"enum": ["high", "medium", "low"]},
+    "verdict": {"enum": ["do_not_ship", "ship_with_fixes", "ship", "incomplete"]},
+    "validator": {"type": "string"},
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "browser", "source", "screenshots", "console", "network", "filesystem", "codeExecution"],
+      "properties": {
+        "profile": {"enum": ["hybrid", "browser", "screenshot", "source", "fetch-only"]},
+        "browser": {"type": "boolean"},
+        "source": {"type": "boolean"},
+        "screenshots": {"type": "boolean"},
+        "console": {"type": "boolean"},
+        "network": {"type": "boolean"},
+        "filesystem": {"type": "boolean"},
+        "codeExecution": {"type": "boolean"}
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "mutationPolicy"],
+      "properties": {
+        "kind": {"enum": ["production", "staging", "test", "local", "unknown"]},
+        "mutationPolicy": {"enum": ["read-only", "safe-test-only"]}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["in", "out", "viewports", "persona", "covered", "skipped"],
+      "properties": {
+        "in": {"type": "array", "items": {"type": "string"}},
+        "out": {"type": "array", "items": {"type": "string"}},
+        "viewports": {"type": "array", "items": {"type": "string"}},
+        "persona": {"type": "string"},
+        "covered": {"type": "array", "items": {"type": "string"}},
+        "skipped": {"type": "array", "items": {"type": "string"}},
+        "stopReason": {"type": "string"}
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blocker", "major", "minor", "nit", "needsRepro", "recommendations"],
+      "properties": {
+        "blocker": {"type": "integer", "minimum": 0},
+        "major": {"type": "integer", "minimum": 0},
+        "minor": {"type": "integer", "minimum": 0},
+        "nit": {"type": "integer", "minimum": 0},
+        "needsRepro": {"type": "integer", "minimum": 0},
+        "recommendations": {"type": "integer", "minimum": 0}
+      }
+    },
+    "findings": {"type": "array", "items": {"$ref": "finding.schema.json"}},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "location", "supports", "redacted"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^E-[0-9]{3}$"},
+          "type": {"enum": ["screenshot", "dom", "text", "arithmetic", "console", "network", "source"]},
+          "location": {"type": "string"},
+          "supports": {"type": "array", "items": {"type": "string", "pattern": "^F-[0-9]{3}$"}},
+          "redacted": {"enum": ["yes", "no", "n/a"]}
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["totalInScope", "tested", "sampled", "policyBlocked", "environmentBlocked", "unreachable"],
+      "properties": {
+        "totalInScope": {"type": "integer", "minimum": 0},
+        "tested": {"type": "integer", "minimum": 0},
+        "sampled": {"type": "integer", "minimum": 0},
+        "policyBlocked": {"type": "integer", "minimum": 0},
+        "environmentBlocked": {"type": "integer", "minimum": 0},
+        "unreachable": {"type": "integer", "minimum": 0},
+        "samplingRule": {"type": "string"}
+      }
+    },
+    "contradictionMatrix": {"type": "array"},
+    "outOfScope": {"type": "array", "maxItems": 3, "items": {"type": "string"}},
+    "recommendedNextAudit": {"type": "string"}
+  }
+}

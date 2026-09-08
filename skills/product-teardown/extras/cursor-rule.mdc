@@ -1,0 +1,13 @@
+---
+description: External product/repo → transferable patterns for your target. Not ongoing competitor monitoring.
+alwaysApply: false
+---
+
+When the user asks to **teardown**, reverse-engineer, or learn **implementable patterns** from
+an external product/repo/site — load `product-teardown`.
+
+Unit of work = **transferable pattern**, not feature checklist. ADOPT requires destination-side
+evidence that the problem exists.
+
+Run `scripts/validate_pattern_ledger.py` when pattern JSON exists. Not for competitor watchlists
+(`competitive-intelligence`) or own-repo roadmap (`repo-to-roadmap`).

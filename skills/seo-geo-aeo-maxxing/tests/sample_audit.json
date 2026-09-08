@@ -1,0 +1,479 @@
+{
+  "registry_version": "3.0.0",
+  "mode": "FULL",
+  "profile": "balanced",
+  "site_archetypes": [
+    "saas"
+  ],
+  "target_surfaces": [
+    "chatgpt-search",
+    "claude-search",
+    "perplexity-search",
+    "google-ai-search",
+    "bing-copilot"
+  ],
+  "active_pillars": [
+    "foundation",
+    "relevance",
+    "authority",
+    "geo",
+    "aeo"
+  ],
+  "checks": [
+    {
+      "id": "FND-01",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "FND-01 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "FND-02",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "FND-02 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "FND-03",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "FND-03 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "FND-04",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "FND-04 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "FND-05",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "FND-05 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "FND-06",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "FND-06 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "FND-07",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "FND-07 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "FND-08",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "FND-08 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "FND-09",
+      "verdict": "N/A",
+      "reason": "Synthetic fixture is single-language and single-market",
+      "applicability_evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "Sampled site exposes one language and no locale URL variants",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "REL-01",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "REL-01 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "REL-02",
+      "verdict": "WEAK",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "Pricing page delays the primary commercial answer behind a generic introduction",
+          "source": "https://example.com/pricing/"
+        }
+      ]
+    },
+    {
+      "id": "REL-03",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "REL-03 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "REL-04",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "REL-04 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "REL-05",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "REL-05 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "REL-06",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "REL-06 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "REL-07",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "REL-07 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "REL-08",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "REL-08 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AUT-01",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AUT-01 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AUT-02",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AUT-02 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AUT-03",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AUT-03 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AUT-04",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AUT-04 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AUT-05",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AUT-05 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AUT-06",
+      "verdict": "NOT_ASSESSED",
+      "needed": "Backlink/reference dataset"
+    },
+    {
+      "id": "AUT-07",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AUT-07 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "GEO-01",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "GEO-01 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "GEO-02",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "GEO-02 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "GEO-03",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "GEO-03 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "GEO-04",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "GEO-04 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "GEO-05",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "GEO-05 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "GEO-06",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "GEO-06 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "GEO-07",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "GEO-07 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "GEO-08",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "GEO-08 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "GEO-09",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "GEO-09 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "GEO-10",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "GEO-10 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AEO-01",
+      "verdict": "WEAK",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "Priority answer exists but requires several paragraphs of context before the direct answer",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AEO-02",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AEO-02 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AEO-03",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AEO-03 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AEO-04",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AEO-04 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AEO-05",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AEO-05 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AEO-06",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AEO-06 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    },
+    {
+      "id": "AEO-07",
+      "verdict": "PASS",
+      "evidence": [
+        {
+          "class": "E2_SITE_DIRECT",
+          "artifact": "AEO-07 verified in synthetic regression fixture",
+          "source": "https://example.com/"
+        }
+      ]
+    }
+  ],
+  "gates": [],
+  "subject": "https://example.com/",
+  "scope": {
+    "sample": "synthetic regression fixture",
+    "critical_urls": [
+      "https://example.com/",
+      "https://example.com/pricing/"
+    ]
+  }
+}

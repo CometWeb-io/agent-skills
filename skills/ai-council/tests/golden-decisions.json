@@ -1,0 +1,39 @@
+[
+  {
+    "name": "small reversible pilot",
+    "query": "Mały test nowego CTA, pilot odwracalny",
+    "context": {"financial_impact": 0.1, "strategic_impact": 0.1, "uncertainty": 0.2, "risk_level": "low"},
+    "expected_mode": "FAST"
+  },
+  {
+    "name": "irreversible acquisition",
+    "query": "Czy przejąć konkurenta za 5 mln PLN? Duża inwestycja, trudna do odwrócenia",
+    "context": {"financial_impact": 0.95, "strategic_impact": 0.9, "uncertainty": 0.7},
+    "expected_mode": "DEEP",
+    "required_roles": ["m_and_a", "finance", "legal", "financial_risk"]
+  },
+  {
+    "name": "EU AI employee scoring",
+    "query": "Launch AI employee scoring system in EU using personal data",
+    "context": {"financial_impact": 0.6, "strategic_impact": 0.8, "uncertainty": 0.7, "jurisdictions": ["EU"]},
+    "required_roles": ["legal", "privacy", "responsible_ai"]
+  },
+  {
+    "name": "security-sensitive product launch",
+    "query": "Uruchomić produkcyjnie nowy auth flow z tokenami i sekretami",
+    "context": {"financial_impact": 0.4, "strategic_impact": 0.6, "uncertainty": 0.5},
+    "required_roles": ["security", "technical"]
+  },
+  {
+    "name": "international market entry",
+    "query": "Czy wejść na rynek niemiecki z produktem SaaS?",
+    "context": {"financial_impact": 0.7, "strategic_impact": 0.8, "uncertainty": 0.7},
+    "required_roles": ["localization", "finance", "legal"]
+  },
+  {
+    "name": "resource allocation",
+    "query": "Jak podzielić budżet między marketing, produkt i sprzedaż?",
+    "context": {"financial_impact": 0.8, "strategic_impact": 0.8, "uncertainty": 0.5},
+    "required_roles": ["finance", "data"]
+  }
+]

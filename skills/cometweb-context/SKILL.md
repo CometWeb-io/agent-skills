@@ -17,7 +17,8 @@ Działaj jako **read-only context gateway**. Zbieraj minimalny, świeży i audyt
 6. Nie wykonuj downstreamowej strategii, priorytetyzacji, audytu, decyzji Council ani wysyłki outboundu.
 7. Nie czytaj sekretów, tokenów, plików konfiguracyjnych z credentialami ani nie publikuj treści oznaczonej jako prywatna/wewnętrzna.
 
-Szczegóły źródeł i hierarchii: [references/source-registry.md](references/source-registry.md).  
+Szczegóły źródeł i hierarchii: [references/source-registry.md](references/source-registry.md)  
+Machine-readable bindings: [references/source-registry.json](references/source-registry.json).  
 Zasady provenance i bezpieczeństwa: [references/security-and-provenance.md](references/security-and-provenance.md).  
 Kontrakt wyjścia: [references/context-envelope.md](references/context-envelope.md).
 
@@ -44,7 +45,7 @@ Profile i domyślne źródła:
 
 | Profil | Minimalny zestaw |
 | --- | --- |
-| product / roadmap / release context | repo/GitHub + CometWeb Insight + kanoniczny status/decisions + First Principles dla materialnych nowych decyzji; Notion tylko gdy potrzebne |
+| product / roadmap / release context | repo/GitHub + CometWeb Insight + kanoniczny status/decisions + First Principles binding z `source-registry.json`; Notion tylko gdy potrzebne |
 | GTM / pricing / positioning | decisions + First Principles + dokument kanoniczny tematu + live website; CRM gdy stan komercyjny ma znaczenie |
 | outreach / design partner | CRM + ostatnia komunikacja, jeśli istnieje + ICP/SOP + strona/profil prospekta |
 | personal brand / content | brand canon + evidence register + live public profiles/website + ostatnie istotne treści |
@@ -103,7 +104,7 @@ Nie używaj daty modyfikacji pliku jako automatycznego `effective_at` decyzji bi
 - Jeśli dwa źródła o podobnym autorytecie są sprzeczne, zachowaj oba i wpisz `unresolved_conflict`.
 - Jeśli authoritative source jest niedostępny, nie awansuj fallbacku do poziomu authoritative. Oznacz `authority_gap`.
 - Dokumenty historyczne, drafty i cache nie mogą samodzielnie tworzyć bieżącego stanu.
-- Przy materialnej nowej decyzji pobierz kanoniczne `cometweb/strategia/First Principles.md` (D-028) jako warstwę wejściową. Jeśli historyczny advisor używa kolidującego provisional `D-xxx`, rozwiąż alias przez `governance/decision-candidate-aliases.json`; nie awansuj kandydata do decyzji.
+- Przy materialnej nowej decyzji pobierz kanoniczne First Principles / decision-input ze **source registry** (nie hard-code'uj ścieżek vaulta w logice skilla). Aliasów provisional `D-xxx` nie awansuj do decyzji — rozwiąż przez registry/alias map jeśli istnieje.
 
 ### 6. Delta tylko wobec jawnego baseline'u
 

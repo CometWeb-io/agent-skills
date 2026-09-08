@@ -1,0 +1,12 @@
+interface:
+  display_name: Skill Orchestrator
+  short_description: Plan and run multi-skill CometWeb workflows with CW-AIP handoffs
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

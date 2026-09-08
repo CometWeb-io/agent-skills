@@ -1,0 +1,14 @@
+interface:
+  display_name: Design Partner Finder
+  short_description: 'Find, verify, qualify, and operate evidence-backed design-partner
+    programs: separate research fit from live readiness, compose learning cohorts,
+    control bespoke risk, and graduate early adopters into normal customer motions.'
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

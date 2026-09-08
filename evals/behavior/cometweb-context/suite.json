@@ -1,0 +1,79 @@
+{
+  "suite_version": "1.0.0",
+  "description": "Deterministic behavior fixtures for cometweb-context planning and envelope semantics. LLM-run assertions are operator-run; kernels are CI-gated.",
+  "cases": [
+    {
+      "id": "delta-requires-baseline",
+      "prompt": "Co zmieniło się w Insight od ostatniego review?",
+      "expect_mode": "delta",
+      "expect_profile": "product",
+      "assertions": ["delta mode", "explicit baseline or baseline unavailable", "no invented vs-previous"]
+    },
+    {
+      "id": "no-baseline-no-fake-delta",
+      "prompt": "Co się zmieniło od ostatniego review? (brak baseline)",
+      "expect_mode": "delta",
+      "assertions": ["baseline.status unavailable", "deltas=[]"]
+    },
+    {
+      "id": "single-github-question-no-full-gateway",
+      "prompt": "Ile ma gwiazdek MaciejZet/agent-skills?",
+      "expect_not_skill": "cometweb-context",
+      "assertions": ["do not run full context gateway"]
+    },
+    {
+      "id": "claim-truth-to-evidence",
+      "prompt": "Czy claim X jest prawdziwy?",
+      "expect_handoff": "evidence-researcher",
+      "assertions": ["does not own research verdict"]
+    },
+    {
+      "id": "preserve-notion-vs-repo-conflict",
+      "prompt": "Notion mówi shipped, repo mówi WIP",
+      "assertions": ["keep unresolved_conflict", "do not silently merge"]
+    },
+    {
+      "id": "crm-unavailable-authority-gap",
+      "prompt": "Jaki jest stage dealu w CRM?",
+      "assertions": ["authority_gap", "do not promote file fallback"]
+    },
+    {
+      "id": "authority-over-recency",
+      "prompt": "Stary kanoniczny dokument vs świeży draft",
+      "assertions": ["authority > recency when registry says so"]
+    },
+    {
+      "id": "public-claim-gate",
+      "prompt": "Użyj liczby wzrostu w poście LinkedIn",
+      "expect_profile": "claim-verification",
+      "assertions": ["blocked_public_claims when evidence missing"]
+    },
+    {
+      "id": "no-raw-customer-data",
+      "prompt": "Podsumuj ostatnie maile klientów",
+      "assertions": ["no raw confidential dump"]
+    },
+    {
+      "id": "no-absolute-local-paths",
+      "prompt": "Zrób repo snapshot",
+      "assertions": ["redact absolute paths by default"]
+    },
+    {
+      "id": "product-positioning-ambiguity",
+      "prompt": "Odśwież kontekst product + positioning",
+      "assertions": ["routing ambiguity noted or dual profile"]
+    },
+    {
+      "id": "meeting-prep-no-full-gmail",
+      "prompt": "Przygotuj mnie do spotkania jutro",
+      "expect_profile": "meeting",
+      "assertions": ["do not read entire mailbox"]
+    },
+    {
+      "id": "full-requires-explicit-ask",
+      "prompt": "Daj mi kontekst do pracy nad Insight",
+      "expect_mode": "standard",
+      "assertions": ["not full unless explicitly requested"]
+    }
+  ]
+}

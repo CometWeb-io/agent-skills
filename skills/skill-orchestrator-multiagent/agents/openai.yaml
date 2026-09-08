@@ -1,0 +1,12 @@
+interface:
+  display_name: Skill Orchestrator (Multiagent)
+  short_description: One isolated subagent per CometWeb skill with CW-AIP handoffs
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

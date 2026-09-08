@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "finding.schema.json",
+  "title": "WebAppAuditorFinding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id", "kind", "severity", "confidence", "title", "where", "repro",
+    "expected", "expectedBasis", "actual", "evidence", "impact", "rootCause"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^F-[0-9]{3}$"},
+    "kind": {"enum": ["defect", "usability-risk", "recommendation", "needs-repro"]},
+    "severity": {"enum": ["blocker", "major", "minor", "nit", "n/a"]},
+    "confidence": {"enum": ["high", "medium", "low"]},
+    "title": {"type": "string", "minLength": 8, "maxLength": 160},
+    "where": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["route"],
+      "properties": {
+        "route": {"type": "string"},
+        "viewport": {"type": "string"},
+        "persona": {"type": "string"}
+      }
+    },
+    "repro": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "expected": {"type": "string", "minLength": 1},
+    "expectedBasis": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "product-requirement", "user-instruction", "arithmetic",
+          "observed-consistency", "API-contract", "accessibility-standard",
+          "platform-convention", "heuristic"
+        ]
+      }
+    },
+    "actual": {"type": "string", "minLength": 1},
+    "evidence": {"type": "array", "items": {"type": "string", "pattern": "^E-[0-9]{3}$"}},
+    "impact": {"type": "string", "minLength": 1},
+    "rootCause": {"type": "string", "minLength": 1},
+    "suggestedFix": {"type": "string"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"kind": {"enum": ["recommendation", "needs-repro"]}}},
+      "then": {"properties": {"severity": {"const": "n/a"}}}
+    },
+    {
+      "if": {"properties": {"kind": {"enum": ["defect", "usability-risk"]}}},
+      "then": {"properties": {"severity": {"enum": ["blocker", "major", "minor", "nit"]}}}
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+[
+  {
+    "name": "broad critical outage",
+    "command": "incident-severity",
+    "input": {"impact": 4, "breadth": 4, "workaround": 4, "critical_function": true},
+    "expect": {"customer_impact_severity": "SEV1", "declaration_recommended": true}
+  },
+  {
+    "name": "explicit cancel intent",
+    "command": "churn-risk",
+    "input": {"cancel_intent": 3, "support_pain": 0, "usage_decline": 0, "billing_risk": 0, "relationship_risk": 0, "renewal_pressure": 0, "competitive_pressure": 0},
+    "expect": {"risk_level": "HIGH", "expressed_exit_intent": "EXPLICIT"}
+  },
+  {
+    "name": "strategic account minor issue",
+    "command": "priority-assess",
+    "input": {"impact": 1, "urgency": 1, "breadth": 1, "recurrence": 0, "workaround": 1, "customer_risk": 0, "strategic_value": 4},
+    "expect": {"operational_priority": "P3", "account_escalation": "EXPEDITED"}
+  },
+  {
+    "name": "low value severe harm",
+    "command": "priority-assess",
+    "input": {"impact": 4, "urgency": 4, "breadth": 3, "recurrence": 0, "workaround": 4, "customer_risk": 0, "strategic_value": 0},
+    "expect": {"operational_priority": "P0", "account_escalation": "STANDARD"}
+  },
+  {
+    "name": "provider paused SLA",
+    "command": "deadline-status",
+    "input": {"native_status": "paused"},
+    "expect": {"status": "PAUSED", "source": "native_status"}
+  },
+  {
+    "name": "insufficient provider SLA semantics",
+    "command": "sla-status",
+    "input": {"start_at": "2026-08-25T10:00:00+02:00", "now": "2026-08-25T10:46:00+02:00", "target_minutes": 60},
+    "expect": {"status": "UNKNOWN"}
+  },
+  {
+    "name": "unaccepted handoff cannot finish",
+    "command": "transition",
+    "input": {"entity": "handoff", "from_state": "PROPOSED", "to_state": "DONE"},
+    "expect": {"allowed": false}
+  },
+  {
+    "name": "resolved case cannot skip verification",
+    "command": "transition",
+    "input": {"entity": "case", "from_state": "RESOLVED", "to_state": "CLOSED"},
+    "expect": {"allowed": false}
+  },
+  {
+    "name": "broken promise overdue",
+    "command": "commitment-status",
+    "input": {"due_at": "2026-08-25T10:00:00+02:00", "now": "2026-08-25T11:00:00+02:00"},
+    "expect": {"status": "OVERDUE"}
+  },
+  {
+    "name": "vague promise does not become fake overdue",
+    "command": "commitment-status",
+    "input": {"state": "OPEN"},
+    "expect": {"status": "OPEN"}
+  },
+  {
+    "name": "github publication blocked by privacy preflight",
+    "command": "case-gate",
+    "input": {"stage": "GITHUB_READY", "customer_symptom": "export fails", "expected_behavior": "csv downloads", "actual_behavior": "empty file", "reproduction_state": "reproduced", "verification_criteria": "large export works", "dedupe_search_status": "done", "privacy_preflight_status": "blocked", "repo_conventions_status": "done"},
+    "expect": {"status": "BLOCK"}
+  },
+  {
+    "name": "closed issue is not verified customer closure",
+    "command": "case-gate",
+    "input": {"stage": "CLOSED", "verified": false, "customer_followup_status": "sent", "open_commitments_count": 0, "open_critical_handoffs_count": 0},
+    "expect": {"status": "BLOCK"}
+  },
+  {
+    "name": "verified customer closure",
+    "command": "case-gate",
+    "input": {"stage": "CLOSED", "verified": true, "customer_followup_status": "sent", "open_commitments_count": 0, "open_critical_handoffs_count": 0},
+    "expect": {"status": "PASS"}
+  }
+]

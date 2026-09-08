@@ -1,0 +1,13 @@
+---
+description: Use web-app-auditor for evidence-driven QA, click-through, data checks, UI/UX and accessibility audits of user-facing web surfaces.
+alwaysApply: false
+---
+
+When the user asks to audit, QA, review, click through, przeklikaj, verify data
+or numbers, check consistency, inspect UI/UX, accessibility, forms, flows, or
+responsive behavior, load and follow the `web-app-auditor` skill.
+
+Scope first. Detect capabilities and environment. Keep production/unknown
+read-only. Use the skill's standard-vs-forensic sampling contract, evidence
+manifest, Expected basis, calibrated severities, and report validator when code
+execution is available.

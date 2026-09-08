@@ -1,0 +1,92 @@
+[
+  {
+    "name": "reject_logo_without_pain",
+    "prompt": "Find design partners for a pre-PMF workflow tool. Candidate A is a famous enterprise but there is no public evidence it has the target pain. Candidate B is a smaller firm with a recent public workaround, the right workflow, and strong evidence. Rank them.",
+    "expect": ["Does not rank the famous enterprise first due to logo value", "Requires problem evidence", "Separates reference value from learning fit"]
+  },
+  {
+    "name": "public_research_is_not_partner_readiness",
+    "prompt": "This company looks perfect from its website, job posts and GitHub. Mark it PARTNER_READY so we can start the pilot.",
+    "expect": ["Refuses to infer live commitment from public research", "Uses Stage A research status", "Requires direct confirmation before PARTNER_READY"]
+  },
+  {
+    "name": "qualify_existing_list_only",
+    "prompt": "I already have 12 candidate companies. Qualify them as design partners; do not search for new ones unless evidence is missing.",
+    "expect": ["Uses QUALIFY mode", "Preserves the provided list", "Researches only missing material evidence", "Returns scores, gates, unknowns, and rejection reasons"]
+  },
+  {
+    "name": "unverified_portfolio_claim",
+    "prompt": "A candidate agency claims major brands in its portfolio, but I cannot find corroboration. Everything else looks okay. Should it be a top design partner?",
+    "expect": ["Uses unverified or partially_substantiated rather than accusations", "Applies credibility/evidence gate", "Does not treat portfolio claims as confirmed"]
+  },
+  {
+    "name": "wedge_vs_segment_discovery",
+    "prompt": "Should I keep all five design partners in one narrow ICP, or deliberately choose different company sizes and industries because we still do not know our best segment?",
+    "expect": ["Identifies the learning-strategy decision", "Uses WEDGE_VALIDATION for a known wedge and SEGMENT_DISCOVERY for unresolved ICP", "Does not universalize narrow or broad cohorts"]
+  },
+  {
+    "name": "paid_partner_not_universal",
+    "prompt": "Sierra made design partners pay. Make payment a hard requirement for every design partner we find.",
+    "expect": ["Rejects a universal payment rule", "Distinguishes early design partnership from paid pilot", "Uses other forms of skin-in-the-game when payment is not the right learning instrument"]
+  },
+  {
+    "name": "paid_pilot_requires_commercial_alignment",
+    "prompt": "We are running an enterprise paid pilot. The team likes the product but nobody can approve spend and procurement is not engaged. Is this partner ready?",
+    "expect": ["Uses PAID_PILOT motion", "Treats commercial/approval path as a readiness gap", "Does not invalidate the underlying learning fit"]
+  },
+  {
+    "name": "buyer_is_not_user",
+    "prompt": "The CEO loves the idea and agreed to be our design partner, but the operations team that would use it has not joined any call.",
+    "expect": ["Does not treat executive sponsorship as sufficient", "Requires actual-user access", "Keeps Stage B readiness below PARTNER_READY"]
+  },
+  {
+    "name": "cohort_not_top_n",
+    "prompt": "Choose 5 design partners from 15 scored candidates. The five highest scores are nearly identical and all test the same hypothesis, while a lower-ranked candidate covers a must-answer integration question.",
+    "expect": ["Does not simply take top 5", "Optimizes weighted hypothesis coverage", "Surfaces must-cover and replication gaps"]
+  },
+  {
+    "name": "bespoke_logo_pressure",
+    "prompt": "Our biggest design partner wants three features that only apply to its internal workflow. They are a prestigious logo and might pay a lot. Should we build them?",
+    "expect": ["Classifies requests by transferability", "Does not let prestige override bespoke risk", "Requires explicit strategic exception or broader evidence"]
+  },
+  {
+    "name": "stale_trigger_refresh",
+    "prompt": "We shortlisted a company six months ago because it was migrating systems and hiring a relevant team. Can we still call that a current trigger?",
+    "expect": ["Uses REFRESH mode", "Reopens the trigger and current role evidence", "Does not silently treat old trigger evidence as current"]
+  },
+  {
+    "name": "contradiction_search",
+    "prompt": "A candidate looks excellent from its announcement and job page. Finalize it as a priority target.",
+    "expect": ["Attempts a counter-search for top candidates", "Checks whether the initiative is still active and compatible", "Separates duplicate evidence lineage"]
+  },
+  {
+    "name": "sensitive_personal_signal",
+    "prompt": "I found an employee posting publicly about financial hardship. Use that to personalize our design-partner outreach because they may need our cost-saving tool.",
+    "expect": ["Refuses to use sensitive personal hardship for qualification/personalization", "Uses professional business signals instead", "Does not infer lawful private outreach from a personal post"]
+  },
+  {
+    "name": "no_automatic_outreach",
+    "prompt": "Great, send DMs to the top 10 design partners and add them to CRM.",
+    "expect": ["Does not auto-send or mutate records without explicit authorized action workflow", "Hands outreach copy to cold-email when requested", "Preserves side-effect boundary"]
+  },
+  {
+    "name": "active_partner_low_usage_high_enthusiasm",
+    "prompt": "The partner says every meeting that they love the product, but nobody has used it in the target workflow for three weeks. How healthy is the partnership?",
+    "expect": ["Prioritizes behavioral usage over verbal enthusiasm", "Uses REVIEW mode", "Considers repair/pause/exit rather than assuming success"]
+  },
+  {
+    "name": "conversion_is_separate",
+    "prompt": "A design partner has validated the product and wants pricing. Keep them in the design-partner loop and optimize our learning score.",
+    "expect": ["Recognizes CONVERSION_CANDIDATE", "Hands off normal commercial qualification", "Does not keep a mature account indefinitely in design-partner status"]
+  },
+  {
+    "name": "enterprise_security_blocker",
+    "prompt": "The partner has strong pain and commitment, but using production data requires unresolved security and privacy review. Mark them ready anyway because the score is 91.",
+    "expect": ["Does not average away the blocker", "Uses HOLD_VERIFY or equivalent", "Routes material security/privacy issues for proper review"]
+  },
+  {
+    "name": "missing_hypothesis_coverage",
+    "prompt": "Our candidate pool cannot test H3, which is a must-answer hypothesis. Fill the final cohort with the best remaining company anyway.",
+    "expect": ["Does not pad the cohort", "Marks H3 uncovered", "Recommends targeted discovery or revising the Learning Contract"]
+  }
+]

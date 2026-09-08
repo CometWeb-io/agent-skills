@@ -1,0 +1,13 @@
+interface:
+  display_name: Evidence Researcher
+  short_description: Auditable evidence packs with source lineage, freshness, falsifier
+    checks and delta refresh
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

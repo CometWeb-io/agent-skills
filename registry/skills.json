@@ -1,0 +1,567 @@
+{
+  "schema": "cometweb.skills-registry/v1",
+  "protocol": {
+    "v1": "protocol/cw-aip-v1",
+    "v2": "protocol/cw-aip-v2"
+  },
+  "skills": [
+    {
+      "id": "ai-council",
+      "version": "5.1.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Run an always-current, evidence-governed AI decision council for material, high-stakes, multi-domain decisions where options, risk gates, forecasts, and living memory matter. Use when the user explicitly asks to \"przepuść przez Radę\", \"zapytaj Radę\", compare consequential options, challenge a major plan, decide GO/NO-GO/TEST/DEFER on strategic choices, verify whether a prior decision is still current, inspect Council health, or improve the Council itself. Do not use for routine weekly product prioritization, whole-repo roadmapping, release-candidate gates, customer support triage, or single-domain specialist work when a dedicated skill exists. Orchestrate blind advisers, conditional specialists, binding risk gates, live/fresh evidence, temporal truth, contradiction testing, forecasts, living Decision Memory, watch dependencies, human escalation, and champion/challenger evaluation.",
+      "explicit_only": true,
+      "owns": [
+        "decision contract",
+        "deliberation",
+        "verdict GO/TEST/DEFER",
+        "living decisions"
+      ],
+      "does_not_own": [
+        "Evidence Pack construction",
+        "context gateway",
+        "implementation"
+      ],
+      "trigger_examples": [
+        "Przepuść przez AI Council",
+        "Council: jaka cena Growth?"
+      ],
+      "negative_trigger_examples": [
+        "Zrób research claimów bez decyzji"
+      ],
+      "inputs": [
+        "decision question",
+        "evidence",
+        "mode"
+      ],
+      "outputs": [
+        "DecisionEnvelope",
+        "DecisionHandoff"
+      ],
+      "dependencies": [
+        "evidence-researcher?"
+      ],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "LIGHT",
+        "STANDARD",
+        "DEEP"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "ai-humanize",
+      "version": "2.4.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Naturalize, edit, or substantially rewrite English and Polish prose while preserving meaning, factual constraints, and the author's intentional voice. Use specifically when the user asks to humanize text, sound less like generic AI writing, remove AI tells, perform a strong/deep/robust rewrite, clean suspicious invisible Unicode in prose or Markdown, or re-express text with provenance-aware caution. Supports blogs, articles, LinkedIn posts, emails, proposals, documentation, release notes, and READMEs. Do not use merely for generic proofreading, unrelated copywriting, or AI-authorship detection. Never claim human authorship, detector defeat, or watermark removal without an appropriate supported test.",
+      "explicit_only": false,
+      "owns": [],
+      "does_not_own": [],
+      "trigger_examples": [],
+      "negative_trigger_examples": [],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "cometweb-context",
+      "version": "1.2.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Builds a fresh, provenance-aware context snapshot for CometWeb before another skill makes product, strategy, GTM, outreach, content, or advisory decisions. Use when the task depends on current state across multiple sources, when the user asks to refresh context, check what changed, prepare for a meeting/review, or when an orchestrated CometWeb workflow needs a ContextEnvelope. Select only necessary sources, record freshness, authority, gaps and conflicts, and hand context to the next specialist. Do not use for simple conceptual questions or when one direct source is sufficient.",
+      "explicit_only": false,
+      "owns": [
+        "context snapshot",
+        "provenance",
+        "conflicts/gaps",
+        "ContextEnvelope",
+        "public claim gate"
+      ],
+      "does_not_own": [
+        "evidence packs",
+        "domain decisions",
+        "release gates",
+        "outbound copy"
+      ],
+      "trigger_examples": [
+        "Co zmieniło się w Insight od ostatniego review?",
+        "Odśwież kontekst przed weekly boardroom",
+        "Przygotuj kontekst na spotkanie z design partnerem"
+      ],
+      "negative_trigger_examples": [
+        "Ile gwiazdek ma MaciejZet/agent-skills na GitHub?",
+        "Czy claim X jest prawdziwy? Zrób Evidence Pack",
+        "Przepuść decyzję o cenie przez Council"
+      ],
+      "inputs": [
+        "user goal",
+        "optional baseline ContextEnvelope"
+      ],
+      "outputs": [
+        "ContextEnvelope",
+        "human status report"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "read-only retrieval",
+        "local scripts"
+      ],
+      "eval_suite": "evals/behavior/cometweb-context"
+    },
+    {
+      "id": "competitive-intelligence",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior scan, track pricing/product/positioning/SEO/ads/reviews/company changes, maintain a competitor watchlist, produce recurring competitor digests, verify competitor claims, analyze cross-competitor trends, or turn observed deltas into product/GTM/sales implications. Prefer competitor-profiling for a one-time initial deep profile; use this skill when temporal state, snapshots, deltas, alerts, freshness, evidence provenance, or recurring intelligence operations matter.",
+      "explicit_only": false,
+      "owns": [],
+      "does_not_own": [],
+      "trigger_examples": [],
+      "negative_trigger_examples": [],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "customer-ops",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Run the operational customer-to-resolution loop across support conversations, customer cases, incidents, account risk, commitments, internal handoffs, feedback clusters, and GitHub engineering work. Use when asked to triage an inbox or ticket queue, investigate a customer problem, detect or coordinate an incident, build an operational account 360, watch churn/non-renewal signals, find overdue promises or stalled escalations, dedupe customer-reported bugs into GitHub, produce customer-ops briefs, or verify that a fix actually resolved the customer-visible symptom. Composes with Gmail/support tools, HubSpot/CRM, billing, product analytics, GitHub, Notion/incident records, and connected files. Do not use for broad VOC/persona research, retention-program design, general CRM architecture, analytics implementation, product roadmap prioritization, or security exploitation; hand those workflows to the specialist skill.",
+      "explicit_only": false,
+      "owns": [],
+      "does_not_own": [],
+      "trigger_examples": [],
+      "negative_trigger_examples": [],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "design-partner-finder",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Find, verify, qualify, compare, and manage companies as design partners, co-development partners, beta partners, paid pilots, lighthouse customers, or early adopters. Use for design-partner discovery, early-adopter shortlists, qualification of an existing candidate list, cohort selection, partner-readiness validation, active-partner review, or revalidation of prior candidates. Go deeper than generic prospecting by optimizing for learning value, urgency, representativeness, implementation feasibility, real user/champion access, mutual commitment, evidence quality, transferability, cohort coverage, and cost-to-learn. Separate desk-research fit from live readiness, preserve evidence lineage/freshness, and prevent prestige or contract size from replacing product-learning quality. Hand off broad lead generation to prospecting, research synthesis to customer-research, and outreach copy to cold-email.",
+      "explicit_only": false,
+      "owns": [],
+      "does_not_own": [],
+      "trigger_examples": [],
+      "negative_trigger_examples": [],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "evidence-researcher",
+      "version": "1.0.1",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Build auditable Evidence Packs for consequential research, fact-checking, due diligence, verification, and cross-skill evidence handoff. Use when ChatGPT must decompose a question into material claims, inspect primary or system-of-record sources, verify currentness/effective dates/versions, distinguish source artifacts from claim-specific evidence, search for falsifiers and negative evidence, resolve contradictions, detect derivative or non-independent sources, identify evidence gaps, compare evidence deltas, or prepare reusable evidence for AI Council, product, technical, audit, SEO/GEO/AEO, sales, or customer workflows. Do not use for casual single-fact lookup or as the final decision-maker when a dedicated decision skill exists.",
+      "explicit_only": false,
+      "owns": [
+        "claim decomposition",
+        "evidence edges",
+        "falsifiers",
+        "Evidence Pack"
+      ],
+      "does_not_own": [
+        "final GO/NO_GO",
+        "release verdict",
+        "context-only refresh"
+      ],
+      "trigger_examples": [
+        "Zrób Evidence Pack dla claimów pricing",
+        "Fact-check EU AI Act marketing claims"
+      ],
+      "negative_trigger_examples": [
+        "Odśwież kontekst CometWeb",
+        "Czy RC 1.2 gotowy do produkcji?"
+      ],
+      "inputs": [
+        "research question",
+        "scope",
+        "as_of"
+      ],
+      "outputs": [
+        "EvidenceEnvelope",
+        "Evidence Pack"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "web/docs research",
+        "validators"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "product-operator",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Evidence-governed product operating system that reconciles GitHub implementation and release state, Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what the team should do next on an existing roadmap or product state. Use for weekly control-loop questions such as what to build/fix/verify next, how to unstick work, what is actually done vs planned, whether roadmap and repo agree, what changed since the last review, or what should wait/stop. Produces bounded BLOCKER/VERIFY NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness, immutable snapshots/deltas, confidence, done conditions, and specialist handoffs. Do not use for first-time whole-repo baseline analysis or roadmap creation from scratch — use Repo to Roadmap. Do not use for release-candidate GO/NO_GO gates on a specific build/artifact — use Release Readiness. Read-only by default; delegate deep audits and consequential decisions instead of duplicating specialist skills.",
+      "explicit_only": false,
+      "owns": [],
+      "does_not_own": [],
+      "trigger_examples": [],
+      "negative_trigger_examples": [],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "product-teardown",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Analyze external products, websites, apps, APIs, documentation, and source repositories to extract evidence-backed, transferable, implementable product and engineering patterns rather than generic competitor summaries. Use when the user asks to teardown, reverse-engineer at a product/architecture level, benchmark, study, or learn from another product/repo; asks what workflows, UX mechanics, architecture, onboarding, monetization, developer experience, operations, reliability, or implementation ideas are worth adapting; asks \"what can we borrow/learn/implement from X\" or Polish equivalents such as \"przeanalizuj produkt/repo\", \"wyciagnij wzorce\", or \"co warto wdrozyc\". Also use for multi-product pattern synthesis and source-to-target adaptation. Do not use as the primary skill for ongoing competitor monitoring/delta analysis, broad competitor dossiers, external-facing comparison pages, or a roadmap of the user's own repo with no external/reference target.",
+      "explicit_only": false,
+      "owns": [],
+      "does_not_own": [],
+      "trigger_examples": [],
+      "negative_trigger_examples": [],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "release-readiness",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Assess whether a specific release candidate, build, artifact, application, service, mobile/desktop build, or API is ready for production in a named environment and issue an evidence-backed GO / GO_WITH_CONTROLS / NO_GO / DEFER verdict across product acceptance, QA, security, operations/reliability, documentation, billing/entitlements, and support/incident readiness. Use when the user names or implies a concrete candidate (version, build ID, branch/tag, artifact digest, deploy target) for launch/release gates, pre-deploy audits, \"is this build ready to ship?\", hotfix readiness, post-incident releases, and repeated delta/revalidation reviews. Do not use for first-time whole-project roadmap baselines or \"analyze the entire repo\" — use Repo to Roadmap. Do not use for ongoing weekly prioritization on an existing roadmap — use Product Operator. Orchestrate specialist evidence without pretending to replace security scans, live-app QA, legal/privacy review, or deployment authorization.",
+      "explicit_only": false,
+      "owns": [],
+      "does_not_own": [],
+      "trigger_examples": [],
+      "negative_trigger_examples": [],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "repo-to-roadmap",
+      "version": "1.0.1",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Analyze an entire software/product project and turn verified project truth into an evidence-based, dependency-aware, reusable roadmap. Use for first-time or delta whole-project baselines such as \"analyze the whole repo/project\", \"what is left to build before target state\", \"create/update a roadmap from GitHub/Notion\", \"przeanalizuj całe repo\", or \"update the roadmap after recent changes\". Inventory topology before searching, separate intent/presence/behavior/release/outcome truth, prove material absence instead of inferring it from search misses, expose coverage and contradictions, model capabilities/critical journeys, prioritize target blockers and gates, validate hard dependencies, and create immutable baseline/delta roadmap snapshots. Do not use for weekly sprint control, release-candidate GO/NO_GO gates, or \"is build v1.2.3 ready to ship?\" — use Product Operator or Release Readiness instead. Do not use as an implementation agent, narrow code review, or specialist security/SEO/CRO audit.",
+      "explicit_only": false,
+      "owns": [],
+      "does_not_own": [],
+      "trigger_examples": [],
+      "negative_trigger_examples": [],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "seo-geo-aeo-maxxing",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Run evidence-governed, multi-pillar website visibility audits across technical SEO, relevance, authority/trust, GEO/AI citation readiness, and AEO/answer extraction. Use when the user explicitly asks for SEO+GEO+AEO or \"maxxing\", a broad end-to-end search/AI visibility audit, cross-pillar diagnosis of ranking/AI-visibility problems, same-rubric competitor comparison, or a repeat/delta audit. Use PILLAR mode only when this skill is explicitly requested for one pillar. Do not trigger for isolated schema, one canonical/meta tag, keyword research, pure content writing, or a narrow implementation task better handled by a specialist skill. Diagnosis only; never mutate live sites.",
+      "explicit_only": false,
+      "owns": [],
+      "does_not_own": [],
+      "trigger_examples": [],
+      "negative_trigger_examples": [],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "skill-orchestrator",
+      "version": "1.1.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Plan and execute multi-skill CometWeb workflows with CW-AIP handoffs when the user wants one entry point instead of tagging each specialist. Use when the user asks to orchestrate, sequence, or run end-to-end flows (e.g. evidence then Council, audit then release, research then weekly ops), run everything needed for a goal, or chain Evidence Researcher with ai-council or other skills in order. Supports execution_mode auto|single_thread|isolated_subagents. Loads each step's SKILL.md, runs it fully, and passes envelopes between steps. Do not use for a single-domain task when one specialist skill is enough, for routing-only questions without execution, or to bypass AI Council decision policy or Release Readiness gate rules.",
+      "explicit_only": false,
+      "owns": [
+        "multi-skill plan",
+        "execution_mode",
+        "CW-AIP handoffs",
+        "workflow result"
+      ],
+      "does_not_own": [
+        "domain skill contracts",
+        "Council policy",
+        "release gates"
+      ],
+      "trigger_examples": [
+        "Zorkiestruj evidence potem Council",
+        "Audit register potem release readiness"
+      ],
+      "negative_trigger_examples": [
+        "Tylko zrób Evidence Pack"
+      ],
+      "inputs": [
+        "multi-skill goal",
+        "optional execution_mode"
+      ],
+      "outputs": [
+        "workflow plan",
+        "envelopes",
+        "workflow result"
+      ],
+      "dependencies": [
+        "cometweb-context?"
+      ],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "single_thread",
+        "isolated_subagents",
+        "auto"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "skill-orchestrator-multiagent",
+      "version": "1.1.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "foundation",
+      "alias_of": "skill-orchestrator",
+      "description": "Alias for skill-orchestrator with execution_mode=isolated_subagents. Use when the user asks for multiagent orchestration, separate agents per skill, Task/subagent per step, or strict isolation between Evidence Researcher, AI Council, auditors, and other skills. Do not use when a single specialist suffices, when the host has no subagent/Task API (use skill-orchestrator single_thread), for routing-only questions, or to bypass AI Council or Release Readiness policy.",
+      "explicit_only": false,
+      "owns": [
+        "alias for isolated_subagents execution"
+      ],
+      "does_not_own": [
+        "separate planning model"
+      ],
+      "trigger_examples": [
+        "Multiagent: evidence potem Council"
+      ],
+      "negative_trigger_examples": [
+        "Jeden skill wystarczy"
+      ],
+      "inputs": [
+        "multi-skill goal"
+      ],
+      "outputs": [
+        "same as skill-orchestrator"
+      ],
+      "dependencies": [
+        "skill-orchestrator"
+      ],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "isolated_subagents"
+      ],
+      "eval_suite": null
+    },
+    {
+      "id": "web-app-auditor",
+      "version": "1.1.1",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Evidence-driven QA and product audit for websites and web applications. Use when asked to audit, review, inspect, QA, verify, click through, test, or \"roast\" a user-facing site/app/page/dashboard/checkout/form, including Polish requests such as audyt, przeklikaj, sprawdz dane, zgodnosc liczb, poprawność, UI/UX, dostepnosc, regresja. Verifies interactions, data integrity, totals, counts, prices, dates, labels, cross-screen consistency, forms, states, accessibility, responsiveness, and critical flows. Supports browser, browser+source, screenshot-only, source-only, and fetch-only environments. Do not use for backend-only review, greenfield implementation, or penetration testing/exploitation with no product-audit goal.",
+      "explicit_only": false,
+      "owns": [],
+      "does_not_own": [],
+      "trigger_examples": [],
+      "negative_trigger_examples": [],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null
+    }
+  ]
+}

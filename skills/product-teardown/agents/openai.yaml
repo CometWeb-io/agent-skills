@@ -1,0 +1,13 @@
+interface:
+  display_name: Product Teardown
+  short_description: Extract transferable patterns from products and repos, prove
+    target fit, and map them into implementation decisions
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

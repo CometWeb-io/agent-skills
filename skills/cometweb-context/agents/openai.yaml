@@ -1,8 +1,9 @@
 interface:
   display_name: CometWeb Context
   short_description: Fresh, provenance-aware context gateway for CometWeb workflows
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  default_prompt: "Refresh the minimal CometWeb context needed for my goal and return a ContextEnvelope with sources, facts, conflicts, gaps, and handoff."
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   products:
   - chatgpt

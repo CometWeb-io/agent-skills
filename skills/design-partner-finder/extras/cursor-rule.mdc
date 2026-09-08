@@ -1,0 +1,12 @@
+---
+description: Design partner program — Learning Contract, cohort scoring, live readiness. Not lead gen or cold email.
+alwaysApply: false
+---
+
+When the user asks for **design partners**, partner cohort selection, Learning Contract,
+Partner Charter, or desk vs live partner readiness — load `design-partner-finder`.
+
+Run `scripts/score_candidate.py`, `select_cohort.py`, `assess_partner_health.py` when data exists.
+Desk-research fit ≠ live partner readiness.
+
+Do not use for customer support queues (`customer-ops`) or generic CRM building.

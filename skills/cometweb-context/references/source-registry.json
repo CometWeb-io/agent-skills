@@ -1,0 +1,51 @@
+{
+  "schema": "cometweb.source-registry/v1",
+  "notes": "Machine-readable bindings for cometweb-context. Paths are relative to $COMETWEB_ROOT / $COMETWEB_CENTRUM when local access exists. Skills must discover live connectors at runtime — do not hard-code MCP tool names.",
+  "authority_levels": [
+    "system_of_record",
+    "canonical",
+    "primary",
+    "secondary",
+    "fallback"
+  ],
+  "domains": {
+    "product": {
+      "preferred_source_groups": ["repo", "insight", "vault-status", "vault-first-principles"],
+      "hierarchy": [
+        "pinned release/CI artifact",
+        "github head",
+        "local checkout",
+        "docs/notion intent"
+      ]
+    },
+    "gtm": {
+      "preferred_source_groups": [
+        "vault-decisions",
+        "vault-first-principles",
+        "vault-topic",
+        "website"
+      ]
+    },
+    "governance": {
+      "bindings": [
+        {
+          "id": "first-principles",
+          "role": "canonical_decision_input",
+          "local_path_template": "<COMETWEB_GTM_ROOT>/cometweb/strategia/First Principles.md",
+          "decision_alias": "D-028",
+          "alias_map_template": "<COMETWEB_GTM_ROOT>/governance/decision-candidate-aliases.json",
+          "note": "Retrieve when material new decision; never allocate decisions from context skill"
+        }
+      ]
+    },
+    "crm": {
+      "system_of_record": "twenty-or-hubspot-via-available-connector",
+      "on_unavailable": "authority_gap"
+    },
+    "claims": {
+      "evidence_register_template": "<COMETWEB_GTM_ROOT>/claims/evidence-register.json",
+      "public_use_gate": true
+    }
+  },
+  "repo_registry_file": "references/repos.txt"
+}

@@ -1,0 +1,8 @@
+[
+  {"name":"stale legal source","row":{"claim_type":"law_regulation","material":true,"last_verified_at":"2026-08-20T12:00:00+00:00","verified_for_decision":false},"as_of":"2026-08-24T17:00:00+00:00","expected_status":"STALE","admissible":false},
+  {"name":"future-effective rule","row":{"claim_type":"law_regulation","material":true,"last_verified_at":"2026-08-24T16:00:00+00:00","verified_for_decision":true,"effective_from":"2026-09-01T00:00:00+00:00"},"as_of":"2026-08-24T17:00:00+00:00","expected_status":"NOT_YET_EFFECTIVE","admissible":false},
+  {"name":"superseded technical doc","row":{"claim_type":"official_technical_docs","material":true,"last_verified_at":"2026-08-24T16:00:00+00:00","superseded_by":"v2"},"as_of":"2026-08-24T17:00:00+00:00","expected_status":"SUPERSEDED","admissible":false},
+  {"name":"stale competitor price","row":{"claim_type":"competitor_pricing","material":true,"last_verified_at":"2026-08-23T10:00:00+00:00"},"as_of":"2026-08-24T17:00:00+00:00","expected_status":"STALE","admissible":false},
+  {"name":"internal metric without system of record","row":{"claim_type":"internal_metric","material":true,"last_verified_at":"2026-08-24T16:30:00+00:00","system_of_record_verified":false},"as_of":"2026-08-24T17:00:00+00:00","expected_status":"STALE","admissible":false},
+  {"name":"versioned doctrine","row":{"claim_type":"doctrine","material":false,"source_version":"book-v1"},"as_of":"2026-08-24T17:00:00+00:00","expected_status":"CURRENT","admissible":true}
+]

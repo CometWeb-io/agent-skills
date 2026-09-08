@@ -1,0 +1,11 @@
+interface:
+  display_name: Release Readiness
+  short_description: Specific release candidate / build / artifact + environment → GO / NO_GO / DEFER gate
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - atlas
+  allow_implicit_invocation: true

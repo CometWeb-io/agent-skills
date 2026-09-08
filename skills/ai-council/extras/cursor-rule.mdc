@@ -1,0 +1,14 @@
+---
+description: Explicit high-stakes decisions only — Council protocol, gates, forecasts, living memory. Not weekly ops or release gates.
+alwaysApply: false
+---
+
+Load `ai-council` only when the user **explicitly** asks for Council / „Radę”, material
+GO/NO-GO/TEST/DEFER on strategic choices, living decision revalidation, or Council health.
+
+Do **not** use for: sprint prioritization (`product-operator`), whole-repo roadmap
+(`repo-to-roadmap`), pinned RC deploy gate (`release-readiness`), or routine research.
+
+Run `scripts/council_kernel.py` for contract, plan, gates, freshness — do not reimplement in prose.
+
+Notion bindings: `~/.config/cometweb/ai-council-notion.json` (never commit).

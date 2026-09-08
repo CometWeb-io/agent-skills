@@ -1,0 +1,223 @@
+[
+  {
+    "id": "notion-done-no-code",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "billing",
+        "states": {
+          "planned": "DONE",
+          "implemented": "UNKNOWN"
+        },
+        "evidence": [
+          {
+            "stage": "planned",
+            "source": "notion",
+            "authority": "notion",
+            "locator": "roadmap",
+            "claim": "Billing is Done",
+            "claim_type": "planning",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "PLAN_AHEAD_OF_CODE"
+  },
+  {
+    "id": "code-needs-verification",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "export",
+        "states": {
+          "implemented": "PRESENT",
+          "verified": "UNKNOWN"
+        },
+        "evidence": [
+          {
+            "stage": "implemented",
+            "source": "github",
+            "authority": "github",
+            "locator": "src/export.ts",
+            "claim": "Implementation exists",
+            "claim_type": "implementation",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "CODE_AHEAD_OF_VERIFICATION"
+  },
+  {
+    "id": "wrong-authority",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "auth",
+        "states": {
+          "implemented": "PRESENT"
+        },
+        "evidence": [
+          {
+            "stage": "implemented",
+            "source": "notion",
+            "authority": "notion",
+            "locator": "task",
+            "claim": "Marked implemented",
+            "claim_type": "implementation",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "IMPLEMENTED_EVIDENCE_WRONG_AUTHORITY"
+  },
+  {
+    "id": "critical-unknown-verify",
+    "kind": "rank_tier",
+    "input": {
+      "id": "verify-billing",
+      "impact": 5,
+      "goal_alignment": 5,
+      "urgency": 4,
+      "dependency_leverage": 5,
+      "risk_reduction": 4,
+      "learning_value": 5,
+      "effort": 1,
+      "confidence": 0.4,
+      "evidence_strength": 0.35,
+      "verify_first": true
+    },
+    "expect": "VERIFY_NOW"
+  },
+  {
+    "id": "dependency-order",
+    "kind": "sequence_order",
+    "input": [
+      {
+        "id": "ship",
+        "depends_on": [
+          "verify"
+        ],
+        "impact": 5,
+        "goal_alignment": 5,
+        "urgency": 5,
+        "dependency_leverage": 4,
+        "risk_reduction": 2,
+        "effort": 1,
+        "confidence": 0.9,
+        "evidence_strength": 0.9
+      },
+      {
+        "id": "verify",
+        "impact": 4,
+        "goal_alignment": 5,
+        "urgency": 5,
+        "dependency_leverage": 5,
+        "risk_reduction": 4,
+        "effort": 1,
+        "confidence": 0.9,
+        "evidence_strength": 0.9
+      }
+    ],
+    "expect": [
+      "verify",
+      "ship"
+    ]
+  },
+  {
+    "id": "missing-planning-provisional",
+    "kind": "readiness_status",
+    "input": {
+      "goal_known": true,
+      "coverage": {
+        "github": "verified",
+        "notion": "unavailable",
+        "product_context": "verified"
+      }
+    },
+    "expect": "PROVISIONAL"
+  },
+  {
+    "id": "same-state-priority-thrash",
+    "kind": "delta_thrash",
+    "input": {
+      "old": {
+        "as_of": "2026-08-25T20:00:00+02:00",
+        "target": "x",
+        "goal": "ship",
+        "horizon": "release",
+        "state_items": [],
+        "blockers": [],
+        "drift": [],
+        "now": [
+          {
+            "id": "A"
+          }
+        ]
+      },
+      "new": {
+        "as_of": "2026-08-25T22:00:00+02:00",
+        "target": "x",
+        "goal": "ship",
+        "horizon": "release",
+        "state_items": [],
+        "blockers": [],
+        "drift": [],
+        "next": [
+          {
+            "id": "A"
+          }
+        ]
+      }
+    },
+    "expect": true
+  },
+  {
+    "id": "stale-current-blocks-ready",
+    "kind": "validate_status",
+    "input": {
+      "as_of": "2026-08-25T22:03:12+02:00",
+      "mode": "STANDARD",
+      "target": "x",
+      "goal": "ship",
+      "horizon": "release",
+      "decision": "verify",
+      "coverage": {
+        "github": "verified",
+        "notion": "verified",
+        "product_context": "verified",
+        "outcome_data": "not-required"
+      },
+      "readiness": {
+        "status": "READY",
+        "reasons": []
+      },
+      "state_items": [
+        {
+          "id": "A",
+          "states": {
+            "implemented": "PRESENT"
+          },
+          "evidence": [
+            {
+              "stage": "implemented",
+              "source": "github",
+              "authority": "github",
+              "locator": "src/a",
+              "claim": "exists",
+              "claim_type": "implementation",
+              "freshness_status": "STALE",
+              "required_current": true
+            }
+          ]
+        }
+      ],
+      "now": [],
+      "next": [],
+      "protocol_version": "2.0"
+    },
+    "expect": "FAIL"
+  }
+]

@@ -1,0 +1,920 @@
+{
+  "suite_version": "1.0.0",
+  "description": "Cross-skill implicit routing eval cases. Run manually or in CI structure checks; LLM routing evals are operator-run.",
+  "cases": [
+    {
+      "id": "roadmap-whole-repo-baseline",
+      "prompt": "Przeanalizuj całe repo Nevometry i stwórz plan dojścia do PAID_PRODUCTION.",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-operator",
+        "release-readiness"
+      ],
+      "reason": "Comprehensive baseline roadmap to target state, not weekly ops or RC gate"
+    },
+    {
+      "id": "roadmap-what-left-to-build",
+      "prompt": "Analyze the whole project and tell me what is left to build before we are client-ready.",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "web-app-auditor"
+      ],
+      "must_not_trigger": [
+        "product-operator",
+        "release-readiness"
+      ],
+      "reason": "Gap inventory and roadmap creation from project truth"
+    },
+    {
+      "id": "roadmap-update-after-changes",
+      "prompt": "Update the roadmap after the last two weeks of commits on main.",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [
+        "product-operator"
+      ],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "DELTA roadmap against new evidence"
+    },
+    {
+      "id": "roadmap-not-production-gate",
+      "prompt": "Przeanalizuj całe repo i powiedz co zostało, żeby było production ready.",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [
+        "release-readiness",
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Ambiguous wording; baseline roadmap wins over sprint operator; RC gate only if build pinned"
+    },
+    {
+      "id": "operator-weekly-next",
+      "prompt": "Mamy roadmapę. Co w tym tygodniu rzeczywiście powinniśmy zrobić i co się zmieniło od poprzedniego review?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [
+        "repo-to-roadmap",
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Control loop on existing roadmap/state"
+    },
+    {
+      "id": "operator-what-next",
+      "prompt": "What should we build, verify, or stop doing next given current GitHub and Notion state?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "release-readiness"
+      ],
+      "reason": "Bounded next actions from reconciled state"
+    },
+    {
+      "id": "operator-roadmap-drift",
+      "prompt": "Does our roadmap match what is actually implemented in the repo?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [
+        "repo-to-roadmap",
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "State drift detection, not new baseline roadmap"
+    },
+    {
+      "id": "operator-not-whole-baseline",
+      "prompt": "Create a full roadmap from scratch for this monorepo.",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [
+        "product-operator"
+      ],
+      "must_not_trigger": [],
+      "reason": "Explicit from-scratch roadmap request belongs to repo-to-roadmap"
+    },
+    {
+      "id": "readiness-specific-rc",
+      "prompt": "Is build v2.14.0-rc3 ready for production on app.cometweb.io?",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [
+        "web-app-auditor",
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-operator",
+        "repo-to-roadmap"
+      ],
+      "reason": "Candidate-specific GO/NO_GO gate"
+    },
+    {
+      "id": "readiness-hotfix-gate",
+      "prompt": "Run a release gate on commit abc1234 for hotfix deploy to production.",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [
+        "web-app-auditor"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "product-operator"
+      ],
+      "reason": "Pinned artifact + environment verdict"
+    },
+    {
+      "id": "readiness-pre-deploy",
+      "prompt": "Can we ship this release candidate tonight? Issue GO or NO_GO with blockers.",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [
+        "web-app-auditor",
+        "product-operator"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Launch gate language with verdict expectation"
+    },
+    {
+      "id": "readiness-not-roadmap",
+      "prompt": "What gates are missing before any future production launch?",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [
+        "release-readiness"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Future/hypothetical scope without RC → roadmap gaps"
+    },
+    {
+      "id": "evidence-pack-dd",
+      "prompt": "Build an Evidence Pack on whether competitor X actually supports SAML SSO.",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council",
+        "competitive-intelligence"
+      ],
+      "reason": "Claim verification upstream of decisions"
+    },
+    {
+      "id": "evidence-not-council",
+      "prompt": "Verify current pricing claims for three vendors and list contradictions.",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [
+        "competitive-intelligence"
+      ],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Research contract, not strategic decision"
+    },
+    {
+      "id": "council-strategic-decision",
+      "prompt": "Przepuść przez Radę: czy wchodzimy na rynek DE w Q1 przy obecnym stacku?",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Explicit high-stakes multi-domain decision"
+    },
+    {
+      "id": "council-go-nogo",
+      "prompt": "Council: GO or NO-GO on acquiring ToolCo given the diligence memo.",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Business decision, not deploy gate"
+    },
+    {
+      "id": "council-not-implicit-pricing",
+      "prompt": "What price should we charge for the Growth plan?",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "competitive-intelligence"
+      ],
+      "must_not_trigger": [],
+      "reason": "Material pricing decision when explicitly asked"
+    },
+    {
+      "id": "humanize-prose",
+      "prompt": "Humanize this LinkedIn post so it sounds less like AI.",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Prose rewrite with voice preservation"
+    },
+    {
+      "id": "humanize-not-proofread",
+      "prompt": "Fix typos in this email.",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Light edit may still route here but not specialist skills"
+    },
+    {
+      "id": "seo-audit-page",
+      "prompt": "Run SEO GEO AEO audit on https://cometweb.io/pricing",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "web-app-auditor"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Specialist visibility audit"
+    },
+    {
+      "id": "web-audit-clickthrough",
+      "prompt": "Click through the billing flow on staging and file defects with evidence.",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Specialist QA evidence collection"
+    },
+    {
+      "id": "web-audit-a11y",
+      "prompt": "Audit accessibility of the registration wizard with reproduction steps.",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Live app QA scope"
+    },
+    {
+      "id": "comp-intel-delta",
+      "prompt": "What changed on competitor homepages since last month's snapshot?",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Temporal delta monitoring"
+    },
+    {
+      "id": "comp-intel-watchlist",
+      "prompt": "Refresh the competitor watchlist digest for Acme and BetaCo.",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Recurring intelligence ops"
+    },
+    {
+      "id": "teardown-linear-patterns",
+      "prompt": "Teardown Linear's UX and extract transferable patterns for our issue tracker.",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "External pattern extraction, not ongoing monitoring"
+    },
+    {
+      "id": "teardown-not-roadmap",
+      "prompt": "What can we borrow from Stripe's docs UX for our API docs?",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Source-to-target adaptation"
+    },
+    {
+      "id": "design-partner-cohort",
+      "prompt": "Score design partner candidates for Insight and pick a pilot cohort.",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "Partner program, not support queue"
+    },
+    {
+      "id": "design-partner-charter",
+      "prompt": "Draft a Learning Contract for a potential design partner in fintech.",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Partner engagement design"
+    },
+    {
+      "id": "customer-ops-incident",
+      "prompt": "Triage support queue: cluster login failures and open an incident if needed.",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Support → engineering loop"
+    },
+    {
+      "id": "customer-ops-handoff",
+      "prompt": "Customer says billing broken — dedupe GitHub issues and track commitment to fix.",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [
+        "product-operator"
+      ],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Case lifecycle, not deploy gate"
+    },
+    {
+      "id": "customer-ops-not-crm-build",
+      "prompt": "Build a CRM from scratch for our leads.",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "design-partner-finder"
+      ],
+      "reason": "Out of scope shadow CRM; should refuse or clarify"
+    },
+    {
+      "id": "roadmap-topology-first",
+      "prompt": "Map project topology for platforms/cometweb-io and list capability gaps to MVP.",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Topology → gaps → roadmap chain"
+    },
+    {
+      "id": "operator-blocker-verify",
+      "prompt": "List BLOCKER and VERIFY NOW items for Insight sprint.",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Control plane prioritization vocabulary"
+    },
+    {
+      "id": "operator-shipped-without-outcome",
+      "prompt": "Find features marked shipped without outcome evidence.",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Lifecycle state drift detection"
+    },
+    {
+      "id": "readiness-defer-missing-gate",
+      "prompt": "Assess RC 2026.08.25.1 for production; we have QA but no recovery drill evidence.",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [
+        "web-app-auditor"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Binding gate evaluation on pinned RC"
+    },
+    {
+      "id": "readiness-post-incident",
+      "prompt": "Revalidate release readiness after yesterday's outage fix branch.",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [
+        "customer-ops",
+        "web-app-auditor"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Delta revalidation on candidate"
+    },
+    {
+      "id": "evidence-for-council",
+      "prompt": "Prepare evidence for Council on EU AI Act impact on our roadmap.",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [
+        "ai-council"
+      ],
+      "must_not_trigger": [],
+      "reason": "Upstream pack; Council only if decision requested separately"
+    },
+    {
+      "id": "auditor-to-readiness-handoff",
+      "prompt": "Use latest web app audit JSON as input to release readiness for RC 9.",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [
+        "web-app-auditor"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Specialist evidence consumed by gate skill"
+    },
+    {
+      "id": "roadmap-polish-client-ready",
+      "prompt": "czy projekt jest client-ready — przeanalizuj całość i daj roadmapę",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [
+        "release-readiness"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Polish whole-project roadmap phrasing"
+    },
+    {
+      "id": "operator-polish-co-dalej",
+      "prompt": "co robimy dalej w produkcie po ostatnim deployu?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "release-readiness"
+      ],
+      "reason": "Polish control-loop phrasing"
+    },
+    {
+      "id": "readiness-polish-wypuscic",
+      "prompt": "czy ten build możemy wypuścić na produkcję dziś wieczorem?",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [
+        "web-app-auditor"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Polish ship/gate phrasing with implicit RC"
+    },
+    {
+      "id": "seo-vs-web-auditor",
+      "prompt": "Check if pricing page is indexable and has correct canonical.",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [
+        "web-app-auditor"
+      ],
+      "must_not_trigger": [],
+      "reason": "SEO evidence class"
+    },
+    {
+      "id": "comp-intel-escalate-council",
+      "prompt": "Competitor dropped fre tier — should we respond strategically?",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [
+        "ai-council",
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "CI first; Council only after verified material event"
+    },
+    {
+      "id": "teardown-repo-source",
+      "prompt": "Teardown the open-source repo github.com/org/app for architecture patterns.",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "External source analysis"
+    },
+    {
+      "id": "roadmap-exhaustive-explicit",
+      "prompt": "Read every file in the repo exhaustively and produce a roadmap.",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "EXHAUSTIVE mode roadmap"
+    },
+    {
+      "id": "operator-delegate-audit",
+      "prompt": "What specialist audits should we run before next release?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [
+        "release-readiness",
+        "web-app-auditor",
+        "seo-geo-aeo-maxxing"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Delegation from control plane"
+    },
+    {
+      "id": "readiness-governance-legal",
+      "prompt": "Release gate for mobile build 4.2 including privacy/legal governance checks.",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Governance gates inside readiness"
+    },
+    {
+      "id": "council-living-decision",
+      "prompt": "Is our Q3 pricing decision still current given new churn data?",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "customer-ops"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Living decision revalidation"
+    },
+    {
+      "id": "humanize-unicode",
+      "prompt": "Clean suspicious invisible Unicode in this Markdown draft.",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Layer A deterministic clean path"
+    },
+    {
+      "id": "customer-ops-churn",
+      "prompt": "Flag non-renewal risk signals from last week's support conversations.",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "design-partner-finder"
+      ],
+      "reason": "Customer signal taxonomy"
+    },
+    {
+      "id": "design-partner-desk-vs-live",
+      "prompt": "Which shortlisted partners are live-ready vs desk-research only?",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Two-stage partner scoring"
+    },
+    {
+      "id": "roadmap-target-paid-production",
+      "prompt": "Roadmap from current state to PAID_PRODUCTION with acceptance proofs.",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Target profile explicit"
+    },
+    {
+      "id": "operator-intent-planned-gap",
+      "prompt": "Show items stuck between Planned and Implemented.",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Canonical state model query"
+    },
+    {
+      "id": "readiness-score-not-gate",
+      "prompt": "We scored 98/100 — confirm GO for RC 7 to prod.",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Score cannot override missing gates"
+    },
+    {
+      "id": "evidence-negative",
+      "prompt": "Search for falsifiers: does Acme actually have an EU data center?",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Falsifier pass research"
+    },
+    {
+      "id": "web-audit-forensic",
+      "prompt": "Forensic audit of checkout on production with zero sampling.",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Forensic mode QA"
+    },
+    {
+      "id": "seo-freshness",
+      "prompt": "Is our GEO audit registry fresh enough to trust for cometweb.io?",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "SEO skill owns registry freshness"
+    },
+    {
+      "id": "comp-intel-not-teardown",
+      "prompt": "One-time deep profile of Notion's pricing page.",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [
+        "product-teardown"
+      ],
+      "must_not_trigger": [],
+      "reason": "Initial profile can overlap; CI preferred for competitor dossier"
+    },
+    {
+      "id": "teardown-multi-target",
+      "prompt": "Synthesize onboarding patterns from three SaaS products for our signup.",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "design-partner-finder"
+      ],
+      "reason": "Multi-target pattern synthesis"
+    },
+    {
+      "id": "customer-ops-resolved-verified",
+      "prompt": "List cases stuck between RESOLVED and VERIFIED.",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Customer ops lifecycle states"
+    },
+    {
+      "id": "operator-stop-lateral",
+      "prompt": "What should we STOP doing this quarter based on outcome evidence?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [
+        "ai-council"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "STOP/LATER control vocabulary"
+    },
+    {
+      "id": "readiness-bootstrap-manifest",
+      "prompt": "Bootstrap readiness manifest for service api v3 RC.",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Manifest + gate workflow"
+    },
+    {
+      "id": "roadmap-not-sprint",
+      "prompt": "Daily standup: what did we finish yesterday?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "release-readiness"
+      ],
+      "reason": "Sprint/status → operator not baseline roadmap"
+    },
+    {
+      "id": "council-explicit-invoke-only",
+      "prompt": "Summarize competitor pricing changes.",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Council should not implicit-trigger on routine research"
+    },
+    {
+      "id": "evidence-handoff-operator",
+      "prompt": "Evidence pack on production incident root cause for Product Operator review.",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [
+        "product-operator",
+        "customer-ops"
+      ],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Evidence upstream of ops reconciliation"
+    },
+    {
+      "id": "readiness-vs-roadmap-production-left",
+      "prompt": "What is left before production for the whole platform?",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [
+        "release-readiness"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Whole-platform gap question without pinned RC"
+    },
+    {
+      "id": "orchestrator-evidence-then-council",
+      "prompt": "Verify EU AI Act claims first, then run Council on our roadmap impact.",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "ai-council"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Explicit multi-step sequence; orchestrator owns plan and handoffs"
+    },
+    {
+      "id": "orchestrator-audit-then-release",
+      "prompt": "Orchestrate: web app audit then release readiness for RC 1.2.0 on staging.",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [
+        "web-app-auditor",
+        "release-readiness"
+      ],
+      "must_not_trigger": [
+        "ai-council",
+        "repo-to-roadmap"
+      ],
+      "reason": "Two-step QA → gate workflow with pinned RC"
+    },
+    {
+      "id": "orchestrator-full-workflow",
+      "prompt": "Run the full CometWeb workflow — evidence on pricing claims then Council GO/NO-GO.",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "ai-council"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "End-to-end orchestration entry point"
+    },
+    {
+      "id": "orchestrator-not-single-evidence",
+      "prompt": "Chain skills: research vendor claims and decide via Council.",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "ai-council"
+      ],
+      "must_not_trigger": [],
+      "reason": "Chain keyword + decision implies orchestrator not ER alone"
+    },
+    {
+      "id": "orchestrator-disambiguate-weekly",
+      "prompt": "Which CometWeb skill should I use for our weekly product review?",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [
+        "product-operator"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "ai-council"
+      ],
+      "reason": "Skill-selection meta question; orchestrator routes to operator"
+    },
+    {
+      "id": "multiagent-evidence-council",
+      "prompt": "Multiagent: verify pricing claims with separate agents, then Council GO/NO-GO.",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "ai-council"
+      ],
+      "must_not_trigger": [
+        "skill-orchestrator"
+      ],
+      "reason": "Explicit multiagent + subagent separation"
+    },
+    {
+      "id": "multiagent-audit-release",
+      "prompt": "One subagent per skill: web app audit then release readiness RC 1.2.0 staging.",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [
+        "web-app-auditor",
+        "release-readiness"
+      ],
+      "must_not_trigger": [
+        "skill-orchestrator"
+      ],
+      "reason": "Task-per-step execution model"
+    },
+    {
+      "id": "multiagent-not-single-thread",
+      "prompt": "@skill-orchestrator-multiagent — isolated subagent per specialist for EU AI Act research then Rada.",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "ai-council"
+      ],
+      "must_not_trigger": [],
+      "reason": "Tagged multiagent variant"
+    },
+    {
+      "id": "orchestrator-not-multiagent-default",
+      "prompt": "Orchestrate evidence then Council on pricing — single workflow.",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "ai-council"
+      ],
+      "must_not_trigger": [
+        "skill-orchestrator-multiagent"
+      ],
+      "reason": "Default orchestrator when multiagent not requested"
+    },
+    {
+      "id": "context-delta-insight",
+      "prompt": "Odśwież kontekst: co zmieniło się w Insight od ostatniego review?",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [
+        "product-operator"
+      ],
+      "must_not_trigger": [
+        "ai-council",
+        "release-readiness"
+      ],
+      "reason": "Multi-source delta context refresh, not decision or RC gate"
+    },
+    {
+      "id": "context-not-single-github",
+      "prompt": "Fact-check: ile gwiazdek ma MaciejZet/agent-skills? Jedno pytanie, bez pełnego context gateway.",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "cometweb-context",
+        "ai-council",
+        "skill-orchestrator"
+      ],
+      "reason": "Single direct source question must not run full context gateway; light lookup/research"
+    },
+    {
+      "id": "context-meeting-prep",
+      "prompt": "Przygotuj kontekst na jutrzejsze spotkanie (calendar + CRM), bez pełnego design-partner workflow",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [
+        "design-partner-finder"
+      ],
+      "must_not_trigger": [
+        "ai-council",
+        "design-partner-finder"
+      ],
+      "reason": "Meeting prep context gateway"
+    },
+    {
+      "id": "context-vs-evidence-claim",
+      "prompt": "Czy claim o wzroście MRR jest prawdziwy? Zrób Evidence Pack.",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [
+        "cometweb-context"
+      ],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Claim verification is Evidence Researcher, not context-only"
+    }
+  ]
+}

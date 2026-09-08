@@ -1,0 +1,49 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Registry and repo integrity
+        run: python3 tooling/validate_repo.py
+
+      - name: Host compatibility
+        run: python3 tooling/compatibility.py
+
+      - name: Generated adapters check
+        run: |
+          python3 tooling/generate_adapters.py
+          python3 tooling/generate_adapters.py --check
+
+      - name: Routing evals
+        run: python3 tooling/run_routing_evals.py
+
+      - name: Behavior fixtures
+        run: python3 tooling/run_behavior_evals.py
+
+      - name: Compile Python modules
+        run: |
+          find skills tooling -name '*.py' -print0 | xargs -0 python3 -m py_compile
+
+      - name: Unit tests
+        run: |
+          # Some skill CLIs still invoke `python`; ensure it exists on PATH.
+          if ! command -v python >/dev/null; then
+            sudo ln -sf "$(command -v python3)" /usr/local/bin/python
+          fi
+          python3 -m pytest -q tooling/tests skills/*/tests

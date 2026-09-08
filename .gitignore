@@ -1,0 +1,11 @@
+.venv/
+dist/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+.idea/
+.vscode/
+*.log
+**/notion-bindings.local.json
+.cursor/hooks/state/
