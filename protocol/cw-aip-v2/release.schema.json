@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/v2/release.schema.json",
+  "title": "CW-AIP v2 ReleaseEnvelope payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "release_candidate",
+    "environment",
+    "verdict",
+    "gates",
+    "blockers",
+    "controls",
+    "as_of",
+    "manifest_hash"
+  ],
+  "properties": {
+    "schema": { "const": "cometweb.release/v2" },
+    "release_candidate": { "type": "string", "minLength": 1 },
+    "environment": { "type": "string", "minLength": 1 },
+    "verdict": {
+      "type": "string",
+      "enum": ["GO", "NO_GO", "DEFER", "GO_WITH_CONTROLS"]
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["gate_id", "status"],
+        "properties": {
+          "gate_id": { "type": "string" },
+          "status": { "type": "string" }
+        }
+      }
+    },
+    "blockers": { "type": "array", "items": { "type": "string" } },
+    "controls": { "type": "array", "items": { "type": "string" } },
+    "as_of": { "type": "string", "minLength": 1 },
+    "manifest_hash": { "type": "string", "minLength": 1 },
+    "score": { "type": ["number", "null"] }
+  }
+}

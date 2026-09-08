@@ -23,7 +23,9 @@ See `core.schema.json`:
 | ContextEnvelope | `context.schema.json` (`cometweb.context/v2`) |
 | EvidenceEnvelope | `evidence.schema.json` (`cometweb.evidence/v2`) |
 | DecisionEnvelope | `decision.schema.json` (`cometweb.decision/v2`) |
-| FindingEnvelope / RoadmapEnvelope / ReleaseEnvelope | incremental migration |
+| FindingEnvelope | `finding.schema.json` (`cometweb.finding/v2`) |
+| RoadmapEnvelope | `roadmap.schema.json` (`cometweb.roadmap/v2`) |
+| ReleaseEnvelope | `release.schema.json` (`cometweb.release/v2`) |
 
 Validators:
 

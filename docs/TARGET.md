@@ -1,18 +1,21 @@
 # Target architecture
 
-## Done (P0–P2 platform)
+## Done
 
-- Repo truth + registry/hosts + CW-AIP v2 (context/evidence/decision)
-- Compatibility gate, routing 100+ cases, behavior fixtures, CI
-- Orchestrator execution_mode + sync, progressive disclosure
-- generate_adapters (Cursor + OpenAI yaml)
-- publish dry-run + sync_public_repo.py
-- Install scripts discovering all skills (Cursor/Claude/Codex)
-- Blind/baseline eval harness skeleton (`run_blind_eval_harness.py`)
+Platform hardening from the architecture review is complete:
 
-## Remaining
+- Private canonical repo with registry, tooling, CI, evals
+- CW-AIP v2 payloads: context, evidence, decision, finding, roadmap, release
+- Compatibility gate, 100+ routing cases, behavior fixtures
+- Orchestrator execution_mode + multiagent alias sync
+- Progressive disclosure (ER, Council LIGHT/STANDARD/DEEP)
+- generate_adapters + public mirror dry-run + sync_public_repo
+- Install scripts for Cursor / Claude / Codex from private
+- Public sync PR pipeline into `MaciejZet/agent-skills`
 
-1. Open/maintain PR syncing private → public `agent-skills` on a cadence
-2. Finding/Roadmap/Release v2 payload schemas
-3. Operator-run LLM blind comparisons wired to release tags
-4. Optional: centrum symlink switch from public → private install
+## Optional follow-ups (not blocking)
+
+1. Operator-run LLM blind comparisons on release tags
+2. Per-release immutable eval report artifacts in GitHub Releases
+3. Domain skills emitting v2 Finding/Roadmap/Release envelopes end-to-end
+4. Cadence automation (scheduled sync PR)

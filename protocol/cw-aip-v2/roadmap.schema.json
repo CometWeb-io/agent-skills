@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/v2/roadmap.schema.json",
+  "title": "CW-AIP v2 RoadmapEnvelope payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "baseline_id",
+    "target_state",
+    "mode",
+    "items",
+    "coverage",
+    "snapshot_hash"
+  ],
+  "properties": {
+    "schema": { "const": "cometweb.roadmap/v2" },
+    "baseline_id": { "type": "string", "minLength": 1 },
+    "target_state": { "type": "string", "minLength": 1 },
+    "mode": { "type": "string", "enum": ["BASELINE", "DELTA"] },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["item_id", "title", "priority"],
+        "properties": {
+          "item_id": { "type": "string" },
+          "title": { "type": "string" },
+          "priority": { "type": "string" },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "coverage": { "type": "object" },
+    "snapshot_hash": { "type": "string", "minLength": 1 },
+    "delta_of": { "type": ["string", "null"] }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/v2/finding.schema.json",
+  "title": "CW-AIP v2 FindingEnvelope payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "finding_id",
+    "severity",
+    "title",
+    "summary",
+    "evidence_refs",
+    "status"
+  ],
+  "properties": {
+    "schema": { "const": "cometweb.finding/v2" },
+    "finding_id": { "type": "string", "minLength": 1 },
+    "severity": {
+      "type": "string",
+      "enum": ["blocker", "high", "medium", "low", "info"]
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string" },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "needs_repro", "verified", "wontfix", "fixed"]
+    },
+    "area": { "type": "string" },
+    "locator": { "type": "string" }
+  }
+}

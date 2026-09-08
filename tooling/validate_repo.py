@@ -125,6 +125,9 @@ def main() -> None:
         "protocol/cw-aip-v2/context.schema.json",
         "protocol/cw-aip-v2/evidence.schema.json",
         "protocol/cw-aip-v2/decision.schema.json",
+        "protocol/cw-aip-v2/finding.schema.json",
+        "protocol/cw-aip-v2/roadmap.schema.json",
+        "protocol/cw-aip-v2/release.schema.json",
         "protocol/cw-interchange-v1.md",
     ):
         if not (ROOT / rel).is_file():
