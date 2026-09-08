@@ -1,8 +1,9 @@
 interface:
   display_name: Repo to Roadmap
-  short_description: First-time or delta whole-project baseline → evidence-based roadmap (not weekly ops or RC gates)
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  short_description: Analyze an entire software/product project and turn verified project truth into an evidence-based, dependency-aware, reusable roadmap. Use f
+  default_prompt: "Use the Repo to Roadmap skill for: Analyze an entire software/product project and turn verified project truth into an evidence-based, dependency-aware, reusable roadmap. Use for first-time or delta whole-project baselines such as "anal"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   products:
   - chatgpt

@@ -1,8 +1,9 @@
 interface:
   display_name: Release Readiness
-  short_description: Specific release candidate / build / artifact + environment → GO / NO_GO / DEFER gate
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  short_description: Assess whether a specific release candidate, build, artifact, application, service, mobile/desktop build, or API is ready for production in 
+  default_prompt: "Use the Release Readiness skill for: Assess whether a specific release candidate, build, artifact, application, service, mobile/desktop build, or API is ready for production in a named environment and issue an evidence-backed GO / GO_WIT"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   products:
   - chatgpt

@@ -90,7 +90,7 @@
     },
     {
       "id": "cometweb-context",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "foundation",
@@ -236,7 +236,7 @@
     },
     {
       "id": "evidence-researcher",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "foundation",
@@ -441,7 +441,7 @@
     },
     {
       "id": "skill-orchestrator",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "foundation",
@@ -493,7 +493,7 @@
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "foundation",

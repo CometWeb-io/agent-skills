@@ -1,8 +1,9 @@
 interface:
   display_name: Product Operator
-  short_description: Weekly product control loop on existing roadmap/state — what to build, verify, or stop now
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  short_description: Evidence-governed product operating system that reconciles GitHub implementation and release state, Notion roadmap/tasks/decision docs, prod
+  default_prompt: "Use the Product Operator skill for: Evidence-governed product operating system that reconciles GitHub implementation and release state, Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what th"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   products:
   - chatgpt

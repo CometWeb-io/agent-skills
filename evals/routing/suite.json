@@ -915,6 +915,286 @@
         "ai-council"
       ],
       "reason": "Claim verification is Evidence Researcher, not context-only"
+    },
+    {
+      "id": "boundary-context-vs-evidence-pack",
+      "prompt": "Zrób Evidence Pack: czy nasze claimy pricing na landing page są aktualne?",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [
+        "cometweb-context"
+      ],
+      "must_not_trigger": [
+        "ai-council",
+        "cometweb-context"
+      ],
+      "reason": "Explicit Evidence Pack is ER, not context gateway"
+    },
+    {
+      "id": "boundary-context-refresh-only",
+      "prompt": "Odśwież kontekst CometWeb przed weekly — tylko ContextEnvelope, bez decyzji",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [
+        "product-operator"
+      ],
+      "must_not_trigger": [
+        "ai-council",
+        "evidence-researcher"
+      ],
+      "reason": "Explicit context-only refresh"
+    },
+    {
+      "id": "boundary-context-not-council",
+      "prompt": "Jaki jest aktualny stan Insight i Notion decisions? Potrzebuję kontekstu / ContextEnvelope.",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [
+        "product-operator"
+      ],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "State snapshot is context, not Council"
+    },
+    {
+      "id": "boundary-operator-not-roadmap",
+      "prompt": "Mamy roadmapę. Co robimy w tym tygodniu i co jest blockerem?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "release-readiness"
+      ],
+      "reason": "Weekly control loop"
+    },
+    {
+      "id": "boundary-roadmap-not-operator",
+      "prompt": "Przeanalizuj całe repo i stwórz baseline roadmap do PAID_PRODUCTION",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-operator",
+        "release-readiness"
+      ],
+      "reason": "Whole-project baseline"
+    },
+    {
+      "id": "boundary-release-not-operator",
+      "prompt": "Is build 2.4.0-rc1 ready to ship on staging.cometweb.io?",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [
+        "web-app-auditor",
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-operator",
+        "repo-to-roadmap"
+      ],
+      "reason": "Pinned RC gate"
+    },
+    {
+      "id": "boundary-release-needs-pin",
+      "prompt": "What should we do this week to get Insight closer to a production release? No RC pinned yet.",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [
+        "release-readiness"
+      ],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "release-readiness"
+      ],
+      "reason": "No RC pin — operator/planning, not readiness gate"
+    },
+    {
+      "id": "boundary-evidence-not-council",
+      "prompt": "Fact-check our EU AI Act marketing claims and prepare evidence for later",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Research without explicit Council"
+    },
+    {
+      "id": "boundary-council-explicit",
+      "prompt": "Przepuść przez AI Council: czy podnieść cenę Growth?",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Explicit Council invocation"
+    },
+    {
+      "id": "boundary-council-not-weekly",
+      "prompt": "Co priorytetyzować w sprincie Insight w tym tygodniu? Mamy roadmapę.",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council",
+        "repo-to-roadmap"
+      ],
+      "reason": "Routine weekly ops ≠ Council"
+    },
+    {
+      "id": "boundary-orch-evidence-then-council",
+      "prompt": "Zorkiestruj workflow: najpierw Evidence Pack claimów, potem Council GO/NO-GO na copy landing",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "ai-council"
+      ],
+      "must_not_trigger": [],
+      "reason": "Multi-skill orchestration"
+    },
+    {
+      "id": "boundary-orch-multiagent",
+      "prompt": "Multiagent: osobny agent per skill — audit register potem release readiness RC 1.2",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [
+        "skill-orchestrator"
+      ],
+      "must_not_trigger": [],
+      "reason": "Explicit multiagent alias"
+    },
+    {
+      "id": "boundary-single-evidence-only",
+      "prompt": "Tylko zrób Evidence Pack dla trzech claimów SEO, bez orchestracji",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator",
+        "skill-orchestrator-multiagent"
+      ],
+      "reason": "Single specialist"
+    },
+    {
+      "id": "boundary-audit-not-release",
+      "prompt": "Click-through QA audit of app.cometweb.io/register — file defects with evidence",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness",
+        "product-operator"
+      ],
+      "reason": "Audit alone"
+    },
+    {
+      "id": "boundary-ci-not-council",
+      "prompt": "Competitor digest: what changed on pricing pages since last month snapshot?",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "CI delta without strategic decision ask"
+    },
+    {
+      "id": "boundary-teardown-not-roadmap",
+      "prompt": "Teardown Linear's onboarding — transferable patterns for Insight",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "product-operator"
+      ],
+      "reason": "External pattern teardown"
+    },
+    {
+      "id": "boundary-design-partner",
+      "prompt": "Score design partner candidates and propose a pilot cohort charter",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops",
+        "ai-council"
+      ],
+      "reason": "Partner program"
+    },
+    {
+      "id": "boundary-customer-ops",
+      "prompt": "Triage support queue: possible incident and churn signal on account Acme",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council",
+        "release-readiness"
+      ],
+      "reason": "Support→eng loop"
+    },
+    {
+      "id": "boundary-seo-not-evidence",
+      "prompt": "Run SEO/GEO/AEO visibility audit on cometweb.io",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher",
+        "web-app-auditor"
+      ],
+      "reason": "SEO specialist"
+    },
+    {
+      "id": "boundary-humanize",
+      "prompt": "Humanize this Polish LinkedIn draft — remove AI tells",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "cometweb-context",
+        "ai-council"
+      ],
+      "reason": "Prose humanize"
+    },
+    {
+      "id": "boundary-context-meeting",
+      "prompt": "Przygotuj kontekst na jutrzejsze spotkanie z klientem — calendar i CRM",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [
+        "customer-ops"
+      ],
+      "must_not_trigger": [
+        "ai-council",
+        "design-partner-finder"
+      ],
+      "reason": "Meeting context gateway"
+    },
+    {
+      "id": "boundary-living-decision",
+      "prompt": "AI Council: is our prior pricing decision still current? Living decision check",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Living decision / Council health"
+    },
+    {
+      "id": "boundary-orch-audit-release",
+      "prompt": "Orchestrate: web app audit of /register then release readiness for RC 1.3.0 build 500 on staging",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [
+        "web-app-auditor",
+        "release-readiness"
+      ],
+      "must_not_trigger": [],
+      "reason": "Audit then release flow"
+    },
+    {
+      "id": "boundary-context-delta-product",
+      "prompt": "Odśwież kontekst produktu: delta Insight vs last ContextEnvelope baseline",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [
+        "product-operator"
+      ],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Context delta with baseline"
     }
   ]
 }

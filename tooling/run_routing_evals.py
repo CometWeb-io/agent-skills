@@ -16,10 +16,10 @@ SUITE = ROOT / "evals" / "routing" / "suite.json"
 SIGNALS: dict[str, list[tuple[int, str]]] = {
     "cometweb-context": [
         (12, r"od[sś]wie[zż].*kontekst|refresh context|context envelope|przygotuj kontekst"),
-        (10, r"kontekst.*(spotkani|review|insight|boardroom)|context snapshot|stan na "),
+        (11, r"aktualny stan|potrzebuj[eę] kontekstu|contextenvelope|context-only"),
+        (10, r"kontekst.*(spotkani|review|insight|boardroom|cometweb)|context snapshot|stan na "),
         (8, r"delta baseline|authority_gap|provenance-aware context"),
         (6, r"context gateway|minimal.?source"),
-        # intentionally no bare "co się zmieniło" — that belongs to product-operator weekly loop
     ],
     "ai-council": [
         (10, r"przepu[śs][ćc]? przez rad"),
@@ -61,6 +61,8 @@ SIGNALS: dict[str, list[tuple[int, str]]] = {
         (10, r"what (should we|to) (do|build|fix|verify) (next|this week)"),
         (10, r"what changed since (the )?last review"),
         (10, r"co robimy dalej"),
+        (10, r"priorytetyzowa[cć].*sprint|w sprincie|ship .* this week"),
+        (9, r"can we ship .* this week"),
         (9, r"roadmap.*repo agree|plan ahead of code|shipped without outcome"),
         (9, r"does our roadmap match|actually implemented in the repo"),
         (9, r"weekly (product|sprint)|control loop|existing roadmap"),
@@ -112,7 +114,8 @@ SIGNALS: dict[str, list[tuple[int, str]]] = {
         (7, r"build a crm"),
     ],
     "seo-geo-aeo-maxxing": [
-        (10, r"seo geo aeo|seo/ geo/ aeo|seo audit"),
+        (12, r"seo/geo/aeo|seo geo aeo|seo/ geo/ aeo"),
+        (10, r"seo audit|visibility audit|aeo visibility"),
         (9, r"indexable|canonical|search visibility audit"),
         (8, r"geo audit registry fresh"),
     ],
@@ -122,7 +125,9 @@ SIGNALS: dict[str, list[tuple[int, str]]] = {
         (5, r"fix typos"),
     ],
     "skill-orchestrator": [
-        (10, r"skill orchestrator|@skill-orchestrator"),
+        (16, r"zorkiestruj|zorkiestr"),
+        (14, r"najpierw .* potem"),
+        (12, r"orchestrate:|@skill-orchestrator|skill orchestrator"),
         (11, r"\borchestrat(e|:|\b)"),
         (10, r"orchestrat.*skill|sequence.*skill|multi.?step workflow"),
         (10, r"verify.*then run council|claims first.*then.*council"),

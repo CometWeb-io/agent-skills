@@ -1,8 +1,9 @@
 interface:
   display_name: Web App Auditor
-  short_description: Evidence-driven web app QA with safe click-through and data verification
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  short_description: Evidence-driven QA and product audit for websites and web applications. Use when asked to audit, review, inspect, QA, verify, click through,
+  default_prompt: "Use the Web App Auditor skill for: Evidence-driven QA and product audit for websites and web applications. Use when asked to audit, review, inspect, QA, verify, click through, test, or "roast" a user-facing site/app/page/dashboard/chec"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   products:
   - chatgpt

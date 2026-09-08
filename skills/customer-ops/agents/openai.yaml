@@ -1,9 +1,9 @@
 interface:
   display_name: Customer Ops
-  short_description: Evidence-driven customer operations from support signal to verified
-    product action
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  short_description: Run the operational customer-to-resolution loop across support conversations, customer cases, incidents, account risk, commitments, internal
+  default_prompt: "Use the Customer Ops skill for: Run the operational customer-to-resolution loop across support conversations, customer cases, incidents, account risk, commitments, internal handoffs, feedback clusters, and GitHub engineering work. U"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   products:
   - chatgpt

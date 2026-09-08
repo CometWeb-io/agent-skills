@@ -1,5 +1,12 @@
 # Changelog — cometweb-context
 
+## [1.2.1] - 2026-09-08
+
+### Changed
+- Profile source groups loaded from source-registry.json.
+- SKILL.md slimmed; operational bindings registry-first.
+
+
 ## [1.2.0] - 2026-09-08
 
 ### Changed

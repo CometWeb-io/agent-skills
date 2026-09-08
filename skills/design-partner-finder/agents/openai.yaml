@@ -1,10 +1,9 @@
 interface:
   display_name: Design Partner Finder
-  short_description: 'Find, verify, qualify, and operate evidence-backed design-partner
-    programs: separate research fit from live readiness, compose learning cohorts,
-    control bespoke risk, and graduate early adopters into normal customer motions.'
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  short_description: Find, verify, qualify, compare, and manage companies as design partners, co-development partners, beta partners, paid pilots, lighthouse cus
+  default_prompt: "Use the Design Partner Finder skill for: Find, verify, qualify, compare, and manage companies as design partners, co-development partners, beta partners, paid pilots, lighthouse customers, or early adopters. Use for design-partner discovery,"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   products:
   - chatgpt

@@ -26,5 +26,12 @@ def test_product_profile():
 
 
 def test_product_and_gtm_include_first_principles():
-    assert "vault-first-principles" in module.PROFILES["product"]
-    assert "vault-first-principles" in module.PROFILES["gtm"]
+    profiles = module.load_profiles()
+    assert "vault-first-principles" in profiles["product"]
+    assert "vault-first-principles" in profiles["gtm"]
+
+
+def test_profiles_come_from_registry_file():
+    profiles = module.load_profiles()
+    assert "meeting" in profiles
+    assert "calendar" in profiles["meeting"]

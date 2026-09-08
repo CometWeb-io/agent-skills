@@ -17,124 +17,72 @@ Działaj jako **read-only context gateway**. Zbieraj minimalny, świeży i audyt
 6. Nie wykonuj downstreamowej strategii, priorytetyzacji, audytu, decyzji Council ani wysyłki outboundu.
 7. Nie czytaj sekretów, tokenów, plików konfiguracyjnych z credentialami ani nie publikuj treści oznaczonej jako prywatna/wewnętrzna.
 
-Szczegóły źródeł i hierarchii: [references/source-registry.md](references/source-registry.md)  
-Machine-readable bindings: [references/source-registry.json](references/source-registry.json).  
-Zasady provenance i bezpieczeństwa: [references/security-and-provenance.md](references/security-and-provenance.md).  
-Kontrakt wyjścia: [references/context-envelope.md](references/context-envelope.md).
+Bindings i hierarchie źródeł: [references/source-registry.json](references/source-registry.json) + [references/source-registry.md](references/source-registry.md).  
+Provenance / security: [references/security-and-provenance.md](references/security-and-provenance.md).  
+Output: [references/context-envelope.md](references/context-envelope.md) (JSON Schema: `protocol/cw-aip-v2/context.schema.json`).
 
 ## Workflow
 
 ### 1. Ustal tryb i profil
 
-Najpierw określ najmniejszy sensowny zakres:
-
-- `targeted` — jedno konkretne pytanie lub jeden obszar; zwykle 1-2 grupy źródeł.
-- `standard` — bieżący kontekst do pracy domenowej; zwykle 2-4 grupy źródeł.
-- `delta` — użytkownik pyta "co się zmieniło"; wymagany jawny baseline.
-- `full` — boardroom/weekly review/pełny refresh; używaj tylko po wyraźnej prośbie.
-
-Jeśli lokalne uruchamianie skryptów jest dostępne, możesz użyć:
+- `targeted` — 1 pytanie/obszar; zwykle 1–2 grupy źródeł.
+- `standard` — bieżąca praca domenowa; zwykle 2–4 grupy.
+- `delta` — „co się zmieniło”; wymagany jawny baseline.
+- `full` — tylko po wyraźnej prośbie (boardroom / weekly).
 
 ```bash
-python3 scripts/context_plan.py "<cel użytkownika>" --json
+python3 scripts/context_plan.py "<cel>" --json
 ```
 
-Skrypt jest planerem pomocniczym, nie źródłem prawdy. Jeśli cel jest oczywisty, dobierz profil bez uruchamiania go.
+Planer jest pomocniczy. Profile i `preferred_source_groups` bierz z
+`source-registry.json` → `domains.*.preferred_source_groups` (oraz tabeli w
+`source-registry.md`). Nie duplikuj ścieżek vaulta / CRM / decision IDs w tym pliku.
 
-Profile i domyślne źródła:
-
-| Profil | Minimalny zestaw |
-| --- | --- |
-| product / roadmap / release context | repo/GitHub + CometWeb Insight + kanoniczny status/decisions + First Principles binding z `source-registry.json`; Notion tylko gdy potrzebne |
-| GTM / pricing / positioning | decisions + First Principles + dokument kanoniczny tematu + live website; CRM gdy stan komercyjny ma znaczenie |
-| outreach / design partner | CRM + ostatnia komunikacja, jeśli istnieje + ICP/SOP + strona/profil prospekta |
-| personal brand / content | brand canon + evidence register + live public profiles/website + ostatnie istotne treści |
-| meeting prep | Calendar + Contacts + CRM/komunikacja + dokumenty dotyczące rozmowy |
-| weekly / boardroom | pełny refresh systemów rekordowych + jawny delta baseline |
-| public claim verification | evidence register + pierwotne źródło claimu + miejsce publikacji |
-
-Nie pobieraj sociali do roadmapy produktu, repo do prostego posta ani pełnego vaulta do jednego pytania.
+Nie over-fetchuj: social ≠ roadmap produktu; jedno pytanie GitHub ≠ full gateway.
 
 ### 2. Wykryj dostępne źródła
 
-Przeczytaj odpowiednią sekcję w `references/source-registry.md`.
+Preferuj: system of record → connector/lokalny artefakt → live/public → fallback.
 
-Preferuj w tej kolejności:
+Nie hard-code'uj nazw MCP. Użyj aktualnie dostępnego connectora. Niedostępne =
+`unavailable` / `authority_gap`; nie awansuj fallbacku po cichu.
 
-1. system of record / kanoniczne źródło,
-2. bezpośredni connector lub lokalny artefakt,
-3. źródło live/publiczne,
-4. fallback o niższej wiarygodności.
-
-Nie hard-code'uj nazw MCP typu `mcp__...`. Użyj aktualnie dostępnego connectora/toola dla GitHub, Notion, Gmail, Calendar, Contacts, CometWeb Insight, Files lub web. Jeśli źródło nie jest dostępne, wpisz `unavailable`; nie zastępuj go innym systemem bez oznaczenia degradacji.
-
-### 3. Zbierz repo snapshot tylko gdy potrzebny
-
-Jeśli masz lokalny dostęp do repozytoriów, uruchom:
+### 3. Repo snapshot tylko gdy potrzebny
 
 ```bash
 python3 scripts/repo_snapshot.py --json
 ```
 
-Root wybieraj kolejno z `COMETWEB_ROOT`, `COMETWEB_CENTRUM`, a na końcu `~/Github/CometWeb`. Lista repo jest w `references/repos.txt` i może być nadpisana argumentami skryptu.
-
-Jeśli lokalny checkout jest mirror/stale albo niedostępny, preferuj GitHub connector dla aktualnego stanu. Nie traktuj dirty tree jako dowodu stanu produkcji.
+Root: `COMETWEB_ROOT` → `COMETWEB_CENTRUM` → `~/Github/CometWeb`. Lista:
+`references/repos.txt`. Domyślnie ścieżki są redagowane (`--redact-paths`).
+Dirty tree ≠ stan produkcji; sprawdź ahead/behind względem remote.
 
 ### 4. Zbieraj z provenance
 
-Dla każdej użytej grupy źródeł zapisuj co najmniej:
+Dla każdej grupy: `source_id`, `source_type`, `authority`, `retrieved_at`,
+`effective_at?`, `freshness`, `access`, `sensitivity`, `summary`, `evidence_ref`.
 
-- `source_id`
-- `source_type`
-- `authority`
-- `retrieved_at`
-- `effective_at` jeśli źródło podaje datę obowiązywania
-- `freshness`: `fresh | aging | stale | unknown`
-- `access`: `live | local | connector | cached | fallback`
-- `sensitivity`: `public | internal | confidential | restricted`
-- krótki `summary`
-- `evidence_ref` lub identyfikator pozwalający wrócić do artefaktu
+`retrieved_at` ≠ `effective_at`. Authority ≠ freshness.
 
-Nie używaj daty modyfikacji pliku jako automatycznego `effective_at` decyzji biznesowej.
+### 5. Konflikty i luki
 
-### 5. Rozwiąż konflikty i luki
+Hierarchia z registry. Zachowaj `unresolved_conflict`. `authority_gap` gdy brak
+SoR. Materialna nowa decyzja → decision-input binding z registry (nie hard-code).
 
-- Użyj hierarchii per domena z `source-registry.md`.
-- Nowsze nie zawsze znaczy nadrzędne; decyzja kanoniczna może przeważać nad późniejszą notatką roboczą.
-- Jeśli dwa źródła o podobnym autorytecie są sprzeczne, zachowaj oba i wpisz `unresolved_conflict`.
-- Jeśli authoritative source jest niedostępny, nie awansuj fallbacku do poziomu authoritative. Oznacz `authority_gap`.
-- Dokumenty historyczne, drafty i cache nie mogą samodzielnie tworzyć bieżącego stanu.
-- Przy materialnej nowej decyzji pobierz kanoniczne First Principles / decision-input ze **source registry** (nie hard-code'uj ścieżek vaulta w logice skilla). Aliasów provisional `D-xxx` nie awansuj do decyzji — rozwiąż przez registry/alias map jeśli istnieje.
+### 6. Delta tylko wobec baseline'u
 
-### 6. Delta tylko wobec jawnego baseline'u
+Baseline = poprzedni ContextEnvelope / timestampowany snapshot / wskazanie usera.
+Bez baseline: `baseline.status=unavailable`, `deltas=[]`.
 
-Dla `delta` porównuj bieżący snapshot wyłącznie z:
+### 7. Public claim gate
 
-- poprzednim `ContextEnvelope`,
-- snapshotem/systemowym rekordem z jawnym timestampem,
-- baseline'em wskazanym przez użytkownika.
+Sprawdź evidence register z registry (`domains.claims`). Brak pokrycia →
+`blocked_public_claims` z `reason`. Nie wymyślaj liczb.
 
-Jeśli baseline'u nie ma, ustaw `baseline_status: unavailable` i podaj bieżący stan bez wymyślonego "vs poprzednio".
+### 8. Emituj ContextEnvelope
 
-### 7. Gate dla publicznych claimów
-
-Przed użyciem liczby, wyniku, case study lub obietnicy w materiale publicznym:
-
-1. sprawdź `claims/evidence-register.json` albo aktualny równoważny rejestr,
-2. potwierdź `public_use` / status dopuszczenia,
-3. zachowaj źródło i freshness,
-4. jeśli brak pokrycia, wpisz claim do `blocked_public_claims`.
-
-Ten skill nie naprawia claimu i nie wymyśla zastępczej liczby.
-
-### 8. Emituj `ContextEnvelope`
-
-Zwróć dwa poziomy:
-
-1. krótki raport dla użytkownika `Stan na <timestamp>`,
-2. ustandaryzowany `ContextEnvelope` według `references/context-envelope.md`.
-
-Jeśli envelope został zapisany jako JSON, zweryfikuj:
+1. Krótki raport `Stan na <timestamp>`
+2. Envelope zgodny ze schematem; waliduj:
 
 ```bash
 python3 scripts/validate_context_envelope.py path/to/context-envelope.json
@@ -142,20 +90,11 @@ python3 scripts/validate_context_envelope.py path/to/context-envelope.json
 
 ### 9. Handoff
 
-- Jeśli użytkownik chciał tylko refresh/stanu: zakończ na envelope.
-- Jeśli skill jest krokiem orkiestratora: przekaż envelope do następnego specjalisty jako zależność.
-- Jeśli użytkownik chce również pracę właściwą, wskaż właściwy kolejny skill, ale nie wykonuj jego kontraktu pod nazwą `cometweb-context`.
+Wskaż następny skill z katalogu CometWeb (np. `product-operator`,
+`evidence-researcher`, `repo-to-roadmap`, `release-readiness`, `ai-council`,
+`design-partner-finder`). Nie wykonuj ich kontraktu pod tą skillą.
 
-Typowe handoffy:
-
-- `repo-to-roadmap` / `product-operator` — stan produktu i priorytety,
-- `release-readiness` — tylko po przypięciu RC/build/environment,
-- `design-partner-finder` — discovery/qualification,
-- `cold-email` — outbound copy po zebraniu kontekstu prospekta,
-- `content-strategy` / `social` / `copywriting` — treści i marka,
-- `ai-council` — dopiero gdy istnieje materialna decyzja i odpowiednie evidence.
-
-## Domyślny format odpowiedzi
+## Format odpowiedzi
 
 ```text
 Stan na <ISO-8601>
@@ -172,4 +111,4 @@ Handoff
 - constraints: ...
 ```
 
-Nie wklejaj do odpowiedzi pełnych prywatnych dokumentów, maili ani stron Notion. Streszczaj minimalnie i zachowuj referencje.
+Nie wklejaj pełnych prywatnych dokumentów, maili ani stron Notion.

@@ -1,6 +1,6 @@
 {
   "schema": "cometweb.source-registry/v1",
-  "notes": "Machine-readable bindings for cometweb-context. Paths are relative to $COMETWEB_ROOT / $COMETWEB_CENTRUM when local access exists. Skills must discover live connectors at runtime — do not hard-code MCP tool names.",
+  "notes": "Machine-readable bindings for cometweb-context. Paths are relative to $COMETWEB_ROOT / $COMETWEB_CENTRUM when local access exists. Skills must discover live connectors at runtime — do not hard-code MCP tool names. Live customer bindings stay outside git.",
   "authority_levels": [
     "system_of_record",
     "canonical",
@@ -8,15 +8,9 @@
     "secondary",
     "fallback"
   ],
-  "domains": {
+  "profiles": {
     "product": {
-      "preferred_source_groups": ["repo", "insight", "vault-status", "vault-first-principles"],
-      "hierarchy": [
-        "pinned release/CI artifact",
-        "github head",
-        "local checkout",
-        "docs/notion intent"
-      ]
+      "preferred_source_groups": ["repo", "insight", "vault-status", "vault-first-principles"]
     },
     "gtm": {
       "preferred_source_groups": [
@@ -24,6 +18,57 @@
         "vault-first-principles",
         "vault-topic",
         "website"
+      ]
+    },
+    "outreach": {
+      "preferred_source_groups": ["crm", "communications", "vault-icp-sop", "prospect-web"]
+    },
+    "brand": {
+      "preferred_source_groups": [
+        "vault-brand",
+        "evidence-register",
+        "public-profiles",
+        "website"
+      ]
+    },
+    "meeting": {
+      "preferred_source_groups": [
+        "calendar",
+        "contacts",
+        "crm-or-communications",
+        "relevant-docs"
+      ]
+    },
+    "weekly": {
+      "preferred_source_groups": [
+        "repo",
+        "insight",
+        "vault",
+        "crm",
+        "notion",
+        "communications",
+        "website",
+        "public-profiles"
+      ]
+    },
+    "claim-verification": {
+      "preferred_source_groups": [
+        "evidence-register",
+        "primary-claim-source",
+        "publication-surface"
+      ]
+    },
+    "custom": {
+      "preferred_source_groups": []
+    }
+  },
+  "domains": {
+    "product": {
+      "hierarchy": [
+        "pinned release/CI artifact",
+        "github head",
+        "local checkout",
+        "docs/notion intent"
       ]
     },
     "governance": {

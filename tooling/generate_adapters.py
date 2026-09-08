@@ -1,24 +1,114 @@
 #!/usr/bin/env python3
-"""Generate host adapters from registry/skills.json (Cursor routing stub + docs table)."""
+"""Generate host adapters from registry/skills.json.
+
+Writes:
+  - docs/generated-skills-table.md
+  - docs/generated-cursor-routing.mdc
+  - skills/<id>/agents/openai.yaml interface block (preserves policy)
+"""
 from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "registry" / "skills.json"
+SKILLS = ROOT / "skills"
 OUT_DOCS = ROOT / "docs" / "generated-skills-table.md"
 OUT_CURSOR = ROOT / "docs" / "generated-cursor-routing.mdc"
 
+DISPLAY_NAMES = {
+    "cometweb-context": "CometWeb Context",
+    "evidence-researcher": "Evidence Researcher",
+    "skill-orchestrator": "Skill Orchestrator",
+    "skill-orchestrator-multiagent": "Skill Orchestrator Multiagent",
+    "ai-council": "AI Council",
+    "repo-to-roadmap": "Repo to Roadmap",
+    "product-operator": "Product Operator",
+    "release-readiness": "Release Readiness",
+    "web-app-auditor": "Web App Auditor",
+    "competitive-intelligence": "Competitive Intelligence",
+    "product-teardown": "Product Teardown",
+    "design-partner-finder": "Design Partner Finder",
+    "customer-ops": "Customer Ops",
+    "seo-geo-aeo-maxxing": "SEO GEO AEO Maxxing",
+    "ai-humanize": "AI Humanize",
+}
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--check", action="store_true", help="exit 1 if generated files would change")
-    args = parser.parse_args()
-    data = json.loads(REGISTRY.read_text(encoding="utf-8"))
-    skills = data["skills"]
+DEFAULT_PROMPTS = {
+    "cometweb-context": (
+        "Refresh the minimal CometWeb context needed for my goal and return a "
+        "ContextEnvelope with sources, facts, conflicts, gaps, and handoff."
+    ),
+    "evidence-researcher": (
+        "Build an Evidence Pack for my question: decompose claims, verify sources, "
+        "run falsifier passes, and report readiness without making the final decision."
+    ),
+    "skill-orchestrator": (
+        "Plan and execute the multi-skill workflow for my goal. Choose execution_mode "
+        "auto|single_thread|isolated_subagents and hand off via CW-AIP envelopes."
+    ),
+    "skill-orchestrator-multiagent": (
+        "Run the multi-skill workflow with execution_mode=isolated_subagents "
+        "(one Task/subagent per specialist skill)."
+    ),
+    "ai-council": (
+        "Run AI Council on my decision question. Use the smallest profile "
+        "(LIGHT|STANDARD|DEEP) that protects the decision."
+    ),
+}
 
+
+def title_case_skill(skill_id: str) -> str:
+    return DISPLAY_NAMES.get(skill_id, skill_id.replace("-", " ").title())
+
+
+def short_description(entry: dict) -> str:
+    owns = entry.get("owns") or []
+    if owns:
+        text = "; ".join(owns[:3])
+        return text[:140]
+    desc = entry.get("description", "")
+    return desc[:140]
+
+
+def render_openai_yaml(entry: dict, existing: str | None) -> str:
+    skill_id = entry["id"]
+    display = title_case_skill(skill_id)
+    short = short_description(entry)
+    default_prompt = DEFAULT_PROMPTS.get(
+        skill_id,
+        f"Use the {display} skill for: {entry.get('description', skill_id)[:200]}",
+    )
+    allow_implicit = "false" if entry.get("explicit_only") else "true"
+
+    # Preserve policy.products if present
+    products = ["chatgpt", "codex", "api", "atlas"]
+    if existing:
+        match = re.search(r"products:\n((?:  - .+\n)+)", existing)
+        if match:
+            products = [line.strip()[2:] for line in match.group(1).splitlines() if line.strip()]
+
+    lines = [
+        "interface:",
+        f"  display_name: {display}",
+        f"  short_description: {short}",
+        f"  default_prompt: \"{default_prompt}\"",
+        "  icon_small: ./assets/icon.svg",
+        "  icon_large: ./assets/icon.svg",
+        "policy:",
+        "  products:",
+    ]
+    for product in products:
+        lines.append(f"  - {product}")
+    lines.append(f"  allow_implicit_invocation: {allow_implicit}")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def build_docs(skills: list[dict]) -> str:
     rows = [
         "# Generated skills table",
         "",
@@ -27,14 +117,17 @@ def main() -> None:
         "| id | version | tier | lifecycle | desc_len | explicit_only |",
         "| --- | ---: | --- | --- | ---: | --- |",
     ]
-    for s in skills:
+    for skill in skills:
         rows.append(
-            f"| `{s['id']}` | {s['version']} | {s.get('tier','')} | {s.get('lifecycle','')} | "
-            f"{len(s.get('description',''))} | {s.get('explicit_only', False)} |"
+            f"| `{skill['id']}` | {skill['version']} | {skill.get('tier', '')} | "
+            f"{skill.get('lifecycle', '')} | {len(skill.get('description', ''))} | "
+            f"{skill.get('explicit_only', False)} |"
         )
-    docs = "\n".join(rows) + "\n"
+    return "\n".join(rows) + "\n"
 
-    routing_lines = [
+
+def build_cursor(skills: list[dict]) -> str:
+    lines = [
         "---",
         "description: Generated CometWeb Agent Skills routing (from registry/skills.json)",
         "globs:",
@@ -54,32 +147,105 @@ def main() -> None:
         "| Intent | Skill |",
         "| --- | --- |",
     ]
-    for s in skills:
-        if s.get("alias_of"):
-            routing_lines.append(
-                f"| Alias for `{s['alias_of']}` isolated_subagents | `{s['id']}` |"
+    for skill in skills:
+        if skill.get("alias_of"):
+            lines.append(
+                f"| Alias for `{skill['alias_of']}` with isolated_subagents | `{skill['id']}` |"
             )
             continue
-        owns = ", ".join(s.get("owns") or []) or s["id"]
-        routing_lines.append(f"| {owns} | `{s['id']}` |")
-    routing_lines.append("")
-    cursor = "\n".join(routing_lines) + "\n"
+        owns = ", ".join(skill.get("owns") or []) or skill["id"]
+        lines.append(f"| {owns} | `{skill['id']}` |")
+
+    lines.extend(
+        [
+            "",
+            "## Collision guardrails",
+            "",
+        ]
+    )
+    for skill in skills:
+        if not skill.get("does_not_own"):
+            continue
+        denied = "; ".join(skill["does_not_own"])
+        explicit = " Explicit invocation only." if skill.get("explicit_only") else ""
+        lines.append(f"- **{skill['id']}** — does not own: {denied}.{explicit}")
+
+    lines.extend(["", "## Trigger examples (from registry)", ""])
+    for skill in skills:
+        examples = skill.get("trigger_examples") or []
+        negatives = skill.get("negative_trigger_examples") or []
+        if not examples and not negatives:
+            continue
+        lines.append(f"### `{skill['id']}`")
+        for example in examples:
+            lines.append(f"- trigger: {example}")
+        for example in negatives:
+            lines.append(f"- do not trigger: {example}")
+        lines.append("")
+    return "\n".join(lines) + "\n"
+
+
+def write_openai_yamls(skills: list[dict]) -> list[Path]:
+    written: list[Path] = []
+    for entry in skills:
+        skill_dir = SKILLS / entry["id"]
+        agents = skill_dir / "agents"
+        agents.mkdir(parents=True, exist_ok=True)
+        path = agents / "openai.yaml"
+        existing = path.read_text(encoding="utf-8") if path.is_file() else None
+        content = render_openai_yaml(entry, existing)
+        if existing != content:
+            path.write_text(content, encoding="utf-8")
+            written.append(path)
+        elif not path.is_file():
+            path.write_text(content, encoding="utf-8")
+            written.append(path)
+    return written
+
+
+def expected_artifacts(skills: list[dict]) -> dict[Path, str]:
+    docs = build_docs(skills)
+    cursor = build_cursor(skills)
+    artifacts = {
+        OUT_DOCS: docs,
+        OUT_CURSOR: cursor,
+    }
+    for entry in skills:
+        path = SKILLS / entry["id"] / "agents" / "openai.yaml"
+        existing = path.read_text(encoding="utf-8") if path.is_file() else None
+        artifacts[path] = render_openai_yaml(entry, existing)
+    return artifacts
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--check", action="store_true", help="exit 1 if generated files would change")
+    parser.add_argument("--skip-openai", action="store_true", help="do not rewrite agents/openai.yaml")
+    args = parser.parse_args()
+    data = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    skills = data["skills"]
 
     if args.check:
-        changed = False
-        if not OUT_DOCS.is_file() or OUT_DOCS.read_text(encoding="utf-8") != docs:
-            changed = True
-        if not OUT_CURSOR.is_file() or OUT_CURSOR.read_text(encoding="utf-8") != cursor:
-            changed = True
+        artifacts = expected_artifacts(skills)
+        if args.skip_openai:
+            artifacts = {path: text for path, text in artifacts.items() if path in {OUT_DOCS, OUT_CURSOR}}
+        changed = []
+        for path, expected in artifacts.items():
+            if not path.is_file() or path.read_text(encoding="utf-8") != expected:
+                changed.append(str(path.relative_to(ROOT)))
         if changed:
-            raise SystemExit("generated adapters out of date; run tooling/generate_adapters.py")
+            raise SystemExit("generated adapters out of date:\n- " + "\n- ".join(changed))
         print("OK: generate_adapters --check")
         return
 
     OUT_DOCS.parent.mkdir(parents=True, exist_ok=True)
-    OUT_DOCS.write_text(docs, encoding="utf-8")
-    OUT_CURSOR.write_text(cursor, encoding="utf-8")
-    print(f"OK: wrote {OUT_DOCS.relative_to(ROOT)} and {OUT_CURSOR.relative_to(ROOT)}")
+    OUT_DOCS.write_text(build_docs(skills), encoding="utf-8")
+    OUT_CURSOR.write_text(build_cursor(skills), encoding="utf-8")
+    written = [] if args.skip_openai else write_openai_yamls(skills)
+    msg = f"OK: wrote {OUT_DOCS.relative_to(ROOT)}, {OUT_CURSOR.relative_to(ROOT)}"
+    if written:
+        msg += f", {len(written)} openai.yaml"
+    print(msg)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 interface:
   display_name: AI Council
-  short_description: Material high-stakes multi-domain decisions with explicit Council invocation
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  short_description: decision contract; deliberation; verdict GO/TEST/DEFER
+  default_prompt: "Run AI Council on my decision question. Use the smallest profile (LIGHT|STANDARD|DEEP) that protects the decision."
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   products:
   - chatgpt

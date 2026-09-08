@@ -1,8 +1,9 @@
 interface:
   display_name: Competitive Intelligence
-  short_description: Track competitor changes, deltas, and strategic signals
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  short_description: Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existi
+  default_prompt: "Use the Competitive Intelligence skill for: Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior sc"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   products:
   - chatgpt

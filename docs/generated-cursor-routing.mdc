@@ -29,6 +29,44 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 | repo-to-roadmap | `repo-to-roadmap` |
 | seo-geo-aeo-maxxing | `seo-geo-aeo-maxxing` |
 | multi-skill plan, execution_mode, CW-AIP handoffs, workflow result | `skill-orchestrator` |
-| Alias for `skill-orchestrator` isolated_subagents | `skill-orchestrator-multiagent` |
+| Alias for `skill-orchestrator` with isolated_subagents | `skill-orchestrator-multiagent` |
 | web-app-auditor | `web-app-auditor` |
+
+## Collision guardrails
+
+- **ai-council** — does not own: Evidence Pack construction; context gateway; implementation. Explicit invocation only.
+- **cometweb-context** — does not own: evidence packs; domain decisions; release gates; outbound copy.
+- **evidence-researcher** — does not own: final GO/NO_GO; release verdict; context-only refresh.
+- **skill-orchestrator** — does not own: domain skill contracts; Council policy; release gates.
+- **skill-orchestrator-multiagent** — does not own: separate planning model.
+
+## Trigger examples (from registry)
+
+### `ai-council`
+- trigger: Przepuść przez AI Council
+- trigger: Council: jaka cena Growth?
+- do not trigger: Zrób research claimów bez decyzji
+
+### `cometweb-context`
+- trigger: Co zmieniło się w Insight od ostatniego review?
+- trigger: Odśwież kontekst przed weekly boardroom
+- trigger: Przygotuj kontekst na spotkanie z design partnerem
+- do not trigger: Ile gwiazdek ma MaciejZet/agent-skills na GitHub?
+- do not trigger: Czy claim X jest prawdziwy? Zrób Evidence Pack
+- do not trigger: Przepuść decyzję o cenie przez Council
+
+### `evidence-researcher`
+- trigger: Zrób Evidence Pack dla claimów pricing
+- trigger: Fact-check EU AI Act marketing claims
+- do not trigger: Odśwież kontekst CometWeb
+- do not trigger: Czy RC 1.2 gotowy do produkcji?
+
+### `skill-orchestrator`
+- trigger: Zorkiestruj evidence potem Council
+- trigger: Audit register potem release readiness
+- do not trigger: Tylko zrób Evidence Pack
+
+### `skill-orchestrator-multiagent`
+- trigger: Multiagent: evidence potem Council
+- do not trigger: Jeden skill wystarczy
 

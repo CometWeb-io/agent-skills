@@ -56,10 +56,14 @@ docs/                     architecture notes
 ```bash
 python3 -m pip install -r requirements-dev.txt
 python3 tooling/validate_repo.py
+python3 tooling/sync_orchestrator.py --check
 python3 tooling/compatibility.py
-python3 -m pytest -q tooling/tests skills/*/tests
+python3 tooling/generate_adapters.py
 python3 tooling/run_routing_evals.py
-python3 tooling/package_skill.py cometweb-context
+python3 tooling/run_behavior_evals.py
+python3 tooling/publish_public_dry_run.py
+python3 -m pytest -q tooling/tests skills/*/tests
+python3 tooling/package_skill.py cometweb-context --versioned
 ```
 
 ## Rules

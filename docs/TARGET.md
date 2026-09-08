@@ -1,28 +1,24 @@
 # Target architecture
 
-## Done in P0 (this hardening pass)
+## Done (P0 + P1 hardening)
 
 - Repo truth: README matches on-disk layout
 - Canonical `registry/skills.json` + `hosts.json`
 - CW-AIP v2 core + ContextEnvelope JSON Schema + semantic validator
 - Compatibility gate (incl. Codex description ≤ 1024)
-- Routing + context behavior eval fixtures
-- CI validate workflow
-- Orchestrator `execution_mode` + multiagent as thin alias
-- Context path redaction + remote freshness fields
-- Council LIGHT profile documented as default cognitive gate
-
-## Remaining P1
-
-1. `tooling/generate_adapters.py` writing Cursor rules + OpenAI yaml from registry only
-2. Move remaining operational bindings out of `cometweb-context` SKILL into
-   `references/source-registry.json` (machine-readable)
-3. Expand trigger evals to 20–30 cases per foundation skill boundary
-4. Progressive disclosure pass on Evidence Researcher cookbook sections
-5. Public mirror pipeline (`public-safety-check` → sync subset)
+- Routing evals (100+ cases) + context behavior fixtures
+- CI validate workflow (incl. orchestrator sync + public mirror dry-run)
+- Orchestrator `execution_mode` + multiagent alias + `sync_orchestrator.py`
+- Context path redaction, remote freshness, registry-first bindings
+- Council LIGHT / STANDARD / DEEP cognitive profiles
+- Evidence Researcher progressive disclosure (`kernel-cli.md`)
+- `generate_adapters.py` → docs table, Cursor routing, `agents/openai.yaml`
+- `publish_public_dry_run.py` strips private path templates for mirror preview
 
 ## Remaining P2
 
-1. Per-skill semver release artifacts with pinned eval reports
-2. Immutable `dist/<skill>/<version>/skill.zip`
+1. Automated sync PR into `MaciejZet/agent-skills` from dry-run output
+2. Per-skill immutable `dist/<skill>/<version>/skill.zip` + pinned eval report on release
 3. Blind baseline comparison harness for LLM behavior evals (operator-run)
+4. Expand CW-AIP v2 payload schemas beyond Context (Evidence/Decision wrappers)
+5. Install scripts for private canonical → Cursor/Claude/Codex (pointing at this repo)

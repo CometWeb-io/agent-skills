@@ -5,10 +5,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import pathlib
 import re
 import unicodedata
 
-PROFILES = {
+_DEFAULT_PROFILES = {
     "product": ["repo", "insight", "vault-status", "vault-first-principles"],
     "gtm": ["vault-decisions", "vault-first-principles", "vault-topic", "website"],
     "outreach": ["crm", "communications", "vault-icp-sop", "prospect-web"],
@@ -21,13 +22,33 @@ PROFILES = {
 
 RULES = [
     (r"weekly|boardroom|tygodni|pełn.*refresh|pel[nł].*refresh", "weekly"),
-    (r"meeting|spotkani|przygotuj mnie do|calendar|kalendar", "meeting"),
+    (r"meeting|spotkani|przygotuj mnie do|calendar|kalendar|przygotuj kontekst", "meeting"),
     (r"outreach|design partner|prospekt|cold email|follow.?up|sprzeda", "outreach"),
     (r"personal brand|marka osobista|linkedin|threads|social|content|post", "brand"),
     (r"public claim|claim|evidence register|case study|wynik.*public", "claim-verification"),
     (r"pricing|gtm|positioning|pozycjon|strategi|go.to.market", "gtm"),
-    (r"repo|roadmap|release|product|insight|cometpen|cometbase|extension|wdroż|wdroz", "product"),
+    (r"repo|roadmap|release|product|insight|cometpen|cometbase|extension|wdroż|wdroz|kontekst produktu", "product"),
 ]
+
+
+def load_profiles() -> dict[str, list[str]]:
+    registry = pathlib.Path(__file__).resolve().parent.parent / "references" / "source-registry.json"
+    if not registry.is_file():
+        return dict(_DEFAULT_PROFILES)
+    try:
+        data = json.loads(registry.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return dict(_DEFAULT_PROFILES)
+    profiles = data.get("profiles") or {}
+    merged = dict(_DEFAULT_PROFILES)
+    for name, body in profiles.items():
+        groups = body.get("preferred_source_groups")
+        if isinstance(groups, list):
+            merged[name] = [str(item) for item in groups]
+    return merged
+
+
+PROFILES = load_profiles()
 
 
 def norm(text: str) -> str:
@@ -62,13 +83,15 @@ def main() -> None:
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
 
+    profiles = load_profiles()
     profile = pick_profile(args.goal)
     mode = pick_mode(args.goal, args.mode)
     payload = {
         "profile": profile,
         "mode": mode,
-        "source_groups": PROFILES[profile],
+        "source_groups": profiles.get(profile, []),
         "rule": "minimal-sources-first",
+        "registry": "references/source-registry.json",
     }
     if args.json:
         print(json.dumps(payload, ensure_ascii=False, indent=2))

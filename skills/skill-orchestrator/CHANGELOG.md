@@ -1,5 +1,11 @@
 # Changelog — skill-orchestrator
 
+## [1.1.1] - 2026-09-08
+
+### Changed
+- tooling/sync_orchestrator.py keeps multiagent planner identical to canonical kernel.
+
+
 ## [1.1.0] - 2026-09-08
 
 ### Changed
