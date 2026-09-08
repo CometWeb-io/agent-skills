@@ -7,7 +7,7 @@
   "skills": [
     {
       "id": "ai-council",
-      "version": "5.1.0",
+      "version": "5.1.1",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "foundation",
@@ -55,7 +55,57 @@
         "STANDARD",
         "DEEP"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "przepu[śs][ćc]? przez rad"
+        ],
+        [
+          10,
+          "\\bai council\\b"
+        ],
+        [
+          10,
+          "\\bcouncil:"
+        ],
+        [
+          8,
+          "\\bcouncil health\\b"
+        ],
+        [
+          8,
+          "living decision"
+        ],
+        [
+          8,
+          "champion.challenger"
+        ],
+        [
+          8,
+          "pricing decision still current"
+        ],
+        [
+          7,
+          "strategic (go|no-go|defer)"
+        ],
+        [
+          7,
+          "acquiring .* diligence"
+        ],
+        [
+          6,
+          "what price should we charge"
+        ],
+        [
+          6,
+          "material options"
+        ],
+        [
+          6,
+          "decision council"
+        ]
+      ]
     },
     {
       "id": "ai-humanize",
@@ -66,10 +116,24 @@
       "alias_of": null,
       "description": "Naturalize, edit, or substantially rewrite English and Polish prose while preserving meaning, factual constraints, and the author's intentional voice. Use specifically when the user asks to humanize text, sound less like generic AI writing, remove AI tells, perform a strong/deep/robust rewrite, clean suspicious invisible Unicode in prose or Markdown, or re-express text with provenance-aware caution. Supports blogs, articles, LinkedIn posts, emails, proposals, documentation, release notes, and READMEs. Do not use merely for generic proofreading, unrelated copywriting, or AI-authorship detection. Never claim human authorship, detector defeat, or watermark removal without an appropriate supported test.",
       "explicit_only": false,
-      "owns": [],
-      "does_not_own": [],
-      "trigger_examples": [],
-      "negative_trigger_examples": [],
+      "owns": [
+        "EN/PL humanize",
+        "AI-tell removal",
+        "semantic-fidelity guards"
+      ],
+      "does_not_own": [
+        "authorship claims",
+        "detector defeat",
+        "generic proofreading-only"
+      ],
+      "trigger_examples": [
+        "Humanize this Polish LinkedIn draft",
+        "Remove AI tells from this README"
+      ],
+      "negative_trigger_examples": [
+        "Odśwież kontekst Insight",
+        "Zrób Evidence Pack"
+      ],
       "inputs": [
         "user goal"
       ],
@@ -86,11 +150,25 @@
       "execution_capabilities": [
         "standard"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "humanize|humanise|sound less like ai"
+        ],
+        [
+          9,
+          "remove ai tells|invisible unicode|deep rewrite"
+        ],
+        [
+          5,
+          "fix typos"
+        ]
+      ]
     },
     {
       "id": "cometweb-context",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "foundation",
@@ -139,7 +217,29 @@
         "read-only retrieval",
         "local scripts"
       ],
-      "eval_suite": "evals/behavior/cometweb-context"
+      "eval_suite": "evals/behavior/cometweb-context",
+      "routing_signals": [
+        [
+          12,
+          "od[sś]wie[zż].*kontekst|refresh context|context envelope|przygotuj kontekst"
+        ],
+        [
+          11,
+          "aktualny stan|potrzebuj[eę] kontekstu|contextenvelope|context-only"
+        ],
+        [
+          10,
+          "kontekst.*(spotkani|review|insight|boardroom|cometweb)|context snapshot|stan na "
+        ],
+        [
+          8,
+          "delta baseline|authority_gap|provenance-aware context"
+        ],
+        [
+          6,
+          "context gateway|minimal.?source"
+        ]
+      ]
     },
     {
       "id": "competitive-intelligence",
@@ -150,10 +250,22 @@
       "alias_of": null,
       "description": "Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior scan, track pricing/product/positioning/SEO/ads/reviews/company changes, maintain a competitor watchlist, produce recurring competitor digests, verify competitor claims, analyze cross-competitor trends, or turn observed deltas into product/GTM/sales implications. Prefer competitor-profiling for a one-time initial deep profile; use this skill when temporal state, snapshots, deltas, alerts, freshness, evidence provenance, or recurring intelligence operations matter.",
       "explicit_only": false,
-      "owns": [],
-      "does_not_own": [],
-      "trigger_examples": [],
-      "negative_trigger_examples": [],
+      "owns": [
+        "competitor watchlist",
+        "delta digest",
+        "normalized competitor state"
+      ],
+      "does_not_own": [
+        "strategic GO/NO_GO",
+        "pricing decision"
+      ],
+      "trigger_examples": [
+        "Competitor digest since last month snapshot",
+        "What changed on competitor pricing pages?"
+      ],
+      "negative_trigger_examples": [
+        "Przepuść przez Council cenę Growth"
+      ],
       "inputs": [
         "user goal"
       ],
@@ -170,7 +282,33 @@
       "execution_capabilities": [
         "standard"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "competitor watchlist|competitor digest|competitive intelligence"
+        ],
+        [
+          10,
+          "one-time deep profile of .* pricing"
+        ],
+        [
+          9,
+          "what changed on competitor|since last month.?s snapshot"
+        ],
+        [
+          9,
+          "competitor.*pricing page|summarize competitor pricing"
+        ],
+        [
+          8,
+          "competitor dropped|should we respond strategically"
+        ],
+        [
+          7,
+          "monitor competitors|competitor delta"
+        ]
+      ]
     },
     {
       "id": "customer-ops",
@@ -181,10 +319,22 @@
       "alias_of": null,
       "description": "Run the operational customer-to-resolution loop across support conversations, customer cases, incidents, account risk, commitments, internal handoffs, feedback clusters, and GitHub engineering work. Use when asked to triage an inbox or ticket queue, investigate a customer problem, detect or coordinate an incident, build an operational account 360, watch churn/non-renewal signals, find overdue promises or stalled escalations, dedupe customer-reported bugs into GitHub, produce customer-ops briefs, or verify that a fix actually resolved the customer-visible symptom. Composes with Gmail/support tools, HubSpot/CRM, billing, product analytics, GitHub, Notion/incident records, and connected files. Do not use for broad VOC/persona research, retention-program design, general CRM architecture, analytics implementation, product roadmap prioritization, or security exploitation; hand those workflows to the specialist skill.",
       "explicit_only": false,
-      "owns": [],
-      "does_not_own": [],
-      "trigger_examples": [],
-      "negative_trigger_examples": [],
+      "owns": [
+        "support triage",
+        "incident candidate",
+        "eng handoff"
+      ],
+      "does_not_own": [
+        "release gate",
+        "Council decision"
+      ],
+      "trigger_examples": [
+        "Triage support queue for churn signal",
+        "Account incident candidate"
+      ],
+      "negative_trigger_examples": [
+        "Is RC ready to ship?"
+      ],
       "inputs": [
         "user goal"
       ],
@@ -201,7 +351,29 @@
       "execution_capabilities": [
         "standard"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "support queue|customer case|account 360"
+        ],
+        [
+          9,
+          "incident candidate|churn signal|non-renewal"
+        ],
+        [
+          8,
+          "support.*engineering|dedupe github issues"
+        ],
+        [
+          8,
+          "resolved.*verified|stuck between resolved and verified"
+        ],
+        [
+          7,
+          "build a crm"
+        ]
+      ]
     },
     {
       "id": "design-partner-finder",
@@ -212,10 +384,22 @@
       "alias_of": null,
       "description": "Find, verify, qualify, compare, and manage companies as design partners, co-development partners, beta partners, paid pilots, lighthouse customers, or early adopters. Use for design-partner discovery, early-adopter shortlists, qualification of an existing candidate list, cohort selection, partner-readiness validation, active-partner review, or revalidation of prior candidates. Go deeper than generic prospecting by optimizing for learning value, urgency, representativeness, implementation feasibility, real user/champion access, mutual commitment, evidence quality, transferability, cohort coverage, and cost-to-learn. Separate desk-research fit from live readiness, preserve evidence lineage/freshness, and prevent prestige or contract size from replacing product-learning quality. Hand off broad lead generation to prospecting, research synthesis to customer-research, and outreach copy to cold-email.",
       "explicit_only": false,
-      "owns": [],
-      "does_not_own": [],
-      "trigger_examples": [],
-      "negative_trigger_examples": [],
+      "owns": [
+        "partner cohort",
+        "learning contract",
+        "partnerability score"
+      ],
+      "does_not_own": [
+        "cold outbound copy",
+        "Council pricing"
+      ],
+      "trigger_examples": [
+        "Score design partner candidates",
+        "Propose pilot cohort charter"
+      ],
+      "negative_trigger_examples": [
+        "Zrób cold email do prospektów"
+      ],
       "inputs": [
         "user goal"
       ],
@@ -232,7 +416,21 @@
       "execution_capabilities": [
         "standard"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "design partner|learning contract|partner charter"
+        ],
+        [
+          9,
+          "partner cohort|partnerability|live-ready vs desk"
+        ],
+        [
+          8,
+          "score design partner|pilot cohort"
+        ]
+      ]
     },
     {
       "id": "evidence-researcher",
@@ -282,7 +480,33 @@
         "web/docs research",
         "validators"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "evidence pack"
+        ],
+        [
+          9,
+          "fact-check|due diligence|falsifier"
+        ],
+        [
+          8,
+          "verify claims|source lineage|negative evidence"
+        ],
+        [
+          8,
+          "contradiction|derivative source"
+        ],
+        [
+          7,
+          "prepare evidence for council"
+        ],
+        [
+          6,
+          "pricing claims for .* vendors"
+        ]
+      ]
     },
     {
       "id": "product-operator",
@@ -293,10 +517,23 @@
       "alias_of": null,
       "description": "Evidence-governed product operating system that reconciles GitHub implementation and release state, Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what the team should do next on an existing roadmap or product state. Use for weekly control-loop questions such as what to build/fix/verify next, how to unstick work, what is actually done vs planned, whether roadmap and repo agree, what changed since the last review, or what should wait/stop. Produces bounded BLOCKER/VERIFY NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness, immutable snapshots/deltas, confidence, done conditions, and specialist handoffs. Do not use for first-time whole-repo baseline analysis or roadmap creation from scratch — use Repo to Roadmap. Do not use for release-candidate GO/NO_GO gates on a specific build/artifact — use Release Readiness. Read-only by default; delegate deep audits and consequential decisions instead of duplicating specialist skills.",
       "explicit_only": false,
-      "owns": [],
-      "does_not_own": [],
-      "trigger_examples": [],
-      "negative_trigger_examples": [],
+      "owns": [
+        "weekly control loop",
+        "now/next/later/stop",
+        "roadmap drift"
+      ],
+      "does_not_own": [
+        "from-scratch roadmap",
+        "RC GO/NO_GO"
+      ],
+      "trigger_examples": [
+        "What should we do this week given the roadmap?",
+        "Does roadmap match the repo?"
+      ],
+      "negative_trigger_examples": [
+        "Create a full roadmap from scratch",
+        "Is build v1.2-rc ready?"
+      ],
       "inputs": [
         "user goal"
       ],
@@ -313,7 +550,65 @@
       "execution_capabilities": [
         "standard"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "what (should we|to) (do|build|fix|verify) (next|this week)"
+        ],
+        [
+          10,
+          "what changed since (the )?last review"
+        ],
+        [
+          10,
+          "co robimy dalej"
+        ],
+        [
+          10,
+          "priorytetyzowa[cć].*sprint|w sprincie|ship .* this week"
+        ],
+        [
+          9,
+          "can we ship .* this week"
+        ],
+        [
+          9,
+          "roadmap.*repo agree|plan ahead of code|shipped without outcome"
+        ],
+        [
+          9,
+          "does our roadmap match|actually implemented in the repo"
+        ],
+        [
+          9,
+          "weekly (product|sprint)|control loop|existing roadmap"
+        ],
+        [
+          8,
+          "blocker|verify now|now/next/later/stop"
+        ],
+        [
+          8,
+          "stuck between planned and implemented|daily standup"
+        ],
+        [
+          8,
+          "github.*notion state"
+        ],
+        [
+          7,
+          "unstick|priority thrash|what should we stop"
+        ],
+        [
+          7,
+          "specialist audits should we run"
+        ],
+        [
+          6,
+          "mamy roadmap"
+        ]
+      ]
     },
     {
       "id": "product-teardown",
@@ -324,10 +619,20 @@
       "alias_of": null,
       "description": "Analyze external products, websites, apps, APIs, documentation, and source repositories to extract evidence-backed, transferable, implementable product and engineering patterns rather than generic competitor summaries. Use when the user asks to teardown, reverse-engineer at a product/architecture level, benchmark, study, or learn from another product/repo; asks what workflows, UX mechanics, architecture, onboarding, monetization, developer experience, operations, reliability, or implementation ideas are worth adapting; asks \"what can we borrow/learn/implement from X\" or Polish equivalents such as \"przeanalizuj produkt/repo\", \"wyciagnij wzorce\", or \"co warto wdrozyc\". Also use for multi-product pattern synthesis and source-to-target adaptation. Do not use as the primary skill for ongoing competitor monitoring/delta analysis, broad competitor dossiers, external-facing comparison pages, or a roadmap of the user's own repo with no external/reference target.",
       "explicit_only": false,
-      "owns": [],
-      "does_not_own": [],
-      "trigger_examples": [],
-      "negative_trigger_examples": [],
+      "owns": [
+        "external product patterns",
+        "ADOPT/ADAPT/AVOID"
+      ],
+      "does_not_own": [
+        "owned-repo roadmap",
+        "release gate"
+      ],
+      "trigger_examples": [
+        "Teardown Linear onboarding for transferable patterns"
+      ],
+      "negative_trigger_examples": [
+        "Analyze our whole repo roadmap"
+      ],
       "inputs": [
         "user goal"
       ],
@@ -344,7 +649,25 @@
       "execution_capabilities": [
         "standard"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "\\bteardown\\b|reverse-engineer"
+        ],
+        [
+          9,
+          "transferable pattern|what can we (borrow|learn) from"
+        ],
+        [
+          8,
+          "wyci[ąa]gnij wzorce|co warto wdro[żz]y"
+        ],
+        [
+          7,
+          "synthesize onboarding patterns|architecture patterns"
+        ]
+      ]
     },
     {
       "id": "release-readiness",
@@ -355,10 +678,22 @@
       "alias_of": null,
       "description": "Assess whether a specific release candidate, build, artifact, application, service, mobile/desktop build, or API is ready for production in a named environment and issue an evidence-backed GO / GO_WITH_CONTROLS / NO_GO / DEFER verdict across product acceptance, QA, security, operations/reliability, documentation, billing/entitlements, and support/incident readiness. Use when the user names or implies a concrete candidate (version, build ID, branch/tag, artifact digest, deploy target) for launch/release gates, pre-deploy audits, \"is this build ready to ship?\", hotfix readiness, post-incident releases, and repeated delta/revalidation reviews. Do not use for first-time whole-project roadmap baselines or \"analyze the entire repo\" — use Repo to Roadmap. Do not use for ongoing weekly prioritization on an existing roadmap — use Product Operator. Orchestrate specialist evidence without pretending to replace security scans, live-app QA, legal/privacy review, or deployment authorization.",
       "explicit_only": false,
-      "owns": [],
-      "does_not_own": [],
-      "trigger_examples": [],
-      "negative_trigger_examples": [],
+      "owns": [
+        "pinned RC gate",
+        "GO/NO_GO/DEFER",
+        "environment checks"
+      ],
+      "does_not_own": [
+        "weekly priorities",
+        "whole-project baseline"
+      ],
+      "trigger_examples": [
+        "Is build v2.14.0-rc3 ready for production?",
+        "Release gate for hotfix commit"
+      ],
+      "negative_trigger_examples": [
+        "What should we build this week?"
+      ],
       "inputs": [
         "user goal"
       ],
@@ -375,7 +710,37 @@
       "execution_capabilities": [
         "standard"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "release candidate|release gate|go_with_controls|\\bno_go\\b"
+        ],
+        [
+          10,
+          "\\brc[\\s.-]?\\d|build v?\\d+\\.\\d+|artifact digest"
+        ],
+        [
+          9,
+          "ready for production|ready to ship|wypu[śs]ci[ćc].*produkc"
+        ],
+        [
+          9,
+          "hotfix readiness|pre-deploy audit|launch gate|production gate"
+        ],
+        [
+          8,
+          "readiness manifest|release readiness"
+        ],
+        [
+          7,
+          "post-incident release|revalidat.*release"
+        ],
+        [
+          6,
+          "can we ship"
+        ]
+      ]
     },
     {
       "id": "repo-to-roadmap",
@@ -386,10 +751,21 @@
       "alias_of": null,
       "description": "Analyze an entire software/product project and turn verified project truth into an evidence-based, dependency-aware, reusable roadmap. Use for first-time or delta whole-project baselines such as \"analyze the whole repo/project\", \"what is left to build before target state\", \"create/update a roadmap from GitHub/Notion\", \"przeanalizuj całe repo\", or \"update the roadmap after recent changes\". Inventory topology before searching, separate intent/presence/behavior/release/outcome truth, prove material absence instead of inferring it from search misses, expose coverage and contradictions, model capabilities/critical journeys, prioritize target blockers and gates, validate hard dependencies, and create immutable baseline/delta roadmap snapshots. Do not use for weekly sprint control, release-candidate GO/NO_GO gates, or \"is build v1.2.3 ready to ship?\" — use Product Operator or Release Readiness instead. Do not use as an implementation agent, narrow code review, or specialist security/SEO/CRO audit.",
       "explicit_only": false,
-      "owns": [],
-      "does_not_own": [],
-      "trigger_examples": [],
-      "negative_trigger_examples": [],
+      "owns": [
+        "whole-project baseline",
+        "gap inventory",
+        "immutable roadmap snapshot"
+      ],
+      "does_not_own": [
+        "weekly sprint ops",
+        "RC ship gate"
+      ],
+      "trigger_examples": [
+        "Analyze the whole repo and create a roadmap to target state"
+      ],
+      "negative_trigger_examples": [
+        "What should we do this week?"
+      ],
       "inputs": [
         "user goal"
       ],
@@ -406,7 +782,53 @@
       "execution_capabilities": [
         "standard"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "analyze the (whole|entire) (repo|project|codebase)"
+        ],
+        [
+          10,
+          "przeanalizuj ca[łl][eąa] repo"
+        ],
+        [
+          9,
+          "whole-project baseline|roadmap from scratch|first-time.*roadmap"
+        ],
+        [
+          9,
+          "project topology|target state.*roadmap|paid_production"
+        ],
+        [
+          8,
+          "co zosta[łl]o do wdro[żz]enia|roadmap.*acceptance proof"
+        ],
+        [
+          8,
+          "update the roadmap after|delta roadmap|exhaustively.*roadmap"
+        ],
+        [
+          8,
+          "what gates are missing before any future production"
+        ],
+        [
+          8,
+          "what is left before production for the whole platform"
+        ],
+        [
+          7,
+          "what is left to build|what.?s left before production for the whole"
+        ],
+        [
+          7,
+          "client-ready.*roadmap|roadmap.*client-ready"
+        ],
+        [
+          6,
+          "create.*roadmap.*repo|gaps before any future production"
+        ]
+      ]
     },
     {
       "id": "seo-geo-aeo-maxxing",
@@ -417,10 +839,20 @@
       "alias_of": null,
       "description": "Run evidence-governed, multi-pillar website visibility audits across technical SEO, relevance, authority/trust, GEO/AI citation readiness, and AEO/answer extraction. Use when the user explicitly asks for SEO+GEO+AEO or \"maxxing\", a broad end-to-end search/AI visibility audit, cross-pillar diagnosis of ranking/AI-visibility problems, same-rubric competitor comparison, or a repeat/delta audit. Use PILLAR mode only when this skill is explicitly requested for one pillar. Do not trigger for isolated schema, one canonical/meta tag, keyword research, pure content writing, or a narrow implementation task better handled by a specialist skill. Diagnosis only; never mutate live sites.",
       "explicit_only": false,
-      "owns": [],
-      "does_not_own": [],
-      "trigger_examples": [],
-      "negative_trigger_examples": [],
+      "owns": [
+        "SEO/GEO/AEO visibility audit",
+        "live-verified scoring"
+      ],
+      "does_not_own": [
+        "Evidence Pack construction",
+        "click-through QA"
+      ],
+      "trigger_examples": [
+        "Run SEO/GEO/AEO visibility audit on cometweb.io"
+      ],
+      "negative_trigger_examples": [
+        "Click-through QA of /register"
+      ],
       "inputs": [
         "user goal"
       ],
@@ -437,7 +869,25 @@
       "execution_capabilities": [
         "standard"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          12,
+          "seo/geo/aeo|seo geo aeo|seo/ geo/ aeo"
+        ],
+        [
+          10,
+          "seo audit|visibility audit|aeo visibility"
+        ],
+        [
+          9,
+          "indexable|canonical|search visibility audit"
+        ],
+        [
+          8,
+          "geo audit registry fresh"
+        ]
+      ]
     },
     {
       "id": "skill-orchestrator",
@@ -489,7 +939,65 @@
         "isolated_subagents",
         "auto"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          16,
+          "zorkiestruj|zorkiestr"
+        ],
+        [
+          14,
+          "najpierw .* potem"
+        ],
+        [
+          12,
+          "orchestrate:|@skill-orchestrator|skill orchestrator"
+        ],
+        [
+          11,
+          "\\borchestrat(e|:|\\b)"
+        ],
+        [
+          10,
+          "orchestrat.*skill|sequence.*skill|multi.?step workflow"
+        ],
+        [
+          10,
+          "verify.*then run council|claims first.*then.*council"
+        ],
+        [
+          10,
+          "then run council|research.*then.*council"
+        ],
+        [
+          10,
+          "evidence.*(then|→|->|potem).*(council|rad[ęe])"
+        ],
+        [
+          10,
+          "which cometweb skill|which skill should I use"
+        ],
+        [
+          9,
+          "full workflow|end.to.end|ca[łl][yąa] workflow"
+        ],
+        [
+          9,
+          "zr[oó]b wszystko|od researchu do (decyzji|rady)"
+        ],
+        [
+          9,
+          "chain.*skill|run everything needed"
+        ],
+        [
+          8,
+          "audit.*(then|→|->|potem).*(release|ship|readiness)"
+        ],
+        [
+          7,
+          "help me pick.*skill"
+        ]
+      ]
     },
     {
       "id": "skill-orchestrator-multiagent",
@@ -530,7 +1038,33 @@
       "execution_capabilities": [
         "isolated_subagents"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          20,
+          "one subagent per skill|subagent per step"
+        ],
+        [
+          12,
+          "skill-orchestrator-multiagent|@skill-orchestrator-multiagent"
+        ],
+        [
+          12,
+          "\\bmultiagent\\b|\\bmulti-agent\\b|\\bmulti agent\\b"
+        ],
+        [
+          11,
+          "separate agent per skill|one agent per skill|osobn(y|e) agent"
+        ],
+        [
+          10,
+          "wymus.*subagent|wymus.*agent"
+        ],
+        [
+          9,
+          "multiagent.*orchestrat|orchestrat.*multiagent"
+        ]
+      ]
     },
     {
       "id": "web-app-auditor",
@@ -541,10 +1075,21 @@
       "alias_of": null,
       "description": "Evidence-driven QA and product audit for websites and web applications. Use when asked to audit, review, inspect, QA, verify, click through, test, or \"roast\" a user-facing site/app/page/dashboard/checkout/form, including Polish requests such as audyt, przeklikaj, sprawdz dane, zgodnosc liczb, poprawność, UI/UX, dostepnosc, regresja. Verifies interactions, data integrity, totals, counts, prices, dates, labels, cross-screen consistency, forms, states, accessibility, responsiveness, and critical flows. Supports browser, browser+source, screenshot-only, source-only, and fetch-only environments. Do not use for backend-only review, greenfield implementation, or penetration testing/exploitation with no product-audit goal.",
       "explicit_only": false,
-      "owns": [],
-      "does_not_own": [],
-      "trigger_examples": [],
-      "negative_trigger_examples": [],
+      "owns": [
+        "live click-through QA",
+        "findings with evidence",
+        "audit report"
+      ],
+      "does_not_own": [
+        "release verdict",
+        "SEO scoring"
+      ],
+      "trigger_examples": [
+        "Click-through QA audit of app.cometweb.io/register"
+      ],
+      "negative_trigger_examples": [
+        "Is RC ready to ship?"
+      ],
       "inputs": [
         "user goal"
       ],
@@ -561,7 +1106,25 @@
       "execution_capabilities": [
         "standard"
       ],
-      "eval_suite": null
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "click through|click-through|web app audit|live app audit"
+        ],
+        [
+          9,
+          "qa audit|forensic audit|accessibility of the registration"
+        ],
+        [
+          8,
+          "usability-risk|needs-repro|scope card"
+        ],
+        [
+          7,
+          "file defects with evidence"
+        ]
+      ]
     }
   ]
 }

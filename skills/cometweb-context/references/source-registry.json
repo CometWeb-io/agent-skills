@@ -84,8 +84,11 @@
       ]
     },
     "crm": {
-      "system_of_record": "twenty-or-hubspot-via-available-connector",
-      "on_unavailable": "authority_gap"
+      "binding": "external",
+      "resolver": "runtime",
+      "required_role": "system_of_record",
+      "fallback_policy": "authority_gap",
+      "note": "Concrete SoR (Twenty vs HubSpot) lives in private local bindings, not in this public-safe template"
     },
     "claims": {
       "evidence_register_template": "<COMETWEB_GTM_ROOT>/claims/evidence-register.json",

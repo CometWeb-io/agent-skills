@@ -1,5 +1,13 @@
 # Changelog — cometweb-context
 
+## [1.2.2] - 2026-09-08
+
+### Changed
+- Claim-verification preferred over brand when both match (e.g. LinkedIn + public claim).
+- `pick_profiles()` exposes ambiguous multi-profile candidates.
+- `repo_snapshot`: `requested_as_of` / `observed_at` / `snapshot_ref` (no fake historical checkout).
+- CRM SoR: external/runtime binding + `authority_gap` fallback (no twenty-or-hubspot mush).
+
 ## [1.2.1] - 2026-09-08
 
 ### Changed

@@ -1,6 +1,6 @@
 interface:
   display_name: Web App Auditor
-  short_description: Evidence-driven QA and product audit for websites and web applications. Use when asked to audit, review, inspect, QA, verify, click through,
+  short_description: live click-through QA; findings with evidence; audit report
   default_prompt: "Use the Web App Auditor skill for: Evidence-driven QA and product audit for websites and web applications. Use when asked to audit, review, inspect, QA, verify, click through, test, or "roast" a user-facing site/app/page/dashboard/chec"
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg

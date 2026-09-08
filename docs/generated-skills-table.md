@@ -4,9 +4,9 @@
 
 | id | version | tier | lifecycle | desc_len | explicit_only |
 | --- | ---: | --- | --- | ---: | --- |
-| `ai-council` | 5.1.0 | foundation | active | 893 | True |
+| `ai-council` | 5.1.1 | foundation | active | 893 | True |
 | `ai-humanize` | 2.4.0 | domain | active | 708 | False |
-| `cometweb-context` | 1.2.1 | foundation | active | 584 | False |
+| `cometweb-context` | 1.2.2 | foundation | active | 584 | False |
 | `competitive-intelligence` | 1.0.0 | domain | active | 666 | False |
 | `customer-ops` | 1.0.0 | domain | active | 924 | False |
 | `design-partner-finder` | 1.0.0 | domain | active | 907 | False |

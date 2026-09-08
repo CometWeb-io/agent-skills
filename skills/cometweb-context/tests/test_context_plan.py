@@ -35,3 +35,10 @@ def test_profiles_come_from_registry_file():
     profiles = module.load_profiles()
     assert "meeting" in profiles
     assert "calendar" in profiles["meeting"]
+
+
+def test_ambiguous_product_and_positioning():
+    result = module.pick_profiles("Odśwież kontekst product + positioning")
+    assert result["ambiguous"] is True
+    assert "product" in result["candidates"]
+    assert "gtm" in result["candidates"]

@@ -130,9 +130,15 @@ def main() -> None:
         help="Omit absolute local paths from output (default: true)",
     )
     parser.add_argument(
-        "--as-of",
+        "--requested-as-of",
         default=None,
-        help="Optional ISO timestamp label recorded on the snapshot (does not time-travel git)",
+        help="Optional ISO label for the request time (does NOT checkout historical git state)",
+    )
+    parser.add_argument(
+        "--as-of",
+        dest="requested_as_of",
+        default=None,
+        help=argparse.SUPPRESS,  # backward-compatible alias for --requested-as-of
     )
     args = parser.parse_args()
 
@@ -141,11 +147,13 @@ def main() -> None:
         pathlib.Path(__file__).resolve().parent.parent / "references" / "repos.txt"
     )
     repos = args.repo or load_registry(registry)
-    generated_at = dt.datetime.now(dt.timezone.utc).isoformat()
+    observed_at = dt.datetime.now(dt.timezone.utc).isoformat()
     payload = {
         "schema": "cometweb.repo-snapshot/v1",
-        "generated_at": generated_at,
-        "as_of": args.as_of or generated_at,
+        "generated_at": observed_at,
+        "observed_at": observed_at,
+        "requested_as_of": args.requested_as_of,
+        "snapshot_ref": "HEAD",
         "root": "<redacted>" if args.redact_paths else str(root),
         "repos": [snapshot(root, rel, redact_paths=args.redact_paths) for rel in repos],
     }

@@ -1,6 +1,6 @@
 {
-  "suite_version": "1.0.0",
-  "description": "Deterministic behavior fixtures for cometweb-context planning and envelope semantics. LLM-run assertions are operator-run; kernels are CI-gated.",
+  "suite_version": "1.1.0",
+  "description": "Executable deterministic behavior evals for cometweb-context. Each expect_* / assertion is enforced by tooling/run_behavior_evals.py.",
   "cases": [
     {
       "id": "delta-requires-baseline",
@@ -13,7 +13,7 @@
       "id": "no-baseline-no-fake-delta",
       "prompt": "Co się zmieniło od ostatniego review? (brak baseline)",
       "expect_mode": "delta",
-      "assertions": ["baseline.status unavailable", "deltas=[]"]
+      "assertions": ["deltas=[]", "baseline.status unavailable"]
     },
     {
       "id": "single-github-question-no-full-gateway",
@@ -23,7 +23,7 @@
     },
     {
       "id": "claim-truth-to-evidence",
-      "prompt": "Czy claim X jest prawdziwy?",
+      "prompt": "Czy claim X jest prawdziwy? Zrób Evidence Pack.",
       "expect_handoff": "evidence-researcher",
       "assertions": ["does not own research verdict"]
     },
@@ -44,7 +44,7 @@
     },
     {
       "id": "public-claim-gate",
-      "prompt": "Użyj liczby wzrostu w poście LinkedIn",
+      "prompt": "Użyj liczby wzrostu w poście LinkedIn — public claim",
       "expect_profile": "claim-verification",
       "assertions": ["blocked_public_claims when evidence missing"]
     },
@@ -61,6 +61,7 @@
     {
       "id": "product-positioning-ambiguity",
       "prompt": "Odśwież kontekst product + positioning",
+      "expect_ambiguous": true,
       "assertions": ["routing ambiguity noted or dual profile"]
     },
     {

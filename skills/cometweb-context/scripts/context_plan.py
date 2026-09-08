@@ -24,8 +24,9 @@ RULES = [
     (r"weekly|boardroom|tygodni|pełn.*refresh|pel[nł].*refresh", "weekly"),
     (r"meeting|spotkani|przygotuj mnie do|calendar|kalendar|przygotuj kontekst", "meeting"),
     (r"outreach|design partner|prospekt|cold email|follow.?up|sprzeda", "outreach"),
+    # Claim before brand: "LinkedIn post + public claim" must prefer claim-verification.
+    (r"public claim|claim|evidence register|case study|wynik.*public|liczb.*wzrost|wzrostu|growth (number|metric|claim)", "claim-verification"),
     (r"personal brand|marka osobista|linkedin|threads|social|content|post", "brand"),
-    (r"public claim|claim|evidence register|case study|wynik.*public", "claim-verification"),
     (r"pricing|gtm|positioning|pozycjon|strategi|go.to.market", "gtm"),
     (r"repo|roadmap|release|product|insight|cometpen|cometbase|extension|wdroż|wdroz|kontekst produktu", "product"),
 ]
@@ -56,11 +57,29 @@ def norm(text: str) -> str:
 
 
 def pick_profile(goal: str) -> str:
+    return pick_profiles(goal)["primary"]
+
+
+def pick_profiles(goal: str) -> dict:
     text = norm(goal)
+    matches: list[str] = []
     for pattern, profile in RULES:
         if re.search(pattern, text, re.IGNORECASE):
-            return profile
-    return "custom"
+            matches.append(profile)
+    # unique preserve order
+    seen: set[str] = set()
+    candidates: list[str] = []
+    for profile in matches:
+        if profile not in seen:
+            seen.add(profile)
+            candidates.append(profile)
+    if not candidates:
+        return {"primary": "custom", "candidates": ["custom"], "ambiguous": False}
+    return {
+        "primary": candidates[0],
+        "candidates": candidates,
+        "ambiguous": len(candidates) > 1,
+    }
 
 
 def pick_mode(goal: str, requested: str) -> str:
@@ -85,11 +104,14 @@ def main() -> None:
 
     profiles = load_profiles()
     profile = pick_profile(args.goal)
+    profiles_meta = pick_profiles(args.goal)
     mode = pick_mode(args.goal, args.mode)
     payload = {
         "profile": profile,
         "mode": mode,
         "source_groups": profiles.get(profile, []),
+        "candidates": profiles_meta["candidates"],
+        "ambiguous": profiles_meta["ambiguous"],
         "rule": "minimal-sources-first",
         "registry": "references/source-registry.json",
     }

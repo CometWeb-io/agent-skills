@@ -35,7 +35,7 @@ python3 scripts/context_plan.py "<cel>" --json
 ```
 
 Planer jest pomocniczy. Profile i `preferred_source_groups` bierz z
-`source-registry.json` → `domains.*.preferred_source_groups` (oraz tabeli w
+`source-registry.json` → `profiles.*.preferred_source_groups` (oraz tabeli w
 `source-registry.md`). Nie duplikuj ścieżek vaulta / CRM / decision IDs w tym pliku.
 
 Nie over-fetchuj: social ≠ roadmap produktu; jedno pytanie GitHub ≠ full gateway.

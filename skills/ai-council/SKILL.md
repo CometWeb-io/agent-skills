@@ -19,51 +19,22 @@ Prowadź Radę jako **temporal decision intelligence system**, nie panel person.
 
 ## Profile kosztu poznawczego
 
-Wybierz najmniejszy profil, który chroni decyzję. Szczegóły budżetów: `references/modes.md`.
+Wybierz najmniejszy profil, który chroni decyzję. Budżety: `references/modes.md`.
 
-| Profile | Kiedy | Ścieżka |
+| Profile | Kiedy | Load |
 | --- | --- | --- |
-| `LIGHT` | mała, odwracalna decyzja; użytkownik chce szybki sanity check | Decision Contract → 2–3 perspektywy → evidence sanity → key risks → `GO` / `TEST` / `DEFER` (bez forecasting/portfolio/living-decision machinery) |
-| `STANDARD` | domyślny dla materialnych decyzji | blind round → evidence/falsifier → gates → minority → Decision Snapshot |
-| `DEEP` | wysoki lock-in, regulacja, multi-system | pełny workflow poniżej (forecasting, portfolio, living decision, champion/challenger) |
+| `LIGHT` | mała, odwracalna decyzja | `references/workflow-light.md` |
+| `STANDARD` | domyślny materialny | `references/workflow-standard.md` |
+| `DEEP` | wysoki lock-in / regulacja / multi-system | `references/workflow-deep.md` |
 
-Nie ładuj DEEP cognitive path dla LIGHT. Kernel `plan` nadal wybiera tryb, jeśli użytkownik go nie wymusi.
+Nie ładuj DEEP cognitive path dla LIGHT. Kernel `plan` wybiera tryb, jeśli użytkownik go nie wymusi (`LIGHT`≈FAST).
 
-## Workflow decyzji
+## Workflow
 
-1. Ustal dokładne `as_of` w lokalnej strefie użytkownika i zbuduj canonical Decision Contract przez `contract`. Uzupełnij tylko znane dane. Przeczytaj `references/decision-contract.md`.
-2. Dla materialnych internal claims uruchom `context-route`; wybierz system-of-record według `references/internal-context.md`.
-3. Uruchom `plan`. Kernel wybiera `Council Mode` (`LIGHT`≈FAST, `STANDARD`, `DEEP`), budżet, role, frameworki, critical evidence areas i wymagane temporal stages, chyba że użytkownik wymusi tryb. Dla `LIGHT` przejdź skróconą ścieżkę z tabeli powyżej i pomiń kroki forecasting/portfolio/living-decision chyba że risk surface wymusi gate.
-4. Jeśli archetyp ma sensowne historyczne analogie, zbuduj outside view przez `base-rate` **bez czytania historycznych verdictów blind ekspertom**. Base rate jest priorem dla późniejszej syntezy, nie informacją dla blind round.
-5. Pobierz prywatną wiedzę per role/capability pack. Użyj `references/knowledge-routing.md` i `references/capability-packs.md`.
-6. Wykonaj blind round adviserów i relewantnych specialistów. Nie odczytuj Decision Memory przed zakończeniem wszystkich blind memos.
-7. Wymagaj w memo: vote, confidence, thesis, claims, assumptions, risks, strongest falsifier, what changes my mind, evidence needed oraz provenance lane.
-8. Zbuduj Assumption Ledger (`importance × uncertainty`). Przeczytaj `references/assumptions.md`.
-9. Dopiero teraz odczytaj Decision Memory. Rankuj tylko ograniczoną liczbę analogii i kalibruj na rozliczonych decyzjach z odpowiednią sample strength.
-10. Wykonaj rebuttals i `crux`. Double-crux ma być falsyfikowalnym założeniem.
-11. Dla każdego materialnego claimu określ typ i authority przez `source-authority`. Przeczytaj `references/source-authority.md`.
-12. Zbierz Live Evidence zgodnie z budżetem. Dla prawa/regulacji/security/vendor policy/aktualnych cen używaj bieżących primary/official sources.
-13. Uruchom `temporal` dla materialnych current claims, a następnie `freshness` dla całego materialnego evidence set. Przeczytaj `references/freshness.md`.
-14. Uruchom `coverage` oraz `contradiction`. Dla top claims wykonaj osobny support search i contradiction search. Critical unresolved contradiction blokuje decision readiness.
-15. Jeśli wymagany, wykonaj premortem z ownerem, leading indicator, mitigation i contingency.
-16. Uruchom gatekeeperów z planera. Legal kieruj przez `legal` i `references/legal-risk.md`; Security/Privacy/Financial Risk/Responsible AI/Reputation uruchamiaj wg risk surface.
-17. Uruchom `consensus` i `independence-grade`. Raportuj Raw Consensus, Adjusted Consensus i realną klasę niezależności `I0–I4`; liczba agentów nie jest liczbą niezależnych ekspertów.
-18. W STANDARD/DEEP uruchom `minority`; zachowaj materialny independent dissent.
-19. Uruchom Red Team i Evidence Judge. Chairman może zobaczyć tylko accepted **i temporally admissible** material evidence.
-20. Wykonaj counterfactual/best-alternative/no-action/timing zgodnie z trybem i ryzykiem.
-21. Policz `voi`, gdy dodatkowy research/test ma koszt. Po każdej dodatkowej rundzie uruchom `stop`; unresolved mandatory gate/freshness blocker nie pozwala zakończyć procesu.
-22. Dla DEEP/high-stakes utwórz 1–5 rozstrzygalnych forecasts, jeśli mają wartość. Użyj `references/forecasting.md`.
-23. Jeśli decyzja konkuruje o zasoby z innymi decyzjami/projektami, uruchom `portfolio`. Przeczytaj `references/portfolio.md`.
-24. Zbuduj confidence decomposition: thesis, evidence, execution oraz relewantne finance/legal/security/privacy/timing.
-25. Chairman proponuje `GO | NO-GO | TEST | DEFER`, recommended option/allocation/sequence i reasoning map.
-26. Policz Required Confidence i uruchom `gate` z gate statuses, freshness status i human approval state. `BLOCK` nie jest przegłosowywany; `COUNSEL_REQUIRED` → DEFER.
-27. Jeśli potrzebna jest kwalifikowana opinia, wygeneruj `handoff` packet według `references/human-escalation.md`.
-28. Dla `TEST` zbuduj pełny Experiment Spec według `references/experiments.md`.
-29. Przed zewnętrznym write/send/destructive/financial action uruchom `tool-authority`; T3/T4 wymagają explicit human approval. Przeczytaj `references/tool-authority.md`.
-30. Utwórz immutable Decision Snapshot z wersjami Council/Kernel i temporal metadata; policz Snapshot Hash.
-31. Zbuduj/odśwież Decision Validity Overlay przez `validity`. Dla materialnych zależności utwórz Watch Dependencies zgodnie z `references/living-decisions.md`.
-32. Sformatuj wynik według `references/output-contract.md`.
-33. Zapisz Decision Memory lifecycle `Writing → Complete`; Decision oznacz `Complete` jako ostatni rekord.
+1. Wybierz profil (tabela powyżej).
+2. Załaduj **tylko** odpowiadający `workflow-*.md`.
+3. Stosuj zasady nadrzędne i twarde granice z tego pliku.
+4. Emituj Decision Snapshot / output według `references/output-contract.md`.
 
 ## Freshness gate
 

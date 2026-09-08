@@ -101,8 +101,18 @@ def main() -> None:
             fail(f"{sid}: description exceeds common max ({len(desc)})")
         if len(desc) > codex["description_max"]:
             fail(f"{sid}: description exceeds openai-codex max {codex['description_max']} ({len(desc)})")
+        reg_desc = (entry.get("description") or "").strip()
+        if " ".join(desc.split()) != " ".join(reg_desc.split()):
+            fail(f"{sid}: SKILL.md description != registry.description")
         if not name_re.match(sid):
             fail(f"{sid}: id fails name_pattern")
+        if not entry.get("alias_of"):
+            if not entry.get("owns"):
+                fail(f"{sid}: registry.owns must be non-empty")
+            if not entry.get("trigger_examples"):
+                fail(f"{sid}: registry.trigger_examples must be non-empty")
+            if not entry.get("routing_signals"):
+                fail(f"{sid}: registry.routing_signals must be non-empty")
 
         version_file = (skill_dir / "VERSION").read_text(encoding="utf-8").strip()
         if entry.get("version") != version_file:

@@ -1,6 +1,6 @@
 interface:
   display_name: Product Teardown
-  short_description: Analyze external products, websites, apps, APIs, documentation, and source repositories to extract evidence-backed, transferable, implementa
+  short_description: external product patterns; ADOPT/ADAPT/AVOID
   default_prompt: "Use the Product Teardown skill for: Analyze external products, websites, apps, APIs, documentation, and source repositories to extract evidence-backed, transferable, implementable product and engineering patterns rather than generic com"
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg

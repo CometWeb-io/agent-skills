@@ -17,28 +17,38 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 | Intent | Skill |
 | --- | --- |
 | decision contract, deliberation, verdict GO/TEST/DEFER, living decisions | `ai-council` |
-| ai-humanize | `ai-humanize` |
+| EN/PL humanize, AI-tell removal, semantic-fidelity guards | `ai-humanize` |
 | context snapshot, provenance, conflicts/gaps, ContextEnvelope, public claim gate | `cometweb-context` |
-| competitive-intelligence | `competitive-intelligence` |
-| customer-ops | `customer-ops` |
-| design-partner-finder | `design-partner-finder` |
+| competitor watchlist, delta digest, normalized competitor state | `competitive-intelligence` |
+| support triage, incident candidate, eng handoff | `customer-ops` |
+| partner cohort, learning contract, partnerability score | `design-partner-finder` |
 | claim decomposition, evidence edges, falsifiers, Evidence Pack | `evidence-researcher` |
-| product-operator | `product-operator` |
-| product-teardown | `product-teardown` |
-| release-readiness | `release-readiness` |
-| repo-to-roadmap | `repo-to-roadmap` |
-| seo-geo-aeo-maxxing | `seo-geo-aeo-maxxing` |
+| weekly control loop, now/next/later/stop, roadmap drift | `product-operator` |
+| external product patterns, ADOPT/ADAPT/AVOID | `product-teardown` |
+| pinned RC gate, GO/NO_GO/DEFER, environment checks | `release-readiness` |
+| whole-project baseline, gap inventory, immutable roadmap snapshot | `repo-to-roadmap` |
+| SEO/GEO/AEO visibility audit, live-verified scoring | `seo-geo-aeo-maxxing` |
 | multi-skill plan, execution_mode, CW-AIP handoffs, workflow result | `skill-orchestrator` |
 | Alias for `skill-orchestrator` with isolated_subagents | `skill-orchestrator-multiagent` |
-| web-app-auditor | `web-app-auditor` |
+| live click-through QA, findings with evidence, audit report | `web-app-auditor` |
 
 ## Collision guardrails
 
 - **ai-council** — does not own: Evidence Pack construction; context gateway; implementation. Explicit invocation only.
+- **ai-humanize** — does not own: authorship claims; detector defeat; generic proofreading-only.
 - **cometweb-context** — does not own: evidence packs; domain decisions; release gates; outbound copy.
+- **competitive-intelligence** — does not own: strategic GO/NO_GO; pricing decision.
+- **customer-ops** — does not own: release gate; Council decision.
+- **design-partner-finder** — does not own: cold outbound copy; Council pricing.
 - **evidence-researcher** — does not own: final GO/NO_GO; release verdict; context-only refresh.
+- **product-operator** — does not own: from-scratch roadmap; RC GO/NO_GO.
+- **product-teardown** — does not own: owned-repo roadmap; release gate.
+- **release-readiness** — does not own: weekly priorities; whole-project baseline.
+- **repo-to-roadmap** — does not own: weekly sprint ops; RC ship gate.
+- **seo-geo-aeo-maxxing** — does not own: Evidence Pack construction; click-through QA.
 - **skill-orchestrator** — does not own: domain skill contracts; Council policy; release gates.
 - **skill-orchestrator-multiagent** — does not own: separate planning model.
+- **web-app-auditor** — does not own: release verdict; SEO scoring.
 
 ## Trigger examples (from registry)
 
@@ -46,6 +56,12 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - trigger: Przepuść przez AI Council
 - trigger: Council: jaka cena Growth?
 - do not trigger: Zrób research claimów bez decyzji
+
+### `ai-humanize`
+- trigger: Humanize this Polish LinkedIn draft
+- trigger: Remove AI tells from this README
+- do not trigger: Odśwież kontekst Insight
+- do not trigger: Zrób Evidence Pack
 
 ### `cometweb-context`
 - trigger: Co zmieniło się w Insight od ostatniego review?
@@ -55,11 +71,49 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - do not trigger: Czy claim X jest prawdziwy? Zrób Evidence Pack
 - do not trigger: Przepuść decyzję o cenie przez Council
 
+### `competitive-intelligence`
+- trigger: Competitor digest since last month snapshot
+- trigger: What changed on competitor pricing pages?
+- do not trigger: Przepuść przez Council cenę Growth
+
+### `customer-ops`
+- trigger: Triage support queue for churn signal
+- trigger: Account incident candidate
+- do not trigger: Is RC ready to ship?
+
+### `design-partner-finder`
+- trigger: Score design partner candidates
+- trigger: Propose pilot cohort charter
+- do not trigger: Zrób cold email do prospektów
+
 ### `evidence-researcher`
 - trigger: Zrób Evidence Pack dla claimów pricing
 - trigger: Fact-check EU AI Act marketing claims
 - do not trigger: Odśwież kontekst CometWeb
 - do not trigger: Czy RC 1.2 gotowy do produkcji?
+
+### `product-operator`
+- trigger: What should we do this week given the roadmap?
+- trigger: Does roadmap match the repo?
+- do not trigger: Create a full roadmap from scratch
+- do not trigger: Is build v1.2-rc ready?
+
+### `product-teardown`
+- trigger: Teardown Linear onboarding for transferable patterns
+- do not trigger: Analyze our whole repo roadmap
+
+### `release-readiness`
+- trigger: Is build v2.14.0-rc3 ready for production?
+- trigger: Release gate for hotfix commit
+- do not trigger: What should we build this week?
+
+### `repo-to-roadmap`
+- trigger: Analyze the whole repo and create a roadmap to target state
+- do not trigger: What should we do this week?
+
+### `seo-geo-aeo-maxxing`
+- trigger: Run SEO/GEO/AEO visibility audit on cometweb.io
+- do not trigger: Click-through QA of /register
 
 ### `skill-orchestrator`
 - trigger: Zorkiestruj evidence potem Council
@@ -69,4 +123,8 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 ### `skill-orchestrator-multiagent`
 - trigger: Multiagent: evidence potem Council
 - do not trigger: Jeden skill wystarczy
+
+### `web-app-auditor`
+- trigger: Click-through QA audit of app.cometweb.io/register
+- do not trigger: Is RC ready to ship?
 
