@@ -11,6 +11,23 @@ Spis: 1. Reguły ogólne · 2. Product/repo · 3. CometWeb Insight · 4. Vault G
 
 Sugerowane poziomy `authority`: `system_of_record`, `canonical`, `primary`, `secondary`, `fallback`.
 
+### Profile kontekstowe (`profiles.*`)
+
+Kanoniczna definicja: `source-registry.json` → `profiles.*.preferred_source_groups`.
+
+| Profile | Preferred source groups |
+| --- | --- |
+| `product` | repo, insight, vault-status, vault-first-principles |
+| `gtm` | vault-decisions, vault-first-principles, vault-topic, website |
+| `outreach` | crm, communications, vault-icp-sop, prospect-web |
+| `brand` | vault-brand, evidence-register, public-profiles, website |
+| `meeting` | calendar, contacts, crm-or-communications, relevant-docs |
+| `weekly` | repo, insight, vault, crm, notion, communications, website, public-profiles |
+| `claim-verification` | evidence-register, primary-claim-source, publication-surface |
+| `custom` | _(empty — explicit source list only)_ |
+
+Ambiguity: gdy goal matchuje więcej niż jeden profil, `context_plan.py` ustawia `ambiguous=true` i zwraca `candidates`. `primary` to pierwszy match w kolejności reguł (nie ranking wagowy).
+
 ## 2. Product / repo
 
 Źródła:
@@ -77,15 +94,23 @@ Nie zapisuj w skillu listy "znanych luk na dziś". Takie luki mają być pobiera
 
 ## 5. CRM / pipeline
 
-Dla stanu sprzedaży użyj rzeczywistego CRM będącego systemem rekordowym. Jeżeli aktualnie jest nim Twenty CRM, traktuj Twenty jako `system_of_record`.
+CRM SoR jest **runtime binding**, nie hard-code w publicznym registry.
+
+Z `source-registry.json` → `domains.crm`:
+
+- `binding: external`
+- `resolver: runtime`
+- `required_role: system_of_record`
+- `fallback_policy: authority_gap`
+
+Konkretny SoR (Twenty vs HubSpot vs inny) żyje w prywatnych local bindings poza tym szablonem. Dopiero po resolve traktuj wskazany system jako `system_of_record`.
 
 Jeśli connector do właściwego CRM jest niedostępny:
 
 - ustaw źródło CRM jako `unavailable`,
-- roboczy plik `CRM_Agencje.md` może być `secondary` lub `fallback`,
+- dodaj `gaps[]` z `kind=authority_gap` i `missing_authority`,
+- roboczy plik eksportu może być najwyżej `secondary` / `fallback` — **nigdy** ciche awansowanie na SoR,
 - Notion nie staje się automatycznie źródłem pipeline'u.
-
-Nie zastępuj Twenty przez HubSpot ani inny CRM bez jawnego potwierdzenia, że migracja/system of record się zmienił.
 
 ## 6. Notion
 
