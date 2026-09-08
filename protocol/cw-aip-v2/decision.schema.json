@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/v2/decision.schema.json",
+  "title": "CW-AIP v2 DecisionEnvelope payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "decision_question",
+    "profile",
+    "as_of",
+    "verdict",
+    "option",
+    "gates",
+    "blockers",
+    "controls",
+    "evidence_deps",
+    "snapshot_hash"
+  ],
+  "properties": {
+    "schema": { "const": "cometweb.decision/v2" },
+    "decision_question": { "type": "string", "minLength": 1 },
+    "profile": {
+      "type": "string",
+      "enum": ["LIGHT", "STANDARD", "DEEP", "FAST"]
+    },
+    "as_of": { "type": "string", "minLength": 1 },
+    "verdict": {
+      "type": "string",
+      "enum": ["GO", "NO_GO", "TEST", "DEFER"]
+    },
+    "option": { "type": "string" },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["gate_id", "status"],
+        "properties": {
+          "gate_id": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NOT_REQUIRED",
+              "CLEAR",
+              "CLEAR_WITH_CONTROLS",
+              "COUNSEL_REQUIRED",
+              "BLOCK"
+            ]
+          }
+        }
+      }
+    },
+    "blockers": { "type": "array", "items": { "type": "string" } },
+    "controls": { "type": "array", "items": { "type": "string" } },
+    "evidence_deps": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Upstream EvidenceEnvelope / pack IDs"
+    },
+    "snapshot_hash": { "type": "string", "minLength": 1 },
+    "validity": {
+      "type": "string",
+      "enum": ["VALID", "WATCH", "STALE", "REOPEN", "SUPERSEDED"]
+    },
+    "human_approval": {
+      "type": "string",
+      "enum": ["not_required", "required", "granted", "denied", "pending"]
+    }
+  }
+}

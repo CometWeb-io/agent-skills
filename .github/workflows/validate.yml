@@ -36,7 +36,9 @@ jobs:
         run: python3 tooling/run_routing_evals.py
 
       - name: Behavior fixtures
-        run: python3 tooling/run_behavior_evals.py
+        run: |
+          python3 tooling/run_behavior_evals.py
+          python3 tooling/run_blind_eval_harness.py --write-report
 
       - name: Public mirror dry-run
         run: python3 tooling/publish_public_dry_run.py

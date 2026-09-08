@@ -123,6 +123,8 @@ def main() -> None:
     for rel in (
         "protocol/cw-aip-v2/core.schema.json",
         "protocol/cw-aip-v2/context.schema.json",
+        "protocol/cw-aip-v2/evidence.schema.json",
+        "protocol/cw-aip-v2/decision.schema.json",
         "protocol/cw-interchange-v1.md",
     ):
         if not (ROOT / rel).is_file():

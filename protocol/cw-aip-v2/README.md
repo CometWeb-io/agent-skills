@@ -21,9 +21,15 @@ See `core.schema.json`:
 | Type | Schema |
 | --- | --- |
 | ContextEnvelope | `context.schema.json` (`cometweb.context/v2`) |
-| EvidenceEnvelope | migrate from v1 `evidence-envelope.schema.json` (compat path) |
-| DecisionEnvelope | TBD — wrap Council DecisionHandoff |
+| EvidenceEnvelope | `evidence.schema.json` (`cometweb.evidence/v2`) |
+| DecisionEnvelope | `decision.schema.json` (`cometweb.decision/v2`) |
 | FindingEnvelope / RoadmapEnvelope / ReleaseEnvelope | incremental migration |
+
+Validators:
+
+- `skills/cometweb-context/scripts/validate_context_envelope.py`
+- `tooling/validate_evidence_envelope.py`
+- `tooling/validate_decision_envelope.py`
 
 ## Enum conventions
 

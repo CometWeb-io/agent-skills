@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/v2/evidence.schema.json",
+  "title": "CW-AIP v2 EvidenceEnvelope payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "research_contract",
+    "mode",
+    "as_of",
+    "material_claims",
+    "sources",
+    "evidence_edges",
+    "gaps",
+    "contradictions",
+    "readiness",
+    "evidence_pack_hash"
+  ],
+  "properties": {
+    "schema": { "const": "cometweb.evidence/v2" },
+    "research_contract": { "type": "string", "minLength": 1 },
+    "mode": { "type": "string", "enum": ["QUICK", "STANDARD", "DEEP"] },
+    "as_of": { "type": "string", "minLength": 1 },
+    "material_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["claim_id", "text", "epistemic_kind", "status", "materiality"],
+        "properties": {
+          "claim_id": { "type": "string", "minLength": 1 },
+          "text": { "type": "string", "minLength": 1 },
+          "epistemic_kind": { "type": "string", "enum": ["FACT", "INFERENCE"] },
+          "status": { "type": "string", "minLength": 1 },
+          "materiality": {
+            "type": "string",
+            "enum": ["critical", "material", "supporting"]
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["source_id"],
+        "properties": {
+          "source_id": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "evidence_edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["edge_id", "claim_id", "source_id", "direction", "admission"],
+        "properties": {
+          "edge_id": { "type": "string" },
+          "claim_id": { "type": "string" },
+          "source_id": { "type": "string" },
+          "direction": {
+            "type": "string",
+            "enum": ["SUPPORT", "CONTRADICT", "CONTEXT"]
+          },
+          "admission": {
+            "type": "string",
+            "enum": ["ACCEPTED", "CONTEXT_ONLY", "REJECTED"]
+          }
+        }
+      }
+    },
+    "gaps": { "type": "array", "items": { "type": "object" } },
+    "contradictions": { "type": "array", "items": { "type": "object" } },
+    "readiness": {
+      "type": "string",
+      "enum": ["READY", "NOT_READY", "DEFER"]
+    },
+    "evidence_pack_hash": { "type": "string", "minLength": 1 },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "recommended_next_skill": { "type": ["string", "null"] },
+        "constraints": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}
