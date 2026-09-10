@@ -1,11 +1,11 @@
-name: TDD Host v2
+name: TDD Cross Runtime
 
 on:
   pull_request:
     branches: [main]
 
 jobs:
-  host-v2-contract:
+  cross-runtime-contract:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -14,5 +14,8 @@ jobs:
           python-version: "3.12"
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
-      - name: Host v2 contract
-        run: python3 -m pytest -q tooling/tests/test_host_compatibility_v2.py
+      - name: Cross-runtime contracts
+        run: |
+          python3 -m pytest -q \
+            tooling/tests/test_host_compatibility_v2.py \
+            tooling/tests/test_generate_adapters_v2.py
