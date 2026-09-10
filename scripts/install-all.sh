@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
-# Install into Cursor + Claude Code + Codex from this canonical private repo.
+# Install canonical skills into supported local Agent Skills hosts.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 "$ROOT/scripts/install-cursor.sh"
 "$ROOT/scripts/install-claude.sh"
 "$ROOT/scripts/install-codex.sh"
-echo "OK: all hosts installed from $ROOT"
+"$ROOT/scripts/install-qwen.sh"
+"$ROOT/scripts/install-qoder.sh"
+"$ROOT/scripts/install-lingma.sh"
+echo "OK: all local hosts installed from $ROOT"
