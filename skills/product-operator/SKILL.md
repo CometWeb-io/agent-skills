@@ -3,20 +3,17 @@ name: product-operator
 description: >
   Evidence-governed product operating system that reconciles GitHub implementation and release state,
   Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what the
-  team should do next on an existing roadmap or product state. Use for weekly control-loop questions such
-  as what to build/fix/verify next, how to unstick work, what is actually done vs planned, whether
-  roadmap and repo agree, what changed since the last review, or what should wait/stop. Produces
-  bounded BLOCKER/VERIFY NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift,
-  readiness, immutable snapshots/deltas, confidence, done conditions, and specialist handoffs. Do not use
-  for first-time whole-repo baseline analysis or roadmap creation from scratch — use Repo to Roadmap.
-  Do not use for release-candidate GO/NO_GO gates on a specific build/artifact — use Release Readiness.
-  Read-only by default; delegate deep audits and consequential decisions instead of duplicating
-  specialist skills.
+  team should do next. Use for questions such as what remains, what to build/fix/verify next, how to
+  finish or unstick a product, what is actually done, whether roadmap and repo agree, how to plan the
+  next product cycle, what changed since the last review, or what should wait/stop. Produces bounded
+  BLOCKER/VERIFY NOW/DECISION NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness,
+  immutable snapshots/deltas, confidence, done conditions, and specialist handoffs. Read-only by
+  default; delegate deep audits and consequential decisions instead of duplicating specialist skills.
 ---
 
 # Product Operator
 
-Protocol version: **2.0**.
+Protocol version: **2.2**.
 
 Operate as the product control plane, not a generic PM adviser and not a shadow project-management system.
 Reconstruct product reality from authoritative sources, identify the critical path, preserve uncertainty, and
@@ -37,6 +34,7 @@ Always read:
 - [references/source-routing.md](references/source-routing.md)
 - [references/state-model.md](references/state-model.md)
 - [references/prioritization.md](references/prioritization.md)
+- [references/decision-boundaries.md](references/decision-boundaries.md)
 - [references/control-loop.md](references/control-loop.md)
 - [references/output-contract.md](references/output-contract.md)
 - [references/safety.md](references/safety.md)
@@ -216,12 +214,17 @@ id, action, rationale, done_when,
 impact 0-5, goal_alignment 0-5, urgency 0-5,
 dependency_leverage 0-5, risk_reduction 0-5, learning_value 0-5,
 effort 0.5-5, confidence 0-1, evidence_strength 0-1,
-blocker, trust_critical, verify_first, stop,
+blocker, blocks_current_goal, blocked_item, future_gate, trust_critical, verify_first, stop,
+decision_required, decision_domain,
 depends_on[], evidence[]
 ```
 
 Use `learning_value` only for information that can change a material decision or reduce important uncertainty.
 Do not reward telemetry or research merely because it exists.
+
+Before ranking, classify blocker scope and unresolved consequential choices. A `BLOCKER` is **goal-relative**: set `blocks_current_goal=true` only when current evidence shows the condition prevents the stated goal or a current critical-path action, and name that action in `blocked_item`. If a condition blocks only a later motion, mark it `future_gate=true` and keep it in `LATER/WATCH`; it does not block the current goal. If a suspected blocker is not yet proven, use `VERIFY NOW`.
+
+Then classify unresolved consequential choices using `references/decision-boundaries.md`. If the choice still needs an authoritative fact, mark `verify_first=true`. If the facts are adequate but the choice remains material, mark `decision_required=true` and set `decision_domain`; it belongs in `DECISION NOW`. **Do not select the option** inside Product Operator.
 
 ## 8. Delegate specialist depth; keep Product Operator as orchestrator
 
@@ -239,19 +242,19 @@ Product Operator owns:
 Specialists own their deep domains. Never copy their complete audit frameworks into this skill. After a
 specialist returns, consume only accepted findings/evidence and re-enter the Product Operator loop to re-rank.
 
-Escalate consequential strategic/legal/security/privacy/financial/reputation tradeoffs to AI Council or the
-appropriate gatekeeper. Priority arithmetic cannot override a binding gate.
+Escalate consequential strategic/legal/security/privacy/financial/reputation tradeoffs to AI Council, Pricing, Offers, or the appropriate gatekeeper. Product Operator may frame options and sequence consequences, but it must not choose an unresolved material option. Priority arithmetic cannot override a binding gate.
 
 ## 9. Rank, then sequence dependencies
 
-Use gates before arithmetic:
+Use gates and decisions before arithmetic:
 
-1. confirmed blockers;
+1. confirmed blockers that actually block the current goal/critical path;
 2. high-impact uncertainty -> `VERIFY NOW`;
-3. critical-path prerequisites;
-4. value delivery / verification / learning required by the goal;
-5. optimization;
-6. evidence-backed `STOP`.
+3. unresolved consequential choice with adequate facts -> `DECISION NOW`;
+4. critical-path prerequisites;
+5. value delivery / verification / learning required by the goal;
+6. optimization;
+7. evidence-backed `STOP`.
 
 When code execution exists:
 
@@ -288,24 +291,20 @@ Never write snapshot state back into GitHub/Notion as if it were authoritative p
 
 ## 11. Deliver a bounded operator brief
 
-Use `references/output-contract.md`.
+Use `references/output-contract.md`. Separate the Human brief from the Machine sidecar. Evidence depth must not become user-facing verbosity.
 
-The user should understand within seconds:
+The user should understand within seconds: current state/readiness, what blocks the path, what must be verified, which material choices require a decision, the top 1-3 executable actions, and what to stop.
 
-1. where the product actually is;
-2. whether the brief is READY / PROVISIONAL / BLOCKED;
-3. what is blocking or must be verified;
-4. the top 1-3 things to do now;
-5. what follows in dependency order;
-6. what should wait/watch/stop;
-7. what changed since the previous run when a baseline exists.
+Default Human brief budgets: PULSE <=180 words, STANDARD/DELTA <=350, DEEP/RELEASE <=500 unless the user explicitly requests detail. Do not print the full operating contract, coverage matrix, evidence ledger, confidence fields, or tool-limit noise by default.
 
-Do not dump the backlog. Normally:
-
+Normally:
+- `BLOCKER`: top 3 confirmed conditions that actually block the current goal/critical path; omit the section when there are none;
 - `VERIFY NOW`: max 3;
+- `DECISION NOW`: max 3;
 - `NOW`: max 3;
-- `NEXT`: max 5;
-- `Unknowns`: max 3 material gaps.
+- `NEXT`: show max 3 to the user (sidecar may keep 5);
+- `STOP`: top 3 when material;
+- `Unknowns`: max 3, and only when they could change the path.
 
 ## 12. Produce and validate the sidecar when possible
 
@@ -326,7 +325,7 @@ Stop retrieval when all are true:
 - the material state ledger covers the critical path;
 - current required evidence is admissible or the gap is explicitly blocking/provisional;
 - dependencies among top actions are known or explicitly unresolved;
-- new retrieval is unlikely to change `BLOCKER / VERIFY NOW / NOW / NEXT`;
+- new retrieval is unlikely to change `BLOCKER / VERIFY NOW / DECISION NOW / NOW / NEXT`;
 - specialist/gate escalation is routed where required.
 
 More repository traversal after this point is not higher quality.
@@ -345,7 +344,7 @@ More repository traversal after this point is not higher quality.
 - Do not silently average contradictory authoritative sources.
 - Do not invent owner, deadline, capacity, score, metric, or customer requirement.
 - Do not duplicate specialist audits simply to appear comprehensive.
-- Do not let a majority priority score override a legal/security/privacy/financial/reputation blocker.
+- Do not let a majority priority score override a legal/security/privacy/financial/reputation blocker that actually gates the current goal. A gate for a later motion is not a current blocker.
 
 ## 15. Definition of done
 
@@ -358,7 +357,7 @@ A complete `STANDARD/DEEP/RELEASE/DELTA` run requires:
 - [ ] Readiness classified.
 - [ ] Candidate actions trace to evidence/gaps.
 - [ ] Dependencies sequenced or explicitly unresolved.
-- [ ] `VERIFY NOW`, `NOW`, and `NEXT` remain bounded.
+- [ ] `VERIFY NOW`, `DECISION NOW`, `NOW`, and `NEXT` remain bounded.
 - [ ] Specialist/gate handoffs are narrow and decision-relevant.
 - [ ] Previous-run delta is reported when a baseline exists.
 - [ ] Machine sidecar validates when execution is available.

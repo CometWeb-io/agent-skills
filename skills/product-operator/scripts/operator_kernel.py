@@ -26,13 +26,14 @@ import sys
 from datetime import datetime, timezone
 from typing import Any
 
-PROTOCOL_VERSION = "2.0"
+PROTOCOL_VERSION = "2.2"
+SUPPORTED_PROTOCOL_VERSIONS = {"2.0", "2.1", "2.2"}
 ALLOWED_MODES = {"PULSE", "STANDARD", "DEEP", "DELTA", "RELEASE"}
 COVERAGE_VALUES = {"verified", "partial", "unavailable", "not-required"}
 FRESHNESS_VALUES = {"CURRENT", "NEAR_EXPIRY", "STALE", "SUPERSEDED", "UNKNOWN", "NOT_REQUIRED"}
 READINESS_VALUES = {"READY", "PROVISIONAL", "BLOCKED"}
-PRIORITY_TIERS = {"BLOCKER", "VERIFY_NOW", "NOW", "NEXT", "LATER", "STOP"}
-TIER_ORDER = {"BLOCKER": 0, "VERIFY_NOW": 1, "NOW": 2, "NEXT": 3, "LATER": 4, "STOP": 5}
+PRIORITY_TIERS = {"BLOCKER", "VERIFY_NOW", "DECISION_NOW", "NOW", "NEXT", "LATER", "STOP"}
+TIER_ORDER = {"BLOCKER": 0, "VERIFY_NOW": 1, "DECISION_NOW": 2, "NOW": 3, "NEXT": 4, "LATER": 5, "STOP": 6}
 STAGES = ("intent", "planned", "implemented", "verified", "shipped", "outcome")
 
 STAGE_AUTHORITIES = {
@@ -157,10 +158,25 @@ def rank_candidate(row: dict[str, Any]) -> dict[str, Any]:
     blocker = boolish(row.get("blocker"))
     trust_critical = boolish(row.get("trust_critical"))
     verify_first = boolish(row.get("verify_first"))
+    decision_required = boolish(row.get("decision_required"))
+    if "blocks_current_goal" in row:
+        blocks_current_goal = boolish(row.get("blocks_current_goal"))
+    else:
+        # Backward compatibility for legacy candidates that used blocker/trust_critical
+        # before Product Operator 2.2 made blocker scope explicit.
+        blocks_current_goal = blocker or trust_critical
+    future_gate = boolish(row.get("future_gate"))
+    confirmed_current_blocker = (blocker or trust_critical) and blocks_current_goal
 
     if stop:
         tier = "STOP"
-    elif blocker or trust_critical:
+    elif decision_required and verify_first:
+        tier = "VERIFY_NOW"
+    elif decision_required:
+        tier = "DECISION_NOW"
+    elif future_gate and not blocks_current_goal:
+        tier = "LATER"
+    elif confirmed_current_blocker:
         if verify_first or min(confidence, evidence) < 0.5:
             tier = "VERIFY_NOW"
         else:
@@ -409,6 +425,7 @@ def stable_state_payload(report: dict[str, Any]) -> dict[str, Any]:
         "horizon": report.get("horizon"),
         "state_items": report.get("state_items") or [],
         "blockers": report.get("blockers") or [],
+        "decision_now": report.get("decision_now") or [],
         "drift": report.get("drift") or [],
     })
 
@@ -433,6 +450,7 @@ def action_tier_map(report: dict[str, Any]) -> dict[str, str]:
     for field, tier in (
         ("blockers", "BLOCKER"),
         ("verify_now", "VERIFY_NOW"),
+        ("decision_now", "DECISION_NOW"),
         ("now", "NOW"),
         ("next", "NEXT"),
         ("later", "LATER"),
@@ -553,6 +571,47 @@ def validate_action(action: Any, path: str, errors: list[str], warnings: list[st
         errors.append(f"{path}.depends_on must be a list")
 
 
+def validate_blocker(blocker: Any, path: str, errors: list[str], warnings: list[str], as_of: str | None = None) -> None:
+    if not isinstance(blocker, dict):
+        errors.append(f"{path} must be an object")
+        return
+    for key in ("id", "condition", "blocked_item"):
+        if not str(blocker.get(key) or "").strip():
+            errors.append(f"{path}.{key} is required")
+    if blocker.get("blocks_current_goal") is not True:
+        errors.append(f"{path} BLOCKER must block the current goal or a current critical-path action")
+    if not str(blocker.get("why_blocking") or "").strip():
+        errors.append(f"{path}.why_blocking is required")
+    evidence = blocker.get("evidence")
+    if not isinstance(evidence, list) or not evidence:
+        errors.append(f"{path}.evidence must be a non-empty list")
+    else:
+        for idx, ev in enumerate(evidence):
+            validate_evidence(ev, f"{path}.evidence[{idx}]", errors, warnings, as_of=as_of)
+
+
+def validate_decision(decision: Any, path: str, errors: list[str], warnings: list[str], as_of: str | None = None) -> None:
+    if not isinstance(decision, dict):
+        errors.append(f"{path} must be an object")
+        return
+    for key in ("id", "question", "decision_domain", "why_now", "delegated_to", "done_when"):
+        if not str(decision.get(key) or "").strip():
+            errors.append(f"{path}.{key} is required")
+    options = decision.get("options")
+    if not isinstance(options, list) or len([x for x in options if str(x).strip()]) < 2:
+        errors.append(f"{path}.options must contain at least 2 unresolved options")
+    for forbidden in ("selected_option", "recommendation", "verdict"):
+        if str(decision.get(forbidden) or "").strip():
+            errors.append(f"{path} must not select or recommend an option; delegate the unresolved material decision")
+            break
+    evidence = decision.get("evidence")
+    if not isinstance(evidence, list) or not evidence:
+        errors.append(f"{path}.evidence must be a non-empty list")
+    else:
+        for idx, ev in enumerate(evidence):
+            validate_evidence(ev, f"{path}.evidence[{idx}]", errors, warnings, as_of=as_of)
+
+
 def validate_report(report: Any) -> dict[str, Any]:
     errors: list[str] = []
     warnings: list[str] = []
@@ -563,8 +622,9 @@ def validate_report(report: Any) -> dict[str, Any]:
         if not str(report.get(key) or "").strip():
             errors.append(f"{key} is required")
 
-    if str(report.get("protocol_version") or "") != PROTOCOL_VERSION:
-        errors.append(f"protocol_version must be {PROTOCOL_VERSION}")
+    protocol_version = str(report.get("protocol_version") or "")
+    if protocol_version not in SUPPORTED_PROTOCOL_VERSIONS:
+        errors.append(f"protocol_version must be one of {sorted(SUPPORTED_PROTOCOL_VERSIONS)}")
 
     if parse_time(report.get("as_of")) is None:
         errors.append("as_of must be an ISO-8601 timestamp with timezone")
@@ -592,7 +652,7 @@ def validate_report(report: Any) -> dict[str, Any]:
         if not isinstance(readiness.get("reasons") or [], list):
             errors.append("readiness.reasons must be a list")
 
-    fields = {"blockers": None, "verify_now": 3, "now": 3, "next": 5, "later": None, "stop": None, "watch": None}
+    fields = {"blockers": None, "verify_now": 3, "decision_now": 3, "now": 3, "next": 5, "later": None, "stop": None, "watch": None}
     for key, cap in fields.items():
         value = report.get(key) or []
         if not isinstance(value, list):
@@ -603,9 +663,15 @@ def validate_report(report: Any) -> dict[str, Any]:
                 pass
             else:
                 errors.append(f"{key.upper()} may contain at most {cap} actions")
-        if key in {"verify_now", "now", "next"}:
+        if key == "blockers" and protocol_version == "2.2":
+            for idx, blocker_item in enumerate(value):
+                validate_blocker(blocker_item, f"{key}[{idx}]", errors, warnings, as_of=report.get("as_of"))
+        elif key in {"verify_now", "now", "next"}:
             for idx, action in enumerate(value):
                 validate_action(action, f"{key}[{idx}]", errors, warnings, as_of=report.get("as_of"), require_why=True)
+        elif key == "decision_now":
+            for idx, decision_item in enumerate(value):
+                validate_decision(decision_item, f"{key}[{idx}]", errors, warnings, as_of=report.get("as_of"))
 
     for key in ("drift", "delegations", "unknowns"):
         if key in report and not isinstance(report[key], list):
@@ -631,8 +697,8 @@ def validate_report(report: Any) -> dict[str, Any]:
         if inadmissible and norm((report.get("readiness") or {}).get("status")) == "READY":
             errors.append("readiness cannot be READY while required current evidence is inadmissible")
 
-    if not report.get("now") and not report.get("verify_now") and not report.get("blockers"):
-        warnings.append("report has no NOW/VERIFY_NOW action and no blocker; ensure this is intentional")
+    if not report.get("now") and not report.get("verify_now") and not report.get("decision_now") and not report.get("blockers"):
+        warnings.append("report has no NOW/VERIFY_NOW/DECISION_NOW item and no blocker; ensure this is intentional")
 
     status = "FAIL" if errors else "WARN" if warnings else "PASS"
     return {"status": status, "errors": errors, "warnings": warnings}
