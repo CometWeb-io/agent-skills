@@ -1,0 +1,11 @@
+{
+  "scenario": "stale_current_claim",
+  "expect": {
+    "validation": [
+      "VOLATILE_CLAIM_STALE_EVIDENCE"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

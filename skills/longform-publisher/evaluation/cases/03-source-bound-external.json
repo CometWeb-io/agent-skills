@@ -1,0 +1,11 @@
+{
+  "scenario": "source_bound_external",
+  "expect": {
+    "validation": [
+      "SOURCE_BOUND_UNAUTHORIZED_SOURCE"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

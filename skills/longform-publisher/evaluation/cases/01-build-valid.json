@@ -1,0 +1,9 @@
+{
+  "scenario": "build_valid",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

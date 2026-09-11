@@ -1,0 +1,11 @@
+{
+  "scenario": "citation_missing",
+  "expect": {
+    "validation": [],
+    "manuscript": [
+      "CITATION_MARKER_MISSING"
+    ],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "scenario": "pdf_missing_visual_requirement",
+  "expect": {
+    "validation": [
+      "STAGE_INFLATION"
+    ],
+    "manuscript": [],
+    "derived": [
+      "VISUAL_QA_REQUIRED"
+    ],
+    "stage": "MASTER_LOCKED"
+  }
+}

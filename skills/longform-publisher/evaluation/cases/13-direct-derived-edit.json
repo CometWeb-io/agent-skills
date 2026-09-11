@@ -1,0 +1,11 @@
+{
+  "scenario": "direct_derived_edit",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [
+      "DERIVED_MATERIAL_EDIT_FORBIDDEN"
+    ],
+    "stage": "RELEASE_READY"
+  }
+}

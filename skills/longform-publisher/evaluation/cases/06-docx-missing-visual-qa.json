@@ -1,0 +1,13 @@
+{
+  "scenario": "docx_missing_visual_qa",
+  "expect": {
+    "validation": [
+      "STAGE_INFLATION"
+    ],
+    "manuscript": [],
+    "derived": [
+      "VISUAL_QA_MISSING"
+    ],
+    "stage": "MASTER_LOCKED"
+  }
+}

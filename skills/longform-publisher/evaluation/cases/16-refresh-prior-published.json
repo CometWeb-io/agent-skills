@@ -1,0 +1,9 @@
+{
+  "scenario": "refresh_prior_published",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "DRAFTED"
+  }
+}

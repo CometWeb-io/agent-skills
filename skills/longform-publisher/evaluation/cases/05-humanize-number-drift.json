@@ -1,0 +1,11 @@
+{
+  "scenario": "humanize_number_drift",
+  "expect": {
+    "validation": [],
+    "manuscript": [
+      "PROTECTED_FACT_MISSING"
+    ],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "scenario": "critical_gap_open",
+  "expect": {
+    "validation": [
+      "CRITICAL_GAP_OPEN"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}
