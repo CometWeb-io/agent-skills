@@ -10,7 +10,7 @@ EXPECTED = {
     "founder-led-sales-operator": ("1.1.2", "FROZEN"),
     "research-program-operator": ("1.3.1", "FROZEN"),
     "portfolio-operator": ("1.1.0", "ACTIVE"),
-    "longform-publisher": ("1.0.0", "ACTIVE"),
+    "longform-publisher": ("1.0.0", "FROZEN"),
     "product-operator": ("2.2.0", "ACTIVE"),
 }
 
