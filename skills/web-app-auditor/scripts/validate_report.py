@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Validate a web-app-auditor v1.1 JSON report using only the stdlib.
+"""Validate schema structure, then cross-field audit invariants.
 
-This intentionally checks cross-field protocol invariants that JSON Schema alone
-cannot express cleanly. It is not a general JSON Schema validator.
+Requires jsonschema >= 4.18. All schema references are bundled and resolved
+locally; validation never retrieves a remote schema. A valid report is not
+proof that the underlying audit was performed.
 """
 
 from __future__ import annotations
@@ -14,6 +15,8 @@ import sys
 from collections import Counter
 from pathlib import Path
 from typing import Any
+
+from jsonschema import Draft202012Validator
 
 FINDING_ID = re.compile(r"^F-[0-9]{3}$")
 EVIDENCE_ID = re.compile(r"^E-[0-9]{3}$")
@@ -70,6 +73,19 @@ def _require_keys(result: Result, obj: dict[str, Any], keys: set[str], prefix: s
 
 def validate(report: dict[str, Any]) -> Result:
     r = Result()
+    # Inline the single local reference. Never let untrusted report data choose
+    # schemas or cause the validator to make network requests.
+    assets = Path(__file__).resolve().parents[1] / "assets"
+    schema = json.loads((assets / "audit-report.schema.json").read_text(encoding="utf-8"))
+    finding = json.loads((assets / "finding.schema.json").read_text(encoding="utf-8"))
+    finding.pop("$id", None)
+    schema["properties"]["findings"]["items"] = finding
+    Draft202012Validator.check_schema(schema)
+    for error in Draft202012Validator(schema).iter_errors(report):
+        path = ".".join(str(part) for part in error.absolute_path) or "report"
+        r.error(f"{path}: {error.message}")
+    if r.errors:
+        return r  # malformed types must never reach arithmetic or enum checks
 
     required_top = {
         "schemaVersion", "target", "mode", "depth", "confidence", "verdict",
@@ -149,6 +165,9 @@ def validate(report: dict[str, Any]) -> Result:
             r.error(f"{prefix}.type is invalid")
         if e.get("redacted") not in {"yes", "no", "n/a"}:
             r.error(f"{prefix}.redacted must be yes/no/n/a")
+        capability = {"screenshot": "screenshots", "dom": "browser", "console": "console", "network": "network", "source": "source"}.get(e.get("type"))
+        if capability and not caps.get(capability):
+            r.error(f"{prefix}: {e.get('type')} evidence requires capabilities.{capability}=true")
         supports = _list(e.get("supports"))
         if not isinstance(e.get("supports"), list):
             r.error(f"{prefix}.supports must be an array")
@@ -229,7 +248,7 @@ def validate(report: dict[str, Any]) -> Result:
             if eid not in evidence_ids:
                 r.error(f"{prefix}: references missing evidence id {eid}")
             elif fid and fid not in evidence_supports.get(eid, set()):
-                r.warn(f"{prefix}: {eid} does not list {fid} in evidence.supports")
+                r.error(f"{prefix}: {eid} does not list {fid} in evidence.supports")
 
         for key in ("expected", "actual", "impact", "rootCause"):
             if not isinstance(f.get(key), str) or not f.get(key, "").strip():
@@ -288,18 +307,34 @@ def validate(report: dict[str, Any]) -> Result:
         report.get("mode") in INTERACTION_HEAVY_MODES
         and report.get("depth") in {"standard", "forensic"}
         and not caps.get("browser")
-        and verdict != "incomplete"
+        and verdict not in {"incomplete", "do_not_ship"}
     ):
         r.error("interaction-heavy standard/forensic audit without browser must use verdict 'incomplete'")
 
-    if verdict == "ship" and coverage.get("unreachable", 0) > 0:
-        r.warn("verdict 'ship' with unreachable in-scope controls requires justification")
+    if verdict in {"ship", "ship_with_fixes"}:
+        if coverage.get("environmentBlocked", 0) or coverage.get("unreachable", 0):
+            r.error("missing in-scope evidence requires verdict 'incomplete'; blockers may still justify 'do_not_ship'")
+        if coverage.get("totalInScope", 0) == 0 or coverage.get("tested", 0) + coverage.get("sampled", 0) == 0:
+            r.error("a shipping verdict requires non-empty scope and actual tested/sampled coverage")
     if verdict == "ship" and coverage.get("policyBlocked", 0) > 0:
         r.warn("verdict 'ship' with policy-blocked controls is valid only if terminal proof was not required")
     if len(_list(report.get("outOfScope"))) > 3:
         r.error("outOfScope may contain at most 3 observations")
 
     return r
+
+
+def _unique_pairs(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"duplicate JSON key: {key}")
+        value[key] = item
+    return value
+
+
+def _reject_nonfinite(value):
+    raise ValueError(f"non-finite JSON number: {value}")
 
 
 def main() -> int:
@@ -309,11 +344,11 @@ def main() -> int:
     args = parser.parse_args()
 
     try:
-        report = json.loads(args.report.read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        print(f"ERROR: report not found: {args.report}", file=sys.stderr)
+        report = json.loads(args.report.read_text(encoding="utf-8"), object_pairs_hook=_unique_pairs, parse_constant=_reject_nonfinite)
+    except (OSError, UnicodeError):
+        print("ERROR: report cannot be read as UTF-8", file=sys.stderr)
         return 2
-    except json.JSONDecodeError as exc:
+    except ValueError as exc:
         print(f"ERROR: invalid JSON: {exc}", file=sys.stderr)
         return 2
 

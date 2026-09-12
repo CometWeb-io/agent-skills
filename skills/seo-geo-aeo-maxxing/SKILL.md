@@ -4,13 +4,22 @@ description: >
   Run evidence-governed, multi-pillar website visibility audits across technical SEO, relevance,
   authority/trust, GEO/AI citation readiness, and AEO/answer extraction. Use when the user explicitly
   asks for SEO+GEO+AEO or "maxxing", a broad end-to-end search/AI visibility audit, cross-pillar
-  diagnosis of ranking/AI-visibility problems, same-rubric competitor comparison, or a repeat/delta
-  audit. Use PILLAR mode only when this skill is explicitly requested for one pillar. Do not trigger
-  for isolated schema, one canonical/meta tag, keyword research, pure content writing, or a narrow
-  implementation task better handled by a specialist skill. Diagnosis only; never mutate live sites.
+  diagnosis, same-rubric competitor comparison, or repeat/delta audit. Use PILLAR only when this skill
+  is explicitly requested for one pillar. Do not use for isolated schema/meta tasks, ongoing competitor
+  monitoring, whole-product roadmapping, or release-candidate GO/NO-GO; hand accepted findings to the
+  corresponding specialist. Diagnosis only; never mutate live sites.
 ---
 
 # SEO / GEO / AEO Maxxing
+
+## Quality preflight
+
+Read [runtime evidence and safety](references/runtime-policy.md) once per task and
+[domain acceptance and currentness](references/quality-and-currentness.md) before
+applying the workflow. Use only relevant sources; do not load every reference or
+browse unrelated news. Preserve the output protocol and report untested capabilities.
+
+Protocol version: **1.1.0**.
 
 Run one auditable diagnostic system across classic search, generative search, answer engines, and
 answer extraction. Separate controllable readiness from observed visibility and business outcomes.
@@ -38,7 +47,7 @@ answer extraction. Separate controllable readiness from observed visibility and 
 8. Measure observed search/AI visibility separately.
 9. Prioritize by dependency, business exposure, evidence, and effort.
 10. For VERSUS/DELTA, run deterministic comparison.
-11. Deliver using the output contract.
+11. Deliver using the output contract. When findings will feed another skill, apply `references/composability.md`.
 
 ## Step 0 - Frame the audit without needless interrogation
 
@@ -266,6 +275,10 @@ Lead with the decision, gate, or dominant uncertainty. Show scope, coverage, evi
 observed visibility, platform controls when relevant, material findings, prioritized actions, and
 not-assessed gaps. End with one concrete next step.
 
+## Specialist handoff boundary
+
+Read `references/composability.md` when an audit feeds Product Operator, Repo to Roadmap, Release Readiness, Competitive Intelligence, Evidence Researcher, or AI Council. Preserve check IDs, evidence scope, coverage, freshness, and `NOT_ASSESSED` gaps. A downstream skill may impose stricter evidence requirements than this audit.
+
 ## Anti-pattern guardrails
 
 - Title/meta length ranges are heuristics, not ranking pass/fail thresholds.
@@ -304,6 +317,7 @@ references/
   fix-library.md
   schema-library.md
   output-contract.md
+  composability.md
 scripts/
   build_audit_template.py
   check_freshness.py

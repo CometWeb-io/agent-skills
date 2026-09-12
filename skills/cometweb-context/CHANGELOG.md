@@ -1,49 +1,45 @@
+# Changelog
+
+## 1.4.1 — 2026-09-12
+
+- Reconcile the runtime bundle with main: preserve machine-readable source routing, ambiguity reporting, CRM authority-gap and confidential-summary guards.
+- Keep public-claim verification ahead of generic social/content routing.
+
+## 1.4.0 — 2026-09-12
+
+- Add scoped currentness, evidence, safety and domain acceptance contracts.
+- Normalize host metadata and verify standalone package structure.
+- Reject path escape, parent-repository confusion, ambiguous timestamps, empty provenance and unsupported deltas; redact normal snapshot errors.
+
 # Changelog — cometweb-context
 
-## [1.2.3] - 2026-09-08
+## [1.3.0] - 2026-09-07
 
 ### Changed
-- Envelope kernel rejects fallback access promoted to system_of_record without authority_gap.
-- Confidential fact statements capped at 800 chars (no raw dumps).
-- Behavior evals: every assertion has an executable handler (no pass-through theatre).
+- Split human-facing output from machine/downstream handoff: direct users now receive a compact operator brief while downstream agents retain the full ContextEnvelope.
+- Defined that `full` controls retrieval breadth, not response verbosity.
+- Added response budgets for targeted, standard/delta, and full modes and removed raw ContextEnvelope JSON from default user-facing output.
+- Added anti-wall-of-text rules: no duplicated facts, no exhaustive source/task lists, no tables unless they improve compression, and no verbose process narration.
+- Added explicit `DIRECT_USER`, `DOWNSTREAM`, and `DEBUG / EXPLICIT_DETAIL` output lanes.
 
-## [1.2.2] - 2026-09-08
+## [1.2.0] - 2026-09-07
 
-### Changed
-- Claim-verification preferred over brand when both match (e.g. LinkedIn + public claim).
-- `pick_profiles()` exposes ambiguous multi-profile candidates.
-- `repo_snapshot`: `requested_as_of` / `observed_at` / `snapshot_ref` (no fake historical checkout).
-- CRM SoR: external/runtime binding + `authority_gap` fallback (no twenty-or-hubspot mush).
+### Fixed
+- Broadened skill trigger coverage for full CometWeb/portfolio, cross-project, Notion+GitHub, and "what changed" requests.
+- Added a dedicated `portfolio` profile so whole-CometWeb requests no longer collapse into a single-product context plan.
+- Added First Principles governance preflight for material product/GTM/pricing/portfolio decisions without turning context into a decision layer.
+- Hardened ContextEnvelope validation: source/fact IDs, authority/access/sensitivity enums, timestamps, baseline, handoff, and optional governance state.
+- Prevented local filesystem path leakage from repository snapshots by default.
+- Made missing local CometWeb root a clean GitHub-fallback condition instead of a misleading repository failure.
 
-## [1.2.1] - 2026-09-08
-
-### Changed
-- Profile source groups loaded from source-registry.json.
-- SKILL.md slimmed; operational bindings registry-first.
-
-
-## [1.2.0] - 2026-09-08
-
-### Changed
-- Strict JSON Schema + semantic ContextEnvelope validator.
-- repo_snapshot path redaction by default; remote ahead/behind freshness fields.
-- Operational First Principles / D-xxx bindings deferred to source registry.
-- OpenAI agent metadata: default_prompt + ./assets icon paths.
-
-
-## [1.1.0] - 2026-09-07
-
-### Changed
-
-- Added CometWeb First Principles as a canonical decision-input source for material product/GTM/pricing/portfolio decisions.
-- Planner now includes `vault-first-principles` for product and GTM profiles.
-- Added explicit handling for D-028, FP-6, fast path, decision trace and legacy decision-candidate alias registry.
-- Kept the skill read-only: it retrieves governance context but never allocates decisions or mutates the vault.
+### Improved
+- Expanded claim-specific connector/source routing and CRM fallback rules.
+- Added legacy decision-candidate handling guidance so advisory `D-xxx` labels are not mistaken for binding decisions.
+- Added runtime behavior tests for portfolio routing, delta/full modes, governance preflight, envelope referential integrity, and repo snapshot privacy.
 
 ## [1.0.0] - 2026-08-30
 
 ### Added
-
 - Read-only CometWeb context gateway with targeted, standard, delta, and full refresh modes.
 - Provenance, freshness, authority, conflict, sensitivity, and fallback handling.
 - Typed `ContextEnvelope` output contract for downstream skills.

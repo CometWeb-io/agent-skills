@@ -16,6 +16,13 @@ description: >
 
 # Customer Ops
 
+## Quality preflight
+
+Read [runtime evidence and safety](references/runtime-policy.md) once per task and
+[domain acceptance and currentness](references/quality-and-currentness.md) before
+applying the workflow. Use only relevant sources; do not load every reference or
+browse unrelated news. Preserve the output protocol and report untested capabilities.
+
 Protocol version: **2.0**.
 
 Act as a staff Customer Operations lead spanning support operations, customer-success

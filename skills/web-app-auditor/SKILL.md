@@ -1,21 +1,25 @@
 ---
 name: web-app-auditor
 description: >
-  Evidence-driven QA and product audit for websites and web applications. Use
-  when asked to audit, review, inspect, QA, verify, click through, test, or
-  "roast" a user-facing site/app/page/dashboard/checkout/form, including Polish
-  requests such as audyt, przeklikaj, sprawdz dane, zgodnosc liczb, poprawność,
-  UI/UX, dostepnosc, regresja. Verifies interactions, data integrity, totals,
-  counts, prices, dates, labels, cross-screen consistency, forms, states,
-  accessibility, responsiveness, and critical flows. Supports browser,
-  browser+source, screenshot-only, source-only, and fetch-only environments.
-  Do not use for backend-only review, greenfield implementation, or penetration
-  testing/exploitation with no product-audit goal.
+  Evidence-driven QA and product audit for user-facing websites and web applications. Use when asked
+  to audit, review, inspect, QA, verify, click through, test, or "roast" a site/app/page/dashboard/
+  checkout/form, including UI/UX, accessibility, regression, data integrity, and critical flows.
+  Supports browser, browser+source, screenshot-only, source-only, and fetch-only environments. Do not
+  use for backend-only review, greenfield implementation, whole-repo roadmapping, or as the final
+  production-release gate; provide candidate-bound QA evidence to Release Readiness when relevant.
+  Do not perform penetration testing/exploitation with no product-audit goal.
 ---
 
 # Web App Auditor
 
-Protocol version: **1.1**.
+## Quality preflight
+
+Read [runtime evidence and safety](references/runtime-policy.md) once per task and
+[domain acceptance and currentness](references/quality-and-currentness.md) before
+applying the workflow. Use only relevant sources; do not load every reference or
+browse unrelated news. Preserve the output protocol and report untested capabilities.
+
+Protocol version: **1.2**.
 
 Act as a staff QA lead + product auditor + data-integrity reviewer. Verify what
 users can actually observe. Do not turn taste, source-code suspicion, or a
@@ -44,6 +48,7 @@ Then load only relevant modules:
 | checkout, onboarding, multi-step | [references/flows.md](references/flows.md) |
 | mobile / breakpoints | [references/responsive.md](references/responsive.md) |
 | source code available | [references/source-crosscheck.md](references/source-crosscheck.md) |
+| downstream handoff / specialist composition | [references/composability.md](references/composability.md) |
 
 Use [assets/report-template.md](assets/report-template.md). For `standard` and
 `forensic` audits, when code execution and a filesystem are available, also emit
@@ -258,7 +263,11 @@ Coverage must account for every in-scope control/class:
 `policy-blocked` is not an audit failure. `forensic` should not use sampling.
 `standard` may sample repeated low-risk instances according to `modes.md`.
 
-## 8. Machine-checkable report when possible
+## 8. Specialist handoff
+
+When another skill consumes the audit, read `references/composability.md`. Preserve scope, capability, environment, release/build identity when known, coverage accounting, evidence IDs, finding kinds/severities/confidence, and unsupported/unreachable areas. Do not allow a downstream consumer to treat `incomplete` coverage as a clean pass.
+
+## 9. Machine-checkable report when possible
 
 For `standard` and `forensic`, when filesystem + code execution are available:
 
@@ -277,7 +286,7 @@ python scripts/validate_report.py audit-report.json
 If code execution is unavailable, perform the same checks manually and write
 `validator: not run — capability unavailable`.
 
-## 9. Definition of done
+## 10. Definition of done
 
 A completed `standard` or `forensic` audit requires:
 
