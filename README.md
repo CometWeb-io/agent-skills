@@ -78,6 +78,15 @@ python3 tooling/package_skill.py cometweb-context --versioned
 - Do not hard-code live operational bindings into skill logic when a machine-readable
   source registry can hold them.
 
+## CometWeb publication design
+
+When creating or revising CometWeb ebooks, PDF reports, or audit workbooks, read
+[`docs/COMETWEB-EBOOK-DESIGN-RULES.md`](docs/COMETWEB-EBOOK-DESIGN-RULES.md).
+The series rules cover red before/defect states, verified green outcomes, rounded
+status labels with icons, authentic branding, reference-cover hierarchy, and rendered
+PDF checks. They are project-specific design rules, not a replacement for the generic
+`ai-humanize` editing contract or a claim of accessibility certification.
+
 ## Target (remaining P1/P2)
 
 See `docs/TARGET.md`. Short version: generated OpenAI/Cursor adapters from registry,
