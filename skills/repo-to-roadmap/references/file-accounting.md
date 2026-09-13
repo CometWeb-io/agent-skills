@@ -138,3 +138,97 @@ inventory outputs merely because source file contents are absent.
 
 Git behavior references reviewed 2026-09-13:
 https://git-scm.com/docs/git-ls-tree and https://git-scm.com/docs/git .
+
+
+## Enforce accounting in the final roadmap (kernel 2.0.1)
+
+`roadmap_kernel.py validate` now recomputes supplied file accounting instead of
+trusting a success label or a file count. In `assessment.mode: EXHAUSTIVE`, missing
+file accounting is a validation error. STANDARD/FOCUSED/DELTA do not require new
+file evidence by default, but supplied evidence is always checked, never ignored.
+The check describes records of inspection, not source-review quality or runtime
+correctness. Domain coverage, claim evidence and dependency checks still apply.
+
+Add one exact anchor per assessed repository to `assessment.repos`:
+
+```json
+{
+  "name": "owner/repo",
+  "ref": "<full-pinned-commit-sha>",
+  "tree_sha": "<root-tree-sha-read-from-the-authorized-source>",
+  "inventory_sha256": "<inventory-fingerprint-saved-before-review>"
+}
+```
+
+The placeholder strings are not valid evidence. Preserve these anchors when
+reviewing; do not obtain an apparent independent anchor merely by copying it
+from a finished, untrusted proof bundle. Repo labels and commit/tree associations
+are still supplied data. Hash checking does not authenticate those associations.
+
+Attach raw inventory and ledger objects to the roadmap, not local filenames and
+not the output of `coverage_inventory.py audit`:
+
+```text
+file_coverage:
+  schema: cometweb.roadmap-file-coverage/v1
+  bundles:
+    - inventory: <entire inventory JSON object>
+      ledger: <entire file-review JSON object>
+```
+
+The validator does not open payload-supplied paths. It loads only the inventory
+module shipped beside itself. Bundles must cover every declared repository
+exactly once: missing, extra or duplicate scopes fail. All commit/tree/inventory
+pins must match, and observations/reviews must not postdate assessment.as_of.
+That assessment timestamp must include a timezone and must not be in the future.
+A missing file, unavailable review, empty tree or unexpanded submodule blocks the
+unqualified exhaustive result even with a high domain-coverage score.
+
+The default `assessment.file_review_policy` is `all_inspected`. Explicitly choose
+`allow_documented_exclusions` only when generated/vendor exclusions are within the
+agreed scope. A passing result then says `ACCOUNTED_WITH_EXCLUSIONS` with a warning,
+not that every file was read. A submodule remains unresolved in the parent
+inventory; this change does not implement submodule coverage roll-up.
+
+```bash
+python3 scripts/roadmap_kernel.py validate \
+  --roadmap-json @/path/to/audit/roadmap.json --require-valid
+```
+
+Without --require-valid, the legacy report-only CLI still returns 0 for processed
+invalid results: inspect `valid` and `errors`. With it: 0 means valid supplied
+records, 1 means processed validation failure, 2 means malformed/unreadable input.
+The same option works for `graph`. An invalid dependency graph no longer emits
+execution waves or a topological execution order. Neither validation nor its exit
+code grants permission to execute tasks, publish or deploy.
+
+### Freeze the scope before completing the review
+
+The validation result includes `assessment_contract_sha256` even when the review
+is incomplete. Save it independently before inspection. It fingerprints mode,
+repository pins, target requirements and review policy, but not the review rows
+or assessment timestamp. Then supply it when checking the completed roadmap:
+
+```bash
+python3 scripts/roadmap_kernel.py validate \
+  --roadmap-json @/path/to/audit/roadmap.json --require-valid \
+  --expected-scope-sha256 <independently-saved-contract-hash>
+```
+
+Removing a repository, weakening the exclusion policy, lowering the assessment
+mode or changing target requirements fails this comparison. Without that external
+pin, the validator can only check the scope supplied in the current input. A hash
+is not a record of who approved the scope or whether they had authority.
+
+### Snapshot and delta integration
+
+The complete file-coverage payload participates in the snapshot hash. A supplied
+snapshot hash inconsistent with the roadmap is rejected by validation and delta.
+Changed review records or scope/policy changes require revalidation of roadmap
+items. Identical incomplete file accounting does not yield a VALID delta. Existing
+claim/capability/dependency invalidation remains in place; this is not automatic
+reuse of previous review records. Old snapshots are not rewritten.
+
+Maintenance: run `python3 -m pytest -W error -q tests` for both the inventory and
+roadmap kernel, including their integration tests. These are deterministic tests
+of synthetic records, not completed audits or a model-quality benchmark.

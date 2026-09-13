@@ -12,12 +12,17 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import importlib.util
 import json
 import sys
+from pathlib import Path
+from datetime import datetime, timezone
 from collections import defaultdict, deque
 from typing import Any, Dict, Iterable, List, Tuple
 
 SCHEMA_VERSION = "2.0"
+KERNEL_VERSION = "2.0.1"
+MAX_JSON_BYTES = 32 * 1024 * 1024
 
 SOURCE_BASE = {
     "inventory": 0.94,
@@ -593,6 +598,16 @@ def sensitivity_report(item: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def graph_report(items: List[Dict[str, Any]]) -> Dict[str, Any]:
+    if not isinstance(items, list) or any(not isinstance(item, dict) for item in items):
+        raise ValueError("graph items must be a list of objects")
+    for item in items:
+        if not isinstance(item.get("id"), str) or not item["id"].strip():
+            raise ValueError("graph items require nonempty string IDs")
+        deps_input = item.get("depends_on", [])
+        if not isinstance(deps_input, list) or any(not isinstance(d, str) or not d.strip() for d in deps_input):
+            raise ValueError("dependencies must be a list of nonempty string IDs")
+        if len({d.strip() for d in deps_input}) != len(deps_input):
+            raise ValueError("duplicate dependency references")
     ids = [normalized(item.get("id")) for item in items if item.get("id") is not None]
     duplicate_ids = sorted({item_id for item_id in ids if ids.count(item_id) > 1})
     id_set = set(ids)
@@ -658,17 +673,18 @@ def graph_report(items: List[Dict[str, Any]]) -> Dict[str, Any]:
         ({"id": node, "direct_unblocks": len(outgoing[node]), "transitive_unblocks": transitive_unblocks[node]} for node in id_set),
         key=lambda row: (-row["transitive_unblocks"], -row["direct_unblocks"], row["id"]),
     )
-    critical_chain = max(longest_chain.values(), key=lambda chain: (len(chain), chain)) if longest_chain and not cycle_nodes else []
+    valid = not duplicate_ids and not missing and not cycle_nodes
+    critical_chain = max(longest_chain.values(), key=lambda chain: (len(chain), chain)) if longest_chain and valid else []
 
     return {
         "duplicate_ids": duplicate_ids,
         "missing_dependencies": missing,
         "cycle_nodes": cycle_nodes,
-        "topological_order": order if not cycle_nodes else [],
-        "waves": [{"wave": index, "items": waves[index]} for index in sorted(waves)] if not cycle_nodes else [],
+        "topological_order": order if valid else [],
+        "waves": [{"wave": index, "items": waves[index]} for index in sorted(waves)] if valid else [],
         "dependency_leverage": leverage[:10],
         "critical_chain_by_hard_dependency_count": critical_chain,
-        "valid": not duplicate_ids and not missing and not cycle_nodes,
+        "valid": valid,
         "note": "Critical chain is structural only; it is not a calendar critical path unless duration/capacity evidence exists.",
     }
 
@@ -748,7 +764,7 @@ def coverage_report(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 def stable_json(value: Any) -> str:
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
 def snapshot_core(payload: Dict[str, Any]) -> Dict[str, Any]:
@@ -770,6 +786,113 @@ def snapshot_report(payload: Dict[str, Any]) -> Dict[str, Any]:
         "snapshot_hash_short": digest[:16],
         "canonical_bytes": len(encoded),
     }
+
+
+def _snapshot_consistency_errors(payload: Dict[str, Any]) -> List[str]:
+    expected = snapshot_report(payload)
+    return [f"{key} does not match supplied roadmap content" for key in ("snapshot_hash", "snapshot_hash_short")
+            if key in payload and payload[key] != expected[key]]
+
+
+def assessment_contract_sha256(payload: Dict[str, Any]) -> str:
+    """Fingerprint the declared scope, not its approval or external authenticity."""
+    assessment = payload.get("assessment", {})
+    if not isinstance(assessment, dict):
+        raise ValueError("assessment must be an object")
+    contract = {
+        "schema": "cometweb.roadmap-assessment-contract/v1",
+        "mode": assessment.get("mode"),
+        "repos": assessment.get("repos", []),
+        "file_review_policy": assessment.get("file_review_policy", "all_inspected"),
+        "target_contract": payload.get("target_contract"),
+    }
+    return hashlib.sha256(stable_json(contract).encode("utf-8")).hexdigest()
+
+
+def file_coverage_report(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Recompute file evidence through the existing inventory auditor.
+
+    No paths or modules supplied by the payload are opened. Commit/tree anchors
+    are supplied assessment records; hashing does not authenticate their origin.
+    """
+    assessment = payload.get("assessment")
+    if not isinstance(assessment, dict):
+        return {"status": "INVALID", "errors": ["assessment must be an object"], "repositories": []}
+    required = normalized_upper(assessment.get("mode", "")) == "EXHAUSTIVE"
+    result = {"status": "NOT_REQUESTED", "errors": [], "repositories": [],
+              "review_authentication": "not_performed", "runtime_verification": "not_performed"}
+    if "file_coverage" not in payload and not required:
+        return result
+    result["status"] = "EXHAUSTIVE_NOT_PROVEN"
+    if "file_coverage" not in payload:
+        result["errors"].append("file accounting is required for EXHAUSTIVE mode")
+        return result
+    # Load only the trusted sibling shipped with this skill, not a package named
+    # by the input or one resolved from the caller's current working directory.
+    try:
+        path = Path(__file__).resolve().with_name("coverage_inventory.py")
+        spec = importlib.util.spec_from_file_location("roadmap_pinned_file_accounting", path)
+        if spec is None or spec.loader is None:
+            raise ValueError("file accounting module is unavailable")
+        inventory = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(inventory)
+        require = inventory.require
+        block = payload["file_coverage"]
+        inventory.fields(block, {"schema", "bundles"})
+        require(block["schema"] == "cometweb.roadmap-file-coverage/v1", "unsupported file coverage schema")
+        bundles = block["bundles"]
+        require(isinstance(bundles, list) and 0 < len(bundles) <= 64, "file coverage requires 1-64 bundles")
+        repos = assessment.get("repos")
+        require(isinstance(repos, list) and 0 < len(repos) <= 64, "file coverage requires pinned repository scopes")
+        policy = assessment.get("file_review_policy", "all_inspected")
+        require(isinstance(policy, str) and policy in {"all_inspected", "allow_documented_exclusions"},
+                "unknown file review policy")
+        as_of = inventory.timestamp(assessment.get("as_of"))
+        require(as_of <= datetime.now(timezone.utc), "assessment as_of is in the future")
+        anchors = {}
+        for pin in repos:
+            require(isinstance(pin, dict), "invalid repository pin")
+            name = inventory.repo_id(pin.get("name"))
+            require(name not in anchors, "duplicate repository scope")
+            require(isinstance(pin.get("ref"), str) and isinstance(pin.get("tree_sha"), str), "full ref and tree SHA required")
+            require(isinstance(pin.get("inventory_sha256"), str), "inventory fingerprint required")
+            anchors[name] = pin
+        seen, statuses, total_entries = set(), [], 0
+        for bundle in bundles:
+            inventory.fields(bundle, {"inventory", "ledger"})
+            inv, ledger = bundle["inventory"], bundle["ledger"]
+            require(isinstance(inv, dict), "invalid inventory object")
+            name = inventory.repo_id(inv.get("repository"))
+            require(name in anchors and name not in seen, "unknown or duplicate repository bundle")
+            pin = anchors[name]
+            require(pin["ref"] == inv.get("commit_sha") and pin["tree_sha"] == inv.get("tree_sha"),
+                    "inventory differs from the assessment commit/tree pin")
+            require(isinstance(inv.get("entries"), list), "inventory entries must be a list")
+            total_entries += len(inv["entries"])
+            require(total_entries <= inventory.MAX_ENTRIES, "aggregate inventory budget exceeded")
+            report = inventory.audit(inv, ledger, expected=pin["inventory_sha256"])
+            require(inventory.timestamp(inv["observed_at"]) <= as_of, "inventory is newer than assessment as_of")
+            for row in ledger["rows"]:
+                if "reviewed_at" in row:
+                    require(inventory.timestamp(row["reviewed_at"]) <= as_of, "review is newer than assessment as_of")
+            seen.add(name)
+            statuses.append(report["result"])
+            result["repositories"].append(report)
+        require(seen == set(anchors), "one or more assessed repositories lack file accounting")
+        acceptable = {"INSPECTION_RECORDS_COMPLETE"}
+        if policy == "allow_documented_exclusions":
+            acceptable.add("ACCOUNTED_WITH_EXCLUSIONS")
+        if not all(status in acceptable for status in statuses):
+            result["errors"].append("file accounting has gaps, empty scope, unexpanded submodules or disallowed exclusions")
+        else:
+            result["status"] = ("ACCOUNTED_WITH_EXCLUSIONS" if "ACCOUNTED_WITH_EXCLUSIONS" in statuses
+                                else "INSPECTION_RECORDS_COMPLETE")
+        result["policy"] = policy
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError, ImportError) as exc:
+        result["status"] = "INVALID"
+        # Never reflect source contents, review notes or arbitrary imported data.
+        result["errors"].append("file accounting is missing, malformed or inconsistent with assessment pins")
+    return result
 
 
 def by_id(rows: Any, field: str) -> Dict[str, Any]:
@@ -797,6 +920,13 @@ def delta_report(before: Dict[str, Any], after: Dict[str, Any]) -> Dict[str, Any
     if not isinstance(before, dict) or not isinstance(after, dict):
         raise ValueError("before and after must be objects")
 
+    if _snapshot_consistency_errors(before) or _snapshot_consistency_errors(after):
+        raise ValueError("supplied snapshot hash does not match roadmap content")
+    file_coverage_changed = stable_json(before.get("file_coverage")) != stable_json(after.get("file_coverage"))
+    contract_changed = assessment_contract_sha256(before) != assessment_contract_sha256(after)
+    file_coverage_issues = {label: report["errors"] for label, report in
+                            (("before", file_coverage_report(before)), ("after", file_coverage_report(after)))
+                            if report["errors"]}
     changed_claims, added_claims, removed_claims = changed_ids(before.get("claims", []), after.get("claims", []), "claim_id")
     changed_capabilities, added_capabilities, removed_capabilities = changed_ids(before.get("capabilities", []), after.get("capabilities", []), "capability_id")
     changed_items, added_items, removed_items = changed_ids(before.get("items", []), after.get("items", []), "id")
@@ -825,7 +955,7 @@ def delta_report(before: Dict[str, Any], after: Dict[str, Any]) -> Dict[str, Any
         if refs & changed_claim_set or cap_refs & affected_capabilities:
             revalidate.add(item_id)
 
-    if target_changed or assessment_scope_changed:
+    if target_changed or assessment_scope_changed or file_coverage_changed or contract_changed or file_coverage_issues:
         revalidate.update(after_items)
 
     outgoing: Dict[str, List[str]] = defaultdict(list)
@@ -855,7 +985,7 @@ def delta_report(before: Dict[str, Any], after: Dict[str, Any]) -> Dict[str, Any
     )
     fingerprints_changed = source_fingerprints_before != source_fingerprints_after
 
-    validity = "REVALIDATE" if (revalidate or target_changed or coverage_changed or assessment_scope_changed or fingerprints_changed) else "VALID"
+    validity = "REVALIDATE" if (revalidate or target_changed or coverage_changed or assessment_scope_changed or fingerprints_changed or file_coverage_changed or contract_changed or file_coverage_issues) else "VALID"
 
     return {
         "before_snapshot": snapshot_report(before)["snapshot_hash"],
@@ -863,6 +993,9 @@ def delta_report(before: Dict[str, Any], after: Dict[str, Any]) -> Dict[str, Any
         "target_contract_changed": target_changed,
         "assessment_scope_changed": assessment_scope_changed,
         "coverage_changed": coverage_changed,
+        "file_coverage_changed": file_coverage_changed,
+        "assessment_contract_changed": contract_changed,
+        "file_coverage_issues": file_coverage_issues,
         "source_fingerprints_changed": fingerprints_changed,
         "changed_claim_ids": changed_claims,
         "added_claim_ids": added_claims,
@@ -928,7 +1061,7 @@ def validate_acceptance(item_id: str, criteria: Any) -> List[str]:
     return errors
 
 
-def validate_roadmap(payload: Dict[str, Any]) -> Dict[str, Any]:
+def validate_roadmap(payload: Dict[str, Any], *, expected_scope_sha256: str | None = None) -> Dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("roadmap payload must be an object")
     errors: List[str] = []
@@ -944,13 +1077,28 @@ def validate_roadmap(payload: Dict[str, Any]) -> Dict[str, Any]:
     elif not normalized(assessment.get("mode", "")):
         warnings.append("assessment.mode missing")
 
+    if isinstance(assessment, dict) and "mode" in assessment and (not isinstance(assessment["mode"], str) or normalized_upper(assessment["mode"]) not in {"STANDARD", "EXHAUSTIVE", "DELTA", "FOCUSED"}):
+        errors.append("assessment.mode is unknown")
+    contract_hash = assessment_contract_sha256(payload) if isinstance(assessment, dict) else None
+    if expected_scope_sha256 is not None and expected_scope_sha256 != contract_hash:
+        errors.append("assessment contract differs from independently supplied scope fingerprint")
+    errors.extend(_snapshot_consistency_errors(payload))
+    file_coverage = file_coverage_report(payload)
+    errors.extend(file_coverage["errors"])
+    if file_coverage["status"] == "ACCOUNTED_WITH_EXCLUSIONS":
+        warnings.append("file accounting includes explicit exclusions; not every file was inspected")
+
     target_errors, target_warnings, target_ids = validate_target_contract(payload.get("target_contract", {}))
     errors.extend(target_errors)
     warnings.extend(target_warnings)
-    target_requirements = by_id(payload.get("target_contract", {}).get("requirements", []), "id")
+    target = payload.get("target_contract")
+    target_requirements = by_id(target.get("requirements", []) if isinstance(target, dict) else [], "id")
 
     coverage = coverage_report(payload.get("coverage", []))
     errors.extend(coverage.get("errors", []))
+    if isinstance(assessment, dict) and normalized_upper(assessment.get("mode", "")) == "EXHAUSTIVE" and file_coverage["errors"]:
+        coverage["domain_scope_claim"] = coverage["scope_claim"]
+        coverage["scope_claim"] = "EXHAUSTIVE_NOT_PROVEN"
     if coverage["scope_claim"] == "WHOLE_PROJECT_SCOPE_NOT_DEFENSIBLE":
         warnings.append("coverage is too weak for an unqualified whole-project roadmap claim")
     elif coverage["scope_claim"] == "WHOLE_PROJECT_SCOPE_QUALIFIED":
@@ -1006,6 +1154,7 @@ def validate_roadmap(payload: Dict[str, Any]) -> Dict[str, Any]:
         cap_claim_refs = capability.get("claim_refs", []) or []
         if not isinstance(cap_claim_refs, list):
             errors.append(f"{cap_id}: claim_refs must be a list")
+            cap_claim_refs = []
         else:
             missing_refs = sorted({normalized(ref) for ref in cap_claim_refs if normalized(ref) not in claim_ids})
             if missing_refs:
@@ -1143,7 +1292,13 @@ def validate_roadmap(payload: Dict[str, Any]) -> Dict[str, Any]:
         if kind in {"BUILD", "FIX", "HARDEN", "INSTRUMENT", "MIGRATE"} and not normalized(item.get("success_signal", "")):
             warnings.append(f"{item_id}: missing success_signal")
 
-    graph = graph_report(items)
+    try:
+        graph = graph_report(items)
+    except ValueError:
+        errors.append("invalid dependency graph records")
+        graph = {"valid": False, "duplicate_ids": [], "missing_dependencies": {}, "cycle_nodes": [],
+                 "topological_order": [], "waves": [], "dependency_leverage": [],
+                 "critical_chain_by_hard_dependency_count": []}
     if graph["duplicate_ids"]:
         errors.append(f"duplicate item ids: {graph['duplicate_ids']}")
     if graph["missing_dependencies"]:
@@ -1165,6 +1320,9 @@ def validate_roadmap(payload: Dict[str, Any]) -> Dict[str, Any]:
     snapshot = snapshot_report(payload)
     return {
         "valid": not errors,
+        "kernel_version": KERNEL_VERSION,
+        "assessment_contract_sha256": contract_hash,
+        "file_coverage": file_coverage,
         "errors": sorted(set(errors)),
         "warnings": sorted(set(warnings)),
         "coverage": coverage,
@@ -1175,10 +1333,25 @@ def validate_roadmap(payload: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def parse_json_arg(value: str) -> Any:
+    def unique_pairs(rows):
+        result = {}
+        for key, val in rows:
+            if key in result:
+                raise ValueError("duplicate JSON key")
+            result[key] = val
+        return result
+    def reject_constant(_):
+        raise ValueError("non-finite JSON number")
     if value.startswith("@"):
-        with open(value[1:], "r", encoding="utf-8") as handle:
-            return json.load(handle)
-    return json.loads(value)
+        with open(value[1:], "rb") as handle:
+            raw = handle.read(MAX_JSON_BYTES + 1)
+    else:
+        raw = value.encode("utf-8")
+    if len(raw) > MAX_JSON_BYTES:
+        raise ValueError("JSON input exceeds byte limit")
+    data = json.loads(raw, object_pairs_hook=unique_pairs, parse_constant=reject_constant)
+    stable_json(data).encode("utf-8")  # Also reject overflowed floats and lone surrogates.
+    return data
 
 
 def main() -> int:
@@ -1210,6 +1383,9 @@ def main() -> int:
     p_delta.add_argument("--before-json", required=True, help="JSON object or @file.json")
     p_delta.add_argument("--after-json", required=True, help="JSON object or @file.json")
 
+    p_validate.add_argument("--require-valid", action="store_true", help="Exit 1 for a processed invalid roadmap")
+    p_validate.add_argument("--expected-scope-sha256", help="Independently saved assessment contract fingerprint")
+    p_graph.add_argument("--require-valid", action="store_true", help="Exit 1 for a processed invalid dependency graph")
     args = parser.parse_args()
     try:
         if args.command == "evidence":
@@ -1229,18 +1405,20 @@ def main() -> int:
                 raise ValueError("coverage must be a JSON array")
             result = coverage_report(payload)
         elif args.command == "validate":
-            result = validate_roadmap(parse_json_arg(args.roadmap_json))
+            result = validate_roadmap(parse_json_arg(args.roadmap_json), expected_scope_sha256=args.expected_scope_sha256)
         elif args.command == "snapshot":
             result = snapshot_report(parse_json_arg(args.roadmap_json))
         elif args.command == "delta":
             result = delta_report(parse_json_arg(args.before_json), parse_json_arg(args.after_json))
         else:
             raise ValueError("unknown command")
-    except (ValueError, TypeError, OSError, json.JSONDecodeError) as exc:
-        print(json.dumps({"status": "error", "error": str(exc)}, ensure_ascii=False))
+    except (ValueError, TypeError, OSError, KeyError, AttributeError, RecursionError) as exc:
+        print(json.dumps({"status": "error", "error": "invalid input or unreadable file"}))
         return 2
 
-    print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True, allow_nan=False))
+    if getattr(args, "require_valid", False) and not result.get("valid", False):
+        return 1
     return 0
 
 

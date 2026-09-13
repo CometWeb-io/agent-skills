@@ -129,9 +129,14 @@ reconstructs the pinned Git tree, creates an initially unreviewed per-file ledge
 and checks all review rows against exact object identities. Complete connector
 exports can be imported with an independently obtained tree pin.
 
-Keep the resulting file-coverage sidecar next to the roadmap. The domain-level
-`roadmap_kernel.py coverage` score is not a substitute for this file accounting;
-its existing numeric thresholds and domain statuses remain unchanged.
+Keep the inventory and review ledger next to the roadmap. Kernel 2.0.1 now
+requires their raw objects under `file_coverage` for EXHAUSTIVE validation and
+matches every bundle to the pinned `assessment.repos` scope. Use
+`roadmap_kernel.py validate --roadmap-json @roadmap.json --require-valid`.
+Save `assessment_contract_sha256` before review and pass --expected-scope-sha256
+when the declared scope must not be silently narrowed. Read file-accounting.md
+for the exact input shape and explicit exclusion policy. The numeric domain
+coverage score alone is still not proof that each file was inspected.
 
 Report `EXHAUSTIVE_NOT_PROVEN` while files are missing, unavailable, unreadable or
 submodules are unexpanded. `ACCOUNTED_WITH_EXCLUSIONS` must disclose the excluded

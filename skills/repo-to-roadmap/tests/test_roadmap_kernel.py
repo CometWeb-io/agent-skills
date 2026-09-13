@@ -21,7 +21,7 @@ def code_evidence(ref="code", direction="support", independence="code"):
     }
 
 
-def test_evidence(ref="test", independence="test"):
+def behavior_evidence(ref="test", independence="test"):
     return {
         "source_ref": ref,
         "source_type": "test",
@@ -41,7 +41,7 @@ def behavior_claim(claim_id="C-1"):
         "claim_type": "behavior",
         "materiality": "high",
         "current_sensitive": False,
-        "evidence": [code_evidence(), test_evidence()],
+        "evidence": [code_evidence(), behavior_evidence()],
     }
 
 
