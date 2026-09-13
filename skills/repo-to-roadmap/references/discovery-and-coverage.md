@@ -121,6 +121,25 @@ When the user explicitly requests every file/every module:
 
 Do not substitute code search for complete file enumeration.
 
+### Executable file accounting
+
+When Git/filesystem execution is available, read [file-accounting.md](file-accounting.md)
+and run `scripts/coverage_inventory.py` before claiming exhaustive coverage. It
+reconstructs the pinned Git tree, creates an initially unreviewed per-file ledger,
+and checks all review rows against exact object identities. Complete connector
+exports can be imported with an independently obtained tree pin.
+
+Keep the resulting file-coverage sidecar next to the roadmap. The domain-level
+`roadmap_kernel.py coverage` score is not a substitute for this file accounting;
+its existing numeric thresholds and domain statuses remain unchanged.
+
+Report `EXHAUSTIVE_NOT_PROVEN` while files are missing, unavailable, unreadable or
+submodules are unexpanded. `ACCOUNTED_WITH_EXCLUSIONS` must disclose the excluded
+paths and rationale, not imply that every file was inspected. Even
+`INSPECTION_RECORDS_COMPLETE` only describes supplied review records: it does not
+prove source review quality, current runtime behavior or release readiness.
+Never fabricate reviewer, evidence or summary fields to complete the ledger.
+
 ## DELTA mode
 
 Inventory the old and new scope/ref. Inspect changed surfaces plus dependency paths that could invalidate previous claims. Use `references/living-roadmap.md`.
