@@ -16,7 +16,7 @@ the publish pipeline is live).
 | Protocol | CW-AIP v1 (compat) + CW-AIP v2 core/payload schemas |
 | Tooling | `tooling/` validators, compatibility, packager, adapter generator |
 | Evals | routing suite + context behavior fixtures |
-| CI | `.github/workflows/validate.yml` |
+| Validation | Local `tooling/validate_local.py`; Actions paused per owner |
 
 ## Foundation vs domain
 
@@ -51,20 +51,29 @@ docs/                     architecture notes
 .github/workflows/        CI gates
 ```
 
-## Development loop
+## Development loop — local validation
+
+The owner has paused GitHub Actions because its budget is exhausted. Keep Actions
+and public distribution disabled during private integration. Use a full trusted
+checkout, not the pending file overlay.
 
 ```bash
+# Initial dependency setup, only when needed in your development environment:
 python3 -m pip install -r requirements-dev.txt
-python3 tooling/validate_repo.py
-python3 tooling/sync_orchestrator.py --check
-python3 tooling/compatibility.py
-python3 tooling/generate_adapters.py
-python3 tooling/run_routing_evals.py
-python3 tooling/run_behavior_evals.py
-python3 tooling/publish_public_dry_run.py
-python3 -m pytest -q tooling/tests skills/*/tests
-python3 tooling/package_skill.py cometweb-context --versioned
+# Inventory and command plan only; no tests executed:
+python3 tooling/validate_local.py --plan
+# Execute checks; the output directory must be new and outside the checkout:
+python3 tooling/validate_local.py --output ../cometweb-validation-2026-09-13
 ```
+
+The runner checks the saved adapters without regenerating them, captures separate
+logs and JUnit, and binds results to HEAD plus working-tree/index fingerprints.
+Failures, skipped tests, missing test output and source changes cannot produce a
+fully passing result. It does not install dependencies or publish anything.
+
+See [local validation](docs/LOCAL-VALIDATION.md) for scope, limitations and exit
+codes. The pending 137-file bundle is **not** integrated by adding this runner;
+see [integration status](docs/INTEGRATION-STATUS.md).
 
 ## Rules
 
