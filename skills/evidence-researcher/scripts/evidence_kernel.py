@@ -10,15 +10,16 @@ import argparse
 import copy
 import hashlib
 import json
+import math
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-VERSION = "2.0.0"
+VERSION = "2.0.1"
 SCHEMA_VERSION = "2.0"
-POLICY_VERSION = "evidence-policy-v2"
+POLICY_VERSION = "evidence-policy-v2.1"
 
 TRACKING_KEYS = {
     "fbclid", "gclid", "dclid", "msclkid", "mc_cid", "mc_eid", "ref", "ref_src",
@@ -93,16 +94,52 @@ def _json_dump(value: Any) -> None:
 
 
 def _load_json(value: str) -> Any:
-    path = Path(value)
-    if path.exists() and path.is_file():
-        return json.loads(path.read_text(encoding="utf-8"))
-    return json.loads(value)
+    """Read bounded UTF-8 JSON without duplicate-key or non-finite coercion."""
+    limit = 8 * 1024 * 1024
+    if value.lstrip().startswith(("{", "[")):
+        text = value
+    else:
+        path = Path(value)
+        if path.is_file():
+            with path.open("rb") as handle:
+                raw = handle.read(limit + 1)
+            if len(raw) > limit:
+                raise ValueError("JSON input exceeds size limit")
+            text = raw.decode("utf-8")
+        else:
+            text = value
+    if len(text.encode("utf-8")) > limit:
+        raise ValueError("JSON input exceeds size limit")
+
+    def unique(items):
+        result = {}
+        for key, item in items:
+            if key in result:
+                raise ValueError("duplicate JSON key")
+            result[key] = item
+        return result
+
+    def reject_constant(value):
+        raise ValueError("non-finite JSON number")
+
+    result = json.loads(text, object_pairs_hook=unique, parse_constant=reject_constant)
+    # A finite-looking exponent such as 1e999 can also decode to infinity.
+    pending = [result]
+    while pending:
+        item = pending.pop()
+        if isinstance(item, float) and not math.isfinite(item):
+            raise ValueError("non-finite JSON number")
+        if isinstance(item, dict):
+            pending.extend(item.values())
+        elif isinstance(item, list):
+            pending.extend(item)
+    return result
 
 
 def _parse_dt(value: Optional[str]) -> Optional[datetime]:
-    if not value:
+    if not isinstance(value, str) or "T" not in value:
         return None
-    text = str(value).strip()
+    text = value.strip()
     if text.endswith("Z"):
         text = text[:-1] + "+00:00"
     try:
@@ -153,95 +190,99 @@ def source_policy(claim_type: str) -> Dict[str, Any]:
     }
 
 
-def temporal_status(source: Dict[str, Any], as_of_text: str, claim_type: Optional[str] = None) -> Dict[str, Any]:
+def temporal_status(
+    source: Dict[str, Any], as_of_text: str, claim_type: Optional[str] = None,
+    *, research_id: Optional[str] = None, research_started_at: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Evaluate supplied dates, not source truth or authenticity of inspection.
+
+    Positive cache TTLs are ceilings even for live-verification classes. A zero
+    cache window requires explicit current-run binding and a bounded run interval.
+    """
+    def result(status, reason, **extra):
+        return {"temporal_status": status, "reason": reason,
+                "policy_version": POLICY_VERSION, **extra}
+
     as_of = _parse_dt(as_of_text)
-    if as_of is None:
-        return {"temporal_status": "UNKNOWN", "reason": "as_of must be timezone-aware ISO 8601", "policy_version": POLICY_VERSION}
-
-    ctype = str(claim_type or source.get("claim_type") or "current_fact")
-    state = str(source.get("source_state") or "final").strip().casefold()
-
+    if as_of is None or not isinstance(source, dict):
+        return result("UNKNOWN", "source must be an object and as_of must be a timezone-aware timestamp")
+    ctype = claim_type or source.get("claim_type") or "current_fact"
+    if not isinstance(ctype, str):
+        return result("UNKNOWN", "invalid claim_type")
+    for field in ("requires_live_verification", "verified_for_research"):
+        if field in source and type(source[field]) is not bool:
+            return result("UNKNOWN", f"{field} must be boolean")
+    state = source.get("source_state", "final")
+    if not isinstance(state, str) or state.strip().casefold() not in {"final", "draft", "superseded", "withdrawn"}:
+        return result("UNKNOWN", "invalid source_state")
+    state = state.strip().casefold()
     if source.get("superseded_by_source_id") or source.get("superseded_by") or state in {"superseded", "withdrawn"}:
-        return {"temporal_status": "SUPERSEDED", "reason": "source is superseded or withdrawn", "policy_version": POLICY_VERSION}
+        return result("SUPERSEDED", "source is superseded or withdrawn")
     if state == "draft":
-        return {"temporal_status": "DRAFT", "reason": "source_state is draft", "policy_version": POLICY_VERSION}
+        return result("DRAFT", "source_state is draft")
 
-    parsed: Dict[str, Optional[datetime]] = {}
+    parsed = {}
     for field in ("published_at", "effective_from", "effective_to", "last_verified_at", "expires_at"):
-        parsed[field] = _parse_dt(source.get(field))
-        if source.get(field) and parsed[field] is None:
-            return {"temporal_status": "UNKNOWN", "reason": f"invalid {field}", "policy_version": POLICY_VERSION}
+        value = source.get(field)
+        parsed[field] = _parse_dt(value)
+        if value is not None and parsed[field] is None:
+            return result("UNKNOWN", f"invalid {field}")
+    published, start, end, observed, expires = (parsed[f] for f in
+        ("published_at", "effective_from", "effective_to", "last_verified_at", "expires_at"))
+    if start and end and end <= start:
+        return result("UNKNOWN", "effective interval is empty or reversed")
+    if published and published > as_of:
+        return result("UNKNOWN", "published_at is after as_of")
+    if observed and observed > as_of:
+        return result("UNKNOWN", "last_verified_at is after as_of")
+    if published and observed and published > observed:
+        return result("UNKNOWN", "verification predates the published artifact")
+    if start and start > as_of:
+        return result("NOT_YET_EFFECTIVE", "effective_from is after as_of")
+    if end and end <= as_of:
+        return result("STALE", "effective interval has ended")
+    if expires and expires <= as_of:
+        return result("STALE", "verification has expired")
 
-    published_at = parsed["published_at"]
-    effective_from = parsed["effective_from"]
-    effective_to = parsed["effective_to"]
-    last_verified = parsed["last_verified_at"]
-    expires_at = parsed["expires_at"]
+    requires_live = source.get("requires_live_verification") is True or ctype in LIVE_VERIFICATION_TYPES
+    if requires_live and source.get("verified_for_research") is not True:
+        return result("UNKNOWN", "live verification required but not explicitly recorded", requires_live_verification=True)
+    if observed is None:
+        return result("UNKNOWN", "last_verified_at is required")
 
-    if effective_from and effective_from > as_of:
-        return {"temporal_status": "NOT_YET_EFFECTIVE", "reason": "effective_from is after as_of", "policy_version": POLICY_VERSION}
-    if effective_to and effective_to < as_of:
-        return {"temporal_status": "STALE", "reason": "effective_to is before as_of", "policy_version": POLICY_VERSION}
-    if published_at and published_at > as_of:
-        return {"temporal_status": "UNKNOWN", "reason": "published_at is after as_of", "policy_version": POLICY_VERSION}
-    if expires_at and expires_at < as_of:
-        return {"temporal_status": "STALE", "reason": "expires_at is before as_of", "policy_version": POLICY_VERSION}
-    if last_verified and last_verified > as_of + timedelta(minutes=5):
-        return {"temporal_status": "UNKNOWN", "reason": "last_verified_at is materially after as_of", "policy_version": POLICY_VERSION}
+    default = DEFAULT_TTL_DAYS.get(ctype)
+    explicit = source.get("freshness_ttl_days")
+    if explicit is not None:
+        if type(explicit) not in (int, float) or not math.isfinite(explicit) or not 0 <= explicit <= 36500:
+            return result("UNKNOWN", "invalid freshness_ttl_days")
+    ttl = default if explicit is None else min(default, explicit) if default is not None else explicit
+    if ttl is None:
+        return result("UNKNOWN", "unregistered claim type needs an explicit freshness policy")
 
-    requires_live = bool(source.get("requires_live_verification")) or ctype in LIVE_VERIFICATION_TYPES
-    if requires_live:
-        if not source.get("verified_for_research"):
-            return {
-                "temporal_status": "UNKNOWN",
-                "reason": "live verification required but verified_for_research is not true",
-                "requires_live_verification": True,
-                "policy_version": POLICY_VERSION,
-            }
-        if last_verified is None:
-            return {
-                "temporal_status": "UNKNOWN",
-                "reason": "live verification requires last_verified_at",
-                "requires_live_verification": True,
-                "policy_version": POLICY_VERSION,
-            }
-        return {
-            "temporal_status": "CURRENT",
-            "reason": "live authority inspected for this research run",
-            "requires_live_verification": True,
-            "policy_version": POLICY_VERSION,
-        }
-
-    ttl_days = source.get("freshness_ttl_days")
-    if ttl_days is None:
-        ttl_days = DEFAULT_TTL_DAYS.get(ctype)
-    if ttl_days is None:
-        if last_verified is None:
-            return {"temporal_status": "UNKNOWN", "reason": "no freshness policy and no last_verified_at", "policy_version": POLICY_VERSION}
-        return {"temporal_status": "CURRENT", "reason": "verified and no stricter freshness policy applies", "policy_version": POLICY_VERSION}
-
+    bound_run = source.get("verified_research_id")
+    if bound_run is not None:
+        if not isinstance(bound_run, str) or not bound_run.strip() or not research_id or bound_run != research_id:
+            return result("UNKNOWN", "verification belongs to an unconfirmed or different research run")
+    run_start = _parse_dt(research_started_at)
+    if research_started_at is not None and (run_start is None or run_start > as_of):
+        return result("UNKNOWN", "invalid research start")
+    if bound_run is not None and run_start is not None and observed < run_start:
+        return result("UNKNOWN", "verification predates this research run")
+    if ttl == 0:
+        if source.get("verified_for_research") is not True or not bound_run or run_start is None or observed < run_start:
+            return result("UNKNOWN", "zero-cache evidence needs verified_research_id and research_contract.started_at")
+        return result("CURRENT", "verified within the explicitly identified research run; not reusable cache",
+                      requires_live_verification=requires_live, verification_run_bound=True)
     try:
-        ttl = float(ttl_days)
-    except (TypeError, ValueError):
-        return {"temporal_status": "UNKNOWN", "reason": "invalid freshness_ttl_days", "policy_version": POLICY_VERSION}
-    if last_verified is None:
-        return {"temporal_status": "UNKNOWN", "reason": "last_verified_at required by freshness policy", "policy_version": POLICY_VERSION}
-
-    expiry = last_verified + timedelta(days=max(ttl, 0.0))
-    if as_of > expiry:
-        return {
-            "temporal_status": "STALE", "reason": "verification age exceeds freshness policy",
-            "computed_expires_at": expiry.isoformat(), "policy_version": POLICY_VERSION,
-        }
-    if ttl > 0 and as_of >= last_verified + timedelta(days=ttl * 0.8):
-        return {
-            "temporal_status": "NEAR_EXPIRY", "reason": "verification is within final 20 percent of freshness window",
-            "computed_expires_at": expiry.isoformat(), "policy_version": POLICY_VERSION,
-        }
-    return {
-        "temporal_status": "CURRENT", "reason": "verification is within freshness policy",
-        "computed_expires_at": expiry.isoformat(), "policy_version": POLICY_VERSION,
-    }
+        expiry = observed + timedelta(days=ttl)
+        near = observed + timedelta(days=ttl * 0.8)
+    except (OverflowError, ValueError):
+        return result("UNKNOWN", "freshness window exceeds timestamp range")
+    if as_of >= expiry:
+        return result("STALE", "verification age exceeds freshness policy", computed_expires_at=expiry.isoformat())
+    status = "NEAR_EXPIRY" if as_of >= near else "CURRENT"
+    return result(status, "verification is within freshness policy", computed_expires_at=expiry.isoformat(),
+                  requires_live_verification=requires_live, verification_run_bound=bool(bound_run))
 
 
 def fingerprint_source(source: Dict[str, Any]) -> str:
@@ -272,6 +313,8 @@ def _id_index(rows: Iterable[Dict[str, Any]], field: str) -> Dict[str, Dict[str,
 
 
 def _claim_needs_freshness(claim: Dict[str, Any]) -> bool:
+    if claim.get("claim_type") in LIVE_VERIFICATION_TYPES | {"current_fact"}:
+        return True
     if claim.get("temporal_sensitivity") in {"high", "medium"}:
         return True
     return claim.get("claim_type") not in {"historical_fact", "doctrine_framework"} and claim.get("temporal_sensitivity") != "static"
@@ -409,6 +452,8 @@ def validate_ledger(ledger: Dict[str, Any]) -> Dict[str, Any]:
         cid = claim.get("claim_id") or f"claims[{i}]"
         if not claim.get("claim_text"):
             errors.append(f"{cid}.claim_text is required")
+        if "contradiction_tested" in claim and type(claim["contradiction_tested"]) is not bool:
+            errors.append(f"{cid}.contradiction_tested must be boolean")
         ctype = claim.get("claim_type")
         if not ctype:
             errors.append(f"{cid}.claim_type is required")
@@ -555,7 +600,12 @@ def validate_ledger(ledger: Dict[str, Any]) -> Dict[str, Any]:
         if contract.get("privacy_lane") in {"PRIVATE", "USER_SUPPLIED"} and search.get("source_lane") == "PUBLIC":
             if search.get("sanitized_for_external") is not True:
                 errors.append(f"{sid} public search from a non-public research lane must set sanitized_for_external=true")
-        if search.get("completed") and search.get("purpose") in FALSIFIER_PURPOSES and cid in claim_ids:
+        if search.get("completed") is True and search.get("purpose") in FALSIFIER_PURPOSES and cid in claim_ids:
+            done_at = _parse_dt(search.get("completed_at"))
+            as_of = _parse_dt(contract.get("as_of"))
+            if not isinstance(search.get("query_summary"), str) or not search["query_summary"].strip() or done_at is None or as_of is None or done_at > as_of:
+                errors.append(f"{sid} completed falsifier requires query_summary and admissible completed_at")
+                continue
             completed_falsifier_claims.add(str(cid))
 
     for claim in claims:
@@ -636,8 +686,52 @@ def _accepted_edges_for_claim(evidence: List[Dict[str, Any]], claim_id: str, dir
     ]
 
 
-def _falsifier_searches(searches: List[Dict[str, Any]], claim_id: str) -> List[Dict[str, Any]]:
-    return [s for s in searches if s.get("claim_id") == claim_id and s.get("completed") and s.get("purpose") in FALSIFIER_PURPOSES]
+def _falsifier_searches(searches: List[Dict[str, Any]], claim_id: str, as_of: Optional[str] = None) -> List[Dict[str, Any]]:
+    clock = _parse_dt(as_of)
+    return [s for s in searches if s.get("claim_id") == claim_id and s.get("completed") is True
+            and s.get("purpose") in FALSIFIER_PURPOSES
+            and isinstance(s.get("query_summary"), str) and s["query_summary"].strip()
+            and _parse_dt(s.get("completed_at")) is not None and clock is not None
+            and _parse_dt(s["completed_at"]) <= clock]
+
+
+def _edge_quality(edge: Dict[str, Any]) -> bool:
+    """All dimensions must hold on the same evidence edge, not across a mixture."""
+    return (all(edge.get(field) in {"high", "medium"} for field in ("authority_fit", "directness", "scope_fit"))
+            and edge.get("measurement_quality") in {"high", "medium", "not_applicable"}
+            and isinstance(edge.get("locator"), str) and bool(edge["locator"].strip()))
+
+
+def _independence_components(sources: List[Dict[str, Any]]) -> Dict[str, str]:
+    """Collapse declared lineage and identical references; do not certify independence."""
+    parents = {s["source_id"]: s["source_id"] for s in sources if isinstance(s.get("source_id"), str)}
+    def find(sid):
+        while parents[sid] != sid:
+            parents[sid] = parents[parents[sid]]
+            sid = parents[sid]
+        return sid
+    def join(a, b):
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parents[max(ra, rb)] = min(ra, rb)
+    seen = {}
+    for source in sources:
+        sid = source.get("source_id")
+        if sid not in parents:
+            continue
+        for field in ("independence_group", "canonical_ref", "content_hash"):
+            value = source.get(field)
+            if not isinstance(value, str) or not value.strip():
+                continue
+            key = (field, value.strip())
+            if key in seen:
+                join(sid, seen[key])
+            else:
+                seen[key] = sid
+        for prior in source.get("derived_from_source_ids", []):
+            if prior in parents:
+                join(sid, prior)
+    return {sid: find(sid) for sid in parents}
 
 
 def _support_freshness(
@@ -645,6 +739,8 @@ def _support_freshness(
     support_edges: List[Dict[str, Any]],
     sources_by_id: Dict[str, Dict[str, Any]],
     as_of: Optional[str],
+    research_id: Optional[str] = None,
+    research_started_at: Optional[str] = None,
 ) -> Tuple[bool, List[Dict[str, Any]], int]:
     if claim.get("epistemic_kind") == "INFERENCE" or not _claim_needs_freshness(claim):
         return True, [], 0
@@ -657,10 +753,10 @@ def _support_freshness(
         source = sources_by_id.get(str(edge.get("source_id")))
         if not source:
             continue
-        result = temporal_status(source, as_of, str(claim.get("claim_type") or "current_fact"))
+        result = temporal_status(source, as_of, str(claim.get("claim_type") or "current_fact"), research_id=research_id, research_started_at=research_started_at)
         status = result.get("temporal_status")
         checks.append({"evidence_id": edge.get("evidence_id"), "source_id": source.get("source_id"), **result})
-        if status in {"CURRENT", "NEAR_EXPIRY"} and edge.get("authority_fit") in {"high", "medium"}:
+        if status in {"CURRENT", "NEAR_EXPIRY"} and _edge_quality(edge):
             admissible_count += 1
         elif status not in {"CURRENT", "NEAR_EXPIRY"}:
             stale_accepted_count += 1
@@ -688,41 +784,46 @@ def coverage(ledger: Dict[str, Any]) -> Dict[str, Any]:
     all_independence_groups: set[str] = set()
     unknown_independence_edges = 0
 
-    for claim in material_claims:
+    components = _independence_components(sources)
+    relevant_gaps = {g.get("claim_id") for g in gaps if g.get("severity") in {"critical", "material"}}
+    unresolved_ids = {c.get("claim_id") for c in contradictions if c.get("resolution") == "UNRESOLVED"}
+    all_rows = {}
+    for claim in claims:
         cid = str(claim.get("claim_id") or "")
         support_edges = _accepted_edges_for_claim(evidence, cid, "SUPPORT")
         contradict_edges = _accepted_edges_for_claim(evidence, cid, "CONTRADICT")
         support_sources = [sources_by_id.get(str(e.get("source_id"))) for e in support_edges]
         support_sources = [s for s in support_sources if s]
         has_primary = any(s.get("source_role") in PRIMARY_ROLES for s in support_sources)
-        has_authority = any(e.get("authority_fit") in {"high", "medium"} and e.get("directness") in {"high", "medium"} for e in support_edges)
-        falsifiers = _falsifier_searches(searches, cid)
-        freshness_ok, temporal_checks, stale_supports = _support_freshness(claim, support_edges, sources_by_id, as_of)
+        has_authority = any(_edge_quality(e) for e in support_edges)
+        falsifiers = _falsifier_searches(searches, cid, as_of)
+        freshness_ok, temporal_checks, stale_supports = _support_freshness(claim, support_edges, sources_by_id, as_of, ledger.get("research_id"), contract.get("started_at"))
         groups = set()
         unknown_groups = 0
         for source in support_sources:
             group = str(source.get("independence_group") or "").strip()
             if group:
-                groups.add(group)
-                all_independence_groups.add(group)
+                groups.add(components[source["source_id"]])
+                if claim.get("materiality") in {"critical", "material"}:
+                    all_independence_groups.add(components[source["source_id"]])
             else:
                 unknown_groups += 1
-                unknown_independence_edges += 1
+                if claim.get("materiality") in {"critical", "material"}:
+                    unknown_independence_edges += 1
 
         dep_ids = [str(x) for x in claim.get("depends_on_claim_ids", [])]
-        deps_ready = all(
-            claims_by_id.get(dep, {}).get("status") in {"VERIFIED", "SUPPORTED_INFERENCE"}
-            for dep in dep_ids
-        ) if dep_ids else False
-
-        if claim.get("epistemic_kind") == "FACT":
-            ready = claim.get("status") == "VERIFIED" and bool(support_edges) and has_authority and freshness_ok and bool(falsifiers) and bool(claim.get("contradiction_tested"))
-            if ready:
-                fact_ready += 1
-        else:
-            ready = claim.get("status") == "SUPPORTED_INFERENCE" and deps_ready and bool(falsifiers) and bool(claim.get("contradiction_tested"))
-            if ready:
-                inference_ready += 1
+        falsifier_ok = bool(falsifiers) and claim.get("contradiction_tested") is True
+        # Supporting facts need evidence too; a falsifier is mandatory when material.
+        requires_falsifier = claim.get("materiality") in {"critical", "material"}
+        local_gate = (falsifier_ok or not requires_falsifier) and cid not in relevant_gaps and cid not in unresolved_ids
+        ready = (claim.get("epistemic_kind") == "FACT" and claim.get("status") == "VERIFIED"
+                 and bool(support_edges) and has_authority and freshness_ok and local_gate)
+        deps_ready = False
+        all_rows[cid] = {"ready": ready, "dependency_ids": dep_ids, "local_gate": local_gate,
+                         "inference": claim.get("epistemic_kind") == "INFERENCE",
+                         "status": claim.get("status")}
+        if claim.get("materiality") not in {"critical", "material"}:
+            continue
 
         if support_edges:
             accepted_support_count += 1
@@ -754,6 +855,24 @@ def coverage(ledger: Dict[str, Any]) -> Dict[str, Any]:
             "unknown_independence_support_count": unknown_groups,
             "dependencies_ready": deps_ready if claim.get("epistemic_kind") == "INFERENCE" else None,
         })
+
+    # No recursion limit and no promotion from nominal VERIFIED labels alone.
+    # Cycles and missing dependencies never enter the ready set.
+    ready_ids = {cid for cid, row in all_rows.items() if row["ready"]}
+    remaining = {cid for cid, row in all_rows.items() if row["inference"]}
+    while remaining:
+        newly_ready = {cid for cid in remaining if all_rows[cid]["status"] == "SUPPORTED_INFERENCE"
+                       and all_rows[cid]["local_gate"] and all_rows[cid]["dependency_ids"]
+                       and set(all_rows[cid]["dependency_ids"]) <= ready_ids}
+        if not newly_ready:
+            break
+        ready_ids.update(newly_ready)
+        remaining.difference_update(newly_ready)
+    for row in claim_rows:
+        item = all_rows[row["claim_id"]]
+        row["ready"] = row["claim_id"] in ready_ids
+        if item["inference"]:
+            row["dependencies_ready"] = bool(item["dependency_ids"]) and set(item["dependency_ids"]) <= ready_ids
 
     critical_ids = {str(c.get("claim_id")) for c in critical_claims}
     material_ids = {str(c.get("claim_id")) for c in material_claims}
@@ -818,9 +937,12 @@ def audit(ledger: Dict[str, Any]) -> Dict[str, Any]:
         elif cov["unresolved_material_contradictions"]:
             status = "PARTIAL"
             reason = "material unresolved contradiction remains"
-        elif cov["critical_gaps"]:
+        elif cov["critical_gaps"] or cov["material_gaps"]:
             status = "PARTIAL"
-            reason = "critical evidence gap remains open"
+            reason = "critical or material evidence gap remains open"
+        elif cov["material_claim_count"] == 0:
+            status = "PARTIAL"
+            reason = "no material research scope has been assessed"
         elif any(not row["ready"] for row in cov["claims"]):
             status = "PARTIAL"
             reason = "one or more material claims do not satisfy the evidence gate"
@@ -843,7 +965,16 @@ def audit(ledger: Dict[str, Any]) -> Dict[str, Any]:
 def refresh_plan(ledger: Dict[str, Any]) -> Dict[str, Any]:
     contract = ledger.get("research_contract") if isinstance(ledger.get("research_contract"), dict) else {}
     as_of = contract.get("as_of")
-    claims = [c for c in ledger.get("claims", []) if isinstance(c, dict) and c.get("materiality") in {"critical", "material"}]
+    all_claims = _id_index([c for c in ledger.get("claims", []) if isinstance(c, dict)], "claim_id")
+    needed = {cid for cid, c in all_claims.items() if c.get("materiality") in {"critical", "material"}}
+    pending = list(needed)
+    while pending:
+        claim = all_claims.get(pending.pop(), {})
+        for dep in claim.get("depends_on_claim_ids", []):
+            if dep in all_claims and dep not in needed:
+                needed.add(dep)
+                pending.append(dep)
+    claims = [c for cid, c in all_claims.items() if cid in needed]
     sources = [s for s in ledger.get("sources", []) if isinstance(s, dict)]
     evidence = [e for e in ledger.get("evidence", []) if isinstance(e, dict)]
     sources_by_id = _id_index(sources, "source_id")
@@ -861,7 +992,7 @@ def refresh_plan(ledger: Dict[str, Any]) -> Dict[str, Any]:
             if key in seen:
                 continue
             seen.add(key)
-            result = temporal_status(source, as_of, str(claim.get("claim_type") or "current_fact"))
+            result = temporal_status(source, as_of, str(claim.get("claim_type") or "current_fact"), research_id=ledger.get("research_id"), research_started_at=contract.get("started_at"))
             status = result.get("temporal_status")
             items.append({
                 "claim_id": cid,
@@ -876,7 +1007,17 @@ def refresh_plan(ledger: Dict[str, Any]) -> Dict[str, Any]:
                 "computed_expires_at": result.get("computed_expires_at"),
                 "reason": result.get("reason"),
             })
+    affected = {i["claim_id"] for i in items if i["action"] == "REFRESH_NOW"}
+    dependent = set()
+    while True:
+        extra = {c["claim_id"] for c in claims if c.get("epistemic_kind") == "INFERENCE"
+                 and set(c.get("depends_on_claim_ids", [])) & affected} - affected
+        if not extra:
+            break
+        dependent.update(extra)
+        affected.update(extra)
     return {
+        "dependent_claim_ids": sorted(dependent),
         "as_of": as_of,
         "refresh_required": any(i["action"] == "REFRESH_NOW" for i in items),
         "refresh_soon": any(i["action"] == "REFRESH_SOON" for i in items),
@@ -983,7 +1124,8 @@ def migrate_v1(old: Dict[str, Any]) -> Dict[str, Any]:
             "temporal_sensitivity": c.get("temporal_sensitivity") or "low",
             "scope": c.get("scope") or {},
             "depends_on_claim_ids": [],
-            "contradiction_tested": bool(c.get("contradiction_tested")),
+            "contradiction_tested": False,
+            "legacy_contradiction_tested": c.get("contradiction_tested") is True,
             "status": c.get("status") if c.get("status") in CLAIM_STATUSES else "UNKNOWN",
             "confidence": c.get("confidence") if c.get("confidence") in CONFIDENCE_LEVELS else "low",
             "notes": c.get("notes"),
@@ -1015,8 +1157,8 @@ def migrate_v1(old: Dict[str, Any]) -> Dict[str, Any]:
             "expires_at": row.get("expires_at"),
             "source_version": row.get("source_version"),
             "superseded_by_source_id": None,
-            "requires_live_verification": bool(row.get("requires_live_verification")),
-            "verified_for_research": bool(row.get("verified_for_research")),
+            "requires_live_verification": row.get("requires_live_verification") is True,
+            "verified_for_research": False,
             "freshness_ttl_days": row.get("freshness_ttl_days"),
             "derived_from_source_ids": [],
             "content_hash": row.get("content_hash"),
@@ -1047,7 +1189,7 @@ def migrate_v1(old: Dict[str, Any]) -> Dict[str, Any]:
 
     searches = []
     for claim in claims:
-        if claim.get("contradiction_tested"):
+        if claim.get("legacy_contradiction_tested"):
             cid = str(claim.get("claim_id"))
             searches.append({
                 "search_id": make_id("search", f"legacy-falsifier|{cid}"),
@@ -1055,8 +1197,8 @@ def migrate_v1(old: Dict[str, Any]) -> Dict[str, Any]:
                 "purpose": "FALSIFIER",
                 "source_lane": "PUBLIC",
                 "query_summary": "Migrated v1 contradiction_tested flag; original query unavailable",
-                "completed": True,
-                "completed_at": as_of or None,
+                "completed": False,
+                "completed_at": None,
                 "result_source_ids": [],
                 "novelty_count": None,
                 "notes": "Migration shim only; rerun falsifier search for high-stakes use.",
@@ -1201,6 +1343,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--source-json", required=True)
     p.add_argument("--as-of", required=True)
     p.add_argument("--claim-type")
+    p.add_argument("--research-id")
+    p.add_argument("--research-started-at")
 
     p = sub.add_parser("fingerprint-source")
     p.add_argument("--source-json", required=True)
@@ -1211,6 +1355,8 @@ def build_parser() -> argparse.ArgumentParser:
     for name in ("validate", "coverage", "audit", "refresh-plan", "migrate-v1"):
         p = sub.add_parser(name)
         p.add_argument("--ledger-json", required=True)
+        if name == "audit":
+            p.add_argument("--require-ready", action="store_true", help="exit 1 unless the research gate is READY")
 
     p = sub.add_parser("delta")
     p.add_argument("--old-ledger-json", required=True)
@@ -1240,7 +1386,8 @@ def main() -> int:
         elif args.command == "source-policy":
             _json_dump(source_policy(args.claim_type))
         elif args.command == "temporal":
-            _json_dump(temporal_status(_load_json(args.source_json), args.as_of, args.claim_type))
+            _json_dump(temporal_status(_load_json(args.source_json), args.as_of, args.claim_type,
+                                      research_id=args.research_id, research_started_at=args.research_started_at))
         elif args.command == "fingerprint-source":
             print(fingerprint_source(_load_json(args.source_json)))
         elif args.command == "pack-hash":
@@ -1250,7 +1397,10 @@ def main() -> int:
         elif args.command == "coverage":
             _json_dump(coverage(_load_json(args.ledger_json)))
         elif args.command == "audit":
-            _json_dump(audit(_load_json(args.ledger_json)))
+            result = audit(_load_json(args.ledger_json))
+            _json_dump(result)
+            if args.require_ready and result["research_status"] != "READY":
+                return 1
         elif args.command == "refresh-plan":
             _json_dump(refresh_plan(_load_json(args.ledger_json)))
         elif args.command == "migrate-v1":
@@ -1263,8 +1413,8 @@ def main() -> int:
             _json_dump(template(args.question, args.as_of, args.mode))
         else:
             parser.error("unsupported command")
-    except (ValueError, json.JSONDecodeError) as exc:
-        print(json.dumps({"error": str(exc)}), file=sys.stderr)
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError) as exc:
+        print(json.dumps({"error": "invalid input; research was not assessed"}), file=sys.stderr)
         return 2
     return 0
 

@@ -20,3 +20,15 @@ python3 scripts/evidence_kernel.py migrate-v1 --ledger-json old.json
 ```
 
 Review migrated falsifier/search records before high-stakes use. See `migration-v1-v2.md`.
+
+## Explicit automation gate (kernel 2.0.1)
+
+```bash
+python3 scripts/evidence_kernel.py audit --ledger-json evidence.json --require-ready
+```
+
+With `--require-ready`, exit 0 means the deterministic research gate is READY; exit 1 means a validly processed result is not READY; exit 2 means input/processing failed. Ordinary `audit` keeps its legacy report-only exit policy: inspect the JSON, not only process success. Neither result authorizes a business decision or proves source authenticity.
+
+Zero-cache temporal checks accept `--research-id` and `--research-started-at`; full ledger commands read `research_id` and `research_contract.started_at`. See [freshness.md](freshness.md) for migration and admission rules. Missing verification data must be gathered, not generated to satisfy validation.
+
+`refresh-plan.dependent_claim_ids` lists dependent inferences affected by source refresh. The kernel does not execute refresh work. A migrated v1 falsifier flag is only historical metadata; its reminder is incomplete until a real search is performed and recorded.

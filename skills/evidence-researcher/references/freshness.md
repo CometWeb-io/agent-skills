@@ -58,3 +58,44 @@ These are research-cache defaults, not claims about how often reality changes. D
 A material time-sensitive FACT needs at least one accepted support edge from a temporally admissible source with adequate authority/directness. Do not fail a claim merely because an older accepted source remains in the ledger when a newer admissible authoritative source establishes the claim; surface the stale source separately.
 
 If no admissible support remains, research status becomes `REFRESH_REQUIRED`.
+
+## Kernel 2.0.1: executable admission rules
+
+A live-verification flag does not override the cache window. Boolean flags must be JSON booleans, not strings such as `"false"` or integer substitutes. Supplied TTLs must be finite numbers in 0–36500 days. A registered default is a ceiling; an explicit source policy can shorten it, not extend it. Unregistered claim types need an explicit policy.
+
+Times must be timezone-aware timestamps. Publication and verification cannot occur after the assessment. Verification cannot precede the recorded publication of the inspected artifact. Reversed effective intervals are invalid. `effective_to`, `expires_at`, and positive cache expiry are exclusive upper boundaries. A `static` label cannot disable the live/current-fact gate.
+
+### Zero-cache evidence
+
+Zero days means no reuse between research runs, not an impossible requirement to verify at the exact assessment microsecond. Record both:
+
+- `research_contract.started_at`: actual start of this research run;
+- source `verified_research_id`: exact `research_id` of the run that inspected the source.
+
+The source must also have `verified_for_research: true` and a `last_verified_at` within the inclusive interval from `started_at` to `as_of`. Missing run binding produces `UNKNOWN`. Never synthesize a run ID or timestamp to clear this gate.
+
+For direct CLI evaluation:
+
+```bash
+python scripts/evidence_kernel.py temporal \
+  --source-json source.json --claim-type service_status \
+  --as-of '2026-09-13T10:00:00Z' \
+  --research-id res_example \
+  --research-started-at '2026-09-13T09:00:00Z'
+```
+
+`audit`, `coverage`, and `refresh-plan` take that context from the ledger. If a source supplies a run identifier, a mismatch is inadmissible even for a positive cache window. For legacy positive-window sources without a run identifier, the boolean is still only a supplied assertion; the kernel enforces age but does not authenticate a live inspection.
+
+### Quality, dependencies and independence
+
+Authority, directness, scope fit, measurement quality, pinpoint locator and freshness must hold on the same supporting edge. A stale authoritative source plus a fresh weak summary cannot jointly masquerade as one admissible source.
+
+Inference dependencies are evaluated from their evidence, including supporting claims; a nominal `VERIFIED` label alone is insufficient. Unresolved contradictions or material gaps on a prerequisite block dependent inferences. `refresh-plan.dependent_claim_ids` identifies downstream inferences affected by refresh work; it is not an execution record.
+
+Declared source lineage, identical canonical references, identical content hashes and explicitly shared independence groups are collapsed into connected components for counting. This is conservative duplicate accounting, not proof that remaining components are genuinely independent. Unknown independence stays unknown.
+
+### Completion and migration
+
+An empty pack, a pack with no material claims, or one with open material gaps cannot be `READY`. Completed falsifier records need an actual query summary and a timestamp no later than `as_of`. Migration from v1 preserves legacy flags only as history, resets research verification, and creates incomplete search reminders rather than fabricating executed searches.
+
+The kernel checks consistency of supplied records. It does not authenticate sources, verify the meaning of a quotation, inspect a website, prove entailment, or authorize a downstream decision.
