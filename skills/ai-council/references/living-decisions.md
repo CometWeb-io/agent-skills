@@ -33,3 +33,13 @@ Każdy watch wiąż z Assumption Key, jeśli to możliwe. `Triggered` o wysokiej
 ## Revalidation
 
 Raportuj `Current As Of`, `Current Validity`, powód i liczbę watch triggerów. Revalidacja może być częściowa: sprawdzaj tylko zmienione/materialne obszary, ale ponownie uruchom binding gates, których podstawa się zmieniła.
+
+## Kernel 5.0.1 — brak obserwacji nie oznacza stabilności
+
+`watch` rozdziela `observation_status: OBSERVED | UNKNOWN`. Dla braku danych, nieznanego operatora, błędnej liczby albo procentowej zmiany względem zera zwraca `triggered: null`, nie `false`. Nie konwertuj tego pola automatycznie przez `bool()`.
+
+Operatory liczbowe przyjmują skończone liczby JSON. `changed` porównuje zapis JSON, więc zachowuje różnice typów, także `1` i `1.0`. Schemat danych dostawcy powinien być stabilny; kernel nie normalizuje tych obserwacji po cichu.
+
+Nieznana obserwacja lub brak jakichkolwiek watch dependencies prowadzą do `WATCH`, nie do `VALID`. Jawnie wykryta zmiana o wysokiej materialności prowadzi do `REOPEN`, nawet gdy inne evidence jest stare. Raport zachowuje wtedy wszystkie sygnały i dotknięte założenia. `STALE`, `WATCH` i `REOPEN` wymagają rewalidacji; niepoprawny termin następnej kontroli także wymaga przeglądu.
+
+Nie jest to proces monitorujący w tle ani uwierzytelnianie snapshotu. `VALID` dotyczy wyłącznie przekazanych obserwacji, nie kompletności wszystkich zależności świata. [Pozostałe granice](kernel-admission.md).

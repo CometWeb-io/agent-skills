@@ -5,11 +5,12 @@ import hashlib
 import json
 import math
 import re
+import sys
 from datetime import datetime
 from typing import Any
 
 COUNCIL_VERSION = "5.0"
-KERNEL_VERSION = "5.0.0"
+KERNEL_VERSION = "5.0.1"
 
 VERDICTS = {"GO", "NO-GO", "TEST", "DEFER"}
 GATE_STATUSES = {"NOT_REQUIRED", "CLEAR", "CLEAR_WITH_CONTROLS", "COUNSEL_REQUIRED", "BLOCK"}
@@ -265,6 +266,88 @@ def _jaccard(a: set[str], b: set[str]) -> float:
     return len(a & b) / len(union) if union else 0.0
 
 
+def _boolean(value: Any, name: str) -> bool:
+    if type(value) is not bool:
+        raise ValueError(f"{name} must be boolean")
+    return value
+
+
+def _finite_number(value: Any, name: str) -> float:
+    if type(value) not in (int, float):
+        raise ValueError(f"{name} must be a finite number")
+    try:
+        number = float(value)
+    except OverflowError as exc:
+        raise ValueError(f"{name} must be finite") from exc
+    if not math.isfinite(number):
+        raise ValueError(f"{name} must be finite")
+    return number
+
+
+def _unit_interval(value: Any, name: str) -> float:
+    number = _finite_number(value, name)
+    if not 0 <= number <= 1:
+        raise ValueError(f"{name} must be between zero and one")
+    return number
+
+
+def _aware_time(value: Any, name: str) -> datetime:
+    if not isinstance(value, str) or len(value) > 64 or "T" not in value:
+        raise ValueError(f"{name} must be a timezone-aware timestamp")
+    try:
+        stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ValueError(f"{name} is not an ISO timestamp") from exc
+    if stamp.tzinfo is None:
+        raise ValueError(f"{name} requires a timezone")
+    return stamp
+
+
+def _rows(value: Any, name: str) -> list[dict[str, Any]]:
+    if not isinstance(value, list) or len(value) > 10000 or any(not isinstance(v, dict) for v in value):
+        raise ValueError(f"{name} must be a bounded list of objects")
+    return value
+
+
+def _strings(value: Any, name: str) -> list[str]:
+    if not isinstance(value, list) or any(not isinstance(v, str) or not v.strip() for v in value):
+        raise ValueError(f"{name} must be a list of nonempty strings")
+    if len(value) > 10000 or len(value) != len(set(value)):
+        raise ValueError(f"{name} contains duplicate or excessive identifiers")
+    return value
+
+
+def _mode_name(mode: Any) -> str:
+    if not isinstance(mode, str):
+        raise ValueError("mode must be FAST, LIGHT, STANDARD or DEEP")
+    normalized = mode.strip().upper()
+    if normalized == "LIGHT":
+        normalized = "FAST"
+    if normalized not in {"FAST", "STANDARD", "DEEP"}:
+        raise ValueError("unknown council mode")
+    return normalized
+
+
+def _load_cli_json(text: str) -> Any:
+    if len(text.encode("utf-8")) > 4 * 1024 * 1024:
+        raise ValueError("JSON input exceeds limit")
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate JSON key")
+            result[key] = value
+        return result
+    def number(text):
+        value = float(text)
+        if not math.isfinite(value):
+            raise ValueError("non-finite JSON number")
+        return value
+    def constant(_):
+        raise ValueError("non-finite JSON constant")
+    return json.loads(text, object_pairs_hook=pairs, parse_float=number, parse_constant=constant)
+
+
 def infer_decision_archetype(query: str) -> str:
     text = _norm(query)
     for archetype, triggers in ARCHETYPE_RULES:
@@ -389,7 +472,7 @@ def choose_council_mode(profile_or_contract: dict[str, Any], financial_impact: f
 
 
 def mode_budget(mode: str) -> dict[str, Any]:
-    mode = str(mode or "STANDARD").upper()
+    mode = _mode_name(mode)
     budgets = {
         "FAST": {
             "adviser_count": 3, "expert_count": 3, "max_specialists": 1, "max_gatekeepers": 2,
@@ -497,6 +580,7 @@ def detect_missing_perspectives(query: str, existing_experts: list[str] | None =
 
 
 def route_roles(contract: dict[str, Any], mode: str) -> dict[str, Any]:
+    mode = _mode_name(mode)
     budget = mode_budget(mode)
     profile = {
         "primary_domain": contract.get("primary_domain", "strategy"),
@@ -531,7 +615,8 @@ def route_roles(contract: dict[str, Any], mode: str) -> dict[str, Any]:
         gatekeepers.append("responsible_ai")
     if "reputation" in surfaces:
         gatekeepers.append("reputation")
-    gatekeepers = _dedupe(gatekeepers)[: budget["max_gatekeepers"]]
+    # Cost budgets may limit advisers, never the required risk gates.
+    gatekeepers = _dedupe(gatekeepers)
 
     auditors = ["red_team", "evidence_judge"]
     if budget.get("minority_sentinel"):
@@ -543,6 +628,7 @@ def route_roles(contract: dict[str, Any], mode: str) -> dict[str, Any]:
         "advisers": advisers,
         "specialists": specialists,
         "gatekeepers": gatekeepers,
+        "gatekeeper_budget_exceeded": len(gatekeepers) > budget["max_gatekeepers"],
         "auditors": auditors,
         "authority": ["chairman"],
         "role_classes": {rid: ROLE_REGISTRY[rid]["class"] for rid in _dedupe(advisers + specialists + gatekeepers + auditors + ["chairman"])},
@@ -635,7 +721,7 @@ def required_confidence(profile_or_contract: dict[str, Any], evidence_coverage: 
 
 
 def plan_council(contract: dict[str, Any], mode: str | None = None) -> dict[str, Any]:
-    selected_mode = str(mode or choose_council_mode(contract)).upper()
+    selected_mode = _mode_name(mode or choose_council_mode(contract))
     budget = mode_budget(selected_mode)
     roles = route_roles(contract, selected_mode)
     fw_profile = {
@@ -857,9 +943,13 @@ def assumption_risk(importance: float, uncertainty: float) -> float:
 
 
 def decompose_confidence(dimensions: dict[str, Any], binding_dimensions: list[str] | None = None) -> dict[str, Any]:
-    clean = {str(k): _clamp01(v) for k, v in dimensions.items()}
-    if not clean:
-        return {"dimensions": {}, "overall": 0.0, "binding_dimensions": [], "weakest_dimension": None}
+    if not isinstance(dimensions, dict):
+        raise ValueError("dimensions must be an object")
+    binding = _strings(binding_dimensions if binding_dimensions is not None else [], "binding_dimensions")
+    clean = {k: _unit_interval(v, "confidence dimension") for k, v in dimensions.items()}
+    if any(not isinstance(k, str) or not k.strip() for k in clean):
+        raise ValueError("dimension names must be nonempty strings")
+    missing = sorted(set(binding) - clean.keys())
     default_weights = {
         "thesis": 0.28, "evidence": 0.22, "execution": 0.18, "financial": 0.10,
         "legal": 0.08, "security": 0.06, "privacy": 0.04, "timing": 0.04,
@@ -867,16 +957,15 @@ def decompose_confidence(dimensions: dict[str, Any], binding_dimensions: list[st
     weights = {k: default_weights.get(k, 0.05) for k in clean}
     total = sum(weights.values()) or 1.0
     weighted = sum(clean[k] * weights[k] for k in clean) / total
-    binding = [b for b in (binding_dimensions or []) if b in clean]
-    if binding:
-        binding_floor = min(clean[b] for b in binding)
-        weighted = min(weighted, binding_floor + 0.10)
-    weakest = min(clean, key=lambda k: (clean[k], k))
+    if missing:
+        weighted = 0.0
+    elif binding:
+        weighted = min(weighted, min(clean[b] for b in binding) + 0.10)
     return {
         "dimensions": {k: round(v, 6) for k, v in clean.items()},
-        "overall": round(_clamp01(weighted), 6),
-        "binding_dimensions": binding,
-        "weakest_dimension": weakest,
+        "overall": round(weighted, 6), "binding_dimensions": binding,
+        "missing_binding_dimensions": missing,
+        "weakest_dimension": min(clean, key=lambda k: (clean[k], k)) if clean else None,
     }
 
 
@@ -928,29 +1017,47 @@ def gate_verdict(proposed_verdict: str, confidence: float, required_confidence_v
                  reversible_experiment_available: bool, critical_gap: str | None = None,
                  gate_statuses: dict[str, str] | None = None, controls_implemented: bool = False,
                  freshness_status: str = "CLEAR", human_approval_required: bool = False,
-                 human_approved: bool = False) -> str:
-    verdict = str(proposed_verdict or "DEFER").upper()
-    if verdict not in VERDICTS:
-        verdict = "DEFER"
-    if str(freshness_status or "CLEAR").upper() != "CLEAR":
+                 human_approved: bool = False, required_gatekeepers: list[str] | None = None) -> str:
+    """Apply declared constraints, not factual verification or execution authorization.
+
+    A supplied BLOCK remains NO-GO even when other evidence needs refresh. That
+    preserves the constraint; it does not authenticate its basis. Unknown inputs
+    never become confidence zero, approval, implemented controls, or a clear gate.
+    """
+    conf = _unit_interval(confidence, "confidence")
+    required = _unit_interval(required_confidence_value, "required_confidence")
+    experiment = _boolean(reversible_experiment_available, "reversible_experiment_available")
+    _boolean(controls_implemented, "controls_implemented")
+    _boolean(human_approval_required, "human_approval_required")
+    _boolean(human_approved, "human_approved")
+    if critical_gap is not None and (not isinstance(critical_gap, str) or not critical_gap.strip()):
+        raise ValueError("critical_gap must be null or nonempty text")
+    if gate_statuses is not None and not isinstance(gate_statuses, dict):
+        raise ValueError("gate_statuses must be an object")
+    statuses = {}
+    for name, status in (gate_statuses or {}).items():
+        if not isinstance(name, str) or not name.strip() or not isinstance(status, str):
+            raise ValueError("invalid gate name or status")
+        statuses[name] = status.strip().upper()
+    needed = _strings(required_gatekeepers if required_gatekeepers is not None else [], "required_gatekeepers")
+    verdict = proposed_verdict.strip().upper() if isinstance(proposed_verdict, str) else "DEFER"
+    if "BLOCK" in statuses.values():
+        return "NO-GO"
+    if verdict not in VERDICTS or any(v not in GATE_STATUSES for v in statuses.values()):
+        return "DEFER"
+    if any(name not in statuses or statuses[name] == "NOT_REQUIRED" for name in needed):
+        return "DEFER"
+    if "COUNSEL_REQUIRED" in statuses.values():
+        return "DEFER"
+    if not isinstance(freshness_status, str) or freshness_status.strip().upper() != "CLEAR":
         return "DEFER"
     if human_approval_required and not human_approved:
         return "DEFER"
-    statuses = {str(k): str(v).upper() for k, v in (gate_statuses or {}).items()}
-    if any(status == "BLOCK" for status in statuses.values()):
-        return "NO-GO"
-    if any(status == "COUNSEL_REQUIRED" for status in statuses.values()):
+    # A trial is not permission to skip safeguards required for the assessed scope.
+    if "CLEAR_WITH_CONTROLS" in statuses.values() and not controls_implemented:
         return "DEFER"
-    if any(status not in GATE_STATUSES for status in statuses.values()):
-        return "DEFER"
-    if any(status == "CLEAR_WITH_CONTROLS" for status in statuses.values()) and not controls_implemented and verdict == "GO":
-        return "TEST" if reversible_experiment_available else "DEFER"
-    conf = _clamp01(confidence)
-    required = _clamp01(required_confidence_value)
-    if verdict in {"GO", "NO-GO"} and conf < required:
-        return "TEST" if reversible_experiment_available else "DEFER"
-    if critical_gap and verdict in {"GO", "NO-GO"} and conf < min(0.95, required + 0.03):
-        return "TEST" if reversible_experiment_available else "DEFER"
+    if verdict in {"GO", "NO-GO"} and (critical_gap or conf < required):
+        return "TEST" if experiment else "DEFER"
     return verdict
 
 
@@ -1353,98 +1460,98 @@ def _hours_between(older: datetime, newer: datetime) -> float:
 
 
 def evaluate_temporal_truth(row: dict[str, Any], as_of: str) -> dict[str, Any]:
-    now = _parse_date(as_of)
-    if now is None:
-        raise ValueError("as_of must be ISO-8601")
-    claim_type = str(row.get("claim_type") or row.get("freshness_policy") or "general_web").lower()
-    if claim_type not in FRESHNESS_POLICIES:
-        claim_type = "general_web"
-    policy = FRESHNESS_POLICIES[claim_type]
-    material = bool(row.get("material", True))
-    published = _parse_date(row.get("published_at"))
-    effective_from = _parse_date(row.get("effective_from"))
-    effective_to = _parse_date(row.get("effective_to"))
-    last_verified = _parse_date(row.get("last_verified_at") or row.get("verified_at") or row.get("observed_at"))
-    superseded_by = row.get("superseded_by")
-    draft = bool(row.get("draft", False))
-
-    status = "CURRENT"
-    reason = "within freshness policy"
-    if draft:
-        status, reason = "DRAFT", "source or rule is marked draft"
-    elif superseded_by:
-        status, reason = "SUPERSEDED", "a superseding source/version is known"
-    elif effective_from is not None:
-        left, right = effective_from, now
-        if left.tzinfo is not None and right.tzinfo is None:
-            right = right.replace(tzinfo=left.tzinfo)
-        if left.tzinfo is None and right.tzinfo is not None:
-            left = left.replace(tzinfo=right.tzinfo)
-        if right < left:
+    now = _aware_time(as_of, "as_of")
+    if not isinstance(row, dict):
+        raise ValueError("temporal row must be an object")
+    claim_type = row.get("claim_type", row.get("freshness_policy", "general_web"))
+    known_policy = isinstance(claim_type, str) and claim_type.lower() in FRESHNESS_POLICIES
+    claim_type = claim_type.lower() if isinstance(claim_type, str) else "unknown"
+    policy = FRESHNESS_POLICIES.get(claim_type, {})
+    material = row.get("material", True)
+    status, reason, age_hours = "CURRENT", "within freshness policy", None
+    parsed = {}
+    fields = ("published_at", "effective_from", "effective_to", "expires_at",
+              "last_verified_at", "verified_at", "observed_at")
+    try:
+        for name in ("material", "draft", "verified_for_decision", "system_of_record_verified"):
+            if name in row:
+                _boolean(row[name], name)
+        if not known_policy:
+            raise ValueError("unregistered freshness policy")
+        for name in fields:
+            parsed[name] = _aware_time(row[name], name) if row.get(name) is not None else None
+        checks = [parsed[n] for n in ("last_verified_at", "verified_at", "observed_at") if parsed[n] is not None]
+        if checks and any(t != checks[0] for t in checks):
+            raise ValueError("conflicting verification timestamps")
+        verified = checks[0] if checks else None
+        if verified and verified > now:
+            raise ValueError("verification is after as_of")
+        if parsed["published_at"] and parsed["published_at"] > now:
+            raise ValueError("publication is after as_of")
+        if parsed["effective_from"] and parsed["effective_to"] and parsed["effective_to"] <= parsed["effective_from"]:
+            raise ValueError("invalid effective interval")
+        if parsed["expires_at"] and verified and parsed["expires_at"] < verified:
+            raise ValueError("verification expiry predates verification")
+        if row.get("draft", False):
+            status, reason = "DRAFT", "source or rule is marked draft"
+        elif row.get("superseded_by"):
+            status, reason = "SUPERSEDED", "a superseding source/version is known"
+        elif parsed["effective_from"] and now < parsed["effective_from"]:
             status, reason = "NOT_YET_EFFECTIVE", "effective_from is in the future"
-    if status == "CURRENT" and effective_to is not None:
-        left, right = effective_to, now
-        if left.tzinfo is not None and right.tzinfo is None:
-            right = right.replace(tzinfo=left.tzinfo)
-        if left.tzinfo is None and right.tzinfo is not None:
-            left = left.replace(tzinfo=right.tzinfo)
-        if right > left:
+        elif parsed["effective_to"] and now >= parsed["effective_to"]:
             status, reason = "SUPERSEDED", "effective_to has passed"
-
-    age_hours = None
-    if status == "CURRENT":
-        if policy.get("versioned_static"):
-            if not row.get("source_version"):
+        elif parsed["expires_at"] and now >= parsed["expires_at"]:
+            status, reason = "STALE", "explicit verification expiry reached"
+        elif policy.get("versioned_static"):
+            if not isinstance(row.get("source_version"), str) or not row["source_version"].strip():
                 status, reason = "UNKNOWN", "versioned static source has no source_version"
-        elif last_verified is None:
+        elif verified is None:
             status, reason = "UNKNOWN", "no last_verified_at/observed_at"
         else:
-            age_hours = _hours_between(last_verified, now)
-            if policy.get("requires_system_of_record") and material and not bool(row.get("system_of_record_verified", False)):
+            age_hours = (now - verified).total_seconds() / 3600.0
+            if policy.get("requires_system_of_record") and material and not row.get("system_of_record_verified", False):
                 status, reason = "STALE", "material internal metric is not verified against system of record"
-            elif policy.get("requires_live_verification") and material and not bool(row.get("verified_for_decision", False)):
+            elif policy.get("requires_live_verification") and material and not row.get("verified_for_decision", False):
                 status, reason = "STALE", "material claim requires live verification for this decision"
-            else:
-                max_age = policy.get("max_age_hours")
-                if max_age is not None and age_hours > float(max_age):
-                    status, reason = "STALE", f"age {age_hours:.2f}h exceeds {max_age}h policy"
-                elif max_age is not None and age_hours > float(max_age) * float(policy.get("near_expiry_ratio", 0.75)):
-                    status, reason = "NEAR_EXPIRY", f"age {age_hours:.2f}h is near freshness limit"
-
-    if status not in TEMPORAL_STATUSES:
-        status = "UNKNOWN"
-    admissible = status in {"CURRENT", "NEAR_EXPIRY"}
-    if material and status in {"DRAFT", "NOT_YET_EFFECTIVE", "STALE", "SUPERSEDED", "UNKNOWN"}:
-        admissible = False
+            elif policy.get("max_age_hours") is not None and age_hours >= policy["max_age_hours"]:
+                status, reason = "STALE", "verification age reaches freshness limit"
+            elif policy.get("max_age_hours") is not None and age_hours > policy["max_age_hours"] * policy["near_expiry_ratio"]:
+                status, reason = "NEAR_EXPIRY", "verification is near freshness limit"
+    except ValueError as exc:
+        status, reason = "UNKNOWN", str(exc)
+        # Bad materiality is unresolved, not an opt-out from the freshness gate.
+        if type(material) is not bool:
+            material = True
     return {
         "claim_id": row.get("claim_id") or row.get("evidence_id") or row.get("id"),
-        "claim_type": claim_type,
-        "status": status,
-        "admissible": bool(admissible),
-        "material": material,
-        "reason": reason,
-        "published_at": row.get("published_at"),
-        "effective_from": row.get("effective_from"),
-        "effective_to": row.get("effective_to"),
+        "claim_type": claim_type, "status": status,
+        "admissible": status in {"CURRENT", "NEAR_EXPIRY"}, "material": material,
+        "reason": reason, "published_at": row.get("published_at"),
+        "effective_from": row.get("effective_from"), "effective_to": row.get("effective_to"),
+        "expires_at": row.get("expires_at"),
         "last_verified_at": row.get("last_verified_at") or row.get("verified_at") or row.get("observed_at"),
         "age_hours": round(age_hours, 3) if age_hours is not None else None,
         "max_age_hours": policy.get("max_age_hours"),
         "requires_live_verification": bool(policy.get("requires_live_verification", False)),
         "requires_system_of_record": bool(policy.get("requires_system_of_record", False)),
-        "superseded_by": superseded_by,
+        "superseded_by": row.get("superseded_by"),
+        "evidence_authentication": "not_performed",
     }
 
 
 def freshness_gate(rows: list[dict[str, Any]], as_of: str) -> dict[str, Any]:
-    evaluated = [evaluate_temporal_truth(row, as_of) for row in rows]
+    _aware_time(as_of, "as_of")
+    evaluated = [evaluate_temporal_truth(row, as_of) for row in _rows(rows, "evidence")]
     blockers = [r for r in evaluated if r["material"] and not r["admissible"]]
     warnings = [r for r in evaluated if r["status"] == "NEAR_EXPIRY"]
     material_ages = [r["age_hours"] for r in evaluated if r["material"] and r["age_hours"] is not None]
     counts = {status: sum(1 for r in evaluated if r["status"] == status) for status in sorted(TEMPORAL_STATUSES)}
     return {
         "as_of": as_of,
-        "status": "REFRESH_REQUIRED" if blockers else "CLEAR",
-        "decision_ready": not blockers,
+        "status": "REFRESH_REQUIRED" if blockers or not evaluated else "CLEAR",
+        "decision_ready": bool(evaluated) and not blockers,
+        "coverage_assessed": False,
+        "reason": "no evidence rows supplied" if not evaluated else "supplied rows evaluated",
         "material_blocker_count": len(blockers),
         "near_expiry_count": len(warnings),
         "oldest_material_evidence_hours": round(max(material_ages), 3) if material_ages else None,
@@ -1469,92 +1576,125 @@ def route_internal_context(query: str) -> dict[str, Any]:
 
 
 def evaluate_watch_dependency(dependency: dict[str, Any]) -> dict[str, Any]:
-    op = str(dependency.get("operator") or "changed").lower()
-    previous = dependency.get("previous")
-    current = dependency.get("current")
-    threshold = dependency.get("threshold")
-    triggered = bool(dependency.get("triggered", False))
-    if op == "changed":
-        triggered = current != previous
-    elif op in {"gt", "gte", "lt", "lte"}:
-        try:
-            c, t = float(current), float(threshold)
-            triggered = {"gt": c > t, "gte": c >= t, "lt": c < t, "lte": c <= t}[op]
-        except (TypeError, ValueError):
-            triggered = False
-    elif op == "pct_change_gt":
-        try:
-            p, c, t = float(previous), float(current), abs(float(threshold))
-            triggered = p != 0 and abs((c - p) / p) > t
-        except (TypeError, ValueError):
-            triggered = False
+    if not isinstance(dependency, dict):
+        raise ValueError("dependency must be an object")
+    op = dependency.get("operator", "changed")
+    op = op.lower() if isinstance(op, str) else "unknown"
+    previous, current, threshold = (dependency.get(n) for n in ("previous", "current", "threshold"))
+    materiality = _unit_interval(dependency.get("materiality", 0.5), "materiality")
+    keys = _strings(dependency.get("assumption_keys", []), "assumption_keys")
+    triggered, status, reason = None, "UNKNOWN", "unusable observation"
+    try:
+        if "triggered" in dependency:
+            _boolean(dependency["triggered"], "triggered")
+        if op == "changed":
+            if previous is None or current is None:
+                raise ValueError("both observations are required")
+            # JSON equality is typed: boolean true is not the numeric value 1.
+            before = json.dumps(previous, sort_keys=True, allow_nan=False)
+            after = json.dumps(current, sort_keys=True, allow_nan=False)
+            triggered = before != after
+        elif op in {"gt", "gte", "lt", "lte", "pct_change_gt"}:
+            c = _finite_number(current, "current")
+            t = _finite_number(threshold, "threshold")
+            if op == "pct_change_gt":
+                p = _finite_number(previous, "previous")
+                if p == 0 or t < 0:
+                    raise ValueError("percentage change requires nonzero baseline and nonnegative threshold")
+                change = abs((c - p) / p)
+                if not math.isfinite(change):
+                    raise ValueError("percentage change overflow")
+                triggered = change > t
+            else:
+                triggered = {"gt": c > t, "gte": c >= t, "lt": c < t, "lte": c <= t}[op]
+        else:
+            raise ValueError("unknown watch operator")
+        status, reason = "OBSERVED", "comparison completed on supplied observations"
+    except (ValueError, TypeError, OverflowError):
+        triggered, status, reason = None, "UNKNOWN", "missing, invalid or incomparable observation"
     return {
         "dependency_id": dependency.get("dependency_id") or dependency.get("id"),
-        "type": dependency.get("type") or "generic",
-        "operator": op,
-        "triggered": bool(triggered),
-        "materiality": _clamp01(dependency.get("materiality", 0.5)),
-        "assumption_keys": list(dependency.get("assumption_keys") or []),
-        "previous": previous,
-        "current": current,
-        "threshold": threshold,
-        "reason": dependency.get("reason") or "",
+        "type": dependency.get("type") or "generic", "operator": op,
+        "triggered": triggered, "observation_status": status, "materiality": materiality,
+        "assumption_keys": keys, "previous": previous, "current": current,
+        "threshold": threshold, "reason": reason,
     }
 
 
 def decision_validity_overlay(decision: dict[str, Any], dependencies: list[dict[str, Any]], as_of: str) -> dict[str, Any]:
-    if decision.get("superseded_by"):
-        return {"status": "SUPERSEDED", "as_of": as_of, "reason": "decision explicitly superseded", "triggered_dependencies": []}
-    if int(decision.get("material_stale_evidence_count") or 0) > 0:
-        return {"status": "STALE", "as_of": as_of, "reason": "material evidence is stale", "triggered_dependencies": []}
-    evaluated = [evaluate_watch_dependency(dep) for dep in dependencies]
-    triggered = [d for d in evaluated if d["triggered"]]
+    now = _aware_time(as_of, "as_of")
+    if not isinstance(decision, dict):
+        raise ValueError("decision must be an object")
+    stale = decision.get("material_stale_evidence_count", 0)
+    if type(stale) is not int or stale < 0:
+        raise ValueError("material_stale_evidence_count must be a nonnegative integer")
+    evaluated = [evaluate_watch_dependency(dep) for dep in _rows(dependencies, "dependencies")]
+    triggered = [d for d in evaluated if d["triggered"] is True]
+    unknown = [d for d in evaluated if d["observation_status"] == "UNKNOWN"]
     high = [d for d in triggered if d["materiality"] >= 0.7]
-    status = "REOPEN" if high else ("WATCH" if triggered else "VALID")
-    reasons = []
+    status, reasons = "VALID", []
     if high:
+        status = "REOPEN"
         reasons.append("high-materiality watch dependency changed")
-    elif triggered:
+    elif stale:
+        status = "STALE"
+    elif triggered or unknown or not evaluated:
+        status = "WATCH"
+    if stale:
+        reasons.append("material evidence is stale")
+    if triggered and not high:
         reasons.append("watch dependency changed")
-    next_revalidation = _parse_date(decision.get("next_revalidation_at"))
-    now = _parse_date(as_of)
-    if next_revalidation and now:
-        left, right = next_revalidation, now
-        if left.tzinfo is not None and right.tzinfo is None:
-            right = right.replace(tzinfo=left.tzinfo)
-        if left.tzinfo is None and right.tzinfo is not None:
-            left = left.replace(tzinfo=right.tzinfo)
-        if right >= left and status == "VALID":
-            status = "WATCH"
+    if unknown or not evaluated:
+        reasons.append("watch coverage is incomplete or observation is unknown")
+    if decision.get("next_revalidation_at") is not None:
+        try:
+            due = now >= _aware_time(decision["next_revalidation_at"], "next_revalidation_at")
+        except ValueError:
+            due = True
+            reasons.append("invalid next revalidation timestamp")
+        if due:
+            if status == "VALID":
+                status = "WATCH"
             reasons.append("scheduled revalidation is due")
-    affected = sorted({key for d in triggered for key in d.get("assumption_keys", [])})
+    if decision.get("superseded_by"):
+        status = "SUPERSEDED"
+        reasons.append("decision explicitly superseded")
     return {
-        "status": status if status in DECISION_VALIDITY_STATUSES else "WATCH",
-        "as_of": as_of,
-        "reason": "; ".join(reasons) or "no material change detected",
-        "triggered_dependencies": triggered,
-        "affected_assumptions": affected,
-        "revalidation_required": status in {"WATCH", "REOPEN"},
+        "status": status, "as_of": as_of,
+        "reason": "; ".join(reasons) or "no change in supplied dependencies",
+        "triggered_dependencies": triggered, "unknown_dependencies": unknown,
+        "affected_assumptions": sorted({key for d in triggered + unknown for key in d["assumption_keys"]}),
+        "revalidation_required": status in {"WATCH", "REOPEN", "STALE"},
+        "evidence_authentication": "not_performed",
     }
 
 
 def contradiction_coverage(claims: list[dict[str, Any]]) -> dict[str, Any]:
-    material = [c for c in claims if bool(c.get("material", True))]
-    tested = [c for c in material if bool(c.get("contradiction_tested", False))]
-    unresolved = []
-    for c in tested:
-        opposing = int(c.get("opposing_evidence_count") or 0)
-        if bool(c.get("unresolved_contradiction", False)) or (opposing > 0 and not bool(c.get("contradiction_resolved", False))):
+    material, tested, unresolved, critical_unresolved = [], [], [], []
+    for c in _rows(claims, "claims"):
+        flags = {n: _boolean(c.get(n, n == "material"), n) for n in
+                 ("material", "contradiction_tested", "unresolved_contradiction", "contradiction_resolved")}
+        count = c.get("opposing_evidence_count", 0)
+        if type(count) is not int or count < 0:
+            raise ValueError("opposing_evidence_count must be a nonnegative integer")
+        importance = _unit_interval(c.get("importance", 0.5), "importance")
+        if not flags["material"]:
+            continue
+        material.append(c)
+        if flags["contradiction_tested"]:
+            tested.append(c)
+        # Opposition is not erased by omitting the search-completed flag.
+        if flags["unresolved_contradiction"] or (count > 0 and not flags["contradiction_resolved"]):
             unresolved.append(c)
-    coverage = len(tested) / len(material) if material else 1.0
-    critical_unresolved = [c for c in unresolved if _clamp01(c.get("importance", 0.5)) >= 0.8]
+            if importance >= 0.8:
+                critical_unresolved.append(c)
     return {
-        "material_claims": len(material),
-        "contradiction_tested": len(tested),
-        "contradiction_coverage": round(coverage, 6),
+        "material_claims": len(material), "contradiction_tested": len(tested),
+        "contradiction_coverage": round(len(tested) / len(material), 6) if material else None,
         "unresolved_contradictions": len(unresolved),
         "critical_unresolved_claim_ids": [c.get("claim_id") or c.get("id") for c in critical_unresolved],
-        "decision_ready": not critical_unresolved,
+        "decision_ready": bool(material) and len(tested) == len(material) and not unresolved,
+        "verification_scope": "declared_claim_records_only",
     }
 
 
@@ -1586,20 +1726,25 @@ def independence_grade_report(memos: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def forecast_score_report(forecasts: list[dict[str, Any]]) -> dict[str, Any]:
-    resolved = []
-    for row in forecasts:
+    resolved, invalid, unresolved = [], [], []
+    for index, row in enumerate(_rows(forecasts, "forecasts")):
         try:
-            p = _clamp01(row.get("probability"))
-            outcome = row.get("outcome")
-            if isinstance(outcome, str):
-                outcome = 1 if outcome.lower() in {"1", "true", "yes", "success", "occurred"} else 0 if outcome.lower() in {"0", "false", "no", "failure", "did_not_occur"} else None
-            if outcome not in (0, 1, False, True):
-                continue
-            resolved.append((p, int(bool(outcome))))
-        except Exception:
+            p = _unit_interval(row.get("probability"), "probability")
+        except ValueError:
+            invalid.append({"index": index, "reason": "invalid_probability"})
             continue
+        outcome = row.get("outcome")
+        if isinstance(outcome, str):
+            outcome = {"1": 1, "true": 1, "yes": 1, "success": 1, "occurred": 1,
+                       "0": 0, "false": 0, "no": 0, "failure": 0, "did_not_occur": 0}.get(outcome.lower())
+        if type(outcome) not in (int, float, bool) or outcome not in (0, 1):
+            unresolved.append(index)
+            continue
+        resolved.append((p, int(outcome)))
+    accounting = {"input_count": len(forecasts), "invalid_count": len(invalid),
+                  "unresolved_count": len(unresolved), "invalid_rows": invalid}
     if not resolved:
-        return {"n": 0, "sample_strength": "none", "brier_score": None, "calibration_error": None}
+        return {**accounting, "n": 0, "sample_strength": "none", "brier_score": None, "calibration_error": None}
     brier = sum((p - y) ** 2 for p, y in resolved) / len(resolved)
     bins: dict[int, list[tuple[float, int]]] = {}
     for p, y in resolved:
@@ -1611,6 +1756,7 @@ def forecast_score_report(forecasts: list[dict[str, Any]]) -> dict[str, Any]:
         avg_y = sum(y for _, y in vals) / len(vals)
         cal += abs(avg_p - avg_y) * (len(vals) / len(resolved))
     return {
+        **accounting,
         "n": len(resolved),
         "sample_strength": _sample_strength(len(resolved)),
         "brier_score": round(brier, 6),
@@ -1733,7 +1879,7 @@ def tool_authority_assessment(action: dict[str, Any]) -> dict[str, Any]:
         "rule": "higher tool authority requires stronger approval; evidence gathering must not silently escalate into side effects",
     }
 
-def main() -> None:
+def main() -> int:
     parser = argparse.ArgumentParser(description="Deterministic AI Council v5 temporal decision intelligence kernel")
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -1850,7 +1996,9 @@ def main() -> None:
     p.add_argument("--critical-gap")
     p.add_argument("--gate-statuses-json", default="{}")
     p.add_argument("--controls-implemented", action="store_true")
-    p.add_argument("--freshness-status", default="CLEAR")
+    p.add_argument("--freshness-status", default="UNKNOWN")
+    p.add_argument("--required-gates-json", default="[]")
+    p.add_argument("--require-go", action="store_true")
     p.add_argument("--human-approval-required", action="store_true")
     p.add_argument("--human-approved", action="store_true")
 
@@ -1946,52 +2094,52 @@ def main() -> None:
     if args.command == "profile":
         result = profile_problem(args.query)
     elif args.command == "contract":
-        result = compile_decision_contract(args.query, json.loads(args.context_json))
+        result = compile_decision_contract(args.query, _load_cli_json(args.context_json))
     elif args.command == "plan":
-        result = plan_council(json.loads(args.contract_json), args.mode)
+        result = plan_council(_load_cli_json(args.contract_json), args.mode)
     elif args.command == "route":
-        result = route_roles(json.loads(args.contract_json), args.mode.upper())
+        result = route_roles(_load_cli_json(args.contract_json), args.mode.upper())
     elif args.command == "legal":
-        result = route_legal_risk(args.query, json.loads(args.context_json))
+        result = route_legal_risk(args.query, _load_cli_json(args.context_json))
     elif args.command == "select":
-        result = select_frameworks(args.query, json.loads(args.profile_json), json.loads(args.experts_json), args.max_frameworks)
+        result = select_frameworks(args.query, _load_cli_json(args.profile_json), _load_cli_json(args.experts_json), args.max_frameworks)
     elif args.command == "rank":
-        result = rank_analogies(json.loads(args.current_json), json.loads(args.history_json))
+        result = rank_analogies(_load_cli_json(args.current_json), _load_cli_json(args.history_json))
     elif args.command == "calibrate":
-        regimes = json.loads(args.regime_tags_json) if args.regime_tags_json else None
-        result = calibration_report(json.loads(args.rows_json), args.expert, args.domain, args.decision_kind, regimes)
+        regimes = _load_cli_json(args.regime_tags_json) if args.regime_tags_json else None
+        result = calibration_report(_load_cli_json(args.rows_json), args.expert, args.domain, args.decision_kind, regimes)
     elif args.command == "sanitize":
-        result = sanitize_memory_record(json.loads(args.record_json))
+        result = sanitize_memory_record(_load_cli_json(args.record_json))
     elif args.command == "key":
-        result = {"decision_key": make_decision_key(args.query, args.date, json.loads(args.context_json))}
+        result = {"decision_key": make_decision_key(args.query, args.date, _load_cli_json(args.context_json))}
     elif args.command == "mode":
-        profile = json.loads(args.profile_json)
+        profile = _load_cli_json(args.profile_json)
         score = decision_value_score(profile, args.financial_impact, args.uncertainty, args.strategic_impact)
         result = {"mode": choose_council_mode(profile, args.financial_impact, args.uncertainty, args.strategic_impact), "decision_value_score": score}
     elif args.command == "budget":
         result = mode_budget(args.mode)
     elif args.command == "threshold":
-        result = {"required_confidence": required_confidence(json.loads(args.profile_json), args.evidence_coverage, args.decision_value)}
+        result = {"required_confidence": required_confidence(_load_cli_json(args.profile_json), args.evidence_coverage, args.decision_value)}
     elif args.command == "coverage":
-        result = evidence_coverage_report(json.loads(args.rows_json), json.loads(args.areas_json))
+        result = evidence_coverage_report(_load_cli_json(args.rows_json), _load_cli_json(args.areas_json))
     elif args.command == "crux":
-        result = find_double_crux(json.loads(args.memos_json))
+        result = find_double_crux(_load_cli_json(args.memos_json))
     elif args.command == "consensus":
-        result = consensus_report(json.loads(args.memos_json), args.same_model_baseline)
+        result = consensus_report(_load_cli_json(args.memos_json), args.same_model_baseline)
     elif args.command == "minority":
-        result = minority_sentinel(json.loads(args.memos_json))
+        result = minority_sentinel(_load_cli_json(args.memos_json))
     elif args.command == "confidence":
-        result = decompose_confidence(json.loads(args.dimensions_json), json.loads(args.binding_json))
+        result = decompose_confidence(_load_cli_json(args.dimensions_json), _load_cli_json(args.binding_json))
     elif args.command == "voi":
         result = value_of_information(args.probability_change, args.value_difference, args.information_cost, args.delay_cost)
     elif args.command == "stop":
         result = deliberation_stop(args.expected_information_gain, args.deliberation_cost, args.no_novelty_rounds, args.unresolved_mandatory_gate, args.critical_gap_open)
     elif args.command == "specialists":
-        result = dynamic_specialists(args.query, json.loads(args.experts_json), args.max_specialists)
+        result = dynamic_specialists(args.query, _load_cli_json(args.experts_json), args.max_specialists)
     elif args.command == "missing":
-        result = {"missing_perspectives": detect_missing_perspectives(args.query, json.loads(args.experts_json))}
+        result = {"missing_perspectives": detect_missing_perspectives(args.query, _load_cli_json(args.experts_json))}
     elif args.command == "experiment":
-        spec = json.loads(args.spec_json)
+        spec = _load_cli_json(args.spec_json)
         result = build_experiment_spec(
             spec.get("hypothesis", ""), spec.get("metric") or spec.get("primary_metric", ""), spec.get("baseline", ""),
             spec.get("pass_threshold") or spec.get("target", ""), spec.get("fail_threshold", ""), spec.get("duration", ""),
@@ -2000,61 +2148,67 @@ def main() -> None:
             spec.get("owner", ""), spec.get("review_date", ""),
         )
     elif args.command == "snapshot":
-        result = {"snapshot_hash": snapshot_hash(json.loads(args.snapshot_json), args.version), "snapshot_version": args.version}
+        result = {"snapshot_hash": snapshot_hash(_load_cli_json(args.snapshot_json), args.version), "snapshot_version": args.version}
     elif args.command == "gate":
         result = {"verdict": gate_verdict(
             args.verdict, args.confidence, args.required_confidence, args.reversible_experiment,
-            args.critical_gap, json.loads(args.gate_statuses_json), args.controls_implemented,
+            args.critical_gap, _load_cli_json(args.gate_statuses_json), args.controls_implemented,
             args.freshness_status, args.human_approval_required, args.human_approved,
+            _load_cli_json(args.required_gates_json),
         )}
     elif args.command == "regime":
-        result = {"regime_tags": infer_regime_tags(json.loads(args.context_json))}
+        result = {"regime_tags": infer_regime_tags(_load_cli_json(args.context_json))}
     elif args.command == "due-reviews":
-        result = due_reviews(json.loads(args.rows_json), args.today)
+        result = due_reviews(_load_cli_json(args.rows_json), args.today)
     elif args.command == "info-gain":
         result = {"information_gain": information_gain_score(
-            args.expert_vote, json.loads(args.peer_votes_json), args.novel_claims, args.shared_claims,
+            args.expert_vote, _load_cli_json(args.peer_votes_json), args.novel_claims, args.shared_claims,
             args.independence, args.decision_impact, args.later_validation,
         )}
     elif args.command == "framework-utility":
         result = framework_usefulness(args.exposed_assumption, args.changed_vote, args.identified_test, args.exposed_risk, args.rejected)
     elif args.command == "health":
-        result = council_health(json.loads(args.decisions_json), json.loads(args.votes_json), json.loads(args.experiments_json), json.loads(args.process_json))
+        result = council_health(_load_cli_json(args.decisions_json), _load_cli_json(args.votes_json), _load_cli_json(args.experiments_json), _load_cli_json(args.process_json))
     elif args.command == "provenance":
-        result = source_provenance_summary(json.loads(args.rows_json))
+        result = source_provenance_summary(_load_cli_json(args.rows_json))
     elif args.command == "consensus-patterns":
-        result = consensus_failure_patterns(json.loads(args.rows_json))
+        result = consensus_failure_patterns(_load_cli_json(args.rows_json))
     elif args.command == "eval-compare":
-        result = champion_challenger(json.loads(args.champion_json), json.loads(args.challenger_json))
+        result = champion_challenger(_load_cli_json(args.champion_json), _load_cli_json(args.challenger_json))
     elif args.command == "source-authority":
         result = source_authority_for_claim(args.claim_type)
     elif args.command == "temporal":
-        result = evaluate_temporal_truth(json.loads(args.row_json), args.as_of)
+        result = evaluate_temporal_truth(_load_cli_json(args.row_json), args.as_of)
     elif args.command == "freshness":
-        result = freshness_gate(json.loads(args.rows_json), args.as_of)
+        result = freshness_gate(_load_cli_json(args.rows_json), args.as_of)
     elif args.command == "context-route":
         result = route_internal_context(args.query)
     elif args.command == "watch":
-        result = evaluate_watch_dependency(json.loads(args.dependency_json))
+        result = evaluate_watch_dependency(_load_cli_json(args.dependency_json))
     elif args.command == "validity":
-        result = decision_validity_overlay(json.loads(args.decision_json), json.loads(args.dependencies_json), args.as_of)
+        result = decision_validity_overlay(_load_cli_json(args.decision_json), _load_cli_json(args.dependencies_json), args.as_of)
     elif args.command == "contradiction":
-        result = contradiction_coverage(json.loads(args.claims_json))
+        result = contradiction_coverage(_load_cli_json(args.claims_json))
     elif args.command == "independence-grade":
-        result = independence_grade_report(json.loads(args.memos_json))
+        result = independence_grade_report(_load_cli_json(args.memos_json))
     elif args.command == "forecast-score":
-        result = forecast_score_report(json.loads(args.forecasts_json))
+        result = forecast_score_report(_load_cli_json(args.forecasts_json))
     elif args.command == "base-rate":
-        result = base_rate_report(json.loads(args.rows_json), args.decision_type, json.loads(args.regime_tags_json))
+        result = base_rate_report(_load_cli_json(args.rows_json), args.decision_type, _load_cli_json(args.regime_tags_json))
     elif args.command == "portfolio":
-        result = portfolio_report(json.loads(args.decisions_json), json.loads(args.capacities_json))
+        result = portfolio_report(_load_cli_json(args.decisions_json), _load_cli_json(args.capacities_json))
     elif args.command == "handoff":
-        result = build_human_handoff_packet(args.kind, json.loads(args.decision_json), json.loads(args.issue_json))
+        result = build_human_handoff_packet(args.kind, _load_cli_json(args.decision_json), _load_cli_json(args.issue_json))
     else:
-        result = tool_authority_assessment(json.loads(args.action_json))
+        result = tool_authority_assessment(_load_cli_json(args.action_json))
 
-    print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+    print(json.dumps(result, ensure_ascii=False, sort_keys=True, allow_nan=False))
+    return int(args.command == "gate" and args.require_go and result["verdict"] != "GO")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        raise SystemExit(main())
+    except (ValueError, TypeError, KeyError, AttributeError, OverflowError, RecursionError):
+        print(json.dumps({"status": "INVALID", "error": "invalid decision input", "execution_authorized": False}), file=sys.stderr)
+        raise SystemExit(2)

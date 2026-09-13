@@ -52,3 +52,13 @@ Kernel jest źródłem TTL i wymogu live verification. Ogólna intencja:
 Uruchom `freshness` przed Chairmanem, gdy decyzja zawiera materialne current claims. Wynik `REFRESH_REQUIRED` blokuje finalizację do czasu odświeżenia lub jawnego usunięcia claimu z reasoning path.
 
 Nie obniżaj tylko confidence dla stale prawa/security/system-of-record. Jeśli claim jest binding, odśwież go albo użyj `DEFER`.
+
+## Kernel 5.0.1 — granice danych
+
+`as_of` i wszystkie podane znaczniki weryfikacji wymagają czasu i strefy czasowej. Data bez czasu ani poprawny prefiks błędnej daty nie wystarczają. Jeśli podano kilka pól `last_verified_at`, `verified_at`, `observed_at`, muszą oznaczać tę samą chwilę; w przeciwnym razie wybierz właściwą obserwację, nie usuwaj konfliktu arbitralnie.
+
+Kernel odrzuca jako niedopuszczalne przyszłą publikację/weryfikację, odwrócony przedział obowiązywania i nieprawidłową datę wygaśnięcia. `expires_at` i koniec TTL są granicami wyłącznymi: w chwili wygaśnięcia dowód nie jest już aktualny. Nieznana polityka daje `UNKNOWN`, zamiast przejścia do łagodniejszej polityki ogólnej.
+
+Flagi mają być wartościami JSON `true`/`false`, nie tekstem. Puste wejście `freshness` daje `REFRESH_REQUIRED`. Wynik ocenia wyłącznie dostarczone wiersze (`coverage_assessed: false`); nie dowodzi pełnego pokrycia pytań ani faktycznego wykonania weryfikacji przez model.
+
+[Zasady końcowego gate i migracja CLI](kernel-admission.md).
