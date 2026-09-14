@@ -1,0 +1,26 @@
+{
+  "name": "cometweb-agent-skills",
+  "displayName": "CometWeb Agent Skills",
+  "description": "CometWeb Labs specialist skills (18 packages): AI Council, AI Humanize, CometWeb Context, Competitive Intelligence, Customer Ops, Design Partner Finder, Ebook Publisher, Evidence Researcher, Longform Publisher, Portfolio Operator, Product Operator, Product Teardown, Release Readiness, Repo To Roadmap, SEO GEO AEO Maxxing, Skill Orchestrator, Skill Orchestrator Multiagent, Web App Auditor.",
+  "version": "2.0.0",
+  "author": {
+    "name": "CometWeb Labs",
+    "url": "https://cometweb.io"
+  },
+  "homepage": "https://github.com/MaciejZet/agent-skills",
+  "repository": "https://github.com/MaciejZet/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "ai-council",
+    "web-app-auditor",
+    "seo",
+    "geo",
+    "aeo",
+    "competitive-intelligence",
+    "customer-ops",
+    "product-strategy",
+    "release-readiness",
+    "roadmap",
+    "orchestration"
+  ]
+}

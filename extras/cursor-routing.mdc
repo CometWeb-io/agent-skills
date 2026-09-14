@@ -1,0 +1,47 @@
+---
+description: Route CometWeb Agent Skills — 14-skill evidence-driven operating system. Use when product, research, QA, release, customer, or strategic work needs the right specialist skill.
+alwaysApply: true
+---
+
+# CometWeb Agent Skills routing
+
+Load skills from `~/.cursor/skills/` (symlinked from `platforms/agent-skills`). Prefer
+**one primary skill** per turn unless the user wants a multi-step workflow — then use
+`skill-orchestrator` (single thread) or `skill-orchestrator-multiagent` (one subagent
+per step). Hand off via CW-AIP envelopes when outputs feed another skill.
+
+## Primary routing
+
+| Intent | Skill |
+| --- | --- |
+| Multi-skill workflow, single thread | `skill-orchestrator` |
+| Multi-skill workflow, one subagent per skill / Task per step | `skill-orchestrator-multiagent` |
+| Whole repo/project → baseline roadmap to target state | `repo-to-roadmap` |
+| Weekly control loop on existing roadmap/state | `product-operator` |
+| Pinned RC/build + environment → GO/NO_GO/DEFER | `release-readiness` |
+| Evidence Pack / claim verification (no decision) | `evidence-researcher` |
+| Explicit Council / high-stakes multi-domain decision | `ai-council` |
+| Competitor monitoring, deltas, watchlist | `competitive-intelligence` |
+| External product pattern → adaptation | `product-teardown` |
+| Design partner program / cohort | `design-partner-finder` |
+| Support → incident → engineering loop | `customer-ops` |
+| Live web QA / click-through / a11y | `web-app-auditor` |
+| SEO/GEO/AEO visibility audit | `seo-geo-aeo-maxxing` |
+| Humanize / de-AI-tell prose (PL/EN) | `ai-humanize` |
+
+## Collision guardrails
+
+- **Repo to Roadmap** — first-time or delta whole-project baseline; not weekly sprint ops.
+- **Product Operator** — reconciled next actions; not from-scratch roadmap.
+- **Release Readiness** — requires identifiable release candidate + environment; score never overrides gates.
+- **AI Council** — explicit invocation only; not routine research or triage.
+- **Evidence Researcher** — upstream of decisions; never issues GO/NO_GO alone.
+- **Skill Orchestrator** — sequences specialists in one thread; does not replace domain skills.
+- **Skill Orchestrator Multiagent** — launches subagents; parent must not run domain steps inline.
+
+## Execution
+
+1. Read the skill's `SKILL.md` before acting.
+2. Run deterministic scripts in `skills/<name>/scripts/` when available.
+3. Polish for product/CRM/ops replies when the user writes in Polish.
+4. Inter-skill handoffs: `platforms/agent-skills/protocol/cw-interchange-v1.md`.

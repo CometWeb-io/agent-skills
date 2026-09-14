@@ -1,0 +1,27 @@
+# NOTICE
+
+This repository is MIT-licensed by CometWeb Labs (see root `LICENSE` and
+per-skill `LICENSE` files).
+
+## Provenance
+
+- **Origin:** CometWeb Labs internal agent skill library, published August 2026.
+- **Skills:** Twelve standalone packages under `skills/`; deterministic Python
+  kernels and validators are first-party CometWeb Labs code unless noted in a
+  skill's references.
+- **Third-party data:** SEO check registries and evaluation fixtures are
+  maintained in-repo; refresh via each skill's freshness tooling.
+- **Trademarks:** Product names cited in docs (e.g. for teardowns) belong to
+  their owners; skills do not imply endorsement.
+
+## Private bindings
+
+AI Council Notion database IDs and workspace hub URLs are intentionally
+omitted from the public tree. Operators supply bindings at
+`~/.config/cometweb/ai-council-notion.json` (or `$COMETWEB_CONFIG_HOME/…`),
+optionally overridden by a gitignored `notion-bindings.local.json` in a clone.
+
+## Security
+
+Run `./scripts/public-safety-check.sh` before release. Do not commit secrets,
+customer data, or live Notion collection UUIDs.

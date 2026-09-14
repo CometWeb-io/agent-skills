@@ -1,0 +1,15 @@
+{
+  "name": "cometweb-agent-skills",
+  "description": "Agent skills for Claude Code: research, product operations, QA, release gates and strategic decisions — each covered by tests.",
+  "owner": {
+    "name": "CometWeb Labs",
+    "url": "https://cometweb.io"
+  },
+  "plugins": [
+    {
+      "name": "cometweb-agent-skills",
+      "source": ".",
+      "description": "CometWeb Labs specialist skills (18 packages): AI Council, AI Humanize, CometWeb Context, Competitive Intelligence, Customer Ops, Design Partner Finder, Ebook Publisher, Evidence Researcher, Longform Publisher, Portfolio Operator, Product Operator, Product Teardown, Release Readiness, Repo To Roadmap, SEO GEO AEO Maxxing, Skill Orchestrator, Skill Orchestrator Multiagent, Web App Auditor."
+    }
+  ]
+}
