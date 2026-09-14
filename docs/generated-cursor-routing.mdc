@@ -22,6 +22,7 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 | competitor watchlist, delta digest, normalized competitor state | `competitive-intelligence` |
 | support triage, incident candidate, eng handoff | `customer-ops` |
 | partner cohort, learning contract, partnerability score | `design-partner-finder` |
+| publication scope and coverage, publication claim ledger, editorial and design workflow, revision-bound publication QA | `ebook-publisher` |
 | claim decomposition, evidence edges, falsifiers, Evidence Pack | `evidence-researcher` |
 | weekly control loop, now/next/later/stop, roadmap drift | `product-operator` |
 | external product patterns, ADOPT/ADAPT/AVOID | `product-teardown` |
@@ -40,6 +41,7 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - **competitive-intelligence** — does not own: strategic GO/NO_GO; pricing decision.
 - **customer-ops** — does not own: release gate; Council decision.
 - **design-partner-finder** — does not own: cold outbound copy; Council pricing.
+- **ebook-publisher** — does not own: independent evidence truth certification; public publishing authorization; host installation; generic blog writing.
 - **evidence-researcher** — does not own: final GO/NO_GO; release verdict; context-only refresh.
 - **product-operator** — does not own: from-scratch roadmap; RC GO/NO_GO.
 - **product-teardown** — does not own: owned-repo roadmap; release gate.
@@ -85,6 +87,15 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - trigger: Score design partner candidates
 - trigger: Propose pilot cohort charter
 - do not trigger: Zrób cold email do prospektów
+
+### `ebook-publisher`
+- trigger: Zrób ebook CometWeb od researchu do PDF
+- trigger: Popraw okładkę ebooka i zachowaj wydanie 1.0
+- trigger: Deep research do ebooka o audycie stron
+- do not trigger: Napisz krótki post na LinkedIn
+- do not trigger: Przeklikaj formularz rejestracji
+- do not trigger: Wyciągnij tekst z PDF
+- do not trigger: Zainstaluj skill
 
 ### `evidence-researcher`
 - trigger: Zrób Evidence Pack dla claimów pricing

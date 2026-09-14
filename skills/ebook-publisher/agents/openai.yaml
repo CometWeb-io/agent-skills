@@ -1,0 +1,13 @@
+interface:
+  display_name: Ebook Publisher
+  short_description: publication scope and coverage; publication claim ledger; editorial and design workflow
+  default_prompt: "Use the Ebook Publisher skill for: Create, research, validate, edit, redesign, and prepare evidence-backed ebooks, white papers, and practical PDF workbooks, especially the CometWeb ebook series. Use for requests such as zrob ebook, na"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

@@ -10,6 +10,7 @@
 | `competitive-intelligence` | 1.0.0 | domain | active | 666 | False |
 | `customer-ops` | 1.0.0 | domain | active | 924 | False |
 | `design-partner-finder` | 1.0.0 | domain | active | 907 | False |
+| `ebook-publisher` | 1.0.0 | domain | active | 914 | False |
 | `evidence-researcher` | 1.0.2 | foundation | active | 741 | False |
 | `product-operator` | 1.0.0 | domain | active | 1014 | False |
 | `product-teardown` | 1.0.0 | domain | active | 967 | False |

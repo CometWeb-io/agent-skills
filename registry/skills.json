@@ -433,6 +433,81 @@
       ]
     },
     {
+      "id": "ebook-publisher",
+      "version": "1.0.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Create, research, validate, edit, redesign, and prepare evidence-backed ebooks, white papers, and practical PDF workbooks, especially the CometWeb ebook series. Use for requests such as zrob ebook, napisz poradnik PDF, deep research do ebooka, zweryfikuj ebook, popraw okladke, or prepare a publication from research through reviewed PDF. Own publication scope, research coverage, claim-to-source mapping, editorial structure, meaning-preserving Polish/English editing, series design, revision-aware QA, and publication handoff. Reuse evidence-researcher and ai-humanize when available. Do not trigger for a standalone blog post, a generic website audit, simple PDF extraction, or merely a request to install a skill. Research-only and redesign-only requests must stay within their requested scope. Never imply that automated checks prove factual accuracy or that a created file is installed or publicly published.",
+      "explicit_only": false,
+      "owns": [
+        "publication scope and coverage",
+        "publication claim ledger",
+        "editorial and design workflow",
+        "revision-bound publication QA"
+      ],
+      "does_not_own": [
+        "independent evidence truth certification",
+        "public publishing authorization",
+        "host installation",
+        "generic blog writing"
+      ],
+      "trigger_examples": [
+        "Zrób ebook CometWeb od researchu do PDF",
+        "Popraw okładkę ebooka i zachowaj wydanie 1.0",
+        "Deep research do ebooka o audycie stron"
+      ],
+      "negative_trigger_examples": [
+        "Napisz krótki post na LinkedIn",
+        "Przeklikaj formularz rejestracji",
+        "Wyciągnij tekst z PDF",
+        "Zainstaluj skill"
+      ],
+      "inputs": [
+        "publication brief or existing volume",
+        "optional reference PDF",
+        "optional evidence pack"
+      ],
+      "outputs": [
+        "editable manuscript",
+        "reviewed PDF when requested and feasible",
+        "publication ledger",
+        "QA report"
+      ],
+      "dependencies": [
+        "evidence-researcher?",
+        "ai-humanize?"
+      ],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "research",
+        "manuscript",
+        "pdf_if_available",
+        "single_thread"
+      ],
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          20,
+          "\\bebook-publisher\\b"
+        ],
+        [
+          15,
+          "(ebook|e-book|white.?paper|poradnik pdf|workbook)"
+        ],
+        [
+          14,
+          "(ok[łl]adk|cover).*(ebook|e-book)"
+        ]
+      ]
+    },
+    {
       "id": "evidence-researcher",
       "version": "1.0.2",
       "lifecycle": "active",
