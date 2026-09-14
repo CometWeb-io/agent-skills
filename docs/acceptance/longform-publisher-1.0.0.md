@@ -6,7 +6,7 @@ Acceptance date: 2026-09-11 (Europe/Warsaw)
 
 ## Scenario
 
-A full `REFRESH` run rebuilt an existing CometWeb ebook into an updated 2026 release candidate using Longform Publisher 1.0.0 on High reasoning.
+A full `REFRESH` run rebuilt an existing ebook into an updated 2026 release candidate using Longform Publisher 1.0.0 on High reasoning.
 
 The run completed the required deterministic publication workflow:
 

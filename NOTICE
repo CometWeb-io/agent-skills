@@ -14,12 +14,11 @@ per-skill `LICENSE` files).
 - **Trademarks:** Product names cited in docs (e.g. for teardowns) belong to
   their owners; skills do not imply endorsement.
 
-## Private bindings
+## Runtime bindings
 
-AI Council Notion database IDs and workspace hub URLs are intentionally
-omitted from the public tree. Operators supply bindings at
-`~/.config/cometweb/ai-council-notion.json` (or `$COMETWEB_CONFIG_HOME/…`),
-optionally overridden by a gitignored `notion-bindings.local.json` in a clone.
+External service IDs, workspace URLs, credentials, and customer data are
+intentionally omitted from the public tree. Operators supply those bindings
+through their host or a local, ignored configuration file.
 
 ## Security
 

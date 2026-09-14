@@ -1,6 +1,6 @@
 # Install
 
-Canonical private repo: `MaciejZet/agent-skills`.
+This repository is the public canonical source: `MaciejZet/agent-skills`.
 
 ```bash
 ./scripts/install-all.sh
@@ -13,10 +13,6 @@ Canonical private repo: `MaciejZet/agent-skills`.
 Skills are discovered from `skills/*/SKILL.md` (includes `cometweb-context`).
 Cursor also links `docs/generated-cursor-routing.mdc` as the routing rule.
 
-Public distribution mirror remains `MaciejZet/agent-skills` — sync with:
-
-```bash
-python3 tooling/publish_public_dry_run.py
-python3 tooling/sync_public_repo.py --public-root ../agent-skills   # dry-run
-python3 tooling/sync_public_repo.py --public-root ../agent-skills --apply
-```
+The installers discover packages from `skills/*/SKILL.md`; they do not copy
+private runtime bindings or credentials. Connector access and external side
+effects remain host-specific and must be authorized by the user.

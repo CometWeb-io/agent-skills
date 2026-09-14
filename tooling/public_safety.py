@@ -32,7 +32,7 @@ PRIVATE_RULES = {
     "private-host": rb"app-eu1\.hubspot|api\.betterwebhub\.com|hpanel\.hostinger",
 }
 FORBIDDEN_NAMES = (
-    ".env", ".env.*", "*.local.json", "*.pem", "*.key", "id_rsa*", "id_ed25519*",
+    ".bootstrap", ".env", ".env.*", "*.local.json", "*.pem", "*.key", "*.b64", "*.base64", "id_rsa*", "id_ed25519*",
     "*client_secret*", "*credentials*.json", "*service-account*.json", ".DS_Store",
 )
 PUBLIC_NAMES = (

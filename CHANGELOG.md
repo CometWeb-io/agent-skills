@@ -8,9 +8,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Version tags: `v
 
 ### Changed
 
-- This repository is now the single canonical source. The private canonical repo
-  and the public mirror are consolidated; mirror tooling and the copy-the-tree
-  publication procedure are gone.
+- This repository is now the single public canonical source; the former split
+  between a private source tree and a public mirror is retired.
 - Paths into private locations are placeholders in tracked files, supplied by
   untracked `*.local.json` / `*.local.txt` overlays read beside them.
 - History was rewritten to remove those paths from every commit.

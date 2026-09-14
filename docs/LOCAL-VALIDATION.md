@@ -1,6 +1,6 @@
 # Lokalna walidacja bez GitHub Actions
 
-Uruchamiaj w pełnym, zaufanym checkoutcie prywatnego repo. Skrypt nie włącza
+Uruchamiaj w pełnym, zaufanym checkoutcie repozytorium. Skrypt nie włącza
 Actions, nie instaluje zależności, nie aktualizuje gałęzi i nie publikuje paczek.
 Testy repo są wykonywalnym kodem: ten runner nie jest sandboxem ani kontrolą
 bezpieczeństwa dla nieznanych repozytoriów.
@@ -33,8 +33,8 @@ fixtures kontekstu, końcową kopertę CW-AIP oraz testy w `tooling/tests` i we
 wszystkich istniejących katalogach `skills/*/tests`.
 
 Nie generuje adapterów przed ich sprawdzeniem. Błąd rozjazdu trzeba rozwiązać
-osobną, przejrzaną zmianą. Nie uruchamia publicznego eksportu, synchronizacji,
-instalatora, benchmarku modeli ani pakowania. Katalogi skilli bez `tests/` są
+osobną, przejrzaną zmianą. Nie uruchamia instalatora, benchmarku modeli ani
+pakowania. Katalogi skilli bez `tests/` są
 wymieniane w raporcie; obecność skilla nie jest dowodem przetestowania zachowania.
 
 Pytest używa `--import-mode=importlib`, żeby pliki o tej samej nazwie w różnych
@@ -74,10 +74,8 @@ Runner nie cofa zmian wykonanych przez testy. Nie uruchamiaj równolegle edytora
 generatorów ani drugiej walidacji w tym samym checkoutcie. Logi mogą zawierać dane
 prywatne; katalog wyniku ma uprawnienia 0700 i wymaga przeglądu przed udostępnieniem.
 
-## Relacja do oczekującej integracji
+## Granice
 
-To narzędzie wspiera lokalną kontrolę aktualnego repo. Nie instaluje ani nie scala
-137-plikowej nakładki z rozmowy. Zachowaj wyłączenie publicznej dystrybucji i stan
-Actions. Wynik runnera nie oznacza gotowości wydania, akceptacji hosta, poprawności
-wszystkich skilli ani skuteczności modeli. Sprawdź też
-`docs/INTEGRATION-STATUS.md` przed integracją wcześniejszych paczek.
+To narzędzie wspiera lokalną kontrolę aktualnego repo. Wynik runnera nie oznacza
+gotowości wydania, akceptacji hosta, poprawności wszystkich skilli ani
+skuteczności modeli. Raportuj osobno testy hosta, providera i end-to-end.

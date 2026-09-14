@@ -115,7 +115,7 @@ def default_entry(skill_id: str) -> dict:
         "id": skill_id,
         "version": version,
         "lifecycle": "active",
-        "visibility": "private_canonical",
+        "visibility": "public_canonical",
         "tier": spec["tier"],
         "alias_of": None,
         "description": description,

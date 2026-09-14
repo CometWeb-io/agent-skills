@@ -34,12 +34,10 @@ application release-readiness machinery as if it certified ebook quality or lega
 Use host tools with the permissions they actually provide. No credential hunting,
 permission expansion, safety-check bypass, background-work promises, or invented installations.
 
-## Private repository integration
+## Repository integration
 
-Baseline for this package: `MaciejZet/agent-skills` at
-`2b644780b999df1eb24d4942abba6155ab09c485`. Existing AGENTS/README state that Actions/public
-mirror are paused and an unrelated overlay integration is pending. This new skill must
-not overwrite that work, PR #5, retired writer decisions, or workflow settings.
+This package is reviewed in the public canonical repository. Its proposed
+registry entry is metadata for review; it is not a second routing registry.
 
 `integration/registry-entry.json` is a proposed registry object matching the observed
 shape; do not treat this file as a second active routing registry. Merge it only into
@@ -48,11 +46,10 @@ objects, detect duplicate IDs, use the repository's actual adapter generator, an
 local integration/routing checks. Do not hand-edit generated adapters. Preserve unrelated
 changes. Any host compatibility declaration describes intended shape, not a tested host.
 
-A scoped package addition can be reviewed separately without pretending that the earlier
-137-file overlay was integrated. Report package unit tests separately from monorepo tests,
+A scoped package addition can be reviewed separately from package unit tests,
 routing evaluation, actual model behavioural runs, and completed-ebook acceptance tests.
-No Actions execution, public publication, paid dependency, or permission changes are authorized
-by merely creating this skill. Confirm a remote commit/branch by reading it after a write.
+Creating this skill does not authorize external writes, publication, paid
+dependencies, or permission changes.
 A ZIP, Git tree, commit object, branch update, PR, merge, host installation, and published
 publication are distinct states; never conflate them.
 

@@ -58,8 +58,8 @@ jobs:
               raise SystemExit("FAIL: pending accepted under --final")
           '
 
-      - name: Public mirror dry-run
-        run: python3 tooling/publish_public_dry_run.py
+      - name: Public safety scan
+        run: python3 tooling/public_safety.py --root .
 
       - name: Compile Python modules
         run: |

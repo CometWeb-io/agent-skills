@@ -13,7 +13,7 @@ tested skills** — not prompt volume.
 ## What does not belong here
 
 - GTM / promotion playbooks, outreach calendars, “how to get stars” guides
-- Council or product **strategy memos** meant for internal GTM (use `private-workspace/`)
+- Council or product strategy memos intended for a private workspace
 - Secrets, Notion UUIDs, customer data
 - Bulk-generated skills without tests
 
@@ -34,10 +34,10 @@ Before tagging a release, also run the history pass:
 ./scripts/public-safety-check.sh --history
 ```
 
-It applies the same leak rules to every commit ever made, not just the working
-tree. It is not part of CI, because a file removed from `HEAD` stays in history
-until someone rewrites it — so this check reports the known 2026-08-26 incident
-and will keep doing so until that rewrite happens.
+It applies the same leak rules to every reachable commit, not just the working
+tree. Run it before a release or after removing a sensitive tracked file; a
+file removed from `HEAD` remains in history until the repository history is
+rewritten.
 
 ## Skill quality bar (vs typical prompt repos)
 

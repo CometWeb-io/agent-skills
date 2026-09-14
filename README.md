@@ -1,12 +1,18 @@
 # CometWeb Agent Skills
 
-Production-grade agent skills for research, product operations, QA, release
+Schema-driven agent skills for research, product operations, QA, release
 readiness, and evidence-based decisions.
 
 This repository contains 18 reusable skill packages for Cursor, Claude Code,
 Codex, and other compatible agent hosts. Each skill combines clear routing
 guidance with structured outputs, references, scripts, and tests where
 deterministic behavior matters.
+
+This is an open-source skill toolkit, not a hosted automation product. It does
+not include built-in Apollo, LinkedIn, CRM, or outbound-campaign execution,
+and it does not send messages or mutate external systems by itself. A host or
+connector must provide those capabilities explicitly, with the user's
+authorization.
 
 **Version:** `2.0.0` · **License:** [MIT](LICENSE)
 
@@ -53,7 +59,7 @@ designed to:
 | [`ebook-publisher`](skills/ebook-publisher/) | Research-backed ebooks, white papers, workbooks, and publication QA. |
 | [`longform-publisher`](skills/longform-publisher/) | Canonical long-form manuscripts and release-ready derived documents. |
 | [`release-readiness`](skills/release-readiness/) | Candidate-bound production gates and GO / GO_WITH_CONTROLS / NO_GO / DEFER verdicts. |
-| [`seo-geo-aeo-maxxing`](skills/seo-geo-aeo-maxxing/) | Multi-pillar SEO, GEO, and AEO visibility audits. |
+| [`seo-geo-aeo-maxxing`](skills/seo-geo-aeo-maxxing/) | Multi-pillar SEO / GEO / AEO visibility audits. |
 | [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. |
 
 ## Installation
@@ -107,6 +113,18 @@ Audit the registration flow, then run release readiness on the candidate.
 For multi-step work, use `skill-orchestrator`; use
 `skill-orchestrator-multiagent` when each specialist should run in isolation.
 
+### What the quality claims mean
+
+- Registry metadata, schemas, validators, routing evals, and unit tests are
+  checked in CI.
+- Those checks prove deterministic contracts and repository consistency; they
+  do not prove that every model, host, connector, or workflow produces a
+  correct result in production.
+- Runtime compatibility is capability-dependent. A host may load a skill while
+  still lacking browser, filesystem, code-execution, or connector access.
+- External side effects belong at the host boundary. Skills may prepare a
+  draft, decision, or handoff; the host controls authorization and execution.
+
 ## Repository structure
 
 ```text
@@ -120,7 +138,9 @@ extras/              Host-specific routing assets
 
 Each package can contain a `SKILL.md`, references, scripts, tests, examples,
 and host metadata. The registry describes the package contract; the skill
-directory contains its implementation and supporting evidence.
+directory contains its implementation and supporting evidence. Business
+specific workflows use the same CW-AIP handoff envelope; this repository does
+not maintain a second business-only protocol.
 
 ## Development and validation
 

@@ -53,6 +53,15 @@ def test_private_files_block_package(root, name):
     assert not (root / "dist/demo/skill.zip").exists()
 
 
+def test_bootstrap_and_base64_payloads_are_not_public_names(tmp_path):
+    for name in (".bootstrap/chunk-00", "payload.b64"):
+        path = tmp_path / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("UEsDB synthetic archive payload")
+    findings = safety.scan(tmp_path)
+    assert {item["rule"] for item in findings} == {"forbidden-name"}
+
+
 @pytest.mark.parametrize("target", ["file", "dir", "broken", "internal"])
 def test_symlinks_are_rejected(root, target):
     outside = root / "outside"

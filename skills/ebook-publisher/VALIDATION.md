@@ -17,7 +17,7 @@ implementation passed the complete suite without weakening or skipping PDF tests
 This is local synthetic software verification. It is not full-monorepo validation,
 routing/model/host evaluation, independent editorial review, or a finished ebook acceptance
 test. The 18 behavioural scenarios are supplied but have not been executed with a model.
-No GitHub Actions or public-mirror publication was requested or run.
+No GitHub Actions or external publication was requested or run.
 
 Test log SHA-256:
 `d350334ba09a24dad2b70db9eaba98a0a9a4b0c2d48487a43b199a136c989c45`
