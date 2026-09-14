@@ -1,0 +1,243 @@
+{
+  "suite_version": "1.0.0",
+  "description": "Admission/tie/no-skill regression cases; not host or model evaluations. Legacy suite.json remains a separate signal-only diagnostic.",
+  "cases": [
+    {
+      "id": "council-implicit-0",
+      "prompt": "what price should we charge",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-implicit-1",
+      "prompt": "pricing decision still current",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-implicit-2",
+      "prompt": "material options",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-implicit-3",
+      "prompt": "strategic go",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-implicit-4",
+      "prompt": "champion challenger",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-explicit-0",
+      "prompt": "Run AI Council on this decision.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "council-explicit-1",
+      "prompt": "Przepuść przez Radę tę decyzję.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "council-explicit-2",
+      "prompt": "Council: porównaj opcje.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "council-explicit-3",
+      "prompt": "$ai-council",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "council-explicit-4",
+      "prompt": "@ai-council",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "proofreading-only-0",
+      "prompt": "Fix typos in this draft.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "proofreading-only-1",
+      "prompt": "Correct spelling only.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "proofreading-only-2",
+      "prompt": "Popraw literówki.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "proofreading-only-3",
+      "prompt": "Proofread only.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "humanize-with-typos",
+      "prompt": "Humanize this draft and fix typos.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-humanize",
+      "must_not_trigger": []
+    },
+    {
+      "id": "one-time-profile",
+      "prompt": "one-time deep profile of Example pricing",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ]
+    },
+    {
+      "id": "monitor-not-profile",
+      "prompt": "competitor watchlist and competitor delta",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "competitive-intelligence",
+      "must_not_trigger": []
+    },
+    {
+      "id": "none-en",
+      "prompt": "Explain two plus two.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": []
+    },
+    {
+      "id": "none-pl",
+      "prompt": "Ile to dwa plus dwa?",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": []
+    },
+    {
+      "id": "ties",
+      "prompt": "humanize. evidence pack",
+      "expected_status": "ambiguous",
+      "expected_primary_skill": null,
+      "must_not_trigger": []
+    },
+    {
+      "id": "explicit-workflow",
+      "prompt": "$ai-council and $evidence-researcher",
+      "expected_status": "workflow",
+      "expected_primary_skill": "skill-orchestrator",
+      "must_not_trigger": []
+    },
+    {
+      "id": "explicit-exclusion",
+      "prompt": "Do not run AI Council.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "explicit-exclusion-marker",
+      "prompt": "Don't use $ai-council.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "explicit-direct",
+      "prompt": "plain instruction",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-humanize",
+      "must_not_trigger": [],
+      "invoked": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "context-pl",
+      "prompt": "Odśwież kontekst",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "cometweb-context",
+      "must_not_trigger": []
+    },
+    {
+      "id": "release-pin",
+      "prompt": "release gate for build v2.14.0",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "release-readiness",
+      "must_not_trigger": []
+    },
+    {
+      "id": "qa",
+      "prompt": "click-through QA audit",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "web-app-auditor",
+      "must_not_trigger": []
+    },
+    {
+      "id": "seo",
+      "prompt": "SEO/GEO/AEO visibility audit",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "must_not_trigger": []
+    },
+    {
+      "id": "orchestration",
+      "prompt": "zorkiestruj evidence potem Council",
+      "expected_status": "workflow",
+      "expected_primary_skill": "skill-orchestrator",
+      "must_not_trigger": []
+    },
+    {
+      "id": "alias",
+      "prompt": "one subagent per skill",
+      "expected_status": "workflow",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "must_not_trigger": []
+    }
+  ]
+}

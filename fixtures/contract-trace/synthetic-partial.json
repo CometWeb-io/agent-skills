@@ -1,0 +1,145 @@
+{
+  "schema": "cometweb.contract-trace/v1",
+  "claim": "bounded",
+  "scope": {
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "build": "fixture-build-1",
+    "environment": "synthetic-local",
+    "as_of": "2026-09-12T11:00:00Z",
+    "inventory_status": "complete",
+    "inventory_refs": [
+      "inventory"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "ui",
+      "kind": "ui",
+      "locator": "synthetic/ui"
+    },
+    {
+      "id": "api",
+      "kind": "api",
+      "locator": "synthetic/api"
+    },
+    {
+      "id": "auth",
+      "kind": "authorization",
+      "locator": "synthetic/auth"
+    },
+    {
+      "id": "db",
+      "kind": "database",
+      "locator": "synthetic/db"
+    }
+  ],
+  "edges": [
+    {
+      "id": "ui-api",
+      "from": "ui",
+      "to": "api",
+      "contract": "Synthetic explicit expectation",
+      "state": "pass",
+      "method": "runtime",
+      "evidence_refs": [
+        "run"
+      ]
+    },
+    {
+      "id": "api-auth",
+      "from": "api",
+      "to": "auth",
+      "contract": "Synthetic explicit expectation",
+      "state": "pass",
+      "method": "runtime",
+      "evidence_refs": [
+        "run"
+      ]
+    },
+    {
+      "id": "auth-db",
+      "from": "auth",
+      "to": "db",
+      "contract": "Synthetic explicit expectation",
+      "state": "pass",
+      "method": "runtime",
+      "evidence_refs": [
+        "run"
+      ]
+    },
+    {
+      "id": "db-ui",
+      "from": "db",
+      "to": "ui",
+      "contract": "Synthetic explicit expectation",
+      "state": "pass",
+      "method": "runtime",
+      "evidence_refs": [
+        "run"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "environment": "synthetic-local",
+      "observed_at": "2026-09-12T10:00:00Z",
+      "artifact": {
+        "path": "evidence.txt",
+        "sha256": "b781ca4e3efcbf31178927825de855f45b7e52f0d652af03cfb236785de2fe48"
+      },
+      "id": "inventory",
+      "kind": "inventory",
+      "covers_edges": []
+    },
+    {
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "environment": "synthetic-local",
+      "observed_at": "2026-09-12T10:00:00Z",
+      "artifact": {
+        "path": "evidence.txt",
+        "sha256": "b781ca4e3efcbf31178927825de855f45b7e52f0d652af03cfb236785de2fe48"
+      },
+      "id": "run",
+      "kind": "execution",
+      "build": "fixture-build-1",
+      "run_id": "synthetic-run",
+      "journey_id": "save",
+      "scenario_id": "save-happy",
+      "outcome": "pass",
+      "covers_edges": [
+        "ui-api",
+        "api-auth",
+        "auth-db",
+        "db-ui"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "save",
+      "edge_ids": [
+        "ui-api",
+        "api-auth",
+        "auth-db",
+        "db-ui"
+      ],
+      "required_scenarios": [
+        "save-happy",
+        "save-retry",
+        "save-forbidden",
+        "save-partial"
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "save-happy",
+      "journey_id": "save",
+      "state": "pass",
+      "evidence_refs": [
+        "run"
+      ]
+    }
+  ]
+}

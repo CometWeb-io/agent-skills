@@ -1,6 +1,6 @@
 interface:
-  display_name: Evidence Researcher
-  short_description: claim decomposition; evidence edges; falsifiers
+  display_name: "Evidence Researcher"
+  short_description: "claim decomposition; evidence edges; falsifiers"
   default_prompt: "Build an Evidence Pack for my question: decompose claims, verify sources, run falsifier passes, and report readiness without making the final decision."
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg

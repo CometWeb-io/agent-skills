@@ -11,7 +11,7 @@ assert spec.loader is not None
 spec.loader.exec_module(engine)
 
 AS_OF = "2026-08-25T22:03:05+02:00"
-CANDIDATE = "abc1234"
+CANDIDATE = "abc1234" + "0" * 33
 
 
 def release():
@@ -40,6 +40,7 @@ def evidence(level="verified", candidate=True):
         "summary": "candidate-specific evidence",
         "last_verified_at": AS_OF,
         "source_type": "ci",
+        "environment": "production",
     }
     if candidate:
         data["candidate_ref"] = CANDIDATE

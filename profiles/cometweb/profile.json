@@ -1,0 +1,14 @@
+{
+  "schema": "cometweb.project-profile/v1",
+  "id": "cometweb-publications-and-audits",
+  "version": "1.0.0",
+  "entrypoint": "profiles/cometweb/PROFILE.md",
+  "canonical_reference": "docs/COMETWEB-EBOOK-DESIGN-RULES.md",
+  "supplementary_reference": "docs/EDITORIAL_VISUAL_STANDARD.md",
+  "font_family": "Nunito Sans",
+  "font_files_distributed": false,
+  "logo": {"requirement": "authentic_user_approved_asset", "binding": null, "status": "resolve_at_execution"},
+  "runtime_installation": "not_claimed",
+  "applies_to": ["CometWeb ebook", "CometWeb audit report", "CometWeb workbook"],
+  "does_not_apply_to": ["generic prose editing", "unrelated client brand"]
+}

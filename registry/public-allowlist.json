@@ -1,0 +1,5 @@
+{
+  "schema": "cometweb.public-allowlist/v1",
+  "approved": [],
+  "note": "Public export is intentionally disabled until a reviewer explicitly approves each skill/version/payload_sha256 tuple. An active lifecycle is NOT publication permission. No public repository is modified by a dry run."
+}

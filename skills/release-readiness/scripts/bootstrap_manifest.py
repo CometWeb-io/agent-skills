@@ -53,7 +53,8 @@ def build(context: Dict[str, Any]) -> Dict[str, Any]:
     mode = str(context.get("mode", "standard")).lower().strip()
     if mode not in engine.MODES:
         raise engine.ManifestError(f"invalid mode: {mode!r}")
-    release = context.get("release") or {}
+    engine._validate_json(context)
+    release = context.get("release", {})
     if not isinstance(release, dict):
         raise engine.ManifestError("release must be an object")
 
@@ -72,7 +73,7 @@ def build(context: Dict[str, Any]) -> Dict[str, Any]:
             "binding": True,
             "applicable": True,
             "evidence_level": "missing",
-            "required_evidence": required_evidence,
+            "required_evidence": engine.GATE_EVIDENCE_FLOORS[gate],
             "freshness": "unknown",
             "evidence": {},
             "owner": "",
@@ -101,10 +102,7 @@ def build(context: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _load(path: Path) -> Dict[str, Any]:
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise engine.ManifestError(f"cannot read context: {exc}") from exc
+    return engine._load(path)
 
 
 def main(argv: List[str] | None = None) -> int:
@@ -120,11 +118,14 @@ def main(argv: List[str] | None = None) -> int:
         print(json.dumps({"error": str(exc)}), file=sys.stderr)
         return 2
 
-    text = json.dumps(manifest, ensure_ascii=False, indent=2 if args.pretty else None, sort_keys=True)
+    text = json.dumps(manifest, ensure_ascii=False, indent=2 if args.pretty else None, sort_keys=True, allow_nan=False)
+    try:
+        if args.output:
+            engine.write_output(args.output, text, [args.context])
+    except (engine.ManifestError, OSError):
+        print(json.dumps({"error": "output could not be safely written"}), file=sys.stderr)
+        return 2
     print(text)
-    if args.output:
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(text + "\n", encoding="utf-8")
     return 0
 
 

@@ -1,0 +1,350 @@
+{
+  "schema": "cometweb.canonical-routing-cases/v1",
+  "source_revision": "868045d5ad486c96e45556c0aa7be628d8a1cd4a",
+  "source_registry_git_blob": "775e63cfa128086b57581347fb5e027364be97e6",
+  "description": "26 declared positive and 20 negative examples from the pinned registry, plus 8 new paraphrase/denial cases. These are deterministic routing checks, not model executions.",
+  "cases": [
+    {
+      "id": "canonical-positive-ai-council-1",
+      "prompt": "Przepuść przez AI Council",
+      "expected_primary_skill": "ai-council",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-positive-ai-council-2",
+      "prompt": "Council: jaka cena Growth?",
+      "expected_primary_skill": "ai-council",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-ai-council-1",
+      "prompt": "Zrób research claimów bez decyzji",
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "canonical-positive-ai-humanize-1",
+      "prompt": "Humanize this Polish LinkedIn draft",
+      "expected_primary_skill": "ai-humanize",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-positive-ai-humanize-2",
+      "prompt": "Remove AI tells from this README",
+      "expected_primary_skill": "ai-humanize",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-ai-humanize-1",
+      "prompt": "Odśwież kontekst Insight",
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "canonical-negative-ai-humanize-2",
+      "prompt": "Zrób Evidence Pack",
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "canonical-positive-cometweb-context-1",
+      "prompt": "Co zmieniło się w Insight od ostatniego review?",
+      "expected_primary_skill": "cometweb-context",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-positive-cometweb-context-2",
+      "prompt": "Odśwież kontekst przed weekly boardroom",
+      "expected_primary_skill": "cometweb-context",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-positive-cometweb-context-3",
+      "prompt": "Przygotuj kontekst na spotkanie z design partnerem",
+      "expected_primary_skill": "cometweb-context",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-cometweb-context-1",
+      "prompt": "Ile gwiazdek ma MaciejZet/agent-skills na GitHub?",
+      "must_not_trigger": [
+        "cometweb-context"
+      ]
+    },
+    {
+      "id": "canonical-negative-cometweb-context-2",
+      "prompt": "Czy claim X jest prawdziwy? Zrób Evidence Pack",
+      "must_not_trigger": [
+        "cometweb-context"
+      ]
+    },
+    {
+      "id": "canonical-negative-cometweb-context-3",
+      "prompt": "Przepuść decyzję o cenie przez Council",
+      "must_not_trigger": [
+        "cometweb-context"
+      ]
+    },
+    {
+      "id": "canonical-positive-competitive-intelligence-1",
+      "prompt": "Competitor digest since last month snapshot",
+      "expected_primary_skill": "competitive-intelligence",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-positive-competitive-intelligence-2",
+      "prompt": "What changed on competitor pricing pages?",
+      "expected_primary_skill": "competitive-intelligence",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-competitive-intelligence-1",
+      "prompt": "Przepuść przez Council cenę Growth",
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ]
+    },
+    {
+      "id": "canonical-positive-customer-ops-1",
+      "prompt": "Triage support queue for churn signal",
+      "expected_primary_skill": "customer-ops",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-positive-customer-ops-2",
+      "prompt": "Account incident candidate",
+      "expected_primary_skill": "customer-ops",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-customer-ops-1",
+      "prompt": "Is RC ready to ship?",
+      "must_not_trigger": [
+        "customer-ops"
+      ]
+    },
+    {
+      "id": "canonical-positive-design-partner-finder-1",
+      "prompt": "Score design partner candidates",
+      "expected_primary_skill": "design-partner-finder",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-positive-design-partner-finder-2",
+      "prompt": "Propose pilot cohort charter",
+      "expected_primary_skill": "design-partner-finder",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-design-partner-finder-1",
+      "prompt": "Zrób cold email do prospektów",
+      "must_not_trigger": [
+        "design-partner-finder"
+      ]
+    },
+    {
+      "id": "canonical-positive-evidence-researcher-1",
+      "prompt": "Zrób Evidence Pack dla claimów pricing",
+      "expected_primary_skill": "evidence-researcher",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-positive-evidence-researcher-2",
+      "prompt": "Fact-check EU AI Act marketing claims",
+      "expected_primary_skill": "evidence-researcher",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-evidence-researcher-1",
+      "prompt": "Odśwież kontekst CometWeb",
+      "must_not_trigger": [
+        "evidence-researcher"
+      ]
+    },
+    {
+      "id": "canonical-negative-evidence-researcher-2",
+      "prompt": "Czy RC 1.2 gotowy do produkcji?",
+      "must_not_trigger": [
+        "evidence-researcher"
+      ]
+    },
+    {
+      "id": "canonical-positive-product-operator-1",
+      "prompt": "What should we do this week given the roadmap?",
+      "expected_primary_skill": "product-operator",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-positive-product-operator-2",
+      "prompt": "Does roadmap match the repo?",
+      "expected_primary_skill": "product-operator",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-product-operator-1",
+      "prompt": "Create a full roadmap from scratch",
+      "must_not_trigger": [
+        "product-operator"
+      ]
+    },
+    {
+      "id": "canonical-negative-product-operator-2",
+      "prompt": "Is build v1.2-rc ready?",
+      "must_not_trigger": [
+        "product-operator"
+      ]
+    },
+    {
+      "id": "canonical-positive-product-teardown-1",
+      "prompt": "Teardown Linear onboarding for transferable patterns",
+      "expected_primary_skill": "product-teardown",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-product-teardown-1",
+      "prompt": "Analyze our whole repo roadmap",
+      "must_not_trigger": [
+        "product-teardown"
+      ]
+    },
+    {
+      "id": "canonical-positive-release-readiness-1",
+      "prompt": "Is build v2.14.0-rc3 ready for production?",
+      "expected_primary_skill": "release-readiness",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-positive-release-readiness-2",
+      "prompt": "Release gate for hotfix commit",
+      "expected_primary_skill": "release-readiness",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-release-readiness-1",
+      "prompt": "What should we build this week?",
+      "must_not_trigger": [
+        "release-readiness"
+      ]
+    },
+    {
+      "id": "canonical-positive-repo-to-roadmap-1",
+      "prompt": "Analyze the whole repo and create a roadmap to target state",
+      "expected_primary_skill": "repo-to-roadmap",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-repo-to-roadmap-1",
+      "prompt": "What should we do this week?",
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ]
+    },
+    {
+      "id": "canonical-positive-seo-geo-aeo-maxxing-1",
+      "prompt": "Run SEO/GEO/AEO visibility audit on cometweb.io",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-seo-geo-aeo-maxxing-1",
+      "prompt": "Click-through QA of /register",
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ]
+    },
+    {
+      "id": "canonical-positive-skill-orchestrator-1",
+      "prompt": "Zorkiestruj evidence potem Council",
+      "expected_primary_skill": "skill-orchestrator",
+      "expected_status": "workflow"
+    },
+    {
+      "id": "canonical-positive-skill-orchestrator-2",
+      "prompt": "Audit register potem release readiness",
+      "expected_primary_skill": "skill-orchestrator",
+      "expected_status": "workflow"
+    },
+    {
+      "id": "canonical-negative-skill-orchestrator-1",
+      "prompt": "Tylko zrób Evidence Pack",
+      "must_not_trigger": [
+        "skill-orchestrator"
+      ]
+    },
+    {
+      "id": "canonical-positive-skill-orchestrator-multiagent-1",
+      "prompt": "Multiagent: evidence potem Council",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "expected_status": "workflow"
+    },
+    {
+      "id": "canonical-negative-skill-orchestrator-multiagent-1",
+      "prompt": "Jeden skill wystarczy",
+      "must_not_trigger": [
+        "skill-orchestrator-multiagent"
+      ]
+    },
+    {
+      "id": "canonical-positive-web-app-auditor-1",
+      "prompt": "Click-through QA audit of app.cometweb.io/register",
+      "expected_primary_skill": "web-app-auditor",
+      "expected_status": "single_skill"
+    },
+    {
+      "id": "canonical-negative-web-app-auditor-1",
+      "prompt": "Is RC ready to ship?",
+      "must_not_trigger": [
+        "web-app-auditor"
+      ]
+    },
+    {
+      "id": "paraphrase-1",
+      "prompt": "Co się zmieniło w Insight od poprzedniego przeglądu?",
+      "expected_primary_skill": "cometweb-context"
+    },
+    {
+      "id": "paraphrase-2",
+      "prompt": "Co zmieniło się w CometWeb?",
+      "expected_primary_skill": "cometweb-context"
+    },
+    {
+      "id": "paraphrase-3",
+      "prompt": "Does roadmap match implementation in the repo?",
+      "expected_primary_skill": "product-operator"
+    },
+    {
+      "id": "paraphrase-4",
+      "prompt": "Audit checkout then assess release readiness",
+      "expected_primary_skill": "skill-orchestrator"
+    },
+    {
+      "id": "paraphrase-5",
+      "prompt": "Najpierw audyt, potem release readiness",
+      "expected_primary_skill": "skill-orchestrator"
+    },
+    {
+      "id": "explicit-denial-1",
+      "prompt": "Don't use @ai-humanize; fix typos only.",
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "explicit-denial-2",
+      "prompt": "Nie używaj @ai-humanize. Popraw literówki.",
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "explicit-denial-3",
+      "prompt": "Popraw literówki bez humanizacji.",
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    }
+  ]
+}

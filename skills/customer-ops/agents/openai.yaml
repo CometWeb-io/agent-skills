@@ -1,6 +1,6 @@
 interface:
-  display_name: Customer Ops
-  short_description: support triage; incident candidate; eng handoff
+  display_name: "Customer Ops"
+  short_description: "support triage; incident candidate; eng handoff"
   default_prompt: "Use the Customer Ops skill for: Run the operational customer-to-resolution loop across support conversations, customer cases, incidents, account risk, commitments, internal handoffs, feedback clusters, and GitHub engineering work. U"
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg

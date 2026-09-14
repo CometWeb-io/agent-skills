@@ -1,6 +1,6 @@
 interface:
-  display_name: Release Readiness
-  short_description: pinned RC gate; GO/NO_GO/DEFER; environment checks
+  display_name: "Release Readiness"
+  short_description: "pinned RC gate; GO/NO_GO/DEFER; environment checks"
   default_prompt: "Use the Release Readiness skill for: Assess whether a specific release candidate, build, artifact, application, service, mobile/desktop build, or API is ready for production in a named environment and issue an evidence-backed GO / GO_WIT"
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg

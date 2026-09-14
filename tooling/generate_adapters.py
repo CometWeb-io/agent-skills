@@ -72,6 +72,17 @@ def title_case_skill(skill_id: str) -> str:
     return DISPLAY_NAMES.get(skill_id, skill_id.replace("-", " ").title())
 
 
+def yaml_scalar(value: str) -> str:
+    """Quote a single-line scalar so it survives a strict YAML parser.
+
+    Descriptions get truncated to a fixed width, which regularly cuts inside a
+    quoted phrase and used to emit an unterminated string. JSON string syntax
+    is a valid YAML double-quoted scalar and escapes quotes and backslashes for
+    us, so round-trip through it rather than interpolating raw text.
+    """
+    return json.dumps(value, ensure_ascii=False)
+
+
 def short_description(entry: dict) -> str:
     owns = entry.get("owns") or []
     if owns:
@@ -98,9 +109,9 @@ def render_openai_yaml(entry: dict, existing: str | None, skill_dir: Path | None
 
     lines = [
         "interface:",
-        f"  display_name: {display}",
-        f"  short_description: {short}",
-        f"  default_prompt: \"{default_prompt}\"",
+        f"  display_name: {yaml_scalar(display)}",
+        f"  short_description: {yaml_scalar(short)}",
+        f"  default_prompt: {yaml_scalar(default_prompt)}",
     ]
     actual_dir = skill_dir or (SKILLS / skill_id)
     if (actual_dir / "assets" / "icon.svg").is_file():
@@ -256,13 +267,60 @@ def write_openai_yamls(skills: list[dict]) -> list[Path]:
     return written
 
 
+def hosts_file() -> Path:
+    return ROOT / "registry" / "hosts.json"
+
+
+def out_compat() -> Path:
+    return ROOT / "docs" / "generated-compatibility-matrix.md"
+
+
+def validate_sources(skills: list[dict]) -> None:
+    """Reject an incomplete or redirected source tree before writing anything.
+
+    Generation rewrites files in place across every skill, so a defect found
+    halfway through would leave the tree half-updated. Everything is checked
+    up front and the run aborts without touching disk.
+    """
+    seen: set[str] = set()
+    for entry in skills:
+        skill_id = entry.get("id", "")
+        if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", skill_id or ""):
+            raise SystemExit(f"invalid skill id: {skill_id!r}")
+        if skill_id in seen:
+            raise SystemExit(f"duplicate registry entry: {skill_id}")
+        seen.add(skill_id)
+
+        skill_dir = SKILLS / skill_id
+        if not skill_dir.is_dir():
+            raise SystemExit(f"registry lists {skill_id} but it is not on disk")
+        for rel in ("SKILL.md", "VERSION"):
+            path = skill_dir / rel
+            if not path.is_file():
+                raise SystemExit(f"{skill_id}: missing {rel}")
+            if path.is_symlink():
+                raise SystemExit(f"{skill_id}: {rel} must not be a symlink")
+        agents = skill_dir / "agents"
+        if agents.is_symlink():
+            raise SystemExit(f"{skill_id}: agents/ must not be a symlink")
+        on_disk = (skill_dir / "VERSION").read_text(encoding="utf-8").strip()
+        if on_disk != entry.get("version"):
+            raise SystemExit(
+                f"{skill_id}: registry version {entry.get('version')!r} != VERSION {on_disk!r}"
+            )
+
+
 def expected_artifacts(skills: list[dict]) -> dict[Path, str]:
-    hosts = json.loads(HOSTS_FILE.read_text(encoding="utf-8"))["hosts"]
     artifacts = {
         OUT_DOCS: build_docs(skills),
         OUT_CURSOR: build_cursor(skills),
-        OUT_COMPAT: build_compatibility_matrix(skills, hosts),
     }
+    # The host matrix needs a host registry. A tree that declares no hosts is a
+    # reduced but valid layout, so generate the rest rather than failing.
+    hosts_path = hosts_file()
+    if hosts_path.is_file():
+        hosts = json.loads(hosts_path.read_text(encoding="utf-8"))["hosts"]
+        artifacts[out_compat()] = build_compatibility_matrix(skills, hosts)
     for entry in skills:
         path = SKILLS / entry["id"] / "agents" / "openai.yaml"
         existing = path.read_text(encoding="utf-8") if path.is_file() else None
@@ -277,11 +335,12 @@ def main() -> None:
     args = parser.parse_args()
     data = json.loads(REGISTRY.read_text(encoding="utf-8"))
     skills = data["skills"]
+    validate_sources(skills)
 
     if args.check:
         artifacts = expected_artifacts(skills)
         if args.skip_openai:
-            artifacts = {path: text for path, text in artifacts.items() if path in {OUT_DOCS, OUT_CURSOR, OUT_COMPAT}}
+            artifacts = {path: text for path, text in artifacts.items() if path in {OUT_DOCS, OUT_CURSOR, out_compat()}}
         changed = []
         for path, expected in artifacts.items():
             if not path.is_file() or path.read_text(encoding="utf-8") != expected:
@@ -294,10 +353,15 @@ def main() -> None:
     OUT_DOCS.parent.mkdir(parents=True, exist_ok=True)
     OUT_DOCS.write_text(build_docs(skills), encoding="utf-8")
     OUT_CURSOR.write_text(build_cursor(skills), encoding="utf-8")
-    hosts = json.loads(HOSTS_FILE.read_text(encoding="utf-8"))["hosts"]
-    OUT_COMPAT.write_text(build_compatibility_matrix(skills, hosts), encoding="utf-8")
+    written_docs = [OUT_DOCS, OUT_CURSOR]
+    hosts_path = hosts_file()
+    if hosts_path.is_file():
+        hosts = json.loads(hosts_path.read_text(encoding="utf-8"))["hosts"]
+        compat = out_compat()
+        compat.write_text(build_compatibility_matrix(skills, hosts), encoding="utf-8")
+        written_docs.append(compat)
     written = [] if args.skip_openai else write_openai_yamls(skills)
-    msg = f"OK: wrote {OUT_DOCS.relative_to(ROOT)}, {OUT_CURSOR.relative_to(ROOT)}, {OUT_COMPAT.relative_to(ROOT)}"
+    msg = "OK: wrote " + ", ".join(str(d.relative_to(ROOT)) for d in written_docs)
     if written:
         msg += f", {len(written)} openai.yaml"
     print(msg)

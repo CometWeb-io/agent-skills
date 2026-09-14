@@ -5,7 +5,7 @@
 | id | version | tier | lifecycle | release_status | desc_len | explicit_only |
 | --- | ---: | --- | --- | --- | ---: | --- |
 | `ai-council` | 5.1.1 | foundation | active | ACTIVE | 893 | True |
-| `ai-humanize` | 2.4.0 | domain | active | ACTIVE | 708 | False |
+| `ai-humanize` | 2.4.1 | domain | active | ACTIVE | 708 | False |
 | `cometweb-context` | 1.4.1 | foundation | active | ACTIVE | 826 | False |
 | `competitive-intelligence` | 1.0.0 | domain | active | ACTIVE | 666 | False |
 | `customer-ops` | 2.1.0 | domain | active | ACTIVE | 924 | False |
@@ -16,7 +16,7 @@
 | `portfolio-operator` | 1.1.0 | foundation | active | ACTIVE | 647 | False |
 | `product-operator` | 2.2.0 | domain | active | ACTIVE | 808 | False |
 | `product-teardown` | 1.0.0 | domain | active | ACTIVE | 967 | False |
-| `release-readiness` | 1.0.0 | domain | active | ACTIVE | 992 | False |
+| `release-readiness` | 1.1.0 | domain | active | ACTIVE | 992 | False |
 | `repo-to-roadmap` | 1.0.1 | domain | active | ACTIVE | 1005 | False |
 | `seo-geo-aeo-maxxing` | 1.2.0 | domain | active | ACTIVE | 659 | False |
 | `skill-orchestrator` | 1.1.1 | foundation | active | ACTIVE | 728 | False |

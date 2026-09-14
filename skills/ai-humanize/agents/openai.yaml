@@ -1,6 +1,6 @@
 interface:
-  display_name: AI Humanize
-  short_description: EN/PL humanize; AI-tell removal; semantic-fidelity guards
+  display_name: "AI Humanize"
+  short_description: "EN/PL humanize; AI-tell removal; semantic-fidelity guards"
   default_prompt: "Use the AI Humanize skill for: Naturalize, edit, or substantially rewrite English and Polish prose while preserving meaning, factual constraints, and the author's intentional voice. Use specifically when the user asks to humanize t"
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg

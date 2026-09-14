@@ -1,6 +1,6 @@
 interface:
-  display_name: Longform Publisher
-  short_description: canonical long-form manuscript; publication lifecycle and claim-use reconciliation; derived-artifact release readiness
+  display_name: "Longform Publisher"
+  short_description: "canonical long-form manuscript; publication lifecycle and claim-use reconciliation; derived-artifact release readiness"
   default_prompt: "Use the Longform Publisher skill for: Use when ChatGPT must build, refresh, reconcile, or release a long-form publication such as an ebook, report, playbook, white paper, guide, handbook, or research-backed article across manuscript and d"
 policy:
   products:

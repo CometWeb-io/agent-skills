@@ -1,0 +1,8 @@
+{
+  "schema": "cometweb.knowledge-rules/v1",
+  "rules": [
+    {"id":"agentskills-description-limit", "state":"active", "kind":"standard", "statement":"Agent Skills descriptions must be non-empty and no longer than 1024 characters.", "scope":"Agent Skills common frontmatter", "verified_at":"2026-09-12", "ttl_days":30, "sources":["https://agentskills.io/specification"], "regression_tests":["tooling/tests/test_quality_tooling.py::test_frontmatter_description_limit"]},
+    {"id":"openai-explicit-invocation", "state":"active", "kind":"platform_requirement", "statement":"The OpenAI skills adapter can disable implicit invocation with policy.allow_implicit_invocation=false; explicit invocation remains possible.", "scope":"OpenAI skills adapter; not a universal host security boundary", "verified_at":"2026-09-12", "ttl_days":30, "sources":["https://developers.openai.com/codex/skills"], "regression_tests":["tooling/tests/test_quality_tooling.py::test_explicit_registry_policy_wins"]},
+    {"id":"skill-baseline-comparison", "state":"active", "kind":"heuristic", "statement":"Compare outputs with a skill against a no-skill baseline under matched task conditions and review outcome quality, not only structure.", "scope":"CometWeb evaluation design; not evidence that a particular skill improves outcomes", "verified_at":"2026-09-12", "ttl_days":90, "sources":["https://agentskills.io/skill-creation/evaluating-skills"], "regression_tests":["tooling/tests/test_model_evals.py"]}
+  ]
+}

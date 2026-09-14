@@ -18,7 +18,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, Iterable, List, Sequence
 
-__version__ = "1.3.0"
+__version__ = "1.3.1"
 
 URL_RE = re.compile(r"https?://[^\s<>\])}]+")
 EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
@@ -47,6 +47,23 @@ CURRENCY_RE = re.compile(
     r"[+-]?(?:\d{1,3}(?:[ ,]\d{3})+|\d+)(?:[.,]\d+)?\s*(?:USD|EUR|GBP|PLN))\b",
     re.IGNORECASE,
 )
+# Protect literal numeric thresholds, not arbitrary mathematical equivalence.
+# Do not mistake the > in an arrow (->) for a comparator.
+NUMERIC_CONSTRAINT_RE = re.compile(
+    r"(?<![<>=!\-])(?P<operator><=|>=|!=|==|≤|≥|≠|<(?![=])|>(?![=])|=(?![=]))"
+    r"[ \t]*(?P<number>[+-]?(?:\d{1,3}(?:[ ,]\d{3})+(?:[.,]\d+)?|\d+(?:[.,]\d+)?))(?!\d)"
+)
+NUMERIC_OPERATORS = {"≤": "<=", "≥": ">=", "≠": "!="}
+
+
+def _numeric_constraints(text: str) -> Iterable[str]:
+    # A line-leading Markdown blockquote marker is syntax, not a threshold.
+    text = re.sub(r"(?m)^ {0,3}(?:>[ \t]?)+", "", text)
+    for match in NUMERIC_CONSTRAINT_RE.finditer(text):
+        operator = match.group("operator")
+        yield NUMERIC_OPERATORS.get(operator, operator) + " " + match.group("number")
+
+
 MD_LINK_DEST_RE = re.compile(r"\[[^\]]+\]\(([^)\s]+)(?:\s+['\"][^'\"]*['\"])?\)")
 NUMERIC_CITATION_RE = re.compile(r"(?<!\w)\[(\d+(?:\s*[-,]\s*\d+)*)\]")
 PATH_RE = re.compile(
@@ -137,6 +154,9 @@ def extract(text: str, protected_terms: Sequence[str] = ()) -> Dict[str, Counter
     inline = [m.group(2) for m in INLINE_CODE_RE.finditer(without_fenced)]
     without_code = INLINE_CODE_RE.sub("", without_fenced)
 
+    # Normalize a mathematical minus only in numeric extraction. Quoted spans,
+    # code, paths, URLs and explicit protected terms still compare exact bytes.
+    numeric_text = without_code.replace("−", "-")
     protected_present = [term for term in protected_terms if term and term in text]
     return {
         "urls": counter(value.rstrip(".,;:!?") for value in URL_RE.findall(text)),
@@ -148,9 +168,10 @@ def extract(text: str, protected_terms: Sequence[str] = ()) -> Dict[str, Counter
         "cves": counter(value.upper() for value in CVE_RE.findall(without_code)),
         "rfc_refs": counter(value.upper().replace(" ", "-") for value in RFC_RE.findall(without_code)),
         "standards": counter(STANDARD_RE.findall(without_code)),
-        "number_unit_pairs": counter(" ".join(m.groups()) for m in UNIT_RE.finditer(without_code)),
-        "currency_amounts": counter(CURRENCY_RE.findall(without_code)),
-        "numbers": counter(NUMBER_RE.findall(without_code)),
+        "number_unit_pairs": counter(" ".join(m.groups()) for m in UNIT_RE.finditer(numeric_text)),
+        "currency_amounts": counter(CURRENCY_RE.findall(numeric_text)),
+        "numbers": counter(NUMBER_RE.findall(numeric_text)),
+        "numeric_constraints": counter(_numeric_constraints(numeric_text)),
         "markdown_link_destinations": counter(MD_LINK_DEST_RE.findall(text)),
         "inline_code": counter(inline),
         "fenced_code_blocks": counter(fenced),
@@ -224,6 +245,7 @@ def compare(
         "warnings": warnings,
         "limitations": [
             "Does not verify semantic equivalence, causal relations, attribution, or factual truth.",
+            "Numeric constraints protect literal operators and values, not worded inequalities or algebraic equivalence.",
             "Semantic-risk markers are heuristic and may change legitimately during paraphrase.",
             "Single-token proper names are not inferred reliably; pass them with --protect.",
             "Quoted material is exact-match protected and can over-constrain intentional quote paraphrases.",
@@ -274,8 +296,8 @@ def main() -> int:
         before = args.before.read_text(encoding="utf-8")
         after = args.after.read_text(encoding="utf-8")
         protected_terms = _load_protected_terms(args.protect, args.protect_file)
-    except OSError as exc:
-        print(f"error: {exc}", file=sys.stderr)
+    except (OSError, UnicodeError):
+        print("error: unable to read UTF-8 inputs or protected terms", file=sys.stderr)
         return 2
 
     result = compare(before, after, strict=args.strict, protected_terms=protected_terms)

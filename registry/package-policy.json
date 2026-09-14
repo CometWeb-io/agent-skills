@@ -1,0 +1,37 @@
+{
+  "schema": "cometweb.package-policy/v1",
+  "revision": 3,
+  "required_files": [
+    "SKILL.md",
+    "VERSION",
+    "LICENSE"
+  ],
+  "root_files": [
+    "SKILL.md",
+    "VERSION",
+    "CHANGELOG.md",
+    "LICENSE",
+    "LICENSE.txt",
+    "NOTICE",
+    "NOTICE.md",
+    "README.md",
+    "requirements.txt",
+    "pyproject.toml",
+    "INSTALL.md"
+  ],
+  "directories": [
+    "scripts",
+    "references",
+    "assets",
+    "agents",
+    "evals",
+    "tests",
+    "extras",
+    "evaluation",
+    "examples"
+  ],
+  "shared_roots": [
+    "protocol"
+  ],
+  "note": "An allowlist is not a secret-scan exemption. Unexpected files and symlinks block packaging. Shared protocol resources are vendored into references/_shared; external links are checked after relocation."
+}

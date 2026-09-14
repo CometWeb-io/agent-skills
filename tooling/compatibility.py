@@ -19,39 +19,65 @@ SKILLS = ROOT / "skills"
 FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
 
 
+if yaml is not None:
+
+    class UniqueLoader(yaml.SafeLoader):
+        """SafeLoader that rejects duplicate keys instead of silently
+        keeping the last one, so a skill cannot declare two descriptions
+        and have the quieter tooling read the wrong one."""
+
+    def _unique_mapping(loader, node, deep=False):
+        result = {}
+        for key_node, value_node in node.value:
+            key = loader.construct_object(key_node, deep=deep)
+            if key in result:
+                raise ValueError(f"duplicate YAML key: {key}")
+            result[key] = loader.construct_object(value_node, deep=deep)
+        return result
+
+    UniqueLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _unique_mapping
+    )
+else:  # pragma: no cover - yaml is a declared dev dependency
+    UniqueLoader = None
+
+
 def fail(msg: str) -> None:
     print(f"FAIL: {msg}", file=sys.stderr)
     raise SystemExit(1)
 
 
-def parse_frontmatter(path: Path) -> dict[str, str]:
-    text = path.read_text(encoding="utf-8")
-    match = FRONTMATTER_RE.match(text)
+def parse_frontmatter(path: Path) -> dict:
+    """Parse and validate a skill's YAML frontmatter.
+
+    Parsed with UniqueLoader rather than a hand-rolled line reader so that a
+    duplicate key is an error instead of silently resolving to whichever copy
+    happened to come last, and so the name/description contract is enforced
+    at the point of reading rather than by whoever remembers to check.
+    """
+    match = FRONTMATTER_RE.match(path.read_text(encoding="utf-8"))
     if not match:
-        fail(f"missing YAML frontmatter: {path}")
-    block = match.group(1)
-    result: dict[str, str] = {}
-    key: str | None = None
-    buf: list[str] = []
-    for line in block.splitlines():
-        if line.startswith("  ") and key:
-            buf.append(line.strip())
-            continue
-        if key:
-            result[key] = " ".join(buf).strip()
-            buf = []
-        if ":" in line:
-            key, val = line.split(":", 1)
-            key = key.strip()
-            val = val.strip()
-            if val in (">", ">-", "|"):
-                buf = []
-            else:
-                result[key] = val.strip('"').strip("'")
-                key = None
-    if key:
-        result[key] = " ".join(buf).strip()
-    return result
+        raise ValueError(f"missing YAML frontmatter: {path}")
+    data = yaml.load(match.group(1), Loader=UniqueLoader)
+    if not isinstance(data, dict):
+        raise ValueError("frontmatter must be a mapping")
+    name, desc = data.get("name"), data.get("description")
+    if (
+        not isinstance(name, str)
+        or not 1 <= len(name) <= 64
+        or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name)
+    ):
+        raise ValueError("invalid skill name")
+    if name != path.parent.name:
+        raise ValueError("skill name must match its directory")
+    if not isinstance(desc, str) or not 1 <= len(desc.strip()) <= 1024:
+        raise ValueError("description must contain 1-1024 characters")
+    if "compatibility" in data and (
+        not isinstance(data["compatibility"], str)
+        or not 1 <= len(data["compatibility"]) <= 500
+    ):
+        raise ValueError("invalid compatibility text")
+    return data
 
 
 def compute_support(entry: dict, host: dict, *, format_ok: bool) -> dict[str, object]:

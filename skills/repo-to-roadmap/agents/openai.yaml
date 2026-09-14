@@ -1,7 +1,7 @@
 interface:
-  display_name: Repo to Roadmap
-  short_description: whole-project baseline; gap inventory; immutable roadmap snapshot
-  default_prompt: "Use the Repo to Roadmap skill for: Analyze an entire software/product project and turn verified project truth into an evidence-based, dependency-aware, reusable roadmap. Use for first-time or delta whole-project baselines such as "anal"
+  display_name: "Repo to Roadmap"
+  short_description: "whole-project baseline; gap inventory; immutable roadmap snapshot"
+  default_prompt: "Use the Repo to Roadmap skill for: Analyze an entire software/product project and turn verified project truth into an evidence-based, dependency-aware, reusable roadmap. Use for first-time or delta whole-project baselines such as \"anal"
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg
 policy:

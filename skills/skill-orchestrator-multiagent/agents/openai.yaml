@@ -1,6 +1,6 @@
 interface:
-  display_name: Skill Orchestrator Multiagent
-  short_description: alias for isolated_subagents execution
+  display_name: "Skill Orchestrator Multiagent"
+  short_description: "alias for isolated_subagents execution"
   default_prompt: "Run the multi-skill workflow with execution_mode=isolated_subagents (one Task/subagent per specialist skill)."
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg

@@ -109,7 +109,7 @@
     },
     {
       "id": "ai-humanize",
-      "version": "2.4.0",
+      "version": "2.4.1",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "domain",
@@ -238,6 +238,10 @@
         [
           6,
           "context gateway|minimal.?source"
+        ],
+        [
+          11,
+          "co (?:zmieni[łl]o si[eę]|si[eę] zmieni[łl]o) w (?:insight|cometweb)\\b"
         ]
       ]
     },
@@ -855,6 +859,10 @@
         [
           6,
           "mamy roadmap"
+        ],
+        [
+          9,
+          "does (?:our )?roadmap match|actually implemented in the repo"
         ]
       ],
       "release_status": "ACTIVE",
@@ -937,7 +945,7 @@
     },
     {
       "id": "release-readiness",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "domain",
@@ -1256,7 +1264,7 @@
           "chain.*skill|run everything needed"
         ],
         [
-          8,
+          12,
           "audit.*(then|→|->|potem).*(release|ship|readiness)"
         ],
         [

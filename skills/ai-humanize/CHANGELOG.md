@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.4.1 — integration candidate (not published)
+
+- Preserve the value of a Unicode minus sign during numeric extraction; do not normalize protected quotes or code.
+- Track literal numeric comparison operators and normalize equivalent glyph forms (`≤`/`<=`, `≥`/`>=`, `≠`/`!=`). This is not algebraic or semantic equivalence checking.
+- Make the saved-output scorer fail on missing, empty, malformed, oversized or symlinked outputs instead of treating absent runs as success.
+- Require review when negation, modality or scope heuristics change, even if extractable hard tokens are unchanged.
+- Replace the ambiguous per-case `pass` label with `automated_pass`; manual review and semantic equivalence remain explicitly unverified. Consumers of the old label must be updated.
+- Add source/case/output fingerprints and strict, bounded manifest validation. Hashes describe supplied bytes, not model execution or evidence authenticity.
+- Preserve the existing 19 rewrite-guard regressions; add 52 unit cases covering numeric fidelity and scorer admission. Synthetic text fixtures are not a runtime benchmark.
+
 ## 2.4.0
 
 - Added explicit task routing and an over-editing brake so already-natural prose stays close to the source.

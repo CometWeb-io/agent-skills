@@ -1,101 +1,76 @@
-# CI Integration
+# CI Integration — engine 2.1
 
-Use the deterministic engine as a policy gate only after generating a candidate-specific manifest. CI automation does not remove the need for correct scope/risk classification.
+CI must use a candidate-specific manifest produced from actual scope and evidence.
+JSON consistency is not evidence authentication and never authorizes deployment.
 
-## Basic evaluation
+## Exit policies
 
 ```bash
 python scripts/readiness_engine.py --input readiness.json --pretty
+python scripts/readiness_engine.py --input readiness.json --ci-policy strict
+python scripts/readiness_engine.py --input readiness.json --ci-policy controlled
 ```
 
-The default process exit code is `0` when the manifest is valid, regardless of release verdict. Consume the JSON verdict explicitly.
+| Policy | Exit 0 | Exit 1 | Exit 2 |
+| --- | --- | --- | --- |
+| `none` (default) | Valid assessment, regardless of verdict | Not used | Invalid input or unsafe/unavailable output |
+| `strict` | `GO` only | Any other verdict | Invalid input or unsafe/unavailable output |
+| `controlled` | `GO` or `GO_WITH_CONTROLS` | `DEFER` or `NO_GO` | Invalid input or unsafe/unavailable output |
 
-## Strict CI policy
+Always inspect exit status and verdict; never pipe a failed command through a
+success-returning consumer and call that a green gate. `controlled` is appropriate
+only when a separate organizational process enforces and approves the controls.
 
-Fail CI unless verdict is exactly `GO`:
+`--validate-only` emits a smaller report, not weaker checks; `valid: true` means
+structurally valid input, not approval. The compact report retains the verdict,
+snapshot hash, contract hash, contract mismatch, and scope/gate gaps.
 
-```bash
-python scripts/readiness_engine.py \
-  --input readiness.json \
-  --ci-policy strict
-```
-
-Exit code:
-
-- `0` → `GO`
-- `1` → `GO_WITH_CONTROLS`, `DEFER`, or `NO_GO`
-- `2` → invalid manifest/input
-
-Use this when conditional release requires a separate approval path.
-
-## Controlled CI policy
-
-Allow `GO` and `GO_WITH_CONTROLS`:
-
-```bash
-python scripts/readiness_engine.py \
-  --input readiness.json \
-  --ci-policy controlled
-```
-
-Exit code:
-
-- `0` → `GO` or `GO_WITH_CONTROLS`
-- `1` → `DEFER` or `NO_GO`
-- `2` → invalid manifest/input
-
-Use only when the organization has a real mechanism to enforce named controls/accepted risks after the automated gate.
-
-## Validate-only
-
-```bash
-python scripts/readiness_engine.py \
-  --input readiness.json \
-  --validate-only \
-  --pretty
-```
-
-This returns a compact summary including verdict, snapshot hash, missing required gates, and scope gaps.
-
-## Delta in CI
+## Frozen before/after review
 
 ```bash
 python scripts/readiness_engine.py \
   --input current-readiness.json \
   --previous previous-readiness.json \
-  --pretty
+  --ci-policy strict --pretty
 ```
 
-Use the `delta` object to detect:
+This automatically freezes current requirements against the previously assessed
+contract. Removing an inconvenient check cannot turn a failed previous review into
+a clean current review. The `delta` object separates actual verified resolutions,
+removed checks, changed requirements, newly unverified checks and missing gates.
 
-- new blockers;
-- new binding unknowns;
-- newly missing required gates;
-- candidate identity change;
-- score/coverage regression.
+For an explicitly reviewed scope change, provide the new independently approved
+`--expected-contract-hash`. Never generate the supposed approval from the changed
+manifest inside the same CI job. Hash consistency does not establish who approved
+it, so retain the approval provenance outside this skill.
 
-## Recommended pipeline placement
+## Immutable local outputs
 
-A practical order:
+```bash
+python scripts/readiness_engine.py --input readiness.json \
+  --output results/candidate-assessment.json --ci-policy strict
+```
 
-1. build immutable candidate;
-2. establish profile + complete scope/risk flags;
-3. bootstrap the required-gate manifest skeleton;
-4. run candidate tests/scans and collect runtime/provider/docs evidence;
-5. replace placeholders with evidence-backed states;
-6. evaluate release readiness;
-7. require human/organizational approval where policy demands it;
-8. deploy/publish through the separate authorized workflow.
+An output must not replace either input manifest, traverse output symlinks, or
+replace an existing different result. Repeating byte-identical output is allowed.
+Use a new result path for a new assessment. The bootstrapper applies the same
+protection to its `--context` and `--output` paths. No JSON success is printed when
+output creation fails.
 
-Do not generate a manifest before the candidate exists and then silently attach it to a later artifact.
+## Collection and release flow
 
-## Policy ownership
+Build the immutable candidate; resolve scope/risk flags; bootstrap required gates
+as unknown; freeze reviewed requirements; run the actual checks; preserve the
+run's full candidate identities, environment, optional config fingerprint and
+explicit-offset observation times; replace placeholders with evidence; evaluate
+and red-team the result; require any independent approval; deploy only through a
+separately authorized workflow.
 
-Version-control organization-specific additions separately from the generic skill where possible:
+A unit-test count, mocked integration trace, generated manifest, copied answer or
+self-asserted `verified` label is not a runtime test. Keep the original artifacts
+and review whether they support the claimed behavior.
 
-- higher thresholds;
-- additional required gates;
-- release-specific approval requirements;
-- environment-specific rollout controls.
-
-Risk-tier floors in the engine are minimum safety policy and cannot be lowered through manifest overrides.
+Organization-specific thresholds and approval requirements remain separate from
+this generic skill. Baseline floors cannot be lowered via manifest overrides.
+For the full input contract and stricter legacy migration, read
+`manifest-schema.md`.

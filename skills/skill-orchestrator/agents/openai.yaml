@@ -1,6 +1,6 @@
 interface:
-  display_name: Skill Orchestrator
-  short_description: multi-skill plan; execution_mode; CW-AIP handoffs
+  display_name: "Skill Orchestrator"
+  short_description: "multi-skill plan; execution_mode; CW-AIP handoffs"
   default_prompt: "Plan and execute the multi-skill workflow for my goal. Choose execution_mode auto|single_thread|isolated_subagents and hand off via CW-AIP envelopes."
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg
