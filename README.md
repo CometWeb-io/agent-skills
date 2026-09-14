@@ -1,103 +1,142 @@
-# CometWeb Agent Skills (private canonical)
+# CometWeb Agent Skills
 
-Private canonical monorepo for Comet-owned agent skills used across ChatGPT, Codex,
-Cursor, Claude Code, and CometWeb operating workflows.
+Production-grade agent skills for research, product operations, QA, release
+readiness, and evidence-based decisions.
 
-Public distribution mirror: [`MaciejZet/agent-skills`](https://github.com/MaciejZet/agent-skills)
-(generated / synced subset — do not treat as a second hand-edited source of truth once
-the publish pipeline is live).
+This repository contains 18 reusable skill packages for Cursor, Claude Code,
+Codex, and other compatible agent hosts. Each skill combines clear routing
+guidance with structured outputs, references, scripts, and tests where
+deterministic behavior matters.
 
-## Current state (as of this commit)
+**Version:** `2.0.0` · **License:** [MIT](LICENSE)
 
-| Area | Status |
+## Why these skills
+
+Agent skills should do more than provide a large prompt. CometWeb skills are
+designed to:
+
+- route a request to the right specialist and define when not to use it;
+- separate context, evidence, decisions, audits, and release verdicts;
+- produce reusable, structured handoffs between skills;
+- keep important behavior enforceable through scripts, schemas, tests, and evals;
+- work across multiple agent hosts without duplicating the source package.
+
+## Skills
+
+### Foundation and orchestration
+
+| Skill | Use it for |
 | --- | --- |
-| Active skills on disk | 15 packages under `skills/` (incl. `cometweb-context`) |
-| Registry | `registry/skills.json` — single source for lifecycle + routing metadata |
-| Protocol | CW-AIP v1 (compat) + CW-AIP v2 core/payload schemas |
-| Tooling | `tooling/` validators, compatibility, packager, adapter generator |
-| Evals | routing suite + context behavior fixtures |
-| Validation | Local `tooling/validate_local.py`; Actions paused per owner |
+| [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. |
+| [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. |
+| [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. |
+| [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. |
+| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. |
+| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. |
 
-## Foundation vs domain
+### Product, research, and partnerships
 
-**Foundation (platform):**
-
-| Skill | Role |
+| Skill | Use it for |
 | --- | --- |
-| `cometweb-context` | Provenance-aware context gateway → ContextEnvelope |
-| `evidence-researcher` | Auditable Evidence Packs |
-| `skill-orchestrator` | Multi-skill workflows (`execution_mode`: auto / single_thread / isolated_subagents) |
-| `ai-council` | Consequential decisions (LIGHT / STANDARD / DEEP) |
+| [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. |
+| [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. |
+| [`design-partner-finder`](skills/design-partner-finder/) | Finding, qualifying, and managing design partners and early adopters. |
+| [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. |
+| [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. |
+| [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. |
 
-`skill-orchestrator-multiagent` is a **thin alias** for `execution_mode=isolated_subagents`.
-Do not diverge its planning model from `skill-orchestrator`.
+### Publication, operations, QA, and release
 
-**Domain specialists** (product-operator, release-readiness, web-app-auditor, …) remain
-first-class skills; they are not “foundation OS”, but they ship in this repo.
+| Skill | Use it for |
+| --- | --- |
+| [`customer-ops`](skills/customer-ops/) | Support triage, incidents, account risk, commitments, and engineering handoffs. |
+| [`ebook-publisher`](skills/ebook-publisher/) | Research-backed ebooks, white papers, workbooks, and publication QA. |
+| [`longform-publisher`](skills/longform-publisher/) | Canonical long-form manuscripts and release-ready derived documents. |
+| [`release-readiness`](skills/release-readiness/) | Candidate-bound production gates and GO / GO_WITH_CONTROLS / NO_GO / DEFER verdicts. |
+| [`seo-geo-aeo-maxxing`](skills/seo-geo-aeo-maxxing/) | Multi-pillar SEO, GEO, and AEO visibility audits. |
+| [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. |
 
-## Repository layout
+## Installation
 
-```text
-registry/                 skills.json, hosts.json, schemas
-protocol/
-  cw-aip-v1/              legacy interchange (compat)
-  cw-aip-v2/              unified core + typed payloads
-tooling/                  validate, compatibility, package, generate adapters
-evals/
-  routing/                trigger / collision cases
-  behavior/               skill behavior fixtures
-skills/<name>/            self-contained skill packages
-docs/                     architecture notes
-.github/workflows/        CI gates
-```
-
-## Development loop — local validation
-
-The owner has paused GitHub Actions because its budget is exhausted. Keep Actions
-and public distribution disabled during private integration. Use a full trusted
-checkout, not the pending file overlay.
+Clone the repository, then run the installer for the hosts you use:
 
 ```bash
-# Initial dependency setup, only when needed in your development environment:
-python3 -m pip install -r requirements-dev.txt
-# Inventory and command plan only; no tests executed:
-python3 tooling/validate_local.py --plan
-# Execute checks; the output directory must be new and outside the checkout:
-python3 tooling/validate_local.py --output ../cometweb-validation-2026-09-13
+git clone https://github.com/MaciejZet/agent-skills.git
+cd agent-skills
+./scripts/install-all.sh
 ```
 
-The runner checks the saved adapters without regenerating them, captures separate
-logs and JUnit, and binds results to HEAD plus working-tree/index fingerprints.
-Failures, skipped tests, missing test output and source changes cannot produce a
-fully passing result. It does not install dependencies or publish anything.
+`install-all.sh` installs the skills for Cursor, Claude Code, Codex, Qwen
+Code, Qoder, and Lingma. To install selected hosts instead:
 
-See [local validation](docs/LOCAL-VALIDATION.md) for scope, limitations and exit
-codes. The pending 137-file bundle is **not** integrated by adding this runner;
-see [integration status](docs/INTEGRATION-STATUS.md).
+```bash
+./scripts/install-cursor.sh
+./scripts/install-codex.sh
+./scripts/install-claude.sh
+```
 
-## Rules
+The installers discover every package under `skills/*/SKILL.md`, so newly
+registered skills do not require a hard-coded installer list.
 
-- `registry/skills.json` is the routing source of truth; generated adapters must not be
-  hand-edited as primary policy.
-- `SKILL.md` frontmatter: `name` + `description` (host-safe length; Codex ≤ 1024).
-- Active skills have `VERSION` and `CHANGELOG.md`.
-- Behavior changes are test-first.
-- Never commit secrets, `.env`, credential stores, customer exports, or private vault contents.
-- Typed boundaries: context ≠ evidence ≠ decision ≠ release verdict.
-- Do not hard-code live operational bindings into skill logic when a machine-readable
-  source registry can hold them.
+## Usage
 
-## CometWeb publication design
+Describe the outcome you need in your agent host. The routing metadata will
+select the specialist when the request matches its scope. You can also name a
+skill directly:
 
-When creating or revising CometWeb ebooks, PDF reports, or audit workbooks, read
-[`docs/COMETWEB-EBOOK-DESIGN-RULES.md`](docs/COMETWEB-EBOOK-DESIGN-RULES.md).
-The series rules cover red before/defect states, verified green outcomes, rounded
-status labels with icons, authentic branding, reference-cover hierarchy, and rendered
-PDF checks. They are project-specific design rules, not a replacement for the generic
-`ai-humanize` editing contract or a claim of accessibility certification.
+```text
+Build an Evidence Pack for these pricing claims, including falsifiers.
+```
 
-## Target (remaining P1/P2)
+```text
+Audit the registration flow, then run release readiness on the candidate.
+```
 
-See `docs/TARGET.md`. Short version: generated OpenAI/Cursor adapters from registry,
-immutable per-skill packages with eval reports, and a public-safe publish pipeline into
-`MaciejZet/agent-skills`.
+For multi-step work, use `skill-orchestrator`; use
+`skill-orchestrator-multiagent` when each specialist should run in isolation.
+
+## Repository structure
+
+```text
+skills/<name>/       Self-contained skill packages
+registry/            Routing, lifecycle, and host compatibility metadata
+protocol/            CW-AIP v1 compatibility and CW-AIP v2 schemas
+tooling/              Validators, compatibility checks, and adapter tooling
+evals/               Routing and behavior evaluation fixtures
+extras/              Host-specific routing assets
+```
+
+Each package can contain a `SKILL.md`, references, scripts, tests, examples,
+and host metadata. The registry describes the package contract; the skill
+directory contains its implementation and supporting evidence.
+
+## Development and validation
+
+Install the development dependencies:
+
+```bash
+python3 -m pip install -r requirements-dev.txt
+```
+
+Run the test suite and inspect the local validation plan:
+
+```bash
+python3 -m pytest -q
+python3 tooling/validate_local.py --plan
+```
+
+Before opening a pull request, read
+[`CONTRIBUTING.md`](CONTRIBUTING.md). Changes should keep routing explicit,
+preserve typed handoff boundaries, and add tests or eval coverage when
+behavior changes.
+
+## Protocol
+
+Skills use the CometWeb Agent Interchange Protocol (CW-AIP) for typed handoffs:
+
+- [`CW-AIP v1`](protocol/cw-aip-v1/)
+- [`CW-AIP v2`](protocol/cw-aip-v2/)
+
+## License
+
+CometWeb Agent Skills is released under the [MIT License](LICENSE).
