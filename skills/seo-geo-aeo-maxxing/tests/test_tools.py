@@ -13,7 +13,7 @@ COMPARE = ROOT / "scripts" / "compare_scores.py"
 
 
 def call(args):
-    return subprocess.run(args, capture_output=True, text=True)
+    return subprocess.run(args, capture_output=True, text=True, timeout=30)
 
 
 def test_template_full_is_complete_and_scoreable():

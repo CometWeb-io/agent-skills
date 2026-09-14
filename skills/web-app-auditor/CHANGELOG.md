@@ -1,9 +1,23 @@
 # Changelog
 
-## 1.1.1
+## 1.3.1 — 2026-09-12
 
-- Added `tests/test_validate_report.py` — golden fixtures plus invariant regression cases.
-- Added `extras/cursor-rule.mdc` for Cursor routing.
+- Correct installation dependency instructions; the schema-backed validator requires jsonschema.
+- Preserve canonical repository assets and license during integration rather than replacing them with bundle metadata.
+
+## 1.3.0 — 2026-09-12
+
+- Add scoped currentness, evidence, safety and domain acceptance contracts.
+- Normalize host metadata and verify standalone package structure.
+- Validate bundled JSON Schema before cross-field checks; reject unsupported shipping verdicts and inconsistent evidence. Add executable adversarial regressions.
+
+## 1.2
+
+- Added explicit handoff boundaries with Release Readiness, Product Operator, Repo to Roadmap, Customer Ops, Evidence Researcher, and AI Council.
+- Added candidate/build-aware QA evidence semantics so an audit cannot accidentally satisfy a mismatched release gate.
+- Added `references/composability.md` with lossless coverage/finding/evidence handoff rules.
+- Narrowed implicit routing away from whole-repo roadmapping and final production-release authorization.
+- Added formal `VERSION` metadata.
 
 ## 1.1
 

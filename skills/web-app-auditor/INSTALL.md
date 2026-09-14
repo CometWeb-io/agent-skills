@@ -1,4 +1,4 @@
-# Installation — web-app-auditor v1.1
+# Installation — web-app-auditor
 
 The distributable skill is the complete `web-app-auditor/` directory. Keep the
 relative paths intact because `SKILL.md` loads references, schemas, and scripts
@@ -23,19 +23,17 @@ Upload the packaged `skill.zip`. The ChatGPT-compatible `SKILL.md` frontmatter
 contains only `name` and `description`; OpenAI UI metadata lives in
 `agents/openai.yaml`.
 
-## Claude Code / repository-based agents
+## Repository-based agents
 
 If the host supports filesystem skills, copy the whole folder into the skill
-location documented by that host, or run `./scripts/install-claude.sh` from the
-repo root for `~/.claude/skills/`. A common repository-level location is:
+location documented by that host. A common repository-level location is:
 
 ```text
 .agents/skills/web-app-auditor/
 ```
 
-Some hosts also support product-specific directories such as `.cursor/skills/`,
-`.claude/skills/` (Claude Code — see repo `./scripts/install-claude.sh`), or
-`.agents/skills/`. Those conventions can change; prefer the current host
+Some hosts also support product-specific directories such as `.cursor/skills/`
+or `.claude/skills/`. Those conventions can change; prefer the current host
 documentation over this file.
 
 `extras/cursor-rule.mdc` and `extras/AGENTS.snippet.md` are optional adapters.
@@ -71,11 +69,13 @@ by the mutation safety policy.
 When the host can create files and run code, produce `audit-report.json` and run:
 
 ```bash
+python -m pip install -r requirements.txt
 python scripts/validate_report.py audit-report.json
 ```
 
-A valid report exits `0`; protocol errors exit non-zero. The validator uses only
-Python's standard library.
+A valid report exits `0`; schema or protocol errors exit non-zero. Install the
+`jsonschema` dependency declared in `requirements.txt` before running the validator.
+A structurally valid report does not prove that its evidence was actually collected.
 
 ## Safety default
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.0 — 2026-09-12
+
+- Add scoped currentness, evidence, safety and domain acceptance contracts.
+- Normalize host metadata and verify standalone package structure.
+- Preserve the existing executable decision protocol and its fixtures; skill release version and protocol version remain separate.
+
 ## 2.0.0 — 2026-08-25
 
 - Rebuilt Customer Ops around an explicit case graph rather than a flat ticket model.

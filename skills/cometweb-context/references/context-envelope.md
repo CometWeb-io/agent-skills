@@ -6,18 +6,18 @@ Minimalny kontrakt przekazywany do kolejnego skilla lub orkiestratora.
 {
   "schema": "cometweb.context/v2",
   "snapshot_id": "ctx-<timestamp-or-uuid>",
-  "generated_at": "2026-08-30T19:30:00Z",
+  "generated_at": "2026-09-07T00:00:00+02:00",
   "goal": "...",
   "mode": "targeted|standard|delta|full",
-  "profile": "product|gtm|outreach|brand|meeting|weekly|claim-verification|custom",
+  "profile": "product|portfolio|gtm|outreach|brand|meeting|weekly|claim-verification|custom",
   "baseline": {
     "status": "available|unavailable|not_requested",
     "ref": null
   },
   "sources": [
     {
-      "source_id": "...",
-      "source_type": "github|local-repo|vault|notion|crm|gmail|calendar|insight|website|social|file|other",
+      "source_id": "src-001",
+      "source_type": "github|local-repo|vault|notion|crm|gmail|calendar|contacts|insight|website|social|file|other",
       "authority": "system_of_record|canonical|primary|secondary|fallback",
       "access": "live|local|connector|cached|fallback",
       "retrieved_at": "...",
@@ -32,7 +32,7 @@ Minimalny kontrakt przekazywany do kolejnego skilla lub orkiestratora.
     {
       "fact_id": "f-001",
       "statement": "...",
-      "source_ids": ["..."],
+      "source_ids": ["src-001"],
       "confidence": "high|medium|low",
       "sensitivity": "public|internal|confidential|restricted"
     }
@@ -41,6 +41,14 @@ Minimalny kontrakt przekazywany do kolejnego skilla lub orkiestratora.
   "conflicts": [],
   "gaps": [],
   "blocked_public_claims": [],
+  "governance": {
+    "first_principles": {
+      "required": false,
+      "status": "loaded|not_required|unavailable",
+      "source_ref": null,
+      "reason": null
+    }
+  },
   "handoff": {
     "recommended_next_skill": null,
     "dependencies": [],
@@ -49,22 +57,18 @@ Minimalny kontrakt przekazywany do kolejnego skilla lub orkiestratora.
 }
 ```
 
-## Semantyka
+## Invariants
 
-- `facts` zawiera tylko fakty potrzebne do celu, nie dump wszystkich źródeł.
-- `deltas` jest puste, jeśli baseline nie istnieje.
+- `facts` zawiera tylko fakty potrzebne do celu.
+- Każdy `fact.source_ids[]` wskazuje istniejący `sources[].source_id`.
+- `deltas` wymaga realnego baseline'u; bez niego nie twórz fikcyjnego porównania.
 - `conflicts` zachowuje obie wersje i źródła.
-- `gaps` obejmuje brak connectora, niepełny zakres, nieweryfikowalny claim i authority gap.
-- `blocked_public_claims` nie oznacza, że claim jest fałszywy; oznacza, że nie spełnił gate'u do użycia publicznego.
-- `handoff.dependencies` może zawierać ID wcześniejszych envelope'ów CW-AIP, jeśli skill działa w orkiestratorze.
+- `gaps` obejmuje brak connectora, authority gap, nieweryfikowalny claim i brak wymaganej świeżości.
+- `blocked_public_claims` oznacza brak dopuszczenia do public use, nie automatycznie fałsz.
+- `governance.first_principles` opisuje preflight, nie verdict.
+- `handoff.dependencies` może zawierać ID wcześniejszych CW-AIP envelope'ów.
 
-## Handoff do Skill Orchestrator
+## Handoff
 
-Traktuj `ContextEnvelope` jako preflight dependency, a nie verdict. Kolejny skill może użyć go jako wejścia, ale musi nadal wykonać własne wymagane read/research/gates.
-
-Przykłady:
-
-- ContextEnvelope -> `repo-to-roadmap`: świeży stan repo/Insight/docs.
-- ContextEnvelope -> `product-operator`: świeży kontekst operacyjny, ale operator sam odpowiada za priorytety.
-- ContextEnvelope -> `ai-council`: tylko kontekst; materialne claimy mogą nadal wymagać Evidence Researcher.
-- ContextEnvelope -> `cold-email`: kontekst prospekta; copy skill nadal odpowiada za treść i compliance.
+ContextEnvelope jest preflight dependency. Kolejny skill nadal wykonuje własne research/gates i nie może uznać
+context factu za evidence admission tylko dlatego, że pojawił się w envelope.

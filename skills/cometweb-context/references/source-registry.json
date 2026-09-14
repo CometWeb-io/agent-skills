@@ -1,6 +1,6 @@
 {
   "schema": "cometweb.source-registry/v1",
-  "notes": "Machine-readable bindings for cometweb-context. Paths are relative to $COMETWEB_ROOT / $COMETWEB_CENTRUM when local access exists. Skills must discover live connectors at runtime — do not hard-code MCP tool names. Live customer bindings stay outside git.",
+  "notes": "Claim-specific source authority. Resolve live customer bindings at runtime; never store credentials or customer records here.",
   "authority_levels": [
     "system_of_record",
     "canonical",
@@ -10,18 +10,38 @@
   ],
   "profiles": {
     "product": {
-      "preferred_source_groups": ["repo", "insight", "vault-status", "vault-first-principles"]
+      "preferred_source_groups": [
+        "github-product",
+        "insight",
+        "vault-status",
+        "vault-decisions"
+      ]
+    },
+    "portfolio": {
+      "preferred_source_groups": [
+        "github-portfolio",
+        "notion",
+        "vault-status",
+        "vault-decisions",
+        "insight"
+      ]
     },
     "gtm": {
       "preferred_source_groups": [
         "vault-decisions",
         "vault-first-principles",
         "vault-topic",
-        "website"
+        "website",
+        "crm-when-material"
       ]
     },
     "outreach": {
-      "preferred_source_groups": ["crm", "communications", "vault-icp-sop", "prospect-web"]
+      "preferred_source_groups": [
+        "crm",
+        "communications",
+        "vault-icp-sop",
+        "prospect-web"
+      ]
     },
     "brand": {
       "preferred_source_groups": [
@@ -41,14 +61,13 @@
     },
     "weekly": {
       "preferred_source_groups": [
-        "repo",
+        "github-portfolio",
         "insight",
         "vault",
         "crm",
         "notion",
-        "communications",
-        "website",
-        "public-profiles"
+        "communications-when-relevant",
+        "website"
       ]
     },
     "claim-verification": {
@@ -88,7 +107,7 @@
       "resolver": "runtime",
       "required_role": "system_of_record",
       "fallback_policy": "authority_gap",
-      "note": "Concrete SoR (Twenty vs HubSpot) lives in private local bindings, not in this public-safe template"
+      "note": "Concrete SoR lives in private runtime bindings; do not silently replace it with another available connector"
     },
     "claims": {
       "evidence_register_template": "<COMETWEB_GTM_ROOT>/claims/evidence-register.json",
