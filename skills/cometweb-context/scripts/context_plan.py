@@ -63,11 +63,45 @@ def norm(text: str) -> str:
     return unicodedata.normalize("NFKC", text).casefold()
 
 
+def _deep_merge(base: dict, overlay: dict) -> dict:
+    for key, value in overlay.items():
+        if isinstance(value, dict) and isinstance(base.get(key), dict):
+            _deep_merge(base[key], value)
+        elif isinstance(value, list) and isinstance(base.get(key), list):
+            by_id = {item.get("id"): item for item in base[key] if isinstance(item, dict)}
+            for item in value:
+                if isinstance(item, dict) and item.get("id") in by_id:
+                    by_id[item["id"]].update(item)
+                else:
+                    base[key].append(item)
+        else:
+            base[key] = value
+    return base
+
+
+def load_source_registry(registry: pathlib.Path) -> dict:
+    """Read the tracked registry and apply an untracked local overlay.
+
+    Paths into a private vault are placeholders in the committed file and real
+    values in source-registry.local.json beside it, which is gitignored. That
+    keeps one registry shape for everyone while the concrete locations never
+    reach a published tree.
+    """
+    data = json.loads(registry.read_text(encoding="utf-8"))
+    local = registry.with_name(registry.stem + ".local" + registry.suffix)
+    if local.is_file():
+        overlay = json.loads(local.read_text(encoding="utf-8"))
+        if not isinstance(overlay, dict):
+            raise ValueError("local source registry overlay must be an object")
+        _deep_merge(data, overlay)
+    return data
+
+
 def load_profiles(registry: pathlib.Path | None = None) -> dict[str, list[str]]:
     registry = registry or pathlib.Path(__file__).resolve().parents[1] / "references/source-registry.json"
     if not registry.is_file():
         return {name: list(groups) for name, groups in _DEFAULT_PROFILES.items()}
-    data = json.loads(registry.read_text(encoding="utf-8"))
+    data = load_source_registry(registry)
     profiles = data.get("profiles") if isinstance(data, dict) else None
     if not isinstance(profiles, dict):
         raise ValueError("source registry profiles must be an object")

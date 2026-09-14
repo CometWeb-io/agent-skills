@@ -1,4 +1,9 @@
-# Relative paths below COMETWEB_ROOT. One repo per line.
+# Repositories below COMETWEB_ROOT, one per line.
+#
+# Private locations are deliberately absent here. Put them in repos.local.txt
+# next to this file; that name is gitignored and is read in addition to this
+# list, so a local checkout sees everything while the published tree does not
+# disclose the layout of a private vault.
 products/insight
 products/pen
 products/extensions
@@ -7,6 +12,3 @@ platforms/betterwebhub
 platforms/seoinsight
 platforms/agent-skills
 platforms/rankproof
-<COMETWEB_INTERNAL_ROOT>/main
-<COMETWEB_GTM_ROOT>
-<COMETWEB_NAUKA_ROOT>

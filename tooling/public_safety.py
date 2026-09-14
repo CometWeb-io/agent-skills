@@ -82,12 +82,47 @@ def check_blob(name: str, blob: bytes, *, public: bool = True) -> list[dict]:
     return findings
 
 
+# These two files define the rules and exercise them with synthetic material,
+# so they match themselves by construction. The exemption covers content rules
+# only; a forbidden *name* is still reported here like anywhere else.
+RULE_DEFINITIONS = frozenset({
+    "tooling/public_safety.py",
+    "tooling/tests/test_distribution_hardening.py",
+})
+
+
+def tracked_files(root: Path) -> set[str] | None:
+    """Paths git tracks, or None when root is not a work tree.
+
+    Pointed at a checkout rather than an export, the scan must judge what
+    would actually be published. An ignored file - a local binding holding the
+    real path into a private vault, for instance - exists precisely so that it
+    never ships, and reporting it as a leak inverts the meaning of the gate.
+    """
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z"],
+            check=True, capture_output=True, timeout=120,
+        )
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError):
+        return None
+    return {name for name in proc.stdout.decode("utf-8").split("\0") if name}
+
+
 def scan(root: Path, *, public: bool = True) -> list[dict]:
     findings = []
+    tracked = tracked_files(root)
     for path in files(root):
+        rel = path.relative_to(root).as_posix()
+        if tracked is not None and rel not in tracked:
+            continue
         if path.stat().st_size > MAX_FILE_BYTES:
             raise ValueError(f"file too large for bounded scan: {path.relative_to(root)}")
-        findings.extend(check_blob(path.relative_to(root).as_posix(), path.read_bytes(), public=public))
+        blob = path.read_bytes()
+        entries = check_blob(rel, blob, public=public)
+        if rel in RULE_DEFINITIONS:
+            entries = [f for f in entries if f["rule"] == "forbidden-name"]
+        findings.extend(entries)
     return findings
 
 

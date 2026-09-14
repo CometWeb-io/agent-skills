@@ -39,12 +39,29 @@ def default_root() -> tuple[pathlib.Path, str]:
     return pathlib.Path.home() / "Github" / "CometWeb", "fallback"
 
 
-def load_registry(path: pathlib.Path) -> list[str]:
+def _read_repo_list(path: pathlib.Path) -> list[str]:
     repos: list[str] = []
     for raw in path.read_text(encoding="utf-8").splitlines():
         line = raw.strip()
         if line and not line.startswith("#"):
             repos.append(line)
+    return repos
+
+
+def load_registry(path: pathlib.Path) -> list[str]:
+    """Read the tracked repo list plus an untracked local one beside it.
+
+    The published list names only repositories that are safe to disclose.
+    Private locations live in repos.local.txt, which is gitignored, so a local
+    checkout still sees the whole estate without the layout of a private vault
+    being committed.
+    """
+    repos = _read_repo_list(path)
+    local = path.with_name(path.stem + ".local" + path.suffix)
+    if local.is_file():
+        for rel in _read_repo_list(local):
+            if rel not in repos:
+                repos.append(rel)
     return repos
 
 

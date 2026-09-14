@@ -53,6 +53,11 @@ Claim-specific kolejność:
 4. docs/Notion — intent/planning, nie implementation proof.
 
 Lokalny snapshot: `scripts/repo_snapshot.py`; repo registry: `references/repos.txt`.
+
+Ścieżki do lokalizacji prywatnych są w commitowanym rejestrze placeholderami. Realne
+wartości trzymaj obok, w nieśledzonych `references/repos.local.txt` i
+`references/source-registry.local.json` — oba są wczytywane jako nakładka, więc lokalny
+checkout widzi całość, a publikowane drzewo nie ujawnia układu prywatnego repozytorium.
 Nie inferuj runtime z samego kodu.
 
 ## 4. CometWeb Insight

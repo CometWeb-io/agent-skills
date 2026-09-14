@@ -9,3 +9,7 @@ __pycache__/
 *.log
 **/notion-bindings.local.json
 .cursor/hooks/state/
+
+# Local bindings: real paths into private locations stay out of the tree.
+**/*.local.json
+**/*.local.txt

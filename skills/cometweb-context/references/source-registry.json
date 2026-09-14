@@ -95,9 +95,9 @@
         {
           "id": "first-principles",
           "role": "canonical_decision_input",
-          "local_path_template": "<COMETWEB_GTM_ROOT>/cometweb/strategia/First Principles.md",
-          "decision_alias": "D-028",
-          "alias_map_template": "<COMETWEB_GTM_ROOT>/governance/decision-candidate-aliases.json",
+          "local_path_template": "<set-in-source-registry.local.json:first-principles>",
+          "decision_alias": "<internal-alias>",
+          "alias_map_template": "<set-in-source-registry.local.json:first-principles>",
           "note": "Retrieve when material new decision; never allocate decisions from context skill"
         }
       ]
@@ -110,7 +110,7 @@
       "note": "Concrete SoR lives in private runtime bindings; do not silently replace it with another available connector"
     },
     "claims": {
-      "evidence_register_template": "<COMETWEB_GTM_ROOT>/claims/evidence-register.json",
+      "evidence_register_template": "<set-in-source-registry.local.json:evidence-register>",
       "public_use_gate": true
     }
   },

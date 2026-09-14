@@ -121,7 +121,8 @@ python3 scripts/repo_snapshot.py --json
 
 Skrypt nie ujawnia lokalnych ścieżek domyślnie. Jeśli root nie istnieje, wynik ma wskazać fallback do bieżącego GitHub connectora. Nie traktuj brakującego lokalnego checkoutu jako braku repozytorium.
 
-Lista repo: [references/repos.txt](references/repos.txt).
+Lista repo: [references/repos.txt](references/repos.txt), rozszerzana o nieśledzony
+`references/repos.local.txt`, jeśli istnieje.
 
 ## 7. Provenance, freshness i konflikty
 
