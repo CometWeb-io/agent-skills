@@ -25,7 +25,10 @@ PRIVATE_RULES = {
     "notion-binding": rb"collection://[0-9a-f-]{36}|app\.notion\.com/p/[0-9a-f]{20,}|notion\.so/[0-9a-f]{32}",
     "linear-binding": rb"linear\.app/|(?:^|[^A-Za-z0-9])COM-[0-9]{1,5}(?:[^A-Za-z0-9]|$)",
     "owner-path": rb"/Users/[A-Za-z0-9._-]+/(?:Github|Documents|Desktop)/",
-    "private-vault": rb"personal/(?:gtm-cometweb|nauka)(?:/|\b)|<COMETWEB_INTERNAL_ROOT>(?:/|\b)",
+    # Assembled from fragments so this rule never contains, as a literal, the
+    # path it searches for. A history rewrite that scrubs those paths would
+    # otherwise rewrite the rule too and silently disarm the check.
+    "private-vault": rb"personal/(?:gtm-cometweb|nauka)(?:/|\b)|internal/" + rb"comet" + rb"base(?:/|\b)",
     "private-host": rb"app-eu1\.hubspot|api\.betterwebhub\.com|hpanel\.hostinger",
 }
 FORBIDDEN_NAMES = (
@@ -149,7 +152,12 @@ def scan_history(root: Path, *, public: bool = True) -> list[dict]:
                 continue
             if int(git("cat-file", "-s", oid)) > MAX_FILE_BYTES:
                 raise ValueError(f"historical file exceeds scan budget: {name}")
-            for item in check_blob(name, git("cat-file", "blob", oid), public=public):
+            entries = check_blob(name, git("cat-file", "blob", oid), public=public)
+            if name in RULE_DEFINITIONS:
+                # Same reasoning as in scan(): these two files are the rules and
+                # their synthetic fixtures, so they match themselves by design.
+                entries = [f for f in entries if f["rule"] == "forbidden-name"]
+            for item in entries:
                 findings.append({**item, "revision": commit})
     return findings
 
