@@ -1,0 +1,42 @@
+{
+  "target": "owner/repo",
+  "goal": "repair route",
+  "horizon": "this week",
+  "as_of": "2026-09-12T12:00:00Z",
+  "coverage": {
+    "github": "verified",
+    "notion": "verified",
+    "product_context": "verified"
+  },
+  "state_items": [],
+  "candidates": [
+    {
+      "id": "A",
+      "impact": 5,
+      "goal_alignment": 5,
+      "urgency": 4,
+      "effort": 1,
+      "confidence": 0.9,
+      "evidence_strength": 0.9,
+      "action": "verify a route",
+      "why_now": "required by goal",
+      "done_when": "record verified state",
+      "evidence": [
+        {
+          "stage": "implemented",
+          "source": "github",
+          "authority": "github",
+          "locator": "repo/file:1",
+          "claim": "implemented in pinned source",
+          "claim_type": "implementation",
+          "observed_at": "2026-09-12T12:00:00Z",
+          "max_age_days": 2,
+          "required_current": true
+        }
+      ],
+      "depends_on": [],
+      "action_type": "verify",
+      "verify_first": true
+    }
+  ]
+}

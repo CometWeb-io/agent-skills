@@ -24,6 +24,8 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 | partner cohort, learning contract, partnerability score | `design-partner-finder` |
 | publication scope and coverage, publication claim ledger, editorial and design workflow, revision-bound publication QA | `ebook-publisher` |
 | claim decomposition, evidence edges, falsifiers, Evidence Pack | `evidence-researcher` |
+| canonical long-form manuscript, publication lifecycle and claim-use reconciliation, derived-artifact release readiness | `longform-publisher` |
+| cross-domain allocation, capacity conflicts, focus/pause/delegate decisions | `portfolio-operator` |
 | weekly control loop, now/next/later/stop, roadmap drift | `product-operator` |
 | external product patterns, ADOPT/ADAPT/AVOID | `product-teardown` |
 | pinned RC gate, GO/NO_GO/DEFER, environment checks | `release-readiness` |
@@ -43,6 +45,8 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - **design-partner-finder** — does not own: cold outbound copy; Council pricing.
 - **ebook-publisher** — does not own: independent evidence truth certification; public publishing authorization; host installation; generic blog writing.
 - **evidence-researcher** — does not own: final GO/NO_GO; release verdict; context-only refresh.
+- **longform-publisher** — does not own: primary evidence research; generic prose humanization; DOCX/PDF rendering internals.
+- **portfolio-operator** — does not own: deep single-product sequencing; release GO/NO_GO; specialist implementation.
 - **product-operator** — does not own: from-scratch roadmap; RC GO/NO_GO.
 - **product-teardown** — does not own: owned-repo roadmap; release gate.
 - **release-readiness** — does not own: weekly priorities; whole-project baseline.
@@ -102,6 +106,18 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - trigger: Fact-check EU AI Act marketing claims
 - do not trigger: Odśwież kontekst CometWeb
 - do not trigger: Czy RC 1.2 gotowy do produkcji?
+
+### `longform-publisher`
+- trigger: Refresh this old ebook into a publication-ready 2026 edition
+- trigger: Build this evidence-backed report through manuscript, DOCX and PDF release readiness
+- do not trigger: Humanize this paragraph
+- do not trigger: Rotate this PDF page
+
+### `portfolio-operator`
+- trigger: What should I focus on for the next 14 days across all my projects?
+- trigger: Which commitments conflict and what should I pause?
+- do not trigger: What should we build next inside this one repo?
+- do not trigger: Is this release candidate safe to ship?
 
 ### `product-operator`
 - trigger: What should we do this week given the roadmap?

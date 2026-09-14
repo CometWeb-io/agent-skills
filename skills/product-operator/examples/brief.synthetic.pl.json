@@ -1,0 +1,73 @@
+{
+  "target": "fixture/example-product",
+  "goal": "Zweryfikować zapis ustawień przed zmianą interfejsu",
+  "horizon": "bieżąca iteracja",
+  "as_of": "2026-09-12T12:00:00Z",
+  "coverage": {
+    "github": "verified",
+    "notion": "unavailable",
+    "product_context": "verified",
+    "outcome_data": "unavailable"
+  },
+  "state_items": [],
+  "candidates": [
+    {
+      "id": "A",
+      "impact": 5,
+      "goal_alignment": 5,
+      "urgency": 4,
+      "effort": 1,
+      "confidence": 0.9,
+      "evidence_strength": 0.9,
+      "action": "Sprawdź ponowny odczyt zapisanych ustawień",
+      "why_now": "Dane syntetyczne: dostępna jest implementacja, brakuje obserwacji ponownego odczytu.",
+      "done_when": "Zapisz wynik kontrolowanego testu odczytu po ponownym otwarciu widoku.",
+      "evidence": [
+        {
+          "stage": "implemented",
+          "source": "github",
+          "authority": "github",
+          "locator": "fixture://settings/source",
+          "claim": "Syntetyczny przykład obecnej implementacji; nie dotyczy rzeczywistego produktu.",
+          "claim_type": "implementation",
+          "observed_at": "2026-09-12T12:00:00Z",
+          "max_age_days": 2,
+          "required_current": true
+        }
+      ],
+      "depends_on": [],
+      "action_type": "verify",
+      "verify_first": true
+    },
+    {
+      "id": "B",
+      "impact": 5,
+      "goal_alignment": 5,
+      "urgency": 4,
+      "effort": 1,
+      "confidence": 0.9,
+      "evidence_strength": 0.9,
+      "action": "Dostosuj widok do zweryfikowanego kontraktu",
+      "why_now": "Dane syntetyczne: dostępna jest implementacja, brakuje obserwacji ponownego odczytu.",
+      "done_when": "Zmiana widoku ma wynik testu względem ustalonego kontraktu.",
+      "evidence": [
+        {
+          "stage": "implemented",
+          "source": "github",
+          "authority": "github",
+          "locator": "fixture://settings/source",
+          "claim": "Syntetyczny przykład obecnej implementacji; nie dotyczy rzeczywistego produktu.",
+          "claim_type": "implementation",
+          "observed_at": "2026-09-12T12:00:00Z",
+          "max_age_days": 2,
+          "required_current": true
+        }
+      ],
+      "depends_on": [
+        "A"
+      ],
+      "action_type": "implement",
+      "verify_first": false
+    }
+  ]
+}

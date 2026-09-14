@@ -138,10 +138,27 @@ def default_entry(skill_id: str) -> dict:
     }
 
 
+def pending_packages() -> list[str]:
+    """Overrides whose package body has not landed on disk yet.
+
+    The metadata for a release is written here before the package itself is
+    staged, so an override without a SKILL.md is a package still in flight,
+    not a broken repo. Skip it instead of crashing on the missing file.
+    """
+    return sorted(
+        skill_id
+        for skill_id in OVERRIDES
+        if not (SKILLS / skill_id / "SKILL.md").is_file()
+    )
+
+
 def desired_registry(current: dict) -> dict:
     result = deepcopy(current)
     by_id = {entry["id"]: entry for entry in result["skills"]}
+    pending = set(pending_packages())
     for skill_id, spec in OVERRIDES.items():
+        if skill_id in pending:
+            continue
         version, description = package_identity(skill_id)
         if skill_id not in by_id:
             entry = default_entry(skill_id)
@@ -169,6 +186,9 @@ def main() -> int:
     mode.add_argument("--check", action="store_true")
     args = parser.parse_args()
     current = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    pending = pending_packages()
+    if pending:
+        print(f"PENDING: package not on disk, skipped: {', '.join(pending)}")
     desired = desired_registry(current)
     rendered = json.dumps(desired, ensure_ascii=False, indent=2) + "\n"
     existing = REGISTRY.read_text(encoding="utf-8")
@@ -179,7 +199,7 @@ def main() -> int:
         print("OK: registry/skills.json synchronized")
         return 0
     REGISTRY.write_text(rendered, encoding="utf-8")
-    print(f"OK: synchronized {len(OVERRIDES)} authoritative releases")
+    print(f"OK: synchronized {len(OVERRIDES) - len(pending)} authoritative releases")
     return 0
 
 

@@ -584,13 +584,182 @@
       ]
     },
     {
-      "id": "product-operator",
+      "id": "longform-publisher",
       "version": "1.0.0",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Evidence-governed product operating system that reconciles GitHub implementation and release state, Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what the team should do next on an existing roadmap or product state. Use for weekly control-loop questions such as what to build/fix/verify next, how to unstick work, what is actually done vs planned, whether roadmap and repo agree, what changed since the last review, or what should wait/stop. Produces bounded BLOCKER/VERIFY NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness, immutable snapshots/deltas, confidence, done conditions, and specialist handoffs. Do not use for first-time whole-repo baseline analysis or roadmap creation from scratch — use Repo to Roadmap. Do not use for release-candidate GO/NO_GO gates on a specific build/artifact — use Release Readiness. Read-only by default; delegate deep audits and consequential decisions instead of duplicating specialist skills.",
+      "description": "Use when ChatGPT must build, refresh, reconcile, or release a long-form publication such as an ebook, report, playbook, white paper, guide, handbook, or research-backed article across manuscript and derived document formats.",
+      "explicit_only": false,
+      "owns": [
+        "canonical long-form manuscript",
+        "publication lifecycle and claim-use reconciliation",
+        "derived-artifact release readiness"
+      ],
+      "does_not_own": [
+        "primary evidence research",
+        "generic prose humanization",
+        "DOCX/PDF rendering internals"
+      ],
+      "trigger_examples": [
+        "Refresh this old ebook into a publication-ready 2026 edition",
+        "Build this evidence-backed report through manuscript, DOCX and PDF release readiness"
+      ],
+      "negative_trigger_examples": [
+        "Humanize this paragraph",
+        "Rotate this PDF page"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "web",
+        "files"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "FROZEN",
+      "routing_signals": [
+        [
+          12,
+          "longform publisher|publication workflow"
+        ],
+        [
+          11,
+          "(ebook|white paper|playbook|handbook).*(refresh|publication-ready|release ready)"
+        ],
+        [
+          10,
+          "canonical manuscript|publication-report\\.json"
+        ],
+        [
+          9,
+          "refresh.*(ebook|report|guide)|derived artifacts?.*(docx|pdf)"
+        ]
+      ]
+    },
+    {
+      "id": "portfolio-operator",
+      "version": "1.1.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Evidence-grounded cross-domain portfolio control plane for deciding what a user or small team should focus on across products, client work, research/academic commitments, growth, operations, and side projects. Use when the user asks what to do this week/next 7-30 days across multiple projects, how to allocate limited capacity, which commitments conflict, what to pause/drop/delegate, how to reconcile client deadlines with product/research work, or for a portfolio-wide review. Do not use for deep prioritization inside one product/repo, release GO/NO-GO, or executing a multi-skill workflow when a specialist/control-plane skill owns that task.",
+      "explicit_only": false,
+      "owns": [
+        "cross-domain allocation",
+        "capacity conflicts",
+        "focus/pause/delegate decisions"
+      ],
+      "does_not_own": [
+        "deep single-product sequencing",
+        "release GO/NO_GO",
+        "specialist implementation"
+      ],
+      "trigger_examples": [
+        "What should I focus on for the next 14 days across all my projects?",
+        "Which commitments conflict and what should I pause?"
+      ],
+      "negative_trigger_examples": [
+        "What should we build next inside this one repo?",
+        "Is this release candidate safe to ship?"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "connectors"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          12,
+          "portfolio operator|portfolio-wide"
+        ],
+        [
+          10,
+          "next (7|14|30) days.*(projects|commitments|focus)"
+        ],
+        [
+          9,
+          "capacity conflicts?|what should (i|we) pause|across multiple projects"
+        ],
+        [
+          8,
+          "client.*product.*research|cross-domain allocation"
+        ]
+      ]
+    },
+    {
+      "id": "product-operator",
+      "version": "2.2.0",
+      "lifecycle": "active",
+      "visibility": "private_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Evidence-governed product operating system that reconciles GitHub implementation and release state, Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what the team should do next. Use for questions such as what remains, what to build/fix/verify next, how to finish or unstick a product, what is actually done, whether roadmap and repo agree, how to plan the next product cycle, what changed since the last review, or what should wait/stop. Produces bounded BLOCKER/VERIFY NOW/DECISION NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness, immutable snapshots/deltas, confidence, done conditions, and specialist handoffs. Read-only by default; delegate deep audits and consequential decisions instead of duplicating specialist skills.",
       "explicit_only": false,
       "owns": [
         "weekly control loop",
@@ -617,10 +786,14 @@
       ],
       "dependencies": [],
       "compatible_hosts": [
-        "cursor",
-        "claude-code",
+        "chatgpt",
         "openai-codex",
-        "chatgpt"
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
       ],
       "execution_capabilities": [
         "standard"
@@ -683,6 +856,24 @@
           6,
           "mamy roadmap"
         ]
+      ],
+      "release_status": "ACTIVE",
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "git",
+        "connectors"
       ]
     },
     {

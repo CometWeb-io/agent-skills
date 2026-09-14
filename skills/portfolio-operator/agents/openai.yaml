@@ -1,9 +1,9 @@
 interface:
   display_name: Portfolio Operator
-  short_description: Cross-domain control plane for commitments, capacity, focus,
-    and pause/delegate decisions
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
+  short_description: cross-domain allocation; capacity conflicts; focus/pause/delegate decisions
+  default_prompt: "Use the Portfolio Operator skill for: Evidence-grounded cross-domain portfolio control plane for deciding what a user or small team should focus on across products, client work, research/academic commitments, growth, operations, and side "
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
   products:
   - chatgpt
