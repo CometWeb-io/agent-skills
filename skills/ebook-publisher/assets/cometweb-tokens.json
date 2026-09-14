@@ -1,0 +1,70 @@
+{
+  "schema": "cometweb.ebook-tokens/v1",
+  "profile_revision": "1",
+  "source_commit": "2b644780b999df1eb24d4942abba6155ab09c485",
+  "font_family": "Nunito Sans",
+  "brand": {
+    "night": "#18181B",
+    "mint": "#05F29B",
+    "green": "#04C27C",
+    "deep": "#034C32",
+    "white": "#FFFFFF"
+  },
+  "states": {
+    "pass": {
+      "label": "Potwierdzone",
+      "icon": "check-circle",
+      "text": "#034C32",
+      "fill": "#E8FBF2",
+      "border": "#B6E5D0"
+    },
+    "fail": {
+      "label": "Problem",
+      "icon": "x-circle",
+      "text": "#991B1B",
+      "fill": "#FEF2F2",
+      "border": "#F5C3C3"
+    },
+    "caution": {
+      "label": "Wymaga oceny",
+      "icon": "alert-triangle",
+      "text": "#92400E",
+      "fill": "#FFFBEB",
+      "border": "#F0D9A0"
+    },
+    "unknown": {
+      "label": "Nie zbadano",
+      "icon": "circle-question",
+      "text": "#4B5563",
+      "fill": "#F1F4F3",
+      "border": "#D6DFDC"
+    },
+    "not_applicable": {
+      "label": "Nie dotyczy",
+      "icon": "circle-minus",
+      "text": "#4B5563",
+      "fill": "#F1F4F3",
+      "border": "#D6DFDC"
+    },
+    "pending": {
+      "label": "Czeka na retest",
+      "icon": "clock",
+      "text": "#1E40AF",
+      "fill": "#EFF6FF",
+      "border": "#BFDBFE"
+    },
+    "blocked": {
+      "label": "Zablokowane",
+      "icon": "lock",
+      "text": "#6941A5",
+      "fill": "#F5F1FA",
+      "border": "#D7C6ED"
+    }
+  },
+  "geometry": {
+    "icon_grid": 24,
+    "icon_stroke": 1.8,
+    "card_radius_px": 14,
+    "pill_radius_px": 999
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "cometweb.ebook/v1",
+  "publication": {
+    "id": "new-ebook",
+    "title": "",
+    "language": "pl",
+    "edition": "1.0",
+    "revision": "1",
+    "as_of": ""
+  },
+  "scope": {
+    "audience": "",
+    "outcome": "",
+    "questions": [
+      {
+        "id": "Q001",
+        "question": "",
+        "status": "open",
+        "chapter_ids": [
+          "ch01"
+        ],
+        "rationale": ""
+      }
+    ]
+  },
+  "chapters": [
+    {
+      "id": "ch01",
+      "title": "",
+      "outcome": "",
+      "question_ids": [
+        "Q001"
+      ]
+    }
+  ],
+  "sources": [],
+  "claims": [],
+  "files": {
+    "manuscript": "manuscript.md",
+    "pdf": "ebook.pdf",
+    "deliverables": [
+      "ebook.pdf",
+      "manuscript.md",
+      "publication.json",
+      "qa-report.md"
+    ]
+  },
+  "checks": [],
+  "visual": {
+    "renderer": "",
+    "pdf_sha256": "",
+    "page_count": 0,
+    "pages": []
+  }
+}

@@ -1,0 +1,57 @@
+/* CometWeb ebook baseline. Actual pagination/contrast/font embedding need rendered QA.
+   Generated state tokens follow cometweb-tokens.json; no bundled or remote font files.
+   Provide approved local @font-face declarations in the publication source if needed. */
+:root {
+  --cw-night: #18181B; --cw-mint: #05F29B; --cw-green: #04C27C;
+  --cw-deep: #034C32; --cw-white: #FFFFFF;
+}
+@page { size: A4; margin: 18mm 17mm 20mm; }
+* { box-sizing: border-box; }
+body { font-family: "Nunito Sans", sans-serif; color: var(--cw-night);
+  background: var(--cw-white); font-size: 11pt; line-height: 1.5; }
+h1,h2,h3 { line-height: 1.15; break-after: avoid; }
+h2,h3 { color: var(--cw-deep); }
+p { orphans: 3; widows: 3; }
+a { color: var(--cw-deep); text-decoration: underline; overflow-wrap: anywhere; }
+.cover { background: var(--cw-night); color: var(--cw-white); padding: 18mm;
+  position: relative; overflow: hidden; break-after: page; }
+.cover h1 { font-size: 42pt; max-width: 95%; margin: 18mm 0 8mm; }
+.cover .accent { color: var(--cw-mint); }
+.cover .subtitle { font-size: 15pt; max-width: 90%; }
+.cover .brand-logo { max-width: 58mm; height: auto; }
+.cover .background-icon { position: absolute; right: 6mm; bottom: 18mm;
+  width: 85mm; height: 85mm; opacity: .07; color: var(--cw-mint); }
+.cover .meta { font-size: 9pt; margin-top: 20mm; }
+.icon { width: 16px; height: 16px; stroke: currentColor; fill: none;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
+.chapter-label { color: var(--cw-deep); font-weight: 800; }
+.card { border: 1px solid #D6DFDC; border-radius: 14px; padding: 12px 14px;
+  margin: 10px 0; background: #F8FAF9; }
+.card.short { break-inside: avoid; }
+.card.long { break-inside: auto; }
+.before-defect { border-color: #F5C3C3; background: #FEF2F2; }
+.before-defect .label { color: #991B1B; }
+.after-verified { border-color: #B6E5D0; background: #E8FBF2; }
+.after-verified .label { color: #034C32; }
+.status { display: inline-block; white-space: nowrap; font-size: 9pt; line-height: 1.25;
+  border: 1px solid; border-radius: 999px; padding: 4px 8px;
+  break-inside: avoid; font-weight: 700; }
+.status .icon { width: 13px; height: 13px; margin-right: 4px; }
+table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin: 10px 0; }
+thead { display: table-header-group; background: #F1F4F3; }
+th,td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid #D6DFDC; }
+tr { break-inside: avoid; }
+td p { margin: 0; }
+figure { margin: 12px 0; break-inside: avoid; }
+figcaption { font-size: 9pt; margin-top: 6px; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 9pt; padding: 10px;
+  border: 1px solid #D6DFDC; border-radius: 10px; }
+.sources { font-size: 9pt; overflow-wrap: anywhere; }
+@media print { body { margin: 0; } .screen-only { display: none; } }
+.status--pass { color: #034C32; background: #E8FBF2; border-color: #B6E5D0; }
+.status--fail { color: #991B1B; background: #FEF2F2; border-color: #F5C3C3; }
+.status--caution { color: #92400E; background: #FFFBEB; border-color: #F0D9A0; }
+.status--unknown { color: #4B5563; background: #F1F4F3; border-color: #D6DFDC; }
+.status--not_applicable { color: #4B5563; background: #F1F4F3; border-color: #D6DFDC; }
+.status--pending { color: #1E40AF; background: #EFF6FF; border-color: #BFDBFE; }
+.status--blocked { color: #6941A5; background: #F5F1FA; border-color: #D7C6ED; }
