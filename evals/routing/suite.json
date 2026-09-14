@@ -357,12 +357,13 @@
     {
       "id": "customer-ops-not-crm-build",
       "prompt": "Build a CRM from scratch for our leads.",
-      "expected_primary_skill": "customer-ops",
+      "expected_primary_skill": null,
       "allowed_secondary_skills": [],
       "must_not_trigger": [
-        "design-partner-finder"
+        "design-partner-finder",
+        "customer-ops"
       ],
-      "reason": "Out of scope shadow CRM; should refuse or clarify"
+      "reason": "Building a CRM is owned by no skill; customer-ops runs an existing support/CRM stack, it does not architect one"
     },
     {
       "id": "roadmap-topology-first",

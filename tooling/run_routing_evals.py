@@ -78,7 +78,9 @@ def main() -> int:
     for index, case in enumerate(data["cases"]):
         validate_case(case, index)
         expected = case["expected_primary_skill"]
-        if expected not in known:
+        # null expresses "no skill owns this prompt" — the suite has to be able
+        # to assert a refusal, not only a correct destination.
+        if expected is not None and expected not in known:
             failures.append(f"{case['id']}: unknown expected skill {expected!r}")
             continue
         predicted = classify(case["prompt"])
