@@ -168,12 +168,12 @@
     },
     {
       "id": "cometweb-context",
-      "version": "1.2.3",
+      "version": "1.4.1",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Builds a fresh, provenance-aware context snapshot for CometWeb before another skill makes product, strategy, GTM, outreach, content, or advisory decisions. Use when the task depends on current state across multiple sources, when the user asks to refresh context, check what changed, prepare for a meeting/review, or when an orchestrated CometWeb workflow needs a ContextEnvelope. Select only necessary sources, record freshness, authority, gaps and conflicts, and hand context to the next specialist. Do not use for simple conceptual questions or when one direct source is sufficient.",
+      "description": "Builds a fresh, provenance-aware context snapshot for CometWeb and its active projects before product, portfolio, strategy, GTM, pricing, outreach, meeting, content, or advisory work. Use when the request depends on current state across GitHub/repositories, Notion, CometWeb Insight, CRM/communications, files, live CometWeb surfaces, or multiple CometWeb projects such as Insight, CometBase, CometPen, CometLens/Extensions, cometweb.io, agent-skills, RankProof, and research. Also use for \"what changed\", full/portfolio refreshes, meeting prep, and as a preflight for Product Operator, AI Council, Repo to Roadmap, or Skill Orchestrator. Include First Principles governance for material product/GTM/pricing/portfolio decisions. Do not use for simple conceptual questions or when one direct authoritative source is sufficient.",
       "explicit_only": false,
       "owns": [
         "context snapshot",
@@ -312,7 +312,7 @@
     },
     {
       "id": "customer-ops",
-      "version": "1.0.0",
+      "version": "2.1.0",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "domain",
@@ -907,12 +907,12 @@
     },
     {
       "id": "seo-geo-aeo-maxxing",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run evidence-governed, multi-pillar website visibility audits across technical SEO, relevance, authority/trust, GEO/AI citation readiness, and AEO/answer extraction. Use when the user explicitly asks for SEO+GEO+AEO or \"maxxing\", a broad end-to-end search/AI visibility audit, cross-pillar diagnosis of ranking/AI-visibility problems, same-rubric competitor comparison, or a repeat/delta audit. Use PILLAR mode only when this skill is explicitly requested for one pillar. Do not trigger for isolated schema, one canonical/meta tag, keyword research, pure content writing, or a narrow implementation task better handled by a specialist skill. Diagnosis only; never mutate live sites.",
+      "description": "Run evidence-governed, multi-pillar website visibility audits across technical SEO, relevance, authority/trust, GEO/AI citation readiness, and AEO/answer extraction. Use when the user explicitly asks for SEO+GEO+AEO or \"maxxing\", a broad end-to-end search/AI visibility audit, cross-pillar diagnosis, same-rubric competitor comparison, or repeat/delta audit. Use PILLAR only when this skill is explicitly requested for one pillar. Do not use for isolated schema/meta tasks, ongoing competitor monitoring, whole-product roadmapping, or release-candidate GO/NO-GO; hand accepted findings to the corresponding specialist. Diagnosis only; never mutate live sites.",
       "explicit_only": false,
       "owns": [
         "SEO/GEO/AEO visibility audit",
@@ -1143,12 +1143,12 @@
     },
     {
       "id": "web-app-auditor",
-      "version": "1.1.1",
+      "version": "1.3.1",
       "lifecycle": "active",
       "visibility": "private_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Evidence-driven QA and product audit for websites and web applications. Use when asked to audit, review, inspect, QA, verify, click through, test, or \"roast\" a user-facing site/app/page/dashboard/checkout/form, including Polish requests such as audyt, przeklikaj, sprawdz dane, zgodnosc liczb, poprawność, UI/UX, dostepnosc, regresja. Verifies interactions, data integrity, totals, counts, prices, dates, labels, cross-screen consistency, forms, states, accessibility, responsiveness, and critical flows. Supports browser, browser+source, screenshot-only, source-only, and fetch-only environments. Do not use for backend-only review, greenfield implementation, or penetration testing/exploitation with no product-audit goal.",
+      "description": "Evidence-driven QA and product audit for user-facing websites and web applications. Use when asked to audit, review, inspect, QA, verify, click through, test, or \"roast\" a site/app/page/dashboard/ checkout/form, including UI/UX, accessibility, regression, data integrity, and critical flows. Supports browser, browser+source, screenshot-only, source-only, and fetch-only environments. Do not use for backend-only review, greenfield implementation, whole-repo roadmapping, or as the final production-release gate; provide candidate-bound QA evidence to Release Readiness when relevant. Do not perform penetration testing/exploitation with no product-audit goal.",
       "explicit_only": false,
       "owns": [
         "live click-through QA",

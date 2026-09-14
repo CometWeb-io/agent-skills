@@ -1,9 +1,13 @@
 interface:
   display_name: SEO GEO AEO Maxxing
-  short_description: Audit SEO and AI visibility with current evidence
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
-  default_prompt: Use $seo-geo-aeo-maxxing for the requested task; preserve scope, evidence, and verification
-    limits.
+  short_description: SEO/GEO/AEO visibility audit; live-verified scoring
+  default_prompt: "Use the SEO GEO AEO Maxxing skill for: Run evidence-governed, multi-pillar website visibility audits across technical SEO, relevance, authority/trust, GEO/AI citation readiness, and AEO/answer extraction. Use when the user explicitly asks "
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
   allow_implicit_invocation: true

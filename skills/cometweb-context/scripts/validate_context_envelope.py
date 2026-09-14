@@ -149,6 +149,28 @@ def validate(data: dict) -> None:
         if not isinstance(data[key], list):
             fail(f"{key} must be a list")
 
+    # These three guards stop the envelope from laundering an unsupported
+    # judgement into a settled fact: a conflict cannot read as resolved without
+    # saying on what basis, an authority gap has to name the authority it is
+    # missing, and a blocked public claim has to carry its reason.
+    for index, conflict in enumerate(data["conflicts"]):
+        if not isinstance(conflict, dict):
+            fail(f"conflicts[{index}] must be an object")
+        if conflict.get("status") == "resolved" and not conflict.get("basis"):
+            fail(f"conflicts[{index}] resolved conflict requires basis")
+
+    for index, gap in enumerate(data["gaps"]):
+        if not isinstance(gap, dict):
+            fail(f"gaps[{index}] must be an object")
+        if gap.get("kind") == "authority_gap" and not gap.get("missing_authority"):
+            fail(f"gaps[{index}] authority_gap requires missing_authority")
+
+    for index, blocked in enumerate(data["blocked_public_claims"]):
+        if not isinstance(blocked, dict):
+            fail(f"blocked_public_claims[{index}] must be an object")
+        if not blocked.get("reason"):
+            fail(f"blocked_public_claims[{index}] requires reason")
+
     handoff = data["handoff"]
     if not isinstance(handoff, dict):
         fail("handoff must be an object")

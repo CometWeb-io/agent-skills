@@ -110,16 +110,22 @@ def main() -> None:
     registry = args.registry or (pathlib.Path(__file__).resolve().parent.parent / "references" / "repos.txt")
     repos = args.repo or load_registry(registry)
     root_available = root.exists()
+    observed_at = dt.datetime.now(dt.timezone.utc).isoformat()
     payload = {
         "schema": "cometweb.repo-snapshot/v2",
-        "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
+        "generated_at": observed_at,
+        # Provenance the downstream envelope relies on: when the working trees
+        # were read, and against which ref.
+        "observed_at": observed_at,
+        "snapshot_ref": "HEAD",
         "root_source": root_source,
         "root_available": root_available,
         "repos": [snapshot(root, rel, args.include_paths) for rel in repos] if root_available else [],
         "fallback": None if root_available else "use-current-github-connector",
     }
-    if args.include_paths:
-        payload["root"] = str(root)
+    # Always carry the key so a consumer can tell a hidden root from a missing
+    # one; the real path appears only when the caller asks for it.
+    payload["root"] = str(root) if args.include_paths else "<redacted>"
     if args.json:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
     else:

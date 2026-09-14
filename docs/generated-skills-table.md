@@ -6,9 +6,9 @@
 | --- | ---: | --- | --- | ---: | --- |
 | `ai-council` | 5.1.1 | foundation | active | 893 | True |
 | `ai-humanize` | 2.4.0 | domain | active | 708 | False |
-| `cometweb-context` | 1.2.3 | foundation | active | 584 | False |
+| `cometweb-context` | 1.4.1 | foundation | active | 826 | False |
 | `competitive-intelligence` | 1.0.0 | domain | active | 666 | False |
-| `customer-ops` | 1.0.0 | domain | active | 924 | False |
+| `customer-ops` | 2.1.0 | domain | active | 924 | False |
 | `design-partner-finder` | 1.0.0 | domain | active | 907 | False |
 | `ebook-publisher` | 1.0.0 | domain | active | 914 | False |
 | `evidence-researcher` | 1.0.2 | foundation | active | 741 | False |
@@ -16,7 +16,7 @@
 | `product-teardown` | 1.0.0 | domain | active | 967 | False |
 | `release-readiness` | 1.0.0 | domain | active | 992 | False |
 | `repo-to-roadmap` | 1.0.1 | domain | active | 1005 | False |
-| `seo-geo-aeo-maxxing` | 1.0.0 | domain | active | 682 | False |
+| `seo-geo-aeo-maxxing` | 1.2.0 | domain | active | 659 | False |
 | `skill-orchestrator` | 1.1.1 | foundation | active | 728 | False |
 | `skill-orchestrator-multiagent` | 1.1.1 | foundation | active | 467 | False |
-| `web-app-auditor` | 1.1.1 | domain | active | 724 | False |
+| `web-app-auditor` | 1.3.1 | domain | active | 660 | False |

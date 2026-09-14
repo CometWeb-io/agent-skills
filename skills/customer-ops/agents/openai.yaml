@@ -1,9 +1,13 @@
 interface:
   display_name: Customer Ops
-  short_description: Track customer cases through verified resolution
-  icon_small: assets/icon.svg
-  icon_large: assets/icon.svg
-  default_prompt: Use $customer-ops for the requested task; preserve scope, evidence, and verification
-    limits.
+  short_description: support triage; incident candidate; eng handoff
+  default_prompt: "Use the Customer Ops skill for: Run the operational customer-to-resolution loop across support conversations, customer cases, incidents, account risk, commitments, internal handoffs, feedback clusters, and GitHub engineering work. U"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
 policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
   allow_implicit_invocation: true
