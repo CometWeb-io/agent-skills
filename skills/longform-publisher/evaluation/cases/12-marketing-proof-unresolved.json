@@ -1,0 +1,11 @@
+{
+  "scenario": "invented_marketing_proof",
+  "expect": {
+    "validation": [
+      "MATERIAL_CLAIM_UNSUPPORTED"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

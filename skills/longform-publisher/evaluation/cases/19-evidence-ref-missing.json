@@ -1,0 +1,11 @@
+{
+  "scenario": "evidence_ref_missing",
+  "expect": {
+    "validation": [
+      "EVIDENCE_REF_UNRESOLVED"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

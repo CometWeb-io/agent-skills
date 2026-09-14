@@ -1,5 +1,5 @@
 {
-  "schema": "cometweb.hosts/v1",
+  "schema": "cometweb.hosts/v2",
   "hosts": {
     "agentskills-common": {
       "frontmatter_keys": ["name", "description"],
@@ -8,24 +8,81 @@
       "description_max": 2048
     },
     "openai-codex": {
+      "vendor": "openai",
+      "family": "local-agent",
       "description_max": 1024,
+      "skill_dirs": ["~/.codex/skills"],
       "agents_file": "agents/openai.yaml",
-      "recommended_interface_keys": [
-        "display_name",
-        "short_description",
-        "default_prompt"
-      ]
+      "recommended_interface_keys": ["display_name", "short_description", "default_prompt"],
+      "capabilities": ["filesystem", "code_execution", "git"],
+      "profile_verified_at": "2026-09-11",
+      "profile_basis": "OpenAI Codex Agent Skills documentation"
     },
     "chatgpt": {
+      "vendor": "openai",
+      "family": "managed-agent",
       "description_max": 1024,
-      "agents_file": "agents/openai.yaml"
+      "install_mode": "managed_skill_upload",
+      "agents_file": "agents/openai.yaml",
+      "recommended_interface_keys": ["display_name", "short_description", "default_prompt"],
+      "capabilities": ["managed_skills", "web", "files", "connectors", "code_execution"],
+      "profile_verified_at": "2026-09-11",
+      "profile_basis": "OpenAI ChatGPT Skills documentation"
     },
     "claude-code": {
-      "description_max": 2048
+      "vendor": "anthropic",
+      "family": "local-agent",
+      "description_max": 2048,
+      "skill_dirs": ["~/.claude/skills"],
+      "capabilities": ["filesystem", "code_execution", "git"],
+      "profile_verified_at": "2026-09-11",
+      "profile_basis": "Anthropic Agent Skills / Claude Code documentation"
     },
     "cursor": {
+      "vendor": "cursor",
+      "family": "ide-agent",
       "description_max": 2048,
-      "optional_extras": ["extras/cursor-rule.mdc"]
+      "skill_dirs": ["~/.cursor/skills"],
+      "optional_extras": ["extras/cursor-rule.mdc"],
+      "capabilities": ["filesystem", "code_execution", "git"],
+      "profile_verified_at": "2026-09-11",
+      "profile_basis": "Cursor Agent Skills documentation"
+    },
+    "qwen-code": {
+      "vendor": "alibaba",
+      "family": "local-agent",
+      "description_max": 2048,
+      "skill_dirs": ["~/.qwen/skills"],
+      "capabilities": ["filesystem", "code_execution", "git"],
+      "profile_verified_at": "2026-09-11",
+      "profile_basis": "Qwen Code Skills documentation"
+    },
+    "qoder": {
+      "vendor": "alibaba",
+      "family": "ide-agent",
+      "description_max": 2048,
+      "skill_dirs": ["~/.qoder/skills"],
+      "capabilities": ["filesystem", "code_execution", "git"],
+      "profile_verified_at": "2026-09-11",
+      "profile_basis": "Qoder Skills documentation"
+    },
+    "lingma": {
+      "vendor": "alibaba",
+      "family": "ide-agent",
+      "description_max": 2048,
+      "skill_dirs": ["~/.lingma/skills"],
+      "capabilities": ["filesystem", "code_execution", "git"],
+      "profile_verified_at": "2026-09-11",
+      "profile_basis": "Alibaba Cloud Lingma Skills documentation"
+    },
+    "alibaba-skills-portal": {
+      "vendor": "alibaba",
+      "family": "managed-distribution",
+      "description_max": 2048,
+      "install_mode": "managed_or_client_specific",
+      "capabilities": ["managed_skills"],
+      "profile_verified_at": "2026-09-11",
+      "profile_basis": "Alibaba Cloud Skills Portal documentation"
     },
     "package": {
       "required_files": ["SKILL.md", "VERSION", "LICENSE"]

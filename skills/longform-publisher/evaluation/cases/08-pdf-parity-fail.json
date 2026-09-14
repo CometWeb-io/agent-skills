@@ -1,0 +1,13 @@
+{
+  "scenario": "pdf_parity_fail",
+  "expect": {
+    "validation": [
+      "STAGE_INFLATION"
+    ],
+    "manuscript": [],
+    "derived": [
+      "DERIVED_PARITY_FAILED"
+    ],
+    "stage": "MASTER_LOCKED"
+  }
+}

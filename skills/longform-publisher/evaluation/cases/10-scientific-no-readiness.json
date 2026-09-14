@@ -1,0 +1,11 @@
+{
+  "scenario": "scientific_without_readiness",
+  "expect": {
+    "validation": [
+      "SCIENTIFIC_READINESS_REQUIRED"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

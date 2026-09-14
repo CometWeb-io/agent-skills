@@ -1,0 +1,20 @@
+[
+  {
+    "name": "client deadline beats optional feature",
+    "kind": "ranking",
+    "items": [
+      {"id":"client","commitment_type":"hard_external","days_to_deadline":2,"effort_class":"M","goal_alignment":3,"revenue":3,"trust":5,"dependency_leverage":1},
+      {"id":"feature","commitment_type":"optional","effort_class":"XS","goal_alignment":5,"revenue":5,"trust":5,"dependency_leverage":5,"learning":5}
+    ],
+    "expected_first":"client"
+  },
+  {"name":"future gate waits","kind":"lane","item":{"id":"billing","future_gate":true,"blocks_current_goal":false,"commitment_type":"strategic"},"expected":"WAITING"},
+  {"name":"product depth delegates","kind":"delegation","item":{"id":"insight-state","domain":"product","depth_required":"product"},"expected":"product-operator"},
+  {"name":"release verdict delegates","kind":"delegation","item":{"id":"release","depth_required":"release"},"expected":"release-readiness"},
+  {"name":"overlapping hard commitments conflict","kind":"conflict","items":[{"id":"client-launch","commitment_type":"hard_external","deadline":"2026-09-18","effort_class":"L"},{"id":"paper","commitment_type":"hard_external","deadline":"2026-09-18","effort_class":"XL"}],"expected_count":1},
+  {"name":"unknown capacity cannot invent hours","kind":"validation","report":{"protocol_version":"1.0","as_of":"2026-09-10T10:00:00+02:00","horizon":"14d","capacity":{"source":"unknown","hours":40},"must_do":[],"now":[],"delegate":[],"waiting":[],"pause_drop":[],"next":[],"capacity_conflicts":[]},"expected_valid":false},
+  {"name":"valid bounded report","kind":"validation","report":{"protocol_version":"1.0","as_of":"2026-09-10T10:00:00+02:00","horizon":"14d","capacity":{"source":"unknown"},"must_do":[{"id":"client","action":"Deliver client migration","done_when":"Cutover verified","evidence":["client:promise"]}],"now":[],"delegate":[],"waiting":[],"pause_drop":[],"next":[],"capacity_conflicts":[]},"expected_valid":true},
+  {"name":"numeric target without provenance is invalid","kind":"validation","report":{"protocol_version":"1.1","as_of":"2026-09-10T10:00:00+02:00","horizon":"14d","capacity":{"source":"unknown"},"must_do":[],"now":[{"id":"sales","action":"Book 2 pilot calls by 19 IX","done_when":"2 calls booked","evidence":["notion:gtm"]}],"delegate":[],"delegate_candidate":[],"waiting":[],"pause_drop":[],"next":[],"capacity_conflicts":[]},"expected_valid":false},
+  {"name":"unconfirmed external delegate is invalid","kind":"validation","report":{"protocol_version":"1.1","as_of":"2026-09-10T10:00:00+02:00","horizon":"14d","capacity":{"source":"unknown"},"must_do":[],"now":[],"delegate":[{"id":"agent","delegate_to":"coding-agent","question":"Continue maintenance","return_contract":"Return at human gate"}],"delegate_candidate":[],"waiting":[],"pause_drop":[],"next":[],"capacity_conflicts":[]},"expected_valid":false},
+  {"name":"three hard streams surface portfolio conflict","kind":"conflict","capacity_source":"unknown","items":[{"id":"insight","project":"Insight","commitment_type":"hard_internal","current_horizon":true,"effort_class":"L"},{"id":"client","project":"KATEX","commitment_type":"hard_external","current_horizon":true,"effort_class":"L"},{"id":"research","project":"FGCS","commitment_type":"hard_external","current_horizon":true,"effort_class":"M"}],"expected_count":1}
+]

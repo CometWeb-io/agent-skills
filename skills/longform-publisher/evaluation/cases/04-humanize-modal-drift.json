@@ -1,0 +1,14 @@
+{
+  "scenario": "humanize_modal_drift",
+  "expect": {
+    "validation": [
+      "STAGE_INFLATION"
+    ],
+    "manuscript": [
+      "POST_EDIT_FIDELITY_REQUIRED",
+      "PROTECTED_FACT_MISSING"
+    ],
+    "derived": [],
+    "stage": "EDITED"
+  }
+}

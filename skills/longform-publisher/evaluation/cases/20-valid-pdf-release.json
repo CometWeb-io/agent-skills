@@ -1,0 +1,9 @@
+{
+  "scenario": "valid_pdf_release",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

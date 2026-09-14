@@ -54,6 +54,42 @@ def parse_frontmatter(path: Path) -> dict[str, str]:
     return result
 
 
+def compute_support(entry: dict, host: dict, *, format_ok: bool) -> dict[str, object]:
+    """Return deterministic format/runtime support for one skill x host pair.
+
+    Host capabilities describe the platform-level surface, not a guarantee that a
+    specific session has every connector authenticated. Missing required capability
+    makes the default runtime unsupported; missing optional capability degrades it.
+    """
+    if not format_ok:
+        return {
+            "format": "UNSUPPORTED",
+            "runtime": "UNSUPPORTED",
+            "missing_required": [],
+            "missing_optional": [],
+        }
+
+    available = set(host.get("capabilities") or [])
+    required = list(entry.get("required_capabilities") or [])
+    optional = list(entry.get("optional_capabilities") or [])
+    missing_required = sorted(cap for cap in required if cap not in available)
+    missing_optional = sorted(cap for cap in optional if cap not in available)
+
+    if missing_required:
+        runtime = "UNSUPPORTED"
+    elif missing_optional:
+        runtime = "DEGRADED"
+    else:
+        runtime = "FULL"
+
+    return {
+        "format": "FULL",
+        "runtime": runtime,
+        "missing_required": missing_required,
+        "missing_optional": missing_optional,
+    }
+
+
 def check_openai_yaml(skill: str, path: Path, profile: dict) -> list[str]:
     warnings: list[str] = []
     if not path.is_file():
@@ -63,7 +99,6 @@ def check_openai_yaml(skill: str, path: Path, profile: dict) -> list[str]:
     if yaml is not None:
         data = yaml.safe_load(text) or {}
     else:
-        # Minimal parse without PyYAML
         data = {"interface": {}, "raw": text}
         if "display_name:" in text:
             data["interface"]["display_name"] = True
@@ -72,7 +107,7 @@ def check_openai_yaml(skill: str, path: Path, profile: dict) -> list[str]:
         if "default_prompt:" in text:
             data["interface"]["default_prompt"] = True
         if "icon_small:" in text and "assets/" not in text:
-            warnings.append(f"{skill}: openai.yaml icons should use ./assets/… paths")
+            warnings.append(f"{skill}: openai.yaml icons should use ./assets/... paths")
         return warnings
 
     interface = data.get("interface") or {}
@@ -84,6 +119,21 @@ def check_openai_yaml(skill: str, path: Path, profile: dict) -> list[str]:
         if isinstance(val, str) and val and not val.startswith(("./", "assets/")):
             warnings.append(f"{skill}: {icon_key} should be relative under ./assets/")
     return warnings
+
+
+def host_targets(entry: dict) -> list[str]:
+    return list(entry.get("host_targets") or entry.get("compatible_hosts") or [])
+
+
+def format_compatible(desc: str, host: dict, skill_dir: Path) -> tuple[bool, list[str]]:
+    errors: list[str] = []
+    max_len = host.get("description_max")
+    if max_len is not None and len(desc) > max_len:
+        errors.append(f"description {len(desc)} > {max_len}")
+    agents_file = host.get("agents_file")
+    if agents_file and not (skill_dir / agents_file).is_file():
+        errors.append(f"missing {agents_file}")
+    return not errors, errors
 
 
 def main() -> None:
@@ -98,17 +148,22 @@ def main() -> None:
         fm = parse_frontmatter(skill_dir / "SKILL.md")
         desc = fm.get("description", "")
 
-        for host_name in entry.get("compatible_hosts", []):
+        for host_name in host_targets(entry):
             profile = hosts.get(host_name)
             if not profile:
                 errors.append(f"{sid}: unknown host {host_name}")
                 continue
-            max_len = profile.get("description_max")
-            if max_len is not None and len(desc) > max_len:
-                errors.append(f"{sid}@{host_name}: description {len(desc)} > {max_len}")
+            format_ok, format_errors = format_compatible(desc, profile, skill_dir)
+            for detail in format_errors:
+                errors.append(f"{sid}@{host_name}: {detail}")
 
             if host_name in {"openai-codex", "chatgpt"} and "agents_file" in profile:
                 warnings.extend(check_openai_yaml(sid, skill_dir / profile["agents_file"], profile))
+
+            support = compute_support(entry, profile, format_ok=format_ok)
+            if support["runtime"] == "UNSUPPORTED" and support["missing_required"]:
+                missing = ", ".join(support["missing_required"])
+                warnings.append(f"{sid}@{host_name}: runtime unsupported; missing required capabilities: {missing}")
 
         for rel in hosts["package"]["required_files"]:
             if not (skill_dir / rel).is_file():

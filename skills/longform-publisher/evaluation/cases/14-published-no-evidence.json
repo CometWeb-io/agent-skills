@@ -1,0 +1,12 @@
+{
+  "scenario": "published_without_evidence",
+  "expect": {
+    "validation": [
+      "PUBLISHED_WITHOUT_EVIDENCE",
+      "STAGE_INFLATION"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

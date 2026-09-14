@@ -1,0 +1,11 @@
+interface:
+  display_name: Portfolio Operator
+  short_description: Cross-domain control plane for commitments, capacity, focus,
+    and pause/delegate decisions
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  allow_implicit_invocation: true
