@@ -78,6 +78,18 @@ Code, Qoder, and Lingma. To install selected hosts instead:
 The installers discover every package under `skills/*/SKILL.md`, so newly
 registered skills do not require a hard-coded installer list.
 
+## Cursor Marketplace
+
+To add the repository as a Cursor marketplace:
+
+1. Open **Settings → Plugins → Add marketplace**.
+2. Enter `MaciejZet/agent-skills`.
+3. Select the marketplace and install `CometWeb Agent Skills`.
+
+The repository includes the Cursor marketplace manifests under
+`.cursor-plugin/`. The Claude Code marketplace manifests remain under
+`.claude-plugin/`.
+
 ## Usage
 
 Describe the outcome you need in your agent host. The routing metadata will
