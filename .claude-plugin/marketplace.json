@@ -9,7 +9,11 @@
   "plugins": [
     {
       "name": "cometweb-agent-skills",
-      "source": "./",
+      "source": {
+        "source": "github",
+        "repo": "MaciejZet/agent-skills",
+        "ref": "main"
+      },
       "description": "CometWeb Labs specialist skills (18 packages): AI Council, AI Humanize, CometWeb Context, Competitive Intelligence, Customer Ops, Design Partner Finder, Ebook Publisher, Evidence Researcher, Longform Publisher, Portfolio Operator, Product Operator, Product Teardown, Release Readiness, Repo To Roadmap, SEO GEO AEO Maxxing, Skill Orchestrator, Skill Orchestrator Multiagent, Web App Auditor."
     }
   ]
