@@ -1,6 +1,6 @@
 # Install
 
-This repository is the public canonical source: `MaciejZet/agent-skills`.
+This repository is the public canonical source: `CometWeb-io/agent-skills`.
 
 ```bash
 ./scripts/install-all.sh

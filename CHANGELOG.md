@@ -105,6 +105,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Version tags: `v
 - GitHub Actions CI: safety check, validation, routing evals, pytest
 - GitHub Release v1.0.0 with per-skill and bundle ZIPs
 
-[1.0.2]: https://github.com/MaciejZet/agent-skills/compare/v1.0.1...v1.0.2
-[1.0.1]: https://github.com/MaciejZet/agent-skills/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/MaciejZet/agent-skills/releases/tag/v1.0.0
+[1.0.2]: https://github.com/CometWeb-io/agent-skills/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/CometWeb-io/agent-skills/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/CometWeb-io/agent-skills/releases/tag/v1.0.0

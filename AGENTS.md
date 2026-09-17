@@ -17,7 +17,7 @@ Ten dokument jest instrukcją dla pracy nad materiałami. Sam jego zapis nie ins
 ## Jedno repo publiczne — ustalenie właściciela 2026-09-14
 
 To repozytorium jest jedynym kanonicznym źródłem i jest publiczne. Poprzedni układ z prywatnym
-kanonem i publicznym mirrorem (`MaciejZet/agent-skills`) został zwinięty; narzędzia mirrorowania
+kanonem i publicznym mirrorem (`CometWeb-io/agent-skills`) został zwinięty; narzędzia mirrorowania
 i procedura publikacji przez kopiowanie drzewa już nie obowiązują.
 
 Ścieżki do lokalizacji prywatnych nie trafiają do repo. W commitowanych plikach są placeholdery,

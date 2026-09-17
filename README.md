@@ -67,7 +67,7 @@ designed to:
 Clone the repository, then run the installer for the hosts you use:
 
 ```bash
-git clone https://github.com/MaciejZet/agent-skills.git
+git clone https://github.com/CometWeb-io/agent-skills.git
 cd agent-skills
 ./scripts/install-all.sh
 ```
@@ -89,7 +89,7 @@ registered skills do not require a hard-coded installer list.
 To add the repository as a Cursor marketplace:
 
 1. Open **Settings → Plugins → Add marketplace**.
-2. Enter `MaciejZet/agent-skills`.
+2. Enter `CometWeb-io/agent-skills`.
 3. Select the marketplace and install `CometWeb Agent Skills`.
 
 The repository includes the Cursor marketplace manifests under

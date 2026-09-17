@@ -2,7 +2,7 @@
 
 ## Provenance and precedence
 
-Baseline read for this package: the public `MaciejZet/agent-skills` repository.
+Baseline read for this package: the public `CometWeb-io/agent-skills` repository.
 
 - `docs/EDITORIAL_VISUAL_STANDARD.md`, blob `edf2d2f44c8ef66848c4b35e100688c9a0cada79`.
 - `docs/COMETWEB-EBOOK-DESIGN-RULES.md`, blob `3219bcfb917fceeb8436c87429714afc3df65a01`.
