@@ -13,7 +13,6 @@ import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import re
-import sys
 from typing import Any
 
 MAX_JSON = 4 * 1024 * 1024
@@ -244,7 +243,7 @@ def _validate(data: dict, *, artifacts_root: Path | None = None,
         obj(journey, {"id", "edge_ids", "required_scenarios"}, set(), "journey")
         sequence = ids(journey["edge_ids"], "journey.edge_ids", True)
         require(set(sequence) <= edges.keys(), "journey references nonexistent edge")
-        require(all(edges[a]["to"] == edges[b]["from"] for a, b in zip(sequence, sequence[1:])),
+        require(all(edges[a]["to"] == edges[b]["from"] for a, b in zip(sequence, sequence[1:], strict=False)),
                 "journey edges do not form one continuous path")
         for scenario_id in ids(journey["required_scenarios"], "required_scenarios", True):
             require(scenario_id not in required_scenarios, "scenario ID reused across journeys")

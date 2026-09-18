@@ -7,7 +7,8 @@ import sys
 import zipfile
 import pytest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from test_review_packet_bridge import packet_source
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _tooling_fixtures import packet_source  # noqa: F401
 import build_review_packets as bridge
 import review_skill_evals as review
 import reviewer_bundle

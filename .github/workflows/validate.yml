@@ -19,6 +19,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
 
+      - name: Lint
+        run: python3 -m ruff check .
+
       - name: Registry and repo integrity
         run: |
           python3 tooling/validate_repo.py
@@ -28,12 +31,16 @@ jobs:
         run: python3 tooling/compatibility.py
 
       - name: Generated adapters check
-        run: |
-          python3 tooling/generate_adapters.py
-          python3 tooling/generate_adapters.py --check
+        run: python3 tooling/generate_adapters.py --check
+
+      - name: Context budget
+        run: python3 tooling/context_budget.py --check
 
       - name: Routing evals
         run: python3 tooling/run_routing_evals.py
+
+      - name: Eval strength
+        run: python3 tooling/eval_strength.py --check
 
       - name: Behavior fixtures
         run: |

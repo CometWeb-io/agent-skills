@@ -1,0 +1,29 @@
+{
+  "note": "Recorded by tooling/eval_strength.py --update. Held counts may rise freely; a fall means a rule stopped being pinned.",
+  "skills": [
+    {
+      "guards": 54,
+      "held": 28,
+      "id": "longform-publisher",
+      "strength": 0.519,
+      "unexercised": []
+    },
+    {
+      "guards": 61,
+      "held": 55,
+      "id": "portfolio-operator",
+      "strength": 0.902,
+      "unexercised": []
+    },
+    {
+      "guards": 107,
+      "held": 27,
+      "id": "product-operator",
+      "strength": 0.252,
+      "unexercised": [
+        "prepare_brief.py",
+        "self_check.py"
+      ]
+    }
+  ]
+}

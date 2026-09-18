@@ -5,9 +5,8 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from test_distribution_hardening import root, add
-from test_review_packet_bridge import packet_source
-from test_model_evals import response, case
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _tooling_fixtures import root, add, packet_source, response, case  # noqa: F401
 import package_skill as package
 import build_review_packets as bridge
 import run_model_evals as runner

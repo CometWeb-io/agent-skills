@@ -172,7 +172,7 @@ def merge_file(current: bytes, base: bytes, incoming: bytes) -> tuple[str, bytes
         return 'conflict_binary', None
     with tempfile.TemporaryDirectory(prefix='cw-three-way-') as tmp:
         paths = [Path(tmp) / name for name in ('current', 'base', 'incoming')]
-        for path, value in zip(paths, (current, base, incoming)):
+        for path, value in zip(paths, (current, base, incoming), strict=True):
             path.write_bytes(value)
         proc = subprocess.run(['git', 'merge-file', '-p', '--diff3', '-L', 'current', '-L', 'base', '-L', 'overlay',
                                *map(str, paths)], cwd=tmp, env=git_env(), capture_output=True, timeout=30)

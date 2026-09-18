@@ -8,7 +8,8 @@ TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 import generate_adapters as adapters
 import package_skill as package
-from test_distribution_hardening import root, add
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _tooling_fixtures import root, add  # noqa: F401
 
 
 @pytest.mark.parametrize('name', ['INSTALL.md', 'examples/strong-pl.md'])
@@ -70,5 +71,7 @@ def test_complete_sources_allow_generation_and_clean_check(root, monkeypatch):
 def test_candidate_registry_version_and_generated_table_are_consistent():
     registry=json.loads((TOOLS.parent/'registry/skills.json').read_text())
     humanize=next(s for s in registry['skills'] if s['id']=='ai-humanize')
-    assert humanize['version']==(TOOLS.parent/'skills/ai-humanize/VERSION').read_text().strip()=='2.4.1'
+    # The point is that registry and package agree, not which release it is; a
+    # hard-coded version turns every legitimate bump into a failing test.
+    assert humanize['version']==(TOOLS.parent/'skills/ai-humanize/VERSION').read_text().strip()
     assert (TOOLS.parent/'docs/generated-skills-table.md').read_text()==adapters.build_docs(registry['skills'])

@@ -17,27 +17,8 @@ import public_safety as safety
 import publish_public_dry_run as public
 
 
-@pytest.fixture
-def root(tmp_path):
-    (tmp_path / "registry").mkdir()
-    shutil.copyfile(TOOLS.parent / "registry/package-policy.json", tmp_path / "registry/package-policy.json")
-    (tmp_path / "registry/public-allowlist.json").write_text(json.dumps({"schema": "cometweb.public-allowlist/v1", "approved": []}))
-    (tmp_path / "registry/skills.json").write_text(json.dumps({"schema": "cometweb.skills-registry/v1", "skills": [{"id": "demo", "version": "1.0.0", "lifecycle": "active", "visibility": "private_canonical", "description": "Synthetic fixture"}]}))
-    source = tmp_path / "skills/demo"
-    source.mkdir(parents=True)
-    (source / "SKILL.md").write_text("---\nname: demo\ndescription: Synthetic regression fixture for distribution checks.\n---\n# Demo\n")
-    (source / "VERSION").write_text("1.0.0\n")
-    (source / "LICENSE").write_text("Synthetic fixture license.\n")
-    (tmp_path / "tooling").mkdir()
-    shutil.copyfile(TOOLS / "public_safety.py", tmp_path / "tooling/public_safety.py")
-    return tmp_path
-
-
-def add(root, name, data=b"fixture"):
-    path = root / "skills/demo" / name
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(data)
-    return path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _tooling_fixtures import root, add  # noqa: F401  (root is a fixture)
 
 
 def approve(root):
@@ -300,24 +281,20 @@ def test_nested_receipt_named_file_cannot_escape_inventory(root):
         public.verify_mirror(root, mirror)
 
 
-def _case_insensitive_fs(root: Path) -> bool:
-    probe = root / "CaseProbe.tmp"
-    probe.write_text("x", encoding="utf-8")
-    try:
-        return (root / "caseprobe.tmp").exists()
-    finally:
-        probe.unlink()
+def test_case_collision_blocks_cross_host_package(root, monkeypatch):
+    """Two paths differing only by case must not both enter a package.
 
-
-def test_case_collision_blocks_cross_host_package(root):
-    if _case_insensitive_fs(root):
-        pytest.skip(
-            "needs a case-sensitive filesystem to create both names; "
-            "package_skill still rejects the collision, it just cannot be "
-            "staged here (default macOS APFS is case-insensitive)"
-        )
-    add(root, "assets/Icon.svg")
+    A case-insensitive filesystem (macOS APFS by default) cannot hold both
+    spellings at once, so rather than skipping the check there, the second
+    spelling is injected into the file walk. The branch under test is the same
+    either way, and it now runs on every platform instead of only on Linux.
+    """
     add(root, "assets/icon.svg")
+    variant = root / "skills/demo/assets/Icon.svg"
+    if not variant.exists():
+        add(root, "assets/Icon.svg")
+    walk = package.files
+    monkeypatch.setattr(package, "files", lambda directory: [*walk(directory), variant])
     with pytest.raises(ValueError, match="collision"):
         package.build(root, "demo")
 

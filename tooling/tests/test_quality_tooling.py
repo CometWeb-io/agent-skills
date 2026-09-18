@@ -15,7 +15,8 @@ from compatibility import parse_frontmatter
 from doctor import inspect
 import generate_adapters as adapters
 import package_skill as package
-from test_distribution_hardening import root, add
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _tooling_fixtures import root, add  # noqa: F401
 
 
 def test_dependency_and_unknown_metadata_survive_generation():

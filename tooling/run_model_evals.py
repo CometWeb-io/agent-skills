@@ -7,7 +7,6 @@ import json
 import random
 import re
 import subprocess
-import sys
 import tempfile
 import time
 from pathlib import Path

@@ -15,32 +15,8 @@ import run_model_evals as runner
 import review_skill_evals as review
 
 
-def records_for(suite,requests):
-    result=[]
-    for index,(key,request) in enumerate(requests.items()):
-        cid,condition=key
-        output=f"Synthetic conformance response {index}; NOT a model call"
-        response={"schema":"cometweb.eval-response/v1","status":"completed", "execution_kind":"model",
-                  "model":"synthetic-label","host":"synthetic-host","response_id":f"synthetic-{index}",
-                  "output":output,"usage":{},"tool_trace":[],"capabilities":request["capabilities"]}
-        result.append({"case":cid,"repeat":0,"condition":condition,"status":"executed","response":response,
-                       "input_sha256":package_skill.digest(package_skill.canonical(request)),
-                       "output_sha256":hashlib.sha256(output.encode()).hexdigest(),"elapsed_seconds":0.02,
-                       "blind_id":f"output-{index:04d}"})
-    return result
-
-
-@pytest.fixture
-def packet_source(tmp_path):
-    roots=[]
-    for variant in ("current","candidate"):
-        root=tmp_path/variant;(root/"skills/demo").mkdir(parents=True)
-        (root/"skills/demo/SKILL.md").write_text(f"Synthetic {variant} instructions")
-        roots.append(root)
-    cases=[{"id":f"case-{i}","skill":"demo","prompt":f"Synthetic task {i}","fixture":{"x":i},"rubric":["Do not invent evidence"]} for i in range(2)]
-    suite={"schema":"cometweb.model-evals/v1","cases":cases}
-    requests={(c["id"],v):runner.prepare(c,v,*roots,256) for c in cases for v in runner.CONDITIONS}
-    return suite,requests,records_for(suite,requests),roots
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _tooling_fixtures import records_for, packet_source  # noqa: F401
 
 
 def test_bridge_exports_no_invented_reviews_or_unknown_zero_cost(packet_source):
@@ -105,6 +81,9 @@ def test_runner_to_review_to_comparison_end_to_end_without_models(packet_source,
     assert len(calls)==6 and result["comparison_status"]=="unreviewed"
     packet=result["review_packets"][0];directory=out/packet["path"]
     payload=json.loads((directory/"comparison.json").read_text())
+    # The packet must start unreviewed; the final assertion then shows the
+    # review step did not write back into it.
+    assert payload["reviews"]==[]
     grades=json.loads((directory/"review-template.json").read_text())
     for row in grades["reviews"]:
         row.update(reviewer="synthetic-test-reviewer",review_kind="model_assisted",

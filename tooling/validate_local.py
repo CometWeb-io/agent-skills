@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -28,6 +29,14 @@ CHECKS = (
     ("routing", "tooling/run_routing_evals.py", ()),
     ("context_fixtures", "tooling/run_behavior_evals.py", ()),
     ("protocol", "tooling/validate_envelope.py", ("fixtures/cwaip-v2/evidence-final.json", "--final")),
+    ("context_budget", "tooling/context_budget.py", ("--check",)),
+    ("eval_strength", "tooling/eval_strength.py", ("--check",)),
+)
+# Gates that run as an installed module rather than a repo script. They are kept
+# apart from CHECKS because every CHECKS entry is also validated as a file on
+# disk and watched for changes, which cannot apply to a third-party tool.
+MODULE_CHECKS = (
+    ("lint", ("ruff", "check", ".")),
 )
 REQUIRED = ("registry/skills.json", "registry/hosts.json", "requirements-dev.txt",
             "fixtures/cwaip-v2/evidence-final.json", "tooling/validate_local.py")
@@ -61,8 +70,25 @@ def safe_file(root: Path, relative: str) -> Path:
     return path
 
 
+def require_module_tools() -> None:
+    """Fail with the reason, not just a red check, when a gate's tool is absent.
+
+    A missing ruff makes the lint step exit non-zero like any other failure,
+    which reads as "your code is broken" rather than "install the dev
+    requirements". Say which it is.
+    """
+    for name, args in MODULE_CHECKS:
+        module = args[0]
+        if importlib.util.find_spec(module) is None:
+            raise ValueError(
+                f"{name} gate needs the {module!r} package: "
+                f"pip install -r requirements-dev.txt"
+            )
+
+
 def inventory(root: Path) -> dict:
     """Reject incomplete overlays before executing any check."""
+    require_module_tools()
     for relative in (*REQUIRED, *(row[1] for row in CHECKS)):
         safe_file(root, relative)
     data = json.loads((root / "registry/skills.json").read_bytes(), object_pairs_hook=unique_pairs)
@@ -125,7 +151,8 @@ def source_state(root: Path) -> dict:
 
 
 def commands(scope: dict, output: Path) -> list[tuple[str, list[str]]]:
-    rows = [(name, [sys.executable, "-B", script, *args]) for name, script, args in CHECKS]
+    rows = [(name, [sys.executable, "-B", "-m", *args]) for name, args in MODULE_CHECKS]
+    rows += [(name, [sys.executable, "-B", script, *args]) for name, script, args in CHECKS]
     rows.append(("pytest", [sys.executable, "-B", "-m", "pytest", "-q", "-p", "no:cacheprovider",
                             "--import-mode=importlib", "-o", "addopts=", f"--junitxml={output / 'junit.xml'}",
                             *scope["test_directories"]]))

@@ -1,0 +1,24 @@
+# Lint rules are chosen to catch defects, not to enforce a house style. A rule
+# is enabled only if a violation of it is plausibly a bug; large mechanical
+# migrations (annotation syntax, import ordering) are deliberately not enabled,
+# because a diff that touches every file hides the changes that matter.
+
+target-version = "py312"
+line-length = 120
+
+[lint]
+select = [
+    "F",    # pyflakes: undefined names, unused imports and variables
+    "E9",   # syntax and IO errors that stop the file being read at all
+    "B",    # bugbear: mutable defaults, silent zip truncation, raise-from
+    "DTZ",  # naive datetimes - this repo reasons about freshness and as-of dates
+]
+ignore = [
+    "B008",  # function call in a default argument is used deliberately by the kernels
+]
+
+[lint.per-file-ignores]
+# pytest fixtures are requested by parameter name and imported for their side
+# effect of registering; pyflakes reads both as redefinition or dead imports.
+"**/tests/*.py" = ["F811", "F401"]
+"**/tests/_*.py" = ["F401"]

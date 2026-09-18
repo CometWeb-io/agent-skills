@@ -10,14 +10,8 @@ from run_model_evals import CONDITIONS, execute, prepare, run, validate_response
 from openai_eval_runner import build_request, convert_response
 
 
-def response(**changes):
-    value={"schema":"cometweb.eval-response/v1","status":"completed","execution_kind":"mock","model":"synthetic-test-model","host":"synthetic-test-host","response_id":"mock-id","output":"Synthetic text 20%","usage":{"input_tokens":1,"output_tokens":2},"tool_trace":[],"capabilities":{"tools":False}}
-    value.update(changes)
-    return value
-
-
-def case():
-    return {"id":"fixture-case","skill":"demo","prompt":"Edit this sentence.","fixture":{"text":"20% may help"},"rubric":["Preserve uncertainty"],"preserve_literals":["20%"]}
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _tooling_fixtures import response, case  # noqa: F401
 
 
 @pytest.fixture

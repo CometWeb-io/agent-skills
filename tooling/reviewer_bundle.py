@@ -5,7 +5,6 @@ A supplied output can reveal its origin; no claim of perfect blinding is made.
 """
 from __future__ import annotations
 import io
-import json
 from pathlib import Path
 import zipfile
 

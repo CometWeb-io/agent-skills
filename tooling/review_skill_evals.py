@@ -11,7 +11,6 @@ from collections import Counter
 import hashlib
 import json
 from pathlib import Path
-import sys
 from typing import Any
 
 from audit_contracts import MAX_JSON, HEX64, array, ids, index, loads, obj, require, text

@@ -285,9 +285,9 @@ def build(root: Path, skill: str) -> dict:
         inspect_archive(data)
         try:
             write_atomic(out, data, immutable=True)
-        except FileExistsError:
+        except FileExistsError as exc:
             if inspect_archive(out.read_bytes())["payload_sha256"] != manifest["payload_sha256"]:
-                raise ValueError("concurrent immutable version conflict")
+                raise ValueError("concurrent immutable version conflict") from exc
     data = out.read_bytes()
     latest = safe_path(root, f"dist/{skill}/skill.zip")
     write_atomic(latest, data, immutable=False)
