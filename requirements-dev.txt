@@ -1,5 +1,5 @@
 pytest>=8.0
-jsonschema>=4.20
+jsonschema>=4.26.0
 pypdf>=4.0
 PyYAML>=6.0
 ruff>=0.16
