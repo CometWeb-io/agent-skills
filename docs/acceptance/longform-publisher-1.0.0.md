@@ -41,3 +41,17 @@ Longform Publisher 1.0.0 is therefore treated as a frozen baseline. Future chang
 ## Evidence boundary
 
 This acceptance record captures the run result supplied by the operator. It does not independently re-audit the final manuscript, DOCX, PDF, or publication-report contents inside this repository.
+
+## Freeze exception — 1.1.0, 2026-09-18
+
+`validate_report` is declared `-> list[str]` but raised `TypeError` whenever a
+field held a list or dict, because ten membership tests were written as
+`value in {...}` against values read from a caller-supplied report file. A
+non-object root raised `AttributeError` from the first `.get()`.
+
+Treated as a contract change rather than speculative hardening: the function
+did not do what its signature says. No behaviour on valid input changed, the
+frozen control-plane workflow is untouched, and the release stays `FROZEN`.
+
+Guarded by `tooling/tests/test_validators_survive_malformed_input.py`, which
+sweeps every validator in the repo, not only this one.

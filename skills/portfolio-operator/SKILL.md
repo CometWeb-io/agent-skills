@@ -72,65 +72,19 @@ Stop when additional retrieval is unlikely to change `MUST DO / CAPACITY CONFLIC
 
 ## 3. Build a bounded Portfolio Ledger
 
-Use [references/portfolio-model.md](references/portfolio-model.md).
-
-Every material item should preserve:
-
-```text
-id
-project
-domain: CLIENT | PRODUCT | RESEARCH | GROWTH | OPS | ADMIN | OTHER
-outcome / action
-commitment_type: hard_external | hard_internal | strategic | optional
-status
-deadline / days_to_deadline when evidenced
-effort_class: XS | S | M | L | XL | UNKNOWN
-goal_alignment 0-5
-revenue 0-5
-trust 0-5
-strategic_value 0-5
-learning 0-5
-dependency_leverage 0-5
-blocks_current_goal
-future_gate
-depends_on[]
-blocked_by[]
-evidence[]
-freshness
-scope_level: portfolio | specialist
-portfolio_outcome: concise user-facing outcome when specialist depth exists
-depth_required / delegated_to when needed
-evidence_ref / user_defined when an exact date, numeric target, or deadline is user-facing
-delegate_evidence_ref when delegating to an external person/agent/system
-done_when
-```
+Use [references/portfolio-model.md](references/portfolio-model.md) for the domain taxonomy, commitment types, effort classes, portfolio statuses, and the full item shape including the precision and delegation fields.
 
 Do not fill missing fields with guesses. Unknown is a valid state.
 
 ## 4. Separate commitment from importance
 
-Use [references/prioritization.md](references/prioritization.md).
-
-A `MUST DO` item must have a current-horizon reason such as:
-
-- a hard external commitment;
-- an evidenced near-term hard internal gate;
-- a confirmed condition blocking the active portfolio goal;
-- a dependency without which another hard commitment cannot proceed.
-
-"Important", "strategic", "nice to have", or "would improve the product" is not enough.
+Use [references/prioritization.md](references/prioritization.md) and apply its `MUST DO` test literally. "Important", "strategic", "nice to have", or "would improve the product" is not enough.
 
 A future gate that does not block the active horizon belongs in `WAITING` or `NEXT`, not `MUST DO`.
 
 ## 5. Model capacity without pretending precision
 
-If exact capacity is not supplied:
-
-- use relative effort `XS/S/M/L/XL/UNKNOWN`;
-- default to **one primary** focus stream and at most **two secondary** streams;
-- treat maintenance-only projects as non-focus unless an incident/commitment makes them active;
-- surface incompatible hard commitments as `CAPACITY CONFLICTS`;
-- prefer explicit deferral/pause over fitting everything into a fictional schedule.
+If exact capacity is not supplied, follow the capacity rules in [references/prioritization.md](references/prioritization.md): relative effort classes, one primary focus stream, at most two secondary streams, maintenance for non-focus projects, and explicit deferral over a fictional schedule.
 
 Do not invent numeric hours to make the plan look precise.
 
@@ -138,25 +92,11 @@ When hard commitments conflict, state the conflict and what trade-off must be re
 
 ## 6. Enforce the specialist depth ceiling
 
-Use [references/delegation.md](references/delegation.md).
+Use [references/delegation.md](references/delegation.md) for the delegation map, the handoff shape, and the re-entry rule.
 
 **Specialist depth ceiling:** Portfolio Operator may state an **outcome-level** portfolio action, why it deserves capacity, and an observable done condition. It must not expand that action into the internal backlog, component checklist, implementation sequence, release procedure, or detailed specialist methodology of one project.
 
-When specialist depth is required:
-
-- keep the portfolio item at `scope_level=portfolio` and provide a short `portfolio_outcome`;
-- create a separate narrow handoff;
-- let the specialist return the detailed critical path;
-- re-enter Portfolio Operator only if that result changes allocation.
-
-Examples:
-
-- deep product/repo sequencing -> **Product Operator**;
-- release candidate GO/NO-GO -> **Release Readiness**;
-- customer incident/support/account risk -> **Customer Ops**;
-- material claim verification -> **Evidence Researcher**;
-- consequential portfolio/strategic trade-off -> **AI Council**;
-- end-to-end multi-skill execution -> **Skill Orchestrator**.
+When specialist depth is required, keep the portfolio item at `scope_level=portfolio`, give it a short `portfolio_outcome`, create a separate narrow handoff, and re-enter Portfolio Operator only if the specialist result changes allocation.
 
 Do not put specialist-scoped implementation detail directly into `MUST DO` or `NOW`. When `portfolio_outcome` exists, the human renderer must use it instead of any deeper internal `action` text.
 
@@ -171,35 +111,15 @@ If neither exists, remove the exact number/date and express the item relationall
 
 ### Delegation reality gate
 
-Use `DELEGATE` only when the assignee is real and currently usable:
-
-- a known specialist skill/control plane; or
-- an external person/agent/system backed by `delegate_evidence_ref` or explicitly supplied by the user.
+Use `DELEGATE` only when the assignee is real and currently usable: a known specialist skill/control plane, or an external person/agent/system backed by `delegate_evidence_ref` or explicitly supplied by the user.
 
 If the executor is only hypothetical or not confirmed, use `DELEGATE CANDIDATE` or `PAUSE / DROP`; never create fictional execution capacity.
 
 ## 7. Rank after gates, then allocate focus
 
-When execution is available, use the kernel ranking as an aid. Arithmetic cannot override hard commitments or binding gates.
+When execution is available, use the kernel ranking as an aid. Arithmetic cannot override hard commitments or binding gates: apply the gate order in [references/prioritization.md](references/prioritization.md) first, and let a numeric score order items only within a class.
 
-Priority order:
-
-1. overdue/near hard external commitments and safety/legal/financial obligations;
-2. confirmed blockers of the primary horizon goal;
-3. hard internal commitments and dependencies serving #1-2;
-4. revenue/trust-critical work with current evidence;
-5. fixed-date research/submission obligations;
-6. strategic work aligned to the primary goal;
-7. optional improvements;
-8. pause/drop candidates.
-
-Then allocate:
-
-- one primary focus stream;
-- up to two secondary streams;
-- maintenance/watch for the rest.
-
-If this allocation is impossible, emit `CAPACITY CONFLICTS` before adding more `NOW` work.
+Then allocate one primary focus stream, up to two secondary streams, and maintenance/watch for the rest. If this allocation is impossible, emit `CAPACITY CONFLICTS` before adding more `NOW` work.
 
 ## 8. Treat consequential choices as decisions, not hidden ranking
 
@@ -216,70 +136,17 @@ Do not select the option merely because one has a slightly higher arithmetic sco
 
 ## 9. Deliver a bounded human brief
 
-Use [references/output-contract.md](references/output-contract.md).
+Use [references/output-contract.md](references/output-contract.md) for the brief's section order and limits: `MUST DO`, `CAPACITY CONFLICTS`, `NOW`, `DELEGATE`, `DELEGATE CANDIDATE`, `WAITING`, `PAUSE / DROP`, `NEXT`, normally within 450 words and 10 user-facing actions for a standard 14-day plan.
 
-Default direct-user shape:
-
-```text
-Stan: <READY | PROVISIONAL | BLOCKED — one sentence>
-
-MUST DO
-- [DOMAIN] <action> — Done: <observable condition>
-
-CAPACITY CONFLICTS
-- <only real conflicts>
-
-NOW
-- [DOMAIN] <1-4 actions>
-
-DELEGATE
-- <confirmed specialist/owner> — <narrow question>
-
-DELEGATE CANDIDATE
-- <possible owner/agent> — <what must be confirmed before delegation>
-
-WAITING
-- <blocked/future-gated items>
-
-PAUSE / DROP
-- <items intentionally not receiving capacity>
-
-NEXT
-- <dependency-ordered follow-ons>
-```
-
-Omit empty sections. For a standard 14-day plan, normally stay within **450 words** and **10 user-facing actions** total. Do not print the full ledger, source registry, scores, connector telemetry, or raw sidecar unless requested.
+Omit empty sections. Do not print the full ledger, source registry, scores, connector telemetry, or raw sidecar unless requested.
 
 When the user explicitly asks for a view by area, group the same decisions under `CLIENT / PRODUCT / RESEARCH / GROWTH / OPS`; do not create a second competing priority system.
 
 ## 10. Preserve the machine sidecar
 
-When filesystem/execution is available, create `portfolio-report.json` with:
+When filesystem/execution is available, create `portfolio-report.json` in the shape given in [references/output-contract.md](references/output-contract.md) and validate it with `scripts/portfolio_kernel.py` before claiming the brief is complete.
 
-```text
-protocol_version
-as_of
-horizon
-primary_goal
-portfolio_scope[]
-constraints[]
-capacity{source,hours?}
-coverage{}
-readiness{status,reason}
-portfolio_items[]
-must_do[]
-capacity_conflicts[]
-now[]
-delegate[]
-delegate_candidate[]
-waiting[]
-pause_drop[]
-next[]
-decision_now[]
-unknowns[]
-```
-
-Validate it with `scripts/portfolio_kernel.py` functionality before claiming the brief is complete. `MUST DO` and `NOW` items require evidence and an observable `done_when` in the sidecar. Exact user-facing dates/numeric targets require `evidence_ref` or `user_defined=true`; `DELEGATE` items must pass the delegation reality gate.
+`MUST DO` and `NOW` items require evidence and an observable `done_when` in the sidecar. Exact user-facing dates and numeric targets require `evidence_ref` or `user_defined=true`; `DELEGATE` items must pass the delegation reality gate.
 
 ## 11. Use snapshots for repeated reviews
 

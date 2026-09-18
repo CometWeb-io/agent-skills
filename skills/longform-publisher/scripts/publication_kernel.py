@@ -34,12 +34,12 @@ def _derived_ready(report: dict[str, Any]) -> bool:
         if item.get("master_sha256") != master_hash:
             return False
         fmt = str(item.get("format") or "").upper()
-        if fmt in {"DOCX", "PDF"}:
+        if in_set(fmt, {"DOCX", "PDF"}):
             if item.get("qa_required") is not True or item.get("qa_status") != "PASS":
                 return False
         elif item.get("qa_required") is True and item.get("qa_status") != "PASS":
             return False
-        elif item.get("qa_required") is False and item.get("qa_status") not in {"PASS", "NOT_REQUIRED"}:
+        elif item.get("qa_required") is False and not in_set(item.get("qa_status"), {"PASS", "NOT_REQUIRED"}):
             return False
         if item.get("parity_status") != "PASS":
             return False
@@ -95,13 +95,27 @@ def _stage_index(stage: str) -> int:
         return -1
 
 
+def in_set(value, allowed) -> bool:
+    """Membership test that survives untrusted JSON.
+
+    A list or dict read from a report file is unhashable, so `value in allowed`
+    raises TypeError and the validator dies instead of reporting the problem it
+    exists to report. Only a string can be a member anyway.
+    """
+    return isinstance(value, str) and value in allowed
+
+
 def validate_report(report: dict[str, Any]) -> list[str]:
     errors: list[str] = []
+    # A report file that is a list or a bare value must come back as an error
+    # code like anything else, not as an AttributeError from the first .get().
+    if not isinstance(report, dict):
+        return ["REPORT_NOT_AN_OBJECT"]
     if report.get("protocol_version") != "longform-publisher/1":
         errors.append("PROTOCOL_VERSION_INVALID")
 
     mode = report.get("mode")
-    if mode not in VALID_MODES:
+    if not in_set(mode, VALID_MODES):
         errors.append("MODE_INVALID")
 
     sources = report.get("sources") or []
@@ -116,14 +130,14 @@ def validate_report(report: dict[str, Any]) -> list[str]:
         refs = claim.get("evidence_refs") or []
         if any(ref not in source_by_id for ref in refs):
             errors.append("EVIDENCE_REF_UNRESOLVED")
-        material = claim.get("materiality") in {"CRITICAL", "MATERIAL"}
+        material = in_set(claim.get("materiality"), {"CRITICAL", "MATERIAL"})
         if material and claim.get("claim_kind") == "FACT":
             refs = claim.get("evidence_refs") or []
             if claim.get("support_status") != "SUPPORTED" or not refs:
                 errors.append("MATERIAL_CLAIM_UNSUPPORTED")
             if claim.get("volatile_current") is True and refs:
                 freshness = [source_by_id.get(ref, {}).get("freshness") for ref in refs]
-                if not any(x in {"CURRENT", "NEAR_EXPIRY"} for x in freshness):
+                if not any(in_set(x, {"CURRENT", "NEAR_EXPIRY"}) for x in freshness):
                     errors.append("VOLATILE_CLAIM_STALE_EVIDENCE")
 
     lifecycle = report.get("lifecycle") or {}
@@ -133,13 +147,13 @@ def validate_report(report: dict[str, Any]) -> list[str]:
 
     if lifecycle.get("release_ready"):
         for gap in report.get("unresolved_gaps") or []:
-            if gap.get("materiality") == "CRITICAL" and gap.get("status") not in {"CLOSED", "RESOLVED", "SCOPED_OUT"}:
+            if gap.get("materiality") == "CRITICAL" and not in_set(gap.get("status"), {"CLOSED", "RESOLVED", "SCOPED_OUT"}):
                 errors.append("CRITICAL_GAP_OPEN")
                 break
 
     declared = report.get("current_stage")
     inferred = infer_stage(report)
-    if declared not in STAGES:
+    if not in_set(declared, STAGES):
         errors.append("CURRENT_STAGE_INVALID")
     elif _stage_index(declared) > _stage_index(inferred):
         errors.append("STAGE_INFLATION")
@@ -148,7 +162,7 @@ def validate_report(report: dict[str, Any]) -> list[str]:
         errors.append("PUBLISHED_WITHOUT_EVIDENCE")
 
     publication_type = str((report.get("publication") or {}).get("type") or "").upper()
-    if publication_type in {"SCIENTIFIC_MANUSCRIPT", "ACADEMIC_PAPER", "RESEARCH_PAPER"} and declared in {"RELEASE_READY", "PUBLISHED"}:
+    if in_set(publication_type, {"SCIENTIFIC_MANUSCRIPT", "ACADEMIC_PAPER", "RESEARCH_PAPER"}) and in_set(declared, {"RELEASE_READY", "PUBLISHED"}):
         readiness = report.get("scientific_readiness") or {}
         readiness_ok = (
             readiness.get("status") == "PASS"
@@ -179,7 +193,7 @@ def check_manuscript(report: dict[str, Any], manuscript_text: str) -> list[str]:
         errors.append("MASTER_HASH_MISMATCH")
 
     lifecycle = report.get("lifecycle") or {}
-    if lifecycle.get("master_locked") or lifecycle.get("release_ready") or report.get("current_stage") in {"MASTER_LOCKED", "FORMAT_READY", "RELEASE_READY", "PUBLISHED"}:
+    if lifecycle.get("master_locked") or lifecycle.get("release_ready") or in_set(report.get("current_stage"), {"MASTER_LOCKED", "FORMAT_READY", "RELEASE_READY", "PUBLISHED"}):
         if any(pattern.search(manuscript_text) for pattern in _PLACEHOLDER_PATTERNS):
             errors.append("UNRESOLVED_PLACEHOLDER")
 
@@ -215,7 +229,7 @@ def check_derived(report: dict[str, Any]) -> list[str]:
             errors.append("DERIVED_MASTER_HASH_MISMATCH")
         if item.get("direct_material_edit") is True:
             errors.append("DERIVED_MATERIAL_EDIT_FORBIDDEN")
-        if fmt in {"DOCX", "PDF"}:
+        if in_set(fmt, {"DOCX", "PDF"}):
             if item.get("qa_required") is not True:
                 errors.append("VISUAL_QA_REQUIRED")
             elif item.get("qa_status") != "PASS":

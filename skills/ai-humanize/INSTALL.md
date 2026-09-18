@@ -1,4 +1,4 @@
-# Installation — ai-humanize v2.4.0
+# Installation — ai-humanize v2.5.0
 
 Distributable unit: the whole `ai-humanize/` directory (keep `SKILL.md`, `references/`, `scripts/`, `agents/` paths intact).
 

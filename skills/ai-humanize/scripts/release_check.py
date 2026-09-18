@@ -131,9 +131,25 @@ def main() -> int:
     return 0
 
 
+USAGE = (
+    "usage: release_check.py\n"
+    "  Runs the deterministic regression suite plus bundle-level linting of\n"
+    "  examples, references, frontmatter and prohibited unsupported claims.\n"
+    "  Takes no arguments."
+)
+
+
 if __name__ == "__main__":
+    # Without this the script ignores whatever it is given and runs the whole
+    # suite, so --help and a typo look identical to the caller.
+    if len(sys.argv) > 1:
+        if sys.argv[1:] == ["-h"] or sys.argv[1:] == ["--help"]:
+            print(USAGE)
+            raise SystemExit(0)
+        print(USAGE, file=sys.stderr)
+        raise SystemExit(2)
     try:
         raise SystemExit(main())
     except AssertionError as exc:
         print(f"release_check: FAIL: {exc}", file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

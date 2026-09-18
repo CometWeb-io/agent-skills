@@ -129,6 +129,19 @@ The guard checks extractable hard invariants such as URLs, emails, dates, versio
 
 It also reports **semantic-risk warnings** when negation/modal/scope markers change unusually. These warnings are heuristics, not semantic proof.
 
+Pass/fail is an **invariant verdict**. Neither the default nor `--strict` fails on
+a semantic-risk warning — `--strict` covers introduced invariant-like tokens, not
+meaning. A rewrite that inverts every claim keeps its invariants and exits `0`.
+When a caller must stop on a possible meaning change, ask for it:
+
+```bash
+python scripts/rewrite_guard.py before.md after.md --fail-on-semantic-risk
+```
+
+It is opt-in because the markers fire on faithful paraphrase too: turning
+"We are not committing to a date" into "No date is committed" drops a negation
+token. Choose it when a missed inversion costs more than a false positive.
+
 Use `--protect` for exact names, labels, or normative phrases that heuristics cannot infer safely.
 
 The guard supplements editorial review. It cannot prove entailment, factual truth, causal equivalence, attribution equivalence, or watermark status.

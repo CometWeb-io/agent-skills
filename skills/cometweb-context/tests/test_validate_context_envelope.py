@@ -1,61 +1,12 @@
-import importlib.util
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _context_fixtures import load_script, build_valid_envelope as valid_envelope
 
 import pytest
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "scripts" / "validate_context_envelope.py"
-spec = importlib.util.spec_from_file_location("validate_context_envelope", MODULE_PATH)
-module = importlib.util.module_from_spec(spec)
-assert spec and spec.loader
-spec.loader.exec_module(module)
-
-
-def valid_envelope():
-    return {
-        "schema": "cometweb.context/v2",
-        "snapshot_id": "ctx-test",
-        "generated_at": "2026-09-07T00:00:00+02:00",
-        "goal": "test",
-        "mode": "standard",
-        "profile": "portfolio",
-        "baseline": {"status": "not_requested", "ref": None},
-        "sources": [
-            {
-                "source_id": "src-1",
-                "source_type": "github",
-                "authority": "system_of_record",
-                "access": "connector",
-                "retrieved_at": "2026-09-07T00:00:00+02:00",
-                "effective_at": None,
-                "freshness": "fresh",
-                "sensitivity": "internal",
-                "summary": "repo state",
-                "evidence_ref": "repo@sha",
-            }
-        ],
-        "facts": [
-            {
-                "fact_id": "f-1",
-                "statement": "Current repo state was retrieved.",
-                "source_ids": ["src-1"],
-                "confidence": "high",
-                "sensitivity": "internal",
-            }
-        ],
-        "deltas": [],
-        "conflicts": [],
-        "gaps": [],
-        "blocked_public_claims": [],
-        "governance": {
-            "first_principles": {
-                "required": True,
-                "status": "loaded",
-                "source_ref": "cometweb/strategia/First Principles.md",
-                "reason": "material portfolio decision",
-            }
-        },
-        "handoff": {"recommended_next_skill": "product-operator", "dependencies": [], "constraints": []},
-    }
+module = load_script("validate_context_envelope")
 
 
 def test_valid_envelope():

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.2] - 2026-09-18
+
+### Fixed
+
+- `validate_context_envelope.py` read `--help` as a filename and answered
+  "INVALID: No such file". It now prints its usage and exits 0, like every
+  other script in the repo.
+
 ## 1.4.1 — 2026-09-12
 
 - Reconcile the runtime bundle with main: preserve machine-readable source routing, ambiguity reporting, CRM authority-gap and confidential-summary guards.

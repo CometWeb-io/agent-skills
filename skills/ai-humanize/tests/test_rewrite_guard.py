@@ -121,3 +121,51 @@ class RewriteGuardTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SemanticRiskOptInTests(unittest.TestCase):
+    """pass/fail is an invariant verdict unless the caller opts in.
+
+    A rewrite that inverts every claim keeps all hard invariants, so the guard
+    passes by default and under --strict, whose documented job is added
+    invariant-like tokens. That is defensible — negation and modality shift
+    legitimately during paraphrase — but it left no way for automation to stop
+    on a meaning flip except by parsing JSON.
+    """
+
+    BEFORE = "The beta does not support SSO. We are not committing to a date, and it may not ship in Q4 at all."
+    INVERTED = "The beta now supports SSO. We are committing to a date, and it will ship in Q4."
+
+    def test_inversion_still_passes_by_default_and_under_strict(self):
+        for strict in (False, True):
+            result = MOD.compare(self.BEFORE, self.INVERTED, strict=strict)
+            self.assertTrue(result["passed"], f"strict={strict}")
+            self.assertTrue(result["semantic_risk_markers"])
+
+    def test_opt_in_fails_on_inversion(self):
+        result = MOD.compare(self.BEFORE, self.INVERTED, fail_on_semantic_risk=True)
+        self.assertFalse(result["passed"])
+        self.assertTrue(result["fail_on_semantic_risk"])
+        for marker in ("negation", "modality", "scope"):
+            self.assertIn(marker, result["semantic_risk_markers"])
+
+    def test_opt_in_does_not_fire_on_a_faithful_rewrite(self):
+        result = MOD.compare(self.BEFORE, self.BEFORE, fail_on_semantic_risk=True)
+        self.assertTrue(result["passed"])
+        self.assertEqual(result["semantic_risk_markers"], {})
+
+    def test_opt_in_is_not_free_and_fires_on_faithful_paraphrase(self):
+        """Pin the cost of the flag rather than pretend it has none.
+
+        "We are not committing to a date" -> "No date is committed" preserves
+        meaning but drops a negation token, so the marker heuristic fires. That
+        is why this is opt-in and why --strict deliberately does not imply it:
+        a caller who turns it on is choosing false positives over a missed
+        meaning flip, and should know which trade they made.
+        """
+        paraphrase = "The beta does not support SSO. No date is committed, and it may not ship in Q4 at all."
+        strict_result = MOD.compare(self.BEFORE, paraphrase, fail_on_semantic_risk=True)
+        self.assertFalse(strict_result["passed"])
+        self.assertIn("negation", strict_result["semantic_risk_markers"])
+        # The same paraphrase is accepted by the default invariant verdict.
+        self.assertTrue(MOD.compare(self.BEFORE, paraphrase)["passed"])

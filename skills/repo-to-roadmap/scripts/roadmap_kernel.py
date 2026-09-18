@@ -191,8 +191,8 @@ def clamp(value: float, lo: float, hi: float) -> float:
 def require_score(value: Any, field: str) -> float:
     try:
         number = float(value)
-    except (TypeError, ValueError):
-        raise ValueError(f"{field} must be numeric")
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{field} must be numeric") from exc
     if not 0 <= number <= 5:
         raise ValueError(f"{field} must be between 0 and 5")
     return number
@@ -201,8 +201,8 @@ def require_score(value: Any, field: str) -> float:
 def require_probability_like(value: Any, field: str) -> float:
     try:
         number = float(value)
-    except (TypeError, ValueError):
-        raise ValueError(f"{field} must be numeric")
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{field} must be numeric") from exc
     if not 0 <= number <= 1:
         raise ValueError(f"{field} must be between 0 and 1")
     return number
@@ -715,8 +715,8 @@ def coverage_report(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
             continue
         try:
             weight = clamp(float(row.get("weight", 1.0)), 0.0, 10.0)
-        except (TypeError, ValueError):
-            raise ValueError(f"coverage weight for {name} must be numeric")
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"coverage weight for {name} must be numeric") from exc
         denominator += weight
         numerator += weight * float(factor)
         if row.get("mandatory") and status != "COMPLETE":
@@ -888,7 +888,7 @@ def file_coverage_report(payload: Dict[str, Any]) -> Dict[str, Any]:
             result["status"] = ("ACCOUNTED_WITH_EXCLUSIONS" if "ACCOUNTED_WITH_EXCLUSIONS" in statuses
                                 else "INSPECTION_RECORDS_COMPLETE")
         result["policy"] = policy
-    except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError, ImportError) as exc:
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError, ImportError):
         result["status"] = "INVALID"
         # Never reflect source contents, review notes or arbitrary imported data.
         result["errors"].append("file accounting is missing, malformed or inconsistent with assessment pins")
@@ -1412,7 +1412,7 @@ def main() -> int:
             result = delta_report(parse_json_arg(args.before_json), parse_json_arg(args.after_json))
         else:
             raise ValueError("unknown command")
-    except (ValueError, TypeError, OSError, KeyError, AttributeError, RecursionError) as exc:
+    except (ValueError, TypeError, OSError, KeyError, AttributeError, RecursionError):
         print(json.dumps({"status": "error", "error": "invalid input or unreadable file"}))
         return 2
 

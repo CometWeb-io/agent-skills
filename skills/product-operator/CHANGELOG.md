@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.3.0] - 2026-09-18
+
+### Changed
+
+- The golden suite went from 14 cases to 27 because it asserted four of the
+  twelve contradiction codes `reconcile_item` can raise. `STATUS_CONTRADICTION`
+  -- shipped state with no implementation evidence, the only `critical` code in
+  the file -- was among the eight nothing pinned: deleting the check left every
+  case green. Each code now has a case, and every guard in `reconcile_item`
+  fails the suite when removed.
+- `run_evals.py` accepts `expect_absent` on a `reconcile_code` case. `expect`
+  alone only proves a code fires; a guard whose removal swapped one code for
+  another still passed. Two cases use it: an absent stage owes no evidence, and
+  missing evidence is not the same finding as wrong authority.
+
+### Fixed
+
+- `evidence_freshness` clamped a negative age to zero, so an observation dated
+  after `as_of` — a skewed clock or a fabricated record — was reported as
+  `CURRENT`, making the least trustworthy timestamp read as the freshest
+  evidence available. A future observation is now `UNKNOWN`, matching
+  release-readiness, which already flags a future `as_of` as a release-identity
+  gap. The CURRENT / NEAR_EXPIRY / STALE bands are unchanged.
+
 ## 2.2.0 - 2026-09-09
 
 - Make `BLOCKER` goal-relative: a condition is a blocker only when it prevents the current goal or a current critical-path action.

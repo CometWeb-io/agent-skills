@@ -1,16 +1,753 @@
 [
-  {"id":"notion-done-no-code","kind":"reconcile_code","input":[{"id":"billing","states":{"planned":"DONE","implemented":"UNKNOWN"},"evidence":[{"stage":"planned","source":"notion","authority":"notion","locator":"roadmap","claim":"Billing is Done","claim_type":"planning","freshness_status":"CURRENT"}]}],"expect":"PLAN_AHEAD_OF_CODE"},
-  {"id":"code-needs-verification","kind":"reconcile_code","input":[{"id":"export","states":{"implemented":"PRESENT","verified":"UNKNOWN"},"evidence":[{"stage":"implemented","source":"github","authority":"github","locator":"src/export.ts","claim":"Implementation exists","claim_type":"implementation","freshness_status":"CURRENT"}]}],"expect":"CODE_AHEAD_OF_VERIFICATION"},
-  {"id":"wrong-authority","kind":"reconcile_code","input":[{"id":"auth","states":{"implemented":"PRESENT"},"evidence":[{"stage":"implemented","source":"notion","authority":"notion","locator":"task","claim":"Marked implemented","claim_type":"implementation","freshness_status":"CURRENT"}]}],"expect":"IMPLEMENTED_EVIDENCE_WRONG_AUTHORITY"},
-  {"id":"critical-unknown-verify","kind":"rank_tier","input":{"id":"verify-billing","impact":5,"goal_alignment":5,"urgency":4,"dependency_leverage":5,"risk_reduction":4,"learning_value":5,"effort":1,"confidence":0.4,"evidence_strength":0.35,"verify_first":true},"expect":"VERIFY_NOW"},
-  {"id":"dependency-order","kind":"sequence_order","input":[{"id":"ship","depends_on":["verify"],"impact":5,"goal_alignment":5,"urgency":5,"dependency_leverage":4,"risk_reduction":2,"effort":1,"confidence":0.9,"evidence_strength":0.9},{"id":"verify","impact":4,"goal_alignment":5,"urgency":5,"dependency_leverage":5,"risk_reduction":4,"effort":1,"confidence":0.9,"evidence_strength":0.9}],"expect":["verify","ship"]},
-  {"id":"missing-planning-provisional","kind":"readiness_status","input":{"goal_known":true,"coverage":{"github":"verified","notion":"unavailable","product_context":"verified"}},"expect":"PROVISIONAL"},
-  {"id":"same-state-priority-thrash","kind":"delta_thrash","input":{"old":{"as_of":"2026-08-25T20:00:00+02:00","target":"x","goal":"ship","horizon":"release","state_items":[],"blockers":[],"drift":[],"now":[{"id":"A"}]},"new":{"as_of":"2026-08-25T22:00:00+02:00","target":"x","goal":"ship","horizon":"release","state_items":[],"blockers":[],"drift":[],"next":[{"id":"A"}]}},"expect":true},
-  {"id":"stale-current-blocks-ready","kind":"validate_status","input":{"as_of":"2026-08-25T22:03:12+02:00","mode":"STANDARD","target":"x","goal":"ship","horizon":"release","decision":"verify","coverage":{"github":"verified","notion":"verified","product_context":"verified","outcome_data":"not-required"},"readiness":{"status":"READY","reasons":[]},"state_items":[{"id":"A","states":{"implemented":"PRESENT"},"evidence":[{"stage":"implemented","source":"github","authority":"github","locator":"src/a","claim":"exists","claim_type":"implementation","freshness_status":"STALE","required_current":true}]}],"now":[],"next":[],"protocol_version":"2.0"},"expect":"FAIL"},
-  {"id":"material-pilot-tradeoff-decision-now","kind":"rank_tier","input":{"id":"pilot-motion","decision_required":true,"decision_domain":"pricing","impact":5,"goal_alignment":5,"urgency":5,"dependency_leverage":5,"risk_reduction":4,"learning_value":5,"effort":1,"confidence":0.9,"evidence_strength":0.9},"expect":"DECISION_NOW"},
-  {"id":"decision-waits-for-legal-fact","kind":"rank_tier","input":{"id":"paid-motion","decision_required":true,"decision_domain":"financial","verify_first":true,"impact":5,"goal_alignment":5,"urgency":5,"dependency_leverage":5,"risk_reduction":5,"learning_value":5,"effort":1,"confidence":0.4,"evidence_strength":0.4},"expect":"VERIFY_NOW"},
-  {"id":"decision-now-cannot-preselect","kind":"validate_status","input":{"protocol_version":"2.1","as_of":"2026-09-07T17:24:00+02:00","mode":"STANDARD","target":"CometWeb","goal":"first customer","horizon":"14 days","decision":"resolve pilot","coverage":{"github":"verified","notion":"verified","product_context":"verified","outcome_data":"not-required"},"readiness":{"status":"READY","reasons":[]},"decision_now":[{"id":"D-A1","question":"Free or paid?","decision_domain":"pricing","why_now":"changes motion","options":["free","paid"],"delegated_to":"ai-council","selected_option":"free","done_when":"binding choice","evidence":[{"source":"product_context","locator":"pilot","claim":"unresolved","claim_type":"decision","freshness_status":"CURRENT"}]}],"now":[],"next":[]},"expect":"FAIL"},
-  {"id":"future-paid-beta-gate-not-current-blocker","kind":"rank_tier","input":{"id":"paid-beta-hold","blocker":true,"blocks_current_goal":false,"future_gate":true,"impact":5,"goal_alignment":2,"urgency":2,"dependency_leverage":1,"risk_reduction":5,"learning_value":1,"effort":2,"confidence":0.95,"evidence_strength":0.95},"expect":"LATER"},
-  {"id":"suspected-first-pdf-blocker-needs-verification","kind":"rank_tier","input":{"id":"c9-first-pdf","blocker":true,"blocks_current_goal":true,"blocked_item":"complete real friendly pilot","verify_first":true,"impact":5,"goal_alignment":5,"urgency":5,"dependency_leverage":4,"risk_reduction":4,"learning_value":5,"effort":1,"confidence":0.4,"evidence_strength":0.4},"expect":"VERIFY_NOW"},
-  {"id":"confirmed-current-goal-failure-is-blocker","kind":"rank_tier","input":{"id":"prod-flow-fail","blocker":true,"blocks_current_goal":true,"blocked_item":"complete real friendly pilot","impact":5,"goal_alignment":5,"urgency":5,"dependency_leverage":5,"risk_reduction":5,"learning_value":4,"effort":1,"confidence":0.95,"evidence_strength":0.95},"expect":"BLOCKER"}
+  {
+    "id": "notion-done-no-code",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "billing",
+        "states": {
+          "planned": "DONE",
+          "implemented": "UNKNOWN"
+        },
+        "evidence": [
+          {
+            "stage": "planned",
+            "source": "notion",
+            "authority": "notion",
+            "locator": "roadmap",
+            "claim": "Billing is Done",
+            "claim_type": "planning",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "PLAN_AHEAD_OF_CODE"
+  },
+  {
+    "id": "code-needs-verification",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "export",
+        "states": {
+          "implemented": "PRESENT",
+          "verified": "UNKNOWN"
+        },
+        "evidence": [
+          {
+            "stage": "implemented",
+            "source": "github",
+            "authority": "github",
+            "locator": "src/export.ts",
+            "claim": "Implementation exists",
+            "claim_type": "implementation",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "CODE_AHEAD_OF_VERIFICATION"
+  },
+  {
+    "id": "wrong-authority",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "auth",
+        "states": {
+          "implemented": "PRESENT"
+        },
+        "evidence": [
+          {
+            "stage": "implemented",
+            "source": "notion",
+            "authority": "notion",
+            "locator": "task",
+            "claim": "Marked implemented",
+            "claim_type": "implementation",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "IMPLEMENTED_EVIDENCE_WRONG_AUTHORITY"
+  },
+  {
+    "id": "critical-unknown-verify",
+    "kind": "rank_tier",
+    "input": {
+      "id": "verify-billing",
+      "impact": 5,
+      "goal_alignment": 5,
+      "urgency": 4,
+      "dependency_leverage": 5,
+      "risk_reduction": 4,
+      "learning_value": 5,
+      "effort": 1,
+      "confidence": 0.4,
+      "evidence_strength": 0.35,
+      "verify_first": true
+    },
+    "expect": "VERIFY_NOW"
+  },
+  {
+    "id": "dependency-order",
+    "kind": "sequence_order",
+    "input": [
+      {
+        "id": "ship",
+        "depends_on": [
+          "verify"
+        ],
+        "impact": 5,
+        "goal_alignment": 5,
+        "urgency": 5,
+        "dependency_leverage": 4,
+        "risk_reduction": 2,
+        "effort": 1,
+        "confidence": 0.9,
+        "evidence_strength": 0.9
+      },
+      {
+        "id": "verify",
+        "impact": 4,
+        "goal_alignment": 5,
+        "urgency": 5,
+        "dependency_leverage": 5,
+        "risk_reduction": 4,
+        "effort": 1,
+        "confidence": 0.9,
+        "evidence_strength": 0.9
+      }
+    ],
+    "expect": [
+      "verify",
+      "ship"
+    ]
+  },
+  {
+    "id": "missing-planning-provisional",
+    "kind": "readiness_status",
+    "input": {
+      "goal_known": true,
+      "coverage": {
+        "github": "verified",
+        "notion": "unavailable",
+        "product_context": "verified"
+      }
+    },
+    "expect": "PROVISIONAL"
+  },
+  {
+    "id": "same-state-priority-thrash",
+    "kind": "delta_thrash",
+    "input": {
+      "old": {
+        "as_of": "2026-08-25T20:00:00+02:00",
+        "target": "x",
+        "goal": "ship",
+        "horizon": "release",
+        "state_items": [],
+        "blockers": [],
+        "drift": [],
+        "now": [
+          {
+            "id": "A"
+          }
+        ]
+      },
+      "new": {
+        "as_of": "2026-08-25T22:00:00+02:00",
+        "target": "x",
+        "goal": "ship",
+        "horizon": "release",
+        "state_items": [],
+        "blockers": [],
+        "drift": [],
+        "next": [
+          {
+            "id": "A"
+          }
+        ]
+      }
+    },
+    "expect": true
+  },
+  {
+    "id": "stale-current-blocks-ready",
+    "kind": "validate_status",
+    "input": {
+      "as_of": "2026-08-25T22:03:12+02:00",
+      "mode": "STANDARD",
+      "target": "x",
+      "goal": "ship",
+      "horizon": "release",
+      "decision": "verify",
+      "coverage": {
+        "github": "verified",
+        "notion": "verified",
+        "product_context": "verified",
+        "outcome_data": "not-required"
+      },
+      "readiness": {
+        "status": "READY",
+        "reasons": []
+      },
+      "state_items": [
+        {
+          "id": "A",
+          "states": {
+            "implemented": "PRESENT"
+          },
+          "evidence": [
+            {
+              "stage": "implemented",
+              "source": "github",
+              "authority": "github",
+              "locator": "src/a",
+              "claim": "exists",
+              "claim_type": "implementation",
+              "freshness_status": "STALE",
+              "required_current": true
+            }
+          ]
+        }
+      ],
+      "now": [],
+      "next": [],
+      "protocol_version": "2.0"
+    },
+    "expect": "FAIL"
+  },
+  {
+    "id": "material-pilot-tradeoff-decision-now",
+    "kind": "rank_tier",
+    "input": {
+      "id": "pilot-motion",
+      "decision_required": true,
+      "decision_domain": "pricing",
+      "impact": 5,
+      "goal_alignment": 5,
+      "urgency": 5,
+      "dependency_leverage": 5,
+      "risk_reduction": 4,
+      "learning_value": 5,
+      "effort": 1,
+      "confidence": 0.9,
+      "evidence_strength": 0.9
+    },
+    "expect": "DECISION_NOW"
+  },
+  {
+    "id": "decision-waits-for-legal-fact",
+    "kind": "rank_tier",
+    "input": {
+      "id": "paid-motion",
+      "decision_required": true,
+      "decision_domain": "financial",
+      "verify_first": true,
+      "impact": 5,
+      "goal_alignment": 5,
+      "urgency": 5,
+      "dependency_leverage": 5,
+      "risk_reduction": 5,
+      "learning_value": 5,
+      "effort": 1,
+      "confidence": 0.4,
+      "evidence_strength": 0.4
+    },
+    "expect": "VERIFY_NOW"
+  },
+  {
+    "id": "decision-now-cannot-preselect",
+    "kind": "validate_status",
+    "input": {
+      "protocol_version": "2.1",
+      "as_of": "2026-09-07T17:24:00+02:00",
+      "mode": "STANDARD",
+      "target": "CometWeb",
+      "goal": "first customer",
+      "horizon": "14 days",
+      "decision": "resolve pilot",
+      "coverage": {
+        "github": "verified",
+        "notion": "verified",
+        "product_context": "verified",
+        "outcome_data": "not-required"
+      },
+      "readiness": {
+        "status": "READY",
+        "reasons": []
+      },
+      "decision_now": [
+        {
+          "id": "D-A1",
+          "question": "Free or paid?",
+          "decision_domain": "pricing",
+          "why_now": "changes motion",
+          "options": [
+            "free",
+            "paid"
+          ],
+          "delegated_to": "ai-council",
+          "selected_option": "free",
+          "done_when": "binding choice",
+          "evidence": [
+            {
+              "source": "product_context",
+              "locator": "pilot",
+              "claim": "unresolved",
+              "claim_type": "decision",
+              "freshness_status": "CURRENT"
+            }
+          ]
+        }
+      ],
+      "now": [],
+      "next": []
+    },
+    "expect": "FAIL"
+  },
+  {
+    "id": "future-paid-beta-gate-not-current-blocker",
+    "kind": "rank_tier",
+    "input": {
+      "id": "paid-beta-hold",
+      "blocker": true,
+      "blocks_current_goal": false,
+      "future_gate": true,
+      "impact": 5,
+      "goal_alignment": 2,
+      "urgency": 2,
+      "dependency_leverage": 1,
+      "risk_reduction": 5,
+      "learning_value": 1,
+      "effort": 2,
+      "confidence": 0.95,
+      "evidence_strength": 0.95
+    },
+    "expect": "LATER"
+  },
+  {
+    "id": "suspected-first-pdf-blocker-needs-verification",
+    "kind": "rank_tier",
+    "input": {
+      "id": "c9-first-pdf",
+      "blocker": true,
+      "blocks_current_goal": true,
+      "blocked_item": "complete real friendly pilot",
+      "verify_first": true,
+      "impact": 5,
+      "goal_alignment": 5,
+      "urgency": 5,
+      "dependency_leverage": 4,
+      "risk_reduction": 4,
+      "learning_value": 5,
+      "effort": 1,
+      "confidence": 0.4,
+      "evidence_strength": 0.4
+    },
+    "expect": "VERIFY_NOW"
+  },
+  {
+    "id": "confirmed-current-goal-failure-is-blocker",
+    "kind": "rank_tier",
+    "input": {
+      "id": "prod-flow-fail",
+      "blocker": true,
+      "blocks_current_goal": true,
+      "blocked_item": "complete real friendly pilot",
+      "impact": 5,
+      "goal_alignment": 5,
+      "urgency": 5,
+      "dependency_leverage": 5,
+      "risk_reduction": 5,
+      "learning_value": 4,
+      "effort": 1,
+      "confidence": 0.95,
+      "evidence_strength": 0.95
+    },
+    "expect": "BLOCKER"
+  },
+  {
+    "id": "shipped-without-implementation",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "webhooks",
+        "states": {
+          "shipped": "PRESENT",
+          "implemented": "UNKNOWN"
+        },
+        "evidence": [
+          {
+            "stage": "shipped",
+            "source": "release",
+            "authority": "release",
+            "locator": "shipped-record",
+            "claim": "shipped evidence",
+            "claim_type": "shipped",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "STATUS_CONTRADICTION"
+  },
+  {
+    "id": "outcome-without-ship",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "referrals",
+        "states": {
+          "outcome": "POSITIVE",
+          "shipped": "UNKNOWN"
+        },
+        "evidence": [
+          {
+            "stage": "outcome",
+            "source": "analytics",
+            "authority": "analytics",
+            "locator": "outcome-record",
+            "claim": "outcome evidence",
+            "claim_type": "outcome",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "STATUS_CONTRADICTION"
+  },
+  {
+    "id": "code-without-plan",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "importer",
+        "states": {
+          "implemented": "PRESENT",
+          "planned": "UNKNOWN",
+          "verified": "PASS"
+        },
+        "evidence": [
+          {
+            "stage": "implemented",
+            "source": "github",
+            "authority": "github",
+            "locator": "implemented-record",
+            "claim": "implemented evidence",
+            "claim_type": "implemented",
+            "freshness_status": "CURRENT"
+          },
+          {
+            "stage": "verified",
+            "source": "ci",
+            "authority": "ci",
+            "locator": "verified-record",
+            "claim": "verified evidence",
+            "claim_type": "verified",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "CODE_AHEAD_OF_PLAN"
+  },
+  {
+    "id": "verified-not-shipped",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "sso",
+        "states": {
+          "implemented": "PRESENT",
+          "planned": "DONE",
+          "verified": "PASS",
+          "shipped": "UNKNOWN"
+        },
+        "evidence": [
+          {
+            "stage": "planned",
+            "source": "linear",
+            "authority": "linear",
+            "locator": "planned-record",
+            "claim": "planned evidence",
+            "claim_type": "planned",
+            "freshness_status": "CURRENT"
+          },
+          {
+            "stage": "implemented",
+            "source": "github",
+            "authority": "github",
+            "locator": "implemented-record",
+            "claim": "implemented evidence",
+            "claim_type": "implemented",
+            "freshness_status": "CURRENT"
+          },
+          {
+            "stage": "verified",
+            "source": "ci",
+            "authority": "ci",
+            "locator": "verified-record",
+            "claim": "verified evidence",
+            "claim_type": "verified",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "VERIFIED_NOT_SHIPPED"
+  },
+  {
+    "id": "shipped-without-outcome",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "pricing-page",
+        "outcome_required": true,
+        "states": {
+          "implemented": "PRESENT",
+          "verified": "PASS",
+          "shipped": "PRESENT",
+          "outcome": "UNKNOWN"
+        },
+        "evidence": [
+          {
+            "stage": "implemented",
+            "source": "github",
+            "authority": "github",
+            "locator": "implemented-record",
+            "claim": "implemented evidence",
+            "claim_type": "implemented",
+            "freshness_status": "CURRENT"
+          },
+          {
+            "stage": "verified",
+            "source": "ci",
+            "authority": "ci",
+            "locator": "verified-record",
+            "claim": "verified evidence",
+            "claim_type": "verified",
+            "freshness_status": "CURRENT"
+          },
+          {
+            "stage": "shipped",
+            "source": "deploy",
+            "authority": "deploy",
+            "locator": "shipped-record",
+            "claim": "shipped evidence",
+            "claim_type": "shipped",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "SHIP_WITHOUT_OUTCOME_EVIDENCE"
+  },
+  {
+    "id": "stale-plan-flag",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "migration",
+        "stale_plan": true,
+        "states": {
+          "planned": "IN_PROGRESS"
+        },
+        "evidence": [
+          {
+            "stage": "planned",
+            "source": "notion",
+            "authority": "notion",
+            "locator": "planned-record",
+            "claim": "planned evidence",
+            "claim_type": "planned",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "STALE_PLAN"
+  },
+  {
+    "id": "orphaned-wip-flag",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "spike",
+        "orphaned_wip": true,
+        "states": {
+          "planned": "IN_PROGRESS"
+        },
+        "evidence": [
+          {
+            "stage": "planned",
+            "source": "linear",
+            "authority": "linear",
+            "locator": "planned-record",
+            "claim": "planned evidence",
+            "claim_type": "planned",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "ORPHANED_WIP"
+  },
+  {
+    "id": "context-sources-disagree",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "positioning",
+        "context_drift": true,
+        "states": {
+          "intent": "PRESENT"
+        },
+        "evidence": [
+          {
+            "stage": "intent",
+            "source": "product_context",
+            "authority": "product_context",
+            "locator": "intent-record",
+            "claim": "intent evidence",
+            "claim_type": "intent",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "CONTEXT_DRIFT"
+  },
+  {
+    "id": "plan-behind-context",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "roadmap-q4",
+        "context_to_plan_drift": true,
+        "states": {
+          "planned": "IN_PROGRESS"
+        },
+        "evidence": [
+          {
+            "stage": "planned",
+            "source": "roadmap",
+            "authority": "roadmap",
+            "locator": "planned-record",
+            "claim": "planned evidence",
+            "claim_type": "planned",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "CONTEXT_TO_PLAN_DRIFT"
+  },
+  {
+    "id": "stale-evidence-is-flagged",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "integrations",
+        "states": {
+          "implemented": "PRESENT",
+          "verified": "PASS"
+        },
+        "evidence": [
+          {
+            "stage": "implemented",
+            "source": "github",
+            "authority": "github",
+            "locator": "implemented-record",
+            "claim": "implemented evidence",
+            "claim_type": "implemented",
+            "freshness_status": "STALE"
+          },
+          {
+            "stage": "verified",
+            "source": "ci",
+            "authority": "ci",
+            "locator": "verified-record",
+            "claim": "verified evidence",
+            "claim_type": "verified",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "STALE_EVIDENCE"
+  },
+  {
+    "id": "current-claim-on-stale-evidence",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "quota",
+        "states": {
+          "implemented": "PRESENT",
+          "verified": "PASS"
+        },
+        "evidence": [
+          {
+            "stage": "implemented",
+            "source": "github",
+            "authority": "github",
+            "locator": "implemented-record",
+            "claim": "implemented evidence",
+            "claim_type": "implemented",
+            "freshness_status": "STALE",
+            "required_current": true
+          },
+          {
+            "stage": "verified",
+            "source": "ci",
+            "authority": "ci",
+            "locator": "verified-record",
+            "claim": "verified evidence",
+            "claim_type": "verified",
+            "freshness_status": "CURRENT"
+          }
+        ]
+      }
+    ],
+    "expect": "CURRENT_EVIDENCE_NOT_ADMISSIBLE"
+  },
+  {
+    "id": "absent-stage-needs-no-evidence",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "deferred-feature",
+        "states": {
+          "intent": "PRESENT",
+          "planned": "ABSENT"
+        },
+        "evidence": []
+      }
+    ],
+    "expect": "INTENT_EVIDENCE_MISSING",
+    "expect_absent": [
+      "PLANNED_EVIDENCE_MISSING"
+    ]
+  },
+  {
+    "id": "missing-evidence-is-not-wrong-authority",
+    "kind": "reconcile_code",
+    "input": [
+      {
+        "id": "search",
+        "states": {
+          "implemented": "PRESENT"
+        },
+        "evidence": []
+      }
+    ],
+    "expect": "IMPLEMENTED_EVIDENCE_MISSING",
+    "expect_absent": [
+      "IMPLEMENTED_EVIDENCE_WRONG_AUTHORITY"
+    ]
+  }
 ]

@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.5.0] - 2026-09-18
+
+### Fixed
+
+- `release_check.py` ignored whatever it was given and ran the full suite, so
+  `--help` and a mistyped flag were indistinguishable from a normal run. It now
+  prints usage for `--help` and rejects unknown arguments with exit 2.
+
+### Added
+
+- `rewrite_guard.py --fail-on-semantic-risk`. Pass/fail was an invariant verdict
+  only: a rewrite inverting every claim kept all invariants and exited 0 under
+  both the default and `--strict`, whose documented scope is introduced
+  invariant-like tokens. Automation had no way to stop on a meaning flip short
+  of parsing the JSON. Opt-in, because the markers also fire on faithful
+  paraphrase; SKILL.md now states the trade-off instead of leaving a reader to
+  assume `--strict` covers meaning.
+
 ## 2.4.1 — integration candidate (not published)
 
 - Preserve the value of a Unicode minus sign during numeric extraction; do not normalize protected quotes or code.

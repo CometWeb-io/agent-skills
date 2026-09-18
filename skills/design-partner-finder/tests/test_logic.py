@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import sys
 import unittest
 from pathlib import Path
@@ -214,3 +215,30 @@ class PartnerHealthTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ScoringMonotonicityTests(unittest.TestCase):
+    """Raising one rating must never lower the score.
+
+    Weights get tuned; a sign error or a mis-scaled penalty can make a strictly
+    better candidate score worse, which no example-based test notices because
+    each one pins a single payload. This walks every rating dimension across
+    its whole range instead.
+    """
+
+    def _base(self):
+        return ScoreResearchTests.good_payload(ScoreResearchTests)
+
+    def test_no_dimension_penalises_a_higher_rating(self):
+        base = self._base()
+        for dimension in sorted(base["ratings"]):
+            for lower in range(1, 5):
+                worse = copy.deepcopy(base)
+                worse["ratings"][dimension] = lower
+                better = copy.deepcopy(base)
+                better["ratings"][dimension] = lower + 1
+                with self.subTest(dimension=dimension, rating=lower):
+                    self.assertGreaterEqual(
+                        score_candidate.score(better, "research")["score"],
+                        score_candidate.score(worse, "research")["score"],
+                    )

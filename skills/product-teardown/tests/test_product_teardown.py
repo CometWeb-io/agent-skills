@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import importlib.util
 import pathlib
+import copy
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -200,3 +201,63 @@ class ScorerTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MalformedInputTests(unittest.TestCase):
+    """A validator must report bad input, not die on it.
+
+    Set membership was written as `value not in ALLOWED`, which raises
+    TypeError when the value is a list or dict — and every value here comes
+    from a JSON file the caller supplies. Fourteen such comparisons crashed the
+    validator instead of producing the error message it exists to produce.
+    """
+
+    BAD_VALUES = ([], {"x": 1}, None, -999999, "not-a-valid-enum-member")
+
+    @staticmethod
+    def _paths(obj, path=""):
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                yield from MalformedInputTests._paths(value, f"{path}.{key}" if path else key)
+        elif isinstance(obj, list):
+            for index, value in enumerate(obj):
+                yield from MalformedInputTests._paths(value, f"{path}[{index}]")
+        else:
+            yield path
+
+    @staticmethod
+    def _assign(payload, path, value):
+        cursor = payload
+        parts = path.replace("]", "").split(".")
+        for part in parts[:-1]:
+            if "[" in part:
+                key, index = part.split("[")
+                cursor = cursor[key][int(index)]
+            else:
+                cursor = cursor[part]
+        last = parts[-1]
+        if "[" in last:
+            key, index = last.split("[")
+            cursor[key][int(index)] = value
+        else:
+            cursor[last] = value
+
+    def test_no_field_can_crash_the_validator(self):
+        base = valid_ledger()
+        self.assertEqual(validator.validate(base), [])
+        for path in self._paths(base):
+            for bad in self.BAD_VALUES:
+                payload = copy.deepcopy(base)
+                try:
+                    self._assign(payload, path, bad)
+                except (KeyError, IndexError, TypeError):
+                    continue
+                with self.subTest(path=path, value=repr(bad)):
+                    result = validator.validate(payload)
+                    self.assertIsInstance(result, list)
+
+    def test_unhashable_enum_value_is_reported_not_raised(self):
+        for field in ("shape", "mode"):
+            with self.subTest(field=field):
+                errors = validator.validate({"schema_version": "2.0", field: []})
+                self.assertTrue(any(field in e for e in errors), errors)

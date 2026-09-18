@@ -58,7 +58,22 @@ def build(context: Dict[str, Any]) -> Dict[str, Any]:
     if not isinstance(release, dict):
         raise engine.ManifestError("release must be an object")
 
-    scope, _, _, surfaces = engine._normalize_scope(context.get("scope"), profile)
+    raw_scope = context.get("scope")
+    if isinstance(raw_scope, dict):
+        known = set(engine.SCOPE_FLAG_KEYS) | {
+            "audience", "commercial", "commercial_model", "governance_surfaces",
+            "notes", "risk_assessment_complete", "risk_flags",
+        }
+        unknown_keys = sorted(k for k in raw_scope if k not in known)
+        if unknown_keys:
+            # Silently dropping these turned answered flags back into "unknown",
+            # so an operator who resolved the risk scope saw a manifest claiming
+            # they had not. Fail the way an invalid audience already does.
+            raise engine.ManifestError(
+                "unrecognized scope keys: " + ", ".join(repr(k) for k in unknown_keys)
+                + "; valid risk flags are " + ", ".join(engine.SCOPE_FLAG_KEYS)
+            )
+    scope, _, _, surfaces = engine._normalize_scope(raw_scope, profile)
     required = engine._required_gates(profile, scope)
     checks: List[Dict[str, Any]] = []
     for gate in required:

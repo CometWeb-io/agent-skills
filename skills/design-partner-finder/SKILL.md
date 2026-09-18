@@ -70,35 +70,15 @@ Do not treat these labels as synonyms. Use the earliest motion that can answer t
 
 ## Step 1 — Build the Learning Contract
 
-Read `references/learning-contract.md`.
-
-Before discovery, define:
-
-- product stage and current product truth,
-- target workflow / JTBD and current alternative,
-- intended buyer, champion, and actual user,
-- learning strategy: `WEDGE_VALIDATION`, `SEGMENT_DISCOVERY`, `HORIZONTAL_TRANSFER`, or `ENTERPRISE_STRESS_TEST`,
-- 3–7 material hypotheses or decision questions,
-- what evidence would support and falsify each hypothesis,
-- which product/market decision changes if the hypothesis is true or false,
-- required implementation/data/system access,
-- expected time and team capacity for the partner program,
-- partner `give` and company `give`,
-- disqualifiers, anti-personas, conflict risks, and bespoke-work limits,
-- intended outreach-slate size and active-cohort capacity.
+Read `references/learning-contract.md` and fill it in before discovery: product truth, engagement motion, learning strategy, hypothesis ledger, partner requirements, mutual value, capacity budget, and stop rules.
 
 Treat the Learning Contract as the governing artifact. A candidate can be excellent in general and still be irrelevant to the current contract.
 
 ## Step 2 — Discover candidates
 
-For FIND mode, read `references/discovery-playbook.md`.
+For FIND mode, read `references/discovery-playbook.md` and work the discovery order it defines: warm graph, problem-first public signals, ecosystem adjacency, then coverage search once the pain vocabulary and target pattern are understood.
 
-Prefer a mixed discovery strategy:
-
-1. **Warm graph** — existing customers, founder/team network, prior opportunities, advisors, investors, partners, users, newsletter/community relationships. Warmth improves access; it does not increase partnerability by itself.
-2. **Problem-first public signals** — workarounds, migration pain, job posts, workflow complaints, technical constraints, launch/scale triggers, public initiatives.
-3. **Ecosystem adjacency** — users of substitutes, integrations, open-source tools, agencies/consultancies operating the workflow, adjacent vendors with the target user base.
-4. **Coverage search** — only after the pain vocabulary and target pattern are understood; use firmographic databases/directories to fill gaps, not to define evidence.
+Warmth improves access; it does not increase partnerability by itself.
 
 Build a candidate universe roughly 3–5x larger than the desired outreach slate when quality and evidence are sufficient. Stop expanding when another search wave adds little novel evidence or segment coverage.
 
@@ -106,22 +86,7 @@ Never qualify from a search-result snippet alone. Open the underlying source.
 
 ## Step 3 — Run Stage A: desk-research Discovery Fit
 
-Read `references/partnerability-rubric.md` and `references/evidence-and-freshness.md`.
-
-Evaluate only what can be credibly researched before contact:
-
-- problem evidence,
-- urgency / current trigger,
-- representativeness relative to the Learning Contract,
-- learning value,
-- implementation plausibility,
-- stakeholder/contact path,
-- credibility and evidence quality,
-- commercial optionality,
-- reference/network value as a minor tie-breaker,
-- customization risk, conflict risk, contradiction risk, and research uncertainty.
-
-Run `scripts/score_candidate.py --stage research` when code execution is available.
+Read `references/partnerability-rubric.md` and `references/evidence-and-freshness.md`. Score only the Stage A dimensions — the ones that can be credibly researched before contact. Run `scripts/score_candidate.py --stage research` when code execution is available.
 
 Use the research-stage output to choose whom to **contact for discovery**, not to claim they have agreed to be a design partner.
 
@@ -129,128 +94,47 @@ Do not score public enthusiasm as `feedback_commitment`. Do not claim private ca
 
 ## Step 4 — Diligence evidence and freshness
 
-For every serious candidate:
+Apply `references/evidence-and-freshness.md` to every serious candidate: resolve the canonical entity and aliases, mark each material claim with a claim state, record lineage and `last_verified_at`, and run a contradiction search for top candidates.
 
-1. Resolve the canonical entity/domain and aliases.
-2. Separate observed/confirmed facts from inference.
-3. Record source, publication date when available, and `last_verified_at` for material current claims.
-4. Verify the problem/trigger from a distinct lineage where practical.
-5. Run a contradiction search for top candidates.
-6. Mark duplicate/repackaged evidence as one lineage, not multiple confirmations.
-7. Use `CURRENT`, `NEAR_EXPIRY`, `STALE`, or `UNKNOWN` for material current claims; refresh stale trigger/contact/capability evidence before making a current recommendation.
-8. Downgrade confidence rather than inventing missing evidence.
+Duplicate or repackaged evidence is one lineage, not multiple confirmations. Refresh stale trigger/contact/capability evidence before making a current recommendation, and downgrade confidence rather than inventing missing evidence.
 
 A lack of public evidence is not proof that the company lacks the pain. It means `unknown` until live validation.
 
 ## Step 5 — Build the outreach slate
 
-Use Stage A scores plus evidence gaps to prioritize who deserves a discovery conversation.
-
-For each top candidate, state:
-
-- why this company / why now,
-- which Learning Contract hypotheses it can test,
-- what is observed vs inferred,
-- highest-value missing fact that could change the ranking,
-- buyer/champion/user hypotheses,
-- likely implementation blockers,
-- customization/conflict concerns,
-- the natural professional contact path,
-- one low-friction validation question.
+Use Stage A scores plus evidence gaps to prioritize who deserves a discovery conversation. Write each top candidate up as the dossier in `references/output-contract.md`: why this company and why now, which Learning Contract hypotheses it can test, what is observed versus inferred, the highest-VOI missing fact, buyer/champion/user hypotheses, likely implementation blockers, the natural professional contact path, and one low-friction validation question.
 
 When selecting a slate from many similar candidates, use `scripts/select_cohort.py --selection-stage outreach_slate` to reward weighted learning coverage and reduce redundant research effort.
 
 ## Step 6 — Run Stage B: live Partner Readiness
 
-After a real conversation or direct company evidence exists, re-score with `scripts/score_candidate.py --stage live`.
-
-Confirm rather than infer:
-
-- problem severity and cost of status quo,
-- urgency and why now,
-- actual user + champion access,
-- implementation readiness and required data/systems,
-- feedback cadence and time commitment,
-- decision authority / procurement feasibility appropriate to the engagement motion,
-- mutual value alignment,
-- pilot measurability,
-- transferability beyond this one company,
-- material legal/security/privacy blockers where relevant.
+After a real conversation or direct company evidence exists, re-score with `scripts/score_candidate.py --stage live` against the Stage B dimensions and gates in `references/partnerability-rubric.md`. Confirm those dimensions; never infer them from public evidence.
 
 Only a live-qualified candidate may become `PARTNER_READY`. Research-stage fit alone never produces that status.
 
 ## Step 7 — Compose the active cohort
 
-Read `references/cohort-and-pilot.md`.
+Read `references/cohort-and-pilot.md`. Do not take the top N scores mechanically. Choose the cohort strategy from the Learning Contract, then optimize weighted hypothesis coverage, replication, overlap, implementation capacity, and cost-to-learn as that reference defines them. Run `scripts/select_cohort.py --selection-stage active_cohort` when useful.
 
-Do not take the top N scores mechanically. Choose the cohort strategy from the Learning Contract, then optimize for:
-
-- weighted hypothesis coverage,
-- enough replication on core questions to avoid overreacting to one idiosyncratic partner,
-- acceptable overlap/confounding,
-- implementation/support capacity,
-- expected learning per unit of team effort,
-- explicit edge/stress-test roles only when they answer named questions.
-
-Run `scripts/select_cohort.py --selection-stage active_cohort` when useful.
+Assign explicit edge or stress-test roles only when they answer named questions.
 
 If the selected cohort does not cover a must-answer hypothesis, state that the cohort is incomplete instead of padding it with weak candidates.
 
 ## Step 8 — Activate with a Partner Charter
 
-Read `references/partner-charter.md` and `references/partner-lifecycle.md`.
-
-Before kickoff, define:
-
-- sponsor/champion/actual-user roles,
-- specific learning hypotheses,
-- implementation owner and prerequisites,
-- data/system/security boundaries,
-- expected feedback/usage cadence,
-- success, failure, and stop criteria,
-- company and partner commitments,
-- non-goals and bespoke-work boundary,
-- escalation path,
-- engagement length/review date,
-- commercial terms only when appropriate to the selected motion,
-- confidentiality, IP, data-processing, reference/publicity, and contractual issues to route for qualified review when material.
+Fill in `references/partner-charter.md` before kickoff and follow `references/partner-lifecycle.md` for the engagement itself. The charter covers roles, learning hypotheses, implementation prerequisites, data/system/security boundaries, feedback cadence, success/failure/stop criteria, mutual commitments, non-goals and the bespoke-work boundary, escalation path, review date, commercial terms where the motion calls for them, and the legal/privacy/IP issues to route for qualified review.
 
 Do not turn the skill into legal counsel. Identify issues and trigger current jurisdiction-specific review when necessary.
 
 ## Step 9 — Operate the learning loop
 
-Prefer behavioral evidence:
+Prefer behavioral evidence over stated enthusiasm: implementation progress, repeated use of the target workflow, task success and time-to-value, support and manual-service burden, and buyer-versus-user disagreement. `references/partner-lifecycle.md` lists what to instrument and how to triage each material request as `CORE`, `SEGMENT`, `EDGE`, `BESPOKE`, or `CONTRADICTS_THESIS`.
 
-- activation and implementation progress,
-- repeated product usage in the target workflow,
-- task success/failure and time-to-value,
-- qualitative feedback tied to an observed workflow event,
-- support burden and founder/manual-service dependence,
-- recurring requests across independent partners,
-- churn/inaction reasons,
-- buyer vs user disagreement.
-
-For every material request, classify it as:
-
-- `CORE` — supports the current product thesis and transfers broadly,
-- `SEGMENT` — useful to a deliberate target segment,
-- `EDGE` — valid but not roadmap-defining,
-- `BESPOKE` — primarily serves one partner,
-- `CONTRADICTS_THESIS` — evidence that the current product/ICP assumption may be wrong.
-
-Do not build a material feature solely because one prestigious partner requests it. Require explicit product reasoning or a deliberate experiment.
+A request repeated by independent partners is a signal; one prestigious partner is not. Do not build a material feature solely because one partner asks for it. Require explicit product reasoning or a deliberate experiment.
 
 ## Step 10 — Review, graduate, or exit
 
-For active partners, run `scripts/assess_partner_health.py` when code execution is available.
-
-Use outcomes:
-
-- `CONTINUE` — learning yield and engagement justify more work,
-- `REPAIR` — valuable partner but a recoverable engagement/implementation issue exists,
-- `PAUSE` — timing/capacity makes continued work inefficient,
-- `EXIT_REVIEW` — low learning, bespoke pressure, or persistent non-engagement warrants exit,
-- `CONVERSION_CANDIDATE` — product value is demonstrated and the company may move into a normal commercial motion.
+For active partners, run `scripts/assess_partner_health.py` when code execution is available, and use the graduation outcomes defined in `references/partner-lifecycle.md`: `CONTINUE`, `REPAIR`, `PAUSE`, `EXIT_REVIEW`, or `CONVERSION_CANDIDATE`.
 
 Do not preserve a design partnership indefinitely because the logo is attractive.
 
@@ -268,20 +152,7 @@ For an older shortlist or cohort:
 
 ## Output contract
 
-Read `references/output-contract.md` before finalizing.
-
-Default output:
-
-1. **Learning Contract** — product stage, motion, strategy, hypotheses, gates.
-2. **Evidence readiness** — what is confirmed, inferred, stale, or missing.
-3. **Ranked outreach slate** — Stage A score/status/action.
-4. **Top candidate dossiers** — evidence, hypothesis coverage, risks, next fact to validate.
-5. **Live readiness** — only for candidates with direct evidence.
-6. **Recommended cohort** — unique learning role + coverage/replication summary.
-7. **Rejected / near-miss candidates** — concise reason and reconsideration trigger.
-8. **Activation plan** — charter/pilot requirements when requested.
-9. **Search parameters + as-of** — reproducibility.
-10. **Open unknowns + highest-VOI next actions**.
+Read `references/output-contract.md` before finalizing. It defines the default sequence — Learning Contract, evidence readiness, ranked outreach slate, candidate dossiers, live readiness, recommended cohort, rejections and near misses, activation plan, search parameters and as-of, open unknowns and highest-VOI next actions — and the honest-language vocabulary for describing candidate state.
 
 For large candidate sets, use a file only when requested or appropriate; keep the decision summary in chat.
 

@@ -2,15 +2,15 @@
 import argparse
 import json
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 
 def parse_day(value):
     try:
-        return datetime.strptime(value, "%Y-%m-%d").date()
-    except (TypeError, ValueError):
-        raise ValueError(f"Invalid date {value!r}; expected YYYY-MM-DD")
+        return date.fromisoformat(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Invalid date {value!r}; expected YYYY-MM-DD") from exc
 
 
 def main(argv=None):
@@ -22,7 +22,8 @@ def main(argv=None):
 
     root = Path(__file__).resolve().parents[1]
     registry = json.loads((root / "references" / "live-source-registry.json").read_text(encoding="utf-8"))
-    as_of = parse_day(args.as_of) if args.as_of else date.today()
+    # UTC so a freshness verdict does not depend on the runner's timezone.
+    as_of = parse_day(args.as_of) if args.as_of else datetime.now(timezone.utc).date()
     selected = None
     if args.groups:
         selected = {x.strip() for x in args.groups.split(",") if x.strip()}
@@ -69,4 +70,4 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except (ValueError, json.JSONDecodeError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

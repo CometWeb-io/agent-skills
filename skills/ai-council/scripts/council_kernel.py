@@ -6,7 +6,7 @@ import json
 import math
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 COUNCIL_VERSION = "5.0"
@@ -348,12 +348,17 @@ def _load_cli_json(text: str) -> Any:
     return json.loads(text, object_pairs_hook=pairs, parse_float=number, parse_constant=constant)
 
 
-def infer_decision_archetype(query: str) -> str:
+def infer_decision_archetype(query: str, options: Any = None) -> str:
     text = _norm(query)
     for archetype, triggers in ARCHETYPE_RULES:
         if any(t in text for t in triggers):
             return archetype
     if re.search(r"\b(a|b|c)\s+(czy|vs|versus|albo)\b", text):
+        return "option_selection"
+    # Three or more named options is not a binary decision, whatever the prose
+    # looks like. The caller already told us the shape; prefer that over
+    # guessing from wording.
+    if isinstance(options, (list, tuple)) and len(options) >= 3:
         return "option_selection"
     return "binary"
 
@@ -415,6 +420,16 @@ def compile_decision_contract(question: str, context: dict[str, Any] | None = No
     options = context.get("options") or []
     if isinstance(options, str):
         options = [options]
+    if (
+        not context.get("decision_type")
+        and len(options) >= 3
+        and profile["decision_archetype"] == "binary"
+    ):
+        # Three or more named options is not a binary decision, whatever the
+        # prose looks like. Only upgrade the generic fallback: a domain
+        # archetype such as pricing or m_and_a drives specialist routing and
+        # must not be replaced by the shape of the option list.
+        profile = {**profile, "decision_archetype": "option_selection"}
     contract = {
         "question": str(question).strip(),
         "decision_type": context.get("decision_type") or profile["decision_archetype"],
@@ -1096,14 +1111,18 @@ def _parse_date(value: str | None) -> datetime | None:
         return datetime.fromisoformat(raw)
     except ValueError:
         try:
-            return datetime.strptime(raw[:10], "%Y-%m-%d")
+            # Date-only fallback: deliberately naive, and every caller
+            # reconciles tzinfo against the other operand before comparing.
+            return datetime.strptime(raw[:10], "%Y-%m-%d")  # noqa: DTZ007
         except ValueError:
             return None
 
 
 def _recency_factor(updated_at: str | None, as_of: str | None) -> float:
     updated = _parse_date(updated_at)
-    now = _parse_date(as_of) or datetime.utcnow()
+    # Timezone-aware: utcnow() is deprecated and returns a naive value, which
+    # is a poor default in a kernel whose whole job is temporal correctness.
+    now = _parse_date(as_of) or datetime.now(timezone.utc)
     if not updated:
         return 0.0
     if updated.tzinfo is not None and now.tzinfo is None:
@@ -1192,7 +1211,7 @@ def calibration_report(rows: list[dict[str, Any]], expert_id: str, domain: str |
     confidence = [_clamp01(row.get("blind_confidence") or 0) for row in usable]
     hit = sum(correct) / n
     mean_conf = sum(confidence) / n
-    brier = sum((c - y) ** 2 for c, y in zip(confidence, correct)) / n
+    brier = sum((c - y) ** 2 for c, y in zip(confidence, correct, strict=True)) / n
     flags = []
     if mean_conf - hit >= 0.15:
         flags.append("overconfidence")
@@ -1701,10 +1720,22 @@ def contradiction_coverage(claims: list[dict[str, Any]]) -> dict[str, Any]:
 def independence_grade(memo: dict[str, Any], peers: list[dict[str, Any]]) -> str:
     if bool(memo.get("human_external", False)) or str(memo.get("actor_type") or "").lower() == "human":
         return "I4"
-    model = str(memo.get("model_family") or memo.get("model") or "unknown")
-    provider = str(memo.get("provider") or "unknown")
+    def declared(row: dict[str, Any]) -> tuple[str, str] | None:
+        """Provider/model pair, or None when either is undeclared.
+
+        Absence is unknown independence, not a distinct origin — see
+        references/evidence-policy.md. Folding a missing field into the literal
+        "unknown" and then comparing it made an undeclared adviser differ from a
+        declared one, so it scored I3 (0.75) instead of I1 (0.25) and tripled the
+        panel's measured independence on nothing but a blank field.
+        """
+        provider = str(row.get("provider") or "").strip()
+        model = str(row.get("model_family") or row.get("model") or "").strip()
+        return (provider, model) if provider and model else None
+
+    mine = declared(memo)
     others = [p for p in peers if p is not memo and (p.get("expert_id") or p.get("id")) != (memo.get("expert_id") or memo.get("id"))]
-    if others and any(str(p.get("provider") or "unknown") != provider or str(p.get("model_family") or p.get("model") or "unknown") != model for p in others):
+    if mine and any((theirs := declared(p)) is not None and theirs != mine for p in others):
         return "I3"
     groups = _setish(memo.get("independence_groups"))
     peer_groups = set().union(*[_setish(p.get("independence_groups")) for p in others]) if others else set()
@@ -2211,4 +2242,4 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except (ValueError, TypeError, KeyError, AttributeError, OverflowError, RecursionError):
         print(json.dumps({"status": "INVALID", "error": "invalid decision input", "execution_authorized": False}), file=sys.stderr)
-        raise SystemExit(2)
+        raise SystemExit(2) from None

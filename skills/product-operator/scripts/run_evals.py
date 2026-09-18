@@ -5,7 +5,6 @@ import argparse
 import importlib.util
 import json
 import pathlib
-import sys
 from typing import Any
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -23,7 +22,11 @@ def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
     if kind == "reconcile_code":
         result = kernel.reconcile_items(payload)
         actual = {row["code"] for row in result["issues"]}
-        return expected in actual, sorted(actual)
+        # `expect` alone only proves a code fires. A guard whose removal swaps one
+        # code for another then passes unnoticed, so a case may also pin what must
+        # stay silent.
+        forbidden = set(case.get("expect_absent") or ())
+        return expected in actual and not (forbidden & actual), sorted(actual)
     if kind == "rank_tier":
         actual = kernel.rank_candidate(payload)["priority_tier"]
         return actual == expected, actual

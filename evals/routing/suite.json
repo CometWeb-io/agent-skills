@@ -1196,6 +1196,16 @@
         "ai-council"
       ],
       "reason": "Context delta with baseline"
+    },
+    {
+      "id": "longform-report-through-manuscript-not-release-gate",
+      "prompt": "Build this evidence-backed report through manuscript, DOCX and PDF release readiness",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "The phrase 'release readiness' inside a publication request is about the document's release, not a build's; this was the skill's own trigger example and it routed to release-readiness"
     }
   ]
 }

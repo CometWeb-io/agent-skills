@@ -2,6 +2,9 @@
 import importlib.util
 import pathlib
 import tempfile
+import copy
+import json
+import random
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -115,3 +118,44 @@ class CompetitiveIntelligenceKernelTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class NoPhantomChangeTests(unittest.TestCase):
+    """A delta digest is only useful if "nothing changed" survives a round trip.
+
+    Competitor monitoring reruns on a schedule and most runs find nothing. If
+    re-serialising a snapshot — different key order, same content — produced
+    changes, every quiet week would read as movement and the digest would train
+    its reader to ignore it.
+    """
+
+    def setUp(self):
+        base = CompetitiveIntelligenceKernelTests("run")
+        base.setUp()
+        self.old, self.new = base.old, base.new
+
+    def test_identical_snapshots_produce_no_changes(self):
+        self.assertEqual(K.diff_snapshots(self.old, copy.deepcopy(self.old))["changes"], [])
+
+    def test_key_order_does_not_create_changes(self):
+        def reorder(value, rnd):
+            if isinstance(value, dict):
+                items = list(value.items())
+                rnd.shuffle(items)
+                return {k: reorder(v, rnd) for k, v in items}
+            if isinstance(value, list):
+                return [reorder(v, rnd) for v in value]
+            return value
+
+        for seed in range(4):
+            with self.subTest(seed=seed):
+                shuffled = reorder(copy.deepcopy(self.old), random.Random(seed))
+                self.assertEqual(K.diff_snapshots(self.old, shuffled)["changes"], [])
+
+    def test_diff_is_deterministic(self):
+        first = json.dumps(K.diff_snapshots(self.old, self.new), sort_keys=True)
+        second = json.dumps(K.diff_snapshots(self.old, self.new), sort_keys=True)
+        self.assertEqual(first, second)
+
+    def test_a_real_change_is_still_detected(self):
+        self.assertTrue(K.diff_snapshots(self.old, self.new)["changes"])

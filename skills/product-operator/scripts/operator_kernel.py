@@ -111,7 +111,13 @@ def evidence_freshness(ev: dict[str, Any], as_of: str | None = None) -> str:
     max_age = ev.get("max_age_days")
     as_of_dt = parse_time(as_of)
     if observed is not None and max_age is not None and as_of_dt is not None:
-        age_days = max(0.0, (as_of_dt - observed).total_seconds() / 86400.0)
+        age_days = (as_of_dt - observed).total_seconds() / 86400.0
+        if age_days < 0:
+            # An observation dated after as_of means a skewed clock or a
+            # fabricated record; clamping it to zero age made the least
+            # trustworthy timestamp read as the freshest. release-readiness
+            # already flags a future as_of as a release-identity gap.
+            return "UNKNOWN"
         ttl = clamp(max_age, 0, 36500, 0)
         if ttl <= 0:
             return "UNKNOWN"

@@ -3,7 +3,14 @@ import json
 import subprocess
 from pathlib import Path
 import pytest
-from test_validate_context_envelope import valid_envelope, module as validator
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _context_fixtures import load_script, build_valid_envelope as valid_envelope
+
+planner = load_script("context_plan")
+validator = load_script("validate_context_envelope")
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("snapshot_quality", ROOT / "scripts/repo_snapshot.py")
 snap = importlib.util.module_from_spec(spec)

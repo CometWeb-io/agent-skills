@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import json
 import re
+import sys
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -59,7 +61,7 @@ def test_registry_math_and_refs_are_structurally_sane():
         assert all(v >= 0 for v in weights.values()) and sum(weights.values()) > 0
     tiers = REGISTRY["tiers"]
     assert tiers[0]["min"] == 0 and tiers[-1]["max"] == 100
-    for a, b in zip(tiers, tiers[1:]):
+    for a, b in zip(tiers, tiers[1:], strict=False):
         assert a["max"] < b["min"] and round(b["min"] - a["max"], 3) <= 0.001
 
 
@@ -102,3 +104,42 @@ if __name__ == "__main__":
     for name in tests:
         globals()[name]()
         print("PASS", name)
+
+
+
+# --- Freshness gate -------------------------------------------------------
+# --strict must actually block once the bundled sources expire. If the gate
+# reported a stale group but still exited 0, an audit would keep citing expired
+# sources and look green doing it. Dates below are taken from the registry's
+# own last_checked values, so this never becomes a test that fails on a calendar.
+
+CHECK_FRESHNESS = ROOT / "scripts" / "check_freshness.py"
+
+
+def _freshness(*args):
+    return subprocess.run(
+        [sys.executable, str(CHECK_FRESHNESS), *args],
+        capture_output=True, text=True, timeout=120,
+    )
+
+
+def _states(as_of):
+    proc = _freshness("--as-of", as_of)
+    assert proc.returncode == 0, proc.stderr
+    return {group.get("state") for group in json.loads(proc.stdout).get("groups", [])}
+
+
+def test_far_future_makes_every_group_stale():
+    assert _states("2099-01-01") == {"stale"}
+
+
+def test_strict_blocks_when_a_group_is_stale():
+    assert _freshness("--as-of", "2099-01-01", "--strict").returncode == 1
+
+
+def test_strict_passes_when_every_group_is_fresh():
+    checked = [g["last_verified"] for g in LIVE_JSON.get("groups", []) if g.get("last_verified")]
+    assert checked, "registry records no last_verified dates"
+    oldest = min(checked)
+    assert _states(oldest) == {"fresh"}
+    assert _freshness("--as-of", oldest, "--strict").returncode == 0

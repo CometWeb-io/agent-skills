@@ -210,7 +210,7 @@ def test_valid_cases_still_work():
 def test_every_combination_preserves_explicit_block():
     for statuses in itertools.product(sorted(k.GATE_STATUSES), repeat=3):
         if 'BLOCK' in statuses:
-            assert gate(gate_statuses=dict(zip(['a','b','c'], statuses)),
+            assert gate(gate_statuses=dict(zip(['a','b','c'], statuses, strict=True)),
                         freshness_status='UNKNOWN', human_approval_required=True) == 'NO-GO'
 
 

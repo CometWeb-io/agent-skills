@@ -444,7 +444,6 @@ def validate_ledger(ledger: Dict[str, Any]) -> Dict[str, Any]:
 
     claim_ids = ids_by_kind.get("claim", set())
     source_ids = ids_by_kind.get("source", set())
-    evidence_ids = ids_by_kind.get("evidence", set())
 
     for i, claim in enumerate(claims):
         if not isinstance(claim, dict):
@@ -525,7 +524,7 @@ def validate_ledger(ledger: Dict[str, Any]) -> Dict[str, Any]:
     for cycle in _source_lineage_cycles([src for src in sources if isinstance(src, dict)]):
         errors.append("source lineage cycle: " + " -> ".join(cycle))
 
-    for fp, sids in source_fingerprints.items():
+    for _fingerprint, sids in source_fingerprints.items():
         if len(sids) > 1:
             warnings.append(f"duplicate source fingerprint across source_ids: {', '.join(sorted(sids))}")
     for cref, groups in canonical_groups.items():
@@ -772,14 +771,13 @@ def coverage(ledger: Dict[str, Any]) -> Dict[str, Any]:
     contradictions = [c for c in ledger.get("contradictions", []) if isinstance(c, dict)]
     gaps = [g for g in ledger.get("gaps", []) if isinstance(g, dict)]
     sources_by_id = _id_index(sources, "source_id")
-    claims_by_id = _id_index(claims, "claim_id")
     as_of = contract.get("as_of")
 
     material_claims = [c for c in claims if c.get("materiality") in {"critical", "material"}]
     critical_claims = [c for c in material_claims if c.get("materiality") == "critical"]
 
     claim_rows: List[Dict[str, Any]] = []
-    fact_ready = inference_ready = accepted_support_count = primary_count = falsifier_count = freshness_count = 0
+    accepted_support_count = primary_count = falsifier_count = freshness_count = 0
     authority_count = 0
     all_independence_groups: set[str] = set()
     unknown_independence_edges = 0
@@ -1413,7 +1411,7 @@ def main() -> int:
             _json_dump(template(args.question, args.as_of, args.mode))
         else:
             parser.error("unsupported command")
-    except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError) as exc:
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError):
         print(json.dumps({"error": "invalid input; research was not assessed"}), file=sys.stderr)
         return 2
     return 0

@@ -72,6 +72,16 @@ EXPERIMENT_FIELDS = {
 }
 
 
+def in_set(value: Any, allowed: set[str]) -> bool:
+    """Membership test that survives untrusted JSON.
+
+    A list or dict from an input file is unhashable, so `value not in allowed`
+    raises TypeError and the validator dies instead of reporting the problem it
+    exists to report. Only a string can be a member anyway.
+    """
+    return isinstance(value, str) and value in allowed
+
+
 def num01(value: Any) -> bool:
     try:
         number = float(value)
@@ -105,10 +115,10 @@ def validate(payload: Any) -> list[str]:
         errors.append(f"schema_version must be '{SCHEMA_VERSION}'")
 
     shape = payload.get("shape")
-    if shape not in SHAPES:
+    if not in_set(shape, SHAPES):
         errors.append(f"shape must be one of {sorted(SHAPES)}")
 
-    if payload.get("mode") not in MODES:
+    if not in_set(payload.get("mode"), MODES):
         errors.append(f"mode must be one of {sorted(MODES)}")
 
     source_targets = payload.get("source_targets")
@@ -133,7 +143,7 @@ def validate(payload: Any) -> list[str]:
                 errors.append(f"{p}.{key} is required")
 
     destination = payload.get("destination")
-    if shape in {"SOURCE_TO_TARGET", "MULTI_SOURCE_TO_TARGET"}:
+    if in_set(shape, {"SOURCE_TO_TARGET", "MULTI_SOURCE_TO_TARGET"}):
         if not isinstance(destination, dict):
             errors.append(f"destination must be an object for shape {shape}")
         else:
@@ -161,11 +171,11 @@ def validate(payload: Any) -> list[str]:
             evidence_by_id[eid] = item
 
         subject = item.get("subject")
-        if subject not in {"source", "destination"}:
+        if not in_set(subject, {"source", "destination"}):
             errors.append(f"{p}.subject must be source or destination")
 
         target_id = item.get("target_id")
-        if subject == "source" and target_id not in source_ids:
+        if subject == "source" and not in_set(target_id, source_ids):
             errors.append(f"{p}.target_id must reference a source target id")
         if subject == "destination" and target_id != "DEST":
             errors.append(f"{p}.target_id must be DEST for destination evidence")
@@ -175,12 +185,12 @@ def validate(payload: Any) -> list[str]:
                 errors.append(f"{p}.{key} is required")
 
         lane = item.get("claim_lane")
-        if subject == "source" and lane not in SOURCE_LANES:
+        if subject == "source" and not in_set(lane, SOURCE_LANES):
             errors.append(f"{p}.claim_lane invalid for source evidence")
-        if subject == "destination" and lane not in DESTINATION_LANES:
+        if subject == "destination" and not in_set(lane, DESTINATION_LANES):
             errors.append(f"{p}.claim_lane invalid for destination evidence")
 
-        if item.get("claim_state") not in CLAIM_STATES:
+        if not in_set(item.get("claim_state"), CLAIM_STATES):
             errors.append(f"{p}.claim_state invalid")
         if not num01(item.get("confidence")):
             errors.append(f"{p}.confidence must be in [0,1]")
@@ -211,7 +221,7 @@ def validate(payload: Any) -> list[str]:
         for key in ("name", "problem", "mechanism", "source_observation", "decision_reason"):
             if not nonempty_string(item.get(key)):
                 errors.append(f"{p}.{key} is required")
-        if item.get("category") not in CATEGORIES:
+        if not in_set(item.get("category"), CATEGORIES):
             errors.append(f"{p}.category invalid")
 
         source_refs = item.get("evidence_ids")
@@ -260,7 +270,7 @@ def validate(payload: Any) -> list[str]:
             errors.append(f"{p}.implementation must be an object")
             implementation = {}
         transfer_mode = implementation.get("transfer_mode")
-        if transfer_mode not in TRANSFER_MODES:
+        if not in_set(transfer_mode, TRANSFER_MODES):
             errors.append(f"{p}.implementation.transfer_mode invalid")
         for key in ("target_surfaces", "prerequisites", "steps"):
             if key in implementation and not string_list(implementation.get(key)):
@@ -268,7 +278,7 @@ def validate(payload: Any) -> list[str]:
         for key in ("effort_band", "uncertainty"):
             if key in implementation and not nonempty_string(implementation.get(key)):
                 errors.append(f"{p}.implementation.{key} must be a string")
-        if transfer_mode in {"REUSE_CODE", "REUSE_ASSET"} and not nonempty_string(implementation.get("provenance_note")):
+        if in_set(transfer_mode, {"REUSE_CODE", "REUSE_ASSET"}) and not nonempty_string(implementation.get("provenance_note")):
             errors.append(f"{p}.implementation.provenance_note required for {transfer_mode}")
 
         interactions = item.get("interactions")
@@ -294,13 +304,13 @@ def validate(payload: Any) -> list[str]:
                 errors.append(f"{p}.confidence.{key} must be in [0,1]")
 
         verdict = item.get("verdict")
-        if verdict not in VERDICTS:
+        if not in_set(verdict, VERDICTS):
             errors.append(f"{p}.verdict invalid")
             continue
 
         source_observed = any(
             evidence_by_id.get(ref, {}).get("claim_state") == "OBSERVED"
-            and evidence_by_id.get(ref, {}).get("claim_lane") in {"source_behavior", "source_implementation"}
+            and in_set(evidence_by_id.get(ref, {}).get("claim_lane"), {"source_behavior", "source_implementation"})
             for ref in source_refs
         )
         destination_problem = any(
@@ -310,7 +320,7 @@ def validate(payload: Any) -> list[str]:
         )
         gates_clear = gate_is_clear(gates.get("legal_ip")) and gate_is_clear(gates.get("security_privacy"))
 
-        if verdict in {"ADOPT", "EXPERIMENT"}:
+        if in_set(verdict, {"ADOPT", "EXPERIMENT"}):
             if not isinstance(destination, dict):
                 errors.append(f"{p}: {verdict} requires destination context")
             if not destination_problem:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
@@ -144,7 +144,7 @@ def current_date() -> date:
         from zoneinfo import ZoneInfo
         return datetime.now(ZoneInfo('Europe/Warsaw')).date()
     except (ImportError, KeyError, OSError):
-        return date.today()
+        return datetime.now(timezone.utc).date()
 
 
 class Review:

@@ -209,9 +209,17 @@ def _reject_nonfinite(value):
     raise ValueError(f"non-finite JSON number: {value}")
 
 
+USAGE = "usage: validate_context_envelope.py <file.json>"
+
+
 def main() -> None:
+    # Every other script in this repo answers --help; without this one the flag
+    # is read as a filename and reported as "INVALID: No such file".
+    if len(sys.argv) == 2 and sys.argv[1] in ("-h", "--help"):
+        print(USAGE)
+        raise SystemExit(0)
     if len(sys.argv) != 2:
-        print("usage: validate_context_envelope.py <file.json>", file=sys.stderr)
+        print(USAGE, file=sys.stderr)
         raise SystemExit(2)
     path = pathlib.Path(sys.argv[1])
     try:
@@ -219,7 +227,7 @@ def main() -> None:
         validate(data)
     except (OSError, UnicodeError, ValueError) as exc:
         print(f"INVALID: {exc}", file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None
     print("OK: cometweb.context/v2")
 
 

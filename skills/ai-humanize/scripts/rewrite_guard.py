@@ -218,6 +218,7 @@ def compare(
     *,
     strict: bool = False,
     protected_terms: Sequence[str] = (),
+    fail_on_semantic_risk: bool = False,
 ) -> dict:
     a = extract(before, protected_terms)
     b = extract(after, protected_terms)
@@ -227,18 +228,28 @@ def compare(
     added = {kind: vals for kind, vals in added.items() if vals}
     semantic_risk = _semantic_deltas(before, after)
 
+    # pass/fail is an invariant verdict. Semantic markers are heuristics that
+    # change legitimately during paraphrase, so they only fail the run when the
+    # caller opts in — see --fail-on-semantic-risk.
     passed = not bool(missing) and (not strict or not bool(added))
+    if fail_on_semantic_risk and semantic_risk:
+        passed = False
     warnings: List[str] = []
     if added and not strict:
         warnings.append("New invariant-like tokens were introduced; review for factual drift.")
     if strict and added:
         warnings.append("Strict mode treats introduced invariant-like tokens as failure.")
     if semantic_risk:
-        warnings.append("Negation, modality, or scope markers changed; review semantic fidelity manually.")
+        warnings.append(
+            "Negation, modality, or scope markers changed; review semantic fidelity manually."
+            if not fail_on_semantic_risk
+            else "Negation, modality, or scope markers changed; failing because --fail-on-semantic-risk is set."
+        )
 
     return {
         "passed": passed,
         "strict": strict,
+        "fail_on_semantic_risk": fail_on_semantic_risk,
         "missing_invariants": missing,
         "added_invariants": added,
         "semantic_risk_markers": semantic_risk,
@@ -278,6 +289,13 @@ def main() -> int:
         help="Fail on added invariant-like tokens as well as missing ones.",
     )
     parser.add_argument(
+        "--fail-on-semantic-risk", action="store_true",
+        help="Also fail when negation/modality/scope markers change. Neither the "
+             "default nor --strict does this, because such markers shift "
+             "legitimately during paraphrase; opt in when a caller must stop on "
+             "a possible meaning change.",
+    )
+    parser.add_argument(
         "--protect", action="append", default=[], metavar="TEXT",
         help="Exact protected term/span. Repeat for single-token names or normative phrases.",
     )
@@ -300,7 +318,12 @@ def main() -> int:
         print("error: unable to read UTF-8 inputs or protected terms", file=sys.stderr)
         return 2
 
-    result = compare(before, after, strict=args.strict, protected_terms=protected_terms)
+    result = compare(
+        before, after,
+        strict=args.strict,
+        protected_terms=protected_terms,
+        fail_on_semantic_risk=args.fail_on_semantic_risk,
+    )
 
     if args.summary:
         status = "PASS" if result["passed"] else "FAIL"

@@ -3,18 +3,1549 @@
     "name": "client deadline beats optional feature",
     "kind": "ranking",
     "items": [
-      {"id":"client","commitment_type":"hard_external","days_to_deadline":2,"effort_class":"M","goal_alignment":3,"revenue":3,"trust":5,"dependency_leverage":1},
-      {"id":"feature","commitment_type":"optional","effort_class":"XS","goal_alignment":5,"revenue":5,"trust":5,"dependency_leverage":5,"learning":5}
+      {
+        "id": "client",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 2,
+        "effort_class": "M",
+        "goal_alignment": 3,
+        "revenue": 3,
+        "trust": 5,
+        "dependency_leverage": 1
+      },
+      {
+        "id": "feature",
+        "commitment_type": "optional",
+        "effort_class": "XS",
+        "goal_alignment": 5,
+        "revenue": 5,
+        "trust": 5,
+        "dependency_leverage": 5,
+        "learning": 5
+      }
     ],
-    "expected_first":"client"
+    "expected_first": "client"
   },
-  {"name":"future gate waits","kind":"lane","item":{"id":"billing","future_gate":true,"blocks_current_goal":false,"commitment_type":"strategic"},"expected":"WAITING"},
-  {"name":"product depth delegates","kind":"delegation","item":{"id":"insight-state","domain":"product","depth_required":"product"},"expected":"product-operator"},
-  {"name":"release verdict delegates","kind":"delegation","item":{"id":"release","depth_required":"release"},"expected":"release-readiness"},
-  {"name":"overlapping hard commitments conflict","kind":"conflict","items":[{"id":"client-launch","commitment_type":"hard_external","deadline":"2026-09-18","effort_class":"L"},{"id":"paper","commitment_type":"hard_external","deadline":"2026-09-18","effort_class":"XL"}],"expected_count":1},
-  {"name":"unknown capacity cannot invent hours","kind":"validation","report":{"protocol_version":"1.0","as_of":"2026-09-10T10:00:00+02:00","horizon":"14d","capacity":{"source":"unknown","hours":40},"must_do":[],"now":[],"delegate":[],"waiting":[],"pause_drop":[],"next":[],"capacity_conflicts":[]},"expected_valid":false},
-  {"name":"valid bounded report","kind":"validation","report":{"protocol_version":"1.0","as_of":"2026-09-10T10:00:00+02:00","horizon":"14d","capacity":{"source":"unknown"},"must_do":[{"id":"client","action":"Deliver client migration","done_when":"Cutover verified","evidence":["client:promise"]}],"now":[],"delegate":[],"waiting":[],"pause_drop":[],"next":[],"capacity_conflicts":[]},"expected_valid":true},
-  {"name":"numeric target without provenance is invalid","kind":"validation","report":{"protocol_version":"1.1","as_of":"2026-09-10T10:00:00+02:00","horizon":"14d","capacity":{"source":"unknown"},"must_do":[],"now":[{"id":"sales","action":"Book 2 pilot calls by 19 IX","done_when":"2 calls booked","evidence":["notion:gtm"]}],"delegate":[],"delegate_candidate":[],"waiting":[],"pause_drop":[],"next":[],"capacity_conflicts":[]},"expected_valid":false},
-  {"name":"unconfirmed external delegate is invalid","kind":"validation","report":{"protocol_version":"1.1","as_of":"2026-09-10T10:00:00+02:00","horizon":"14d","capacity":{"source":"unknown"},"must_do":[],"now":[],"delegate":[{"id":"agent","delegate_to":"coding-agent","question":"Continue maintenance","return_contract":"Return at human gate"}],"delegate_candidate":[],"waiting":[],"pause_drop":[],"next":[],"capacity_conflicts":[]},"expected_valid":false},
-  {"name":"three hard streams surface portfolio conflict","kind":"conflict","capacity_source":"unknown","items":[{"id":"insight","project":"Insight","commitment_type":"hard_internal","current_horizon":true,"effort_class":"L"},{"id":"client","project":"KATEX","commitment_type":"hard_external","current_horizon":true,"effort_class":"L"},{"id":"research","project":"FGCS","commitment_type":"hard_external","current_horizon":true,"effort_class":"M"}],"expected_count":1}
+  {
+    "name": "future gate waits",
+    "kind": "lane",
+    "item": {
+      "id": "billing",
+      "future_gate": true,
+      "blocks_current_goal": false,
+      "commitment_type": "strategic"
+    },
+    "expected": "WAITING"
+  },
+  {
+    "name": "product depth delegates",
+    "kind": "delegation",
+    "item": {
+      "id": "insight-state",
+      "domain": "product",
+      "depth_required": "product"
+    },
+    "expected": "product-operator"
+  },
+  {
+    "name": "release verdict delegates",
+    "kind": "delegation",
+    "item": {
+      "id": "release",
+      "depth_required": "release"
+    },
+    "expected": "release-readiness"
+  },
+  {
+    "name": "overlapping hard commitments conflict",
+    "kind": "conflict",
+    "items": [
+      {
+        "id": "client-launch",
+        "commitment_type": "hard_external",
+        "deadline": "2026-09-18",
+        "effort_class": "L"
+      },
+      {
+        "id": "paper",
+        "commitment_type": "hard_external",
+        "deadline": "2026-09-18",
+        "effort_class": "XL"
+      }
+    ],
+    "expected_count": 1
+  },
+  {
+    "name": "unknown capacity cannot invent hours",
+    "kind": "validation",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown",
+        "hours": 40
+      },
+      "must_do": [],
+      "now": [],
+      "delegate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "name": "valid bounded report",
+    "kind": "validation",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Deliver client migration",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ]
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": true
+  },
+  {
+    "name": "numeric target without provenance is invalid",
+    "kind": "validation",
+    "report": {
+      "protocol_version": "1.1",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [
+        {
+          "id": "sales",
+          "action": "Book 2 pilot calls by 19 IX",
+          "done_when": "2 calls booked",
+          "evidence": [
+            "notion:gtm"
+          ]
+        }
+      ],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "name": "unconfirmed external delegate is invalid",
+    "kind": "validation",
+    "report": {
+      "protocol_version": "1.1",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [],
+      "delegate": [
+        {
+          "id": "agent",
+          "delegate_to": "coding-agent",
+          "question": "Continue maintenance",
+          "return_contract": "Return at human gate"
+        }
+      ],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "name": "three hard streams surface portfolio conflict",
+    "kind": "conflict",
+    "capacity_source": "unknown",
+    "items": [
+      {
+        "id": "insight",
+        "project": "Insight",
+        "commitment_type": "hard_internal",
+        "current_horizon": true,
+        "effort_class": "L"
+      },
+      {
+        "id": "client",
+        "project": "KATEX",
+        "commitment_type": "hard_external",
+        "current_horizon": true,
+        "effort_class": "L"
+      },
+      {
+        "id": "research",
+        "project": "FGCS",
+        "commitment_type": "hard_external",
+        "current_horizon": true,
+        "effort_class": "M"
+      }
+    ],
+    "expected_count": 1
+  },
+  {
+    "kind": "ranking",
+    "name": "within one gate class the score decides, not the id",
+    "items": [
+      {
+        "id": "alpha-cleanup",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 25,
+        "goal_alignment": 1,
+        "revenue": 1,
+        "trust": 1,
+        "effort_class": "S"
+      },
+      {
+        "id": "zeta-renewal",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 2,
+        "goal_alignment": 4,
+        "revenue": 5,
+        "trust": 5,
+        "effort_class": "S"
+      }
+    ],
+    "expected_first": "zeta-renewal"
+  },
+  {
+    "kind": "lane",
+    "name": "a blocking future gate is not parked in WAITING",
+    "item": {
+      "id": "billing",
+      "future_gate": true,
+      "blocks_current_goal": true
+    },
+    "expected": "MUST_DO"
+  },
+  {
+    "kind": "lane",
+    "name": "explicit pause leaves the focus lanes",
+    "item": {
+      "id": "rewrite",
+      "pause": true,
+      "commitment_type": "hard_internal"
+    },
+    "expected": "PAUSE_DROP"
+  },
+  {
+    "kind": "lane",
+    "name": "an unconfirmed executor is a candidate, not a delegation",
+    "item": {
+      "id": "audit",
+      "delegate_candidate": true,
+      "depth_required": "product"
+    },
+    "expected": "DELEGATE_CANDIDATE"
+  },
+  {
+    "kind": "lane",
+    "name": "routable specialist depth becomes DELEGATE",
+    "item": {
+      "id": "release",
+      "depth_required": "release"
+    },
+    "expected": "DELEGATE"
+  },
+  {
+    "kind": "lane",
+    "name": "a confirmed blocker of the active goal is MUST DO",
+    "item": {
+      "id": "dns",
+      "blocks_current_goal": true
+    },
+    "expected": "MUST_DO"
+  },
+  {
+    "kind": "lane",
+    "name": "a hard commitment inside the horizon is MUST DO",
+    "item": {
+      "id": "invoice",
+      "commitment_type": "hard_external"
+    },
+    "expected": "MUST_DO"
+  },
+  {
+    "kind": "lane",
+    "name": "a hard commitment outside the horizon is not MUST DO",
+    "item": {
+      "id": "invoice-q1",
+      "commitment_type": "hard_external",
+      "current_horizon": false
+    },
+    "expected": "NOW"
+  },
+  {
+    "kind": "lane",
+    "name": "strategic work without a gate stays in NOW",
+    "item": {
+      "id": "positioning",
+      "commitment_type": "strategic"
+    },
+    "expected": "NOW"
+  },
+  {
+    "kind": "delegation",
+    "name": "an explicit owner wins over inferred depth",
+    "item": {
+      "id": "x",
+      "delegated_to": "customer-research",
+      "depth_required": "product"
+    },
+    "expected": "customer-research"
+  },
+  {
+    "kind": "delegation",
+    "name": "a customer incident routes to customer ops",
+    "item": {
+      "id": "outage",
+      "customer_incident": true
+    },
+    "expected": "customer-ops"
+  },
+  {
+    "kind": "delegation",
+    "name": "claim verification routes to the evidence researcher",
+    "item": {
+      "id": "claim",
+      "claim_verification_required": true
+    },
+    "expected": "evidence-researcher"
+  },
+  {
+    "kind": "delegation",
+    "name": "a consequential portfolio choice routes to the council",
+    "item": {
+      "id": "bet",
+      "depth_required": "portfolio-decision"
+    },
+    "expected": "ai-council"
+  },
+  {
+    "kind": "delegation",
+    "name": "a multi-skill chain routes to the orchestrator",
+    "item": {
+      "id": "chain",
+      "multi_skill_execution": true
+    },
+    "expected": "skill-orchestrator"
+  },
+  {
+    "kind": "delegation",
+    "name": "ordinary portfolio work is not delegated",
+    "item": {
+      "id": "plain",
+      "domain": "ops"
+    },
+    "expected": null
+  },
+  {
+    "kind": "delegation",
+    "name": "a product domain alone is not specialist depth",
+    "item": {
+      "id": "prod",
+      "domain": "product"
+    },
+    "expected": null
+  },
+  {
+    "kind": "ranking",
+    "name": "an overdue hard commitment outranks one due tomorrow",
+    "items": [
+      {
+        "id": "due-tomorrow",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 1,
+        "effort_class": "S"
+      },
+      {
+        "id": "overdue",
+        "commitment_type": "hard_external",
+        "days_to_deadline": -2,
+        "effort_class": "S"
+      }
+    ],
+    "expected_first": "overdue"
+  },
+  {
+    "kind": "ranking",
+    "name": "a goal blocker outranks a hard internal gate",
+    "items": [
+      {
+        "id": "internal-gate",
+        "commitment_type": "hard_internal",
+        "goal_alignment": 5,
+        "revenue": 5,
+        "trust": 5,
+        "effort_class": "XS"
+      },
+      {
+        "id": "blocker",
+        "commitment_type": "optional",
+        "blocks_current_goal": true,
+        "effort_class": "XL"
+      }
+    ],
+    "expected_first": "blocker"
+  },
+  {
+    "kind": "ranking",
+    "name": "a hard internal gate outranks strategic work",
+    "items": [
+      {
+        "id": "strategy",
+        "commitment_type": "strategic",
+        "goal_alignment": 5,
+        "revenue": 5,
+        "effort_class": "XS"
+      },
+      {
+        "id": "gate",
+        "commitment_type": "hard_internal",
+        "effort_class": "XL"
+      }
+    ],
+    "expected_first": "gate"
+  },
+  {
+    "kind": "ranking",
+    "name": "strategic work outranks an optional improvement",
+    "items": [
+      {
+        "id": "nice-to-have",
+        "commitment_type": "optional",
+        "goal_alignment": 5,
+        "revenue": 5,
+        "effort_class": "XS"
+      },
+      {
+        "id": "bet",
+        "commitment_type": "strategic",
+        "effort_class": "XL"
+      }
+    ],
+    "expected_first": "bet"
+  },
+  {
+    "kind": "ranking",
+    "name": "a future gate sorts last however well it scores",
+    "items": [
+      {
+        "id": "future-billing",
+        "commitment_type": "hard_external",
+        "future_gate": true,
+        "goal_alignment": 5,
+        "revenue": 5,
+        "trust": 5,
+        "days_to_deadline": -5,
+        "effort_class": "XS"
+      },
+      {
+        "id": "small-chore",
+        "commitment_type": "optional",
+        "effort_class": "XL"
+      }
+    ],
+    "expected_first": "small-chore"
+  },
+  {
+    "kind": "ranking",
+    "name": "effort is a penalty, not a gate",
+    "items": [
+      {
+        "id": "cheap-optional",
+        "commitment_type": "optional",
+        "effort_class": "XS"
+      },
+      {
+        "id": "expensive-external",
+        "commitment_type": "hard_external",
+        "effort_class": "XL"
+      }
+    ],
+    "expected_first": "expensive-external"
+  },
+  {
+    "kind": "conflict",
+    "name": "the same day written two ways is still one deadline",
+    "items": [
+      {
+        "id": "a",
+        "commitment_type": "hard_external",
+        "effort_class": "L",
+        "deadline": "2026-10-01"
+      },
+      {
+        "id": "b",
+        "commitment_type": "hard_internal",
+        "effort_class": "XL",
+        "deadline": "2026-10-01T09:00:00+02:00"
+      }
+    ],
+    "expected_count": 1
+  },
+  {
+    "kind": "conflict",
+    "name": "adjacent days are not an overlap",
+    "items": [
+      {
+        "id": "a",
+        "commitment_type": "hard_external",
+        "effort_class": "L",
+        "deadline": "2026-10-01"
+      },
+      {
+        "id": "b",
+        "commitment_type": "hard_external",
+        "effort_class": "L",
+        "deadline": "2026-10-02"
+      }
+    ],
+    "expected_count": 0
+  },
+  {
+    "kind": "conflict",
+    "name": "small hard commitments sharing a deadline are not a conflict",
+    "items": [
+      {
+        "id": "a",
+        "commitment_type": "hard_external",
+        "effort_class": "S",
+        "deadline": "2026-10-01"
+      },
+      {
+        "id": "b",
+        "commitment_type": "hard_external",
+        "effort_class": "XS",
+        "deadline": "2026-10-01"
+      }
+    ],
+    "expected_count": 0
+  },
+  {
+    "kind": "conflict",
+    "name": "optional work sharing a deadline is not a conflict",
+    "items": [
+      {
+        "id": "a",
+        "commitment_type": "optional",
+        "effort_class": "XL",
+        "deadline": "2026-10-01"
+      },
+      {
+        "id": "b",
+        "commitment_type": "strategic",
+        "effort_class": "XL",
+        "deadline": "2026-10-01"
+      }
+    ],
+    "expected_count": 0
+  },
+  {
+    "kind": "conflict",
+    "name": "known capacity does not raise the portfolio load flag",
+    "items": [
+      {
+        "id": "a",
+        "project": "p1",
+        "commitment_type": "hard_external",
+        "effort_class": "L"
+      },
+      {
+        "id": "b",
+        "project": "p2",
+        "commitment_type": "hard_internal",
+        "effort_class": "M"
+      },
+      {
+        "id": "c",
+        "project": "p3",
+        "commitment_type": "hard_external",
+        "effort_class": "XL"
+      }
+    ],
+    "capacity_source": "user-provided",
+    "expected_count": 0
+  },
+  {
+    "kind": "conflict",
+    "name": "three hard streams in one project are not a portfolio conflict",
+    "items": [
+      {
+        "id": "a",
+        "project": "p1",
+        "commitment_type": "hard_external",
+        "effort_class": "L"
+      },
+      {
+        "id": "b",
+        "project": "p1",
+        "commitment_type": "hard_internal",
+        "effort_class": "M"
+      },
+      {
+        "id": "c",
+        "project": "p1",
+        "commitment_type": "hard_external",
+        "effort_class": "XL"
+      }
+    ],
+    "capacity_source": "unknown",
+    "expected_count": 0
+  },
+  {
+    "kind": "conflict",
+    "name": "a future gate does not count toward the hard load",
+    "items": [
+      {
+        "id": "a",
+        "project": "p1",
+        "commitment_type": "hard_external",
+        "effort_class": "L"
+      },
+      {
+        "id": "b",
+        "project": "p2",
+        "commitment_type": "hard_internal",
+        "effort_class": "M"
+      },
+      {
+        "id": "c",
+        "project": "p3",
+        "commitment_type": "hard_external",
+        "effort_class": "XL",
+        "future_gate": true
+      }
+    ],
+    "capacity_source": "unknown",
+    "expected_count": 0
+  },
+  {
+    "kind": "validation",
+    "name": "a MUST DO without an observable done condition is invalid",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Ship it",
+          "evidence": [
+            "crm:1"
+          ]
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "a MUST DO without evidence is invalid",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Ship it",
+          "done_when": "Live"
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "specialist depth in MUST DO must be delegated, not rendered",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Deliver client migration",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ],
+          "depth_required": "product",
+          "portfolio_outcome": "Product moves"
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "a delegated item still owes a portfolio outcome",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Deliver client migration",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ],
+          "depth_required": "product",
+          "scope_level": "portfolio"
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "implementation detail cannot ride along in a portfolio item",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Deliver client migration",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ],
+          "depth_required": "product",
+          "scope_level": "portfolio",
+          "portfolio_outcome": "Product moves",
+          "implementation_steps": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "an outcome-level delegated item is valid",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Deliver client migration",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ],
+          "depth_required": "product",
+          "scope_level": "portfolio",
+          "portfolio_outcome": "Product moves"
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": true
+  },
+  {
+    "kind": "validation",
+    "name": "specialist-scoped work cannot appear as portfolio NOW",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [
+        {
+          "id": "client",
+          "action": "Deliver client migration",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ],
+          "scope_level": "specialist"
+        }
+      ],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "a non-blocking future gate cannot sit in MUST DO",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Deliver client migration",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ],
+          "future_gate": true
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "a blocking future gate may sit in MUST DO",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Deliver client migration",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ],
+          "future_gate": true,
+          "blocks_current_goal": true
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": true
+  },
+  {
+    "kind": "validation",
+    "name": "a deadline without provenance is invalid",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [
+        {
+          "id": "client",
+          "action": "Deliver client migration",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ],
+          "deadline": "2026-10-01"
+        }
+      ],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "evidence_ref satisfies the provenance gate",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [
+        {
+          "id": "client",
+          "action": "Deliver client migration",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ],
+          "deadline": "2026-10-01",
+          "evidence_ref": "calendar:event-456"
+        }
+      ],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": true
+  },
+  {
+    "kind": "validation",
+    "name": "user_defined satisfies the provenance gate",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [
+        {
+          "id": "client",
+          "action": "Book 2 calls",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "client:promise"
+          ],
+          "user_defined": true
+        }
+      ],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": true
+  },
+  {
+    "kind": "validation",
+    "name": "the provenance gate also covers WAITING and NEXT",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [
+        {
+          "id": "w",
+          "reason": "blocked until 2026-11-30"
+        }
+      ],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "a delegation without a question is invalid",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [],
+      "delegate": [
+        {
+          "id": "d",
+          "delegate_to": "ai-council",
+          "return_contract": "verdict"
+        }
+      ],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "a delegation without a return contract is invalid",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [],
+      "delegate": [
+        {
+          "id": "d",
+          "delegate_to": "ai-council",
+          "question": "Which bet?"
+        }
+      ],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "a known specialist passes the delegate reality gate",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [],
+      "delegate": [
+        {
+          "id": "d",
+          "delegate_to": "ai-council",
+          "question": "Which bet?",
+          "return_contract": "verdict"
+        }
+      ],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": true
+  },
+  {
+    "kind": "validation",
+    "name": "an external delegate with evidence passes the reality gate",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [],
+      "delegate": [
+        {
+          "id": "d",
+          "delegate_to": "Anna from Acme",
+          "delegate_evidence_ref": "email:thread-12",
+          "question": "Can you take the migration?",
+          "return_contract": "yes/no plus date"
+        }
+      ],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": true
+  },
+  {
+    "kind": "ranking",
+    "name": "due tomorrow outranks due in two days",
+    "items": [
+      {
+        "id": "a-in-2-days",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 2,
+        "effort_class": "S"
+      },
+      {
+        "id": "z-in-1-days",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 1,
+        "effort_class": "S"
+      }
+    ],
+    "expected_first": "z-in-1-days"
+  },
+  {
+    "kind": "ranking",
+    "name": "the three-day tier outranks the week tier",
+    "items": [
+      {
+        "id": "a-in-5-days",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 5,
+        "effort_class": "S"
+      },
+      {
+        "id": "z-in-3-days",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 3,
+        "effort_class": "S"
+      }
+    ],
+    "expected_first": "z-in-3-days"
+  },
+  {
+    "kind": "ranking",
+    "name": "the week tier outranks the fortnight tier",
+    "items": [
+      {
+        "id": "a-in-10-days",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 10,
+        "effort_class": "S"
+      },
+      {
+        "id": "z-in-7-days",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 7,
+        "effort_class": "S"
+      }
+    ],
+    "expected_first": "z-in-7-days"
+  },
+  {
+    "kind": "ranking",
+    "name": "the fortnight tier outranks no deadline pressure",
+    "items": [
+      {
+        "id": "a-in-30-days",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 30,
+        "effort_class": "S"
+      },
+      {
+        "id": "z-in-14-days",
+        "commitment_type": "hard_external",
+        "days_to_deadline": 14,
+        "effort_class": "S"
+      }
+    ],
+    "expected_first": "z-in-14-days"
+  },
+  {
+    "kind": "ranking",
+    "name": "blocking the active goal lifts an item within its gate class",
+    "items": [
+      {
+        "id": "a-routine-renewal",
+        "commitment_type": "hard_external",
+        "effort_class": "S"
+      },
+      {
+        "id": "z-blocking-migration",
+        "commitment_type": "hard_external",
+        "blocks_current_goal": true,
+        "effort_class": "S"
+      }
+    ],
+    "expected_first": "z-blocking-migration"
+  },
+  {
+    "kind": "ranking",
+    "name": "an external promise outranks a better-scoring internal gate",
+    "items": [
+      {
+        "id": "internal-gate",
+        "commitment_type": "hard_internal",
+        "goal_alignment": 5,
+        "revenue": 5,
+        "trust": 5,
+        "effort_class": "XS"
+      },
+      {
+        "id": "client-promise",
+        "commitment_type": "hard_external",
+        "effort_class": "XL"
+      }
+    ],
+    "expected_first": "client-promise"
+  },
+  {
+    "kind": "validation",
+    "name": "an evidence_ref list satisfies the provenance gate",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [
+        {
+          "id": "n",
+          "action": "Deliver by 2026-10-01",
+          "done_when": "Signed off",
+          "evidence": [
+            "crm:1"
+          ],
+          "evidence_ref": [
+            "calendar:event-456"
+          ]
+        }
+      ],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": true
+  },
+  {
+    "kind": "validation",
+    "name": "an empty evidence_ref list does not satisfy the provenance gate",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [
+        {
+          "id": "n",
+          "action": "Deliver by 2026-10-01",
+          "done_when": "Signed off",
+          "evidence": [
+            "crm:1"
+          ],
+          "evidence_ref": [
+            "  "
+          ]
+        }
+      ],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": false
+  },
+  {
+    "kind": "validation",
+    "name": "a delegate_evidence_ref list satisfies the reality gate",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [],
+      "delegate": [
+        {
+          "id": "d",
+          "delegate_to": "Anna from Acme",
+          "delegate_evidence_ref": [
+            "email:thread-12"
+          ],
+          "question": "Can you take the migration?",
+          "return_contract": "yes/no plus date"
+        }
+      ],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": true
+  },
+  {
+    "kind": "validation",
+    "name": "a user-defined external delegate passes the reality gate",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [],
+      "delegate": [
+        {
+          "id": "d",
+          "delegate_to": "Anna from Acme",
+          "user_defined": true,
+          "question": "Can you take the migration?",
+          "return_contract": "yes/no plus date"
+        }
+      ],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_valid": true
+  },
+  {
+    "kind": "render",
+    "name": "the brief shows the portfolio outcome, not the internal action",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "billing",
+          "scope_level": "portfolio",
+          "portfolio_outcome": "Billing can charge a real customer",
+          "action": "Wire StripeWebhookHandler into the retry queue",
+          "done_when": "One live charge settles",
+          "evidence": [
+            "github:pr-31"
+          ]
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_contains": [
+      "Billing can charge a real customer",
+      "— Done: One live charge settles"
+    ],
+    "expected_absent": [
+      "StripeWebhookHandler"
+    ]
+  },
+  {
+    "kind": "render",
+    "name": "empty lanes are left out of the brief",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "x",
+          "action": "Do the thing",
+          "done_when": "It is done",
+          "evidence": [
+            "e"
+          ]
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_contains": [
+      "MUST DO",
+      "Do the thing"
+    ],
+    "expected_absent": [
+      "WAITING",
+      "NEXT",
+      "PAUSE / DROP",
+      "CAPACITY CONFLICTS"
+    ]
+  },
+  {
+    "kind": "render",
+    "name": "an item without a done condition falls back to its reason",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [
+        {
+          "id": "w",
+          "action": "Await the client decision",
+          "reason": "blocked on their legal review"
+        }
+      ],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": []
+    },
+    "expected_contains": [
+      "WAITING",
+      "Await the client decision",
+      "— blocked on their legal review"
+    ]
+  },
+  {
+    "kind": "render",
+    "name": "readiness leads the brief",
+    "report": {
+      "protocol_version": "1.0",
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "capacity": {
+        "source": "unknown"
+      },
+      "must_do": [
+        {
+          "id": "x",
+          "action": "Do the thing",
+          "done_when": "It is done",
+          "evidence": [
+            "e"
+          ]
+        }
+      ],
+      "now": [],
+      "delegate": [],
+      "delegate_candidate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": [],
+      "readiness": {
+        "status": "BLOCKED",
+        "reason": "capacity unknown and three hard streams"
+      }
+    },
+    "expected_contains": [
+      "Stan: BLOCKED — capacity unknown and three hard streams"
+    ]
+  }
 ]

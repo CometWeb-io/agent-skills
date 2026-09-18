@@ -30,7 +30,16 @@ def main() -> None:
     for name in SHARED_REFS:
         left = REF_SRC / name
         right = REF_DST / name
-        if left.is_file() and (not right.is_file() or left.read_bytes() != right.read_bytes()):
+        # SHARED_REFS is a declared contract, so a file missing on either side is
+        # a defect. Skipping when the source copy is absent let a deletion pass
+        # silently and stopped the two skills being compared at all.
+        if not left.is_file():
+            errors.append(f"references/{name} missing from skill-orchestrator")
+            continue
+        if not right.is_file():
+            errors.append(f"references/{name} missing from skill-orchestrator-multiagent")
+            continue
+        if left.read_bytes() != right.read_bytes():
             errors.append(f"references/{name} drift")
 
     if args.check:

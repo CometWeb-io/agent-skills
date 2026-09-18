@@ -94,22 +94,32 @@ The engine derives `R1/R2/R3` from scope flags and enforces a minimum mode. Do n
 
 Resolve these risk flags to `yes | no | unknown`:
 
-- first production release;
-- auth change;
-- billing change;
-- schema or data migration;
-- sensitive-data change;
-- public API breaking change;
-- major infrastructure change;
-- mobile store release;
-- incident-recovery release;
-- high-impact AI change;
-- legal/regulatory change.
+These are keys of the **`scope.risk_flags`** object, not fields of `scope`
+itself. Write them exactly; a key the engine does not recognise is rejected
+rather than guessed:
+
+```json
+{"scope": {"audience": "library_consumers", "commercial": "not_applicable",
+           "risk_flags": {"auth_change": "no", "billing_change": "unknown"}}}
+```
+
+
+- `first_production_release`
+- `auth_change`
+- `billing_change`
+- `schema_or_data_migration`
+- `sensitive_data_change`
+- `public_api_breaking_change`
+- `major_infra_change`
+- `mobile_store_release`
+- `incident_recovery_release`
+- `high_impact_ai_change`
+- `legal_or_regulatory_change`
 
 Also record:
 
-- audience: external / internal / library consumers;
-- commercial model: paid / free / not applicable;
+- `audience`: `external` | `internal` | `library_consumers` | `unknown`;
+- `commercial_model`: `paid` | `free` | `not_applicable` | `unknown`;
 - governance surfaces;
 - whether risk-surface assessment is complete.
 

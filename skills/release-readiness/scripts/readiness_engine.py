@@ -16,7 +16,6 @@ or an unresolved governance blocker.
 from __future__ import annotations
 
 import argparse
-import copy
 import hashlib
 import json
 import math
@@ -680,8 +679,8 @@ def _summarize_domain(checks: Iterable[Dict[str, Any]]) -> Tuple[float, float, i
     scale = max(c["weight"] for c in applicable)
     weights = [c["weight"] / scale for c in applicable]
     total = math.fsum(weights)
-    earned = math.fsum(w * STATUS_CREDIT[c["effective_status"]] for c, w in zip(applicable, weights))
-    known = math.fsum(w for c, w in zip(applicable, weights) if c["effective_status"] != "unknown")
+    earned = math.fsum(w * STATUS_CREDIT[c["effective_status"]] for c, w in zip(applicable, weights, strict=True))
+    known = math.fsum(w for c, w in zip(applicable, weights, strict=True) if c["effective_status"] != "unknown")
     return (100.0 * (earned / total), 100.0 * (known / total), len(applicable))
 
 

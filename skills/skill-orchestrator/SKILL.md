@@ -86,7 +86,8 @@ request the pin before gating.
 
 **isolated_subagents** — for each step:
 
-1. Build subagent payload (`scripts/orchestrate_multiagent_kernel.py` when available).
+1. Build subagent payload (`skills/skill-orchestrator-multiagent/scripts/orchestrate_multiagent_kernel.py`
+   when available; it ships with the multiagent skill, not this one).
 2. Launch host Task/subagent; do **not** run domain work in the parent.
 3. Validate returned envelope type; append to `prior_envelopes`.
 

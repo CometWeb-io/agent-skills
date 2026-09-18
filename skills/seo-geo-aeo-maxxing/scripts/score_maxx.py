@@ -4,7 +4,7 @@ import hashlib
 import json
 import os
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -26,14 +26,15 @@ def load_json(path):
 
 def parse_day(value):
     try:
-        return datetime.strptime(value, "%Y-%m-%d").date()
+        return date.fromisoformat(value)
     except (TypeError, ValueError):
         fail(f"Invalid date {value!r}; expected YYYY-MM-DD")
 
 
 def get_as_of(cli_value=None):
     raw = cli_value or os.environ.get("MAXX_AS_OF_DATE")
-    return parse_day(raw) if raw else date.today()
+    # UTC so a score does not depend on the runner's timezone.
+    return parse_day(raw) if raw else datetime.now(timezone.utc).date()
 
 
 def tier_for(score, tiers):
@@ -501,4 +502,4 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except (ValueError, json.JSONDecodeError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
-        raise SystemExit(1)
+        raise SystemExit(1) from None

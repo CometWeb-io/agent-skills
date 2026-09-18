@@ -4,6 +4,7 @@ import argparse
 import json
 import re
 import sys
+import datetime as dt
 from collections import defaultdict
 from copy import deepcopy
 from typing import Any
@@ -147,6 +148,23 @@ def route_delegation(item: dict[str, Any]) -> str | None:
     return None
 
 
+def _deadline_key(value: Any) -> str:
+    """Collapse a deadline to the calendar day it names.
+
+    Grouping by the raw string meant "2026-10-01" and "2026-10-01T00:00:00"
+    landed in different buckets, so two large hard commitments due the same day
+    were reported as no conflict at all. Anything unparseable keeps its stripped
+    text, so an unusual format still groups with itself.
+    """
+    text = str(value).strip()
+    if not text:
+        return ""
+    try:
+        return dt.date.fromisoformat(text[:10]).isoformat()
+    except ValueError:
+        return text
+
+
 def detect_capacity_conflicts(
     items: list[dict[str, Any]],
     capacity_source: str = 'unknown',
@@ -160,7 +178,7 @@ def detect_capacity_conflicts(
             continue
         if item.get('effort_class') not in LARGE_EFFORT:
             continue
-        by_deadline[str(deadline)].append(item)
+        by_deadline[_deadline_key(deadline)].append(item)
 
     conflicts: list[dict[str, Any]] = []
     for deadline, grouped in sorted(by_deadline.items()):

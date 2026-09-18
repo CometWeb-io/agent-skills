@@ -95,7 +95,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["primary evidence research", "generic prose humanization", "DOCX/PDF rendering internals"],
         "trigger_examples": ["Refresh this old ebook into a publication-ready 2026 edition", "Build this evidence-backed report through manuscript, DOCX and PDF release readiness"],
         "negative_trigger_examples": ["Humanize this paragraph", "Rotate this PDF page"],
-        "routing_signals": [[12, "longform publisher|publication workflow"], [11, "(ebook|white paper|playbook|handbook).*(refresh|publication-ready|release ready)"], [10, "canonical manuscript|publication-report\\.json"], [9, "refresh.*(ebook|report|guide)|derived artifacts?.*(docx|pdf)"]],
+        "routing_signals": [[12, "longform publisher|publication workflow"], [11, "(ebook|white paper|playbook|handbook|report).*(refresh|publication-ready|release ready)"], [10, "canonical manuscript|publication-report\\.json"], [10, "through manuscript|manuscript.*(docx|pdf)"], [9, "refresh.*(ebook|report|guide)|derived artifacts?.*(docx|pdf)"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "web", "files"],
     },

@@ -1,8 +1,14 @@
 """The bundle overlay must preserve existing canonical repository guarantees."""
 import json
 import pytest
-from test_context_plan import module as planner
-from test_validate_context_envelope import module as validator, valid_envelope
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _context_fixtures import load_script, build_valid_envelope as valid_envelope
+
+planner = load_script("context_plan")
+validator = load_script("validate_context_envelope")
 
 
 def test_registry_overrides_are_used(tmp_path):

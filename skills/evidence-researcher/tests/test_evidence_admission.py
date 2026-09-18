@@ -277,3 +277,47 @@ def test_zero_cache_refresh_receives_run_identity():
 def test_nonfinite_exponent_is_rejected():
     with pytest.raises(ValueError):
         kernel._load_json('{"value":1e999}')
+
+
+
+# --- Degradation is reported, not hidden ----------------------------------
+# `ready` is deliberately narrower than "well supported": a claim can be ready
+# while its only support is a blog, or while independence is unknown. That is
+# defensible only because separate rates carry those facts. If `ready` ever
+# absorbed them, or a rate went constant, a consumer reading the coverage report
+# would lose the distinction without anything failing.
+
+
+def _coverage(mutate=None):
+    led = copy.deepcopy(ledger())
+    if mutate:
+        mutate(led)
+    return kernel.coverage(led)
+
+
+def test_baseline_is_fully_supported():
+    cov = _coverage()
+    assert cov["claims"][0]["ready"] is True
+    assert cov["primary_or_system_of_record_rate"] == 1.0
+    assert cov["unknown_independence_support_count"] == 0
+
+
+def test_non_primary_source_drops_the_primary_rate():
+    assert _coverage(lambda l: l["sources"][0].__setitem__("source_role", "BLOG"))[
+        "primary_or_system_of_record_rate"] == 0.0
+
+
+def test_missing_independence_group_is_counted_as_unknown():
+    cov = _coverage(lambda l: l["sources"][0].pop("independence_group", None))
+    assert cov["unknown_independence_support_count"] == 1
+    assert cov["accepted_independence_group_count"] == 0
+
+
+@pytest.mark.parametrize("admission", ["REJECTED", None])
+def test_readiness_still_requires_accepted_support(admission):
+    def mutate(led):
+        if admission is None:
+            led["evidence"][0].pop("admission")
+        else:
+            led["evidence"][0]["admission"] = admission
+    assert _coverage(mutate)["claims"][0]["ready"] is False

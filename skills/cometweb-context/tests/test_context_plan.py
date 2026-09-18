@@ -1,11 +1,10 @@
-import importlib.util
+import sys
 from pathlib import Path
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "scripts" / "context_plan.py"
-spec = importlib.util.spec_from_file_location("context_plan", MODULE_PATH)
-module = importlib.util.module_from_spec(spec)
-assert spec and spec.loader
-spec.loader.exec_module(module)
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _context_fixtures import load_script
+
+module = load_script("context_plan")
 
 
 def test_outreach_profile():

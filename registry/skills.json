@@ -7,7 +7,7 @@
   "skills": [
     {
       "id": "ai-council",
-      "version": "5.1.1",
+      "version": "5.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -109,7 +109,7 @@
     },
     {
       "id": "ai-humanize",
-      "version": "2.4.1",
+      "version": "2.5.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -168,7 +168,7 @@
     },
     {
       "id": "cometweb-context",
-      "version": "1.4.1",
+      "version": "1.4.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -247,7 +247,7 @@
     },
     {
       "id": "competitive-intelligence",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -381,7 +381,7 @@
     },
     {
       "id": "design-partner-finder",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -589,7 +589,7 @@
     },
     {
       "id": "longform-publisher",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -660,11 +660,15 @@
         ],
         [
           11,
-          "(ebook|white paper|playbook|handbook).*(refresh|publication-ready|release ready)"
+          "(ebook|white paper|playbook|handbook|report).*(refresh|publication-ready|release ready)"
         ],
         [
           10,
           "canonical manuscript|publication-report\\.json"
+        ],
+        [
+          10,
+          "through manuscript|manuscript.*(docx|pdf)"
         ],
         [
           9,
@@ -674,7 +678,7 @@
     },
     {
       "id": "portfolio-operator",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -758,7 +762,7 @@
     },
     {
       "id": "product-operator",
-      "version": "2.2.0",
+      "version": "2.3.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -886,7 +890,7 @@
     },
     {
       "id": "product-teardown",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -945,7 +949,7 @@
     },
     {
       "id": "release-readiness",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",

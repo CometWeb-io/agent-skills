@@ -15,7 +15,7 @@ import math
 import re
 import sys
 import unicodedata
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, Tuple
 
 VERSION = "2.0.0"

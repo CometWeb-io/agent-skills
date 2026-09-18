@@ -8,7 +8,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 
-from portfolio_kernel import classify_lane, detect_capacity_conflicts, rank_items, route_delegation, validate_report
+from portfolio_kernel import (classify_lane, detect_capacity_conflicts, rank_items,
+                              render_human_brief, route_delegation, validate_report)
 
 
 def main() -> int:
@@ -33,6 +34,14 @@ def main() -> int:
             elif kind == 'validation':
                 actual = not validate_report(case['report'])
                 expected = case['expected_valid']
+            elif kind == 'render':
+                # The brief is what the user reads. Assert on what must appear and
+                # on what must not: portfolio_outcome replacing internal action text
+                # is a rule of the skill, and only an absence check can prove it.
+                brief = render_human_brief(case['report'])
+                actual = (all(s in brief for s in case.get('expected_contains', ()))
+                          and not any(s in brief for s in case.get('expected_absent', ())))
+                expected = True
             else:
                 failures.append(f"{name}: unknown kind {kind}")
                 continue

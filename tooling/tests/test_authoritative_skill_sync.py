@@ -15,9 +15,14 @@ ROOT = Path(__file__).resolve().parents[2]
 EXPECTED = {
     "founder-led-sales-operator": ("1.1.2", "FROZEN"),
     "research-program-operator": ("1.3.1", "FROZEN"),
-    "portfolio-operator": ("1.1.0", "ACTIVE"),
-    "longform-publisher": ("1.0.0", "FROZEN"),
-    "product-operator": ("2.2.0", "ACTIVE"),
+    "portfolio-operator": ("1.2.0", "ACTIVE"),
+    # 1.1.0 moved a frozen baseline. The freeze rationale in
+    # docs/acceptance/longform-publisher-1.0.0.md allows a contract change, and
+    # validate_report declares "-> list[str]" yet raised TypeError on a list or
+    # dict field. No behaviour on valid input changed. See the exception note in
+    # that acceptance record.
+    "longform-publisher": ("1.1.0", "FROZEN"),
+    "product-operator": ("2.3.0", "ACTIVE"),
 }
 
 SUPPORTED_HOSTS = {

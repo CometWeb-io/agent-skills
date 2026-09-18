@@ -261,3 +261,98 @@ class CouncilKernelV5Tests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class OptionShapeArchetypeTests(unittest.TestCase):
+    """A three-option decision is not binary.
+
+    infer_decision_archetype reads the question text only, so a caller who
+    supplied three named options still got decision_type "binary" — the
+    contract carried the options and then described their shape wrongly.
+    The upgrade applies to the generic fallback only: a domain archetype such
+    as pricing or m_and_a drives specialist routing and must survive.
+    """
+
+    def _archetype(self, question, **context):
+        return k.compile_decision_contract(question, context)["decision_type"]
+
+    def test_three_generic_options_become_option_selection(self):
+        self.assertEqual(
+            self._archetype("Czy otagowac teraz, cofnac, czy odlozyc?",
+                            options=["tag", "revert", "defer"]),
+            "option_selection",
+        )
+
+    def test_two_options_stay_binary(self):
+        self.assertEqual(
+            self._archetype("Czy wdrozyc teraz czy poczekac?", options=["now", "wait"]),
+            "binary",
+        )
+
+    def test_domain_archetype_is_not_replaced_by_option_shape(self):
+        for question, expected in (
+            ("Czy podniesc cene pakietu?", "pricing"),
+            ("Czy przejac firme X?", "m_and_a"),
+        ):
+            with self.subTest(question=question):
+                self.assertEqual(self._archetype(question, options=["a", "b", "c"]), expected)
+
+    def test_explicit_decision_type_from_caller_wins(self):
+        self.assertEqual(
+            self._archetype("cokolwiek", options=["a", "b", "c"], decision_type="binary"),
+            "binary",
+        )
+
+
+class IndependenceUnknownProvenanceTests(unittest.TestCase):
+    """Unknown provenance must not read as independent confirmation.
+
+    SKILL.md states it outright and references/evidence-policy.md repeats it:
+    absence is unknown independence, not a distinct origin. The grader folded a
+    missing provider into the literal string "unknown" and then compared it, so
+    an adviser that declared nothing differed from one that declared OpenAI and
+    both scored I3 — 0.75 on mean_independence_grade instead of 0.25, tripling
+    the panel's measured independence on a blank field.
+    """
+
+    def _grades(self, memos):
+        report = k.independence_grade_report(memos)
+        return {row["expert_id"]: row["grade"] for row in report["grades"]}, report["mean_independence_grade"]
+
+    def test_undeclared_peer_does_not_create_model_independence(self):
+        grades, mean = self._grades([
+            {"expert_id": "a", "provider": "openai", "model_family": "gpt"},
+            {"expert_id": "b"},
+        ])
+        self.assertEqual(grades, {"a": "I1", "b": "I1"})
+        self.assertEqual(mean, 0.25)
+
+    def test_two_undeclared_advisers_are_not_independent(self):
+        grades, _ = self._grades([{"expert_id": "a"}, {"expert_id": "b"}])
+        self.assertEqual(set(grades.values()), {"I1"})
+
+    def test_declared_and_different_still_grades_i3(self):
+        grades, mean = self._grades([
+            {"expert_id": "a", "provider": "openai", "model_family": "gpt"},
+            {"expert_id": "b", "provider": "anthropic", "model_family": "claude"},
+        ])
+        self.assertEqual(set(grades.values()), {"I3"})
+        self.assertEqual(mean, 0.75)
+
+    def test_same_provider_different_model_still_grades_i3(self):
+        grades, _ = self._grades([
+            {"expert_id": "a", "provider": "openai", "model_family": "gpt-4"},
+            {"expert_id": "b", "provider": "openai", "model_family": "gpt-5"},
+        ])
+        self.assertEqual(set(grades.values()), {"I3"})
+
+    def test_same_provider_and_model_is_not_independent(self):
+        grades, _ = self._grades([
+            {"expert_id": "a", "provider": "openai", "model_family": "gpt"},
+            {"expert_id": "b", "provider": "openai", "model_family": "gpt"},
+        ])
+        self.assertEqual(set(grades.values()), {"I1"})
+
+    def test_external_human_still_outranks_everything(self):
+        grades, _ = self._grades([{"expert_id": "a", "actor_type": "human"}, {"expert_id": "b"}])
+        self.assertEqual(grades["a"], "I4")

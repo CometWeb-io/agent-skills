@@ -7,10 +7,9 @@ import argparse
 import json
 import sys
 from dataclasses import asdict, dataclass
-from pathlib import Path
 from typing import Any
 
-from orchestrate_kernel import WorkflowPlan, WorkflowStep, plan_workflow
+from orchestrate_kernel import WorkflowStep, plan_workflow
 
 SKILL_ROOT_HINTS = (
     "~/.cursor/skills/{skill}",

@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.2.0] - 2026-09-18
+
+### Fixed
+
+- `SKILL.md` told an agent to write `library consumers` and `not applicable`,
+  which are prose spellings of the engine enums `library_consumers` and
+  `not_applicable`. A context file built by following the skill was rejected
+  before assessment could start. `references/manifest-schema.md` had it right;
+  the file an agent reads first did not.
+- The risk flags were listed in prose ("major infrastructure change"), not as
+  the `scope.risk_flags` keys the engine requires — two of the eleven are not
+  guessable (`major_infra_change`, `legal_or_regulatory_change`) — and nothing
+  said they nest under `risk_flags` at all. Keys and shape are now shown.
+- `bootstrap_manifest.py` silently discarded unrecognised keys placed directly
+  on `scope`, so answered risk flags came back as `unknown` and an operator who
+  had resolved the risk scope saw a manifest claiming otherwise. Unrecognised
+  keys now fail with the offending names and the valid list, the way an invalid
+  `audience` already did.
+
 ## 1.1.0 — unreleased candidate
 
 - Engine 2.1.0 rejects prefix-only, mutable-label and mismatching candidate binding;
