@@ -1,5 +1,9 @@
 # CometWeb Agent Skills
 
+[![Validate](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
+[![Skills](https://img.shields.io/badge/skills-18-informational.svg)](#skills)
+
 Schema-driven agent skills for research, product operations, QA, release
 readiness, and evidence-based decisions.
 
@@ -125,15 +129,36 @@ For multi-step work, use `skill-orchestrator`; use
 - External side effects belong at the host boundary. Skills may prepare a
   draft, decision, or handoff; the host controls authorization and execution.
 
+## What a skill costs, and what its tests are worth
+
+Correctness is gated in twelve places. Two things the gates themselves depend
+on are measured rather than assumed.
+
+Context is the resource that decides whether a skill can be loaded at all.
+[`docs/generated-context-budget.md`](docs/generated-context-budget.md) records
+what each SKILL.md costs a host at the front door, and what it keeps behind it
+in references. `tooling/context_budget.py --check` fails when a front door grows
+without that cost being accepted deliberately.
+
+A passing test suite is worth only what it would fail on.
+[`docs/generated-eval-strength.md`](docs/generated-eval-strength.md) records, per
+skill, how many of its kernel's branches its own eval harness actually holds —
+measured by removing one branch at a time and checking whether a case goes red.
+`tooling/eval_strength.py --check` fails when a rule stops being pinned.
+
 ## Repository structure
 
 ```text
 skills/<name>/       Self-contained skill packages
 registry/            Routing, lifecycle, and host compatibility metadata
 protocol/            CW-AIP v1 compatibility and CW-AIP v2 schemas
-tooling/              Validators, compatibility checks, and adapter tooling
+tooling/             Validators, compatibility checks, and adapter tooling
 evals/               Routing and behavior evaluation fixtures
+fixtures/            Shared synthetic inputs used by tests and evals
+profiles/            Deployment profiles consumed by the registry
 extras/              Host-specific routing assets
+scripts/             Per-host installers
+docs/                Protocol notes and generated reference tables
 ```
 
 Each package can contain a `SKILL.md`, references, scripts, tests, examples,
@@ -150,17 +175,42 @@ Install the development dependencies:
 python3 -m pip install -r requirements-dev.txt
 ```
 
-Run the test suite and inspect the local validation plan:
+Run the test suite:
 
 ```bash
 python3 -m pytest -q
-python3 tooling/validate_local.py --plan
 ```
+
+Run the local repository gate, with per-check logs and a JUnit report outside
+the checkout:
+
+```bash
+python3 tooling/validate_local.py --output ../agent-skills-validation-run-01 --timeout 900
+```
+
+Choose a new output directory outside the checkout for each run. The verdict is
+in `../agent-skills-validation-run-01/report.json`. A check counts as `passed` only
+when it exits zero and nothing was skipped, so an unproven test never reads as
+a green one. Use `--plan` to print the command list without executing it.
+Run the public-safety scan separately before proposing changes; CI also performs
+that check.
 
 Before opening a pull request, read
 [`CONTRIBUTING.md`](CONTRIBUTING.md). Changes should keep routing explicit,
 preserve typed handoff boundaries, and add tests or eval coverage when
 behavior changes.
+
+## Security
+
+Report vulnerabilities privately — see [`SECURITY.md`](SECURITY.md). Everyday
+participation is covered by the
+[Code of Conduct](CODE_OF_CONDUCT.md).
+
+## Documentation
+
+[`docs/`](docs/README.md) indexes the repository's documents: direction and
+quality policy, local validation, the publication and visual standards, and the
+generated tables that must not be hand-edited.
 
 ## Protocol
 

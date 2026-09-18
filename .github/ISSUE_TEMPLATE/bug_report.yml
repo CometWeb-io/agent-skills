@@ -1,0 +1,55 @@
+name: Bug report
+description: A check fails, a skill routes wrongly, or documented behaviour does not hold.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not report security findings here — see [SECURITY.md](../../SECURITY.md).
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Contents of `VERSION`, or the commit SHA you are on.
+      placeholder: "2.0.0 / 0f2f4c6"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - A skill's behaviour or routing
+        - Validators / tooling
+        - Tests or evals
+        - Installation into a host
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happens instead
+      description: Paste the exact command and its output. Redact anything private.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: gate
+    attributes:
+      label: Local gate result
+      description: |
+        Output of `python3 tooling/validate_local.py --output .validation --timeout 900`,
+        or the failing check from `.validation/report.json`.
+      render: shell
+  - type: input
+    id: env
+    attributes:
+      label: Python version and OS
+      placeholder: "Python 3.12.13, macOS 15"

@@ -1,0 +1,54 @@
+name: Skill proposal
+description: Propose a new skill package, or a scope change to an existing one.
+labels: ["skill-proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The bar here is routing clarity and enforceable behaviour, not prompt
+        volume. A proposal that cannot say what it does *not* own, or how it
+        would be tested, is not ready.
+  - type: input
+    id: name
+    attributes:
+      label: Proposed skill id
+      placeholder: "lowercase-with-hyphens"
+    validations:
+      required: true
+  - type: textarea
+    id: owns
+    attributes:
+      label: What it owns
+      description: The decisions and artifacts this skill is responsible for.
+    validations:
+      required: true
+  - type: textarea
+    id: does_not_own
+    attributes:
+      label: What it does not own
+      description: Which existing skill takes each neighbouring case instead.
+    validations:
+      required: true
+  - type: textarea
+    id: triggers
+    attributes:
+      label: Trigger and negative-trigger examples
+      description: Real prompts that should route here, and near-misses that must not.
+    validations:
+      required: true
+  - type: textarea
+    id: enforcement
+    attributes:
+      label: How its behaviour would be enforced
+      description: |
+        Which parts become a script, schema or validator, and what the tests or
+        eval cases would assert. "The SKILL.md says so" is not enforcement.
+    validations:
+      required: true
+  - type: checkboxes
+    id: overlap
+    attributes:
+      label: Overlap check
+      options:
+        - label: I checked the existing 18 skills and none of them already owns this.
+          required: true
