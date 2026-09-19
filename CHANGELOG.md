@@ -149,7 +149,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Version tags: `v
   must compile. Tracked shell scripts must carry the executable bit.
 - `docs/README.md` indexes nine documents that almost nothing linked to, and
   marks which files are generated
-- Dependabot for Actions and pip; CI status, licence and skill-count badges
+- CI status, licence and skill-count badges
 - A test that imports every skill script and forces the date-default branches,
   written after a missing import survived both a syntax check and the full
   suite because the branch containing it only runs when an optional argument is
