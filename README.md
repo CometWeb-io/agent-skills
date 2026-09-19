@@ -1,35 +1,47 @@
 # CometWeb Agent Skills
 
+Reusable skills that help AI coding assistants research a question, choose the next product task, audit a workflow, and review a release.
+
+![A request passes through a specialist skill to a structured result; tools and approvals stay with the host.](docs/media/overview.svg)
+
 [![Validate](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-informational.svg)](LICENSE)
-[![Skills](https://img.shields.io/badge/skills-18-informational.svg)](#skills)
+[![MIT](https://img.shields.io/badge/license-MIT-034C32)](LICENSE)
 
-Schema-driven agent skills for research, product operations, QA, release
-readiness, and evidence-based decisions.
+**18 skills · Cursor, Claude Code, Codex and compatible hosts**
 
-This repository contains 18 reusable skill packages for Cursor, Claude Code,
-Codex, and other compatible agent hosts. Each skill combines clear routing
-guidance with structured outputs, references, scripts, and tests where
-deterministic behavior matters.
+## Start here
 
-This is an open-source skill toolkit, not a hosted automation product. It does
-not include built-in Apollo, LinkedIn, CRM, or outbound-campaign execution,
-and it does not send messages or mutate external systems by itself. A host or
-connector must provide those capabilities explicitly, with the user's
-authorization.
+```bash
+git clone https://github.com/CometWeb-io/agent-skills.git
+cd agent-skills
+./scripts/install-codex.sh
+```
 
-**Version:** `2.0.0` · **License:** [MIT](LICENSE)
+Use `./scripts/install-claude.sh` for Claude Code or `./scripts/install-cursor.sh` for Cursor. For all supported hosts, use `./scripts/install-all.sh`. See [installation and host setup](INSTALL.md).
 
-## Why these skills
+Then ask your assistant:
 
-Agent skills should do more than provide a large prompt. CometWeb skills are
-designed to:
+```text
+Use product-operator to compare this repo with the roadmap.
+Give me the three most useful next actions and how to verify each one.
+```
 
-- route a request to the right specialist and define when not to use it;
-- separate context, evidence, decisions, audits, and release verdicts;
-- produce reusable, structured handoffs between skills;
-- keep important behavior enforceable through scripts, schemas, tests, and evals;
-- work across multiple agent hosts without duplicating the source package.
+The assistant loads the skill's instructions and uses the tools available in your host. Browser access, connectors and external actions depend on that host and your authorization.
+
+## Pick a starting point
+
+| You need to… | Start with | You get |
+| --- | --- | --- |
+| Check a claim | [evidence-researcher](skills/evidence-researcher/) | Sources, contradictions and an Evidence Pack |
+| Decide what to do next | [product-operator](skills/product-operator/) | A bounded now / next / stop list |
+| Inspect an app | [web-app-auditor](skills/web-app-auditor/) | Findings tied to observed behavior |
+| Review a release | [release-readiness](skills/release-readiness/) | A verdict for a specific candidate |
+| Combine specialists | [skill-orchestrator](skills/skill-orchestrator/) | Ordered steps and structured handoffs |
+
+For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-orchestrator-multiagent/).
+
+<details>
+<summary>Browse all 18 skills</summary>
 
 ## Skills
 
@@ -66,159 +78,23 @@ designed to:
 | [`seo-geo-aeo-maxxing`](skills/seo-geo-aeo-maxxing/) | Multi-pillar SEO / GEO / AEO visibility audits. |
 | [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. |
 
-## Installation
 
-Clone the repository, then run the installer for the hosts you use:
+</details>
 
-```bash
-git clone https://github.com/CometWeb-io/agent-skills.git
-cd agent-skills
-./scripts/install-all.sh
-```
+## What is inside a skill?
 
-`install-all.sh` installs the skills for Cursor, Claude Code, Codex, Qwen
-Code, Qoder, and Lingma. To install selected hosts instead:
+A `SKILL.md` entry point, focused references, and scripts or tests where deterministic checks help. The [registry](registry/skills.json) describes routing and compatibility; [CW-AIP](protocol/) defines handoffs between skills.
 
-```bash
-./scripts/install-cursor.sh
-./scripts/install-codex.sh
-./scripts/install-claude.sh
-```
+Skills supply instructions and contracts. They do not supply model subscriptions, CRM accounts, or an autonomous outbound service. A passing validator checks a contract; it does not prove that an AI answer is correct.
 
-The installers discover every package under `skills/*/SKILL.md`, so newly
-registered skills do not require a hard-coded installer list.
-
-## Cursor Marketplace
-
-To add the repository as a Cursor marketplace:
-
-1. Open **Settings → Plugins → Add marketplace**.
-2. Enter `CometWeb-io/agent-skills`.
-3. Select the marketplace and install `CometWeb Agent Skills`.
-
-The repository includes the Cursor marketplace manifests under
-`.cursor-plugin/`. The Claude Code marketplace manifests remain under
-`.claude-plugin/`.
-
-## Usage
-
-Describe the outcome you need in your agent host. The routing metadata will
-select the specialist when the request matches its scope. You can also name a
-skill directly:
-
-```text
-Build an Evidence Pack for these pricing claims, including falsifiers.
-```
-
-```text
-Audit the registration flow, then run release readiness on the candidate.
-```
-
-For multi-step work, use `skill-orchestrator`; use
-`skill-orchestrator-multiagent` when each specialist should run in isolation.
-
-### What the quality claims mean
-
-- Registry metadata, schemas, validators, routing evals, and unit tests are
-  checked in CI.
-- Those checks prove deterministic contracts and repository consistency; they
-  do not prove that every model, host, connector, or workflow produces a
-  correct result in production.
-- Runtime compatibility is capability-dependent. A host may load a skill while
-  still lacking browser, filesystem, code-execution, or connector access.
-- External side effects belong at the host boundary. Skills may prepare a
-  draft, decision, or handoff; the host controls authorization and execution.
-
-## What a skill costs, and what its tests are worth
-
-Correctness is gated in twelve places. Two things the gates themselves depend
-on are measured rather than assumed.
-
-Context is the resource that decides whether a skill can be loaded at all.
-[`docs/generated-context-budget.md`](docs/generated-context-budget.md) records
-what each SKILL.md costs a host at the front door, and what it keeps behind it
-in references. `tooling/context_budget.py --check` fails when a front door grows
-without that cost being accepted deliberately.
-
-A passing test suite is worth only what it would fail on.
-[`docs/generated-eval-strength.md`](docs/generated-eval-strength.md) records, per
-skill, how many of its kernel's branches its own eval harness actually holds —
-measured by removing one branch at a time and checking whether a case goes red.
-`tooling/eval_strength.py --check` fails when a rule stops being pinned.
-
-## Repository structure
-
-```text
-skills/<name>/       Self-contained skill packages
-registry/            Routing, lifecycle, and host compatibility metadata
-protocol/            CW-AIP v1 compatibility and CW-AIP v2 schemas
-tooling/             Validators, compatibility checks, and adapter tooling
-evals/               Routing and behavior evaluation fixtures
-fixtures/            Shared synthetic inputs used by tests and evals
-profiles/            Deployment profiles consumed by the registry
-extras/              Host-specific routing assets
-scripts/             Per-host installers
-docs/                Protocol notes and generated reference tables
-```
-
-Each package can contain a `SKILL.md`, references, scripts, tests, examples,
-and host metadata. The registry describes the package contract; the skill
-directory contains its implementation and supporting evidence. Business
-specific workflows use the same CW-AIP handoff envelope; this repository does
-not maintain a second business-only protocol.
-
-## Development and validation
-
-Install the development dependencies:
+## Contribute
 
 ```bash
 python3 -m pip install -r requirements-dev.txt
+python3 -m pytest
+python3 tooling/validate_local.py
 ```
 
-Run the test suite:
+See [CONTRIBUTING.md](CONTRIBUTING.md), [security reporting](SECURITY.md), and the [documentation index](docs/README.md). Maintainers can inspect [context budgets](docs/generated-context-budget.md) and [eval strength](docs/generated-eval-strength.md).
 
-```bash
-python3 -m pytest -q
-```
-
-Run the local repository gate, with per-check logs and a JUnit report outside
-the checkout:
-
-```bash
-python3 tooling/validate_local.py --output ../agent-skills-validation-run-01 --timeout 900
-```
-
-Choose a new output directory outside the checkout for each run. The verdict is
-in `../agent-skills-validation-run-01/report.json`. A check counts as `passed` only
-when it exits zero and nothing was skipped, so an unproven test never reads as
-a green one. Use `--plan` to print the command list without executing it.
-Run the public-safety scan separately before proposing changes; CI also performs
-that check.
-
-Before opening a pull request, read
-[`CONTRIBUTING.md`](CONTRIBUTING.md). Changes should keep routing explicit,
-preserve typed handoff boundaries, and add tests or eval coverage when
-behavior changes.
-
-## Security
-
-Report vulnerabilities privately — see [`SECURITY.md`](SECURITY.md). Everyday
-participation is covered by the
-[Code of Conduct](CODE_OF_CONDUCT.md).
-
-## Documentation
-
-[`docs/`](docs/README.md) indexes the repository's documents: direction and
-quality policy, local validation, the publication and visual standards, and the
-generated tables that must not be hand-edited.
-
-## Protocol
-
-Skills use the CometWeb Agent Interchange Protocol (CW-AIP) for typed handoffs:
-
-- [`CW-AIP v1`](protocol/cw-aip-v1/)
-- [`CW-AIP v2`](protocol/cw-aip-v2/)
-
-## License
-
-CometWeb Agent Skills is released under the [MIT License](LICENSE).
+[MIT license](LICENSE) · [Changelog](CHANGELOG.md)
