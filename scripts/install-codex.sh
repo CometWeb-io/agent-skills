@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Auto-discovers skills from skills/*/SKILL.md (canonical private repo).
+# Auto-discovers skills from skills/*/SKILL.md in the canonical public repo.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -19,11 +19,8 @@ while IFS= read -r name; do
   fi
   if [[ -L "$dest" ]]; then
     rm "$dest"
-  elif [[ -d "$dest" ]]; then
-    echo "replacing directory $dest with symlink"
-    rm -rf "$dest"
   elif [[ -e "$dest" ]]; then
-    echo "FAIL: $dest exists and is not a directory or symlink — move it aside first" >&2
+    echo "FAIL: $dest exists and is not a symlink — move it aside first" >&2
     exit 1
   fi
   ln -s "$src" "$dest"
@@ -31,4 +28,3 @@ while IFS= read -r name; do
   count=$((count + 1))
 done < <(list_skills)
 echo "OK: $count Codex skills installed in $TARGET"
-

@@ -1,0 +1,16 @@
+{
+  "name": "cometweb-agent-skills",
+  "interface": {
+    "displayName": "CometWeb Agent Skills"
+  },
+  "plugins": [
+    {
+      "name": "cometweb-agent-skills",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "description": "CometWeb Labs specialist skills for research, product operations, QA, release readiness, and evidence-based decisions."
+    }
+  ]
+}

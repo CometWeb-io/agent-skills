@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "cometweb-agent-skills",
+  "version": "2.0.0",
+  "description": "CometWeb Labs specialist skills for research, product operations, QA, release readiness, and evidence-based decisions.",
+  "author": {
+    "name": "CometWeb Labs",
+    "url": "https://cometweb.io"
+  },
+  "homepage": "https://github.com/CometWeb-io/agent-skills",
+  "repository": "https://github.com/CometWeb-io/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "research",
+    "product-operations",
+    "qa",
+    "release-readiness",
+    "evidence"
+  ]
+}

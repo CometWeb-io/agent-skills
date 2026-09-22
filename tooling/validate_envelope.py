@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import hashlib
+import importlib.util
 import json
 import pathlib
 import re
@@ -21,6 +23,10 @@ PAYLOAD_SCHEMAS = {
     "ReleaseEnvelope": ROOT / "protocol" / "cw-aip-v2" / "release.schema.json",
 }
 HASH_RE = re.compile(r"^(sha256:)?[a-fA-F0-9]{64}$|^pending$")
+RFC3339_RE = re.compile(
+    r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}"
+    r"(?:\.[0-9]+)?(?:[Zz]|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])$"
+)
 CORE_REQUIRED = (
     "id",
     "type",
@@ -42,7 +48,7 @@ def fail(message: str) -> None:
 
 
 def payload_hash(payload: dict[str, Any]) -> str:
-    blob = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    blob = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
     return "sha256:" + hashlib.sha256(blob.encode("utf-8")).hexdigest()
 
 
@@ -72,45 +78,70 @@ def validate_core_fallback(data: dict[str, Any]) -> None:
     for key in CORE_REQUIRED:
         if key not in data:
             fail(f"core: missing {key}")
-    if not isinstance(data.get("id"), str) or not data["id"]:
-        fail("core:id must be non-empty string")
+    unexpected = sorted(set(data) - set(CORE_REQUIRED))
+    if unexpected:
+        fail(f"core: unexpected properties: {', '.join(unexpected)}")
+    for key in ("id", "producer", "producer_version", "subject", "generated_at", "as_of"):
+        if not isinstance(data.get(key), str) or not data[key]:
+            fail(f"core:{key} must be non-empty string")
+    if not RFC3339_RE.fullmatch(data["generated_at"]):
+        fail("core:generated_at must be an RFC 3339 date-time")
+    try:
+        generated_at = dt.datetime.fromisoformat(
+            data["generated_at"].replace("Z", "+00:00").replace("z", "+00:00")
+        )
+    except ValueError:
+        fail("core:generated_at must be an RFC 3339 date-time")
+    if generated_at.tzinfo is None:
+        fail("core:generated_at must include a timezone")
+    if data.get("type") not in PAYLOAD_SCHEMAS:
+        fail(f"core: unsupported type: {data.get('type')!r}")
     if data.get("protocol_version") != "2.0":
         fail("core:protocol_version must be '2.0'")
-    if not isinstance(data.get("producer"), str) or not data["producer"]:
-        fail("core:producer must be non-empty string")
-    if not isinstance(data.get("producer_version"), str) or not data["producer_version"]:
-        fail("core:producer_version must be non-empty string")
     if data.get("sensitivity") not in {"public", "internal", "confidential", "restricted"}:
         fail("core: invalid sensitivity")
-    if not isinstance(data.get("dependencies"), list):
-        fail("core:dependencies must be an array")
+    if not isinstance(data.get("dependencies"), list) or not all(
+        isinstance(item, str) for item in data["dependencies"]
+    ):
+        fail("core:dependencies must be an array of strings")
+    if not isinstance(data.get("payload"), dict):
+        fail("core:payload must be an object")
     digest = data.get("payload_hash")
-    if not isinstance(digest, str) or not HASH_RE.match(digest):
+    if not isinstance(digest, str) or not HASH_RE.fullmatch(digest):
         fail("core:payload_hash must be sha256 hex or 'pending'")
 
 
+def local_validate(path: pathlib.Path, module_name: str, payload: dict[str, Any]) -> None:
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if not spec or not spec.loader:
+        fail(f"cannot load validator: {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    module.validate(payload)
+
+
 def semantic_payload(envelope_type: str, payload: dict[str, Any]) -> None:
-    tooling = str(ROOT / "tooling")
-    if tooling not in sys.path:
-        sys.path.insert(0, tooling)
-    context_scripts = str(ROOT / "skills" / "cometweb-context" / "scripts")
-    if context_scripts not in sys.path:
-        sys.path.insert(0, context_scripts)
 
     if envelope_type == "ContextEnvelope":
-        from validate_context_envelope import validate as validate_context
-
-        validate_context(payload)
+        local_validate(
+            ROOT / "skills" / "cometweb-context" / "scripts" / "validate_context_envelope.py",
+            "_cometweb_context_envelope_validator",
+            payload,
+        )
         return
     if envelope_type == "EvidenceEnvelope":
-        from validate_evidence_envelope import validate as validate_evidence
-
-        validate_evidence(payload)
+        local_validate(
+            ROOT / "tooling" / "validate_evidence_envelope.py",
+            "_cometweb_evidence_envelope_validator",
+            payload,
+        )
         return
     if envelope_type == "DecisionEnvelope":
-        from validate_decision_envelope import validate as validate_decision
-
-        validate_decision(payload)
+        local_validate(
+            ROOT / "tooling" / "validate_decision_envelope.py",
+            "_cometweb_decision_envelope_validator",
+            payload,
+        )
         return
     if envelope_type == "FindingEnvelope":
         if payload.get("schema") != "cometweb.finding/v2":
@@ -137,8 +168,8 @@ def semantic_payload(envelope_type: str, payload: dict[str, Any]) -> None:
 def validate_envelope(data: dict[str, Any], *, final: bool = False) -> None:
     if not isinstance(data, dict):
         fail("envelope must be an object")
-    if not validate_jsonschema(CORE, data, "core"):
-        validate_core_fallback(data)
+    validate_jsonschema(CORE, data, "core")
+    validate_core_fallback(data)
 
     envelope_type = data.get("type")
     if envelope_type not in PAYLOAD_SCHEMAS:

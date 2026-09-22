@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Discover skill package names from skills/*/SKILL.md (canonical private repo).
+# Discover skill package names from skills/*/SKILL.md in the canonical public repo.
 # shellcheck shell=bash
 
 _SKILLS_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

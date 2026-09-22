@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Auto-discovers skills from skills/*/SKILL.md (canonical private repo).
+# Auto-discovers skills from skills/*/SKILL.md in the canonical public repo.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -28,4 +28,3 @@ while IFS= read -r name; do
   count=$((count + 1))
 done < <(list_skills)
 echo "OK: $count Claude Code skills installed in $TARGET"
-

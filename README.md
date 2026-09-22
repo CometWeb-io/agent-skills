@@ -6,8 +6,11 @@ Reusable skills that help AI coding assistants research a question, choose the n
 
 [![Validate](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml)
 [![MIT](https://img.shields.io/badge/license-MIT-034C32)](LICENSE)
+![Skills](https://img.shields.io/badge/skills-18-informational.svg)
 
 **18 skills · Cursor, Claude Code, Codex and compatible hosts**
+
+This repository contains 18 reusable skill packages for compatible agent hosts.
 
 ## Start here
 
@@ -86,6 +89,24 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 A `SKILL.md` entry point, focused references, and scripts or tests where deterministic checks help. The [registry](registry/skills.json) describes routing and compatibility; [CW-AIP](protocol/) defines handoffs between skills.
 
 Skills supply instructions and contracts. They do not supply model subscriptions, CRM accounts, or an autonomous outbound service. A passing validator checks a contract; it does not prove that an AI answer is correct.
+
+## OpenAI Marketplace (ChatGPT and Codex)
+
+The repository includes a portable OpenAI plugin manifest at
+[`plugin.json`](plugin.json) and a repository-scoped marketplace at
+`.agents/plugins/marketplace.json`. Both point at the canonical `skills/` tree;
+there is no mirrored `plugins/` skill tree to drift.
+
+For ChatGPT workspace distribution, import
+`https://github.com/CometWeb-io/agent-skills` from **Workspace settings →
+Plugins → Add → Import marketplace**. Leave Path empty and leave Branch empty
+to follow the default branch, or set Branch to `main`. The marketplace syncs
+daily after GitHub changes; use **Sync now** when an immediate refresh is
+needed. See [the full setup guide](docs/OPENAI-MARKETPLACE.md).
+
+Codex Desktop can discover the same repository-scoped marketplace. The existing
+per-host installers remain available for local skill directories and are not
+replaced by the marketplace layer.
 
 ## Contribute
 

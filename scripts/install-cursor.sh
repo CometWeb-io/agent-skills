@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Auto-discovers skills from skills/*/SKILL.md (canonical private repo).
+# Auto-discovers skills from skills/*/SKILL.md in the canonical public repo.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -47,4 +47,3 @@ if [[ -f "$RULE_SRC" ]]; then
 fi
 
 echo "OK: $count Cursor skills installed in $TARGET"
-

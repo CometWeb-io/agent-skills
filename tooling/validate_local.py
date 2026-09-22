@@ -22,6 +22,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECKS = (
+    ("openai_plugin", "tooling/validate_openai_plugin.py", ()),
     ("registry", "tooling/validate_repo.py", ()),
     ("orchestrator", "tooling/sync_orchestrator.py", ("--check",)),
     ("compatibility", "tooling/compatibility.py", ()),
@@ -38,7 +39,7 @@ CHECKS = (
 MODULE_CHECKS = (
     ("lint", ("ruff", "check", ".")),
 )
-REQUIRED = ("registry/skills.json", "registry/hosts.json", "requirements-dev.txt",
+REQUIRED = ("plugin.json", ".agents/plugins/marketplace.json", "registry/skills.json", "registry/hosts.json", "requirements-dev.txt",
             "fixtures/cwaip-v2/evidence-final.json", "tooling/validate_local.py")
 MAX_FILE = 32 * 1024 * 1024
 
