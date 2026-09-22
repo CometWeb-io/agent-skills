@@ -1,0 +1,68 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.cache-consistency",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review cache-backed flows for key correctness, invalidation, stale reads, multi-tenant isolation and write ordering.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "PR",
+      "DATA_PIPELINE"
+    ],
+    "signals": [
+      "cache",
+      "redis",
+      "memcache",
+      "ttl",
+      "invalidate",
+      "etag"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "key-scope",
+      "why": "Cache keys must include every dimension required to prevent cross-user/tenant or variant collisions.",
+      "evidence_hints": [
+        "cache key",
+        "tenant/user id",
+        "locale/version"
+      ],
+      "false_positive_guards": [
+        "Do not infer collision when a wrapper already namespaces keys."
+      ]
+    },
+    {
+      "id": "invalidation",
+      "why": "Mutations should not leave materially stale cached state beyond the intended consistency model.",
+      "evidence_hints": [
+        "invalidate",
+        "write-through",
+        "TTL",
+        "event invalidation"
+      ],
+      "false_positive_guards": [
+        "TTL alone can be intentional eventual consistency; evaluate against stated invariant."
+      ]
+    },
+    {
+      "id": "stampede-ordering",
+      "why": "Concurrent misses or write ordering can amplify load or reintroduce stale values.",
+      "evidence_hints": [
+        "singleflight",
+        "lock",
+        "version token",
+        "compare-and-set"
+      ],
+      "false_positive_guards": [
+        "Do not demand stampede protection for low-cost/low-volume caches."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "cache consistency boundary"
+  ],
+  "false_positive_guards": [],
+  "handoff_triggers": [],
+  "notes": []
+}

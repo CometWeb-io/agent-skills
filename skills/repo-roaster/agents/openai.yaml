@@ -1,0 +1,13 @@
+interface:
+  display_name: "Repo Roaster"
+  short_description: "adversarial repository review; critical-invariant and reachability analysis; executable engineering repair contracts"
+  default_prompt: "Use the Repo Roaster skill for: Run evidence-anchored adversarial reviews of software repositories, codebases, monorepos, pull requests, branches, modules, architecture, tests, configuration, CI/CD, migrations, data pipelines, infra"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

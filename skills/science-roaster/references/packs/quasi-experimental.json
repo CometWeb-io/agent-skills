@@ -1,0 +1,75 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.quasi-experimental",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review quasi-experimental causal designs for identifying assumptions, pre-trends/overlap, interference, specification sensitivity and estimand clarity.",
+  "activation": {
+    "profiles": [
+      "OBSERVATIONAL",
+      "METHODS",
+      "MIXED"
+    ],
+    "signals": [
+      "difference-in-differences",
+      "diff-in-diff",
+      "regression discontinuity",
+      "instrumental variable",
+      "synthetic control",
+      "quasi-experimental"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "identification",
+      "why": "The causal estimand depends on design-specific identifying assumptions, not only regression output.",
+      "evidence_hints": [
+        "assumption statement",
+        "design diagram",
+        "assignment mechanism",
+        "estimand"
+      ],
+      "false_positive_guards": [
+        "Do not demand causal identification if claims are explicitly descriptive."
+      ]
+    },
+    {
+      "id": "diagnostics",
+      "why": "Design diagnostics should test assumptions that are empirically probeable.",
+      "evidence_hints": [
+        "pre-trends",
+        "density test",
+        "balance",
+        "placebo",
+        "overlap"
+      ],
+      "false_positive_guards": [
+        "Passing diagnostics does not prove untestable assumptions."
+      ]
+    },
+    {
+      "id": "sensitivity",
+      "why": "Specification choices can materially change a quasi-experimental estimate.",
+      "evidence_hints": [
+        "window choice",
+        "bandwidth",
+        "controls",
+        "event-study specification"
+      ],
+      "false_positive_guards": [
+        "Do not require every robustness variant; focus on decisions that threaten the central claim."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "design description",
+    "estimand definition"
+  ],
+  "false_positive_guards": [
+    "Do not convert an unreported diagnostic into proof of failure."
+  ],
+  "handoff_triggers": [
+    "External methodological verification -> evidence-researcher"
+  ],
+  "notes": []
+}

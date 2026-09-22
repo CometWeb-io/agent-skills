@@ -1,0 +1,73 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.file-upload",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review file-upload surfaces for trust boundaries, storage naming, parser isolation, size/resource limits and authorization of read/write paths.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "PR",
+      "FULL_REPO"
+    ],
+    "signals": [
+      "upload",
+      "multipart",
+      "file storage",
+      "presigned",
+      "object storage",
+      "attachment"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "path-and-object-identity",
+      "why": "User-controlled names or keys must not escape the intended storage namespace or overwrite unrelated objects.",
+      "evidence_hints": [
+        "object key construction",
+        "path normalization",
+        "tenant prefix",
+        "random id"
+      ],
+      "false_positive_guards": [
+        "Do not infer path traversal when object storage keys are not filesystem paths."
+      ]
+    },
+    {
+      "id": "parser-boundary",
+      "why": "Content type, extension and parser choice are untrusted-input decisions with different failure modes.",
+      "evidence_hints": [
+        "MIME sniffing",
+        "parser dispatch",
+        "image/pdf processing",
+        "sandbox"
+      ],
+      "false_positive_guards": [
+        "Do not demand deep content inspection if the system deliberately stores opaque blobs and never parses them."
+      ]
+    },
+    {
+      "id": "resource-and-access",
+      "why": "Upload/download limits and authorization should preserve availability and tenant/object access boundaries.",
+      "evidence_hints": [
+        "size limits",
+        "quota",
+        "download auth",
+        "signed URL expiry"
+      ],
+      "false_positive_guards": [
+        "Do not infer public exposure from signed URLs without checking expiry/scope."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "upload trust boundary"
+  ],
+  "false_positive_guards": [
+    "Do not include malicious payload recipes in findings."
+  ],
+  "handoff_triggers": [
+    "Active exploit testing -> dedicated security workflow"
+  ],
+  "notes": []
+}

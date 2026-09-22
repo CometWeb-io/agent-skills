@@ -1,0 +1,13 @@
+interface:
+  display_name: "Repair Operator"
+  short_description: "finding-to-repair planning; authorized bounded repairs; fresh repair verification"
+  default_prompt: "Use the Repair Operator skill for: Convert findings from reviewers, roasters, audits, tests, or acceptance gates into a minimal dependency-aware repair set, optionally apply authorized edits, and verify that fixes close root causes wit"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

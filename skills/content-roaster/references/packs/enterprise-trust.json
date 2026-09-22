@@ -1,0 +1,76 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.enterprise-trust",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review enterprise trust/security pages as high-cost decision artifacts with claim provenance, scope, certification wording and implementation boundaries.",
+  "activation": {
+    "profiles": [
+      "PRODUCT_PAGE",
+      "LANDING_PAGE",
+      "DOCUMENTATION"
+    ],
+    "signals": [
+      "trust center",
+      "security",
+      "soc 2",
+      "iso 27001",
+      "gdpr",
+      "hipaa",
+      "encryption",
+      "enterprise"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "scope-and-qualification",
+      "why": "Security/compliance claims need explicit product, environment, certification and temporal scope.",
+      "evidence_hints": [
+        "certificate",
+        "attestation period",
+        "scope statement",
+        "subprocessors"
+      ],
+      "false_positive_guards": [
+        "Do not perform legal compliance determinations. Review only what the artifact communicates."
+      ]
+    },
+    {
+      "id": "control-vs-certification",
+      "why": "Implemented controls, audits, certifications and legal compliance are different claims with different proof burdens.",
+      "evidence_hints": [
+        "audit report",
+        "certificate",
+        "control description",
+        "policy"
+      ],
+      "false_positive_guards": [
+        "Do not upgrade a control statement into a certification claim."
+      ]
+    },
+    {
+      "id": "commitment-path",
+      "why": "High-cost enterprise decisions require a path to deeper evidence without forcing sensitive disclosure.",
+      "evidence_hints": [
+        "DPA",
+        "security whitepaper",
+        "trust portal",
+        "contact path"
+      ],
+      "false_positive_guards": [
+        "Do not require public disclosure of sensitive security details."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "current trust/security artifact"
+  ],
+  "false_positive_guards": [
+    "Do not reproduce secrets or confidential control details."
+  ],
+  "handoff_triggers": [
+    "Legal/compliance interpretation -> specialist",
+    "External certification verification -> evidence-researcher"
+  ],
+  "notes": []
+}

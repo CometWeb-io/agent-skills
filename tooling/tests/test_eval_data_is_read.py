@@ -1,7 +1,7 @@
 """Eval data a skill ships has to be read by something.
 
-test_skill_eval_harnesses.py runs the three packages that carry a
-scripts/run_evals.py. Four other eval files ship without one, and two of them —
+test_skill_eval_harnesses.py runs the packages that carry a
+scripts/run_evals.py. Other eval files ship without one, and two of them —
 competitive-intelligence's and design-partner-finder's behavioural suites — were
 read by nothing at all. That is how they drifted to different shapes: one spells
 the expectation key `expect`, the other spelled it `expected`, and no run would
@@ -14,12 +14,15 @@ them.
 
 from __future__ import annotations
 
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 HARNESS = "scripts/run_evals.py"
+VALIDATOR = "scripts/validate_evals.py"
 
 COVERED_ELSEWHERE = {
     ("ai-humanize", "evaluation/redteam-cases.json"):
@@ -50,12 +53,14 @@ def eval_files(package: Path) -> list[str]:
 def test_every_eval_file_is_read_by_something(package: Path) -> None:
     if (package / HARNESS).is_file():
         return  # test_skill_eval_harnesses.py runs it
+    if (package / VALIDATOR).is_file():
+        return  # test_roaster_eval_validators.py runs it
     orphans = [
         relative for relative in eval_files(package)
         if (package.name, relative) not in COVERED_ELSEWHERE
     ]
     assert not orphans, (
-        f"{package.name} ships {orphans} with no {HARNESS} and no declared cover. "
+        f"{package.name} ships {orphans} with no {HARNESS} or {VALIDATOR} and no declared cover. "
         f"Add the harness, or list the file in COVERED_ELSEWHERE with the gated "
         f"test that reads it."
     )
@@ -72,3 +77,12 @@ def test_declared_cover_still_describes_reality(entry: tuple[str, str]) -> None:
     )
     cover = COVERED_ELSEWHERE[entry]
     assert (ROOT / cover).is_file(), f"{skill}/{relative} names a missing cover: {cover}"
+
+
+@pytest.mark.parametrize("skill", ["content-roaster", "repo-roaster", "science-roaster"])
+def test_roaster_eval_validator_passes(skill: str) -> None:
+    package = ROOT / "skills" / skill
+    proc = subprocess.run(
+        [sys.executable, VALIDATOR], cwd=package, capture_output=True, text=True, timeout=120
+    )
+    assert proc.returncode == 0, f"{skill} eval validator failed:\n{proc.stdout}\n{proc.stderr}"

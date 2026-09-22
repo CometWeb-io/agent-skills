@@ -1,0 +1,35 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.randomized-experiment",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review randomized experiments for allocation integrity, estimand alignment, attrition, interference and analysis choices before accepting causal language.",
+  "activation": {
+    "profiles": ["EXPERIMENTAL"],
+    "signals": ["randomized", "randomised", "random assignment", "trial", "treatment arm", "control arm", "intention to treat"]
+  },
+  "must_inspect": [
+    {
+      "id": "allocation-and-analysis-population",
+      "why": "Causal interpretation depends on how assignment occurred and whether the analysis preserves that assignment for the stated estimand.",
+      "evidence_hints": ["randomization method", "allocation concealment", "ITT", "per-protocol", "exclusions"],
+      "false_positive_guards": ["Do not equate missing allocation detail with failed randomization; mark unreported procedures as reporting gaps."]
+    },
+    {
+      "id": "attrition-and-missing-outcomes",
+      "why": "Differential attrition can break the comparability created by random assignment.",
+      "evidence_hints": ["flow diagram", "loss to follow-up", "missing outcome handling", "sensitivity analysis"],
+      "false_positive_guards": ["Low attrition is not automatically ignorable; inspect whether missingness differs by arm and relates to outcome risk."]
+    },
+    {
+      "id": "interference-and-contamination",
+      "why": "Spillover or treatment contamination can change the estimand even when allocation itself is valid.",
+      "evidence_hints": ["cluster structure", "cross-arm exposure", "shared environment"],
+      "false_positive_guards": ["Do not invent interference when treatment cannot plausibly propagate across units."]
+    }
+  ],
+  "required_evidence": ["randomization description", "analysis population", "outcome missingness"],
+  "false_positive_guards": ["Do not upgrade a reporting omission into a design failure without evidence."],
+  "handoff_triggers": ["Current methodological standards -> evidence-researcher when external verification is requested"],
+  "notes": []
+}

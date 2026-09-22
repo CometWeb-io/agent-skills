@@ -1,0 +1,682 @@
+[
+  {
+    "expect": {
+      "proposal_count": 1,
+      "status": "PROPOSED"
+    },
+    "id": "repeat-proposed",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "pattern": "weak evidence",
+          "regression_test": {
+            "assertion": "material claim needs evidence",
+            "id": "t1"
+          },
+          "root_layer": "INSTRUCTION",
+          "run_id": "r1",
+          "severity": "MAJOR"
+        },
+        {
+          "context_id": "c2",
+          "pattern": "weak evidence",
+          "root_layer": "INSTRUCTION",
+          "run_id": "r2",
+          "severity": "MINOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "proposal_count": 0,
+      "status": "WATCH"
+    },
+    "id": "same-context-not-independent",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "pattern": "weak evidence",
+          "regression_test": {
+            "assertion": "x",
+            "id": "t1"
+          },
+          "root_layer": "INSTRUCTION",
+          "run_id": "r1",
+          "severity": "MAJOR"
+        },
+        {
+          "context_id": "c1",
+          "pattern": "weak evidence",
+          "root_layer": "INSTRUCTION",
+          "run_id": "r2",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "proposal_count": 0,
+      "status": "WATCH"
+    },
+    "expect_paths": {
+      "watch.0.reason": "regression-test-or-test-gap-required"
+    },
+    "id": "repeat-no-regression",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "pattern": "weak evidence",
+          "root_layer": "INSTRUCTION",
+          "run_id": "r1",
+          "severity": "MAJOR"
+        },
+        {
+          "context_id": "c2",
+          "pattern": "weak evidence",
+          "root_layer": "INSTRUCTION",
+          "run_id": "r2",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "PROPOSED"
+    },
+    "id": "test-gap-proposed",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "pattern": "routing miss",
+          "root_layer": "ROUTING",
+          "run_id": "r1",
+          "severity": "MAJOR",
+          "test_gap": {
+            "assertion": "routes to correct skill",
+            "owner": "maintainer"
+          }
+        },
+        {
+          "context_id": "c2",
+          "pattern": "routing miss",
+          "root_layer": "ROUTING",
+          "run_id": "r2",
+          "severity": "MINOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "PROPOSED"
+    },
+    "id": "systemic-blocker-one-context",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "evidence": [
+            "repro"
+          ],
+          "pattern": "false ready",
+          "regression_test": {
+            "assertion": "cannot ready without evidence",
+            "id": "t1"
+          },
+          "root_layer": "KERNEL",
+          "run_id": "r1",
+          "severity": "BLOCKER",
+          "systemic": true
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "WATCH"
+    },
+    "id": "systemic-blocker-no-regression",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "evidence": [
+            "repro"
+          ],
+          "pattern": "false ready",
+          "root_layer": "KERNEL",
+          "run_id": "r1",
+          "severity": "BLOCKER",
+          "systemic": true
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "WATCH"
+    },
+    "id": "ambiguous-root",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "pattern": "miss",
+          "regression_test": {
+            "assertion": "x",
+            "id": "t1"
+          },
+          "root_layer": "ROUTING",
+          "run_id": "r1",
+          "severity": "MAJOR"
+        },
+        {
+          "context_id": "c2",
+          "pattern": "miss",
+          "root_layer": "INSTRUCTION",
+          "run_id": "r2",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "invalid_count": 1,
+      "status": "INVALID"
+    },
+    "id": "invalid-layer",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "pattern": "miss",
+          "root_layer": "MAGIC",
+          "run_id": "r1",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "invalid-severity",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "pattern": "miss",
+          "root_layer": "EVAL",
+          "run_id": "r1",
+          "severity": "URGENT"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "missing-pattern",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "root_layer": "EVAL",
+          "run_id": "r1",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "WATCH"
+    },
+    "id": "one-off-watch",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "pattern": "typo",
+          "regression_test": {
+            "assertion": "x",
+            "id": "t1"
+          },
+          "root_layer": "INSTRUCTION",
+          "run_id": "r1",
+          "severity": "MINOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "NO_SIGNAL"
+    },
+    "id": "empty-no-signal",
+    "input": {
+      "records": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "records-not-list",
+    "input": {
+      "records": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "malformed-root",
+    "input": "x"
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "record-not-object",
+    "input": {
+      "records": [
+        "x"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "WATCH"
+    },
+    "id": "test-gap-bad-owner",
+    "input": {
+      "records": [
+        {
+          "context_id": "c1",
+          "evidence": [
+            "x"
+          ],
+          "pattern": "x",
+          "root_layer": "KERNEL",
+          "run_id": "r1",
+          "severity": "BLOCKER",
+          "systemic": true,
+          "test_gap": {
+            "assertion": "x"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "retired_count": 1,
+      "status": "RETIRED"
+    },
+    "id": "learning-window-retires-old",
+    "input": {
+      "as_of": "2026-09-21T12:00:00+02:00",
+      "records": [
+        {
+          "context_id": "a",
+          "observed_at": "2026-07-01T12:00:00+02:00",
+          "pattern": "same",
+          "regression_test": {
+            "assertion": "fails before fix",
+            "id": "t"
+          },
+          "root_layer": "KERNEL",
+          "run_id": "run-a",
+          "severity": "MAJOR"
+        }
+      ],
+      "window_days": 30
+    }
+  },
+  {
+    "expect": {
+      "status": "WATCH"
+    },
+    "expect_paths": {
+      "watch.0.reason": "false-positive-dominant"
+    },
+    "id": "false-positive-dominant",
+    "input": {
+      "records": [
+        {
+          "context_id": "a",
+          "outcome": "FALSE_POSITIVE",
+          "pattern": "same",
+          "regression_test": {
+            "assertion": "fails before fix",
+            "id": "t"
+          },
+          "root_layer": "KERNEL",
+          "run_id": "run-a",
+          "severity": "MAJOR"
+        },
+        {
+          "context_id": "b",
+          "outcome": "CONFIRMED",
+          "pattern": "same",
+          "regression_test": {
+            "assertion": "fails before fix",
+            "id": "t"
+          },
+          "root_layer": "KERNEL",
+          "run_id": "run-b",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "WATCH"
+    },
+    "expect_paths": {
+      "watch.0.reason": "proposed-change-with-evaluation-plan-required"
+    },
+    "id": "strict-needs-change-plan",
+    "input": {
+      "records": [
+        {
+          "context_id": "a",
+          "pattern": "same",
+          "regression_test": {
+            "assertion": "fails before fix",
+            "id": "t"
+          },
+          "root_layer": "KERNEL",
+          "run_id": "run-a",
+          "severity": "MAJOR"
+        },
+        {
+          "context_id": "b",
+          "pattern": "same",
+          "regression_test": {
+            "assertion": "fails before fix",
+            "id": "t"
+          },
+          "root_layer": "KERNEL",
+          "run_id": "run-b",
+          "severity": "MAJOR"
+        }
+      ],
+      "strict": true
+    }
+  },
+  {
+    "expect": {
+      "proposal_count": 1,
+      "status": "PROPOSED"
+    },
+    "id": "strict-proposal-ready",
+    "input": {
+      "records": [
+        {
+          "context_id": "a",
+          "pattern": "same",
+          "proposed_change": {
+            "change": "tighten guard",
+            "evaluation_plan": "rerun frozen cases",
+            "expected_effect": "fewer false greens"
+          },
+          "regression_test": {
+            "assertion": "fails before fix",
+            "id": "t"
+          },
+          "root_layer": "KERNEL",
+          "run_id": "run-a",
+          "severity": "MAJOR"
+        },
+        {
+          "context_id": "b",
+          "pattern": "same",
+          "regression_test": {
+            "assertion": "fails before fix",
+            "id": "t"
+          },
+          "root_layer": "KERNEL",
+          "run_id": "run-b",
+          "severity": "MAJOR"
+        }
+      ],
+      "strict": true
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "invalid.0.reason": "as_of:invalid"
+    },
+    "id": "bad-as-of",
+    "input": {
+      "as_of": "today",
+      "records": []
+    }
+  },
+  {
+    "expect": {
+      "retired_count": 1,
+      "status": "RETIRED"
+    },
+    "id": "resolved-only-retires",
+    "input": {
+      "records": [
+        {
+          "context_id": "a",
+          "outcome": "RESOLVED",
+          "pattern": "same",
+          "regression_test": {
+            "assertion": "fails before fix",
+            "id": "t"
+          },
+          "root_layer": "KERNEL",
+          "run_id": "run-a",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-bad-window",
+    "input": {
+      "records": [],
+      "window_days": 0
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-record-not-object",
+    "input": {
+      "records": [
+        "x"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-pattern-invalid",
+    "input": {
+      "records": [
+        {}
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-severity-invalid",
+    "input": {
+      "records": [
+        {
+          "pattern": "p",
+          "severity": "X"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-layer-invalid",
+    "input": {
+      "records": [
+        {
+          "pattern": "p",
+          "root_layer": "X"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-outcome-invalid",
+    "input": {
+      "records": [
+        {
+          "outcome": "X",
+          "pattern": "p"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-observed-invalid",
+    "input": {
+      "records": [
+        {
+          "observed_at": "badTbad",
+          "pattern": "p"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "WATCH"
+    },
+    "expect_paths": {
+      "watch.0.reason": "root-cause-ambiguous"
+    },
+    "id": "edge-root-ambiguous",
+    "input": {
+      "records": [
+        {
+          "context_id": "a",
+          "pattern": "p",
+          "regression_test": {
+            "assertion": "a",
+            "id": "t"
+          },
+          "root_layer": "KERNEL",
+          "severity": "MAJOR"
+        },
+        {
+          "context_id": "b",
+          "pattern": "p",
+          "regression_test": {
+            "assertion": "a",
+            "id": "t"
+          },
+          "root_layer": "INSTRUCTION",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "PROMOTE"
+    },
+    "id": "promotion-pass",
+    "input": {
+      "baseline_version": "1.2.0",
+      "challenger_version": "1.3.0",
+      "evaluation_scope": "same frozen corpus",
+      "frozen_case_count": 20,
+      "improvements": 4,
+      "regressions": 0,
+      "repeated_runs": 3,
+      "safety_regression": false
+    },
+    "operation": "promotion"
+  },
+  {
+    "expect": {
+      "reason": "regression",
+      "status": "HOLD"
+    },
+    "id": "promotion-hold-regression",
+    "input": {
+      "baseline_version": "1.2.0",
+      "challenger_version": "1.3.0",
+      "evaluation_scope": "same frozen corpus",
+      "frozen_case_count": 20,
+      "improvements": 5,
+      "regressions": 1,
+      "repeated_runs": 3
+    },
+    "operation": "promotion"
+  },
+  {
+    "expect": {
+      "status": "HOLD"
+    },
+    "id": "promotion-hold-no-improvement",
+    "input": {
+      "baseline_version": "1.2.0",
+      "challenger_version": "1.3.0",
+      "evaluation_scope": "same frozen corpus",
+      "frozen_case_count": 20,
+      "improvements": 0,
+      "regressions": 0,
+      "repeated_runs": 3
+    },
+    "operation": "promotion"
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "promotion-needs-repeat",
+    "input": {
+      "baseline_version": "1.2.0",
+      "challenger_version": "1.3.0",
+      "evaluation_scope": "same frozen corpus",
+      "frozen_case_count": 20,
+      "improvements": 2,
+      "regressions": 0,
+      "repeated_runs": 1
+    },
+    "operation": "promotion"
+  }
+]

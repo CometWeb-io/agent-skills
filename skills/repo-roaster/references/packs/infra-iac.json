@@ -1,0 +1,35 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.infra-iac",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review infrastructure-as-code for privilege boundaries, destructive change paths, state, rollout and recovery evidence without pretending static IaC review proves deployed state.",
+  "activation": {
+    "profiles": ["INFRA", "FULL_REPO", "MONOREPO"],
+    "signals": ["terraform", "pulumi", "cloudformation", "infrastructure as code", "iac", "kubernetes", "helm", "deployment"]
+  },
+  "must_inspect": [
+    {
+      "id": "privilege-and-secret-boundaries",
+      "why": "IaC can encode broad credentials or workload permissions that expand blast radius.",
+      "evidence_hints": ["IAM", "service accounts", "secret references", "RBAC"],
+      "false_positive_guards": ["Do not treat a wildcard-looking declaration as exploitable without understanding the resource/action scope and deployment context."]
+    },
+    {
+      "id": "destructive-change-path",
+      "why": "Schema, storage, network and identity changes can be irreversible or cause outage if replacement semantics are misunderstood.",
+      "evidence_hints": ["destroy/recreate", "lifecycle", "state migration", "rollout order"],
+      "false_positive_guards": ["A replace operation is not automatically unsafe when redundancy and migration controls are explicit."]
+    },
+    {
+      "id": "recovery-and-state",
+      "why": "Infrastructure automation depends on state integrity, rollback or forward-fix procedures and observable rollout health.",
+      "evidence_hints": ["remote state", "locking", "backup", "rollback", "health check", "progressive rollout"],
+      "false_positive_guards": ["Do not require rollback when the documented strategy is tested forward-fix with bounded blast radius."]
+    }
+  ],
+  "required_evidence": ["IaC source", "state/rollout assumptions"],
+  "false_positive_guards": ["Static IaC is not proof of the currently deployed environment."],
+  "handoff_triggers": ["Deployed-state verification -> infrastructure/runtime operator", "Release authorization -> release-readiness"],
+  "notes": []
+}

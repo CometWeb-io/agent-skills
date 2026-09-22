@@ -1,0 +1,76 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.supply-chain",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review dependency and build supply-chain controls for pinning, provenance, install scripts, generated artifacts and update boundaries.",
+  "activation": {
+    "profiles": [
+      "FULL_REPO",
+      "PR",
+      "LIBRARY",
+      "INFRA"
+    ],
+    "signals": [
+      "dependency",
+      "lockfile",
+      "package-lock",
+      "pnpm-lock",
+      "poetry.lock",
+      "cargo.lock",
+      "npm install",
+      "pip install"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "pinning-reproducibility",
+      "why": "Build inputs should be reproducible enough for the project risk and release model.",
+      "evidence_hints": [
+        "lockfile",
+        "hashes",
+        "image digest",
+        "provider version"
+      ],
+      "false_positive_guards": [
+        "Do not require exact pins everywhere when compatible-range updates are intentionally tested and locked downstream."
+      ]
+    },
+    {
+      "id": "install-execution",
+      "why": "Dependencies and build steps may execute code during install/build and should fit the trust model.",
+      "evidence_hints": [
+        "postinstall",
+        "setup hook",
+        "build plugin",
+        "GitHub Action"
+      ],
+      "false_positive_guards": [
+        "Do not label all install scripts malicious; establish reachability and provenance risk."
+      ]
+    },
+    {
+      "id": "update-governance",
+      "why": "Automated updates need tests/review boundaries proportional to blast radius.",
+      "evidence_hints": [
+        "Dependabot/Renovate",
+        "CI",
+        "review rules",
+        "release notes"
+      ],
+      "false_positive_guards": [
+        "Do not require a specific vendor bot."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "dependency manifests and lock state"
+  ],
+  "false_positive_guards": [
+    "Package reputation is external evidence; verify before claims."
+  ],
+  "handoff_triggers": [
+    "Dependency vulnerability verification -> evidence-researcher"
+  ],
+  "notes": []
+}

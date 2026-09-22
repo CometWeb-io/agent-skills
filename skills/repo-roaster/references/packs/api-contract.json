@@ -1,0 +1,35 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.api-contract",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review API boundaries for authorization, compatibility, idempotency, input/output contracts and failure semantics rather than endpoint style preferences.",
+  "activation": {
+    "profiles": ["SERVICE", "LIBRARY", "FULL_REPO"],
+    "signals": ["api", "endpoint", "rest", "graphql", "webhook", "openapi", "sdk", "versioning"]
+  },
+  "must_inspect": [
+    {
+      "id": "authorization-at-boundary",
+      "why": "Authentication alone does not prove permission for the specific resource or action.",
+      "evidence_hints": ["route middleware", "resource authorization", "ownership checks", "scope checks"],
+      "false_positive_guards": ["Do not flag missing inline checks when authorization is enforced by a proven framework or upstream boundary."]
+    },
+    {
+      "id": "compatibility-contract",
+      "why": "Consumers depend on stable field, status, pagination and version semantics that can be broken without compiler feedback.",
+      "evidence_hints": ["OpenAPI", "schema tests", "consumer contract tests", "version policy"],
+      "false_positive_guards": ["An intentional breaking version can be acceptable when versioning and migration are explicit."]
+    },
+    {
+      "id": "idempotency-and-retry",
+      "why": "Retries, webhooks and network ambiguity can duplicate side effects unless the contract defines replay behavior.",
+      "evidence_hints": ["idempotency key", "dedupe store", "retry policy", "webhook event id"],
+      "false_positive_guards": ["Read-only or naturally idempotent operations do not require synthetic idempotency machinery."]
+    }
+  ],
+  "required_evidence": ["API boundary implementation", "authorization or contract enforcement"],
+  "false_positive_guards": ["Do not infer runtime exposure solely from an unused route definition."],
+  "handoff_triggers": ["Live API behavior -> dedicated runtime/QA tooling", "Release verdict -> release-readiness"],
+  "notes": []
+}

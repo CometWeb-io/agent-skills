@@ -1,0 +1,1453 @@
+[
+  {
+    "expect": {
+      "status": "READY"
+    },
+    "id": "ready",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Answers five defined questions",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "SaaS founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach founders"
+    }
+  },
+  {
+    "expect": {
+      "status": "BLOCKED"
+    },
+    "id": "missing-audience",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Has sources",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "invalid-policy",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Has sources",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "MAGIC",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "material_assumptions": 1,
+      "status": "PROVISIONAL"
+    },
+    "id": "material-assumption-provisional",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Has sources",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "assumptions": [
+        "Budget is unknown"
+      ],
+      "audience": "founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "open_material_decisions": 1,
+      "status": "PROVISIONAL"
+    },
+    "id": "open-decision-provisional",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Has sources",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "decision_needed": [
+        {
+          "material": true,
+          "question": "Free or gated?",
+          "resolved": false
+        }
+      ],
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "status": "READY"
+    },
+    "id": "resolved-decision-ready",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Has sources",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "decision_needed": [
+        {
+          "material": true,
+          "question": "Free or gated?",
+          "resolved": true
+        }
+      ],
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "unobservable-criterion",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Feels premium",
+          "id": "ac1",
+          "observable": false
+        }
+      ],
+      "audience": "founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "duplicate-criterion",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "A",
+          "id": "ac1",
+          "observable": true
+        },
+        {
+          "check": "B",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-deliverable",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "A",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "deliverables": [
+        {}
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "status": "READY"
+    },
+    "id": "dict-deliverable",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "A",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "deliverables": [
+        {
+          "id": "d1",
+          "type": "markdown-report"
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "decisions-not-list",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "A",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "decision_needed": "x",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "malformed-root",
+    "input": "x"
+  },
+  {
+    "expect": {
+      "status": "BLOCKED"
+    },
+    "id": "missing-criteria",
+    "input": {
+      "audience": "y",
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "criterion-not-object",
+    "input": {
+      "acceptance_criteria": [
+        "x"
+      ],
+      "audience": "y",
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "criterion-missing-id",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "observable": true
+        }
+      ],
+      "audience": "y",
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "criterion-missing-check",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "id": "a",
+          "observable": true
+        }
+      ],
+      "audience": "y",
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "BLOCKED"
+    },
+    "id": "missing-deliverables",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "a",
+          "observable": true
+        }
+      ],
+      "audience": "y",
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "assumptions-not-list",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "a",
+          "observable": true
+        }
+      ],
+      "assumptions": "x",
+      "audience": "y",
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "assumption-not-object",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "a",
+          "observable": true
+        }
+      ],
+      "assumptions": [
+        3
+      ],
+      "audience": "y",
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "assumption-missing-value",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "a",
+          "observable": true
+        }
+      ],
+      "assumptions": [
+        {
+          "material": true
+        }
+      ],
+      "audience": "y",
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "READY"
+    },
+    "id": "immaterial-assumption-ready",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "a",
+          "observable": true
+        }
+      ],
+      "assumptions": [
+        {
+          "material": false,
+          "value": "format choice"
+        }
+      ],
+      "audience": "y",
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "PROVISIONAL"
+    },
+    "id": "decision-string-provisional",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "a",
+          "observable": true
+        }
+      ],
+      "audience": "y",
+      "decision_needed": [
+        "choose format"
+      ],
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "decision-invalid-item",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "a",
+          "observable": true
+        }
+      ],
+      "audience": "y",
+      "decision_needed": [
+        3
+      ],
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "decision-missing-question",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "a",
+          "observable": true
+        }
+      ],
+      "audience": "y",
+      "decision_needed": [
+        {
+          "material": true
+        }
+      ],
+      "deliverables": [
+        "z"
+      ],
+      "evidence_policy": "CREATIVE",
+      "objective": "x"
+    }
+  },
+  {
+    "expect": {
+      "material_assumptions": 1,
+      "status": "PROVISIONAL"
+    },
+    "id": "material-assumption-object-provisional",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Has sources",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "assumptions": [
+        {
+          "material": true,
+          "value": "Acquisition channel remains organic"
+        }
+      ],
+      "audience": "founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "status": "BLOCKED"
+    },
+    "id": "missing-evidence-policy",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Has sources",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "deliverables": [
+        "guide"
+      ],
+      "objective": "Teach"
+    }
+  },
+  {
+    "expect": {
+      "status": "BLOCKED"
+    },
+    "id": "deep-missing-use-scope",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "mode": "DEEP",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "BLOCKED"
+    },
+    "id": "deep-high-risk-needs-invariants",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "mode": "DEEP",
+      "objective": "o",
+      "risk_level": "HIGH",
+      "scope": "s",
+      "use_moment": "u"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "assumptions[0]:consequential-cannot-be-assumed"
+    },
+    "id": "consequential-assumption-invalid",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "assumptions": [
+        {
+          "consequential": true,
+          "value": "Choose regulated market"
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "supersedes_brief_id:self"
+    },
+    "id": "version-self-supersede",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "brief_id": "b1",
+      "brief_version": 2,
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o",
+      "supersedes_brief_id": "b1"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "acceptance_criteria[0]:must-evidence-without-method"
+    },
+    "id": "must-evidence-needs-method",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "evidence_required": true,
+          "id": "c",
+          "observable": true,
+          "priority": "MUST"
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "requires_downstream_revalidation": false,
+      "status": "UNCHANGED"
+    },
+    "id": "delta-unchanged",
+    "new": {
+      "acceptance_criteria": [],
+      "audience": "a",
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    },
+    "old": {
+      "acceptance_criteria": [],
+      "audience": "a",
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    },
+    "operation": "delta"
+  },
+  {
+    "expect": {
+      "requires_downstream_revalidation": true,
+      "status": "CHANGED"
+    },
+    "expect_paths": {
+      "material_changes.0": "objective"
+    },
+    "id": "delta-material-change",
+    "new": {
+      "acceptance_criteria": [],
+      "audience": "a",
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "changed"
+    },
+    "old": {
+      "acceptance_criteria": [],
+      "audience": "a",
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    },
+    "operation": "delta"
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-bad-mode",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "mode": "X",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-bad-risk",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o",
+      "risk_level": "X"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-criterion-not-object",
+    "input": {
+      "acceptance_criteria": [
+        "x"
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-criterion-duplicate",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        },
+        {
+          "check": "y",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-criterion-priority",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true,
+          "priority": "X"
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-deliverable-invalid",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        {}
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-deliverable-duplicate",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d",
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-assumptions-not-list",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "assumptions": "x",
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-assumption-invalid",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "assumptions": [
+        1
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-assumption-no-value",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "assumptions": [
+        {}
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-decisions-not-list",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "decision_needed": "x",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-decision-invalid",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "decision_needed": [
+        1
+      ],
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-decision-no-question",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "decision_needed": [
+        {}
+      ],
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-decision-duplicate",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "decision_needed": [
+        {
+          "id": "d",
+          "question": "q"
+        },
+        {
+          "id": "d",
+          "question": "q2"
+        }
+      ],
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-invariants-not-list",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o",
+      "protected_invariants": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-invariant-invalid",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o",
+      "protected_invariants": [
+        {}
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-invariant-duplicate",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o",
+      "protected_invariants": [
+        "i",
+        "i"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-version-needs-id",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "brief_version": 1,
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-version-needs-positive",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "brief_id": "b",
+      "brief_version": 0,
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-parent-invalid",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o",
+      "supersedes_brief_id": ""
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-delta-invalid",
+    "new": {},
+    "old": "x",
+    "operation": "delta"
+  },
+  {
+    "expect": {
+      "requires_downstream_revalidation": true,
+      "status": "CHANGED"
+    },
+    "id": "edge-delta-criteria-change",
+    "new": {
+      "acceptance_criteria": [
+        {
+          "check": "changed",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    },
+    "old": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    },
+    "operation": "delta"
+  },
+  {
+    "expect": {
+      "status": "CHANGED"
+    },
+    "id": "edge-delta-invariant-change",
+    "new": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o",
+      "protected_invariants": [
+        "i2"
+      ]
+    },
+    "old": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o",
+      "protected_invariants": [
+        "i1"
+      ]
+    },
+    "operation": "delta"
+  },
+  {
+    "expect": {
+      "material_assumptions": 1,
+      "status": "PROVISIONAL"
+    },
+    "id": "mutation-string-assumption-preserved",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "assumptions": [
+        "temporary assumption"
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o"
+    }
+  },
+  {
+    "expect": {
+      "status": "READY"
+    },
+    "id": "mutation-string-invariant-preserved",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "x",
+          "id": "c",
+          "observable": true
+        }
+      ],
+      "audience": "a",
+      "deliverables": [
+        "d"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "o",
+      "protected_invariants": [
+        "must stay true"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "READY"
+    },
+    "id": "rubric-lock-valid",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Has evidence",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach",
+      "rubric_lock": {
+        "locked_before_execution": true,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "rubric-lock-bad-hash",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Has evidence",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach",
+      "rubric_lock": {
+        "locked_before_execution": true,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "bad"
+      }
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "rubric-lock-not-prelocked",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Has evidence",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach",
+      "rubric_lock": {
+        "locked_before_execution": false,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    }
+  },
+  {
+    "expect": {
+      "requires_downstream_revalidation": true,
+      "status": "CHANGED"
+    },
+    "id": "delta-rubric-change",
+    "new": {
+      "rubric_lock": {
+        "pack_id": "editorial",
+        "revision": "1.3",
+        "sha256": "b"
+      }
+    },
+    "old": {
+      "rubric_lock": {
+        "pack_id": "editorial",
+        "revision": "1.2",
+        "sha256": "a"
+      }
+    },
+    "operation": "delta"
+  }
+]

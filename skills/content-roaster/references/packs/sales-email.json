@@ -1,0 +1,70 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.sales-email",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review outbound or lifecycle sales email for relevance, burden, proof and ask proportionality.",
+  "activation": {
+    "profiles": [
+      "EMAIL"
+    ],
+    "signals": [
+      "email",
+      "outreach",
+      "cold email",
+      "follow-up",
+      "subject line",
+      "reply"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "relevance-before-ask",
+      "why": "The recipient should understand why the message is about them before being asked to spend attention or commit.",
+      "evidence_hints": [
+        "opening",
+        "account-specific evidence",
+        "reason now"
+      ],
+      "false_positive_guards": [
+        "Personalization tokens alone are not evidence of relevance."
+      ]
+    },
+    {
+      "id": "proof-before-commitment",
+      "why": "The proof burden rises with the size of the requested commitment.",
+      "evidence_hints": [
+        "claim",
+        "proof",
+        "CTA",
+        "meeting ask"
+      ],
+      "false_positive_guards": [
+        "A small reply CTA does not require the same proof as a purchase request."
+      ]
+    },
+    {
+      "id": "friction-budget",
+      "why": "Every paragraph competes with the requested action and should earn its place.",
+      "evidence_hints": [
+        "length",
+        "CTA count",
+        "links",
+        "attachments"
+      ],
+      "false_positive_guards": [
+        "Do not equate brevity with quality when context is necessary to make the ask credible."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "recipient context when available"
+  ],
+  "false_positive_guards": [
+    "Do not invent the recipient persona."
+  ],
+  "handoff_triggers": [
+    "Rewrite -> ai-humanize"
+  ],
+  "notes": []
+}

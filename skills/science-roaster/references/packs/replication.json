@@ -1,0 +1,35 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.replication",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review replication and reproducibility studies for target-effect fidelity, analytic equivalence, deviations and whether success or failure claims exceed the replication design.",
+  "activation": {
+    "profiles": ["EXPERIMENTAL", "OBSERVATIONAL", "COMPUTATIONAL", "MIXED"],
+    "signals": ["replication", "reproduction", "reproducibility", "original study", "registered replication", "many labs"]
+  },
+  "must_inspect": [
+    {
+      "id": "target-effect-fidelity",
+      "why": "A replication must identify which original estimand, endpoint and population it is attempting to reproduce.",
+      "evidence_hints": ["original effect", "primary endpoint", "population", "analysis set"],
+      "false_positive_guards": ["Conceptual replications may intentionally change operationalization; judge whether the claim acknowledges that boundary."]
+    },
+    {
+      "id": "deviation-ledger",
+      "why": "Differences in materials, population, setting or analysis can explain divergence and should be separated from the replication outcome itself.",
+      "evidence_hints": ["protocol deviations", "registered analysis", "materials", "environment"],
+      "false_positive_guards": ["A deviation is not automatically fatal; assess whether it changes the targeted inference."]
+    },
+    {
+      "id": "replication-verdict",
+      "why": "A non-significant result alone is not equivalent to evidence of no effect, and a significant result alone is not full replication.",
+      "evidence_hints": ["effect estimate", "uncertainty", "equivalence or prediction interval", "direction", "heterogeneity"],
+      "false_positive_guards": ["Use the inferential criterion the replication design actually prespecified when available."]
+    }
+  ],
+  "required_evidence": ["original target claim", "replication protocol", "effect estimate and uncertainty"],
+  "false_positive_guards": ["Do not reduce replication to p-value agreement."],
+  "handoff_triggers": ["Original-study fact verification -> evidence-researcher"],
+  "notes": []
+}

@@ -11,7 +11,10 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 
 | Skill | Front door | ~tokens | Depth | ~tokens | Refs | Deferred |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `repo-roaster` | 21,992 B | 5,498 | 53,678 B | 13,419 | 18 | 0.71 |
+| `science-roaster` | 19,860 B | 4,965 | 54,273 B | 13,568 | 19 | 0.73 |
 | `customer-ops` | 19,707 B | 4,926 | 120,175 B | 30,043 | 16 | 0.86 |
+| `content-roaster` | 18,696 B | 4,674 | 51,541 B | 12,885 | 18 | 0.73 |
 | `release-readiness` | 16,673 B | 4,168 | 61,996 B | 15,499 | 10 | 0.79 |
 | `product-operator` | 15,989 B | 3,997 | 34,556 B | 8,639 | 12 | 0.68 |
 | `product-teardown` | 15,932 B | 3,983 | 52,893 B | 13,223 | 10 | 0.77 |
@@ -26,8 +29,19 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `ebook-publisher` | 10,850 B | 2,712 | 35,735 B | 8,933 | 6 | 0.77 |
 | `longform-publisher` | 9,432 B | 2,358 | 11,289 B | 2,822 | 9 | 0.54 |
 | `ai-council` | 9,051 B | 2,262 | 42,230 B | 10,557 | 27 | 0.82 |
+| `quality-loop-operator` | 8,050 B | 2,012 | 10,167 B | 2,541 | 14 | 0.56 |
 | `skill-orchestrator` | 5,418 B | 1,354 | 8,584 B | 2,146 | 4 | 0.61 |
+| `content-writer` | 5,271 B | 1,317 | 6,681 B | 1,670 | 6 | 0.56 |
+| `brief-architect` | 5,251 B | 1,312 | 5,493 B | 1,373 | 5 | 0.51 |
 | `evidence-researcher` | 5,169 B | 1,292 | 34,481 B | 8,620 | 14 | 0.87 |
+| `skill-auditor` | 4,867 B | 1,216 | 5,586 B | 1,396 | 8 | 0.53 |
+| `feedback-integrator` | 4,717 B | 1,179 | 6,316 B | 1,579 | 7 | 0.57 |
+| `skill-evaluator` | 4,643 B | 1,160 | 7,112 B | 1,778 | 10 | 0.60 |
+| `artifact-acceptance` | 4,477 B | 1,119 | 5,774 B | 1,443 | 7 | 0.56 |
+| `repair-operator` | 4,434 B | 1,108 | 5,320 B | 1,330 | 6 | 0.55 |
+| `content-reviewer` | 4,144 B | 1,036 | 5,607 B | 1,401 | 7 | 0.57 |
+| `benchmark-curator` | 3,034 B | 758 | 2,818 B | 704 | 7 | 0.48 |
+| `rubric-designer` | 2,719 B | 679 | 832 B | 208 | 5 | 0.23 |
 | `skill-orchestrator-multiagent` | 1,255 B | 313 | 6,646 B | 1,661 | 3 | 0.84 |
 
-**18 skills.** Loading every front door costs roughly 54,884 tokens before any work begins; the median skill costs ~3,264 and the largest ~4,926.
+**32 skills.** Loading every front door costs roughly 82,917 tokens before any work begins; the median skill costs ~2,535 and the largest ~5,498.

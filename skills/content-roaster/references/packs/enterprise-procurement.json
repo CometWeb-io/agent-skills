@@ -1,0 +1,55 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.enterprise-procurement",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review enterprise/procurement content for security, compliance, deployment, support and commercial claims that influence high-cost buying decisions.",
+  "activation": {
+    "profiles": [
+      "PRODUCT_PAGE",
+      "OFFER",
+      "DOCUMENTATION"
+    ],
+    "signals": [
+      "enterprise",
+      "procurement",
+      "security review",
+      "sso",
+      "sla",
+      "compliance"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "trust-claims",
+      "why": "Enterprise trust claims carry high proof burden because they affect vendor-risk decisions.",
+      "evidence_hints": [
+        "certification evidence",
+        "SLA text",
+        "deployment docs",
+        "support terms"
+      ],
+      "false_positive_guards": [
+        "Do not call a certification false merely because proof is external; mark verification required."
+      ]
+    },
+    {
+      "id": "implementation-reality",
+      "why": "Claims about onboarding, migration, support and deployment should expose material constraints.",
+      "evidence_hints": [
+        "implementation steps",
+        "migration prerequisites",
+        "support boundaries"
+      ],
+      "false_positive_guards": [
+        "Do not demand every operational detail on a marketing page when a clear linked source supplies it."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.measurement-validation",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review validation studies by attacking the reference measurement, construct boundary, repeatability and transportability before judging a proxy or model.",
+  "activation": {
+    "profiles": ["VALIDATION", "METHODS"],
+    "signals": ["validation", "reference method", "ground truth", "gold standard", "construct validity", "repeatability", "agreement"]
+  },
+  "must_inspect": [
+    {
+      "id": "reference-characterization",
+      "why": "A proxy cannot be strongly validated against a reference whose quantity, error, stability or boundary is insufficiently characterized.",
+      "evidence_hints": ["calibration", "reference uncertainty", "repeatability", "system boundary", "traceability"],
+      "false_positive_guards": ["A reference need not be perfect; the manuscript must justify that its limitations are compatible with the claimed inference."]
+    },
+    {
+      "id": "construct-and-operationalization",
+      "why": "Agreement on an observable does not establish validity for a broader latent construct without an explicit bridge.",
+      "evidence_hints": ["construct definition", "operationalization", "measurement chain"],
+      "false_positive_guards": ["Do not demand latent-construct validation when the claim is explicitly limited to the observable quantity."]
+    },
+    {
+      "id": "repeatability-and-domain-shift",
+      "why": "Within-condition fit can mask instability across devices, operators, environments or time.",
+      "evidence_hints": ["repeat measurements", "device strata", "operator strata", "temporal drift", "external holdout"],
+      "false_positive_guards": ["Do not call a deliberately local calibration non-generalizable as a defect when the claim remains local."]
+    }
+  ],
+  "required_evidence": ["reference measurement definition", "validation population", "repeatability or uncertainty characterization"],
+  "false_positive_guards": ["Attack the reference before the proxy, but do not require unattainable metrology when the claim is modest."],
+  "handoff_triggers": ["External standard or instrument facts -> evidence-researcher"],
+  "notes": []
+}

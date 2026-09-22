@@ -1,0 +1,13 @@
+interface:
+  display_name: "Content Writer"
+  short_description: "evidence-aware content production; claim-discipline ledger; reader-facing informational artifacts"
+  default_prompt: "Use the Content Writer skill for: Create evidence-aware informational or editorial prose such as articles, guides, reports, documentation, research-backed explainers, and other bounded knowledge content from an explicit brief or suffi"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

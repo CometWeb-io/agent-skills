@@ -1,0 +1,35 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.longform-report",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review reports, ebooks and long-form guides for argument architecture, evidence density, redundancy and decision utility without turning the task into publication formatting.",
+  "activation": {
+    "profiles": ["LONGFORM", "ARTICLE"],
+    "signals": ["report", "ebook", "white paper", "playbook", "guide", "longform", "long-form"]
+  },
+  "must_inspect": [
+    {
+      "id": "argument-spine",
+      "why": "A long artifact needs a recoverable sequence from problem to evidence to implications rather than a collection of locally plausible sections.",
+      "evidence_hints": ["thesis", "section sequence", "transitions", "summary"],
+      "false_positive_guards": ["A reference handbook may intentionally be modular; judge against its stated reading model."]
+    },
+    {
+      "id": "evidence-density",
+      "why": "Important claims should carry proportionate evidence while low-value exposition should not dominate the artifact.",
+      "evidence_hints": ["claim concentration", "examples", "citations", "numbers", "case evidence"],
+      "false_positive_guards": ["Do not require external citations for clearly framed opinion, procedure or first-party experience."]
+    },
+    {
+      "id": "compression-and-repetition",
+      "why": "Long-form trust erodes when the same point is repackaged repeatedly without new information.",
+      "evidence_hints": ["duplicate claims", "recurring setup", "summary overlap"],
+      "false_positive_guards": ["Strategic repetition can be useful when the audience is expected to skim; identify whether each repeat adds retrieval value."]
+    }
+  ],
+  "required_evidence": ["complete manuscript or explicit sampled scope"],
+  "false_positive_guards": ["Do not claim document-wide redundancy from a short excerpt."],
+  "handoff_triggers": ["Publication workflow -> longform-publisher", "External claim verification -> evidence-researcher"],
+  "notes": []
+}

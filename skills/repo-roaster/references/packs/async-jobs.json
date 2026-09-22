@@ -1,0 +1,75 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.async-jobs",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review workers, queues and scheduled jobs for idempotency, retries, ordering, poison messages and tenant or context propagation.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "DATA_PIPELINE",
+      "FULL_REPO"
+    ],
+    "signals": [
+      "queue",
+      "worker",
+      "job",
+      "celery",
+      "rq",
+      "sidekiq",
+      "cron",
+      "scheduler"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "idempotency",
+      "why": "At-least-once delivery requires effects that can tolerate duplicate execution.",
+      "evidence_hints": [
+        "job id",
+        "dedupe",
+        "upsert",
+        "idempotency key"
+      ],
+      "false_positive_guards": [
+        "Not every job needs global idempotency if upstream delivery is exactly-once and proven."
+      ]
+    },
+    {
+      "id": "retry-semantics",
+      "why": "Retries should distinguish transient failure from permanent poison messages.",
+      "evidence_hints": [
+        "retry count",
+        "dead letter",
+        "backoff",
+        "exception handling"
+      ],
+      "false_positive_guards": [
+        "A bounded retry without a dead-letter queue may be acceptable for low-value ephemeral tasks."
+      ]
+    },
+    {
+      "id": "context-propagation",
+      "why": "Tenant, auth and correlation context can be lost across queue boundaries.",
+      "evidence_hints": [
+        "job payload",
+        "tenant id",
+        "trace id"
+      ],
+      "false_positive_guards": [
+        "Do not assume request identity should propagate when the job intentionally uses service authority."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "delivery semantics",
+    "retry policy"
+  ],
+  "false_positive_guards": [
+    "A retry loop is not necessarily a reliability bug without an unbounded failure path."
+  ],
+  "handoff_triggers": [
+    "Incident or release ops -> customer-ops or release-readiness"
+  ],
+  "notes": []
+}

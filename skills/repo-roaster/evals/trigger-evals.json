@@ -1,0 +1,156 @@
+[
+  {
+    "query": "repo roaster: tear apart this codebase for data integrity, retries and tenant isolation",
+    "should_trigger": true
+  },
+  {
+    "query": "Roast this pull request like a hostile staff engineer and anchor every issue to code.",
+    "should_trigger": true
+  },
+  {
+    "query": "Upiecz to repozytorium, ale nie zgaduj runtime behavioru z samego grep-a.",
+    "should_trigger": true
+  },
+  {
+    "query": "Red-team this monorepo architecture for reliability and state consistency failures.",
+    "should_trigger": true
+  },
+  {
+    "query": "Recheck the branch after the fixes and verify which old repo findings are resolved.",
+    "should_trigger": true
+  },
+  {
+    "query": "Roast this migration PR for partial-failure and rollback problems.",
+    "should_trigger": true
+  },
+  {
+    "query": "Review this AI-agent repository for trust boundaries and unsafe tool-call paths.",
+    "should_trigger": true
+  },
+  {
+    "query": "Tear apart this payment service codebase for idempotency and concurrency bugs.",
+    "should_trigger": true
+  },
+  {
+    "query": "Review this 20-line diff for hidden system blast radius.",
+    "should_trigger": true
+  },
+  {
+    "query": "Forensic repo review of this worker and queue implementation.",
+    "should_trigger": true
+  },
+  {
+    "query": "Analyze the entire repo and create a dependency-aware roadmap to production.",
+    "should_trigger": false,
+    "near_miss": "repo-to-roadmap"
+  },
+  {
+    "query": "Is commit abc123 ready for production? Give GO/NO_GO across QA, security and ops.",
+    "should_trigger": false,
+    "near_miss": "release-readiness"
+  },
+  {
+    "query": "Click through the deployed app and roast the UX and accessibility.",
+    "should_trigger": false,
+    "near_miss": "web-app-auditor"
+  },
+  {
+    "query": "Teardown this external open-source repo and tell me which patterns we should borrow.",
+    "should_trigger": false,
+    "near_miss": "product-teardown"
+  },
+  {
+    "query": "Run a penetration test against this live host and exploit the auth bypass.",
+    "should_trigger": false,
+    "near_miss": "security testing"
+  },
+  {
+    "query": "Fix the failing test in this repo and commit the patch.",
+    "should_trigger": false,
+    "near_miss": "implementation"
+  },
+  {
+    "query": "Explain the architecture of this repository to a new developer; no critique needed.",
+    "should_trigger": false,
+    "near_miss": "explanation"
+  },
+  {
+    "query": "Review the manuscript stored in this repository like Reviewer #2.",
+    "should_trigger": false,
+    "near_miss": "science-roaster"
+  },
+  {
+    "query": "Roast the README marketing copy for vagueness and proof gaps.",
+    "should_trigger": false,
+    "near_miss": "content-roaster"
+  },
+  {
+    "query": "Which of these two frameworks should we adopt? Compare their repos for transferable patterns.",
+    "should_trigger": false,
+    "near_miss": "product-teardown"
+  },
+  {
+    "query": "FORENSIC repo roast using source, test output, runtime logs and deployment config; prioritize reachable data-integrity failures.",
+    "should_trigger": true
+  },
+  {
+    "query": "Recheck this migration PR after the fixes and rerun the original verification conditions.",
+    "should_trigger": true
+  },
+  {
+    "query": "Red-team this AI agent repo for prompt trust boundaries, tool-call reachability and unsafe side effects.",
+    "should_trigger": true
+  },
+  {
+    "query": "Roast this monorepo for cross-tenant isolation and retry/idempotency failures, with file/symbol evidence.",
+    "should_trigger": true
+  },
+  {
+    "query": "Analyze the whole repo and create the implementation roadmap to production.",
+    "should_trigger": false
+  },
+  {
+    "query": "Is rc-17 safe to ship to production? Give GO/NO_GO.",
+    "should_trigger": false
+  },
+  {
+    "query": "Click through the live app and report UX/accessibility bugs.",
+    "should_trigger": false
+  },
+  {
+    "query": "Study Kubernetes source and extract architecture patterns we can adapt.",
+    "should_trigger": false
+  },
+  {
+    "query": "repo roast this transaction boundary and crash-after-charge retry path",
+    "should_trigger": true
+  },
+  {
+    "query": "forensic review this worker for lost-update concurrency races",
+    "should_trigger": true
+  },
+  {
+    "query": "recheck this feature-flag PR after the rollback fixes",
+    "should_trigger": true
+  },
+  {
+    "query": "deep code audit this service for incident observability and secret logging",
+    "should_trigger": true
+  },
+  {
+    "query": "build a roadmap for fixing transaction and concurrency debt across the whole repo",
+    "should_trigger": false
+  },
+  {
+    "query": "is this feature-flag release candidate ready to ship to production",
+    "should_trigger": false
+  },
+  {
+    "query": "extract reusable transaction patterns from the PostgreSQL source repo",
+    "should_trigger": false
+  },
+  {
+    "query": "click through the live app and see whether rollback UX works",
+    "should_trigger": false
+  }
+]

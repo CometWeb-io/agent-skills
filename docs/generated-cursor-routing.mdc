@@ -18,19 +18,33 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 | --- | --- |
 | decision contract, deliberation, verdict GO/TEST/DEFER, living decisions | `ai-council` |
 | EN/PL humanize, AI-tell removal, semantic-fidelity guards | `ai-humanize` |
+| knowledge-artifact acceptance gates, evidence-backed artifact verdicts, candidate and contract traceability | `artifact-acceptance` |
+| benchmark and eval corpus design, holdout and contamination controls, benchmark revision hashes | `benchmark-curator` |
+| artifact brief and execution contract, observable acceptance criteria, evidence policy and handoff fields | `brief-architect` |
 | context snapshot, provenance, conflicts/gaps, ContextEnvelope, public claim gate | `cometweb-context` |
 | competitor watchlist, delta digest, normalized competitor state | `competitive-intelligence` |
+| constructive content review, evidence-backed editorial findings, review coverage and repair direction | `content-reviewer` |
+| adversarial content review, proof-debt and claim-pressure diagnosis, repair verification contracts | `content-roaster` |
+| evidence-aware content production, claim-discipline ledger, reader-facing informational artifacts | `content-writer` |
 | support triage, incident candidate, eng handoff | `customer-ops` |
 | partner cohort, learning contract, partnerability score | `design-partner-finder` |
 | publication scope and coverage, publication claim ledger, editorial and design workflow, revision-bound publication QA | `ebook-publisher` |
 | claim decomposition, evidence edges, falsifiers, Evidence Pack | `evidence-researcher` |
+| recurrent failure pattern synthesis, evidence-backed improvement proposals, regression test proposals | `feedback-integrator` |
 | canonical long-form manuscript, publication lifecycle and claim-use reconciliation, derived-artifact release readiness | `longform-publisher` |
 | cross-domain allocation, capacity conflicts, focus/pause/delegate decisions | `portfolio-operator` |
 | weekly control loop, now/next/later/stop, roadmap drift | `product-operator` |
 | external product patterns, ADOPT/ADAPT/AVOID | `product-teardown` |
+| quality workflow state and sequencing, specialist handoffs and revalidation, quality rollout lifecycle | `quality-loop-operator` |
 | pinned RC gate, GO/NO_GO/DEFER, environment checks | `release-readiness` |
+| finding-to-repair planning, authorized bounded repairs, fresh repair verification | `repair-operator` |
+| adversarial repository review, critical-invariant and reachability analysis, executable engineering repair contracts | `repo-roaster` |
 | whole-project baseline, gap inventory, immutable roadmap snapshot | `repo-to-roadmap` |
+| evaluation rubric design, observable pass/fail evidence floors, rubric revision hashes | `rubric-designer` |
+| adversarial scientific peer review, claim/evidence and validity analysis, methodological repair verification | `science-roaster` |
 | SEO/GEO/AEO visibility audit, live-verified scoring | `seo-geo-aeo-maxxing` |
+| skill package audits, routing, portability, and contract review, package and supply-chain hygiene | `skill-auditor` |
+| skill experiment design, behavioral lift and resource measurement, host and model comparisons | `skill-evaluator` |
 | multi-skill plan, execution_mode, CW-AIP handoffs, workflow result | `skill-orchestrator` |
 | Alias for `skill-orchestrator` with isolated_subagents | `skill-orchestrator-multiagent` |
 | live click-through QA, findings with evidence, audit report | `web-app-auditor` |
@@ -39,19 +53,33 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 
 - **ai-council** — does not own: Evidence Pack construction; context gateway; implementation. Explicit invocation only.
 - **ai-humanize** — does not own: authorship claims; detector defeat; generic proofreading-only.
+- **artifact-acceptance** — does not own: software release verdicts; initial editorial review; consequential strategic decisions.
+- **benchmark-curator** — does not own: model experiment execution; rubric design; skill editing.
+- **brief-architect** — does not own: final artifact production; broad product discovery; consequential strategic decisions.
 - **cometweb-context** — does not own: evidence packs; domain decisions; release gates; outbound copy.
 - **competitive-intelligence** — does not own: strategic GO/NO_GO; pricing decision.
+- **content-reviewer** — does not own: adversarial roasting; full content rewrites; final publication acceptance.
+- **content-roaster** — does not own: scientific peer review; repository/code critique; rewrite-only editing.
+- **content-writer** — does not own: persuasion-first campaign copy; primary evidence research; publication release orchestration.
 - **customer-ops** — does not own: release gate; Council decision.
 - **design-partner-finder** — does not own: cold outbound copy; Council pricing.
 - **ebook-publisher** — does not own: independent evidence truth certification; public publishing authorization; host installation; generic blog writing.
 - **evidence-researcher** — does not own: final GO/NO_GO; release verdict; context-only refresh.
+- **feedback-integrator** — does not own: silent self-modification; single-signal generalization; product or research analytics.
 - **longform-publisher** — does not own: primary evidence research; generic prose humanization; DOCX/PDF rendering internals.
 - **portfolio-operator** — does not own: deep single-product sequencing; release GO/NO_GO; specialist implementation.
 - **product-operator** — does not own: from-scratch roadmap; RC GO/NO_GO.
 - **product-teardown** — does not own: owned-repo roadmap; release gate.
+- **quality-loop-operator** — does not own: general multi-skill orchestration; consequential strategy decisions; software production-readiness verdicts.
 - **release-readiness** — does not own: weekly priorities; whole-project baseline.
+- **repair-operator** — does not own: initial broad audit; inventing new requirements; production release verdicts.
+- **repo-roaster** — does not own: whole-project roadmapping; runtime web QA; final production release verdicts.
 - **repo-to-roadmap** — does not own: weekly sprint ops; RC ship gate.
+- **rubric-designer** — does not own: judging the candidate; writing the artifact; running empirical skill benchmarks.
+- **science-roaster** — does not own: generic content critique; repository/code review; research-program planning.
 - **seo-geo-aeo-maxxing** — does not own: Evidence Pack construction; click-through QA.
+- **skill-auditor** — does not own: editing the audited skill; empirical behavioral benchmarking; production release verdicts.
+- **skill-evaluator** — does not own: static package audits; editing the skill; universal superiority claims.
 - **skill-orchestrator** — does not own: domain skill contracts; Council policy; release gates.
 - **skill-orchestrator-multiagent** — does not own: separate planning model.
 - **web-app-auditor** — does not own: release verdict; SEO scoring.
@@ -69,6 +97,24 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - do not trigger: Odśwież kontekst Insight
 - do not trigger: Zrób Evidence Pack
 
+### `artifact-acceptance`
+- trigger: Is this report ready to publish against its brief?
+- trigger: Run the final acceptance gate on this knowledge artifact
+- do not trigger: Is this software release ready?
+- do not trigger: Review this article for the first time
+
+### `benchmark-curator`
+- trigger: Curate a clean holdout benchmark for this skill
+- trigger: Design the discovery and regression corpus
+- do not trigger: Run the model experiment and claim lift
+- do not trigger: Design the grading rubric
+
+### `brief-architect`
+- trigger: Turn this vague request into an executable brief
+- trigger: Define acceptance criteria before we write the report
+- do not trigger: Write the final article
+- do not trigger: Choose the product strategy
+
 ### `cometweb-context`
 - trigger: Co zmieniło się w Insight od ostatniego review?
 - trigger: Odśwież kontekst przed weekly boardroom
@@ -81,6 +127,24 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - trigger: Competitor digest since last month snapshot
 - trigger: What changed on competitor pricing pages?
 - do not trigger: Przepuść przez Council cenę Growth
+
+### `content-reviewer`
+- trigger: Review this draft against its brief
+- trigger: Give me actionable editorial QA before publication
+- do not trigger: Brutally roast this landing page
+- do not trigger: Rewrite the whole article
+
+### `content-roaster`
+- trigger: Roast this landing page with evidence
+- trigger: Red-team the claims and objections in this offer
+- do not trigger: Peer-review this scientific manuscript
+- do not trigger: Audit the repository code
+
+### `content-writer`
+- trigger: Write the evidence-backed guide from this brief
+- trigger: Create the reader-facing report without inventing claims
+- do not trigger: Humanize this paragraph only
+- do not trigger: Run the primary research first
 
 ### `customer-ops`
 - trigger: Triage support queue for churn signal
@@ -107,6 +171,12 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - do not trigger: Odśwież kontekst CometWeb
 - do not trigger: Czy RC 1.2 gotowy do produkcji?
 
+### `feedback-integrator`
+- trigger: Turn repeated skill failures into a regression plan
+- trigger: Run a retrospective across these quality incidents
+- do not trigger: Patch the skill silently from one correction
+- do not trigger: Analyze product retention
+
 ### `longform-publisher`
 - trigger: Refresh this old ebook into a publication-ready 2026 edition
 - trigger: Build this evidence-backed report through manuscript, DOCX and PDF release readiness
@@ -129,18 +199,60 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - trigger: Teardown Linear onboarding for transferable patterns
 - do not trigger: Analyze our whole repo roadmap
 
+### `quality-loop-operator`
+- trigger: Run the full content quality loop
+- trigger: Resume this quality workflow from the last accepted stage
+- do not trigger: Orchestrate an unrelated product workflow
+- do not trigger: Give a software release GO/NO_GO
+
 ### `release-readiness`
 - trigger: Is build v2.14.0-rc3 ready for production?
 - trigger: Release gate for hotfix commit
 - do not trigger: What should we build this week?
 
+### `repair-operator`
+- trigger: Turn these review findings into the smallest repair set
+- trigger: Apply the authorized fixes and verify they close the root cause
+- do not trigger: Audit the whole repo from scratch
+- do not trigger: Decide whether the release is ready
+
+### `repo-roaster`
+- trigger: Roast this repository with file and test evidence
+- trigger: Red-team the critical invariants and failure paths in this codebase
+- do not trigger: Create the whole-project roadmap
+- do not trigger: Decide whether the release can ship
+
 ### `repo-to-roadmap`
 - trigger: Analyze the whole repo and create a roadmap to target state
 - do not trigger: What should we do this week?
 
+### `rubric-designer`
+- trigger: Design and freeze a review rubric before evaluation
+- trigger: Define blocker rules and evidence floors for this benchmark
+- do not trigger: Score the candidate using the rubric
+- do not trigger: Run the A/B experiment
+
+### `science-roaster`
+- trigger: Reviewer-2 roast this manuscript
+- trigger: Red-team the methods, estimand, and validity of this study
+- do not trigger: Critique this marketing article
+- do not trigger: Audit the software repository
+
 ### `seo-geo-aeo-maxxing`
 - trigger: Run SEO/GEO/AEO visibility audit on cometweb.io
 - do not trigger: Click-through QA of /register
+
+### `skill-auditor`
+- trigger: Audit this Agent Skill package for routing and portability risks
+- trigger: Quality-check the skill library before publication
+- do not trigger: Edit the skill instructions
+- do not trigger: Benchmark model behavior with and without the skill
+
+### `skill-evaluator`
+- trigger: Measure whether this skill improves behavior over the baseline
+- trigger: Design a fair A/B eval for the new skill version
+- do not trigger: Static-audit the package
+- do not trigger: Claim this skill is universally best from one run
 
 ### `skill-orchestrator`
 - trigger: Zorkiestruj evidence potem Council

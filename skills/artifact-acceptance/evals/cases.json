@@ -1,0 +1,1593 @@
+[
+  {
+    "expect": {
+      "verdict": "READY"
+    },
+    "id": "ready",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "failed-required",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "required": true,
+          "state": "FAIL"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "unknown-required",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "required": true,
+          "state": "UNKNOWN"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "pass-no-evidence",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "pass-candidate-mismatch",
+    "input": {
+      "candidate": {
+        "id": "cand-2"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "gate[0]:required-na-not-allowed"
+    },
+    "id": "na-with-rationale",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_rationale": "No links in artifact",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "na-no-rationale",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "open-major",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "findings": [
+        {
+          "blocks_acceptance": true,
+          "open": true,
+          "severity": "MAJOR"
+        }
+      ],
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "READY_WITH_CONTROLS"
+    },
+    "id": "controlled-minor",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "controls": [
+        {
+          "issue": "Fix typo before upload",
+          "owner": "publisher",
+          "revisit_condition": "before upload",
+          "severity": "MINOR"
+        }
+      ],
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "major-control-rejected",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "controls": [
+        {
+          "issue": "Missing evidence",
+          "owner": "author",
+          "revisit_condition": "later",
+          "severity": "MAJOR"
+        }
+      ],
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "control-bypass-rejected",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "controls": [
+        {
+          "issue": "Skip gate",
+          "owner": "author",
+          "required_gate_bypass": true,
+          "revisit_condition": "later",
+          "severity": "MINOR"
+        }
+      ],
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "no-required-gates",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "required": false,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "duplicate-gate",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        },
+        {
+          "gate_id": "g1",
+          "required": false,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "candidate-or-contract-unbound"
+    },
+    "id": "missing-candidate",
+    "input": {
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": []
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "malformed-root",
+    "input": "x"
+  },
+  {
+    "expect": {
+      "verdict": "READY"
+    },
+    "id": "legacy-id-fields",
+    "input": {
+      "candidate_id": "cand-1",
+      "contract_id": "brief-1",
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "bad-evidence-not-object",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            "x"
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "bad-evidence-missing-source",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "x",
+              "observed_at": "2026-09-21T12:00:00+02:00"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "bad-evidence-time-format",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "y",
+              "observed_at": "not-a-date",
+              "source": "x"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "gates:not-list"
+    },
+    "id": "gates-not-list",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": "x"
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "gate-not-object",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        "x"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "gate-missing-id",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "required": true,
+          "state": "FAIL"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "gate-bad-state",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "required": true,
+          "state": "MAYBE"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "findings:not-list"
+    },
+    "id": "findings-not-list",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "findings": "x",
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_allowed": true,
+          "na_rationale": "none",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "finding-not-object",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "findings": [
+        "x"
+      ],
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_rationale": "none",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "controls:not-list"
+    },
+    "id": "controls-not-list",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "controls": "x",
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_allowed": true,
+          "na_rationale": "none",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "control-not-object",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "controls": [
+        "x"
+      ],
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_rationale": "none",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "control-incomplete",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "controls": [
+        {
+          "issue": "x",
+          "severity": "MINOR"
+        }
+      ],
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_allowed": true,
+          "na_rationale": "none",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "gate[0]:pass-without-candidate-evidence"
+    },
+    "id": "bad-evidence-time-type",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "y",
+              "observed_at": 123,
+              "source": "x"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "READY"
+    },
+    "id": "na-explicitly-allowed",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_allowed": true,
+          "na_rationale": "Criterion structurally not applicable",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "profile-missing-gate:brief_compliance"
+    },
+    "id": "profile-missing-gates",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ],
+      "profile": "EDITORIAL"
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "criteria_ids:required"
+    },
+    "id": "deep-traceability-required",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ],
+      "mode": "DEEP"
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "expect_paths": {
+      "errors.0": "control[0]:expired"
+    },
+    "id": "expired-waiver-rejected",
+    "input": {
+      "as_of": "2026-09-21T12:00:00+02:00",
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "controls": [
+        {
+          "approved_at": "2026-09-20T10:00:00+02:00",
+          "approver": "a",
+          "expires_at": "2026-09-21T10:00:00+02:00",
+          "issue": "x",
+          "owner": "o",
+          "revisit_condition": "r",
+          "severity": "MINOR",
+          "waiver": true
+        }
+      ],
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "mode:invalid"
+    },
+    "id": "edge-bad-mode",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ],
+      "mode": "MAGIC"
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "profile:invalid"
+    },
+    "id": "edge-bad-profile",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ],
+      "profile": "MAGIC"
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "as_of:invalid"
+    },
+    "id": "edge-bad-asof-valueerror",
+    "input": {
+      "as_of": "2026-99-99T12:00:00+02:00",
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "traceability:not-list"
+    },
+    "id": "edge-traceability-not-list",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "criteria_ids": [
+        "a"
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ],
+      "traceability": "x"
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "expect_paths": {
+      "errors.0": "traceability[0]:not-object"
+    },
+    "id": "edge-trace-row-not-object",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "criteria_ids": [
+        "a"
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ],
+      "traceability": [
+        "x"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "edge-trace-bad-criterion",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "criteria_ids": [
+        "a"
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ],
+      "traceability": [
+        {
+          "criterion_id": "b",
+          "gate_id": "g"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "edge-trace-bad-gate",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "criteria_ids": [
+        "a"
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ],
+      "traceability": [
+        {
+          "criterion_id": "a",
+          "gate_id": "missing"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "READY"
+    },
+    "id": "edge-trace-valid",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "criteria_ids": [
+        "a"
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ],
+      "traceability": [
+        {
+          "criterion_id": "a",
+          "gate_id": "g"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "edge-control-candidate-mismatch",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "controls": [
+        {
+          "candidate_id": "other",
+          "issue": "x",
+          "owner": "o",
+          "revisit_condition": "r",
+          "severity": "MINOR"
+        }
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "edge-control-bypass",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "controls": [
+        {
+          "issue": "x",
+          "owner": "o",
+          "required_gate_bypass": true,
+          "revisit_condition": "r",
+          "severity": "MINOR"
+        }
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "edge-control-bad-severity",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "controls": [
+        {
+          "issue": "x",
+          "owner": "o",
+          "revisit_condition": "r",
+          "severity": "MAJOR"
+        }
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "edge-waiver-governance-missing",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "controls": [
+        {
+          "issue": "x",
+          "owner": "o",
+          "revisit_condition": "r",
+          "severity": "MINOR",
+          "waiver": true
+        }
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "edge-waiver-expiry-order",
+    "input": {
+      "as_of": "2026-09-21T12:00:00+02:00",
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "controls": [
+        {
+          "approved_at": "2026-09-21T12:00:00+02:00",
+          "approver": "a",
+          "expires_at": "2026-09-20T12:00:00+02:00",
+          "issue": "x",
+          "owner": "o",
+          "revisit_condition": "r",
+          "severity": "MINOR",
+          "waiver": true
+        }
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "READY_WITH_CONTROLS"
+    },
+    "id": "edge-deep-control-valid",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "controls": [
+        {
+          "approved_at": "2026-09-20T12:00:00+02:00",
+          "approver": "a",
+          "expires_at": "2026-09-30T12:00:00+02:00",
+          "issue": "x",
+          "owner": "o",
+          "revisit_condition": "r",
+          "severity": "MINOR"
+        }
+      ],
+      "criteria_ids": [
+        "a"
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ],
+      "mode": "DEEP",
+      "traceability": [
+        {
+          "criterion_id": "a",
+          "gate_id": "g"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "edge-evidence-contract-mismatch",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "c",
+              "contract_id": "other",
+              "locator": "l",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "s"
+            }
+          ],
+          "gate_id": "g",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "NOT_READY"
+    },
+    "id": "edge-control-not-object-v12",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "controls": [
+        "x"
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "READY"
+    },
+    "id": "edge-nonblocking-finding",
+    "input": {
+      "candidate": {
+        "id": "c"
+      },
+      "contract": {
+        "id": "b"
+      },
+      "findings": [
+        {
+          "blocks_acceptance": true,
+          "open": false,
+          "severity": "MAJOR"
+        }
+      ],
+      "gates": [
+        {
+          "gate_id": "g",
+          "na_allowed": true,
+          "na_rationale": "x",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "verdict": "READY"
+    },
+    "id": "policy-lock-valid",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "expected_policy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "c1",
+              "contract_id": "b1",
+              "locator": "x",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "review"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ],
+      "policy_lock": {
+        "locked_before_evaluation": true,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "profile": "CUSTOM"
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "policy-lock-hash-mismatch",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "expected_policy_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "c1",
+              "contract_id": "b1",
+              "locator": "x",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "review"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ],
+      "policy_lock": {
+        "locked_before_evaluation": true,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "profile": "CUSTOM"
+    }
+  },
+  {
+    "expect": {
+      "verdict": "READY"
+    },
+    "id": "gate-evidence-floor-pass",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "c1",
+              "contract_id": "b1",
+              "locator": "x",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "review"
+            }
+          ],
+          "evidence_grade": "A",
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ],
+      "minimum_gate_evidence_grade": "B",
+      "profile": "CUSTOM"
+    }
+  },
+  {
+    "expect": {
+      "verdict": "DEFER"
+    },
+    "id": "gate-evidence-floor-low",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "c1",
+              "contract_id": "b1",
+              "locator": "x",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "review"
+            }
+          ],
+          "evidence_grade": "C",
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ],
+      "minimum_gate_evidence_grade": "B",
+      "profile": "CUSTOM"
+    }
+  },
+  {
+    "id": "policy-lock-not-object-v13",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "gates": [
+        {
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS",
+          "evidence": [
+            {
+              "source": "check",
+              "locator": "x",
+              "candidate_id": "c1",
+              "observed_at": "2026-09-21T20:00:00+02:00"
+            }
+          ]
+        }
+      ],
+      "policy_lock": "bad"
+    },
+    "expect": {
+      "verdict": "DEFER"
+    }
+  },
+  {
+    "id": "minimum-grade-invalid-v13",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "gates": [
+        {
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS",
+          "evidence": [
+            {
+              "source": "check",
+              "locator": "x",
+              "candidate_id": "c1",
+              "observed_at": "2026-09-21T20:00:00+02:00"
+            }
+          ]
+        }
+      ],
+      "minimum_gate_evidence_grade": "Z"
+    },
+    "expect": {
+      "verdict": "DEFER"
+    }
+  },
+  {
+    "id": "minimum-grade-missing-on-gate-v13",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "gates": [
+        {
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS",
+          "evidence": [
+            {
+              "source": "check",
+              "locator": "x",
+              "candidate_id": "c1",
+              "observed_at": "2026-09-21T20:00:00+02:00"
+            }
+          ]
+        }
+      ],
+      "minimum_gate_evidence_grade": "B"
+    },
+    "expect": {
+      "verdict": "DEFER"
+    }
+  }
+]

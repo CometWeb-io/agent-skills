@@ -1,0 +1,72 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.prediction-validation",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review prediction and validation studies for leakage, target definition, calibration, holdout integrity and comparator strength.",
+  "activation": {
+    "profiles": [
+      "PREDICTIVE",
+      "VALIDATION"
+    ],
+    "signals": [
+      "prediction",
+      "classifier",
+      "model validation",
+      "holdout",
+      "cross-validation",
+      "calibration",
+      "auroc"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "target-and-reference",
+      "why": "A model cannot be validated more strongly than the target and reference are defined and measured.",
+      "evidence_hints": [
+        "target label",
+        "reference standard",
+        "measurement uncertainty"
+      ],
+      "false_positive_guards": [
+        "Do not treat imperfect reference measurement as fatal unless it threatens the central inference."
+      ]
+    },
+    {
+      "id": "split-integrity",
+      "why": "Feature engineering, tuning and threshold selection should respect the claimed holdout boundary.",
+      "evidence_hints": [
+        "train or test split",
+        "preprocessing",
+        "threshold selection",
+        "hyperparameter tuning"
+      ],
+      "false_positive_guards": [
+        "Cross-validation is not leakage by itself."
+      ]
+    },
+    {
+      "id": "calibration-and-baselines",
+      "why": "Discrimination alone may be insufficient when the use claim depends on probabilities or practical improvement.",
+      "evidence_hints": [
+        "calibration",
+        "simple baseline",
+        "decision threshold"
+      ],
+      "false_positive_guards": [
+        "Do not require calibration for a purely ranking use case unless probabilities are claimed."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "data split provenance",
+    "reference definition"
+  ],
+  "false_positive_guards": [
+    "A weak baseline can make improvement look larger; inspect comparator adequacy."
+  ],
+  "handoff_triggers": [
+    "External novelty -> evidence-researcher"
+  ],
+  "notes": []
+}

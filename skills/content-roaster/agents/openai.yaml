@@ -1,0 +1,13 @@
+interface:
+  display_name: "Content Roaster"
+  short_description: "adversarial content review; proof-debt and claim-pressure diagnosis; repair verification contracts"
+  default_prompt: "Use the Content Roaster skill for: Run evidence-anchored adversarial reviews of marketing, sales, product, editorial, and long-form content such as landing pages, pricing pages, offers, emails, posts, articles, case studies, reports, e"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

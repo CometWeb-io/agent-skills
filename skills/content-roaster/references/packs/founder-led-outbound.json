@@ -1,0 +1,35 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.founder-led-outbound",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review founder-led outbound messages for relevance, credibility, asymmetry of effort and a reply-sized next step rather than generic personalization theatre.",
+  "activation": {
+    "profiles": ["EMAIL", "OFFER"],
+    "signals": ["cold email", "outbound", "founder-led", "prospect", "design partner", "pilot", "intro email"]
+  },
+  "must_inspect": [
+    {
+      "id": "specific-relevance",
+      "why": "The opening should establish a reason this recipient was selected without pretending generic firmographics are insight.",
+      "evidence_hints": ["recipient-specific observation", "trigger", "role relevance"],
+      "false_positive_guards": ["Do not require deep personalization when the segment-specific problem is itself narrow and credible."]
+    },
+    {
+      "id": "proof-before-ask",
+      "why": "A cold recipient needs enough reason to believe the message before being asked for meaningful time or access.",
+      "evidence_hints": ["proof", "specific mechanism", "bounded pilot evidence"],
+      "false_positive_guards": ["A low-friction question may need less proof than a meeting request or paid-pilot ask."]
+    },
+    {
+      "id": "reply-sized-cta",
+      "why": "The requested next step should match the relationship and uncertainty level.",
+      "evidence_hints": ["CTA", "calendar request", "binary question", "pilot ask"],
+      "false_positive_guards": ["Do not label a meeting CTA high-friction when prior context already established interest."]
+    }
+  ],
+  "required_evidence": ["actual outbound message", "recipient or segment context"],
+  "false_positive_guards": ["Do not invent recipient motives or inbox behavior."],
+  "handoff_triggers": ["Prospect selection -> design-partner-finder or prospecting specialist", "Rewrite after critique -> ai-humanize"],
+  "notes": []
+}

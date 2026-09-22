@@ -1,0 +1,52 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.survival-event-time",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review time-to-event analyses for time origin, censoring, competing risks, proportional-hazards assumptions and estimand interpretation.",
+  "activation": {
+    "profiles": [
+      "OBSERVATIONAL",
+      "EXPERIMENTAL"
+    ],
+    "signals": [
+      "survival",
+      "hazard ratio",
+      "censoring",
+      "time-to-event",
+      "competing risk"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "time-origin-censoring",
+      "why": "The time origin and censoring mechanism must match the scientific question.",
+      "evidence_hints": [
+        "index date",
+        "follow-up start",
+        "censoring rule"
+      ],
+      "false_positive_guards": [
+        "Censoring is not automatically informative; assess the assumption and context."
+      ]
+    },
+    {
+      "id": "effect-interpretation",
+      "why": "Hazard ratios and cumulative incidence answer different questions and must not be translated casually into absolute risk.",
+      "evidence_hints": [
+        "hazard ratio",
+        "survival curve",
+        "risk difference"
+      ],
+      "false_positive_guards": [
+        "Do not require proportional hazards when a different valid estimand/model is used."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

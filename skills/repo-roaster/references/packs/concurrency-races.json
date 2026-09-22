@@ -1,0 +1,54 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.concurrency-races",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review concurrent state transitions for lost updates, check-then-act races, lock scope, optimistic concurrency and duplicate side effects.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "PR",
+      "DATA_PIPELINE"
+    ],
+    "signals": [
+      "race condition",
+      "concurrent",
+      "optimistic lock",
+      "mutex",
+      "compare and swap",
+      "version column"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "read-modify-write",
+      "why": "Read-modify-write paths require concurrency control when concurrent writers can violate an invariant.",
+      "evidence_hints": [
+        "version check",
+        "row lock",
+        "atomic update"
+      ],
+      "false_positive_guards": [
+        "Concurrent code is not automatically racy; establish shared mutable state and interleaving."
+      ]
+    },
+    {
+      "id": "duplicate-work",
+      "why": "Parallel workers or requests must not duplicate non-idempotent external effects.",
+      "evidence_hints": [
+        "claim/lease",
+        "unique constraint",
+        "idempotency"
+      ],
+      "false_positive_guards": [
+        "Do not report a race solely from multiple workers when work ownership is atomically claimed."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

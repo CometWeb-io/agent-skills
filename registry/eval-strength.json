@@ -2,6 +2,48 @@
   "note": "Recorded by tooling/eval_strength.py --update. Held counts may rise freely; a fall means a rule stopped being pinned.",
   "skills": [
     {
+      "guards": 5,
+      "held": 5,
+      "id": "artifact-acceptance",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 3,
+      "held": 3,
+      "id": "benchmark-curator",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 23,
+      "held": 23,
+      "id": "brief-architect",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 7,
+      "held": 7,
+      "id": "content-reviewer",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 11,
+      "held": 11,
+      "id": "content-writer",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 8,
+      "held": 8,
+      "id": "feedback-integrator",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
       "guards": 54,
       "held": 28,
       "id": "longform-publisher",
@@ -24,6 +66,41 @@
         "prepare_brief.py",
         "self_check.py"
       ]
+    },
+    {
+      "guards": 8,
+      "held": 8,
+      "id": "quality-loop-operator",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 3,
+      "held": 3,
+      "id": "repair-operator",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 2,
+      "held": 2,
+      "id": "rubric-designer",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 2,
+      "held": 2,
+      "id": "skill-auditor",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 5,
+      "held": 5,
+      "id": "skill-evaluator",
+      "strength": 1.0,
+      "unexercised": []
     }
   ]
 }

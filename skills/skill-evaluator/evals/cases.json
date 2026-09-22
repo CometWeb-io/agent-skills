@@ -1,0 +1,3156 @@
+[
+  {
+    "expect": {
+      "promotion_eligible": true,
+      "status": "IMPROVED"
+    },
+    "id": "improved",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "invalid-payload",
+    "input": null
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "invalid-mode",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "NOPE",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "invalid-execution",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "NOPE",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "missing-skill",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "missing-candidate-version",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "missing-baseline-version",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-suite-hash",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "bad"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-baseline-hash",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "bad",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "suite-mismatch",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-declared-ids",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "a"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-executed-ids",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "a"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "cherry-pick",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "no-negative",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 0,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "no-discovery",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 0,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "no-forced",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 0,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-runs",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 0,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "promotion_eligible": false,
+      "status": "DESIGN_READY"
+    },
+    "id": "spec-design-ready",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "SPEC_ONLY",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": false,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "spec-cannot-claim-runtime",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "SPEC_ONLY",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "real-host-needs-config",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": null,
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "config": null,
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 3,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "real-host-config-mismatch",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "y",
+        "reasoning_effort": "high"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "x",
+        "reasoning_effort": "high"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 3,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "real-host-needs-three-runs",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "x",
+        "reasoning_effort": "high"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "x",
+        "reasoning_effort": "high"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 2,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "deep-needs-five-runs",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "x"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "x"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "DEEP",
+      "negative_control_count": 1,
+      "paired_analysis": {
+        "status": "SIGNIFICANT_IMPROVEMENT"
+      },
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 4,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "STABLE"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-required",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": false,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-candidate-metrics",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {},
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-baseline-metrics",
+    "input": {
+      "baseline": {},
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "candidate-passed-over-total",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 4,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "baseline-passed-over-total",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 4,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "total-mismatch",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 2,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-invariant-regressions",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": -1,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-policy-object",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": "x",
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-min-delta",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": -1,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INSUFFICIENT_EVIDENCE"
+    },
+    "id": "zero-total",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 0,
+        "tokens": 100,
+        "total": 0,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 0,
+        "tokens": 100,
+        "total": 0,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INSUFFICIENT_EVIDENCE"
+    },
+    "id": "no-trigger-denominator",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 0
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "REGRESSION"
+    },
+    "id": "invariant-regression",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 1,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "REGRESSION"
+    },
+    "id": "pass-rate-regression",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 1,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "TRADEOFF"
+    },
+    "expect_paths": {
+      "tradeoff": "TRIGGER_QUALITY"
+    },
+    "id": "trigger-tradeoff",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 2,
+        "trigger_fp": 4,
+        "trigger_tp": 8
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "TRADEOFF"
+    },
+    "expect_paths": {
+      "tradeoff": "RESOURCE_BUDGET"
+    },
+    "id": "resource-tradeoff",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 200,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "NO_MATERIAL_CHANGE"
+    },
+    "id": "no-material-change",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "IMPROVED"
+    },
+    "id": "real-host-improved",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "x"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "x"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 3,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "missing-rubric-hash",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "missing-benchmark-hash",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.3.0",
+      "benchmark_hash": "",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.4.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "promotion_eligible": false,
+      "status": "TRADEOFF"
+    },
+    "expect_paths": {
+      "tradeoff": "PARETO_DOMINATED"
+    },
+    "id": "pareto-dominated-tradeoff",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "pareto_status": "DOMINATED",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "invalid-pareto-status",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "pareto_status": "NOPE",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "invalid-judge-status",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "LOCAL_DETERMINISTIC",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "NOPE"
+      },
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 1,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "deep-llm-judge-needs-calibration",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "NEEDS_REVIEW"
+      },
+      "mode": "DEEP",
+      "negative_control_count": 1,
+      "paired_analysis": {
+        "status": "SIGNIFICANT_IMPROVEMENT"
+      },
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 5,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "STABLE"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "uses_llm_judge": true
+    }
+  },
+  {
+    "expect": {
+      "promotion_eligible": true,
+      "status": "IMPROVED"
+    },
+    "id": "deep-llm-judge-calibrated",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "CALIBRATED"
+      },
+      "mode": "DEEP",
+      "negative_control_count": 1,
+      "paired_analysis": {
+        "status": "SIGNIFICANT_IMPROVEMENT"
+      },
+      "pareto_status": "FRONTIER",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 5,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "STABLE"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "uses_llm_judge": true
+    }
+  },
+  {
+    "expect": {
+      "status": "REGRESSION"
+    },
+    "id": "deep-paired-regression",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "CALIBRATED"
+      },
+      "mode": "DEEP",
+      "negative_control_count": 1,
+      "paired_analysis": {
+        "status": "SIGNIFICANT_REGRESSION"
+      },
+      "pareto_status": "FRONTIER",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 5,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "STABLE"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "uses_llm_judge": true
+    }
+  },
+  {
+    "expect": {
+      "status": "INSUFFICIENT_EVIDENCE"
+    },
+    "id": "deep-paired-inconclusive",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "CALIBRATED"
+      },
+      "mode": "DEEP",
+      "negative_control_count": 1,
+      "paired_analysis": {
+        "status": "INCONCLUSIVE"
+      },
+      "pareto_status": "FRONTIER",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 5,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "STABLE"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "uses_llm_judge": true
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "deep-flaky-invalid",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "CALIBRATED"
+      },
+      "mode": "DEEP",
+      "negative_control_count": 1,
+      "paired_analysis": {
+        "status": "SIGNIFICANT_IMPROVEMENT"
+      },
+      "pareto_status": "FRONTIER",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 5,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "FLAKY"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "uses_llm_judge": true
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "deep-missing-paired",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "CALIBRATED"
+      },
+      "mode": "DEEP",
+      "negative_control_count": 1,
+      "pareto_status": "FRONTIER",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 5,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "STABLE"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "uses_llm_judge": true
+    }
+  },
+  {
+    "expect": {
+      "promotion_eligible": false,
+      "status": "NO_MATERIAL_CHANGE"
+    },
+    "id": "deep-noninferior-not-improved",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "CALIBRATED"
+      },
+      "mode": "DEEP",
+      "negative_control_count": 1,
+      "paired_analysis": {
+        "status": "NONINFERIOR"
+      },
+      "pareto_status": "FRONTIER",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 5,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "STABLE"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "uses_llm_judge": true
+    }
+  }
+]

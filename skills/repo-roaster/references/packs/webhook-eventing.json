@@ -1,0 +1,71 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.webhook-eventing",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review webhook/event-consumer code for authenticity boundaries, duplicate delivery, ordering, retries, replay safety and idempotent side effects.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "PR",
+      "DATA_PIPELINE"
+    ],
+    "signals": [
+      "webhook",
+      "event consumer",
+      "event handler",
+      "signature header",
+      "delivery id"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "authenticity-boundary",
+      "why": "Event authenticity must be checked before attacker-controlled payloads reach privileged side effects.",
+      "evidence_hints": [
+        "signature verification",
+        "shared secret/public key",
+        "raw body handling"
+      ],
+      "false_positive_guards": [
+        "Do not assume missing verification in one handler if enforced by a verified upstream gateway."
+      ]
+    },
+    {
+      "id": "duplicate-replay",
+      "why": "At-least-once delivery requires a deliberate duplicate/replay strategy around side effects.",
+      "evidence_hints": [
+        "delivery id",
+        "idempotency key",
+        "dedupe store",
+        "unique constraint"
+      ],
+      "false_positive_guards": [
+        "Do not call duplicate handling absent from a local function if enforced transactionally downstream."
+      ]
+    },
+    {
+      "id": "retry-ordering",
+      "why": "Retry and ordering semantics can corrupt state when handlers assume exactly-once/in-order delivery.",
+      "evidence_hints": [
+        "retry policy",
+        "event version",
+        "ordering key",
+        "outbox/inbox"
+      ],
+      "false_positive_guards": [
+        "Do not demand global ordering if the domain invariant does not require it."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "event trust boundary"
+  ],
+  "false_positive_guards": [
+    "Static code cannot prove provider delivery semantics."
+  ],
+  "handoff_triggers": [
+    "Provider contract verification -> evidence-researcher"
+  ],
+  "notes": []
+}

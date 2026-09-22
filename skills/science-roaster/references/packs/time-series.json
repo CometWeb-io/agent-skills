@@ -1,0 +1,72 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.time-series",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review time-series and interrupted-time-series studies for autocorrelation, trend/seasonality, intervention timing, counterfactual construction and small effective sample size.",
+  "activation": {
+    "profiles": [
+      "OBSERVATIONAL",
+      "METHODS",
+      "COMPUTATIONAL"
+    ],
+    "signals": [
+      "time series",
+      "interrupted time series",
+      "its",
+      "seasonality",
+      "autocorrelation",
+      "arima",
+      "segmented regression"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "time-dependence",
+      "why": "Serial dependence changes effective information and uncertainty.",
+      "evidence_hints": [
+        "ACF",
+        "residual diagnostics",
+        "correlation structure",
+        "HAC/AR errors"
+      ],
+      "false_positive_guards": [
+        "Do not infer autocorrelation solely from chronological data."
+      ]
+    },
+    {
+      "id": "counterfactual",
+      "why": "Interrupted-time-series effects depend on a credible no-intervention counterfactual.",
+      "evidence_hints": [
+        "pre-trend",
+        "control series",
+        "intervention date",
+        "segmented model"
+      ],
+      "false_positive_guards": [
+        "Do not require a control series when the design makes a narrower descriptive claim."
+      ]
+    },
+    {
+      "id": "seasonality-and-events",
+      "why": "Concurrent events and seasonality can mimic level or slope changes.",
+      "evidence_hints": [
+        "seasonality",
+        "calendar effects",
+        "cointerventions",
+        "sensitivity analysis"
+      ],
+      "false_positive_guards": [
+        "A time sequence alone does not establish seasonality."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "time index and intervention definition"
+  ],
+  "false_positive_guards": [],
+  "handoff_triggers": [
+    "Domain event verification -> evidence-researcher"
+  ],
+  "notes": []
+}

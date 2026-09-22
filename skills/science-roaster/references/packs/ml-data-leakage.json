@@ -1,0 +1,54 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.ml-data-leakage",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review ML/AI evaluation pipelines for train-test contamination, repeated-entity leakage, preprocessing leakage, benchmark reuse and adaptive holdout overfitting.",
+  "activation": {
+    "profiles": [
+      "PREDICTIVE",
+      "COMPUTATIONAL",
+      "VALIDATION"
+    ],
+    "signals": [
+      "data leakage",
+      "train test",
+      "holdout",
+      "benchmark reuse",
+      "cross validation",
+      "patient split"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "split-integrity",
+      "why": "Evaluation units that can share information must not cross train/test boundaries unintentionally.",
+      "evidence_hints": [
+        "split key",
+        "entity grouping",
+        "temporal split"
+      ],
+      "false_positive_guards": [
+        "A random split is not automatically leakage when observations are genuinely independent."
+      ]
+    },
+    {
+      "id": "adaptive-reuse",
+      "why": "Repeated tuning on the same benchmark can turn a nominal holdout into development data.",
+      "evidence_hints": [
+        "benchmark iterations",
+        "model selection",
+        "final holdout"
+      ],
+      "false_positive_guards": [
+        "Public benchmark use is not automatically invalid; calibrate the claim to the evaluation regime."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

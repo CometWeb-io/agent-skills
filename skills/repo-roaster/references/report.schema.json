@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/repo-roaster-v6.json",
+  "title": "CometWeb Repo Roaster v6 Report",
+  "type": "object",
+  "required": [
+    "schema",
+    "repository",
+    "ref",
+    "review_outcome",
+    "source_manifest",
+    "mode",
+    "review_profile",
+    "lenses",
+    "repo_contract",
+    "coverage",
+    "quality_gates",
+    "system_model",
+    "invariant_ledger",
+    "critical_surface_ledger",
+    "state_transition_ledger",
+    "failure_domain_ledger",
+    "root_causes",
+    "no_material_findings",
+    "first_attack_id",
+    "findings",
+    "resolution_ledger",
+    "verification_gaps",
+    "preserve",
+    "core_fix",
+    "review_plan",
+    "assurance",
+    "evidence_register",
+    "evidence_conflicts",
+    "limitations",
+    "test_evidence_ledger",
+    "outcome_basis"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cometweb.repo-roaster/v6"
+    },
+    "repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_outcome": {
+      "enum": [
+        "MATERIAL_FINDINGS",
+        "NO_MATERIAL_FINDINGS",
+        "INSUFFICIENT_EVIDENCE"
+      ]
+    },
+    "source_manifest": {
+      "type": "array",
+      "minItems": 1
+    },
+    "mode": {
+      "enum": [
+        "QUICK",
+        "FULL",
+        "FORENSIC",
+        "DIFF",
+        "RECHECK"
+      ]
+    },
+    "review_profile": {
+      "enum": [
+        "FULL_REPO",
+        "PR",
+        "SERVICE",
+        "MONOREPO",
+        "LIBRARY",
+        "CLI",
+        "DESKTOP_APP",
+        "MOBILE_APP",
+        "DATA_PIPELINE",
+        "AI_AGENT_SYSTEM",
+        "INFRA",
+        "MIGRATION"
+      ]
+    },
+    "lenses": {
+      "type": "array",
+      "minItems": 1
+    },
+    "invariant_ledger": {
+      "type": "array",
+      "minItems": 1
+    },
+    "critical_surface_ledger": {
+      "type": "array"
+    },
+    "state_transition_ledger": {
+      "type": "array"
+    },
+    "failure_domain_ledger": {
+      "type": "array"
+    },
+    "findings": {
+      "type": "array"
+    },
+    "verification_gaps": {
+      "type": "array"
+    },
+    "first_attack_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "no_material_findings": {
+      "type": "boolean"
+    },
+    "core_fix": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_plan": {
+      "type": "object"
+    },
+    "assurance": {
+      "type": "object",
+      "required": [
+        "mode",
+        "independence",
+        "second_pass_status",
+        "disagreement_summary",
+        "limitations",
+        "pass_records"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "SINGLE_REVIEW",
+            "SECOND_PASS",
+            "BLIND_DUAL_REVIEW"
+          ]
+        },
+        "independence": {
+          "enum": [
+            "NONE",
+            "SAME_CONTEXT",
+            "SEPARATE_CONTEXT"
+          ]
+        },
+        "second_pass_status": {
+          "type": "string"
+        },
+        "disagreement_summary": {
+          "type": "array"
+        },
+        "limitations": {
+          "type": "array"
+        },
+        "pass_records": {
+          "type": "array",
+          "minItems": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "evidence_register": {
+      "type": "array",
+      "minItems": 1
+    },
+    "evidence_conflicts": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "test_evidence_ledger": {
+      "type": "array"
+    },
+    "change_risk_ledger": {
+      "type": "array"
+    },
+    "outcome_basis": {
+      "type": "object",
+      "required": [
+        "surviving_finding_ids",
+        "withdrawn_candidate_count",
+        "unresolved_candidate_count",
+        "reason"
+      ],
+      "properties": {
+        "surviving_finding_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "withdrawn_candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolved_candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

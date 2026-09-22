@@ -1,0 +1,74 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.ai-agent-mcp",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review AI agent and MCP-style systems for trust boundaries, tool authority, prompt or data separation and side-effect controls.",
+  "activation": {
+    "profiles": [
+      "AI_AGENT_SYSTEM",
+      "SERVICE",
+      "FULL_REPO"
+    ],
+    "signals": [
+      "agent",
+      "mcp",
+      "tool call",
+      "system prompt",
+      "function calling",
+      "connector"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "instruction-data-boundary",
+      "why": "Untrusted retrieved content should not silently acquire authority to change agent policy or tool intent.",
+      "evidence_hints": [
+        "prompt assembly",
+        "retrieval",
+        "tool descriptions",
+        "source labels"
+      ],
+      "false_positive_guards": [
+        "Prompt-like text in data is not exploitation by itself; establish a control path."
+      ]
+    },
+    {
+      "id": "tool-authority",
+      "why": "Tool scopes and confirmation boundaries should match the consequence of the action.",
+      "evidence_hints": [
+        "tool schema",
+        "permissions",
+        "confirmation",
+        "allowlist"
+      ],
+      "false_positive_guards": [
+        "A powerful tool can be appropriate in a trusted operator context with explicit authorization."
+      ]
+    },
+    {
+      "id": "side-effect-replay",
+      "why": "Retries and model loops should not repeat irreversible side effects without idempotency or confirmation.",
+      "evidence_hints": [
+        "tool result",
+        "idempotency",
+        "retry loop",
+        "dedupe"
+      ],
+      "false_positive_guards": [
+        "Read-only tools do not need the same replay controls as writes."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "tool capability map",
+    "source trust classes"
+  ],
+  "false_positive_guards": [
+    "Do not claim prompt injection exploitability without a reachable tool or policy path."
+  ],
+  "handoff_triggers": [
+    "Dedicated security exploitation -> specialist security workflow"
+  ],
+  "notes": []
+}

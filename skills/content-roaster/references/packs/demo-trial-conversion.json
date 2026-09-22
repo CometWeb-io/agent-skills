@@ -1,0 +1,54 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.demo-trial-conversion",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review demo, trial and signup content for commitment clarity, expectation setting, proof, handoff friction and whether the CTA matches the buyer decision stage.",
+  "activation": {
+    "profiles": [
+      "LANDING_PAGE",
+      "PRODUCT_PAGE",
+      "OFFER"
+    ],
+    "signals": [
+      "book a demo",
+      "start free trial",
+      "free trial",
+      "request demo",
+      "signup"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "commitment-clarity",
+      "why": "The CTA should make the next step and commitment legible before the user acts.",
+      "evidence_hints": [
+        "CTA",
+        "form intro",
+        "next-step copy"
+      ],
+      "false_positive_guards": [
+        "Do not assume friction from a CTA label without the surrounding flow."
+      ]
+    },
+    {
+      "id": "expectation-setting",
+      "why": "Trial/demo promises should align with what happens after conversion.",
+      "evidence_hints": [
+        "eligibility",
+        "setup effort",
+        "sales follow-up",
+        "time to value"
+      ],
+      "false_positive_guards": [
+        "Do not invent product limitations that are not in reviewed evidence."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

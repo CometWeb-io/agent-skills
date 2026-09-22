@@ -1,0 +1,743 @@
+[
+  {
+    "expect": {
+      "status": "REVIEWED"
+    },
+    "id": "minor-valid",
+    "input": {
+      "findings": [
+        {
+          "finding_id": "f1",
+          "severity": "MINOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "majors": 1,
+      "status": "CHANGES_REQUIRED"
+    },
+    "id": "major-valid",
+    "input": {
+      "findings": [
+        {
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "locator": "sec-2",
+              "source": "artifact.md"
+            }
+          ],
+          "finding_id": "f1",
+          "impact": "Weakens core claim",
+          "locator": "sec-2",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "blockers": 1,
+      "status": "CHANGES_REQUIRED"
+    },
+    "id": "blocker-valid",
+    "input": {
+      "findings": [
+        {
+          "blocks_acceptance": true,
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "locator": "sec-2",
+              "source": "artifact.md"
+            }
+          ],
+          "finding_id": "f1",
+          "impact": "Violates mandatory brief",
+          "locator": "sec-1",
+          "severity": "BLOCKER"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "major-no-evidence",
+    "input": {
+      "findings": [
+        {
+          "finding_id": "f1",
+          "impact": "Weak",
+          "locator": "sec-2",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "major-no-impact",
+    "input": {
+      "findings": [
+        {
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "locator": "sec-2",
+              "source": "artifact.md"
+            }
+          ],
+          "finding_id": "f1",
+          "locator": "sec-2",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "taste-inflated",
+    "input": {
+      "findings": [
+        {
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "locator": "sec-2",
+              "source": "artifact.md"
+            }
+          ],
+          "finding_id": "f1",
+          "impact": "I dislike tone",
+          "locator": "sec-2",
+          "severity": "MAJOR",
+          "style_preference": true
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "CHANGES_REQUIRED"
+    },
+    "id": "taste-brief-violation",
+    "input": {
+      "findings": [
+        {
+          "brief_violation": true,
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "locator": "sec-2",
+              "source": "artifact.md"
+            }
+          ],
+          "finding_id": "f1",
+          "impact": "Violates formal tone requirement",
+          "locator": "sec-2",
+          "severity": "MAJOR",
+          "style_preference": true
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "blocker-not-blocking",
+    "input": {
+      "findings": [
+        {
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "locator": "sec-2",
+              "source": "artifact.md"
+            }
+          ],
+          "finding_id": "f1",
+          "impact": "Bad",
+          "locator": "sec-1",
+          "severity": "BLOCKER"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-evidence-kind",
+    "input": {
+      "findings": [
+        {
+          "evidence": [
+            {
+              "kind": "MAGIC",
+              "locator": "y",
+              "source": "x"
+            }
+          ],
+          "finding_id": "f1",
+          "impact": "Bad",
+          "locator": "sec-2",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "duplicate-id",
+    "input": {
+      "findings": [
+        {
+          "finding_id": "f1",
+          "severity": "MINOR"
+        },
+        {
+          "finding_id": "f1",
+          "severity": "NOTE"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "findings-not-list",
+    "input": {
+      "findings": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "malformed-root",
+    "input": "x"
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "finding-not-object",
+    "input": {
+      "findings": [
+        "x"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "finding-missing-id",
+    "input": {
+      "findings": [
+        {
+          "severity": "MINOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-severity",
+    "input": {
+      "findings": [
+        {
+          "finding_id": "f1",
+          "severity": "URGENT"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "evidence-not-object",
+    "input": {
+      "findings": [
+        {
+          "evidence": [
+            "x"
+          ],
+          "finding_id": "f1",
+          "impact": "y",
+          "locator": "x",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "evidence-missing-locator",
+    "input": {
+      "findings": [
+        {
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "source": "x"
+            }
+          ],
+          "finding_id": "f1",
+          "impact": "y",
+          "locator": "x",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "coverage_complete": false,
+      "status": "INVALID"
+    },
+    "id": "deep-missing-coverage",
+    "input": {
+      "candidate_id": "c1",
+      "findings": [],
+      "mode": "DEEP"
+    }
+  },
+  {
+    "expect": {
+      "coverage_complete": true,
+      "covered_axes": 1,
+      "status": "REVIEWED"
+    },
+    "id": "deep-complete-selected-coverage",
+    "input": {
+      "candidate_id": "c1",
+      "coverage": [
+        {
+          "axis": "claim-integrity",
+          "state": "COVERED"
+        }
+      ],
+      "findings": [],
+      "mode": "DEEP",
+      "required_axes": [
+        "claim-integrity"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "0:carried-without-revalidation"
+    },
+    "id": "carried-needs-revalidation",
+    "input": {
+      "findings": [
+        {
+          "axis": "claim-integrity",
+          "evidence": [
+            {
+              "candidate_id": "c1",
+              "kind": "OBSERVATION",
+              "locator": "p1",
+              "source": "artifact"
+            }
+          ],
+          "finding_id": "f1",
+          "finding_status": "CARRIED",
+          "impact": "wrong claim",
+          "locator": "p1",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "duplicate-fingerprint",
+    "input": {
+      "findings": [
+        {
+          "axis": "claim-integrity",
+          "evidence": [
+            {
+              "candidate_id": "c1",
+              "kind": "OBSERVATION",
+              "locator": "p1",
+              "source": "artifact"
+            }
+          ],
+          "finding_id": "f1",
+          "fingerprint": "same",
+          "impact": "wrong claim",
+          "locator": "p1",
+          "severity": "MAJOR"
+        },
+        {
+          "axis": "claim-integrity",
+          "evidence": [
+            {
+              "candidate_id": "c1",
+              "kind": "OBSERVATION",
+              "locator": "p1",
+              "source": "artifact"
+            }
+          ],
+          "finding_id": "f2",
+          "fingerprint": "same",
+          "impact": "wrong claim",
+          "locator": "p1",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "0:material-without-evidence"
+    },
+    "id": "candidate-bound-observation",
+    "input": {
+      "candidate_id": "c2",
+      "findings": [
+        {
+          "axis": "claim-integrity",
+          "evidence": [
+            {
+              "candidate_id": "c1",
+              "kind": "OBSERVATION",
+              "locator": "p1",
+              "source": "artifact"
+            }
+          ],
+          "finding_id": "f1",
+          "impact": "wrong claim",
+          "locator": "p1",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "coverage-na-needs-rationale",
+    "input": {
+      "coverage": [
+        {
+          "axis": "claim-integrity",
+          "state": "N/A"
+        }
+      ],
+      "findings": [],
+      "mode": "DEEP",
+      "required_axes": [
+        "claim-integrity"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "coverage-unknown-invalid",
+    "input": {
+      "coverage": [
+        {
+          "axis": "claim-integrity",
+          "state": "UNKNOWN"
+        }
+      ],
+      "findings": [],
+      "mode": "DEEP",
+      "required_axes": [
+        "claim-integrity"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-bad-mode",
+    "input": {
+      "findings": [],
+      "mode": "X"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-bad-candidate",
+    "input": {
+      "candidate_id": "",
+      "findings": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-required-axis-invalid",
+    "input": {
+      "findings": [],
+      "required_axes": [
+        "x"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-coverage-not-list",
+    "input": {
+      "coverage": "x",
+      "findings": [],
+      "mode": "DEEP",
+      "required_axes": [
+        "claim-integrity"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-coverage-row-invalid",
+    "input": {
+      "coverage": [
+        "x"
+      ],
+      "findings": [],
+      "mode": "DEEP",
+      "required_axes": [
+        "claim-integrity"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-coverage-axis-invalid",
+    "input": {
+      "coverage": [
+        {
+          "axis": "x",
+          "state": "COVERED"
+        }
+      ],
+      "findings": [],
+      "mode": "DEEP",
+      "required_axes": [
+        "claim-integrity"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-coverage-duplicate",
+    "input": {
+      "coverage": [
+        {
+          "axis": "claim-integrity",
+          "state": "COVERED"
+        },
+        {
+          "axis": "claim-integrity",
+          "state": "COVERED"
+        }
+      ],
+      "findings": [],
+      "mode": "DEEP",
+      "required_axes": [
+        "claim-integrity"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-coverage-state-invalid",
+    "input": {
+      "coverage": [
+        {
+          "axis": "claim-integrity",
+          "state": "X"
+        }
+      ],
+      "findings": [],
+      "mode": "DEEP",
+      "required_axes": [
+        "claim-integrity"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-fingerprint-invalid",
+    "input": {
+      "findings": [
+        {
+          "finding_id": "f",
+          "fingerprint": "",
+          "severity": "NOTE"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-axis-invalid",
+    "input": {
+      "findings": [
+        {
+          "axis": "x",
+          "finding_id": "f",
+          "severity": "NOTE"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-finding-status-invalid",
+    "input": {
+      "findings": [
+        {
+          "finding_id": "f",
+          "finding_status": "X",
+          "severity": "NOTE"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "findings:not-list"
+    },
+    "id": "mutation-findings-type-exact",
+    "input": {
+      "findings": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "CHANGES_REQUIRED",
+      "majors": 1
+    },
+    "id": "evidence-grade-material-pass",
+    "input": {
+      "enforce_evidence_floor": true,
+      "findings": [
+        {
+          "axis": "claim-integrity",
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "locator": "p1",
+              "source": "artifact"
+            }
+          ],
+          "evidence_grade": "B",
+          "finding_id": "f1",
+          "impact": "misleads",
+          "locator": "p1",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "evidence-grade-material-low",
+    "input": {
+      "enforce_evidence_floor": true,
+      "findings": [
+        {
+          "axis": "claim-integrity",
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "locator": "p1",
+              "source": "artifact"
+            }
+          ],
+          "evidence_grade": "D",
+          "finding_id": "f1",
+          "impact": "misleads",
+          "locator": "p1",
+          "severity": "MAJOR"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "evidence-grade-blocker-needs-a",
+    "input": {
+      "enforce_evidence_floor": true,
+      "findings": [
+        {
+          "axis": "claim-integrity",
+          "blocks_acceptance": true,
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "locator": "p1",
+              "source": "artifact"
+            }
+          ],
+          "evidence_grade": "B",
+          "finding_id": "f1",
+          "impact": "misleads",
+          "locator": "p1",
+          "severity": "BLOCKER"
+        }
+      ]
+    }
+  }
+]

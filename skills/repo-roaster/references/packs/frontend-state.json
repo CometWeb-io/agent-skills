@@ -1,0 +1,35 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.frontend-state",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review frontend state and async flows for stale data, race conditions, authorization assumptions, persistence boundaries and recovery from partial failure.",
+  "activation": {
+    "profiles": ["FULL_REPO", "SERVICE", "DESKTOP_APP", "MOBILE_APP"],
+    "signals": ["frontend", "client state", "react", "svelte", "vue", "state store", "optimistic update", "offline"]
+  },
+  "must_inspect": [
+    {
+      "id": "async-race-and-staleness",
+      "why": "Out-of-order requests, optimistic writes and stale caches can render or commit a state that no longer matches user intent.",
+      "evidence_hints": ["request cancellation", "mutation ordering", "query invalidation", "optimistic rollback"],
+      "false_positive_guards": ["A theoretical race is not material without a reachable ordering and meaningful incorrect state."]
+    },
+    {
+      "id": "client-server-authority",
+      "why": "Client state must not be treated as an authorization or integrity boundary for server-side actions.",
+      "evidence_hints": ["server validation", "entitlement check", "route guard", "payload trust"],
+      "false_positive_guards": ["Client-side gating is acceptable as UX when the server independently enforces the rule."]
+    },
+    {
+      "id": "partial-failure-recovery",
+      "why": "Multi-step interactions need a coherent user and data state when one request succeeds and another fails.",
+      "evidence_hints": ["retry", "rollback", "toast/error path", "reconciliation", "offline queue"],
+      "false_positive_guards": ["Do not require transactional UX for operations where eventual reconciliation is an explicit product choice."]
+    }
+  ],
+  "required_evidence": ["state mutation path", "server enforcement boundary where relevant"],
+  "false_positive_guards": ["UI inconsistency is not automatically a backend integrity defect."],
+  "handoff_triggers": ["Observed live UX behavior -> web-app-auditor"],
+  "notes": []
+}

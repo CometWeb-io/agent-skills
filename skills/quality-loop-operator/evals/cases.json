@@ -1,0 +1,2375 @@
+[
+  {
+    "expect": {
+      "next_stage": null,
+      "status": "COMPLETE"
+    },
+    "id": "complete-editorial",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-writer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-reviewer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "repair-operator",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "brief-architect",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "next-brief",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "repair-operator",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "review-changes-needs-repair",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-writer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-reviewer",
+          "state": "CHANGES_REQUIRED"
+        },
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "finding-reconciliation",
+      "status": "NEEDS_RECONCILIATION"
+    },
+    "id": "unresolved-conflict",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "reconciliation": [
+        {
+          "candidate_id": "c1",
+          "resolved": false,
+          "status": "CONFLICT"
+        }
+      ],
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-writer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-reviewer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "repair-operator",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "resolved-conflict-needs-basis",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "reconciliation": [
+        {
+          "resolved": true,
+          "status": "CONFLICT"
+        }
+      ],
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-writer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-reviewer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "repair-operator",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "deep-needs-policy-lock",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "DEEP",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "brief-architect",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "deep-valid-lock-next",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "DEEP",
+      "policy_lock": {
+        "locked_before_evaluation": true,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-policy-hash",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "DEEP",
+      "policy_lock": {
+        "locked_before_evaluation": true,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "bad"
+      },
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "policy-not-prelocked",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "DEEP",
+      "policy_lock": {
+        "locked_before_evaluation": false,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "delta-needs-base",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "DELTA",
+      "policy_lock": {
+        "locked_before_evaluation": true,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "delta-distinct-base",
+    "input": {
+      "base_candidate_id": "c1",
+      "candidate_id": "c2",
+      "contract_id": "b1",
+      "mode": "DELTA",
+      "policy_lock": {
+        "locked_before_evaluation": true,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "candidate-mismatch-stage",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "candidate_id": "c2",
+          "skill": "brief-architect",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "contract-mismatch-stage",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "contract_id": "b2",
+          "skill": "brief-architect",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "stage-order-invalid",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "content-writer",
+          "state": "PASS"
+        },
+        {
+          "skill": "brief-architect",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "duplicate-stage",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "PASS"
+        },
+        {
+          "skill": "brief-architect",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "unexpected-stage",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "repo-roaster",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "unjustified-skip",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "LIGHT",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "SKIPPED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "content-writer",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "light-justified-skip",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "LIGHT",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "skip_allowed": true,
+          "skip_rationale": "Existing locked brief",
+          "state": "SKIPPED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "deep-cannot-skip",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "DEEP",
+      "policy_lock": {
+        "locked_before_evaluation": true,
+        "pack_id": "editorial",
+        "revision": "1.3.0",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "skip_allowed": true,
+          "skip_rationale": "Existing brief",
+          "state": "SKIPPED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "brief-architect",
+      "status": "BLOCKED"
+    },
+    "id": "blocked-stage",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "BLOCKED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "release-readiness",
+      "software_release_verdict": "NOT_OWNED",
+      "status": "COMPLETE"
+    },
+    "id": "repo-complete-handoff-release",
+    "input": {
+      "candidate_id": "r1",
+      "contract_id": "rc1",
+      "mode": "STANDARD",
+      "profile": "REPO_DEEP",
+      "stages": [
+        {
+          "skill": "repo-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "repair-operator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "repo-does-not-own-artifact-acceptance",
+    "input": {
+      "candidate_id": "r1",
+      "contract_id": "rc1",
+      "mode": "STANDARD",
+      "profile": "REPO_DEEP",
+      "stages": [
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "science-roaster",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "research-next-science",
+    "input": {
+      "candidate_id": "r1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "RESEARCH",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-writer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-reviewer",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-profile",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "NOPE",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-mode",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "MAGIC",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "missing-candidate",
+    "input": {
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "missing-contract",
+    "input": {
+      "candidate_id": "c1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "reconciliation-mismatch",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "reconciliation": [
+        {
+          "candidate_id": "c2",
+          "resolved": false,
+          "status": "CONFLICT"
+        }
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "reconciliation-not-list",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "reconciliation": "bad",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "payload-not-object",
+    "input": "bad"
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "policy-lock-not-object",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "DEEP",
+      "policy_lock": "bad",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "stage-row-not-object",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        "bad"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "stage-state-invalid",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "MAGIC"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "reconciliation-row-not-object",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "reconciliation": [
+        "bad"
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "repair-operator",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "repair-stage-changes-required",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-writer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-reviewer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "repair-operator",
+          "state": "CHANGES_REQUIRED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "artifact-acceptance",
+      "status": "BLOCKED"
+    },
+    "id": "acceptance-nonpass-blocks",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-writer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-reviewer",
+          "state": "PASS"
+        },
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "repair-operator",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "CHANGES_REQUIRED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "brief-architect",
+      "status": "BLOCKED"
+    },
+    "id": "deferred-stage-blocks",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": "DEFER"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "adaptive-mode-mismatch",
+    "input": {
+      "adaptive_depth": {
+        "recommended_mode": "DEEP"
+      },
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "brief-architect",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "adaptive-override",
+    "input": {
+      "adaptive_depth": {
+        "override_approved": true,
+        "override_rationale": "bounded low-risk emergency edit",
+        "recommended_mode": "DEEP"
+      },
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "cache-unsafe-reuse",
+    "input": {
+      "cache_reuse": [
+        {
+          "decision": "REUSE",
+          "fingerprint_match": false,
+          "source_status": "PASS"
+        }
+      ],
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "cache-source-not-pass",
+    "input": {
+      "cache_reuse": [
+        {
+          "decision": "REUSE",
+          "fingerprint_match": true,
+          "source_status": "CHANGES_REQUIRED"
+        }
+      ],
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "debt-needs-asof",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "quality_debt": [
+        {
+          "candidate_id": "c1",
+          "severity": "BLOCKER",
+          "status": "OPEN"
+        }
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "debt-candidate-mismatch",
+    "input": {
+      "as_of": "2026-09-21T22:00:00+02:00",
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "quality_debt": [
+        {
+          "candidate_id": "c2",
+          "severity": "BLOCKER",
+          "status": "OPEN"
+        }
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "debt-bad-severity",
+    "input": {
+      "as_of": "2026-09-21T22:00:00+02:00",
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "quality_debt": [
+        {
+          "candidate_id": "c1",
+          "severity": "NOPE",
+          "status": "OPEN"
+        }
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "debt-bad-status",
+    "input": {
+      "as_of": "2026-09-21T22:00:00+02:00",
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "quality_debt": [
+        {
+          "candidate_id": "c1",
+          "severity": "MAJOR",
+          "status": "NOPE"
+        }
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "quality-debt-resolution",
+      "status": "BLOCKED"
+    },
+    "id": "debt-blocker-blocks",
+    "input": {
+      "as_of": "2026-09-21T22:00:00+02:00",
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "quality_debt": [
+        {
+          "candidate_id": "c1",
+          "severity": "BLOCKER",
+          "status": "OPEN"
+        }
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "quality-debt-resolution",
+      "status": "BLOCKED"
+    },
+    "id": "debt-expired-control-blocks",
+    "input": {
+      "as_of": "2026-09-21T22:00:00+02:00",
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "quality_debt": [
+        {
+          "candidate_id": "c1",
+          "due_at": "2026-09-20T22:00:00+02:00",
+          "kind": "CONTROL",
+          "severity": "MAJOR",
+          "status": "OPEN"
+        }
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "debt-closed-needs-evidence",
+    "input": {
+      "as_of": "2026-09-21T22:00:00+02:00",
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "quality_debt": [
+        {
+          "candidate_id": "c1",
+          "severity": "MAJOR",
+          "status": "CLOSED"
+        }
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "revalidation",
+      "status": "BLOCKED"
+    },
+    "id": "replay-drift-blocks",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "replay_status": "DRIFT",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-replay-status",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "replay_status": "MAGIC",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "skill_evaluation_result": "IMPROVED",
+      "status": "COMPLETE"
+    },
+    "id": "skill-quality-improved",
+    "input": {
+      "candidate_id": "s1",
+      "contract_id": "k1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "result": "IMPROVED",
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "skill-creator",
+      "status": "CHANGES_REQUIRED"
+    },
+    "id": "skill-quality-regression",
+    "input": {
+      "candidate_id": "s1",
+      "contract_id": "k1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "result": "REGRESSION",
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "skill-evaluator",
+      "status": "BLOCKED"
+    },
+    "id": "skill-quality-design-ready",
+    "input": {
+      "candidate_id": "s1",
+      "contract_id": "k1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "result": "DESIGN_READY",
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "skill-auditor",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "skill-quality-next-auditor",
+    "input": {
+      "candidate_id": "s1",
+      "contract_id": "k1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "brief-architect",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "adaptive-same-mode-valid",
+    "input": {
+      "adaptive_depth": {
+        "recommended_mode": "STANDARD"
+      },
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "brief-architect",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "cache-nonreuse-valid",
+    "input": {
+      "cache_reuse": [
+        {
+          "decision": "RECOMPUTE",
+          "fingerprint_match": false,
+          "source_status": "CHANGES_REQUIRED"
+        }
+      ],
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "blocking_quality_debt": 0,
+      "next_stage": "brief-architect",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "debt-valid-future-minor",
+    "input": {
+      "as_of": "2026-09-21T22:00:00+02:00",
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "quality_debt": [
+        {
+          "candidate_id": "c1",
+          "due_at": "2026-09-30T22:00:00+02:00",
+          "severity": "MINOR",
+          "status": "OPEN"
+        }
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "blocking_quality_debt": 0,
+      "next_stage": "brief-architect",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "debt-invalid-datetime-nonblocking",
+    "input": {
+      "as_of": "2026-09-21T22:00:00+02:00",
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "quality_debt": [
+        {
+          "candidate_id": "c1",
+          "due_at": "not-a-dateTbad",
+          "severity": "MINOR",
+          "status": "OPEN"
+        }
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "adaptive-not-object",
+    "input": {
+      "adaptive_depth": "DEEP",
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "cache-row-not-object",
+    "input": {
+      "cache_reuse": [
+        "bad-row"
+      ],
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "debt-row-not-object",
+    "input": {
+      "as_of": "2026-09-21T22:00:00+02:00",
+      "candidate_id": "c1",
+      "contract_id": "b1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "quality_debt": [
+        "bad-row"
+      ],
+      "stages": []
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "rubric-designer",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "skill-quality-next-rubric",
+    "input": {
+      "candidate_id": "s1",
+      "contract_id": "k1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "benchmark-curator",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "skill-quality-next-benchmark",
+    "input": {
+      "candidate_id": "s1",
+      "contract_id": "k1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "skill-evaluator",
+      "status": "READY_FOR_NEXT"
+    },
+    "id": "skill-quality-next-evaluator",
+    "input": {
+      "candidate_id": "s1",
+      "contract_id": "k1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "skill-quality-benchmark-rubric-mismatch",
+    "input": {
+      "candidate_id": "s1",
+      "contract_id": "k1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "rubric_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "skill-quality-evaluator-benchmark-mismatch",
+    "input": {
+      "candidate_id": "s1",
+      "contract_id": "k1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "result": "IMPROVED",
+          "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-not-object",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": "bad",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-invalid-state",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "rollback_version": "1.5.0",
+        "state": "NOPE"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-invalid-compat",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "NOPE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "rollback_version": "1.5.0",
+        "state": "READY_FOR_CANARY"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-invalid-host",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "NOPE",
+        "material_change": true,
+        "rollback_version": "1.5.0",
+        "state": "READY_FOR_CANARY"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-staged-needs-canary",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "rollback_version": "1.5.0",
+        "state": "READY_FOR_STAGED"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-material-needs-rollback",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "state": "READY_FOR_CANARY"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-breaking-major",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BREAKING",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "major_version_bump": false,
+        "material_change": true,
+        "migration_guide_present": true,
+        "rollback_version": "1.5.0",
+        "state": "READY_FOR_CANARY"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-breaking-migration",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BREAKING",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "major_version_bump": true,
+        "material_change": true,
+        "migration_guide_present": false,
+        "rollback_version": "1.5.0",
+        "state": "READY_FOR_CANARY"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-full-needs-real-host",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "canary_passed": true,
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "observation_runs": 20,
+        "rollback_version": "1.5.0",
+        "state": "FULL"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-rollback-executable",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "rollback_executable": false,
+        "rollback_version": "1.5.0",
+        "state": "ROLLBACK_REQUIRED"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "canary",
+      "status": "READY_FOR_ROLLOUT"
+    },
+    "expect_paths": {
+      "rollout_status": "READY_FOR_CANARY"
+    },
+    "id": "runtime-ready-canary",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "rollback_version": "1.5.0",
+        "state": "READY_FOR_CANARY"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "staged-rollout",
+      "status": "READY_FOR_ROLLOUT"
+    },
+    "id": "runtime-ready-staged",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "canary_passed": true,
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "observation_runs": 20,
+        "paired_status": "NONINFERIOR",
+        "rollback_version": "1.5.0",
+        "stability_status": "STABLE",
+        "state": "READY_FOR_STAGED"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "full-rollout",
+      "status": "READY_FOR_ROLLOUT"
+    },
+    "id": "runtime-ready-full",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "canary_passed": true,
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "REAL_HOST_VERIFIED",
+        "material_change": true,
+        "observation_runs": 20,
+        "paired_status": "SIGNIFICANT_IMPROVEMENT",
+        "rollback_version": "1.5.0",
+        "stability_status": "STABLE",
+        "state": "READY_FOR_FULL"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "rollback",
+      "status": "CHANGES_REQUIRED"
+    },
+    "id": "runtime-rollback-required",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "rollback_executable": true,
+        "rollback_version": "1.5.0",
+        "state": "ROLLBACK_REQUIRED"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": "runtime-compatibility",
+      "status": "CHANGES_REQUIRED"
+    },
+    "id": "runtime-blocked",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "rollback_version": "1.5.0",
+        "state": "BLOCKED"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "next_stage": null,
+      "status": "COMPLETE"
+    },
+    "expect_paths": {
+      "rollout_status": "FULL"
+    },
+    "id": "runtime-full-complete",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "canary_passed": true,
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "REAL_HOST_VERIFIED",
+        "material_change": true,
+        "observation_runs": 20,
+        "paired_status": "SIGNIFICANT_IMPROVEMENT",
+        "rollback_version": "1.5.0",
+        "stability_status": "STABLE",
+        "state": "FULL"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-observation-window",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "canary_passed": true,
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "observation_runs": 3,
+        "rollback_version": "1.5.0",
+        "state": "READY_FOR_STAGED"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-deprecation-record",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "removing_public_contract": true,
+        "rollback_version": "1.5.0",
+        "state": "READY_FOR_CANARY"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-lifecycle-deprecation-notice",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": false,
+        "rollback_version": "1.5.0",
+        "state": "DEPRECATED"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-staged-flaky-blocked",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "canary_passed": true,
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "STATIC_SHAPE_ONLY",
+        "material_change": true,
+        "observation_runs": 20,
+        "paired_status": "NONINFERIOR",
+        "rollback_version": "1.5.0",
+        "stability_status": "FLAKY",
+        "state": "READY_FOR_STAGED"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "runtime-full-inconclusive-blocked",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "runtime_lifecycle": {
+        "canary_passed": true,
+        "contract_compatibility": "BACKWARD_COMPATIBLE",
+        "host_support": "REAL_HOST_VERIFIED",
+        "material_change": true,
+        "observation_runs": 20,
+        "paired_status": "INCONCLUSIVE",
+        "rollback_version": "1.5.0",
+        "stability_status": "STABLE",
+        "state": "READY_FOR_FULL"
+      },
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVED",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    }
+  }
+]

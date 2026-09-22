@@ -1,0 +1,54 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.database-transactions",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review transactional boundaries, isolation, partial failure, outbox/inbox patterns and cross-store consistency for state-changing workflows.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "DATA_PIPELINE",
+      "MIGRATION"
+    ],
+    "signals": [
+      "transaction",
+      "database transaction",
+      "commit",
+      "rollback",
+      "outbox"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "atomic-boundary",
+      "why": "State transitions that must move together need a boundary or compensating design that matches the invariant.",
+      "evidence_hints": [
+        "transaction scope",
+        "commit order",
+        "outbox",
+        "saga"
+      ],
+      "false_positive_guards": [
+        "Do not demand a single database transaction across intentionally decoupled systems with valid compensation."
+      ]
+    },
+    {
+      "id": "retry-after-commit",
+      "why": "Retries around ambiguous commit/side-effect outcomes need idempotent recovery.",
+      "evidence_hints": [
+        "retry loop",
+        "idempotency key",
+        "commit acknowledgement"
+      ],
+      "false_positive_guards": [
+        "Do not infer duplicate effects if a verified downstream idempotency boundary exists."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.data-migration",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review schema and data migrations for reversibility, partial failure, compatibility and rehearsal evidence.",
+  "activation": {
+    "profiles": [
+      "MIGRATION",
+      "PR"
+    ],
+    "signals": [
+      "migration",
+      "alembic",
+      "flyway",
+      "schema change",
+      "backfill",
+      "rollback"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "forward-compatibility",
+      "why": "Rolling deploys can run old and new code against transitional schema states.",
+      "evidence_hints": [
+        "expand and contract",
+        "feature flag",
+        "compatibility window"
+      ],
+      "false_positive_guards": [
+        "A coordinated stop-the-world deploy may intentionally use a narrower compatibility window."
+      ]
+    },
+    {
+      "id": "partial-failure",
+      "why": "Backfills and DDL can succeed partially and require deterministic resume or repair.",
+      "evidence_hints": [
+        "batching",
+        "checkpoint",
+        "transaction",
+        "retry"
+      ],
+      "false_positive_guards": [
+        "Transactional DDL behavior differs by database; do not assume support."
+      ]
+    },
+    {
+      "id": "rollback-reality",
+      "why": "A rollback script is not proof of recoverability unless data-loss semantics and rehearsal are understood.",
+      "evidence_hints": [
+        "rollback script",
+        "backup",
+        "restore rehearsal",
+        "irreversible transform"
+      ],
+      "false_positive_guards": [
+        "Irreversible migrations can be acceptable with tested restore or forward-fix strategy."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "database or version context",
+    "rollback or recovery strategy"
+  ],
+  "false_positive_guards": [
+    "Do not claim a rollback works merely because a file exists."
+  ],
+  "handoff_triggers": [
+    "Release gate -> release-readiness"
+  ],
+  "notes": []
+}

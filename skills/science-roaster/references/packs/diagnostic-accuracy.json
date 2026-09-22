@@ -1,0 +1,52 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.diagnostic-accuracy",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review diagnostic-accuracy studies for target condition reference, spectrum, threshold selection, verification bias, prevalence context and uncertainty.",
+  "activation": {
+    "profiles": [
+      "VALIDATION",
+      "OBSERVATIONAL"
+    ],
+    "signals": [
+      "sensitivity",
+      "specificity",
+      "diagnostic accuracy",
+      "roc",
+      "reference standard"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "reference-standard",
+      "why": "Diagnostic claims depend on the target condition reference and verification process.",
+      "evidence_hints": [
+        "reference standard",
+        "blinding",
+        "verification completeness"
+      ],
+      "false_positive_guards": [
+        "Imperfect reference is not automatically fatal; quantify how it limits the claim."
+      ]
+    },
+    {
+      "id": "threshold-selection",
+      "why": "Threshold selection and evaluation must be separated enough to avoid optimistic performance.",
+      "evidence_hints": [
+        "pre-specified threshold",
+        "training/validation split",
+        "Youden index"
+      ],
+      "false_positive_guards": [
+        "Exploratory threshold optimization is acceptable when claims and validation status are labeled accordingly."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

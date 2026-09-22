@@ -1,0 +1,55 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.observability-incidents",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review critical paths for actionable telemetry, correlation, failure detection, recovery signals and incident-safe diagnostics without treating logging volume as reliability.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "FULL_REPO",
+      "DATA_PIPELINE"
+    ],
+    "signals": [
+      "observability",
+      "metrics",
+      "tracing",
+      "alert",
+      "incident",
+      "correlation id"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "detectability",
+      "why": "Material failure modes need evidence that operators can detect and localize them in time.",
+      "evidence_hints": [
+        "error metric",
+        "trace span",
+        "structured event",
+        "alert condition"
+      ],
+      "false_positive_guards": [
+        "Do not require bespoke metrics when platform-level telemetry already proves equivalent observability."
+      ]
+    },
+    {
+      "id": "diagnostic-safety",
+      "why": "Operational diagnostics must avoid leaking secrets or sensitive payloads while preserving enough context to debug.",
+      "evidence_hints": [
+        "log redaction",
+        "trace attributes",
+        "correlation id"
+      ],
+      "false_positive_guards": [
+        "Do not call absence of payload logging an observability defect when safer identifiers suffice."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

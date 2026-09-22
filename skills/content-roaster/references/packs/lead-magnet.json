@@ -1,0 +1,52 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.lead-magnet",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review lead magnets and gated assets for promise-to-value fit, proof, specificity, capture friction and whether the asset earns the requested user data.",
+  "activation": {
+    "profiles": [
+      "LONGFORM",
+      "LANDING_PAGE"
+    ],
+    "signals": [
+      "lead magnet",
+      "download guide",
+      "download report",
+      "gated content",
+      "ebook download"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "value-before-gate",
+      "why": "The promised value must be concrete enough to justify attention and data capture.",
+      "evidence_hints": [
+        "asset promise",
+        "preview/sample",
+        "outcome specificity"
+      ],
+      "false_positive_guards": [
+        "Do not call a gate excessive solely because any form exists; evaluate requested commitment and context."
+      ]
+    },
+    {
+      "id": "capture-friction",
+      "why": "Data requested before access should be proportionate to the asset and downstream use.",
+      "evidence_hints": [
+        "form fields",
+        "privacy explanation",
+        "delivery path"
+      ],
+      "false_positive_guards": [
+        "Privacy/compliance conclusions require the relevant policy/legal evidence; keep the content finding bounded."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

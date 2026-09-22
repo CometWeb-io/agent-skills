@@ -1,0 +1,13 @@
+interface:
+  display_name: "Skill Auditor"
+  short_description: "skill package audits; routing, portability, and contract review; package and supply-chain hygiene"
+  default_prompt: "Use the Skill Auditor skill for: Audit an Agent Skill or a repository of skills for trigger quality, scope overlap, instruction conflicts, progressive-disclosure cost, broken references/dependencies, eval blind spots, false-green pat"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

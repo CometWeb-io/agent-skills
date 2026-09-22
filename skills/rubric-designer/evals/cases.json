@@ -1,0 +1,976 @@
+[
+  {
+    "expect": {
+      "blocker_count": 1,
+      "criteria_count": 2,
+      "status": "READY_TO_FREEZE"
+    },
+    "id": "valid",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "not-object",
+    "input": null
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-mode",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "NOPE",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "deep-needs-blind",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": false,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "DEEP",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "deep-needs-freeze",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": false,
+      "mode": "DEEP",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "missing-dimension",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness",
+        "safety"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "duplicate-id",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c1",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "not-observable",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": false,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-floor",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "Z",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "weak-blocker-floor",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "C",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "supporting-blocker",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "identical-pass-fail",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "All material claims meet evidence floor",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-antigaming",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "NEEDS_REVISION"
+    },
+    "id": "draft-needs-revision",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": false,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-weight",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 2
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "zero-blocker-weight",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "criterion-not-object",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        "bad",
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "criterion-missing-dimension",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "blocker-nonbool",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": "yes",
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "required-dims-not-list",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": "accuracy",
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  },
+  {
+    "expect": {
+      "status": "READY_TO_FREEZE"
+    },
+    "id": "weight-omitted-valid",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action"
+        }
+      ],
+      "frozen_before_review": true,
+      "mode": "STANDARD",
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    }
+  }
+]

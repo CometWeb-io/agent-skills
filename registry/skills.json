@@ -167,6 +167,277 @@
       ]
     },
     {
+      "id": "artifact-acceptance",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Run a final evidence-backed acceptance gate on a content, research, documentation, sales, or other knowledge artifact against an explicit brief, required evidence, unresolved findings, and format/QA criteria. Use when the user asks whether an artifact is actually ready, complete, publishable as a deliverable, or has passed its defined acceptance contract. Do not use as the final production-release gate for software, to choose among consequential strategic options, to perform the initial review, or to invent acceptance criteria after seeing the result; use release-readiness, ai-council, or the relevant reviewer instead.",
+      "explicit_only": false,
+      "owns": [
+        "knowledge-artifact acceptance gates",
+        "evidence-backed artifact verdicts",
+        "candidate and contract traceability"
+      ],
+      "does_not_own": [
+        "software release verdicts",
+        "initial editorial review",
+        "consequential strategic decisions"
+      ],
+      "trigger_examples": [
+        "Is this report ready to publish against its brief?",
+        "Run the final acceptance gate on this knowledge artifact"
+      ],
+      "negative_trigger_examples": [
+        "Is this software release ready?",
+        "Review this article for the first time"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "files"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          12,
+          "artifact acceptance|acceptance gate.*(artifact|report|content)"
+        ],
+        [
+          10,
+          "ready.*(publish|deliver).*brief"
+        ],
+        [
+          9,
+          "final (artifact|knowledge) gate"
+        ],
+        [
+          8,
+          "artifact.*(READY_WITH_CONTROLS|NOT_READY|DEFER)"
+        ],
+        [
+          7,
+          "acceptance contract.*evidence"
+        ]
+      ]
+    },
+    {
+      "id": "benchmark-curator",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Design, curate, version, and quality-control benchmark or evaluation corpora for Agent Skills and quality workflows, including task taxonomies, discovery/forced/negative controls, adversarial and regression cases, difficulty strata, holdout isolation, provenance, duplication, contamination risk, coverage balance, and immutable benchmark hashes. Use when the user asks to build or maintain an eval dataset, golden set, benchmark suite, regression corpus, holdout, challenge set, or representative test cases. Do not use to execute the model experiment or claim lift (use skill-evaluator), to design the grading rubric (use rubric-designer), to edit the candidate skill (use skill-creator), or to treat leaked/known cases as a clean holdout.",
+      "explicit_only": false,
+      "owns": [
+        "benchmark and eval corpus design",
+        "holdout and contamination controls",
+        "benchmark revision hashes"
+      ],
+      "does_not_own": [
+        "model experiment execution",
+        "rubric design",
+        "skill editing"
+      ],
+      "trigger_examples": [
+        "Curate a clean holdout benchmark for this skill",
+        "Design the discovery and regression corpus"
+      ],
+      "negative_trigger_examples": [
+        "Run the model experiment and claim lift",
+        "Design the grading rubric"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          20,
+          "curate.*(clean )?holdout benchmark"
+        ],
+        [
+          12,
+          "benchmark curator|benchmark.*corpus"
+        ],
+        [
+          10,
+          "golden set|regression corpus|challenge set"
+        ],
+        [
+          9,
+          "holdout.*(contamination|leakage|clean)"
+        ],
+        [
+          8,
+          "eval dataset.*(taxonomy|provenance|duplicate)"
+        ],
+        [
+          7,
+          "freeze.*benchmark.*hash"
+        ]
+      ]
+    },
+    {
+      "id": "brief-architect",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Turn an ambiguous request for a content, research, sales, documentation, or knowledge artifact into an explicit execution contract with audience, objective, evidence policy, constraints, acceptance criteria, risks, and handoff fields. Use when the task is underspecified, expensive to redo, spans multiple specialists, or needs a durable brief before writing/research. Do not use to write the final artifact, run broad product discovery, make a consequential decision, or replace product-operator, evidence-researcher, content-writer, or ai-council.",
+      "explicit_only": false,
+      "owns": [
+        "artifact brief and execution contract",
+        "observable acceptance criteria",
+        "evidence policy and handoff fields"
+      ],
+      "does_not_own": [
+        "final artifact production",
+        "broad product discovery",
+        "consequential strategic decisions"
+      ],
+      "trigger_examples": [
+        "Turn this vague request into an executable brief",
+        "Define acceptance criteria before we write the report"
+      ],
+      "negative_trigger_examples": [
+        "Write the final article",
+        "Choose the product strategy"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "files"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          20,
+          "vague request.*executable brief|acceptance criteria before"
+        ],
+        [
+          12,
+          "brief architect|artifact brief"
+        ],
+        [
+          10,
+          "turn this vague request into a brief"
+        ],
+        [
+          9,
+          "acceptance criteria before (writing|research|production)"
+        ],
+        [
+          8,
+          "evidence policy.*handoff"
+        ],
+        [
+          7,
+          "underspecified.*(artifact|report|guide)"
+        ]
+      ]
+    },
+    {
       "id": "cometweb-context",
       "version": "1.4.2",
       "lifecycle": "active",
@@ -311,6 +582,273 @@
         [
           7,
           "monitor competitors|competitor delta"
+        ]
+      ]
+    },
+    {
+      "id": "content-reviewer",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Review an existing piece of content constructively against its brief, intended reader, factual/evidence requirements, structure, clarity, specificity, usefulness, and internal consistency. Use when the user wants editorial QA, actionable findings, a pre-publication review, or a reasoned assessment of what must change. Do not use for adversarial roasting, full rewrites, evidence collection, humanization-only editing, or final release acceptance; route those to content-roaster, content-writer/ai-humanize, evidence-researcher, or artifact-acceptance.",
+      "explicit_only": false,
+      "owns": [
+        "constructive content review",
+        "evidence-backed editorial findings",
+        "review coverage and repair direction"
+      ],
+      "does_not_own": [
+        "adversarial roasting",
+        "full content rewrites",
+        "final publication acceptance"
+      ],
+      "trigger_examples": [
+        "Review this draft against its brief",
+        "Give me actionable editorial QA before publication"
+      ],
+      "negative_trigger_examples": [
+        "Brutally roast this landing page",
+        "Rewrite the whole article"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "web",
+        "files"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          12,
+          "content reviewer|editorial (review|qa)"
+        ],
+        [
+          10,
+          "review this (draft|article|report).*brief"
+        ],
+        [
+          9,
+          "pre.publication review|actionable editorial findings"
+        ],
+        [
+          8,
+          "content.*(clarity|specificity|internal consistency).*review"
+        ],
+        [
+          7,
+          "constructive review.*content"
+        ]
+      ]
+    },
+    {
+      "id": "content-roaster",
+      "version": "6.0.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Run evidence-anchored adversarial reviews of marketing, sales, product, editorial, and long-form content such as landing pages, pricing pages, offers, emails, posts, articles, case studies, reports, ebooks, lead magnets, documentation, product pages, demo/trial flows, enterprise procurement or trust content, release announcements, and sales decks. Use when the user asks to roast, tear apart, red-team, stress-test, compare revisions of, or brutally critique content and wants each material criticism tied to exact source evidence, decision impact, proof burden, counterevidence search, a concrete repair, and an observable acceptance check. Do not use for scientific peer review, repository/code critique, rewrite-only work, one-off fact checking, or full SEO/GEO/AEO audits; route those to science-roaster, repo-roaster, ai-humanize, evidence-researcher, or seo-geo-aeo-maxxing.",
+      "explicit_only": false,
+      "owns": [
+        "adversarial content review",
+        "proof-debt and claim-pressure diagnosis",
+        "repair verification contracts"
+      ],
+      "does_not_own": [
+        "scientific peer review",
+        "repository/code critique",
+        "rewrite-only editing"
+      ],
+      "trigger_examples": [
+        "Roast this landing page with evidence",
+        "Red-team the claims and objections in this offer"
+      ],
+      "negative_trigger_examples": [
+        "Peer-review this scientific manuscript",
+        "Audit the repository code"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "web",
+        "files"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          14,
+          "content roaster|content roast|roast.*(landing page|offer|article|copy)"
+        ],
+        [
+          12,
+          "red.team.*(content|copy|offer)"
+        ],
+        [
+          10,
+          "adversarial.*(content|marketing|sales) review"
+        ],
+        [
+          9,
+          "proof debt|claim.*counterevidence.*repair"
+        ],
+        [
+          8,
+          "brutal.*critique.*(copy|content|page)"
+        ]
+      ]
+    },
+    {
+      "id": "content-writer",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Create evidence-aware informational or editorial prose such as articles, guides, reports, documentation, research-backed explainers, and other bounded knowledge content from an explicit brief or sufficiently clear request. Use when the user wants the actual written artifact and factual integrity, reader utility, structure, and claim discipline matter. Do not use primarily for persuasion-first landing-page copy, ads, lifecycle or cold email, generic copy-editing, humanization-only rewrites, long-form publication/release orchestration, hostile critique, or primary research collection; route those to the relevant copy, email, ai-humanize, longform-publisher, evidence-researcher, content-reviewer, or content-roaster specialist when available.",
+      "explicit_only": false,
+      "owns": [
+        "evidence-aware content production",
+        "claim-discipline ledger",
+        "reader-facing informational artifacts"
+      ],
+      "does_not_own": [
+        "persuasion-first campaign copy",
+        "primary evidence research",
+        "publication release orchestration"
+      ],
+      "trigger_examples": [
+        "Write the evidence-backed guide from this brief",
+        "Create the reader-facing report without inventing claims"
+      ],
+      "negative_trigger_examples": [
+        "Humanize this paragraph only",
+        "Run the primary research first"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "web",
+        "files"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          12,
+          "content writer|write.*(evidence.backed|informational) (guide|report|article)"
+        ],
+        [
+          10,
+          "create.*reader.facing (artifact|report|guide)"
+        ],
+        [
+          9,
+          "write.*from this brief.*(article|report|documentation)"
+        ],
+        [
+          8,
+          "claim.discipline.*(draft|content)"
+        ],
+        [
+          7,
+          "evidence.aware.*(prose|content)"
         ]
       ]
     },
@@ -584,6 +1122,98 @@
         [
           6,
           "pricing claims for .* vendors"
+        ]
+      ]
+    },
+    {
+      "id": "feedback-integrator",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Aggregate repeated findings, acceptance failures, eval results, user corrections, and workflow incidents across skill runs to identify recurring failure patterns and propose evidence-backed improvements to skill instructions, routing, references, kernels, evals, or host integration. Use when the user wants the skill system to learn from repeated mistakes, run a retrospective, improve reliability over time, or convert observed failures into regression tests. Do not use to silently self-modify skills, learn from a single weak signal, replace product/research analytics, or apply repository changes without explicit authorization.",
+      "explicit_only": false,
+      "owns": [
+        "recurrent failure pattern synthesis",
+        "evidence-backed improvement proposals",
+        "regression test proposals"
+      ],
+      "does_not_own": [
+        "silent self-modification",
+        "single-signal generalization",
+        "product or research analytics"
+      ],
+      "trigger_examples": [
+        "Turn repeated skill failures into a regression plan",
+        "Run a retrospective across these quality incidents"
+      ],
+      "negative_trigger_examples": [
+        "Patch the skill silently from one correction",
+        "Analyze product retention"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "git"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          20,
+          "retrospective.*quality incidents"
+        ],
+        [
+          12,
+          "feedback integrator|integrate.*feedback"
+        ],
+        [
+          10,
+          "repeated.*(skill failure|quality failure|user correction)"
+        ],
+        [
+          9,
+          "retrospective.*(skill|quality workflow)"
+        ],
+        [
+          8,
+          "failure pattern.*regression test"
+        ],
+        [
+          7,
+          "improve reliability.*repeated incidents"
         ]
       ]
     },
@@ -948,6 +1578,100 @@
       ]
     },
     {
+      "id": "quality-loop-operator",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Orchestrate the CometWeb artifact/repository/skill quality loop across briefing, creation, review, adversarial testing, repair, acceptance, measurement, selective revalidation, and skill runtime lifecycle while preserving candidate/contract identity, frozen policy/rubric locks, finding lineage, rollout state, rollback readiness, disagreement state, and quality debt. Use when the user wants one entry point to run or resume the full quality workflow, coordinate quality specialists, process a batch/campaign, reconcile findings, or govern a measured skill candidate through canary/staged rollout. Do not use for general multi-skill orchestration outside quality workflows, to replace specialist analysis, to make consequential strategy decisions, or to declare software production readiness; use skill-orchestrator, ai-council, or release-readiness for those cases.",
+      "explicit_only": false,
+      "owns": [
+        "quality workflow state and sequencing",
+        "specialist handoffs and revalidation",
+        "quality rollout lifecycle"
+      ],
+      "does_not_own": [
+        "general multi-skill orchestration",
+        "consequential strategy decisions",
+        "software production-readiness verdicts"
+      ],
+      "trigger_examples": [
+        "Run the full content quality loop",
+        "Resume this quality workflow from the last accepted stage"
+      ],
+      "negative_trigger_examples": [
+        "Orchestrate an unrelated product workflow",
+        "Give a software release GO/NO_GO"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "git",
+        "web",
+        "files"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          20,
+          "full content quality loop"
+        ],
+        [
+          14,
+          "quality loop operator|quality workflow"
+        ],
+        [
+          12,
+          "full quality loop|resume.*quality workflow"
+        ],
+        [
+          10,
+          "brief.*review.*roast.*repair.*acceptance"
+        ],
+        [
+          9,
+          "quality.*(revalidation|rollout|rollback)"
+        ],
+        [
+          8,
+          "coordinate quality specialists"
+        ]
+      ]
+    },
+    {
       "id": "release-readiness",
       "version": "1.2.0",
       "lifecycle": "active",
@@ -1017,6 +1741,186 @@
         [
           6,
           "can we ship"
+        ]
+      ]
+    },
+    {
+      "id": "repair-operator",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Convert findings from reviewers, roasters, audits, tests, or acceptance gates into a minimal dependency-aware repair set, optionally apply authorized edits, and verify that fixes close root causes without introducing regressions. Use when the user wants issues actually fixed rather than merely analyzed, especially after content-reviewer, content-roaster, science-roaster, repo-roaster, or artifact-acceptance. Do not use to invent new requirements, perform the initial broad audit, make consequential strategy decisions, or claim a finding is fixed without fresh verification evidence.",
+      "explicit_only": false,
+      "owns": [
+        "finding-to-repair planning",
+        "authorized bounded repairs",
+        "fresh repair verification"
+      ],
+      "does_not_own": [
+        "initial broad audit",
+        "inventing new requirements",
+        "production release verdicts"
+      ],
+      "trigger_examples": [
+        "Turn these review findings into the smallest repair set",
+        "Apply the authorized fixes and verify they close the root cause"
+      ],
+      "negative_trigger_examples": [
+        "Audit the whole repo from scratch",
+        "Decide whether the release is ready"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "git"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          20,
+          "authorized fixes.*verify.*root cause"
+        ],
+        [
+          12,
+          "repair operator|repair set"
+        ],
+        [
+          10,
+          "fix these findings.*(root cause|verify)"
+        ],
+        [
+          9,
+          "convert.*findings.*(repair|patch)"
+        ],
+        [
+          8,
+          "authorized.*(repair|fix).*fresh verification"
+        ],
+        [
+          7,
+          "close.*finding.*without regressions"
+        ]
+      ]
+    },
+    {
+      "id": "repo-roaster",
+      "version": "6.0.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Run evidence-anchored adversarial reviews of software repositories, codebases, monorepos, pull requests, branches, modules, architecture, tests, configuration, CI/CD, migrations, data pipelines, infrastructure, and engineering hygiene. Use when the user asks to roast, tear apart, red-team, stress-test, re-check a repaired repo, or brutally critique a repo/codebase and wants concrete file/symbol evidence, critical-invariant reasoning, trust-boundary and state-transition analysis, execution-path reachability, blast radius, false-positive checks, repairs, and executable verification steps. Do not use as the primary skill for whole-project roadmapping, external-product pattern extraction, runtime web QA, or final release GO/NO_GO; route those to repo-to-roadmap, product-teardown, web-app-auditor, or release-readiness.",
+      "explicit_only": false,
+      "owns": [
+        "adversarial repository review",
+        "critical-invariant and reachability analysis",
+        "executable engineering repair contracts"
+      ],
+      "does_not_own": [
+        "whole-project roadmapping",
+        "runtime web QA",
+        "final production release verdicts"
+      ],
+      "trigger_examples": [
+        "Roast this repository with file and test evidence",
+        "Red-team the critical invariants and failure paths in this codebase"
+      ],
+      "negative_trigger_examples": [
+        "Create the whole-project roadmap",
+        "Decide whether the release can ship"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "git"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          14,
+          "repo roaster|repository roast|roast.*(repo|codebase)"
+        ],
+        [
+          12,
+          "red.team.*(repository|codebase|software)"
+        ],
+        [
+          10,
+          "adversarial.*(repository|codebase) review"
+        ],
+        [
+          9,
+          "critical invariant.*(repo|code)"
+        ],
+        [
+          8,
+          "file.*symbol.*reachability.*blast radius"
         ]
       ]
     },
@@ -1109,6 +2013,186 @@
       ]
     },
     {
+      "id": "rubric-designer",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Design, normalize, lint, and freeze evaluation rubrics before substantive review or benchmarking, with observable criteria, explicit pass/fail semantics, evidence floors, materiality, blocker rules, scope boundaries, and immutable rubric hashes. Use when the user asks to create grading criteria, an evaluation rubric, acceptance scoring framework, reviewer scorecard, red-team rubric, or repeatable assessment contract. Do not use to judge the candidate itself, to write the artifact, to run empirical skill benchmarks, or to move criteria after seeing the result; use the relevant reviewer, artifact-acceptance, skill-evaluator, or quality-loop-operator for those tasks.",
+      "explicit_only": false,
+      "owns": [
+        "evaluation rubric design",
+        "observable pass/fail evidence floors",
+        "rubric revision hashes"
+      ],
+      "does_not_own": [
+        "judging the candidate",
+        "writing the artifact",
+        "running empirical skill benchmarks"
+      ],
+      "trigger_examples": [
+        "Design and freeze a review rubric before evaluation",
+        "Define blocker rules and evidence floors for this benchmark"
+      ],
+      "negative_trigger_examples": [
+        "Score the candidate using the rubric",
+        "Run the A/B experiment"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          20,
+          "define blocker rules.*evidence floors"
+        ],
+        [
+          12,
+          "rubric designer|design.*(evaluation|review) rubric"
+        ],
+        [
+          10,
+          "freeze.*rubric|rubric hash"
+        ],
+        [
+          9,
+          "pass/fail.*(criteria|semantics)"
+        ],
+        [
+          8,
+          "evidence floor.*(rubric|scorecard)"
+        ],
+        [
+          7,
+          "blocker rules.*evaluation"
+        ]
+      ]
+    },
+    {
+      "id": "science-roaster",
+      "version": "6.0.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Run an adversarial Reviewer #2-style critique of scientific manuscripts, papers, protocols, theses, methods, analyses, reviewer responses, validation studies, and research drafts. Use when the user asks to roast, peer-review, red-team, stress-test, re-review a revision of, or challenge scientific work and wants every material criticism anchored to exact source evidence, inferential type, validity domain, counterevidence search, minimum repair burden, and an observable verification condition. Do not use for generic content critique, repository/code review, one-off claim verification, or research-program planning; route those to content-roaster, repo-roaster, evidence-researcher, or research-program-operator.",
+      "explicit_only": false,
+      "owns": [
+        "adversarial scientific peer review",
+        "claim/evidence and validity analysis",
+        "methodological repair verification"
+      ],
+      "does_not_own": [
+        "generic content critique",
+        "repository/code review",
+        "research-program planning"
+      ],
+      "trigger_examples": [
+        "Reviewer-2 roast this manuscript",
+        "Red-team the methods, estimand, and validity of this study"
+      ],
+      "negative_trigger_examples": [
+        "Critique this marketing article",
+        "Audit the software repository"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "web",
+        "files"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          14,
+          "science roaster|scientific peer review|reviewer.?2"
+        ],
+        [
+          12,
+          "roast.*(manuscript|paper|study|protocol)"
+        ],
+        [
+          10,
+          "red.team.*(scientific|study|method)"
+        ],
+        [
+          9,
+          "estimand.*validity.*(review|critique)"
+        ],
+        [
+          8,
+          "methodological.*(repair|counterevidence)"
+        ]
+      ]
+    },
+    {
       "id": "seo-geo-aeo-maxxing",
       "version": "1.2.0",
       "lifecycle": "active",
@@ -1164,6 +2248,190 @@
         [
           8,
           "geo audit registry fresh"
+        ]
+      ]
+    },
+    {
+      "id": "skill-auditor",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Audit an Agent Skill or a repository of skills for trigger quality, scope overlap, instruction conflicts, progressive-disclosure cost, broken references/dependencies, eval blind spots, false-green paths, semantic-version and public-contract compatibility, host-support overclaims, package hygiene, supply-chain risks, migration/deprecation gaps, and drift between registry, docs, tests, and shipped archives. Use when the user asks to audit, review, roast, harden, compare, or quality-check a skill or skill library itself. Do not use to create/edit the skill (use skill-creator), to empirically benchmark model behavior with-vs-without it (use skill-evaluator), to audit ordinary software (use repo-roaster), or to issue a production release verdict.",
+      "explicit_only": false,
+      "owns": [
+        "skill package audits",
+        "routing, portability, and contract review",
+        "package and supply-chain hygiene"
+      ],
+      "does_not_own": [
+        "editing the audited skill",
+        "empirical behavioral benchmarking",
+        "production release verdicts"
+      ],
+      "trigger_examples": [
+        "Audit this Agent Skill package for routing and portability risks",
+        "Quality-check the skill library before publication"
+      ],
+      "negative_trigger_examples": [
+        "Edit the skill instructions",
+        "Benchmark model behavior with and without the skill"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "git"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          20,
+          "quality.check.*skill library"
+        ],
+        [
+          12,
+          "skill auditor|audit.*(agent skill|skill package|skill library)"
+        ],
+        [
+          10,
+          "skill.*(routing|portability|package hygiene).*audit"
+        ],
+        [
+          9,
+          "audit.*skill.*(trigger|reference|eval)"
+        ],
+        [
+          8,
+          "supply.chain.*skill|public.*skill.*hardening"
+        ],
+        [
+          7,
+          "skill registry.*drift.*audit"
+        ]
+      ]
+    },
+    {
+      "id": "skill-evaluator",
+      "version": "1.7.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "foundation",
+      "alias_of": null,
+      "description": "Design and evaluate Agent Skill experiments that measure whether a skill improves model behavior, discovery, task success, reliability, cost, or latency relative to a no-skill/prior-version baseline, including host/model comparisons, judge agreement, quality-cost Pareto trade-offs, and runtime drift under frozen measurement identity. Use when the user asks to benchmark, A/B test, evaluate, compare, prove, regress-test, or measure a skill across supported harnesses, or to prepare executable real-host suites when execution is unavailable. Do not use for static package/routing audits (use skill-auditor), to create/edit a skill (use skill-creator), to fabricate real-host results, or to claim universal superiority from one configuration.",
+      "explicit_only": false,
+      "owns": [
+        "skill experiment design",
+        "behavioral lift and resource measurement",
+        "host and model comparisons"
+      ],
+      "does_not_own": [
+        "static package audits",
+        "editing the skill",
+        "universal superiority claims"
+      ],
+      "trigger_examples": [
+        "Measure whether this skill improves behavior over the baseline",
+        "Design a fair A/B eval for the new skill version"
+      ],
+      "negative_trigger_examples": [
+        "Static-audit the package",
+        "Claim this skill is universally best from one run"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "git"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "release_status": "ACTIVE",
+      "routing_signals": [
+        [
+          20,
+          "measure whether this skill improves behavior over the baseline"
+        ],
+        [
+          12,
+          "skill evaluator|evaluate.*skill"
+        ],
+        [
+          10,
+          "benchmark.*(skill|model behavior)|A/B.*skill"
+        ],
+        [
+          9,
+          "measure.*(behavioral lift|trigger precision|recall)"
+        ],
+        [
+          8,
+          "compare.*(no.skill|baseline).*skill"
+        ],
+        [
+          7,
+          "host/model.*(comparison|experiment)"
         ]
       ]
     },

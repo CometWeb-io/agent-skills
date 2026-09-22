@@ -13,6 +13,17 @@ gate — and those are listed rather than hidden.
 
 | Skill | Guards | Held | Strength |
 | --- | ---: | ---: | ---: |
+| `artifact-acceptance` | 5 | 5 | 1.00 |
+| `benchmark-curator` | 3 | 3 | 1.00 |
+| `brief-architect` | 23 | 23 | 1.00 |
+| `content-reviewer` | 7 | 7 | 1.00 |
+| `content-writer` | 11 | 11 | 1.00 |
+| `feedback-integrator` | 8 | 8 | 1.00 |
+| `quality-loop-operator` | 8 | 8 | 1.00 |
+| `repair-operator` | 3 | 3 | 1.00 |
+| `rubric-designer` | 2 | 2 | 1.00 |
+| `skill-auditor` | 2 | 2 | 1.00 |
+| `skill-evaluator` | 5 | 5 | 1.00 |
 | `portfolio-operator` | 61 | 55 | 0.90 |
 | `longform-publisher` | 54 | 28 | 0.52 |
 | `product-operator` | 107 | 27 | 0.25 |
@@ -21,4 +32,4 @@ Scripts a package ships that its harness never loads, so nothing above measures 
 
 - `product-operator`: prepare_brief.py, self_check.py
 
-**3 harnesses.** 110 of 222 reachable guards are held (50% if every skill counted equally, which they do not).
+**14 harnesses.** 187 of 299 reachable guards are held (63% if every skill counted equally, which they do not).

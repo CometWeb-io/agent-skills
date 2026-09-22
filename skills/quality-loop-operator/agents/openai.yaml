@@ -1,0 +1,13 @@
+interface:
+  display_name: "Quality Loop Operator"
+  short_description: "quality workflow state and sequencing; specialist handoffs and revalidation; quality rollout lifecycle"
+  default_prompt: "Use the Quality Loop Operator skill for: Orchestrate the CometWeb artifact/repository/skill quality loop across briefing, creation, review, adversarial testing, repair, acceptance, measurement, selective revalidation, and skill runtime lifec"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

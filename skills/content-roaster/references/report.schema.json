@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/content-roaster-v6.json",
+  "title": "CometWeb Content Roaster v6 Report",
+  "type": "object",
+  "required": [
+    "schema",
+    "artifact",
+    "review_outcome",
+    "source_manifest",
+    "mode",
+    "tone",
+    "lens",
+    "review_profile",
+    "review_contract",
+    "coverage",
+    "quality_gates",
+    "message_chain",
+    "central_promise",
+    "claim_map",
+    "proof_debt_ledger",
+    "objection_ledger",
+    "root_causes",
+    "no_material_findings",
+    "first_attack_id",
+    "findings",
+    "resolution_ledger",
+    "verification_queue",
+    "preserve",
+    "core_fix",
+    "review_plan",
+    "assurance",
+    "evidence_register",
+    "evidence_conflicts",
+    "limitations",
+    "diagnosis_ledger",
+    "outcome_basis"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cometweb.content-roaster/v6"
+    },
+    "artifact": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_outcome": {
+      "enum": [
+        "MATERIAL_FINDINGS",
+        "NO_MATERIAL_FINDINGS",
+        "INSUFFICIENT_EVIDENCE"
+      ]
+    },
+    "source_manifest": {
+      "type": "array",
+      "minItems": 1
+    },
+    "mode": {
+      "enum": [
+        "QUICK",
+        "FULL",
+        "RED_TEAM",
+        "DELTA"
+      ]
+    },
+    "tone": {
+      "enum": [
+        "SURGICAL",
+        "DRY",
+        "BRUTAL"
+      ]
+    },
+    "review_profile": {
+      "enum": [
+        "GENERAL",
+        "LANDING_PAGE",
+        "PRODUCT_PAGE",
+        "PRICING",
+        "OFFER",
+        "EMAIL",
+        "ARTICLE",
+        "CASE_STUDY",
+        "SALES_DECK",
+        "LONGFORM",
+        "DOCUMENTATION"
+      ]
+    },
+    "claim_map": {
+      "type": "array",
+      "minItems": 1
+    },
+    "proof_debt_ledger": {
+      "type": "array"
+    },
+    "objection_ledger": {
+      "type": "array"
+    },
+    "findings": {
+      "type": "array"
+    },
+    "resolution_ledger": {
+      "type": "array"
+    },
+    "verification_queue": {
+      "type": "array"
+    },
+    "preserve": {
+      "type": "array"
+    },
+    "first_attack_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "no_material_findings": {
+      "type": "boolean"
+    },
+    "core_fix": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_plan": {
+      "type": "object"
+    },
+    "assurance": {
+      "type": "object",
+      "required": [
+        "mode",
+        "independence",
+        "second_pass_status",
+        "disagreement_summary",
+        "limitations",
+        "pass_records"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "SINGLE_REVIEW",
+            "SECOND_PASS",
+            "BLIND_DUAL_REVIEW"
+          ]
+        },
+        "independence": {
+          "enum": [
+            "NONE",
+            "SAME_CONTEXT",
+            "SEPARATE_CONTEXT"
+          ]
+        },
+        "second_pass_status": {
+          "type": "string"
+        },
+        "disagreement_summary": {
+          "type": "array"
+        },
+        "limitations": {
+          "type": "array"
+        },
+        "pass_records": {
+          "type": "array",
+          "minItems": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "evidence_register": {
+      "type": "array",
+      "minItems": 1
+    },
+    "evidence_conflicts": {
+      "type": "array"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "diagnosis_ledger": {
+      "type": "array"
+    },
+    "outcome_basis": {
+      "type": "object",
+      "required": [
+        "surviving_finding_ids",
+        "withdrawn_candidate_count",
+        "unresolved_candidate_count",
+        "reason"
+      ],
+      "properties": {
+        "surviving_finding_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "withdrawn_candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolved_candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

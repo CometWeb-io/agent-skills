@@ -1,0 +1,35 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.homepage-positioning",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review a homepage as a positioning and routing surface that must orient different visitors without diluting the primary promise.",
+  "activation": {
+    "profiles": ["LANDING_PAGE", "PRODUCT_PAGE"],
+    "signals": ["homepage", "home page", "hero", "who is this for", "positioning", "main page"]
+  },
+  "must_inspect": [
+    {
+      "id": "audience-and-category-orientation",
+      "why": "A first-time visitor should be able to identify the category, intended user and problem before evaluating detail.",
+      "evidence_hints": ["hero", "subhead", "category language", "audience qualifiers"],
+      "false_positive_guards": ["Do not require every ICP to be named in the hero when downstream routing is explicit and low-friction."]
+    },
+    {
+      "id": "promise-mechanism-bridge",
+      "why": "The primary promise needs enough mechanism to avoid sounding interchangeable with competitors.",
+      "evidence_hints": ["mechanism", "workflow explanation", "proof adjacent to promise"],
+      "false_positive_guards": ["Do not punish concise positioning merely because implementation detail is deferred to a clearly linked section."]
+    },
+    {
+      "id": "visitor-routing",
+      "why": "Multiple audiences or jobs-to-be-done need a coherent path to the next relevant action.",
+      "evidence_hints": ["CTA hierarchy", "navigation", "persona routes", "use-case routes"],
+      "false_positive_guards": ["Multiple CTAs are not automatically confusing when each corresponds to a distinct visitor intent."]
+    }
+  ],
+  "required_evidence": ["current homepage artifact", "primary intended audience or decision"],
+  "false_positive_guards": ["Do not infer conversion failure without analytics; diagnose observable decision friction instead."],
+  "handoff_triggers": ["Search visibility -> seo-geo-aeo-maxxing", "Live interaction friction -> web-app-auditor"],
+  "notes": []
+}

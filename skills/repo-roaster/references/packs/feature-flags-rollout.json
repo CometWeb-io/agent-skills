@@ -1,0 +1,53 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.feature-flags-rollout",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review feature flags and rollout controls for default behavior, kill switches, cohort consistency, cleanup, schema compatibility and rollback safety.",
+  "activation": {
+    "profiles": [
+      "PR",
+      "SERVICE",
+      "MIGRATION"
+    ],
+    "signals": [
+      "feature flag",
+      "rollout",
+      "kill switch",
+      "canary",
+      "percentage rollout"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "dual-path-compatibility",
+      "why": "Flagged old/new paths must coexist safely across rollout and rollback windows.",
+      "evidence_hints": [
+        "flag default",
+        "schema compatibility",
+        "mixed version behavior"
+      ],
+      "false_positive_guards": [
+        "Do not demand dual-write when the rollout architecture does not require shared state compatibility."
+      ]
+    },
+    {
+      "id": "failure-recovery",
+      "why": "A flag used as a safety control must actually contain the risky effect and be operable under failure.",
+      "evidence_hints": [
+        "kill switch path",
+        "config propagation",
+        "fallback"
+      ],
+      "false_positive_guards": [
+        "A feature flag is not automatically a rollback mechanism for irreversible data changes."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

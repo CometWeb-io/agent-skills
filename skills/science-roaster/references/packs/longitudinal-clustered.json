@@ -1,0 +1,54 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.longitudinal-clustered",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review repeated-measures, longitudinal and clustered designs for independent unit, within-cluster dependence, time structure, attrition and estimand alignment.",
+  "activation": {
+    "profiles": [
+      "OBSERVATIONAL",
+      "EXPERIMENTAL",
+      "MIXED"
+    ],
+    "signals": [
+      "longitudinal",
+      "repeated measures",
+      "clustered",
+      "mixed effects",
+      "multilevel"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "independent-unit",
+      "why": "Inference must respect the actual independent unit rather than treating repeated observations as independent.",
+      "evidence_hints": [
+        "cluster id",
+        "subject id",
+        "random effects",
+        "GEE/cluster robust SE"
+      ],
+      "false_positive_guards": [
+        "Repeated observations are not automatically pseudoreplication when dependence is modeled appropriately."
+      ]
+    },
+    {
+      "id": "time-attrition",
+      "why": "Time-varying missingness and attrition can change the analyzed population and estimand.",
+      "evidence_hints": [
+        "dropout pattern",
+        "visit schedule",
+        "missingness strategy"
+      ],
+      "false_positive_guards": [
+        "Do not label attrition bias without examining timing, reasons and analysis assumptions."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

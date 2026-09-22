@@ -1,0 +1,72 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.multi-tenant-saas",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review multi-tenant SaaS code for isolation invariants across request, storage, cache, jobs and realtime paths.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "FULL_REPO",
+      "MONOREPO"
+    ],
+    "signals": [
+      "tenant",
+      "workspace",
+      "organization",
+      "org_id",
+      "account_id",
+      "multi-tenant"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "identity-to-scope-binding",
+      "why": "Every data path should bind authenticated identity to an authorized tenant scope before data access.",
+      "evidence_hints": [
+        "auth middleware",
+        "tenant resolver",
+        "query filters",
+        "row-level security"
+      ],
+      "false_positive_guards": [
+        "A shared database is not an isolation defect if row-level controls are enforced."
+      ]
+    },
+    {
+      "id": "async-and-cache-isolation",
+      "why": "Background jobs and caches can lose request-scoped tenant context.",
+      "evidence_hints": [
+        "job payload",
+        "cache key",
+        "worker context"
+      ],
+      "false_positive_guards": [
+        "Do not infer cross-tenant leakage from a shared cache without a key collision path."
+      ]
+    },
+    {
+      "id": "realtime-isolation",
+      "why": "Subscription and websocket channels need the same authorization boundary as HTTP paths.",
+      "evidence_hints": [
+        "channel key",
+        "subscription auth",
+        "broadcast routing"
+      ],
+      "false_positive_guards": [
+        "A global connection registry is not a leak if fanout filtering is proven."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "tenant identifier flow",
+    "authorization boundary"
+  ],
+  "false_positive_guards": [
+    "Static suspicion is not proven reachability."
+  ],
+  "handoff_triggers": [
+    "Runtime or live verification -> web-app-auditor"
+  ],
+  "notes": []
+}

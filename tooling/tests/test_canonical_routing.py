@@ -1,4 +1,4 @@
-"""Admission checks use the full 15-entry canonical registry, not the earlier toy catalog."""
+"""Admission checks use the full canonical registry, not the earlier toy catalog."""
 from copy import deepcopy
 import json
 from pathlib import Path

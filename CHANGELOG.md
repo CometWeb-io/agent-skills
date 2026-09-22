@@ -6,6 +6,29 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-09-22
+
+### Added
+
+- Integrated the quality workflow package set: artifact acceptance, briefing,
+  content writing/review, repair, benchmark and rubric design, feedback
+  integration, quality-loop operations, skill auditing, and skill evaluation.
+- Added dedicated `content-roaster`, `science-roaster`, and `repo-roaster`
+  packages from Roaster Suite 6.0.0, with the quality bundle's duplicate copies
+  intentionally excluded so each skill ID has one canonical version.
+- Expanded the canonical marketplace bundle from 18 to 32 skills and refreshed
+  registry metadata, host adapters, routing docs, package manifests, and context
+  budget baselines.
+
+### Verification
+
+- The imported packages retain their own references, deterministic helpers,
+  eval fixtures, and tests; the source bundles' root CI and release tooling are
+  not copied into this repository.
+- Static package integrity, public-tree safety, registry consistency, and the
+  full local validation suite remain release gates; static checks do not claim
+  live-host behavioral lift.
+
 ## [2.0.0] - 2026-09-19
 
 ### Added
@@ -141,6 +164,7 @@ tags use `vMAJOR.MINOR.PATCH`.
 - Routing evaluation suite, validators, installers, safety checks, and release
   packages.
 
+[2.0.1]: https://github.com/CometWeb-io/agent-skills/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/CometWeb-io/agent-skills/compare/v1.0.6...v2.0.0
 [1.0.6]: https://github.com/CometWeb-io/agent-skills/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/CometWeb-io/agent-skills/compare/v1.0.4...v1.0.5

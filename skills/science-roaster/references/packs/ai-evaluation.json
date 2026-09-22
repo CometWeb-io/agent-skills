@@ -1,0 +1,73 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.ai-evaluation",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review AI and LLM evaluations for contamination, prompt dependence, judge dependence, repeated-sample dependence and benchmark scope.",
+  "activation": {
+    "profiles": [
+      "COMPUTATIONAL",
+      "VALIDATION"
+    ],
+    "signals": [
+      "llm",
+      "language model",
+      "ai evaluation",
+      "benchmark",
+      "judge model",
+      "prompt",
+      "temperature"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "prompt-and-sampling-unit",
+      "why": "Prompt variants and repeated generations can create dependence that invalidates naive sample counts.",
+      "evidence_hints": [
+        "prompt set",
+        "seeds",
+        "repetitions",
+        "sampling policy"
+      ],
+      "false_positive_guards": [
+        "Repeated generations are not automatically invalid; match uncertainty to the independent unit."
+      ]
+    },
+    {
+      "id": "judge-dependence",
+      "why": "Model-as-judge results inherit judge calibration, bias and prompt sensitivity.",
+      "evidence_hints": [
+        "judge prompt",
+        "human calibration",
+        "agreement",
+        "blindness"
+      ],
+      "false_positive_guards": [
+        "A model judge can be useful when calibrated; do not reject it categorically."
+      ]
+    },
+    {
+      "id": "contamination-and-benchmark-scope",
+      "why": "Benchmark familiarity and data contamination can weaken generalization claims.",
+      "evidence_hints": [
+        "benchmark provenance",
+        "training cutoff evidence",
+        "holdout creation"
+      ],
+      "false_positive_guards": [
+        "Do not claim contamination without evidence; mark it as a verification gap."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "prompt or evaluation protocol",
+    "sampling unit"
+  ],
+  "false_positive_guards": [
+    "Do not convert benchmark score differences into broad capability claims without scope support."
+  ],
+  "handoff_triggers": [
+    "Current model facts -> evidence-researcher"
+  ],
+  "notes": []
+}

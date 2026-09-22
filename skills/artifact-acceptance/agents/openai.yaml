@@ -1,0 +1,13 @@
+interface:
+  display_name: "Artifact Acceptance"
+  short_description: "knowledge-artifact acceptance gates; evidence-backed artifact verdicts; candidate and contract traceability"
+  default_prompt: "Use the Artifact Acceptance skill for: Run a final evidence-backed acceptance gate on a content, research, documentation, sales, or other knowledge artifact against an explicit brief, required evidence, unresolved findings, and format/QA c"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

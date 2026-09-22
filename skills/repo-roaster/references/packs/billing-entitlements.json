@@ -1,0 +1,73 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.billing-entitlements",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review billing and entitlement code for atomicity, idempotency, source-of-truth drift and authorization impact.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "FULL_REPO",
+      "PR"
+    ],
+    "signals": [
+      "billing",
+      "subscription",
+      "stripe",
+      "entitlement",
+      "plan",
+      "invoice",
+      "webhook"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "event-idempotency",
+      "why": "Retryable billing events should not duplicate grants, charges or state transitions.",
+      "evidence_hints": [
+        "event id",
+        "idempotency key",
+        "webhook handler"
+      ],
+      "false_positive_guards": [
+        "A provider retry guarantee does not remove consumer idempotency needs."
+      ]
+    },
+    {
+      "id": "entitlement-source-of-truth",
+      "why": "Authorization should not drift from paid state because multiple stores disagree.",
+      "evidence_hints": [
+        "subscription store",
+        "entitlement cache",
+        "provider state"
+      ],
+      "false_positive_guards": [
+        "A cache is acceptable when invalidation and fallback are bounded."
+      ]
+    },
+    {
+      "id": "failure-atomicity",
+      "why": "Partial failures should not leave paid or unpaid state inconsistent with granted capabilities.",
+      "evidence_hints": [
+        "transaction boundary",
+        "outbox",
+        "retry",
+        "compensation"
+      ],
+      "false_positive_guards": [
+        "Do not require distributed transactions when a durable reconciliation mechanism exists."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "billing event lifecycle",
+    "entitlement source"
+  ],
+  "false_positive_guards": [
+    "Do not infer payment compliance requirements beyond the code evidence."
+  ],
+  "handoff_triggers": [
+    "Release decision -> release-readiness"
+  ],
+  "notes": []
+}

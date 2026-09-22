@@ -1,0 +1,74 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.case-study-proof",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review case studies and customer stories for attribution, denominators, timeframe and evidence transferability.",
+  "activation": {
+    "profiles": [
+      "CASE_STUDY"
+    ],
+    "signals": [
+      "case study",
+      "customer story",
+      "roi",
+      "lift",
+      "increase",
+      "reduced",
+      "saved",
+      "x faster"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "baseline-and-denominator",
+      "why": "Outcome claims are hard to interpret without knowing what changed relative to what baseline and denominator.",
+      "evidence_hints": [
+        "baseline metric",
+        "before and after values",
+        "denominator",
+        "time window"
+      ],
+      "false_positive_guards": [
+        "Do not demand a denominator for purely qualitative claims."
+      ]
+    },
+    {
+      "id": "attribution-boundary",
+      "why": "A customer outcome can coexist with multiple simultaneous causes; wording should not silently imply exclusive causality.",
+      "evidence_hints": [
+        "intervention description",
+        "other changes",
+        "customer quote",
+        "measurement method"
+      ],
+      "false_positive_guards": [
+        "Do not downgrade first-party testimony merely because it is qualitative; calibrate the claim instead."
+      ]
+    },
+    {
+      "id": "selection-and-transferability",
+      "why": "A selected success story is evidence of possibility, not automatically typical performance.",
+      "evidence_hints": [
+        "selection criteria",
+        "sample size",
+        "distribution",
+        "caveat"
+      ],
+      "false_positive_guards": [
+        "Do not demand population statistics when the artifact makes only a bounded example claim."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "source of reported metrics",
+    "time window"
+  ],
+  "false_positive_guards": [
+    "Unproved does not mean false."
+  ],
+  "handoff_triggers": [
+    "Contested metric verification -> evidence-researcher"
+  ],
+  "notes": []
+}

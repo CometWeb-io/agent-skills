@@ -1,0 +1,13 @@
+interface:
+  display_name: "Rubric Designer"
+  short_description: "evaluation rubric design; observable pass/fail evidence floors; rubric revision hashes"
+  default_prompt: "Use the Rubric Designer skill for: Design, normalize, lint, and freeze evaluation rubrics before substantive review or benchmarking, with observable criteria, explicit pass/fail semantics, evidence floors, materiality, blocker rules, s"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

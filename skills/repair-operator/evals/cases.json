@@ -1,0 +1,1099 @@
+[
+  {
+    "expect": {
+      "closed": 1,
+      "status": "VALID"
+    },
+    "id": "closed-valid",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "Regression passes",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "Bad guard",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "diff clean"
+              ],
+              "fresh": true,
+              "method": "render-and-compare",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "closed-stale",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "x",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "x",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "diff clean"
+              ],
+              "fresh": false,
+              "method": "render-and-compare",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "closed-candidate-mismatch",
+    "input": {
+      "candidate_id": "cand-2",
+      "items": [
+        {
+          "done_when": "x",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "x",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "diff clean"
+              ],
+              "fresh": true,
+              "method": "render-and-compare",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "closed-missing-time",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "x",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "x",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "diff clean"
+              ],
+              "fresh": true,
+              "method": "render-and-compare",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "closed-regression",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "x",
+          "finding_ids": [
+            "f1"
+          ],
+          "regression_detected": true,
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "x",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "diff clean"
+              ],
+              "fresh": true,
+              "method": "render-and-compare",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "closed-verify-first",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "x",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "VERIFY_FIRST",
+          "repair_id": "r1",
+          "root_cause": "x",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "diff clean"
+              ],
+              "fresh": true,
+              "method": "render-and-compare",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "VALID"
+    },
+    "id": "wont-fix-valid",
+    "input": {
+      "items": [
+        {
+          "decision_source": {
+            "decided_at": "2026-09-21T12:00:00+02:00",
+            "owner": "maintainer",
+            "rationale": "accepted tradeoff"
+          },
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "WONT_FIX",
+          "repair_id": "r1",
+          "status": "WONT_FIX"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "wont-fix-no-decision",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "WONT_FIX",
+          "repair_id": "r1",
+          "status": "WONT_FIX"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "wont-fix-class-mismatch",
+    "input": {
+      "items": [
+        {
+          "decision_source": {
+            "decided_at": "2026-09-21T12:00:00+02:00",
+            "owner": "maintainer",
+            "rationale": "x"
+          },
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "WONT_FIX"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "open": 1,
+      "status": "VALID"
+    },
+    "id": "deferred-valid",
+    "input": {
+      "items": [
+        {
+          "defer_reason": "Needs new data",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "REDESIGN",
+          "repair_id": "r1",
+          "status": "DEFERRED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "deferred-no-reason",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "REDESIGN",
+          "repair_id": "r1",
+          "status": "DEFERRED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "orphan-repair",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "OPEN"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "duplicate-id",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "OPEN"
+        },
+        {
+          "finding_ids": [
+            "f2"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "OPEN"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "items:not-list"
+    },
+    "id": "items-not-list",
+    "input": {
+      "items": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "malformed-root",
+    "input": "x"
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "item-not-object",
+    "input": {
+      "items": [
+        "x"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "missing-repair-id",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "status": "OPEN"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-status",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "MAGIC"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "bad-repair-class",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "MAGIC",
+          "repair_id": "r1",
+          "status": "OPEN"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "verification-not-object",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "x",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "x",
+          "status": "CLOSED",
+          "verification_evidence": [
+            "x"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "verification-no-method",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "x",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "x",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "ok"
+              ],
+              "fresh": true,
+              "method": "",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "verification-bad-date",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "x",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "x",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "ok"
+              ],
+              "fresh": true,
+              "method": "render",
+              "observed_at": "bad",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "decision-not-object",
+    "input": {
+      "items": [
+        {
+          "decision_source": "x",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "WONT_FIX",
+          "repair_id": "r1",
+          "status": "WONT_FIX"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "closed-missing-root-cause",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "Regression passes",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r-root",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "diff clean"
+              ],
+              "fresh": true,
+              "method": "render-and-compare",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "closed-missing-done-when",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r-done",
+          "root_cause": "Bad guard",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "diff clean"
+              ],
+              "fresh": true,
+              "method": "render-and-compare",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "deep-close-needs-plan",
+    "input": {
+      "candidate_id": "c1",
+      "items": [
+        {
+          "done_when": "fixed",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "cause",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "c1",
+              "evidence": "log",
+              "fresh": true,
+              "method": "test",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ],
+      "mode": "DEEP"
+    }
+  },
+  {
+    "expect": {
+      "closed": 1,
+      "status": "VALID"
+    },
+    "id": "deep-close-with-plan",
+    "input": {
+      "candidate_id": "c1",
+      "items": [
+        {
+          "done_when": "fixed",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "cause",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "c1",
+              "evidence": "log",
+              "fresh": true,
+              "method": "test",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ],
+          "verification_plan": {
+            "checks": [
+              "original symptom",
+              "protected invariant"
+            ],
+            "method": "targeted regression"
+          }
+        }
+      ],
+      "mode": "DEEP"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "0:high-risk-without-rollback"
+    },
+    "id": "high-risk-needs-rollback",
+    "input": {
+      "candidate_id": "c1",
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "patch_risk": "HIGH",
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "PLANNED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "repair-dependency-cycle"
+    },
+    "id": "repair-dependency-cycle",
+    "input": {
+      "candidate_id": "c1",
+      "items": [
+        {
+          "depends_on": [
+            "r2"
+          ],
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "PLANNED"
+        },
+        {
+          "depends_on": [
+            "r1"
+          ],
+          "finding_ids": [
+            "f2"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r2",
+          "status": "PLANNED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "0:reopened-without-origin"
+    },
+    "id": "reopened-needs-origin",
+    "input": {
+      "candidate_id": "c1",
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "REOPENED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "expect_paths": {
+      "errors.0": "0:wont-fix-without-authorized-decision"
+    },
+    "id": "deep-wont-fix-needs-expiry",
+    "input": {
+      "candidate_id": "c1",
+      "items": [
+        {
+          "decision_source": {
+            "decided_at": "2026-09-21T12:00:00+02:00",
+            "owner": "o",
+            "rationale": "r"
+          },
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "WONT_FIX",
+          "repair_id": "r1",
+          "status": "WONT_FIX"
+        }
+      ],
+      "mode": "DEEP"
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-bad-candidate",
+    "input": {
+      "candidate_id": "",
+      "items": []
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-dep-not-list",
+    "input": {
+      "items": [
+        {
+          "depends_on": "x",
+          "finding_ids": [
+            "f"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r",
+          "status": "PLANNED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-dep-bad-id",
+    "input": {
+      "items": [
+        {
+          "depends_on": [
+            ""
+          ],
+          "finding_ids": [
+            "f"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r",
+          "status": "PLANNED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-dep-missing",
+    "input": {
+      "items": [
+        {
+          "depends_on": [
+            "missing"
+          ],
+          "finding_ids": [
+            "f"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r",
+          "status": "PLANNED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-patch-risk-invalid",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f"
+          ],
+          "patch_risk": "X",
+          "repair_class": "PATCH",
+          "repair_id": "r",
+          "status": "PLANNED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-duplicate-finding-owner",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "PLANNED"
+        },
+        {
+          "finding_ids": [
+            "f"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r2",
+          "status": "PLANNED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-broken-invariant",
+    "input": {
+      "candidate_id": "c",
+      "items": [
+        {
+          "done_when": "x",
+          "finding_ids": [
+            "f"
+          ],
+          "protected_invariant_checks": [
+            {
+              "id": "i",
+              "state": "FAIL"
+            }
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r",
+          "root_cause": "x",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "c",
+              "evidence": "e",
+              "fresh": true,
+              "method": "m",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-invariants-not-list-v12",
+    "input": {
+      "candidate_id": "c",
+      "items": [
+        {
+          "done_when": "x",
+          "finding_ids": [
+            "f"
+          ],
+          "protected_invariant_checks": "x",
+          "repair_class": "PATCH",
+          "repair_id": "r",
+          "root_cause": "x",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "c",
+              "evidence": "e",
+              "fresh": true,
+              "method": "m",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "edge-decision-missing-owner",
+    "input": {
+      "items": [
+        {
+          "decision_source": {
+            "decided_at": "2026-09-21T12:00:00+02:00",
+            "rationale": "r"
+          },
+          "finding_ids": [
+            "f"
+          ],
+          "repair_class": "WONT_FIX",
+          "repair_id": "r",
+          "status": "WONT_FIX"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "VALID"
+    },
+    "id": "edge-dag-shared-dependency",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "PLANNED"
+        },
+        {
+          "depends_on": [
+            "r1"
+          ],
+          "finding_ids": [
+            "f2"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r2",
+          "status": "PLANNED"
+        },
+        {
+          "depends_on": [
+            "r1"
+          ],
+          "finding_ids": [
+            "f3"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r3",
+          "status": "PLANNED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "effort_units": 2,
+      "portfolio_mode": true,
+      "status": "VALID"
+    },
+    "id": "portfolio-metadata-pass",
+    "input": {
+      "items": [
+        {
+          "blast_radius": "LOCAL",
+          "effort_band": "S",
+          "finding_ids": [
+            "f1"
+          ],
+          "patch_risk": "LOW",
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "reversibility": "EASY",
+          "status": "PLANNED"
+        }
+      ],
+      "portfolio_mode": true
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "portfolio-missing-effort",
+    "input": {
+      "items": [
+        {
+          "blast_radius": "LOCAL",
+          "finding_ids": [
+            "f1"
+          ],
+          "patch_risk": "LOW",
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "reversibility": "EASY",
+          "status": "PLANNED"
+        }
+      ],
+      "portfolio_mode": true
+    }
+  },
+  {
+    "expect": {
+      "status": "INVALID"
+    },
+    "id": "portfolio-irreversible-approval",
+    "input": {
+      "items": [
+        {
+          "blast_radius": "SYSTEM",
+          "effort_band": "M",
+          "finding_ids": [
+            "f1"
+          ],
+          "patch_risk": "LOW",
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "reversibility": "IRREVERSIBLE",
+          "status": "PLANNED"
+        }
+      ],
+      "portfolio_mode": true
+    }
+  }
+]

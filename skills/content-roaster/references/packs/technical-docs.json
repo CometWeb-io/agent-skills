@@ -1,0 +1,70 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.technical-docs",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review product documentation for task completion, prerequisites, examples, failure handling and boundary precision.",
+  "activation": {
+    "profiles": [
+      "DOCUMENTATION"
+    ],
+    "signals": [
+      "documentation",
+      "docs",
+      "api guide",
+      "quickstart",
+      "tutorial",
+      "integration"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "task-completion-path",
+      "why": "Documentation should expose a complete path from prerequisites to a verifiable result.",
+      "evidence_hints": [
+        "prerequisites",
+        "steps",
+        "expected result"
+      ],
+      "false_positive_guards": [
+        "Reference docs may intentionally omit tutorial sequencing."
+      ]
+    },
+    {
+      "id": "failure-recovery",
+      "why": "Real users need actionable recovery for material failure states.",
+      "evidence_hints": [
+        "errors",
+        "troubleshooting",
+        "rollback",
+        "retry"
+      ],
+      "false_positive_guards": [
+        "Do not require exhaustive error catalogs; focus on likely or costly failures."
+      ]
+    },
+    {
+      "id": "example-fidelity",
+      "why": "Examples should not hide required security, state or environment constraints.",
+      "evidence_hints": [
+        "example code",
+        "auth",
+        "environment",
+        "version"
+      ],
+      "false_positive_guards": [
+        "Do not assume an example is production guidance unless presented that way."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "target product or version when material"
+  ],
+  "false_positive_guards": [
+    "A docs gap is not proof the product lacks the capability."
+  ],
+  "handoff_triggers": [
+    "Runtime verification -> web-app-auditor or repo-roaster"
+  ],
+  "notes": []
+}

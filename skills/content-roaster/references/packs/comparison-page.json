@@ -1,0 +1,71 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.comparison-page",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review comparison/alternative pages for symmetric evidence, scoped competitor claims, switching assumptions and proof proportional to buyer commitment.",
+  "activation": {
+    "profiles": [
+      "PRODUCT_PAGE",
+      "LANDING_PAGE"
+    ],
+    "signals": [
+      "compare",
+      "comparison",
+      "alternative to",
+      "versus",
+      "vs.",
+      "competitor"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "comparison-basis",
+      "why": "A comparison is only decision-useful when the compared dimensions and population are explicit.",
+      "evidence_hints": [
+        "comparison table",
+        "criteria",
+        "scope",
+        "buyer segment"
+      ],
+      "false_positive_guards": [
+        "Do not require identical products to be compared on every feature."
+      ]
+    },
+    {
+      "id": "competitor-claim-proof",
+      "why": "Claims about another product create an external-truth burden separate from copy quality.",
+      "evidence_hints": [
+        "linked source",
+        "dated competitor documentation",
+        "test protocol"
+      ],
+      "false_positive_guards": [
+        "Do not call a competitor claim false merely because the page does not prove it. Route verification externally when needed."
+      ]
+    },
+    {
+      "id": "switching-cost",
+      "why": "Migration or switching claims can hide operational effort that changes the decision.",
+      "evidence_hints": [
+        "migration steps",
+        "compatibility",
+        "data export/import",
+        "downtime"
+      ],
+      "false_positive_guards": [
+        "Do not invent switching costs not present in scope."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "current comparison artifact"
+  ],
+  "false_positive_guards": [
+    "Preserve unknown external facts as VERIFY_EXTERNAL."
+  ],
+  "handoff_triggers": [
+    "External competitor truth -> evidence-researcher"
+  ],
+  "notes": []
+}

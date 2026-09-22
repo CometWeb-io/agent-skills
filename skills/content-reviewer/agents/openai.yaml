@@ -1,0 +1,13 @@
+interface:
+  display_name: "Content Reviewer"
+  short_description: "constructive content review; evidence-backed editorial findings; review coverage and repair direction"
+  default_prompt: "Use the Content Reviewer skill for: Review an existing piece of content constructively against its brief, intended reader, factual/evidence requirements, structure, clarity, specificity, usefulness, and internal consistency. Use when th"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

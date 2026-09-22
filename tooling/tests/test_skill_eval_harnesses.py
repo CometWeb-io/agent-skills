@@ -1,10 +1,10 @@
 """Run the per-skill eval harnesses as part of the normal test suite.
 
-Three skills carry their coverage in scripts/run_evals.py instead of pytest
+Several skills carry their coverage in scripts/run_evals.py instead of pytest
 tests. Without this, their suites are green only when somebody remembers to run
 them by hand, and CI reports a skill as covered when nothing ran.
 
-They are executed in-process rather than as a subprocess. A subprocess run is
+The harnesses are executed in-process rather than as a subprocess. A subprocess run is
 invisible to coverage, which reported these kernels at 9-12% when the harnesses
 actually exercise 56-63% of them — a number low enough to read as "untested"
 and send someone rewriting tests that already exist.
@@ -71,7 +71,18 @@ def test_every_harness_skill_is_discovered() -> None:
     # Guards against a skill quietly losing its harness: if one disappears the
     # parametrized test above would simply stop running for it.
     assert harness_skills() == [
+        "artifact-acceptance",
+        "benchmark-curator",
+        "brief-architect",
+        "content-reviewer",
+        "content-writer",
+        "feedback-integrator",
         "longform-publisher",
         "portfolio-operator",
         "product-operator",
+        "quality-loop-operator",
+        "repair-operator",
+        "rubric-designer",
+        "skill-auditor",
+        "skill-evaluator",
     ]

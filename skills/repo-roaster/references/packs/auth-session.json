@@ -1,0 +1,73 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.auth-session",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review authentication and session code for identity binding, lifecycle, privilege transitions and cross-channel consistency.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "FULL_REPO",
+      "PR"
+    ],
+    "signals": [
+      "auth",
+      "session",
+      "jwt",
+      "cookie",
+      "oauth",
+      "login",
+      "logout",
+      "refresh token"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "session-lifecycle",
+      "why": "Creation, refresh, revocation and expiry must preserve the intended security boundary.",
+      "evidence_hints": [
+        "session store",
+        "token expiry",
+        "revocation",
+        "logout"
+      ],
+      "false_positive_guards": [
+        "Short expiry does not compensate for missing authorization checks."
+      ]
+    },
+    {
+      "id": "privilege-transition",
+      "why": "Role or account changes should not leave stale credentials with broader authority than intended.",
+      "evidence_hints": [
+        "role change",
+        "session invalidation",
+        "claims refresh"
+      ],
+      "false_positive_guards": [
+        "Do not require immediate global revocation unless the threat model needs it."
+      ]
+    },
+    {
+      "id": "channel-consistency",
+      "why": "HTTP, websocket, background and internal paths should not apply inconsistent identity rules.",
+      "evidence_hints": [
+        "middleware",
+        "socket auth",
+        "job auth"
+      ],
+      "false_positive_guards": [
+        "Different mechanisms can still implement the same invariant."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "auth trust boundary"
+  ],
+  "false_positive_guards": [
+    "Do not expose secrets in report evidence."
+  ],
+  "handoff_triggers": [
+    "Penetration testing -> dedicated security workflow"
+  ],
+  "notes": []
+}

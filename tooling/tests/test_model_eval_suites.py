@@ -1,6 +1,6 @@
 """Suites a model runs, not a kernel — so the repository checks their shape.
 
-test_skill_eval_harnesses.py runs the harnesses three skills ship. These two
+test_skill_eval_harnesses.py runs the harnesses the skills ship. These two
 files have no harness: they are prompts plus the behaviour a model using the skill should
 show, and a person or an agent grades them. Nothing read them, so nothing would
 have noticed that one spelled the expectation key `expect` and the other

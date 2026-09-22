@@ -1,0 +1,72 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.realtime-websocket",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review realtime and websocket paths for authorization, lifecycle cleanup, backpressure and fanout isolation.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "FULL_REPO",
+      "PR"
+    ],
+    "signals": [
+      "websocket",
+      "socket",
+      "subscription",
+      "sse",
+      "realtime",
+      "broadcast"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "subscription-authorization",
+      "why": "Authorization should bind channel or topic subscription to current identity and scope.",
+      "evidence_hints": [
+        "subscribe handler",
+        "topic key",
+        "auth check"
+      ],
+      "false_positive_guards": [
+        "Authenticated connection does not automatically authorize every topic."
+      ]
+    },
+    {
+      "id": "lifecycle-cleanup",
+      "why": "Disconnects and reconnects should not leak subscriptions, tasks or stale identity.",
+      "evidence_hints": [
+        "disconnect handler",
+        "cleanup",
+        "heartbeat",
+        "task cancellation"
+      ],
+      "false_positive_guards": [
+        "Long-lived objects are not leaks if bounded and released on lifecycle events."
+      ]
+    },
+    {
+      "id": "backpressure-and-fanout",
+      "why": "Slow consumers and fanout volume should not create unbounded queues or global failure.",
+      "evidence_hints": [
+        "queue size",
+        "drop policy",
+        "flow control",
+        "fanout loop"
+      ],
+      "false_positive_guards": [
+        "Do not require the same policy for low-volume internal channels and public high-volume streams."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "subscription lifecycle"
+  ],
+  "false_positive_guards": [
+    "Static paths need runtime or load evidence for performance certainty."
+  ],
+  "handoff_triggers": [
+    "Load testing -> specialist performance tooling"
+  ],
+  "notes": []
+}

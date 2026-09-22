@@ -1,0 +1,76 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.saas-pricing",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review SaaS pricing pages as commercial decision systems rather than isolated copy.",
+  "activation": {
+    "profiles": [
+      "PRICING",
+      "OFFER"
+    ],
+    "signals": [
+      "pricing",
+      "plans",
+      "per month",
+      "annual",
+      "trial",
+      "seat",
+      "credits",
+      "usage"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "plan-differentiation",
+      "why": "Buyers must be able to understand why plans differ and which constraint changes the decision.",
+      "evidence_hints": [
+        "plan table",
+        "feature limits",
+        "usage units",
+        "entitlements"
+      ],
+      "false_positive_guards": [
+        "Do not call deliberate simplification ambiguous if detailed terms are available before commitment."
+      ]
+    },
+    {
+      "id": "price-value-bridge",
+      "why": "Price should be connected to a concrete value mechanism or cost avoided at the relevant decision cost.",
+      "evidence_hints": [
+        "outcome proof",
+        "ROI evidence",
+        "mechanism",
+        "pricing rationale"
+      ],
+      "false_positive_guards": [
+        "Do not require ROI claims when the offer intentionally avoids outcome claims."
+      ]
+    },
+    {
+      "id": "billing-semantics",
+      "why": "Billing units, renewal, cancellation and overage semantics can create decision risk independent of prose quality.",
+      "evidence_hints": [
+        "billing cadence",
+        "renewal",
+        "overages",
+        "refund or cancellation terms"
+      ],
+      "false_positive_guards": [
+        "Hand legal interpretation off; review only what the artifact communicates."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "current pricing artifact",
+    "plan limits or entitlement semantics"
+  ],
+  "false_positive_guards": [
+    "Do not infer hidden fees from missing detail in a sampled page."
+  ],
+  "handoff_triggers": [
+    "Legal or compliance interpretation -> specialist",
+    "External truth verification -> evidence-researcher"
+  ],
+  "notes": []
+}

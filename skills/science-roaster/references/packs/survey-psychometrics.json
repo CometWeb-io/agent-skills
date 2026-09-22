@@ -1,0 +1,74 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.survey-psychometrics",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review survey and scale studies for construct validity, item handling, reliability, measurement invariance, response process and score interpretation.",
+  "activation": {
+    "profiles": [
+      "OBSERVATIONAL",
+      "VALIDATION",
+      "METHODS"
+    ],
+    "signals": [
+      "survey",
+      "questionnaire",
+      "scale",
+      "cronbach",
+      "psychometric",
+      "likert",
+      "factor analysis"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "construct-to-score",
+      "why": "A score is only interpretable if the construct, item mapping and scoring rule are coherent.",
+      "evidence_hints": [
+        "construct definition",
+        "items",
+        "scoring rule",
+        "reverse coding"
+      ],
+      "false_positive_guards": [
+        "Do not treat a named validated scale as automatically valid in every population."
+      ]
+    },
+    {
+      "id": "reliability-validity",
+      "why": "Internal consistency is not construct validity and may be misleading under multidimensionality.",
+      "evidence_hints": [
+        "alpha",
+        "omega",
+        "factor structure",
+        "validity evidence"
+      ],
+      "false_positive_guards": [
+        "Do not demand one preferred reliability coefficient without design context."
+      ]
+    },
+    {
+      "id": "invariance-and-groups",
+      "why": "Group comparisons can require evidence that the measurement model is comparable across groups/time.",
+      "evidence_hints": [
+        "measurement invariance",
+        "DIF",
+        "group model",
+        "longitudinal invariance"
+      ],
+      "false_positive_guards": [
+        "Do not require invariance analysis when no cross-group/longitudinal comparison is claimed."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "instrument/scoring description"
+  ],
+  "false_positive_guards": [
+    "NOT_REPORTED is not NOT_DONE."
+  ],
+  "handoff_triggers": [
+    "Instrument provenance verification -> evidence-researcher"
+  ],
+  "notes": []
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.observational",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review observational studies for target estimand, confounding, selection, dependence and missingness.",
+  "activation": {
+    "profiles": [
+      "OBSERVATIONAL"
+    ],
+    "signals": [
+      "observational",
+      "cohort",
+      "case-control",
+      "cross-sectional",
+      "registry"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "estimand-and-population",
+      "why": "The target quantity and target population determine whether an association estimate answers the stated question.",
+      "evidence_hints": [
+        "estimand",
+        "population",
+        "inclusion criteria",
+        "analysis population"
+      ],
+      "false_positive_guards": [
+        "Do not demand a causal estimand if the paper makes only descriptive claims."
+      ]
+    },
+    {
+      "id": "confounding-and-selection",
+      "why": "Adjustment choices and selection mechanisms can change interpretation more than a p-value does.",
+      "evidence_hints": [
+        "covariates",
+        "DAG or rationale",
+        "selection",
+        "loss to follow-up"
+      ],
+      "false_positive_guards": [
+        "Not reporting a confounder is not proof it was unmeasured."
+      ]
+    },
+    {
+      "id": "dependence-and-clustering",
+      "why": "Repeated or clustered observations change the independent unit and uncertainty calculation.",
+      "evidence_hints": [
+        "cluster id",
+        "repeated measures",
+        "model structure"
+      ],
+      "false_positive_guards": [
+        "Do not assume dependence merely because measurements share a device or site; establish the unit."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "analysis population definition",
+    "uncertainty method"
+  ],
+  "false_positive_guards": [
+    "NOT_REPORTED is not NOT_DONE."
+  ],
+  "handoff_triggers": [
+    "Primary literature verification -> evidence-researcher"
+  ],
+  "notes": []
+}

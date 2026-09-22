@@ -1,0 +1,53 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.release-announcement",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review release announcements and launch posts for user impact, evidence, migration caveats, availability scope and action clarity without turning the review into product release readiness.",
+  "activation": {
+    "profiles": [
+      "ARTICLE",
+      "EMAIL",
+      "LONGFORM"
+    ],
+    "signals": [
+      "release announcement",
+      "launch post",
+      "new release",
+      "now available",
+      "changelog"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "availability-scope",
+      "why": "Availability and rollout claims should match actual scope and prerequisites.",
+      "evidence_hints": [
+        "availability",
+        "plan/region limits",
+        "rollout caveats"
+      ],
+      "false_positive_guards": [
+        "Do not infer production readiness from announcement wording."
+      ]
+    },
+    {
+      "id": "user-impact",
+      "why": "The announcement should connect changes to user tasks without inventing outcomes.",
+      "evidence_hints": [
+        "before/after",
+        "use case",
+        "migration action"
+      ],
+      "false_positive_guards": [
+        "Do not require quantified outcomes when the claim is descriptive rather than performance-based."
+      ]
+    }
+  ],
+  "required_evidence": [],
+  "false_positive_guards": [
+    "Treat this pack as review configuration, not as evidence or an automatic severity increase."
+  ],
+  "handoff_triggers": [],
+  "notes": []
+}

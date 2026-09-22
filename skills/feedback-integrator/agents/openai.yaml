@@ -1,0 +1,13 @@
+interface:
+  display_name: "Feedback Integrator"
+  short_description: "recurrent failure pattern synthesis; evidence-backed improvement proposals; regression test proposals"
+  default_prompt: "Use the Feedback Integrator skill for: Aggregate repeated findings, acceptance failures, eval results, user corrections, and workflow incidents across skill runs to identify recurring failure patterns and propose evidence-backed improvemen"
+  icon_small: ./assets/icon.svg
+  icon_large: ./assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

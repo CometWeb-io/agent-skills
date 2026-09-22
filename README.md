@@ -6,11 +6,11 @@ Reusable skills that help AI coding assistants research a question, choose the n
 
 [![Validate](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml)
 [![MIT](https://img.shields.io/badge/license-MIT-034C32)](LICENSE)
-![Skills](https://img.shields.io/badge/skills-18-informational.svg)
+![Skills](https://img.shields.io/badge/skills-32-informational.svg)
 
-**18 skills · Cursor, Claude Code, Codex and compatible hosts**
+**32 skills · Cursor, Claude Code, Codex and compatible hosts**
 
-This repository contains 18 reusable skill packages for compatible agent hosts.
+This repository contains 32 reusable skill packages for compatible agent hosts.
 
 ## Start here
 
@@ -44,7 +44,7 @@ The assistant loads the skill's instructions and uses the tools available in you
 For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-orchestrator-multiagent/).
 
 <details>
-<summary>Browse all 18 skills</summary>
+<summary>Browse all 32 skills</summary>
 
 ## Skills
 
@@ -58,6 +58,12 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. |
 | [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. |
 | [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. |
+| [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. |
+| [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. |
+| [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. |
+| [`rubric-designer`](skills/rubric-designer/) | Observable evaluation criteria, evidence floors, blocker rules, and rubric locks. |
+| [`skill-auditor`](skills/skill-auditor/) | Skill routing, portability, package hygiene, and supply-chain audits. |
+| [`skill-evaluator`](skills/skill-evaluator/) | Fair skill experiments, behavioral lift, resource cost, and host comparisons. |
 
 ### Product, research, and partnerships
 
@@ -69,6 +75,14 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. |
 | [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. |
 | [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. |
+| [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. |
+| [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. |
+| [`content-reviewer`](skills/content-reviewer/) | Constructive editorial QA with evidence-backed, actionable findings. |
+| [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. |
+| [`science-roaster`](skills/science-roaster/) | Reviewer #2-style critique of methods, inference, validity, and reproducibility. |
+| [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. |
+| [`repair-operator`](skills/repair-operator/) | Minimal dependency-aware repairs and fresh verification of closed findings. |
+| [`artifact-acceptance`](skills/artifact-acceptance/) | Final evidence-backed acceptance gates for knowledge artifacts. |
 
 ### Publication, operations, QA, and release
 

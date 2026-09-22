@@ -1,0 +1,816 @@
+[
+  {
+    "expect": {
+      "release_eligible": true,
+      "status": "PASS"
+    },
+    "id": "supported-material",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "locator": "https://example.test/doc",
+              "source": "official-doc"
+            }
+          ],
+          "material": true,
+          "presented_as_fact": true,
+          "status": "SUPPORTED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "release_eligible": false,
+      "status": "FAIL"
+    },
+    "id": "supported-no-evidence",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "freshness-missing",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "locator": "https://example.test/doc",
+              "source": "official-doc"
+            }
+          ],
+          "freshness_required": true,
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "release_eligible": true,
+      "status": "PASS"
+    },
+    "id": "freshness-valid",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "freshness_status": "CURRENT",
+              "locator": "https://example.test/doc",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "official-doc"
+            }
+          ],
+          "freshness_required": true,
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "release_eligible": false,
+      "status": "PASS",
+      "unresolved_material": 1
+    },
+    "id": "unresolved-material",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "material": true,
+          "presented_as_fact": false,
+          "status": "UNRESOLVED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "release_eligible": false,
+      "status": "PASS",
+      "unresolved_material": 1
+    },
+    "id": "unsupported-material",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "material": true,
+          "presented_as_fact": false,
+          "status": "UNSUPPORTED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "unsupported-as-fact",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "material": true,
+          "presented_as_fact": true,
+          "status": "UNSUPPORTED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "opinion-as-fact",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "material": false,
+          "presented_as_fact": true,
+          "status": "OPINION"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "release_eligible": true,
+      "status": "PASS"
+    },
+    "id": "inference-with-basis",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c0",
+          "evidence": [
+            {
+              "locator": "https://example.test/doc",
+              "source": "official-doc"
+            }
+          ],
+          "material": true,
+          "status": "SUPPORTED"
+        },
+        {
+          "basis_claim_ids": [
+            "c0"
+          ],
+          "claim_id": "c1",
+          "material": true,
+          "presented_as_fact": false,
+          "status": "INFERRED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "inference-no-basis",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "material": true,
+          "presented_as_fact": false,
+          "status": "INFERRED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "duplicate-claim",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "status": "EXAMPLE"
+        },
+        {
+          "claim_id": "c1",
+          "status": "EXAMPLE"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "expect_paths": {
+      "errors.0": "claims:not-list"
+    },
+    "id": "claims-not-list",
+    "input": {
+      "claims": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "malformed-root",
+    "input": "x"
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "claim-not-object",
+    "input": {
+      "claims": [
+        "x"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "claim-missing-id",
+    "input": {
+      "claims": [
+        {
+          "status": "EXAMPLE"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "bad-status",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "status": "MAGIC"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "evidence-not-object",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            "x"
+          ],
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "evidence-missing-locator",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "source": "x"
+            }
+          ],
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "freshness-bad-date",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "freshness_status": "CURRENT",
+              "locator": "y",
+              "observed_at": "bad",
+              "source": "x"
+            }
+          ],
+          "freshness_required": true,
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "freshness-bad-status",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "freshness_status": "STALE",
+              "locator": "y",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "x"
+            }
+          ],
+          "freshness_required": true,
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "inference-as-fact",
+    "input": {
+      "claims": [
+        {
+          "basis_claim_ids": [
+            "c0"
+          ],
+          "claim_id": "c1",
+          "material": true,
+          "presented_as_fact": true,
+          "status": "INFERRED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "release_eligible": true,
+      "status": "PASS"
+    },
+    "id": "source-bound-approved",
+    "input": {
+      "approved_sources": [
+        "official"
+      ],
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "locator": "x",
+              "source": "official"
+            }
+          ],
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "mode": "FINAL"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "expect_paths": {
+      "errors.0": "claim[0]:source-not-approved"
+    },
+    "id": "source-bound-rejects-unapproved",
+    "input": {
+      "approved_sources": [
+        "official"
+      ],
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "locator": "x",
+              "source": "blog"
+            }
+          ],
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "mode": "FINAL"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "expect_paths": {
+      "errors.0": "claim[0]:high-risk-missing-authority"
+    },
+    "id": "high-risk-authority-required",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "authority": "SECONDARY",
+              "locator": "x",
+              "source": "blog"
+            }
+          ],
+          "high_risk": true,
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ],
+      "mode": "FINAL"
+    }
+  },
+  {
+    "expect": {
+      "release_eligible": true,
+      "status": "PASS"
+    },
+    "id": "high-risk-official-ok",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "authority": "OFFICIAL",
+              "locator": "x",
+              "source": "official"
+            }
+          ],
+          "high_risk": true,
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ],
+      "mode": "FINAL"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "expect_paths": {
+      "errors.0": "claim-dependency-cycle"
+    },
+    "id": "dependency-cycle",
+    "input": {
+      "claims": [
+        {
+          "basis_claim_ids": [
+            "c2"
+          ],
+          "claim_id": "c1",
+          "material": true,
+          "status": "INFERRED"
+        },
+        {
+          "basis_claim_ids": [
+            "c1"
+          ],
+          "claim_id": "c2",
+          "material": true,
+          "status": "INFERRED"
+        }
+      ],
+      "mode": "FINAL"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "expect_paths": {
+      "errors.0": "revision:candidate-parent-required"
+    },
+    "id": "revision-needs-parent",
+    "input": {
+      "candidate_id": "c2",
+      "claims": [],
+      "mode": "REVISION"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "expect_paths": {
+      "errors.0": "invariant:inv1:missing-check"
+    },
+    "id": "invariant-missing-check",
+    "input": {
+      "claims": [],
+      "invariant_checks": [],
+      "mode": "FINAL",
+      "protected_invariants": [
+        "inv1"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "release_eligible": true,
+      "status": "PASS"
+    },
+    "id": "invariant-pass",
+    "input": {
+      "claims": [],
+      "invariant_checks": [
+        {
+          "id": "inv1",
+          "state": "PASS"
+        }
+      ],
+      "mode": "FINAL",
+      "protected_invariants": [
+        "inv1"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "release_eligible": false,
+      "status": "PASS"
+    },
+    "id": "contextual-draft-never-release",
+    "input": {
+      "claims": [],
+      "evidence_policy": "CONTEXTUAL_DRAFT",
+      "mode": "FINAL"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-bad-mode",
+    "input": {
+      "claims": [],
+      "mode": "X"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-bad-policy",
+    "input": {
+      "claims": [],
+      "evidence_policy": "X"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-bad-candidate",
+    "input": {
+      "candidate_id": "",
+      "claims": []
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-bad-brief",
+    "input": {
+      "brief_id": "",
+      "claims": []
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-revision-same-parent",
+    "input": {
+      "candidate_id": "c",
+      "claims": [],
+      "mode": "REVISION",
+      "parent_candidate_id": "c"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-basis-not-list",
+    "input": {
+      "claims": [
+        {
+          "basis_claim_ids": "x",
+          "claim_id": "c1",
+          "material": true,
+          "status": "INFERRED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-basis-bad-id",
+    "input": {
+      "claims": [
+        {
+          "basis_claim_ids": [
+            ""
+          ],
+          "claim_id": "c1",
+          "material": true,
+          "status": "INFERRED"
+        }
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-invariants-not-list",
+    "input": {
+      "claims": [],
+      "protected_invariants": "x"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-invariant-invalid",
+    "input": {
+      "claims": [],
+      "invariant_checks": [],
+      "protected_invariants": [
+        {}
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-invariant-checks-not-list",
+    "input": {
+      "claims": [],
+      "invariant_checks": "x",
+      "protected_invariants": [
+        "i"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "edge-invariant-fail",
+    "input": {
+      "claims": [],
+      "invariant_checks": [
+        {
+          "id": "i",
+          "state": "FAIL"
+        }
+      ],
+      "protected_invariants": [
+        "i"
+      ]
+    }
+  },
+  {
+    "expect": {
+      "release_eligible": true,
+      "status": "PASS"
+    },
+    "id": "evidence-floor-pass",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "locator": "x",
+              "source": "official"
+            }
+          ],
+          "evidence_grade": "A",
+          "material": true,
+          "presented_as_fact": true,
+          "status": "SUPPORTED"
+        }
+      ],
+      "evidence_floor": {
+        "material": "B"
+      },
+      "mode": "FINAL"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "evidence-floor-missing-grade",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "locator": "x",
+              "source": "official"
+            }
+          ],
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ],
+      "evidence_floor": {
+        "material": "B"
+      },
+      "mode": "FINAL"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "evidence-floor-too-low",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "locator": "x",
+              "source": "official"
+            }
+          ],
+          "evidence_grade": "C",
+          "material": true,
+          "status": "SUPPORTED"
+        }
+      ],
+      "evidence_floor": {
+        "material": "B"
+      },
+      "mode": "FINAL"
+    }
+  },
+  {
+    "expect": {
+      "status": "FAIL"
+    },
+    "id": "evidence-floor-invalid-policy",
+    "input": {
+      "claims": [],
+      "evidence_floor": {
+        "material": "Z"
+      },
+      "mode": "FINAL"
+    }
+  }
+]

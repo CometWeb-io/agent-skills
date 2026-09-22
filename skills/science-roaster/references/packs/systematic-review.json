@@ -1,0 +1,69 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "science.systematic-review",
+  "version": "1.0.0",
+  "skill": "science-roaster",
+  "summary": "Review evidence syntheses for search coverage, eligibility, dependence, risk of bias and synthesis compatibility.",
+  "activation": {
+    "profiles": [
+      "REVIEW"
+    ],
+    "signals": [
+      "systematic review",
+      "meta-analysis",
+      "prisma",
+      "literature review",
+      "evidence synthesis"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "search-and-eligibility",
+      "why": "The evidence base is bounded by databases, dates, search terms and eligibility rules.",
+      "evidence_hints": [
+        "search strategy",
+        "dates",
+        "databases",
+        "eligibility"
+      ],
+      "false_positive_guards": [
+        "Do not demand exhaustive discovery beyond the declared review question."
+      ]
+    },
+    {
+      "id": "study-dependence",
+      "why": "Multiple effects from the same study are not independent evidence units unless modeled accordingly.",
+      "evidence_hints": [
+        "study ids",
+        "multiple outcomes",
+        "multiple arms"
+      ],
+      "false_positive_guards": [
+        "Several papers can still be non-independent if they share a dataset."
+      ]
+    },
+    {
+      "id": "synthesis-compatibility",
+      "why": "Pooling incompatible constructs, populations or endpoints can create a precise answer to the wrong question.",
+      "evidence_hints": [
+        "effect definitions",
+        "heterogeneity",
+        "subgroups"
+      ],
+      "false_positive_guards": [
+        "Heterogeneity alone does not invalidate synthesis; inspect the estimand."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "search strategy",
+    "eligibility criteria"
+  ],
+  "false_positive_guards": [
+    "Search absence is not evidence absence."
+  ],
+  "handoff_triggers": [
+    "Citation verification -> evidence-researcher"
+  ],
+  "notes": []
+}

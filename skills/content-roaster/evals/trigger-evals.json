@@ -1,0 +1,156 @@
+[
+  {
+    "query": "Roast this landing page copy like a skeptical B2B buyer and anchor every criticism to the page.",
+    "should_trigger": true
+  },
+  {
+    "query": "content roaster: tear apart this pricing page before we send traffic to it",
+    "should_trigger": true
+  },
+  {
+    "query": "Upiecz tę ofertę sprzedażową, ale każdą krytykę podeprzyj konkretnym fragmentem.",
+    "should_trigger": true
+  },
+  {
+    "query": "Red-team this customer case study: I want the strongest trust and proof objections.",
+    "should_trigger": true
+  },
+  {
+    "query": "Re-review the revised homepage against the old roast and tell me what is actually fixed.",
+    "should_trigger": true
+  },
+  {
+    "query": "Act like a skeptical buyer and stress-test this sales deck narrative.",
+    "should_trigger": true
+  },
+  {
+    "query": "Brutally critique this outbound email for clarity, credibility and CTA friction.",
+    "should_trigger": true
+  },
+  {
+    "query": "Roast this ebook chapter for fluff, generic claims, repetition and weak proof.",
+    "should_trigger": true
+  },
+  {
+    "query": "Audit this product page copy for decision-stage proof gaps; not SEO.",
+    "should_trigger": true
+  },
+  {
+    "query": "The prose is polished but the offer still feels like a nice-to-have. Red-team the offer page.",
+    "should_trigger": true
+  },
+  {
+    "query": "Humanize this landing page and make it sound less AI-generated while preserving the meaning.",
+    "should_trigger": false,
+    "near_miss": "ai-humanize"
+  },
+  {
+    "query": "Run a full SEO/GEO/AEO audit of this landing page including schema and indexability.",
+    "should_trigger": false,
+    "near_miss": "seo-geo-aeo-maxxing"
+  },
+  {
+    "query": "Reviewer #2: tear apart the methodology and statistical inference in this manuscript.",
+    "should_trigger": false,
+    "near_miss": "science-roaster"
+  },
+  {
+    "query": "Roast this repository for concurrency, tenant isolation and data integrity bugs.",
+    "should_trigger": false,
+    "near_miss": "repo-roaster"
+  },
+  {
+    "query": "Fact-check the pricing claims on this page against primary sources on the web.",
+    "should_trigger": false,
+    "near_miss": "evidence-researcher"
+  },
+  {
+    "query": "Rewrite this weak offer from scratch. I do not need a critique.",
+    "should_trigger": false,
+    "near_miss": "writing/rewrite"
+  },
+  {
+    "query": "Click through our signup flow and roast the live UX, validation and accessibility.",
+    "should_trigger": false,
+    "near_miss": "web-app-auditor"
+  },
+  {
+    "query": "Build an evidence-backed ebook from these sources and release it as PDF/DOCX.",
+    "should_trigger": false,
+    "near_miss": "longform-publisher"
+  },
+  {
+    "query": "What should we build next in this repository before production? Give me a roadmap.",
+    "should_trigger": false,
+    "near_miss": "repo-to-roadmap"
+  },
+  {
+    "query": "Is this release candidate ready for production? Give a GO/NO_GO gate.",
+    "should_trigger": false,
+    "near_miss": "release-readiness"
+  },
+  {
+    "query": "Production roast this pricing page with the CRM win-loss notes and analytics export; separate observed copy problems from proof gaps.",
+    "should_trigger": true
+  },
+  {
+    "query": "Re-review the revised customer case study and verify which old roast findings actually closed.",
+    "should_trigger": true
+  },
+  {
+    "query": "Stress-test this sales deck like a skeptical enterprise buyer; I care about unsupported outcome claims and objections.",
+    "should_trigger": true
+  },
+  {
+    "query": "Roast only the marketing claims in this README; do not review the codebase.",
+    "should_trigger": true
+  },
+  {
+    "query": "Rewrite this landing page in a more human voice; don't critique it.",
+    "should_trigger": false
+  },
+  {
+    "query": "Run a technical SEO audit on this landing page and check canonicals/schema.",
+    "should_trigger": false
+  },
+  {
+    "query": "Verify whether our 70% claim is factually true using primary external sources.",
+    "should_trigger": false
+  },
+  {
+    "query": "Reviewer #2 this scientific case report for methodology flaws.",
+    "should_trigger": false
+  },
+  {
+    "query": "proof audit our enterprise procurement page, especially the SLA and SOC2 claims",
+    "should_trigger": true
+  },
+  {
+    "query": "red-team this gated benchmark ebook before we use it as a lead magnet",
+    "should_trigger": true
+  },
+  {
+    "query": "content roast this free-trial product page and the start-free CTA",
+    "should_trigger": true
+  },
+  {
+    "query": "re-review our launch announcement after we narrowed the availability claim",
+    "should_trigger": true
+  },
+  {
+    "query": "fact-check whether this vendor really has SOC 2 using primary external sources",
+    "should_trigger": false
+  },
+  {
+    "query": "rewrite this demo page in a more human founder voice",
+    "should_trigger": false
+  },
+  {
+    "query": "run SEO GEO AEO research on this enterprise landing page",
+    "should_trigger": false
+  },
+  {
+    "query": "publish this finished benchmark report as a polished ebook",
+    "should_trigger": false
+  }
+]

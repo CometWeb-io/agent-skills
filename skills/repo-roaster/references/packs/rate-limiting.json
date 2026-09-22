@@ -1,0 +1,72 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "repo.rate-limiting",
+  "version": "1.0.0",
+  "skill": "repo-roaster",
+  "summary": "Review rate limiting and quota enforcement for identity keys, distributed consistency, bypass paths, burst semantics and failure behavior.",
+  "activation": {
+    "profiles": [
+      "SERVICE",
+      "PR",
+      "INFRA"
+    ],
+    "signals": [
+      "rate limit",
+      "ratelimit",
+      "quota",
+      "throttle",
+      "token bucket",
+      "leaky bucket"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "identity-key",
+      "why": "The limiter key must correspond to the abuse or fairness boundary being protected.",
+      "evidence_hints": [
+        "user id",
+        "tenant id",
+        "IP",
+        "API key",
+        "route key"
+      ],
+      "false_positive_guards": [
+        "Do not assume IP-only limiting is wrong when protecting an unauthenticated edge."
+      ]
+    },
+    {
+      "id": "distributed-state",
+      "why": "Multiple workers/regions can make local counters ineffective for a global policy.",
+      "evidence_hints": [
+        "shared store",
+        "Redis",
+        "gateway limiter",
+        "regional policy"
+      ],
+      "false_positive_guards": [
+        "Do not demand global consistency if the policy is intentionally per-instance or per-region."
+      ]
+    },
+    {
+      "id": "failure-mode",
+      "why": "Limiter backend failure behavior should be intentional for the protected operation.",
+      "evidence_hints": [
+        "fail-open",
+        "fail-closed",
+        "timeout",
+        "fallback"
+      ],
+      "false_positive_guards": [
+        "The correct failure mode depends on safety/availability tradeoffs; do not impose one universally."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "rate limit boundary"
+  ],
+  "false_positive_guards": [],
+  "handoff_triggers": [
+    "Load/abuse testing -> specialist"
+  ],
+  "notes": []
+}

@@ -1,0 +1,156 @@
+[
+  {
+    "query": "Act as Reviewer #2 and red-team this manuscript’s methods and inference.",
+    "should_trigger": true
+  },
+  {
+    "query": "science roaster: attack the construct validity and holdout logic in this paper",
+    "should_trigger": true
+  },
+  {
+    "query": "Upiecz tę pracę naukową jak hiperkrytyczny recenzent, ale tylko na podstawie manuskryptu.",
+    "should_trigger": true
+  },
+  {
+    "query": "Peer review this validation study and find the strongest rejection-grade weakness.",
+    "should_trigger": true
+  },
+  {
+    "query": "Re-review the revised manuscript and verify which old Reviewer #2 points are truly resolved.",
+    "should_trigger": true
+  },
+  {
+    "query": "Red-team this thesis methodology, especially unit of analysis and missingness.",
+    "should_trigger": true
+  },
+  {
+    "query": "Stress-test the causal inference in this observational paper.",
+    "should_trigger": true
+  },
+  {
+    "query": "Roast this predictive-model paper for leakage, holdout integrity and comparator choice.",
+    "should_trigger": true
+  },
+  {
+    "query": "Review the novelty claim in this methods paper like a hostile peer reviewer.",
+    "should_trigger": true
+  },
+  {
+    "query": "Reviewer two: is the reference measurement good enough to validate this proxy?",
+    "should_trigger": true
+  },
+  {
+    "query": "Fact-check whether these citations actually support the paper’s novelty claim using current literature.",
+    "should_trigger": false,
+    "near_miss": "evidence-researcher"
+  },
+  {
+    "query": "Plan the next six months of this research program after the failed experiment.",
+    "should_trigger": false,
+    "near_miss": "research-program-operator"
+  },
+  {
+    "query": "Format this finished manuscript into APA DOCX and PDF.",
+    "should_trigger": false,
+    "near_miss": "publication/document"
+  },
+  {
+    "query": "Roast the marketing landing page for this research SaaS.",
+    "should_trigger": false,
+    "near_miss": "content-roaster"
+  },
+  {
+    "query": "Review the repository that implements the experiment pipeline for code defects.",
+    "should_trigger": false,
+    "near_miss": "repo-roaster"
+  },
+  {
+    "query": "Summarize this paper for a nontechnical audience.",
+    "should_trigger": false,
+    "near_miss": "summarization"
+  },
+  {
+    "query": "Rewrite the abstract to sound more natural but preserve every scientific claim.",
+    "should_trigger": false,
+    "near_miss": "ai-humanize"
+  },
+  {
+    "query": "Decide which journal we should submit to based on fit and acceptance strategy.",
+    "should_trigger": false,
+    "near_miss": "research-program-operator"
+  },
+  {
+    "query": "Extract the sample sizes and effect estimates from this paper.",
+    "should_trigger": false,
+    "near_miss": "extraction"
+  },
+  {
+    "query": "Make a literature Evidence Pack for whether browser metrics proxy energy use.",
+    "should_trigger": false,
+    "near_miss": "evidence-researcher"
+  },
+  {
+    "query": "Reviewer #2 this manuscript plus supplement and preregistration; reconcile endpoint and analysis-plan conflicts.",
+    "should_trigger": true
+  },
+  {
+    "query": "Re-review the revision and author response; verify which major scientific objections are really resolved.",
+    "should_trigger": true
+  },
+  {
+    "query": "Red-team this validation study's reference measurement, missingness and holdout integrity.",
+    "should_trigger": true
+  },
+  {
+    "query": "Roast the methods chapter of my thesis, especially dependence, multiplicity and construct validity.",
+    "should_trigger": true
+  },
+  {
+    "query": "Build the next 12-month research program and prioritize studies.",
+    "should_trigger": false
+  },
+  {
+    "query": "Fact-check these five citations against the current literature.",
+    "should_trigger": false
+  },
+  {
+    "query": "Humanize the discussion section without changing scientific meaning.",
+    "should_trigger": false
+  },
+  {
+    "query": "Roast this SaaS case study's ROI marketing claim.",
+    "should_trigger": false
+  },
+  {
+    "query": "Reviewer #2 our clustered longitudinal clinic study and its repeated measures analysis",
+    "should_trigger": true
+  },
+  {
+    "query": "science roast this diagnostic accuracy paper and threshold-selection method",
+    "should_trigger": true
+  },
+  {
+    "query": "peer review this survival analysis with censoring and competing risks",
+    "should_trigger": true
+  },
+  {
+    "query": "red-team this ML validation split for patient-level leakage",
+    "should_trigger": true
+  },
+  {
+    "query": "find new papers that verify whether this novelty claim is actually novel",
+    "should_trigger": false
+  },
+  {
+    "query": "plan the next six months of this research program after reviewer comments",
+    "should_trigger": false
+  },
+  {
+    "query": "rewrite the abstract to sound clearer and less AI-generated",
+    "should_trigger": false
+  },
+  {
+    "query": "turn this accepted manuscript into a publication-ready ebook",
+    "should_trigger": false
+  }
+]

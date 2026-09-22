@@ -1,0 +1,71 @@
+{
+  "schema": "cometweb.roaster-policy-pack/v1",
+  "id": "content.product-onboarding",
+  "version": "1.0.0",
+  "skill": "content-roaster",
+  "summary": "Review onboarding content for expectation setting, task success, permission/commitment proportionality and recovery from blocked states.",
+  "activation": {
+    "profiles": [
+      "PRODUCT_PAGE",
+      "DOCUMENTATION",
+      "GENERAL"
+    ],
+    "signals": [
+      "onboarding",
+      "setup",
+      "get started",
+      "connect",
+      "authorize",
+      "import",
+      "invite team"
+    ]
+  },
+  "must_inspect": [
+    {
+      "id": "first-value-path",
+      "why": "The sequence should connect setup work to an observable first value without hiding prerequisites.",
+      "evidence_hints": [
+        "setup steps",
+        "first success state",
+        "prerequisites"
+      ],
+      "false_positive_guards": [
+        "Do not call an intentional expert workflow too complex without audience evidence."
+      ]
+    },
+    {
+      "id": "permission-burden",
+      "why": "Requests for access, data, integrations or invitations should be justified before commitment.",
+      "evidence_hints": [
+        "OAuth scopes",
+        "permissions",
+        "data access",
+        "invite step"
+      ],
+      "false_positive_guards": [
+        "Review communicated rationale; hand runtime permission behavior to web-app-auditor or repo-roaster."
+      ]
+    },
+    {
+      "id": "recovery",
+      "why": "Blocked or failed onboarding needs a recoverable next step for material dead ends.",
+      "evidence_hints": [
+        "error copy",
+        "retry",
+        "support path",
+        "skip/defer"
+      ],
+      "false_positive_guards": [
+        "Do not demand recovery copy for impossible states without evidence they are reachable."
+      ]
+    }
+  ],
+  "required_evidence": [
+    "onboarding artifact"
+  ],
+  "false_positive_guards": [],
+  "handoff_triggers": [
+    "Live onboarding behavior -> web-app-auditor"
+  ],
+  "notes": []
+}
