@@ -6,6 +6,7 @@ Commands:
   reconcile  Detect product-state drift and evidence problems.
   sequence   Order candidate actions by dependencies after ranking.
   readiness  Calculate whether prioritization is READY/PROVISIONAL/BLOCKED.
+  plan       Build a gated immediate/next plan from supplied records.
   snapshot   Create an immutable comparable snapshot with hashes.
   delta      Compare two reports/snapshots and surface material movement.
   validate   Validate an operator-report.json sidecar.
@@ -35,6 +36,9 @@ READINESS_VALUES = {"READY", "PROVISIONAL", "BLOCKED"}
 PRIORITY_TIERS = {"BLOCKER", "VERIFY_NOW", "DECISION_NOW", "NOW", "NEXT", "LATER", "STOP"}
 TIER_ORDER = {"BLOCKER": 0, "VERIFY_NOW": 1, "DECISION_NOW": 2, "NOW": 3, "NEXT": 4, "LATER": 5, "STOP": 6}
 STAGES = ("intent", "planned", "implemented", "verified", "shipped", "outcome")
+IMMEDIATE_CAPS = {"verify": 3, "implement": 3, "decision": 3}
+NEXT_CAP = 5
+JSON_NODE_BUDGET = 100000
 
 STAGE_AUTHORITIES = {
     "intent": {"user", "product_context", "product_marketing", "prd", "strategy", "notion_product"},
@@ -44,6 +48,10 @@ STAGE_AUTHORITIES = {
     "shipped": {"release", "deploy", "deployment", "environment", "github_release", "hosting"},
     "outcome": {"analytics", "customer", "revenue", "support", "crm", "billing", "experiment"},
 }
+
+
+class InputError(ValueError):
+    """Malformed, inconsistent, or integrity-failed operator input."""
 
 
 def load_json_arg(value: str) -> Any:
@@ -99,6 +107,87 @@ def canonical_json(value: Any) -> str:
 
 def sha256_json(value: Any) -> str:
     return hashlib.sha256(canonical_json(value).encode("utf-8")).hexdigest()
+
+
+def _unique_pairs(pairs: list[tuple[Any, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise InputError("duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def _reject_constant(value: str) -> None:
+    raise InputError("non-finite JSON constant")
+
+
+def object_value(value: Any, name: str) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        raise InputError(f"{name} must be an object")
+    return value
+
+
+def check_json(value: Any, depth: int = 0, budget: list[int] | None = None) -> None:
+    if budget is None:
+        budget = [JSON_NODE_BUDGET]
+    budget[0] -= 1
+    if depth > 64 or budget[0] < 0:
+        raise InputError("JSON complexity exceeds limit")
+    if value is None or isinstance(value, (str, bool)):
+        return
+    if type(value) is int:
+        if value.bit_length() > 8192:
+            raise InputError("integer exceeds rendering budget")
+        return
+    if type(value) is float:
+        if not math.isfinite(value):
+            raise InputError("non-finite JSON number")
+        return
+    if isinstance(value, dict):
+        if any(not isinstance(key, str) for key in value):
+            raise InputError("JSON keys must be strings")
+        for item in value.values():
+            check_json(item, depth + 1, budget)
+        return
+    if isinstance(value, list):
+        for item in value:
+            check_json(item, depth + 1, budget)
+        return
+    raise InputError("value contains a non-JSON type")
+
+
+def list_value(value: Any, name: str, maximum: int | None = None) -> list[Any]:
+    if not isinstance(value, list):
+        raise InputError(f"{name} must be a list")
+    if maximum is not None and len(value) > maximum:
+        raise InputError(f"{name} may contain at most {maximum} items")
+    return value
+
+
+def unique_rows(value: Any, name: str) -> list[dict[str, Any]]:
+    rows = list_value(value if value is not None else [], name)
+    seen: set[str] = set()
+    out: list[dict[str, Any]] = []
+    for idx, row in enumerate(rows):
+        if not isinstance(row, dict):
+            raise InputError(f"{name}[{idx}] must be an object")
+        row_id = str(row.get("id") or "").strip()
+        if not row_id:
+            raise InputError(f"{name}[{idx}].id is required")
+        if row_id in seen:
+            raise InputError(f"{name} duplicate id: {row_id}")
+        seen.add(row_id)
+        out.append(row)
+    return out
+
+
+def flag(source: dict[str, Any], key: str) -> bool:
+    return boolish(source.get(key))
+
+
+def nonempty(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
 
 
 def evidence_freshness(ev: dict[str, Any], as_of: str | None = None) -> str:
@@ -406,6 +495,110 @@ def readiness_report(payload: dict[str, Any]) -> dict[str, Any]:
     return {"status": "READY", "reasons": []}
 
 
+def candidate_action_type(row: dict[str, Any]) -> str:
+    explicit = str(row.get("action_type") or "").strip().lower()
+    if explicit in {"verify", "implement", "decision", "stop"}:
+        return explicit
+    if boolish(row.get("stop")) or norm(row.get("priority_tier")) == "STOP":
+        return "stop"
+    if boolish(row.get("decision_required")):
+        return "decision"
+    if boolish(row.get("verify_first")):
+        return "verify"
+    return "implement"
+
+
+def build_plan(payload: dict[str, Any]) -> dict[str, Any]:
+    """Rank, sequence, and gate candidates into an executable shortlist."""
+    source = object_value(payload, "plan input")
+    check_json(source)
+    for key in ("target", "goal", "horizon", "as_of"):
+        if not nonempty(source.get(key)):
+            raise InputError(f"{key} is required")
+    if parse_time(source.get("as_of")) is None:
+        raise InputError("as_of must be an ISO-8601 timestamp with timezone")
+
+    candidates = unique_rows(source.get("candidates", []), "candidates")
+    state_items = list_value(source.get("state_items", []), "state_items")
+    for idx, item in enumerate(state_items):
+        if not isinstance(item, dict):
+            raise InputError(f"state_items[{idx}] must be an object")
+
+    reconciliation = reconcile_items(copy.deepcopy(state_items), as_of=source.get("as_of"))
+    critical_issues = [issue for issue in reconciliation["issues"] if issue["severity"] == "critical"]
+
+    readiness_input = {
+        "coverage": source.get("coverage") or {},
+        "goal_known": nonempty(source.get("goal")),
+        "critical_gap_open": flag(source, "critical_gap_open") or bool(critical_issues),
+        "unresolved_gate": flag(source, "unresolved_gate"),
+        "material_current_evidence_block": flag(source, "material_current_evidence_block"),
+        "material_unknowns_open": flag(source, "material_unknowns_open"),
+        "outcome_required": flag(source, "outcome_required"),
+    }
+    readiness = readiness_report(readiness_input)
+    can_implement = readiness["status"] == "READY"
+
+    ranked = rank_candidates(copy.deepcopy(candidates))["ranked"]
+    sequence = sequence_candidates(copy.deepcopy(candidates))
+    by_id = {str(row.get("id")): row for row in ranked if str(row.get("id") or "").strip()}
+
+    immediate_actions: list[dict[str, Any]] = []
+    next_actions: list[dict[str, Any]] = []
+    held_implementation_action_ids: list[str] = []
+    held_by_readiness_action_ids: list[str] = []
+    immediate_counts = {key: 0 for key in IMMEDIATE_CAPS}
+
+    for row in sequence["execution_order"]:
+        action_id = str(row.get("id") or "").strip()
+        if not action_id or action_id not in by_id:
+            continue
+        ranked_row = by_id[action_id]
+        action_type = candidate_action_type(ranked_row)
+        tier = ranked_row.get("priority_tier")
+        if action_type == "stop" or tier == "STOP":
+            continue
+        if tier == "LATER" and action_type == "implement":
+            continue
+
+        deps = [str(dep) for dep in (ranked_row.get("depends_on") or []) if str(dep).strip()]
+        unmet = [dep for dep in deps if dep in by_id]
+        immediate_ids = {str(item["id"]) for item in immediate_actions}
+
+        if action_type == "implement" and not can_implement:
+            held_implementation_action_ids.append(action_id)
+            held_by_readiness_action_ids.append(action_id)
+            continue
+
+        if unmet:
+            if (
+                all(dep in immediate_ids for dep in unmet)
+                and len(next_actions) < NEXT_CAP
+                and action_id not in {str(item["id"]) for item in next_actions}
+            ):
+                next_actions.append(copy.deepcopy(ranked_row))
+            continue
+
+        if immediate_counts.get(action_type, 0) >= IMMEDIATE_CAPS.get(action_type, 0):
+            if len(next_actions) < NEXT_CAP:
+                next_actions.append(copy.deepcopy(ranked_row))
+            continue
+
+        immediate_actions.append(copy.deepcopy(ranked_row))
+        immediate_counts[action_type] = immediate_counts.get(action_type, 0) + 1
+
+    return {
+        "immediate_actions": immediate_actions,
+        "next_actions": next_actions,
+        "readiness": readiness,
+        "reconciliation": reconciliation,
+        "input_hash": sha256_json(source),
+        "sequence": sequence,
+        "held_by_readiness_action_ids": held_by_readiness_action_ids,
+        "held_implementation_action_ids": held_implementation_action_ids,
+    }
+
+
 VOLATILE_FINGERPRINT_KEYS = {
     "as_of", "observed_at", "verified_at", "checked_at", "last_checked_at",
     "timestamp", "updated_at", "created_at",
@@ -449,6 +642,31 @@ def snapshot_report(report: dict[str, Any]) -> dict[str, Any]:
         "state_fingerprint": state_fingerprint,
         "report": base,
     }
+
+
+def unwrap_report(payload: Any) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Return (report, integrity) from a snapshot or bare report payload."""
+    envelope = object_value(payload, "snapshot")
+    check_json(envelope)
+
+    if isinstance(envelope.get("report"), dict) and (
+        "snapshot_hash" in envelope or "state_fingerprint" in envelope
+    ):
+        report = object_value(envelope["report"], "snapshot.report")
+        recomputed = snapshot_report(report)
+        integrity = {
+            "snapshot_hash_match": envelope.get("snapshot_hash") == recomputed["snapshot_hash"],
+            "state_fingerprint_match": envelope.get("state_fingerprint") == recomputed["state_fingerprint"],
+            "kind": "snapshot",
+        }
+        if not integrity["snapshot_hash_match"] or not integrity["state_fingerprint_match"]:
+            raise InputError("snapshot integrity check failed")
+        return copy.deepcopy(report), integrity
+
+    if any(key in envelope for key in ("protocol_version", "goal", "target", "as_of")):
+        return copy.deepcopy(envelope), {"snapshot_hash_match": True, "state_fingerprint_match": True, "kind": "report"}
+
+    raise InputError("payload is neither a snapshot nor a report")
 
 
 def action_tier_map(report: dict[str, Any]) -> dict[str, str]:
@@ -524,14 +742,46 @@ def delta_reports(old_payload: dict[str, Any], new_payload: dict[str, Any]) -> d
     old_blockers = {entry_key(x) for x in (old_report.get("blockers") or [])}
     new_blockers = {entry_key(x) for x in (new_report.get("blockers") or [])}
 
+    def blocker_ids(report: dict[str, Any]) -> set[str]:
+        ids: set[str] = set()
+        for item in report.get("blockers") or []:
+            if isinstance(item, dict) and str(item.get("id") or "").strip():
+                ids.add(str(item["id"]))
+            elif not isinstance(item, dict) and str(item).strip():
+                ids.add(str(item))
+        return ids
+
+    def resolution_ids(report: dict[str, Any]) -> set[str]:
+        ids: set[str] = set()
+        for item in report.get("blocker_resolutions") or []:
+            if isinstance(item, dict):
+                for key in ("id", "blocker_id", "resolved_id"):
+                    if str(item.get(key) or "").strip():
+                        ids.add(str(item[key]))
+                        break
+            elif str(item).strip():
+                ids.add(str(item))
+        return ids
+
+    removed_blocker_ids = blocker_ids(old_report) - blocker_ids(new_report)
+    unverified_removed_blockers = sorted(removed_blocker_ids - resolution_ids(new_report))
+
+    comparison_status = "comparable"
+    if old_report.get("target") != new_report.get("target"):
+        comparison_status = "scope_changed"
+    elif old_report.get("goal") != new_report.get("goal"):
+        comparison_status = "scope_changed"
+
     return {
         "from_as_of": old_report.get("as_of"),
         "to_as_of": new_report.get("as_of"),
+        "comparison_status": comparison_status,
         "state_fingerprint_changed": old_state_fingerprint != new_state_fingerprint,
         "state_transitions": transitions,
         "priority_changes": priority_changes,
         "new_blockers": sorted(new_blockers - old_blockers),
         "resolved_blockers": sorted(old_blockers - new_blockers),
+        "unverified_removed_blockers": unverified_removed_blockers,
         "new_issues": [{"item_id": i, "code": c} for i, c in sorted(new_issue_keys - old_issue_keys)],
         "resolved_issues": [{"item_id": i, "code": c} for i, c in sorted(old_issue_keys - new_issue_keys)],
         "priority_thrash": thrash,
@@ -727,6 +977,9 @@ def main() -> int:
     readiness_p = sub.add_parser("readiness", help="Calculate decision readiness")
     readiness_p.add_argument("--input-json", required=True)
 
+    plan_p = sub.add_parser("plan", help="Build gated immediate/next action plan")
+    plan_p.add_argument("--input-json", required=True)
+
     snapshot_p = sub.add_parser("snapshot", help="Create immutable comparable snapshot")
     snapshot_p.add_argument("--report-json", required=True)
 
@@ -762,6 +1015,11 @@ def main() -> int:
             if not isinstance(payload, dict):
                 raise ValueError("readiness input must be an object")
             result = readiness_report(payload)
+        elif args.command == "plan":
+            payload = load_json_arg(args.input_json)
+            if not isinstance(payload, dict):
+                raise ValueError("plan input must be an object")
+            result = build_plan(payload)
         elif args.command == "snapshot":
             payload = load_json_arg(args.report_json)
             if not isinstance(payload, dict):

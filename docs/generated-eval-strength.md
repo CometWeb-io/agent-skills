@@ -26,10 +26,6 @@ gate — and those are listed rather than hidden.
 | `skill-evaluator` | 5 | 5 | 1.00 |
 | `portfolio-operator` | 61 | 55 | 0.90 |
 | `longform-publisher` | 54 | 28 | 0.52 |
-| `product-operator` | 107 | 27 | 0.25 |
+| `product-operator` | 165 | 34 | 0.21 |
 
-Scripts a package ships that its harness never loads, so nothing above measures them:
-
-- `product-operator`: prepare_brief.py, self_check.py
-
-**14 harnesses.** 187 of 299 reachable guards are held (63% if every skill counted equally, which they do not).
+**14 harnesses.** 194 of 357 reachable guards are held (54% if every skill counted equally, which they do not).

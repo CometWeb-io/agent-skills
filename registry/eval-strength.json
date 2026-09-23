@@ -58,14 +58,11 @@
       "unexercised": []
     },
     {
-      "guards": 107,
-      "held": 27,
+      "guards": 165,
+      "held": 34,
       "id": "product-operator",
-      "strength": 0.252,
-      "unexercised": [
-        "prepare_brief.py",
-        "self_check.py"
-      ]
+      "strength": 0.206,
+      "unexercised": []
     },
     {
       "guards": 8,

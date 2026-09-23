@@ -91,6 +91,9 @@ jobs:
       - name: Public safety scan — complete history
         run: uv run python tooling/public_safety.py --root . --history
 
+      - name: Installation acceptance (RUNTIME skills)
+        run: uv run python tooling/installation_acceptance.py
+
       - name: Compile Python modules
         run: |
           find skills tooling -name '*.py' -print0 | xargs -0 uv run python -m py_compile

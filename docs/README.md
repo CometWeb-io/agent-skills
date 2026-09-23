@@ -16,6 +16,7 @@ rather than by a person.
 | Document | What it covers |
 | --- | --- |
 | [`LOCAL-VALIDATION.md`](LOCAL-VALIDATION.md) | Running the full gate without GitHub Actions. |
+| [`SIGNED-COMMITS.md`](SIGNED-COMMITS.md) | How to enable commit signing before flipping the ruleset. |
 | [`WHYKIT-INTEGRATION.md`](WHYKIT-INTEGRATION.md) | Converting finalized CW-AIP v2 evidence and decision envelopes into explicit, unreviewed WhyKit drafts. |
 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | The commands to run before a pull request, and the quality bar. |
 | [`../SECURITY.md`](../SECURITY.md) | Reporting a vulnerability, and what the leak gate does and does not promise. |

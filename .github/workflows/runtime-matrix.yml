@@ -1,0 +1,62 @@
+name: Runtime matrix
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-matrix-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  skill-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.11", "3.12", "3.13"]
+        package:
+          - skill: ebook-publisher
+            deps: "pypdf>=4,<7"
+            test: skills/ebook-publisher/tests
+          - skill: web-app-auditor
+            deps: "jsonschema>=4.18,<5"
+            test: skills/web-app-auditor/tests
+    name: ${{ matrix.package.skill }} / py${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python }}
+
+      - name: Install declared skill runtime deps
+        env:
+          SKILL_ID: ${{ matrix.package.skill }}
+          SKILL_DEPS: ${{ matrix.package.deps }}
+        run: |
+          uv venv --python "${{ matrix.python }}" .runtime-venv
+          # shellcheck disable=SC2086
+          uv pip install --python .runtime-venv ${SKILL_DEPS} pytest
+          .runtime-venv/bin/python - <<PY
+          import json
+          from pathlib import Path
+          import os
+          skill = os.environ["SKILL_ID"]
+          runtime = json.loads(Path(f"skills/{skill}/RUNTIME.json").read_text())
+          assert runtime["schema"] == "cometweb.skill-runtime/v1"
+          print(skill, runtime["python"], runtime.get("dependencies"))
+          PY
+
+      - name: Run skill tests against declared runtime
+        run: .runtime-venv/bin/python -m pytest -q ${{ matrix.package.test }}

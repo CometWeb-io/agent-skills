@@ -18,7 +18,8 @@
     "requirements.txt",
     "pyproject.toml",
     "INSTALL.md",
-    "RUNTIME.json"
+    "RUNTIME.json",
+    "VALIDATION.md"
   ],
   "directories": [
     "scripts",
@@ -29,7 +30,9 @@
     "tests",
     "extras",
     "evaluation",
-    "examples"
+    "examples",
+    "integration",
+    "templates"
   ],
   "shared_roots": [
     "protocol"

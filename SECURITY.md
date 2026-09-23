@@ -48,7 +48,9 @@ Security-relevant properties this repo does enforce:
   overlays supply the values.
 - **Branch protection.** `main` is covered by a repository ruleset requiring a
   pull request, up-to-date `validate` status checks, and blocking force-pushes
-  and branch deletion.
+  and branch deletion. Signed commits are documented in
+  [`docs/SIGNED-COMMITS.md`](docs/SIGNED-COMMITS.md) and will be required once
+  signing keys are registered on the publisher account.
 
 What is explicitly **not** in scope:
 
