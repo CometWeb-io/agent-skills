@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
-from typing import Any
 
 from .contract import (
     choose_council_mode,

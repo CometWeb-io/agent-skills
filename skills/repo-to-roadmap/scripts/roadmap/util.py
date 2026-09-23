@@ -5,7 +5,6 @@ import json
 from typing import Any, Dict, List, Tuple
 
 from .constants import (
-    EFFORT_FACTORS,
     FRESHNESS,
     MAX_JSON_BYTES,
 )

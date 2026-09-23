@@ -21,6 +21,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from roadmap import *  # noqa: F401,F403
 from roadmap import __all__ as __all__  # noqa: E402
 from roadmap.cli import main  # noqa: E402
+from roadmap.constants import MAX_JSON_BYTES  # noqa: E402
 from roadmap.util import parse_json_arg as _parse_json_arg  # noqa: E402
 
 

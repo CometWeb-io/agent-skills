@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 
 from .delta import delta_report, snapshot_report
 from .evidence import evidence_report

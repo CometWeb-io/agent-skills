@@ -26,6 +26,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
 from readiness import *  # noqa: F403
+from readiness import main  # noqa: F401
 from readiness import (  # noqa: F401 — private helpers used by bootstrap/tests
     _binding_evidence_issues,
     _binding_evidence_valid,
