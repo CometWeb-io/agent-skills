@@ -57,12 +57,19 @@ def test_unknown_manifest_claims_are_not_admitted():
  {"source_revision":"abc","source_tree":"clean"},
  {"source_revision":None,"source_tree":"clean"},
  {"source_revision":"a"*40,"source_tree":"unavailable"},
+ {"source_revision":"a"*40,"source_tree":"dirty"},
  {"source_revision":"a"*40},
  {"source_tree":"dirty"},
 ])
 def test_inconsistent_source_provenance_rejected(source):
     entries,manifest=sample();manifest.update(source)
     with pytest.raises(ValueError):mod.inspect_archive(mod.archive(entries,manifest))
+
+
+def test_clean_source_provenance_is_admitted():
+    entries,manifest=sample()
+    manifest.update(source_revision="a"*40, source_tree="clean")
+    assert mod.inspect_archive(mod.archive(entries,manifest))["source_tree"]=="clean"
 
 
 def test_duplicate_json_manifest_keys_rejected():

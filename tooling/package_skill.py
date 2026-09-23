@@ -23,6 +23,8 @@ SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 VERSION = re.compile(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?(?:\+[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?\Z")
 LINK = re.compile(r"(?<=\]\()([^\s)]+)(?=\))")
 MANIFEST = "PACKAGE-MANIFEST.json"
+MAX_PACKAGE_FILES = 8192
+MAX_PACKAGE_BYTES = 64 * 1024 * 1024
 
 
 def digest(data: bytes) -> str:
@@ -65,19 +67,49 @@ def validate_frontmatter(blob: bytes, skill: str) -> None:
         raise ValueError("description must contain 1-1024 characters")
 
 
+def source_revision(root: Path) -> str:
+    """Release packaging requires a clean, reachable Git HEAD."""
+    from core.git import read_git
+
+    try:
+        revision = read_git(root, "rev-parse", "HEAD").stdout.decode().strip()
+        dirty = bool(
+            read_git(root, "status", "--porcelain", "--untracked-files=all").stdout.strip()
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise ValueError("release packaging requires a usable Git repository") from exc
+    if not re.fullmatch(r"[0-9a-f]{40}", revision):
+        raise ValueError("release packaging requires a full 40-character commit SHA")
+    if dirty:
+        raise ValueError("release packaging requires a clean Git working tree")
+    return revision
+
+
 def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
+    import unicodedata
+
     identifier(skill)
     policy = json.loads((root / "registry/package-policy.json").read_text())
     if policy.get("schema") != "cometweb.package-policy/v1":
         raise ValueError("unknown package policy")
     source = safe_path(root, "skills/" + skill)
-    entries = {}
-    for path in files(source):
+    entries: dict[str, bytes] = {}
+    seen_names: set[str] = set()
+    total_bytes = 0
+    for index, path in enumerate(files(source), start=1):
+        if index > MAX_PACKAGE_FILES:
+            raise ValueError("package file-count budget exceeded")
         rel = path.relative_to(source).as_posix()
-        if "\\" in rel or any(ord(c) < 32 for c in rel) or path.stat().st_size > MAX_FILE_BYTES:
+        size = path.stat().st_size
+        if "\\" in rel or any(ord(c) < 32 for c in rel) or size > MAX_FILE_BYTES:
             raise ValueError("unsafe filename or package input exceeds scan budget")
-        if rel.casefold() in {n.casefold() for n in entries}:
-            raise ValueError("case-insensitive path collision")
+        folded = unicodedata.normalize("NFC", rel).casefold()
+        if folded in seen_names:
+            raise ValueError("case/unicode-insensitive path collision")
+        seen_names.add(folded)
+        total_bytes += size
+        if total_bytes > MAX_PACKAGE_BYTES:
+            raise ValueError("aggregate package budget exceeded")
         data = path.read_bytes()
         if check_blob(rel, data, public=False):
             raise ValueError(f"unsafe package input: {rel}; matched values redacted")
@@ -221,11 +253,9 @@ def inspect_archive(blob: bytes) -> dict:
                 if present != optional:
                     raise ValueError("incomplete source provenance")
                 revision, state = manifest["source_revision"], manifest["source_tree"]
-                if state == "unavailable":
-                    if revision is not None:
-                        raise ValueError("unavailable source cannot have a revision")
-                elif (state not in {"clean", "dirty"} or not isinstance(revision, str)
-                      or not re.fullmatch(r"[0-9a-f]{40}", revision)):
+                # Release provenance admits only clean trees pinned to a full SHA.
+                if (state != "clean" or not isinstance(revision, str)
+                        or not re.fullmatch(r"[0-9a-f]{40}", revision)):
                     raise ValueError("inconsistent source provenance")
             entries = {n: zf.read(n) for n in names if n != MANIFEST}
             for name, data in entries.items():
@@ -276,14 +306,8 @@ def build(root: Path, skill: str) -> dict:
         if old["payload_sha256"] != manifest["payload_sha256"]:
             raise ValueError("immutable version conflict: bump VERSION; existing release is unchanged")
     else:
-        try:
-            from core.git import read_git
-
-            revision = read_git(root, "rev-parse", "HEAD").stdout.decode().strip()
-            dirty = bool(read_git(root, "status", "--porcelain").stdout.strip())
-            manifest.update(source_revision=revision, source_tree="dirty" if dirty else "clean")
-        except (OSError, subprocess.SubprocessError):
-            manifest.update(source_revision=None, source_tree="unavailable")
+        revision = source_revision(root)
+        manifest.update(source_revision=revision, source_tree="clean")
         data = archive(entries, manifest)
         inspect_archive(data)
         try:
@@ -295,7 +319,17 @@ def build(root: Path, skill: str) -> dict:
     latest = safe_path(root, f"dist/{skill}/skill.zip")
     write_atomic(latest, data, immutable=False)
     write_atomic(safe_path(root, f"dist/{skill}/{manifest['version']}/skill.zip.sha256"), (digest(data) + "  skill.zip\n").encode(), immutable=False)
-    return {"status": "packaged", "skill": skill, "version": manifest["version"], "payload_sha256": manifest["payload_sha256"], "archive_sha256": digest(data), "path": out.relative_to(root).as_posix(), "runtime_acceptance": "not_assessed"}
+    return {"status": "packaged", "skill": skill, "version": manifest["version"], "payload_sha256": manifest["payload_sha256"], "archive_sha256": digest(data), "path": out.relative_to(root).as_posix(), "runtime_acceptance": "not_assessed", "source_tree": "clean"}
+
+
+def build_dev(root: Path, skill: str) -> dict:
+    """Experimental package outside the versioned release path; not distributable."""
+    entries, manifest = payload(root, skill)
+    out = safe_path(root, f"dist/{skill}/dev/skill.zip")
+    data = archive(entries, manifest)
+    inspect_archive(data)
+    write_atomic(out, data, immutable=False)
+    return {"status": "packaged-dev", "skill": skill, "version": manifest["version"], "payload_sha256": manifest["payload_sha256"], "archive_sha256": digest(data), "path": out.relative_to(root).as_posix(), "runtime_acceptance": "not_assessed", "source_tree": "unavailable"}
 
 
 def main() -> int:
@@ -303,9 +337,11 @@ def main() -> int:
     parser.add_argument("skill")
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--versioned", action="store_true", help="Compatibility flag; all releases are now versioned")
+    parser.add_argument("--dev", action="store_true", help="Write an experimental package under dist/<skill>/dev/ (not a release)")
     args = parser.parse_args()
     try:
-        print(json.dumps(build(args.root, args.skill), indent=2))
+        result = build_dev(args.root, args.skill) if args.dev else build(args.root, args.skill)
+        print(json.dumps(result, indent=2))
         return 0
     except (OSError, ValueError, KeyError, zipfile.BadZipFile, yaml.YAMLError) as exc:
         print(f"Packaging blocked: {exc}", file=sys.stderr)

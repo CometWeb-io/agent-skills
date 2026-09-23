@@ -111,6 +111,25 @@ def validate_response(response: dict, *, allow_mock: bool = False) -> None:
         raise ValueError("text-only execution cannot report tool calls")
 
 
+MAX_RUNNER_OUTPUT = 4 * 1024 * 1024
+
+
+def runner_identity(command: list[str]) -> dict:
+    if not command or not all(isinstance(x, str) and x for x in command):
+        raise ValueError("runner command must be a nonempty argv list")
+    argv_blob = canonical(command)
+    if check_blob("runner-argv", argv_blob, public=False):
+        raise ValueError(
+            "runner argv contains secret-like data; "
+            "pass credentials through the approved environment"
+        )
+    return {
+        "program": Path(command[0]).name,
+        "argv_sha256": digest(argv_blob),
+        "argv_len": len(command),
+    }
+
+
 def execute(request: dict, command: list[str], timeout: int, *, allow_mock: bool = False) -> tuple[dict, float]:
     if not command or not all(isinstance(x, str) and x for x in command):
         raise ValueError("runner command must be a nonempty argv list")
@@ -121,19 +140,27 @@ def execute(request: dict, command: list[str], timeout: int, *, allow_mock: bool
     # Inherit only a safe base environment plus explicitly allowed eval secrets.
     runner_env = build_runner_env({"OPENAI_API_KEY", "COMETWEB_EVAL_MODEL", "COMETWEB_EVAL_RUNNER"})
     with tempfile.TemporaryDirectory(prefix="cw-eval-run-") as cwd:
-        proc = subprocess.run(
-            command,
-            input=canonical(request),
-            capture_output=True,
-            cwd=cwd,
-            timeout=timeout,
-            check=True,
-            close_fds=True,
-            env=runner_env,
-        )
-    if len(proc.stdout) > 4 * 1024 * 1024:
+        with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
+            subprocess.run(
+                command,
+                input=canonical(request),
+                stdout=stdout,
+                stderr=stderr,
+                cwd=cwd,
+                timeout=timeout,
+                check=True,
+                close_fds=True,
+                env=runner_env,
+            )
+            if stdout.tell() > MAX_RUNNER_OUTPUT:
+                raise ValueError("runner stdout exceeds budget")
+            if stderr.tell() > MAX_RUNNER_OUTPUT:
+                raise ValueError("runner stderr exceeds budget")
+            stdout.seek(0)
+            blob = stdout.read(MAX_RUNNER_OUTPUT + 1)
+    if len(blob) > MAX_RUNNER_OUTPUT:
         raise ValueError("runner output exceeds bounded record size")
-    response = json.loads(proc.stdout)
+    response = json.loads(blob)
     validate_response(response, allow_mock=allow_mock)
     if response["capabilities"] != request["capabilities"]:
         raise ValueError("runner capabilities differ from the matched experiment contract")
@@ -155,7 +182,7 @@ def run(suite: dict, current: Path, candidate: Path, command: list[str], output:
     (output / "blind").mkdir()
     records, mapping = [], {}
     manifest = {"schema":"cometweb.model-eval-run/v1", "started_at":dt.datetime.now(dt.timezone.utc).isoformat(), "suite_sha256":digest(canonical(suite)),
-                "conditions":list(CONDITIONS), "planned_runs":len(jobs), "seed":seed, "runner_argv":command,
+                "conditions":list(CONDITIONS), "planned_runs":len(jobs), "seed":seed, "runner":runner_identity(command),
                 "provenance":"runner_reported_not_cryptographic_attestation", "quality_verdict":"pending_human_review"}
     (output / "manifest.json").write_bytes(canonical(manifest))
     for index, (case, condition, repetition) in enumerate(jobs):

@@ -34,7 +34,7 @@ Run the local repository gate. It writes per-check logs and a JUnit report
 outside the checkout, and refuses to pass if the working tree changes underneath it:
 
 ```bash
-python3 tooling/validate_local.py --output ../agent-skills-validation-run-01 --timeout 900
+python3 tooling/validate_local.py --trusted-checkout --output ../agent-skills-validation-run-01 --timeout 900
 ```
 
 Choose a new output directory outside the checkout for each run. The report is

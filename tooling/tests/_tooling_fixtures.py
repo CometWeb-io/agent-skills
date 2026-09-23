@@ -44,6 +44,15 @@ def root(tmp_path):
     # path matches the real repository layout when present.
     if (TOOLS / "core").is_dir():
         shutil.copytree(TOOLS / "core", tmp_path / "tooling/core", dirs_exist_ok=True)
+    (tmp_path / ".gitignore").write_text("dist/\n")
+    # Release packaging requires a clean Git tree; fixtures must look like one.
+    import subprocess
+
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.email", "fixture@example.invalid"], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.name", "Fixture"], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(["git", "add", "-A"], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(["git", "commit", "-m", "fixture"], cwd=tmp_path, check=True, capture_output=True)
     return tmp_path
 
 
@@ -51,6 +60,11 @@ def add(root, name, data=b"fixture"):
     path = root / "skills/demo" / name
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(data)
+    import subprocess
+
+    # Keep the fixture tree clean so subsequent release builds stay admissible.
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True, capture_output=True)
+    subprocess.run(["git", "commit", "-m", "fixture-update"], cwd=root, check=True, capture_output=True)
     return path
 
 

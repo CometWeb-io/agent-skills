@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
-"""Deterministic routing eval proxy — signals loaded from registry/skills.json only."""
+"""Deterministic routing evals against the canonical route_skill implementation."""
 
 from __future__ import annotations
 
 import json
-import re
 import sys
-import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUITE = ROOT / "evals" / "routing" / "suite.json"
 REGISTRY = ROOT / "registry" / "skills.json"
+POLICY = ROOT / "registry" / "routing-policy.json"
+
+sys.path.insert(0, str(ROOT / "tooling"))
+from route_skill import route  # noqa: E402
 
 
 def load_signals() -> dict[str, list[tuple[int, str]]]:
+    """Registry signal inventory for tests; scoring itself uses route_skill."""
     data = json.loads(REGISTRY.read_text(encoding="utf-8"))
     signals: dict[str, list[tuple[int, str]]] = {}
     for skill in data["skills"]:
@@ -29,29 +32,18 @@ def load_signals() -> dict[str, list[tuple[int, str]]]:
 SIGNALS = load_signals()
 
 
-def normalize(text: str) -> str:
-    text = unicodedata.normalize("NFKD", text.lower())
-    return "".join(ch for ch in text if not unicodedata.combining(ch))
+def route_result(prompt: str) -> dict:
+    registry = json.loads(REGISTRY.read_text(encoding="utf-8"))
+    policy = json.loads(POLICY.read_text(encoding="utf-8"))
+    return route(prompt, registry, policy)
 
 
 def score_prompt(prompt: str) -> dict[str, int]:
-    text = normalize(prompt)
-    scores: dict[str, int] = {}
-    for skill, patterns in SIGNALS.items():
-        total = 0
-        for weight, pattern in patterns:
-            if re.search(pattern, text, re.I):
-                total += weight
-        if total:
-            scores[skill] = total
-    return scores
+    return route_result(prompt)["scores"]
 
 
 def classify(prompt: str) -> str | None:
-    scores = score_prompt(prompt)
-    if not scores:
-        return None
-    return max(scores, key=scores.get)
+    return route_result(prompt)["primary_skill"]
 
 
 def load_suite() -> dict:
@@ -69,7 +61,6 @@ def validate_case(case: dict, index: int) -> None:
 
 
 def main() -> int:
-    # Reload in case registry changed since import
     global SIGNALS
     SIGNALS = load_signals()
     data = load_suite()
@@ -78,22 +69,22 @@ def main() -> int:
     for index, case in enumerate(data["cases"]):
         validate_case(case, index)
         expected = case["expected_primary_skill"]
-        # null expresses "no skill owns this prompt" — the suite has to be able
-        # to assert a refusal, not only a correct destination.
         if expected is not None and expected not in known:
             failures.append(f"{case['id']}: unknown expected skill {expected!r}")
             continue
-        predicted = classify(case["prompt"])
+        result = route_result(case["prompt"])
+        predicted = result["primary_skill"]
         if predicted != expected:
-            scores = score_prompt(case["prompt"])
             failures.append(
                 f"{case['id']}: expected {expected}, got {predicted!r} "
-                f"(scores={scores}) — {case['reason']}"
+                f"(status={result['status']}, candidates={result['candidates']}, "
+                f"scores={result['scores']}) — {case['reason']}"
             )
         for blocked in case["must_not_trigger"]:
-            if predicted == blocked:
+            if predicted == blocked or blocked in result["candidates"]:
                 failures.append(
-                    f"{case['id']}: must_not_trigger {blocked} but was primary — {case['reason']}"
+                    f"{case['id']}: must_not_trigger {blocked} but appeared "
+                    f"(primary={predicted!r}, candidates={result['candidates']}) — {case['reason']}"
                 )
 
     if failures:
@@ -102,7 +93,7 @@ def main() -> int:
         print(f"\n{len(failures)} routing eval failure(s)", file=sys.stderr)
         return 1
 
-    print(f"OK: {len(data['cases'])} routing eval cases passed (signals from registry)")
+    print(f"OK: {len(data['cases'])} routing eval cases passed (canonical route_skill)")
     return 0
 
 

@@ -1,0 +1,51 @@
+name: Attest packages
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      - name: Sync locked dependencies
+        run: uv sync --frozen --group dev
+
+      - name: Require clean tree
+        run: |
+          if [[ -n "$(git status --porcelain --untracked-files=all)" ]]; then
+            echo "dirty working tree; refusing release packaging" >&2
+            exit 1
+          fi
+
+      - name: Build skill packages
+        run: |
+          mkdir -p dist
+          for skill in skills/*/SKILL.md; do
+            id="$(basename "$(dirname "$skill")")"
+            uv run python tooling/package_skill.py "$id"
+          done
+
+      - name: Attest packages
+        uses: actions/attest@v4
+        with:
+          subject-path: "dist/**/skill.zip"
