@@ -205,13 +205,15 @@
     {
       "id": "council-not-implicit-pricing",
       "prompt": "What price should we charge for the Growth plan?",
-      "expected_primary_skill": "ai-council",
+      "expected_primary_skill": null,
       "allowed_secondary_skills": [
         "evidence-researcher",
         "competitive-intelligence"
       ],
-      "must_not_trigger": [],
-      "reason": "Material pricing decision when explicitly asked"
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Pricing question without explicit Council invocation; ai-council is explicit_only"
     },
     {
       "id": "humanize-prose",
@@ -226,10 +228,12 @@
     {
       "id": "humanize-not-proofread",
       "prompt": "Fix typos in this email.",
-      "expected_primary_skill": "ai-humanize",
+      "expected_primary_skill": null,
       "allowed_secondary_skills": [],
-      "must_not_trigger": [],
-      "reason": "Light edit may still route here but not specialist skills"
+      "must_not_trigger": [
+        "ai-humanize"
+      ],
+      "reason": "Generic typo fix is outside ai-humanize narrow_intent_guards"
     },
     {
       "id": "seo-audit-page",
@@ -553,15 +557,16 @@
     {
       "id": "council-living-decision",
       "prompt": "Is our Q3 pricing decision still current given new churn data?",
-      "expected_primary_skill": "ai-council",
+      "expected_primary_skill": null,
       "allowed_secondary_skills": [
         "evidence-researcher",
         "customer-ops"
       ],
       "must_not_trigger": [
+        "ai-council",
         "product-operator"
       ],
-      "reason": "Living decision revalidation"
+      "reason": "Living-decision language without explicit Council invocation must not auto-route"
     },
     {
       "id": "humanize-unicode",
@@ -656,12 +661,12 @@
     {
       "id": "comp-intel-not-teardown",
       "prompt": "One-time deep profile of Notion's pricing page.",
-      "expected_primary_skill": "competitive-intelligence",
-      "allowed_secondary_skills": [
-        "product-teardown"
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
       ],
-      "must_not_trigger": [],
-      "reason": "Initial profile can overlap; CI preferred for competitor dossier"
+      "reason": "One-time deep profile is outside competitive-intelligence continuous-watch scope"
     },
     {
       "id": "teardown-multi-target",
@@ -755,7 +760,7 @@
     },
     {
       "id": "orchestrator-evidence-then-council",
-      "prompt": "Verify EU AI Act claims first, then run Council on our roadmap impact.",
+      "prompt": "Orchestrate evidence-researcher then ai-council on roadmap impact.",
       "expected_primary_skill": "skill-orchestrator",
       "allowed_secondary_skills": [
         "evidence-researcher",
@@ -764,7 +769,7 @@
       "must_not_trigger": [
         "product-operator"
       ],
-      "reason": "Explicit multi-step sequence; orchestrator owns plan and handoffs"
+      "reason": "Explicit multi-step sequence naming both skills; orchestrator owns plan and handoffs"
     },
     {
       "id": "orchestrator-audit-then-release",

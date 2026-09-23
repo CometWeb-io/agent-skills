@@ -23,6 +23,8 @@ SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 VERSION = re.compile(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?(?:\+[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?\Z")
 LINK = re.compile(r"(?<=\]\()([^\s)]+)(?=\))")
 MANIFEST = "PACKAGE-MANIFEST.json"
+MAX_PACKAGE_FILES = 8192
+MAX_PACKAGE_BYTES = 64 * 1024 * 1024
 
 
 def digest(data: bytes) -> str:
@@ -65,19 +67,67 @@ def validate_frontmatter(blob: bytes, skill: str) -> None:
         raise ValueError("description must contain 1-1024 characters")
 
 
+def source_revision(root: Path) -> str:
+    """Release packaging requires a clean, reachable Git HEAD."""
+    from core.git import read_git
+
+    try:
+        revision = read_git(root, "rev-parse", "HEAD").stdout.decode().strip()
+        dirty = bool(
+            read_git(root, "status", "--porcelain", "--untracked-files=all").stdout.strip()
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise ValueError("release packaging requires a usable Git repository") from exc
+    if not re.fullmatch(r"[0-9a-f]{40}", revision):
+        raise ValueError("release packaging requires a full 40-character commit SHA")
+    if dirty:
+        raise ValueError("release packaging requires a clean Git working tree")
+    return revision
+
+
+def validate_runtime_manifest(blob: bytes) -> dict:
+    data = json.loads(blob.decode("utf-8"))
+    if not isinstance(data, dict) or data.get("schema") != "cometweb.skill-runtime/v1":
+        raise ValueError("invalid RUNTIME.json schema")
+    python = data.get("python")
+    if not isinstance(python, str) or not python.strip():
+        raise ValueError("RUNTIME.json python requirement required")
+    deps = data.get("dependencies", {})
+    if not isinstance(deps, dict):
+        raise ValueError("RUNTIME.json dependencies must be an object")
+    for stage, rows in deps.items():
+        if not isinstance(stage, str) or not isinstance(rows, list) or not rows:
+            raise ValueError("RUNTIME.json dependency stages must be nonempty lists")
+        if any(not isinstance(item, str) or not item.strip() for item in rows):
+            raise ValueError("RUNTIME.json dependency entries must be nonempty strings")
+    return data
+
+
 def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
+    import unicodedata
+
     identifier(skill)
     policy = json.loads((root / "registry/package-policy.json").read_text())
     if policy.get("schema") != "cometweb.package-policy/v1":
         raise ValueError("unknown package policy")
     source = safe_path(root, "skills/" + skill)
-    entries = {}
-    for path in files(source):
+    entries: dict[str, bytes] = {}
+    seen_names: set[str] = set()
+    total_bytes = 0
+    for index, path in enumerate(files(source), start=1):
+        if index > MAX_PACKAGE_FILES:
+            raise ValueError("package file-count budget exceeded")
         rel = path.relative_to(source).as_posix()
-        if "\\" in rel or any(ord(c) < 32 for c in rel) or path.stat().st_size > MAX_FILE_BYTES:
+        size = path.stat().st_size
+        if "\\" in rel or any(ord(c) < 32 for c in rel) or size > MAX_FILE_BYTES:
             raise ValueError("unsafe filename or package input exceeds scan budget")
-        if rel.casefold() in {n.casefold() for n in entries}:
-            raise ValueError("case-insensitive path collision")
+        folded = unicodedata.normalize("NFC", rel).casefold()
+        if folded in seen_names:
+            raise ValueError("case/unicode-insensitive path collision")
+        seen_names.add(folded)
+        total_bytes += size
+        if total_bytes > MAX_PACKAGE_BYTES:
+            raise ValueError("aggregate package budget exceeded")
         data = path.read_bytes()
         if check_blob(rel, data, public=False):
             raise ValueError(f"unsafe package input: {rel}; matched values redacted")
@@ -91,6 +141,9 @@ def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
     if not VERSION.fullmatch(version):
         raise ValueError("invalid VERSION")
     validate_frontmatter(entries["SKILL.md"], skill)
+    runtime = None
+    if "RUNTIME.json" in entries:
+        runtime = validate_runtime_manifest(entries["RUNTIME.json"])
     # Only explicitly admitted repository roots may be bundled. Never chase arbitrary links.
     for shared in policy["shared_roots"]:
         identifier(shared)
@@ -119,6 +172,11 @@ def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
         "files": {name: digest(data) for name, data in sorted(entries.items())},
         "runtime_acceptance": "not_assessed",
     }
+    if runtime is not None:
+        manifest["runtime_requirements"] = {
+            "python": runtime["python"],
+            "dependencies": runtime.get("dependencies", {}),
+        }
     manifest["payload_sha256"] = digest(canonical({"files": manifest["files"], "policy_sha256": manifest["policy_sha256"]}))
     return entries, manifest
 
@@ -203,11 +261,18 @@ def inspect_archive(blob: bytes) -> dict:
                 raise ValueError("package manifest exceeds budget")
             manifest = json.loads(raw, object_pairs_hook=unique, parse_constant=invalid_number)
             required = {"schema", "skill", "version", "policy_sha256", "files", "runtime_acceptance", "payload_sha256"}
-            optional = {"source_revision", "source_tree"}
+            optional = {"source_revision", "source_tree", "runtime_requirements"}
             if not isinstance(manifest, dict) or not required <= manifest.keys() or not manifest.keys() <= required | optional:
                 raise ValueError("invalid package manifest fields")
             if manifest["schema"] != "cometweb.package/v1" or manifest["runtime_acceptance"] != "not_assessed":
                 raise ValueError("package metadata cannot assert runtime acceptance")
+            if "runtime_requirements" in manifest:
+                req = manifest["runtime_requirements"]
+                if not isinstance(req, dict) or not isinstance(req.get("python"), str):
+                    raise ValueError("invalid runtime_requirements")
+                deps = req.get("dependencies", {})
+                if not isinstance(deps, dict):
+                    raise ValueError("invalid runtime_requirements.dependencies")
             if not isinstance(manifest["skill"], str):
                 raise ValueError("invalid package identity")
             identifier(manifest["skill"])
@@ -216,16 +281,15 @@ def inspect_archive(blob: bytes) -> dict:
             for field in ("policy_sha256", "payload_sha256"):
                 if not isinstance(manifest[field], str) or not re.fullmatch(r"[0-9a-f]{64}", manifest[field]):
                     raise ValueError("invalid manifest fingerprint")
-            present = optional & manifest.keys()
+            provenance = {"source_revision", "source_tree"}
+            present = provenance & manifest.keys()
             if present:
-                if present != optional:
+                if present != provenance:
                     raise ValueError("incomplete source provenance")
                 revision, state = manifest["source_revision"], manifest["source_tree"]
-                if state == "unavailable":
-                    if revision is not None:
-                        raise ValueError("unavailable source cannot have a revision")
-                elif (state not in {"clean", "dirty"} or not isinstance(revision, str)
-                      or not re.fullmatch(r"[0-9a-f]{40}", revision)):
+                # Release provenance admits only clean trees pinned to a full SHA.
+                if (state != "clean" or not isinstance(revision, str)
+                        or not re.fullmatch(r"[0-9a-f]{40}", revision)):
                     raise ValueError("inconsistent source provenance")
             entries = {n: zf.read(n) for n in names if n != MANIFEST}
             for name, data in entries.items():
@@ -234,6 +298,14 @@ def inspect_archive(blob: bytes) -> dict:
             for name in ("SKILL.md", "VERSION", "LICENSE"):
                 if not entries.get(name, b"").strip():
                     raise ValueError("required package identity file missing")
+            if "RUNTIME.json" in entries:
+                runtime = validate_runtime_manifest(entries["RUNTIME.json"])
+                declared = manifest.get("runtime_requirements")
+                expected = {"python": runtime["python"], "dependencies": runtime.get("dependencies", {})}
+                if declared != expected:
+                    raise ValueError("runtime_requirements disagree with RUNTIME.json")
+            elif "runtime_requirements" in manifest:
+                raise ValueError("runtime_requirements without RUNTIME.json")
             validate_frontmatter(entries["SKILL.md"], manifest["skill"])
             if entries["VERSION"].decode("utf-8").strip() != manifest["version"]:
                 raise ValueError("manifest version disagrees with VERSION")
@@ -276,14 +348,8 @@ def build(root: Path, skill: str) -> dict:
         if old["payload_sha256"] != manifest["payload_sha256"]:
             raise ValueError("immutable version conflict: bump VERSION; existing release is unchanged")
     else:
-        try:
-            from core.git import read_git
-
-            revision = read_git(root, "rev-parse", "HEAD").stdout.decode().strip()
-            dirty = bool(read_git(root, "status", "--porcelain").stdout.strip())
-            manifest.update(source_revision=revision, source_tree="dirty" if dirty else "clean")
-        except (OSError, subprocess.SubprocessError):
-            manifest.update(source_revision=None, source_tree="unavailable")
+        revision = source_revision(root)
+        manifest.update(source_revision=revision, source_tree="clean")
         data = archive(entries, manifest)
         inspect_archive(data)
         try:
@@ -295,7 +361,17 @@ def build(root: Path, skill: str) -> dict:
     latest = safe_path(root, f"dist/{skill}/skill.zip")
     write_atomic(latest, data, immutable=False)
     write_atomic(safe_path(root, f"dist/{skill}/{manifest['version']}/skill.zip.sha256"), (digest(data) + "  skill.zip\n").encode(), immutable=False)
-    return {"status": "packaged", "skill": skill, "version": manifest["version"], "payload_sha256": manifest["payload_sha256"], "archive_sha256": digest(data), "path": out.relative_to(root).as_posix(), "runtime_acceptance": "not_assessed"}
+    return {"status": "packaged", "skill": skill, "version": manifest["version"], "payload_sha256": manifest["payload_sha256"], "archive_sha256": digest(data), "path": out.relative_to(root).as_posix(), "runtime_acceptance": "not_assessed", "source_tree": "clean"}
+
+
+def build_dev(root: Path, skill: str) -> dict:
+    """Experimental package outside the versioned release path; not distributable."""
+    entries, manifest = payload(root, skill)
+    out = safe_path(root, f"dist/{skill}/dev/skill.zip")
+    data = archive(entries, manifest)
+    inspect_archive(data)
+    write_atomic(out, data, immutable=False)
+    return {"status": "packaged-dev", "skill": skill, "version": manifest["version"], "payload_sha256": manifest["payload_sha256"], "archive_sha256": digest(data), "path": out.relative_to(root).as_posix(), "runtime_acceptance": "not_assessed", "source_tree": "unavailable"}
 
 
 def main() -> int:
@@ -303,9 +379,11 @@ def main() -> int:
     parser.add_argument("skill")
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--versioned", action="store_true", help="Compatibility flag; all releases are now versioned")
+    parser.add_argument("--dev", action="store_true", help="Write an experimental package under dist/<skill>/dev/ (not a release)")
     args = parser.parse_args()
     try:
-        print(json.dumps(build(args.root, args.skill), indent=2))
+        result = build_dev(args.root, args.skill) if args.dev else build(args.root, args.skill)
+        print(json.dumps(result, indent=2))
         return 0
     except (OSError, ValueError, KeyError, zipfile.BadZipFile, yaml.YAMLError) as exc:
         print(f"Packaging blocked: {exc}", file=sys.stderr)

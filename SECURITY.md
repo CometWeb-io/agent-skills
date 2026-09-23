@@ -28,13 +28,16 @@ Security-relevant properties this repo does enforce:
   forbidden filenames. It is fail-closed: a scan that cannot complete blocks the
   release rather than reporting success. Tracked files inside otherwise-transient
   directories (for example a committed `node_modules/` path) are still scanned.
-  CI runs the live-tree scan; `--history` is an operator release check because
-  old commits may still contain synthetic test fixtures that match secret rules.
+  CI runs both the live-tree scan and `--history`. Historical synthetic fixtures
+  may be allowlisted only by exact `(commit, path, rule, blob_sha256)` tuples in
+  `registry/public-safety-allowlist.json` — never by whole directories.
 - **No bypass.** Publication is gated per skill by explicit approval. There is
   no flag that skips the safety scan; attempting one exits non-zero.
 - **Packages are scanned and deterministic.** `tooling/package_skill.py` refuses
   unsafe filenames, path-escaping entries, case-insensitive collisions and
-  oversized inputs before anything is packaged.
+  oversized inputs before anything is packaged. Versioned releases require a
+  **clean Git working tree** pinned to a full commit SHA; experimental builds
+  use `--dev` and never write the immutable release path.
 - **Reproducible CI deps.** `uv.lock` is the source of truth; Validate runs
   `uv sync --frozen` plus `pip-audit` and Bandit (medium+).
 - **Declared vs verified support.** Compatibility cells are host-profile
@@ -43,6 +46,9 @@ Security-relevant properties this repo does enforce:
 - **Local bindings.** Real paths into private locations are never committed;
   tracked files carry placeholders and untracked `*.local.json` / `*.local.txt`
   overlays supply the values.
+- **Branch protection.** `main` is covered by a repository ruleset requiring a
+  pull request, up-to-date `validate` status checks, and blocking force-pushes
+  and branch deletion.
 
 What is explicitly **not** in scope:
 
@@ -52,10 +58,11 @@ What is explicitly **not** in scope:
   handoff; authorization and execution belong to the host.
 - Third-party hosts, marketplaces and connectors that distribute or load these
   skills.
-- **Cryptographic authenticity of release artifacts.** Package SHA-256 digests
-  detect bit-rot and accidental mutation, not a compromised publisher. Sigstore
-  / SLSA provenance for `skill.zip` is planned; until then treat hashes as
-  integrity checks, not authorship proof.
+- **Full cryptographic authenticity of every local package build.** SHA-256
+  digests detect bit-rot and accidental mutation. GitHub/Sigstore attestations
+  for release `skill.zip` artifacts are produced by the `attest-packages`
+  workflow when packages are built in CI; local `--dev` packages are not
+  attested.
 
 ## Reporting something that is not a vulnerability
 

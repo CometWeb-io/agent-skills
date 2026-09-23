@@ -1,0 +1,10 @@
+# Security / supply-chain surfaces — review required once a second
+# maintainer exists and require_code_owner_review is re-enabled on main.
+/.github/       @MaciejZet
+/tooling/       @MaciejZet
+/scripts/       @MaciejZet
+/registry/      @MaciejZet
+/protocol/      @MaciejZet
+
+# Canonical distributed payload
+/skills/        @MaciejZet

@@ -1,0 +1,26 @@
+{
+  "schema": "cometweb.public-safety-allowlist/v1",
+  "allow": [
+    {
+      "commit": "6626bb65beb006a737fff5828a8bfac9ad42d003",
+      "path": "tooling/tests/test_distribution_hardening.py",
+      "rule": "database-credentials",
+      "blob_sha256": "851cd8ad720bf07a0cca2fa485301b1a0e5e065fc850f42941ccbff924de24e2",
+      "reason": "historical synthetic mongodb:// fixture; live tree assembles from fragments"
+    },
+    {
+      "commit": "3d875d52fc62aa96c2ed729ce1f55a15789c3dec",
+      "path": "tooling/tests/test_distribution_hardening.py",
+      "rule": "database-credentials",
+      "blob_sha256": "451201e5b1315eb0d1eda5d350a2c64be8752a25a0dd8ccf0a96c3dbe1f541f4",
+      "reason": "historical synthetic mongodb:// fixture; live tree assembles from fragments"
+    },
+    {
+      "commit": "0e3df61cc1a17666b3e3d10f7102598bd3f81a8e",
+      "path": "tooling/tests/test_distribution_hardening.py",
+      "rule": "database-credentials",
+      "blob_sha256": "73ff28a1b549ca3064acb7bd5bc5949c435f4ed69bb55a8cd6e0ca88f4feef5e",
+      "reason": "historical synthetic mongodb:// fixture; live tree assembles from fragments"
+    }
+  ]
+}

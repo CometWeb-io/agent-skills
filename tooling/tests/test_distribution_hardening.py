@@ -2,6 +2,7 @@
 import io
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -70,6 +71,21 @@ def test_bad_version(root, version):
         package.build(root, "demo")
 
 
+def test_dirty_working_tree_blocks_release_package(root):
+    # Mutate an admitted file without committing so payload succeeds and provenance fails.
+    (root / "skills/demo/LICENSE").write_text("uncommitted license change\n")
+    with pytest.raises(ValueError, match="clean Git working tree"):
+        package.build(root, "demo")
+
+
+def test_dev_package_bypasses_release_provenance(root):
+    result = package.build_dev(root, "demo")
+    assert result["status"] == "packaged-dev"
+    assert (root / result["path"]).is_file()
+    manifest = package.inspect_archive((root / result["path"]).read_bytes())
+    assert "source_revision" not in manifest
+
+
 def test_same_input_is_deterministic_and_idempotent(root):
     first = package.build(root, "demo")
     original = (root / first["path"]).read_bytes()
@@ -79,7 +95,8 @@ def test_same_input_is_deterministic_and_idempotent(root):
     assert (root / first["path"]).read_bytes() == original
     manifest = package.inspect_archive(original)
     assert manifest["runtime_acceptance"] == "not_assessed"
-    assert manifest["source_revision"] is None
+    assert re.fullmatch(r"[0-9a-f]{40}", manifest["source_revision"])
+    assert manifest["source_tree"] == "clean"
     with zipfile.ZipFile(io.BytesIO(original)) as zf:
         assert all(i.date_time == (1980, 1, 1, 0, 0, 0) for i in zf.infolist())
 
@@ -180,7 +197,7 @@ def test_public_approval_expires_on_source_change(root):
 def test_public_private_path_blocks_even_with_approval(root):
     add(root, "README.md", ("personal/" + "gtm-cometweb/fixture.md").encode())
     approve(root)
-    with pytest.raises(subprocess.CalledProcessError):
+    with pytest.raises((subprocess.CalledProcessError, ValueError)):
         public.stage(root, [])
     assert not (root / "dist/public-mirror").exists()
 

@@ -127,6 +127,11 @@ def git(root: Path, *args: str) -> bytes:
     return read_git(root, *args, timeout=30).stdout
 
 
+def source_status(root: Path) -> bytes:
+    """Cheap porcelain fingerprint for mid-pipeline mutation detection."""
+    return git(root, "status", "--porcelain=v2", "--untracked-files=all")
+
+
 def source_state(root: Path) -> dict:
     if Path(os.fsdecode(git(root, "rev-parse", "--show-toplevel")).strip()).resolve() != root:
         raise ValueError("--root must be the full Git working-tree root")
@@ -180,8 +185,13 @@ def junit_counts(path: Path) -> dict:
 
 def run_step(root: Path, command: list[str], log: Path, timeout: int) -> dict:
     started = time.monotonic()
-    environment = os.environ.copy()
-    environment.update(PYTHONDONTWRITEBYTECODE="1", PYTEST_ADDOPTS="")
+    from core.subprocess_env import build_runner_env
+
+    # Trusted checkout only: do not inherit host credentials into repo-owned code.
+    environment = build_runner_env(set())
+    environment.update(PYTHONDONTWRITEBYTECODE="1", PYTEST_ADDOPTS="", PATH=os.environ.get("PATH", ""))
+    if "VIRTUAL_ENV" in os.environ:
+        environment["VIRTUAL_ENV"] = os.environ["VIRTUAL_ENV"]
     # Keep test selection in the command visible; do not inherit PYTEST_ADDOPTS.
     with log.open("xb") as handle:
         try:
@@ -204,6 +214,7 @@ def run(root: Path, output: Path, timeout: int = 300) -> dict:
         raise ValueError("timeout must be an integer between 1 and 1800")
     scope = inventory(root)
     before = source_state(root)
+    before_status = source_status(root)
     required_sources = {*REQUIRED, *(row[1] for row in CHECKS)}
     required_sources.update(f"skills/{sid}/{name}" for sid in scope["skills"] for name in ("SKILL.md", "VERSION", "LICENSE"))
     if not required_sources <= before["files"].keys():
@@ -246,8 +257,8 @@ def run(root: Path, output: Path, timeout: int = 300) -> dict:
             if result["status"] in {"timeout", "execution_error"}:
                 report["status"] = "incomplete"
                 break
-            after = source_state(root)
-            if before != after:
+            # Cheap porcelain check between steps; full hash only at the end.
+            if source_status(root) != before_status:
                 report["status"] = "source_changed"
                 break
         else:
@@ -274,6 +285,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--plan", action="store_true", help="Validate inventory and print commands without running them")
     parser.add_argument("--timeout", type=int, default=300, help="Per-command timeout in seconds (1-1800)")
+    parser.add_argument(
+        "--trusted-checkout",
+        action="store_true",
+        help="Required before executing repository-owned Python/tests (they are not sandboxed)",
+    )
     args = parser.parse_args(argv)
     if not 1 <= args.timeout <= 1800 or (not args.plan and args.output is None):
         parser.error("provide --output for execution and a timeout between 1 and 1800")
@@ -286,6 +302,11 @@ def main(argv: list[str] | None = None) -> int:
             print(encoded({"status": "plan_only", "scope": scope,
                            "commands": commands(scope, Path("<report-directory>"))}).decode(), end="")
             return 0
+        if not args.trusted_checkout:
+            raise ValueError(
+                "Dynamic validation executes repository code. "
+                "Review the checkout and pass --trusted-checkout, or use a sandboxed runner."
+            )
         result = run(root, args.output.absolute(), args.timeout)
         print(json.dumps({"status": result["status"], "report": str(args.output / "report.json")}))
         return 0 if result["status"] == "passed" else 1

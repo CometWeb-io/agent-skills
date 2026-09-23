@@ -32,6 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
 HARNESS = "scripts/run_evals.py"
 BASELINE = ROOT / "registry" / "eval-strength.json"
+POLICY = ROOT / "registry" / "eval-strength-policy.json"
 TIMEOUT = 120
 
 # Guards a harness cannot reach by construction, not ones it fails to cover.
@@ -140,8 +141,12 @@ def table(rows: list[dict]) -> str:
     return "\n".join(out) + "\n"
 
 
-def compare(rows: list[dict], baseline: dict) -> list[str]:
+def compare(rows: list[dict], baseline: dict, policy: dict | None = None) -> list[str]:
     before = {row["id"]: row for row in baseline.get("skills", [])}
+    policy = policy or {}
+    default_floor = float(policy.get("default_min_strength", 0.0))
+    critical = policy.get("critical_skills") or {}
+    allow_unexercised = policy.get("allow_unexercised_scripts") or {}
     problems = []
     for row in rows:
         old = before.get(row["id"])
@@ -152,6 +157,21 @@ def compare(rows: list[dict], baseline: dict) -> list[str]:
             problems.append(
                 f"{row['id']}: held guards fell {old['held']} -> {row['held']} of {row['guards']}. "
                 f"A rule the harness used to pin is now removable without a red case.")
+        minimum = float(critical.get(row["id"], default_floor))
+        strength = row.get("strength")
+        if strength is None and row.get("guards"):
+            strength = round(row["held"] / row["guards"], 3)
+        if strength is not None and strength < minimum:
+            problems.append(
+                f"{row['id']}: strength {strength:.2f} < absolute floor {minimum:.2f}")
+        allowed = set(allow_unexercised.get(row["id"], []))
+        unexpected = [name for name in row.get("unexercised", []) if name not in allowed]
+        if unexpected:
+            problems.append(
+                f"{row['id']}: unexercised scripts without waiver: " + ", ".join(unexpected))
+        for name in sorted(allowed - set(row.get("unexercised", []))):
+            problems.append(
+                f"{row['id']}: waiver lists {name} but the harness now loads it; remove the waiver")
     missing = sorted(set(before) - {row["id"] for row in rows})
     for name in missing:
         problems.append(f"{name}: baseline has it but it ships no {HARNESS} any more")
@@ -186,7 +206,13 @@ def main(argv: list[str] | None = None) -> int:
         if not BASELINE.is_file():
             print(f"FAIL: no baseline at {BASELINE.relative_to(ROOT)}; run --update", file=sys.stderr)
             return 1
-        problems = compare(rows, json.loads(BASELINE.read_text(encoding="utf-8")))
+        policy = {}
+        if POLICY.is_file():
+            policy = json.loads(POLICY.read_text(encoding="utf-8"))
+            if policy.get("schema") != "cometweb.eval-strength-policy/v1":
+                print(f"FAIL: unsupported policy schema in {POLICY.relative_to(ROOT)}", file=sys.stderr)
+                return 1
+        problems = compare(rows, json.loads(BASELINE.read_text(encoding="utf-8")), policy)
         for problem in problems:
             print(f"FAIL: {problem}", file=sys.stderr)
         if problems:

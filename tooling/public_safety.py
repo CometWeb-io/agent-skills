@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import fnmatch
+import hashlib
 import json
 import os
 import re
@@ -13,7 +14,10 @@ import sys
 from pathlib import Path, PurePosixPath
 
 SECRET_RULES = {
-    "api-key": rb"sk-(?:proj-|ant-|live-|test-)?[A-Za-z0-9_-]{24,}",
+    # Classic sk-… keys plus Stripe-like sk_live_ / sk_test_ shapes.
+    # Do not use a bare sk_ wildcard — it false-positives on identifiers like
+    # test_…_sk_requires_….
+    "api-key": rb"sk-(?:proj-|ant-|live-|test-)?[A-Za-z0-9_-]{24,}|sk_(?:live|test|proj|ant)_[A-Za-z0-9]{16,}",
     "github-token": rb"gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,}",
     "slack-token": rb"xox[baprs]-[A-Za-z0-9-]{10,}|hooks\.slack\.com/services/[A-Z0-9]",
     "google-key": rb"AIza[0-9A-Za-z_-]{35}",
@@ -167,6 +171,15 @@ def tracked_files(root: Path) -> set[str] | None:
 def scan(root: Path, *, public: bool = True) -> list[dict]:
     findings = []
     tracked = tracked_files(root)
+    # Nested/export trees inside a Git worktree often have zero tracked paths
+    # (e.g. dist staging). An empty set must not mean "scan nothing".
+    if tracked is not None and not tracked:
+        try:
+            top = Path(_git_read(root, "rev-parse", "--show-toplevel").decode().strip()).resolve()
+            if top != root.resolve():
+                tracked = None
+        except (OSError, ValueError, subprocess.SubprocessError):
+            tracked = None
     count = 0
     total = 0
     for path in files(root, tracked=tracked):
@@ -225,16 +238,52 @@ def _read_blobs_batch(root: Path, oids: list[str]) -> dict[str, bytes]:
     return by_oid
 
 
+def load_history_allowlist(root: Path) -> list[dict]:
+    path = root / "registry" / "public-safety-allowlist.json"
+    if not path.is_file():
+        return []
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if data.get("schema") != "cometweb.public-safety-allowlist/v1":
+        raise ValueError("unsupported public-safety allowlist schema")
+    rows = data.get("allow", [])
+    if not isinstance(rows, list):
+        raise ValueError("allowlist allow[] must be a list")
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ValueError("allowlist entry must be an object")
+        for key in ("commit", "path", "rule", "blob_sha256", "reason"):
+            if not isinstance(row.get(key), str) or not row[key].strip():
+                raise ValueError(f"allowlist entry missing {key}")
+        if not re.fullmatch(r"[0-9a-f]{40}", row["commit"]):
+            raise ValueError("allowlist commit must be a full SHA")
+        if not re.fullmatch(r"[0-9a-f]{64}", row["blob_sha256"]):
+            raise ValueError("allowlist blob_sha256 must be sha256 hex")
+    return rows
+
+
+def finding_allowed(item: dict, blob: bytes, allowlist: list[dict]) -> bool:
+    digest = hashlib.sha256(blob).hexdigest()
+    for row in allowlist:
+        if (row["commit"] == item.get("revision")
+                and row["path"] == item.get("path")
+                and row["rule"] == item.get("rule")
+                and row["blob_sha256"] == digest):
+            return True
+    return False
+
+
 def scan_history(root: Path, *, public: bool = True) -> list[dict]:
     """Scan reachable historical blobs and names, including deleted files; no shell interpolation."""
     if Path(_git_read(root, "rev-parse", "--show-toplevel").decode().strip()).resolve() != root.resolve():
         raise ValueError("--history requires the repository root, not a subdirectory")
 
+    allowlist = load_history_allowlist(root)
     findings: list[dict] = []
     blob_paths: dict[str, set[str]] = {}
     first_revision: dict[tuple[str, str], str] = {}
     file_count = 0
     total_bytes = 0
+    blob_cache: dict[str, bytes] = {}
 
     for commit in _git_read(root, "rev-list", "--all", timeout=120).decode().splitlines():
         for entry in _git_read(root, "ls-tree", "-rz", commit, timeout=120).split(b"\0"):
@@ -260,13 +309,17 @@ def scan_history(root: Path, *, public: bool = True) -> list[dict]:
     for index in range(0, len(unique_oids), chunk_size):
         chunk = unique_oids[index:index + chunk_size]
         blobs = _read_blobs_batch(root, chunk)
+        blob_cache.update(blobs)
         for oid, blob in blobs.items():
             total_bytes += len(blob)
             if total_bytes > MAX_TOTAL_BYTES:
                 raise ValueError("history aggregate scan budget exceeded")
             for path_name in sorted(blob_paths[oid]):
                 for item in check_blob(path_name, blob, public=public):
-                    findings.append({**item, "revision": first_revision[(oid, path_name)]})
+                    finding = {**item, "revision": first_revision[(oid, path_name)]}
+                    if finding_allowed(finding, blob, allowlist):
+                        continue
+                    findings.append(finding)
     return findings
 
 

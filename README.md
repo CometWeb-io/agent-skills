@@ -127,7 +127,7 @@ replaced by the marketplace layer.
 ```bash
 uv sync --group dev
 uv run pytest
-uv run python tooling/validate_local.py
+uv run python tooling/validate_local.py --trusted-checkout --output ../agent-skills-validation --timeout 900
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [security reporting](SECURITY.md), and the [documentation index](docs/README.md). Maintainers can inspect [context budgets](docs/generated-context-budget.md) and [eval strength](docs/generated-eval-strength.md).

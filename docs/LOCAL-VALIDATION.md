@@ -16,7 +16,7 @@ python3 tooling/validate_local.py --plan
 W środowisku zsynchronizowanym przez `uv sync --group dev`:
 
 ```bash
-python3 tooling/validate_local.py --output ../cometweb-validation-2026-09-13
+python3 tooling/validate_local.py --trusted-checkout --output ../cometweb-validation-2026-09-13
 ```
 
 Katalog wyniku musi być nowy, poza checkoutem, w istniejącym katalogu nadrzędnym.

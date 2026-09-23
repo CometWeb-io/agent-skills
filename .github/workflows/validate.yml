@@ -21,6 +21,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       - name: Install uv
         uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
@@ -44,6 +45,7 @@ jobs:
         run: |
           uv run python tooling/validate_repo.py
           uv run python tooling/sync_orchestrator.py --check
+          uv run python tooling/sync_roaster_shared.py --check
 
       - name: Host compatibility
         run: uv run python tooling/compatibility.py
@@ -83,8 +85,11 @@ jobs:
               raise SystemExit("FAIL: pending accepted under --final")
           '
 
-      - name: Public safety scan
+      - name: Public safety scan — live tree
         run: uv run python tooling/public_safety.py --root .
+
+      - name: Public safety scan — complete history
+        run: uv run python tooling/public_safety.py --root . --history
 
       - name: Compile Python modules
         run: |

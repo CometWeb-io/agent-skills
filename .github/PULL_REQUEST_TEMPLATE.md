@@ -9,7 +9,7 @@
 ## Checks
 
 ```
-python3 tooling/validate_local.py --output .validation --timeout 900
+python3 tooling/validate_local.py --trusted-checkout --output .validation --timeout 900
 ```
 
 - [ ] `report.json` says `passed` (every check green, nothing skipped)

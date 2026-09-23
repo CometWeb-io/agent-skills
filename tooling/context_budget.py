@@ -32,6 +32,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 BASELINE = ROOT / "registry" / "context-baseline.json"
+HOST_BUDGET = ROOT / "registry" / "context-host-budget.json"
 BYTES_PER_TOKEN = 4
 
 
@@ -81,10 +82,8 @@ def load_baseline() -> dict[str, Any] | None:
 def compare(current: dict[str, Any], baseline: dict[str, Any], tolerance: float) -> list[str]:
     """Report unexplained growth against the recorded baseline.
 
-    The gate is deliberately about change, not an absolute ceiling: the right
-    ceiling depends on the host, and inventing one here would assert something
-    this repository cannot evidence. Growth, by contrast, is always a decision
-    someone made and should be able to state.
+    Growth is always a decision someone made. Absolute host ceilings are checked
+    separately via enforce_host_budgets().
     """
     was = {r["id"]: r for r in baseline.get("skills", [])}
     problems: list[str] = []
@@ -105,6 +104,34 @@ def compare(current: dict[str, Any], baseline: dict[str, Any], tolerance: float)
             )
     for missing in sorted(set(was) - {r["id"] for r in current["skills"]}):
         problems.append(f"{missing}: in the baseline but no longer on disk; run --update")
+    return problems
+
+
+def load_host_budgets() -> dict[str, Any] | None:
+    if not HOST_BUDGET.is_file():
+        return None
+    data = json.loads(HOST_BUDGET.read_text(encoding="utf-8"))
+    if data.get("schema") != "cometweb.context-host-budget/v1":
+        raise ValueError("unsupported context-host-budget schema")
+    return data
+
+
+def enforce_host_budgets(report: dict[str, Any], policy: dict[str, Any]) -> list[str]:
+    problems: list[str] = []
+    hosts = policy.get("hosts") or {}
+    for host_name, host in hosts.items():
+        limit = host.get("frontdoor_budget_bytes")
+        if limit is None:
+            continue
+        if type(limit) is not int or limit < 1:
+            problems.append(f"{host_name}: invalid frontdoor_budget_bytes")
+            continue
+        for row in report["skills"]:
+            if row["front_door_bytes"] > limit:
+                problems.append(
+                    f"{row['id']}@{host_name}: front door "
+                    f"{row['front_door_bytes']} > host limit {limit}"
+                )
     return problems
 
 
@@ -169,6 +196,13 @@ def main(argv: list[str] | None = None) -> int:
             print("FAIL: no context baseline; run tooling/context_budget.py --update", file=sys.stderr)
             return 1
         problems = compare(report, baseline, args.tolerance)
+        try:
+            host_policy = load_host_budgets()
+        except ValueError as exc:
+            print(f"FAIL: {exc}", file=sys.stderr)
+            return 1
+        if host_policy:
+            problems.extend(enforce_host_budgets(report, host_policy))
         if problems:
             for problem in problems:
                 print(f"FAIL: {problem}", file=sys.stderr)

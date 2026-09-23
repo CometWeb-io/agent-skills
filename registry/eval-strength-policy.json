@@ -1,0 +1,17 @@
+{
+  "schema": "cometweb.eval-strength-policy/v1",
+  "default_min_strength": 0.5,
+  "critical_skills": {
+    "portfolio-operator": 0.9,
+    "product-operator": 0.25,
+    "rubric-designer": 0.9,
+    "skill-auditor": 0.9
+  },
+  "allow_unexercised_scripts": {
+    "product-operator": [
+      "prepare_brief.py",
+      "self_check.py"
+    ]
+  },
+  "note": "Absolute floors ratchet quality; raise critical floors as harnesses improve. Unexercised allowlists are per-script, not blanket minima cuts."
+}
