@@ -21,8 +21,12 @@ Thanks for improving CometWeb Agent Skills. This repo optimizes for
 ## Setup
 
 ```bash
-python3 -m pip install -r requirements-dev.txt
+uv sync --group dev
 ```
+
+Requires [uv](https://docs.astral.sh/uv/) and Python 3.12+. The lockfile is
+`uv.lock` (committed). Do not hand-edit it — change dependencies in
+`pyproject.toml`, then run `uv lock` and commit both files.
 
 ## Before a PR
 

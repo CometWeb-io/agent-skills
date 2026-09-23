@@ -1,0 +1,4 @@
+# Bandit baseline for CometWeb agent-skills tooling.
+# Low-severity assert/subprocess findings are tracked; CI fails on medium+.
+skips:
+  - B101

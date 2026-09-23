@@ -27,6 +27,9 @@ def _pattern(pattern: str):
     # Never casefold regex source: \\S/\\s, \\D/\\d and \\B/\\b are different operators.
     normalized = unicodedata.normalize("NFKD", pattern).replace("ł", "l").replace("Ł", "L")
     normalized = "".join(c for c in normalized if not unicodedata.combining(c))
+    # Reject nested quantifiers that enable catastrophic backtracking on user prompts.
+    if re.search(r"(?:\([^)]*[+*][^)]*\)|[+*])[+*{]", normalized):
+        raise ValueError("unsafe nested quantifier in routing pattern")
     try:
         return re.compile(normalized, re.IGNORECASE)
     except re.error as exc:

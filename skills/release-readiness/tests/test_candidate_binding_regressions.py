@@ -397,9 +397,13 @@ def test_output_symlink_is_rejected(tmp_path, ancestor):
     target = tmp_path/"real"; target.mkdir()
     link = tmp_path/"link"
     if ancestor:
+        # Parent-directory symlinks (including macOS /var) are allowed; only the
+        # leaf output path itself must not be a symlink.
         link.symlink_to(target, target_is_directory=True); out = link/"out.json"
-    else:
-        link.symlink_to(target/"out.json"); out = link
+        engine.write_output(out, '{}')
+        assert (target/"out.json").is_file()
+        return
+    link.symlink_to(target/"out.json"); out = link
     with pytest.raises(engine.ManifestError): engine.write_output(out, '{}')
     assert not (target/"out.json").exists()
 

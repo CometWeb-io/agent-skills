@@ -90,6 +90,8 @@ def test_suite_has_16_real_prompts_but_no_claimed_model_runs():
     proc=subprocess.run([sys.executable,str(TOOLS/"run_model_evals.py")],capture_output=True,text=True,check=True)
     record=json.loads(proc.stdout)
     assert record["status"] == "not_run" and record["model_calls"] == 0
+    assert record["evidence_kind"] == "model_eval"
+    assert record["runtime_acceptance"] == "not_assessed"
 
 
 def test_api_adapter_is_stateless_and_does_not_enable_tools():

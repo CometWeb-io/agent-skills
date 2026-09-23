@@ -58,7 +58,8 @@ def parse_frontmatter(path: Path) -> dict:
     match = FRONTMATTER_RE.match(path.read_text(encoding="utf-8"))
     if not match:
         raise ValueError(f"missing YAML frontmatter: {path}")
-    data = yaml.load(match.group(1), Loader=UniqueLoader)
+    # UniqueLoader subclasses yaml.SafeLoader; duplicate keys are rejected.
+    data = yaml.load(match.group(1), Loader=UniqueLoader)  # nosec B506
     if not isinstance(data, dict):
         raise ValueError("frontmatter must be a mapping")
     name, desc = data.get("name"), data.get("description")
@@ -89,8 +90,11 @@ def compute_support(entry: dict, host: dict, *, format_ok: bool) -> dict[str, ob
     """
     if not format_ok:
         return {
+            "format_support": "UNSUPPORTED",
             "format": "UNSUPPORTED",
+            "declared_runtime_support": "UNSUPPORTED",
             "runtime": "UNSUPPORTED",
+            "verified_runtime_acceptance": "NOT_TESTED",
             "missing_required": [],
             "missing_optional": [],
         }
@@ -109,8 +113,11 @@ def compute_support(entry: dict, host: dict, *, format_ok: bool) -> dict[str, ob
         runtime = "FULL"
 
     return {
+        "format_support": "FULL",
         "format": "FULL",
+        "declared_runtime_support": runtime,
         "runtime": runtime,
+        "verified_runtime_acceptance": "NOT_TESTED",
         "missing_required": missing_required,
         "missing_optional": missing_optional,
     }

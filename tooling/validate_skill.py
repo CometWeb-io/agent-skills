@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import argparse
-import re
 import sys
 from pathlib import Path
 
-FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
+from compatibility import parse_frontmatter as _parse_frontmatter
 
 
 def fail(msg: str) -> None:
@@ -15,34 +14,11 @@ def fail(msg: str) -> None:
     raise SystemExit(1)
 
 
-def parse_frontmatter(path: Path) -> dict[str, str]:
-    text = path.read_text(encoding="utf-8")
-    match = FRONTMATTER_RE.match(text)
-    if not match:
-        fail(f"missing YAML frontmatter: {path}")
-    block = match.group(1)
-    result: dict[str, str] = {}
-    key: str | None = None
-    buf: list[str] = []
-    for line in block.splitlines():
-        if line.startswith("  ") and key:
-            buf.append(line.strip())
-            continue
-        if key:
-            result[key] = " ".join(buf).strip()
-            buf = []
-        if ":" in line:
-            key, val = line.split(":", 1)
-            key = key.strip()
-            val = val.strip()
-            if val in (">", ">-", "|"):
-                buf = []
-            else:
-                result[key] = val.strip('"').strip("'")
-                key = None
-    if key:
-        result[key] = " ".join(buf).strip()
-    return result
+def parse_frontmatter(path: Path) -> dict:
+    try:
+        return _parse_frontmatter(path)
+    except ValueError as exc:
+        fail(str(exc))
 
 
 def main() -> None:

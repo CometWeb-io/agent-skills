@@ -16,48 +16,59 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
-
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7
         with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: pip install -r requirements-dev.txt
+      - name: Sync locked dependencies
+        run: uv sync --frozen --group dev
 
       - name: Lint
-        run: python3 -m ruff check .
+        run: uv run ruff check .
+
+      - name: Dependency vulnerability audit
+        run: uv run pip-audit
+
+      - name: Python security static analysis
+        run: uv run bandit -c .bandit -q -ll -r tooling skills -x '*/tests/*'
 
       - name: Registry and repo integrity
         run: |
-          python3 tooling/validate_repo.py
-          python3 tooling/sync_orchestrator.py --check
+          uv run python tooling/validate_repo.py
+          uv run python tooling/sync_orchestrator.py --check
 
       - name: Host compatibility
-        run: python3 tooling/compatibility.py
+        run: uv run python tooling/compatibility.py
 
       - name: Generated adapters check
-        run: python3 tooling/generate_adapters.py --check
+        run: uv run python tooling/generate_adapters.py --check
 
       - name: Context budget
-        run: python3 tooling/context_budget.py --check
+        run: uv run python tooling/context_budget.py --check
 
       - name: Routing evals
-        run: python3 tooling/run_routing_evals.py
+        run: uv run python tooling/run_routing_evals.py
 
       - name: Eval strength
-        run: python3 tooling/eval_strength.py --check
+        run: uv run python tooling/eval_strength.py --check
 
       - name: Behavior fixtures
         run: |
-          python3 tooling/run_behavior_evals.py
-          python3 tooling/run_blind_eval_harness.py --write-report
+          uv run python tooling/run_behavior_evals.py
+          uv run python tooling/run_blind_eval_harness.py --write-report
 
       - name: CW-AIP envelope validator
         run: |
-          python3 tooling/validate_envelope.py fixtures/cwaip-v2/evidence-final.json --final
-          python3 -c '
+          uv run python tooling/validate_envelope.py fixtures/cwaip-v2/evidence-final.json --final
+          uv run python -c '
           import json, sys
           from pathlib import Path
           sys.path.insert(0, "tooling")
@@ -73,15 +84,11 @@ jobs:
           '
 
       - name: Public safety scan
-        run: python3 tooling/public_safety.py --root .
+        run: uv run python tooling/public_safety.py --root .
 
       - name: Compile Python modules
         run: |
-          find skills tooling -name '*.py' -print0 | xargs -0 python3 -m py_compile
+          find skills tooling -name '*.py' -print0 | xargs -0 uv run python -m py_compile
 
       - name: Unit tests
-        run: |
-          if ! command -v python >/dev/null; then
-            sudo ln -sf "$(command -v python3)" /usr/local/bin/python
-          fi
-          python3 -m pytest -q tooling/tests skills/*/tests
+        run: uv run pytest -q tooling/tests skills/*/tests

@@ -38,8 +38,8 @@ def main() -> int:
     try:
         body = build_request(json.load(sys.stdin), model)
         request = urllib.request.Request(ENDPOINT, data=json.dumps(body).encode(), headers={"Content-Type":"application/json", "Authorization":"Bearer " + key}, method="POST")
-        # No retries: avoid duplicate charges and preserve the first failure as evidence.
-        with urllib.request.urlopen(request, timeout=90) as response:
+        # Constant HTTPS endpoint only; Request target is not user-controlled.
+        with urllib.request.urlopen(request, timeout=90) as response:  # nosec B310
             data = json.loads(response.read(4 * 1024 * 1024 + 1))
         print(json.dumps(convert_response(data), ensure_ascii=False))
         return 0

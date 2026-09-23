@@ -125,9 +125,9 @@ replaced by the marketplace layer.
 ## Contribute
 
 ```bash
-python3 -m pip install -r requirements-dev.txt
-python3 -m pytest
-python3 tooling/validate_local.py
+uv sync --group dev
+uv run pytest
+uv run python tooling/validate_local.py
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [security reporting](SECURITY.md), and the [documentation index](docs/README.md). Maintainers can inspect [context budgets](docs/generated-context-budget.md) and [eval strength](docs/generated-eval-strength.md).

@@ -39,7 +39,8 @@ CHECKS = (
 MODULE_CHECKS = (
     ("lint", ("ruff", "check", ".")),
 )
-REQUIRED = ("plugin.json", ".agents/plugins/marketplace.json", "registry/skills.json", "registry/hosts.json", "requirements-dev.txt",
+REQUIRED = ("plugin.json", ".agents/plugins/marketplace.json", "registry/skills.json", "registry/hosts.json",
+            "pyproject.toml", "uv.lock",
             "fixtures/cwaip-v2/evidence-final.json", "tooling/validate_local.py")
 MAX_FILE = 32 * 1024 * 1024
 
@@ -83,7 +84,7 @@ def require_module_tools() -> None:
         if importlib.util.find_spec(module) is None:
             raise ValueError(
                 f"{name} gate needs the {module!r} package: "
-                f"pip install -r requirements-dev.txt"
+                f"uv sync --group dev"
             )
 
 
@@ -121,8 +122,9 @@ def inventory(root: Path) -> dict:
 
 
 def git(root: Path, *args: str) -> bytes:
-    return subprocess.run(["git", "-C", str(root), *args], check=True, capture_output=True,
-                          stdin=subprocess.DEVNULL, timeout=30).stdout
+    from core.git import read_git
+
+    return read_git(root, *args, timeout=30).stdout
 
 
 def source_state(root: Path) -> dict:
@@ -165,7 +167,8 @@ def junit_counts(path: Path) -> dict:
         blob = handle.read(MAX_FILE + 1)
     if len(blob) > MAX_FILE or b"<!DOCTYPE" in blob.upper() or b"<!ENTITY" in blob.upper():
         raise ValueError("unsupported or oversized JUnit")
-    root = ET.fromstring(blob)
+    # Local pytest JUnit only; DOCTYPE/ENTITY already rejected above.
+    root = ET.fromstring(blob)  # nosec B314
     if root.tag not in {"testsuite", "testsuites"}:
         raise ValueError("invalid JUnit root")
     cases = list(root.iter("testcase"))
@@ -194,10 +197,9 @@ def run_step(root: Path, command: list[str], log: Path, timeout: int) -> dict:
 
 
 def run(root: Path, output: Path, timeout: int = 300) -> dict:
-    root = root.absolute()
-    if any(p.is_symlink() for p in (root, *root.parents)):
-        raise ValueError("checkout path contains a symlink")
-    root = root.resolve()
+    from core.paths import canonical_input, canonical_output
+
+    root = canonical_input(root)
     if type(timeout) is not int or not 1 <= timeout <= 1800:
         raise ValueError("timeout must be an integer between 1 and 1800")
     scope = inventory(root)
@@ -206,9 +208,10 @@ def run(root: Path, output: Path, timeout: int = 300) -> dict:
     required_sources.update(f"skills/{sid}/{name}" for sid in scope["skills"] for name in ("SKILL.md", "VERSION", "LICENSE"))
     if not required_sources <= before["files"].keys():
         raise ValueError("required source file is ignored and not captured in the fingerprint")
-    if output.resolve().is_relative_to(root) or output.exists() or output.is_symlink():
+    output = canonical_output(output)
+    if output.resolve().is_relative_to(root) or output.exists():
         raise ValueError("output must be a new directory outside the checkout")
-    if not output.parent.is_dir() or any(p.is_symlink() for p in (output.parent, *output.parents)):
+    if not output.parent.is_dir():
         raise ValueError("output parent must exist without symlink ancestors")
     output.mkdir(mode=0o700)
     report = {"schema": "cometweb.local-validation/v1", "status": "running",
@@ -275,10 +278,9 @@ def main(argv: list[str] | None = None) -> int:
     if not 1 <= args.timeout <= 1800 or (not args.plan and args.output is None):
         parser.error("provide --output for execution and a timeout between 1 and 1800")
     try:
-        root = args.root.absolute()
-        if any(p.is_symlink() for p in (root, *root.parents)):
-            raise ValueError("checkout path contains a symlink")
-        root = root.resolve()
+        from core.paths import canonical_input
+
+        root = canonical_input(args.root)
         if args.plan:
             scope = inventory(root)
             print(encoded({"status": "plan_only", "scope": scope,

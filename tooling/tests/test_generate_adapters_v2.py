@@ -73,6 +73,35 @@ def test_openai_yaml_includes_existing_icon_asset(tmp_path: Path):
     assert "icon_large: ./assets/icon.svg" in text
 
 
+def test_generator_preserves_non_managed_openai_metadata(tmp_path: Path):
+    gen = load_generator()
+    skill_dir = tmp_path / "example"
+    skill_dir.mkdir()
+    previous = """
+interface:
+  brand_color: "#123456"
+dependencies:
+  tools:
+    - type: mcp
+      value: github
+custom:
+  retained: true
+"""
+    entry = {
+        "id": "example",
+        "description": "Use when a sufficiently long example description is needed for adapter testing and validation behavior.",
+        "owns": ["example"],
+        "explicit_only": False,
+    }
+    import yaml
+
+    data = yaml.safe_load(gen.render_openai_yaml(entry, previous, skill_dir=skill_dir))
+    assert data["dependencies"]["tools"][0]["value"] == "github"
+    assert data["custom"]["retained"] is True
+    assert data["interface"]["brand_color"] == "#123456"
+    assert "icon_small" not in data["interface"]
+
+
 def test_expected_artifacts_include_compatibility_matrix():
     gen = load_generator()
     data = json.loads((ROOT / "registry" / "skills.json").read_text(encoding="utf-8"))

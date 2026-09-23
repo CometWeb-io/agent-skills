@@ -7,11 +7,12 @@ import re
 import sys
 from pathlib import Path
 
+from compatibility import parse_frontmatter as _parse_frontmatter
+
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "registry" / "skills.json"
 HOSTS = ROOT / "registry" / "hosts.json"
 SKILLS = ROOT / "skills"
-FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
 
 
 def fail(msg: str) -> None:
@@ -19,34 +20,11 @@ def fail(msg: str) -> None:
     raise SystemExit(1)
 
 
-def parse_frontmatter(path: Path) -> dict[str, str]:
-    text = path.read_text(encoding="utf-8")
-    match = FRONTMATTER_RE.match(text)
-    if not match:
-        fail(f"missing YAML frontmatter: {path}")
-    block = match.group(1)
-    result: dict[str, str] = {}
-    key: str | None = None
-    buf: list[str] = []
-    for line in block.splitlines():
-        if line.startswith("  ") and key:
-            buf.append(line.strip())
-            continue
-        if key:
-            result[key] = " ".join(buf).strip()
-            buf = []
-        if ":" in line:
-            key, val = line.split(":", 1)
-            key = key.strip()
-            val = val.strip()
-            if val in (">", ">-", "|"):
-                buf = []
-            else:
-                result[key] = val.strip('"').strip("'")
-                key = None
-    if key:
-        result[key] = " ".join(buf).strip()
-    return result
+def parse_frontmatter(path: Path) -> dict:
+    try:
+        return _parse_frontmatter(path)
+    except ValueError as exc:
+        fail(f"{path.relative_to(ROOT)}: {exc}")
 
 
 def load_json(path: Path) -> dict:
@@ -138,8 +116,12 @@ def main() -> None:
         for ref in re.findall(r"\(([^)]+\.(?:md|json|py|yaml|yml|svg))\)", skill_md):
             if ref.startswith("http") or ref.startswith("../../protocol"):
                 continue
-            target = (skill_dir / ref).resolve()
-            if not str(target).startswith(str(skill_dir.resolve())):
+            skill_root = skill_dir.resolve()
+            try:
+                target = (skill_dir / ref).resolve()
+            except OSError:
+                fail(f"{sid}: broken relative ref {ref}")
+            if not target.is_relative_to(skill_root):
                 continue
             if not target.exists():
                 fail(f"{sid}: broken relative ref {ref}")

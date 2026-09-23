@@ -26,12 +26,20 @@ Security-relevant properties this repo does enforce:
 - **Leak gate.** `tooling/public_safety.py` scans tracked files, and with
   `--history` every reachable commit, for secrets, private filesystem paths and
   forbidden filenames. It is fail-closed: a scan that cannot complete blocks the
-  release rather than reporting success.
+  release rather than reporting success. Tracked files inside otherwise-transient
+  directories (for example a committed `node_modules/` path) are still scanned.
+  CI runs the live-tree scan; `--history` is an operator release check because
+  old commits may still contain synthetic test fixtures that match secret rules.
 - **No bypass.** Publication is gated per skill by explicit approval. There is
   no flag that skips the safety scan; attempting one exits non-zero.
 - **Packages are scanned and deterministic.** `tooling/package_skill.py` refuses
   unsafe filenames, path-escaping entries, case-insensitive collisions and
   oversized inputs before anything is packaged.
+- **Reproducible CI deps.** `uv.lock` is the source of truth; Validate runs
+  `uv sync --frozen` plus `pip-audit` and Bandit (medium+).
+- **Declared vs verified support.** Compatibility cells are host-profile
+  declarations. `verified_runtime_acceptance` stays `not_assessed` until an
+  explicit host/model eval records otherwise.
 - **Local bindings.** Real paths into private locations are never committed;
   tracked files carry placeholders and untracked `*.local.json` / `*.local.txt`
   overlays supply the values.
@@ -44,6 +52,10 @@ What is explicitly **not** in scope:
   handoff; authorization and execution belong to the host.
 - Third-party hosts, marketplaces and connectors that distribute or load these
   skills.
+- **Cryptographic authenticity of release artifacts.** Package SHA-256 digests
+  detect bit-rot and accidental mutation, not a compromised publisher. Sigstore
+  / SLSA provenance for `skill.zip` is planned; until then treat hashes as
+  integrity checks, not authorship proof.
 
 ## Reporting something that is not a vulnerability
 

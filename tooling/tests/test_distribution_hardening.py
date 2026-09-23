@@ -218,7 +218,13 @@ def test_scan_includes_untracked_and_hidden_files(tmp_path, name):
     assert any(f["rule"] == "forbidden-name" for f in safety.scan(tmp_path))
 
 
-@pytest.mark.parametrize("secret", [b"ghp_" + b"A" * 36, b"sk-proj-" + b"A" * 40, b"Bearer " + b"Z" * 32, b"mongodb://user:password@example.invalid/db", b"-----BEGIN " + b"PRIVATE KEY-----"])
+@pytest.mark.parametrize("secret", [
+    b"ghp_" + b"A" * 36,
+    b"sk-proj-" + b"A" * 40,
+    b"Bearer " + b"Z" * 32,
+    b"mongodb" + b"://user:password@example.invalid/db",
+    b"-----BEGIN " + b"PRIVATE KEY-----",
+])
 def test_scan_detects_binary_secrets_without_echo(tmp_path, secret):
     (tmp_path / "binary.bin").write_bytes(b"\0\xff" + secret + b"\0")
     findings = safety.scan(tmp_path)
@@ -241,6 +247,22 @@ def test_scanner_rejects_special_files(tmp_path):
     os.mkfifo(tmp_path / "pipe")
     with pytest.raises(ValueError, match="special"):
         safety.scan(tmp_path)
+
+
+def test_scan_includes_tracked_files_inside_transient_dirs(tmp_path):
+    def git(*args):
+        subprocess.run(["git", "-C", str(tmp_path), *args], check=True, capture_output=True)
+
+    git("init")
+    git("config", "user.email", "fixture@example.invalid")
+    git("config", "user.name", "Fixture")
+    tracked = tmp_path / "node_modules" / "pkg" / "leak.txt"
+    tracked.parent.mkdir(parents=True)
+    tracked.write_bytes(b"sk-proj-" + b"A" * 40)
+    git("add", "-f", "node_modules/pkg/leak.txt")
+    git("commit", "-m", "tracked transient")
+    findings = safety.scan(tmp_path)
+    assert any(item["rule"] == "api-key" and "node_modules" in item["path"] for item in findings)
 
 
 def test_history_detects_deleted_files(tmp_path):

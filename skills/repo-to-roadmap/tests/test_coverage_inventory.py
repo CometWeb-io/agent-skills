@@ -366,14 +366,25 @@ def test_cli_end_to_end_and_no_overwrite(checkout, tmp_path):
     assert run("audit", "--inventory", inventory, "--ledger", ledger).returncode == 2
 
 
-def test_output_rejects_symlink_parent(tmp_path):
+def test_output_allows_symlink_parent(tmp_path):
+    """Parent symlinks must not block output (macOS /var-style ancestry)."""
     actual = tmp_path / "actual"
     actual.mkdir()
     alias = tmp_path / "alias"
     alias.symlink_to(actual, target_is_directory=True)
+    m.output_json({"x": 1}, alias / "ok.json")
+    assert (actual / "ok.json").is_file()
+
+
+def test_output_rejects_symlink_leaf(tmp_path):
+    actual = tmp_path / "actual"
+    actual.mkdir()
+    target = actual / "ok.json"
+    target.write_text("{}")
+    link = tmp_path / "alias.json"
+    link.symlink_to(target)
     with pytest.raises(m.InventoryError):
-        m.output_json({"x": 1}, alias / "must-not-appear.json")
-    assert not (actual / "must-not-appear.json").exists()
+        m.output_json({"x": 1}, link)
 
 
 def test_future_inventory_timestamp_rejected(inv):

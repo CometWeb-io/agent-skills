@@ -1,12 +1,23 @@
 """Lossless host-metadata merge: registry-owned fields win; extensions are never silently dropped."""
 from __future__ import annotations
+
 from copy import deepcopy
+
 import yaml
 from compatibility import UniqueLoader
 
+MANAGED_INTERFACE_KEYS = frozenset({
+    "display_name",
+    "short_description",
+    "default_prompt",
+    "icon_small",
+    "icon_large",
+})
+
 
 def merge_openai(entry: dict, existing: str | None, interface: dict) -> str:
-    old = yaml.load(existing, Loader=UniqueLoader) if existing else {}
+    # UniqueLoader subclasses yaml.SafeLoader; duplicate keys are rejected.
+    old = yaml.load(existing, Loader=UniqueLoader) if existing else {}  # nosec B506
     if old is None:
         old = {}
     if not isinstance(old, dict):
@@ -15,7 +26,10 @@ def merge_openai(entry: dict, existing: str | None, interface: dict) -> str:
     for key in ("interface", "policy", "dependencies"):
         if key in data and not isinstance(data[key], dict):
             raise ValueError(f"openai.yaml {key} must be a mapping")
-    data.setdefault("interface", {}).update(interface)
+    managed = data.setdefault("interface", {})
+    for key in MANAGED_INTERFACE_KEYS:
+        managed.pop(key, None)
+    managed.update(interface)
     policy = data.setdefault("policy", {})
     policy.setdefault("products", ["chatgpt", "codex", "api", "atlas"])
     policy["allow_implicit_invocation"] = not bool(entry.get("explicit_only"))
@@ -23,7 +37,13 @@ def merge_openai(entry: dict, existing: str | None, interface: dict) -> str:
         data.setdefault("dependencies", {})["tools"] = deepcopy(entry["tool_dependencies"])
     if "dependencies" in data:
         tools = data["dependencies"].get("tools", [])
-        if not isinstance(tools, list) or any(not isinstance(t, dict) or t.get("type") != "mcp" or not isinstance(t.get("value"), str) or not t["value"] for t in tools):
+        if not isinstance(tools, list) or any(
+            not isinstance(t, dict)
+            or t.get("type") != "mcp"
+            or not isinstance(t.get("value"), str)
+            or not t["value"]
+            for t in tools
+        ):
             raise ValueError("invalid MCP dependency metadata")
     if old == data and existing is not None:
         return existing  # avoid format-only churn; semantic changes are still checked

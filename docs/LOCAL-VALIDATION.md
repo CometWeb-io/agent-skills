@@ -13,7 +13,7 @@ Najpierw sprawdź pełność checkoutu i plan poleceń, bez ich wykonania:
 python3 tooling/validate_local.py --plan
 ```
 
-W środowisku z zainstalowanymi zależnościami z `requirements-dev.txt`:
+W środowisku zsynchronizowanym przez `uv sync --group dev`:
 
 ```bash
 python3 tooling/validate_local.py --output ../cometweb-validation-2026-09-13

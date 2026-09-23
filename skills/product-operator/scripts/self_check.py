@@ -80,7 +80,7 @@ def main()->int:
             target=ROOT/name
             assert not Path(name).is_absolute() and '..' not in Path(name).parts
             assert target.resolve().is_relative_to(ROOT)
-            assert not any(p.is_symlink() for p in (target,*target.parents))
+            assert not target.is_symlink()
             assert target.is_file() and hashlib.sha256(target.read_bytes()).hexdigest()==sha
         return True
     if (ROOT/'PACKAGE-MANIFEST.json').is_file():

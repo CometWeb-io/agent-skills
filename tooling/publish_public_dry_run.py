@@ -18,10 +18,24 @@ def approvals(root: Path) -> tuple[list[dict], str]:
         raise ValueError("invalid public allowlist")
     seen = set()
     for item in data["approved"]:
-        identifier(item["id"])
-        if item["id"] in seen or not re.fullmatch(r"[a-f0-9]{64}", str(item.get("payload_sha256", ""))) or not isinstance(item.get("version"), str):
+        if not isinstance(item, dict):
+            raise ValueError("approval entry must be an object")
+        unknown = set(item) - {"id", "version", "payload_sha256"}
+        if unknown:
+            raise ValueError("unknown approval field")
+        sid = item.get("id")
+        version = item.get("version")
+        payload_hash = item.get("payload_sha256")
+        if not isinstance(sid, str):
+            raise ValueError("invalid approval id")
+        identifier(sid)
+        if not isinstance(version, str):
+            raise ValueError("invalid approval version")
+        if not isinstance(payload_hash, str) or not re.fullmatch(r"[a-f0-9]{64}", payload_hash):
+            raise ValueError("invalid approval hash")
+        if sid in seen:
             raise ValueError("duplicate or malformed approval")
-        seen.add(item["id"])
+        seen.add(sid)
     return data["approved"], digest(canonical(data))
 
 

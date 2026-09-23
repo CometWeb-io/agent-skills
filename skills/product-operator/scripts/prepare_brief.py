@@ -196,9 +196,11 @@ def artifacts(result: dict, *, language: str='pl') -> dict[str, bytes]:
 
 def publish(files: dict[str,bytes], output: Path) -> None:
     """Only a fresh local directory; do not overwrite snapshots or the source skill."""
-    output=output.absolute()
-    if not output.parent.is_dir() or any(p.is_symlink() for p in (output,*output.parents)):
-        raise kernel.InputError('output parent must exist and may not contain symlinks')
+    output=output.expanduser().absolute()
+    if output.exists() and output.is_symlink():
+        raise kernel.InputError('output itself must not be a symlink')
+    if not output.parent.is_dir():
+        raise kernel.InputError('output parent must exist')
     if output.resolve().is_relative_to(SKILL_ROOT):
         raise kernel.InputError('output must be outside the installed skill')
     if any(Path(n).name!=n or n in {'.','..'} for n in files):
@@ -217,8 +219,9 @@ def publish(files: dict[str,bytes], output: Path) -> None:
 
 
 def read(path: Path) -> dict:
-    if any(p.is_symlink() for p in (path,*path.parents)) or not path.is_file():
-        raise kernel.InputError('input must be a regular local file without symlinks')
+    path = path.expanduser().absolute()
+    if path.is_symlink() or not path.is_file():
+        raise kernel.InputError('input must be a regular local file without being a symlink')
     with path.open('rb') as stream:blob=stream.read(MAX_INPUT+1)
     if len(blob)>MAX_INPUT:raise kernel.InputError('input exceeds byte limit')
     value=json.loads(blob,object_pairs_hook=kernel._unique_pairs,parse_constant=kernel._reject_constant)

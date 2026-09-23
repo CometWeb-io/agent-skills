@@ -256,11 +256,25 @@ def test_malformed_nested_values_always_fail_closed():
     assert count>400
 
 
-def test_evidence_root_symlink_ancestor_rejected(tmp_path):
-    real=tmp_path/"real";real.mkdir();(real/"nested").mkdir()
-    (real/"nested/evidence.txt").write_text("synthetic evidence\n")
-    link=tmp_path/"link";link.symlink_to(real,target_is_directory=True)
-    with pytest.raises(ValueError):checked(trace(),artifacts_root=link/"nested")
+def test_evidence_root_allows_symlink_ancestor(tmp_path):
+    """Parent symlinks (macOS /var style) must not block evidence under a real leaf tree."""
+    real = tmp_path / "real"
+    real.mkdir()
+    (real / "nested").mkdir()
+    (real / "nested/evidence.txt").write_text("synthetic evidence\n")
+    link = tmp_path / "link"
+    link.symlink_to(real, target_is_directory=True)
+    checked(trace(), artifacts_root=link / "nested")
+
+
+def test_evidence_root_symlink_leaf_rejected(tmp_path):
+    real = tmp_path / "real"
+    real.mkdir()
+    (real / "evidence.txt").write_text("synthetic evidence\n")
+    link = tmp_path / "link"
+    link.symlink_to(real, target_is_directory=True)
+    with pytest.raises(ValueError):
+        checked(trace(), artifacts_root=link)
 
 
 def test_oversized_artifact_rejected_before_hash_read(tmp_path,monkeypatch):

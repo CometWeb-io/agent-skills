@@ -56,7 +56,8 @@ def validate_frontmatter(blob: bytes, skill: str) -> None:
     if not match:
         raise ValueError("SKILL.md is missing YAML frontmatter")
     from compatibility import UniqueLoader
-    data = yaml.load(match.group(1), Loader=UniqueLoader)
+    # UniqueLoader subclasses yaml.SafeLoader; duplicate keys are rejected.
+    data = yaml.load(match.group(1), Loader=UniqueLoader)  # nosec B506
     if not isinstance(data, dict) or data.get("name") != skill:
         raise ValueError("frontmatter name must match the skill directory")
     desc = data.get("description")
@@ -276,8 +277,10 @@ def build(root: Path, skill: str) -> dict:
             raise ValueError("immutable version conflict: bump VERSION; existing release is unchanged")
     else:
         try:
-            revision = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
-            dirty = bool(subprocess.run(["git", "-C", str(root), "status", "--porcelain"], capture_output=True, check=True).stdout)
+            from core.git import read_git
+
+            revision = read_git(root, "rev-parse", "HEAD").stdout.decode().strip()
+            dirty = bool(read_git(root, "status", "--porcelain").stdout.strip())
             manifest.update(source_revision=revision, source_tree="dirty" if dirty else "clean")
         except (OSError, subprocess.SubprocessError):
             manifest.update(source_revision=None, source_tree="unavailable")

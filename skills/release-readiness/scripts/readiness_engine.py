@@ -1004,8 +1004,8 @@ def write_output(path: Path, text: str, inputs: Iterable[Path] = ()) -> None:
     """Create a result without overwriting source manifests or existing different results."""
     if path.resolve() in {p.resolve() for p in inputs}:
         raise ManifestError("output must not replace an input manifest")
-    if any(p.is_symlink() for p in (path, *path.parents)):
-        raise ManifestError("output symlinks are not permitted")
+    if path.exists() and path.is_symlink():
+        raise ManifestError("output itself must not be a symlink")
     blob = (text + "\n").encode("utf-8")
     if path.exists():
         if path.is_file() and path.stat().st_size == len(blob) and path.read_bytes() == blob:

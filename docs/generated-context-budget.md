@@ -30,7 +30,7 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `longform-publisher` | 9,432 B | 2,358 | 11,289 B | 2,822 | 9 | 0.54 |
 | `ai-council` | 9,051 B | 2,262 | 42,230 B | 10,557 | 27 | 0.82 |
 | `quality-loop-operator` | 8,050 B | 2,012 | 10,167 B | 2,541 | 14 | 0.56 |
-| `skill-orchestrator` | 5,418 B | 1,354 | 8,584 B | 2,146 | 4 | 0.61 |
+| `skill-orchestrator` | 5,418 B | 1,354 | 8,606 B | 2,151 | 4 | 0.61 |
 | `content-writer` | 5,271 B | 1,317 | 6,681 B | 1,670 | 6 | 0.56 |
 | `brief-architect` | 5,251 B | 1,312 | 5,493 B | 1,373 | 5 | 0.51 |
 | `evidence-researcher` | 5,169 B | 1,292 | 34,481 B | 8,620 | 14 | 0.87 |
@@ -42,6 +42,6 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `content-reviewer` | 4,144 B | 1,036 | 5,607 B | 1,401 | 7 | 0.57 |
 | `benchmark-curator` | 3,034 B | 758 | 2,818 B | 704 | 7 | 0.48 |
 | `rubric-designer` | 2,719 B | 679 | 832 B | 208 | 5 | 0.23 |
-| `skill-orchestrator-multiagent` | 1,255 B | 313 | 6,646 B | 1,661 | 3 | 0.84 |
+| `skill-orchestrator-multiagent` | 1,255 B | 313 | 6,668 B | 1,667 | 3 | 0.84 |
 
 **32 skills.** Loading every front door costs roughly 82,917 tokens before any work begins; the median skill costs ~2,535 and the largest ~5,498.

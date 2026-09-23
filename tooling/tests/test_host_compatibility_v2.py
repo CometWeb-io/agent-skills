@@ -82,6 +82,9 @@ def test_compute_support_full_when_capabilities_satisfied():
     support = compat.compute_support(entry, host, format_ok=True)
     assert support["format"] == "FULL"
     assert support["runtime"] == "FULL"
+    assert support["format_support"] == "FULL"
+    assert support["declared_runtime_support"] == "FULL"
+    assert support["verified_runtime_acceptance"] == "NOT_TESTED"
 
 
 def test_compute_support_marks_bad_format_unsupported():
@@ -89,3 +92,15 @@ def test_compute_support_marks_bad_format_unsupported():
     support = compat.compute_support({}, {"capabilities": []}, format_ok=False)
     assert support["format"] == "UNSUPPORTED"
     assert support["runtime"] == "UNSUPPORTED"
+    assert support["verified_runtime_acceptance"] == "NOT_TESTED"
+
+
+def test_pathological_routing_pattern_is_rejected():
+    import sys
+
+    sys.path.insert(0, str(ROOT / "tooling"))
+    import route_skill as routing
+
+    with __import__("pytest").raises(ValueError, match="unsafe nested quantifier"):
+        routing._pattern("(a+)+$")
+

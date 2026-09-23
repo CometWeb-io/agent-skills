@@ -114,10 +114,23 @@ def validate_response(response: dict, *, allow_mock: bool = False) -> None:
 def execute(request: dict, command: list[str], timeout: int, *, allow_mock: bool = False) -> tuple[dict, float]:
     if not command or not all(isinstance(x, str) and x for x in command):
         raise ValueError("runner command must be a nonempty argv list")
+    from core.subprocess_env import build_runner_env
+
     start = time.monotonic()
     # New process and CWD per run provide context separation, NOT an operating-system sandbox.
+    # Inherit only a safe base environment plus explicitly allowed eval secrets.
+    runner_env = build_runner_env({"OPENAI_API_KEY", "COMETWEB_EVAL_MODEL", "COMETWEB_EVAL_RUNNER"})
     with tempfile.TemporaryDirectory(prefix="cw-eval-run-") as cwd:
-        proc = subprocess.run(command, input=canonical(request), capture_output=True, cwd=cwd, timeout=timeout, check=True)
+        proc = subprocess.run(
+            command,
+            input=canonical(request),
+            capture_output=True,
+            cwd=cwd,
+            timeout=timeout,
+            check=True,
+            close_fds=True,
+            env=runner_env,
+        )
     if len(proc.stdout) > 4 * 1024 * 1024:
         raise ValueError("runner output exceeds bounded record size")
     response = json.loads(proc.stdout)
@@ -197,7 +210,17 @@ def main() -> int:
     suite = json.loads(args.suite.read_text())
     cases = validate_suite(suite)
     if not args.execute:
-        print(json.dumps({"status":"not_run", "case_count":len(cases), "planned_conditions":list(CONDITIONS), "model_calls":0, "reason":"Explicit --execute, frozen roots and a configured runner are required"}, indent=2))
+        from core.evidence import EvidenceKind
+
+        print(json.dumps({
+            "status": "not_run",
+            "evidence_kind": EvidenceKind.MODEL_EVAL.value,
+            "case_count": len(cases),
+            "planned_conditions": list(CONDITIONS),
+            "model_calls": 0,
+            "runtime_acceptance": "not_assessed",
+            "reason": "Explicit --execute, frozen roots and a configured runner are required",
+        }, indent=2))
         return 0
     if not all((args.current_root, args.candidate_root, args.runner_json, args.output)):
         parser.error("--execute requires current/candidate roots, runner-json and a new output directory")

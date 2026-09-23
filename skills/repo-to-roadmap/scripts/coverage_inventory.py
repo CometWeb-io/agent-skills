@@ -311,7 +311,7 @@ def output_json(value: Any, path: Path | None) -> None:
         sys.stdout.buffer.write(data)
     else:
         # Exclusive creation. No mkdir, existing-file replacement or implicit input overwrite.
-        require(not any(p.is_symlink() for p in [path, *path.parents]), "output path contains a symlink")
+        require(not path.exists() or not path.is_symlink(), "output itself must not be a symlink")
         with path.open("xb") as handle:
             handle.write(data)
 

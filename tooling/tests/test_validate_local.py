@@ -27,7 +27,12 @@ def checkout(tmp_path):
     root = tmp_path / "checkout"
     root.mkdir()
     for relative in (*local.REQUIRED, *(row[1] for row in local.CHECKS)):
-        put(root, relative, "pass\n" if relative.endswith(".py") else "{}\n")
+        if relative == "pyproject.toml":
+            put(root, relative, '[project]\nname = "fixture"\nversion = "0.0.0"\nrequires-python = ">=3.12"\n')
+        elif relative == "uv.lock":
+            put(root, relative, 'version = 1\nrequires-python = ">=3.12"\n')
+        else:
+            put(root, relative, "pass\n" if relative.endswith(".py") else "{}\n")
     put(root, "registry/skills.json", json.dumps({"skills": [{"id": "example"}]}))
     for name in ("SKILL.md", "VERSION", "LICENSE"):
         put(root, "skills/example/" + name, "fixture\n")

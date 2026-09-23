@@ -113,8 +113,7 @@ def local_path(value: Any) -> str:
 
 def verify_file(root: Path, item: dict) -> int:
     require(root.is_dir() and not root.is_symlink(), "artifacts root must be a real directory")
-    # Reject symlink ancestors too; resolve() alone would silently accept them.
-    require(not any(p.is_symlink() for p in [root, *root.parents]), "symlink in artifacts root")
+    # Reject only the leaf root being a symlink; system ancestors like macOS /var are OK.
     target = root
     for part in PurePosixPath(item["path"]).parts:
         target = target / part

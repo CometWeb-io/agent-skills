@@ -40,6 +40,10 @@ def root(tmp_path):
     (source / "LICENSE").write_text("Synthetic fixture license.\n")
     (tmp_path / "tooling").mkdir()
     shutil.copyfile(TOOLS / "public_safety.py", tmp_path / "tooling/public_safety.py")
+    # Keep scanner portable without core, but also ship core so the packaged
+    # path matches the real repository layout when present.
+    if (TOOLS / "core").is_dir():
+        shutil.copytree(TOOLS / "core", tmp_path / "tooling/core", dirs_exist_ok=True)
     return tmp_path
 
 
