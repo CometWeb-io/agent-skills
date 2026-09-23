@@ -1,0 +1,10 @@
+{
+  "schema": "cometweb.skill-runtime/v1",
+  "python": ">=3.10",
+  "dependencies": {
+    "release": [
+      "pypdf>=4,<7"
+    ]
+  },
+  "notes": "Earlier ebook stages use the standard library only; release-stage PDF page checks import pypdf."
+}

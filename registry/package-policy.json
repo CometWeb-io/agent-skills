@@ -17,7 +17,8 @@
     "README.md",
     "requirements.txt",
     "pyproject.toml",
-    "INSTALL.md"
+    "INSTALL.md",
+    "RUNTIME.json"
   ],
   "directories": [
     "scripts",

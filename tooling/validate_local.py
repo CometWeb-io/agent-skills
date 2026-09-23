@@ -127,6 +127,11 @@ def git(root: Path, *args: str) -> bytes:
     return read_git(root, *args, timeout=30).stdout
 
 
+def source_status(root: Path) -> bytes:
+    """Cheap porcelain fingerprint for mid-pipeline mutation detection."""
+    return git(root, "status", "--porcelain=v2", "--untracked-files=all")
+
+
 def source_state(root: Path) -> dict:
     if Path(os.fsdecode(git(root, "rev-parse", "--show-toplevel")).strip()).resolve() != root:
         raise ValueError("--root must be the full Git working-tree root")
@@ -209,6 +214,7 @@ def run(root: Path, output: Path, timeout: int = 300) -> dict:
         raise ValueError("timeout must be an integer between 1 and 1800")
     scope = inventory(root)
     before = source_state(root)
+    before_status = source_status(root)
     required_sources = {*REQUIRED, *(row[1] for row in CHECKS)}
     required_sources.update(f"skills/{sid}/{name}" for sid in scope["skills"] for name in ("SKILL.md", "VERSION", "LICENSE"))
     if not required_sources <= before["files"].keys():
@@ -251,8 +257,8 @@ def run(root: Path, output: Path, timeout: int = 300) -> dict:
             if result["status"] in {"timeout", "execution_error"}:
                 report["status"] = "incomplete"
                 break
-            after = source_state(root)
-            if before != after:
+            # Cheap porcelain check between steps; full hash only at the end.
+            if source_status(root) != before_status:
                 report["status"] = "source_changed"
                 break
         else:

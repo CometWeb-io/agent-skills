@@ -85,6 +85,24 @@ def source_revision(root: Path) -> str:
     return revision
 
 
+def validate_runtime_manifest(blob: bytes) -> dict:
+    data = json.loads(blob.decode("utf-8"))
+    if not isinstance(data, dict) or data.get("schema") != "cometweb.skill-runtime/v1":
+        raise ValueError("invalid RUNTIME.json schema")
+    python = data.get("python")
+    if not isinstance(python, str) or not python.strip():
+        raise ValueError("RUNTIME.json python requirement required")
+    deps = data.get("dependencies", {})
+    if not isinstance(deps, dict):
+        raise ValueError("RUNTIME.json dependencies must be an object")
+    for stage, rows in deps.items():
+        if not isinstance(stage, str) or not isinstance(rows, list) or not rows:
+            raise ValueError("RUNTIME.json dependency stages must be nonempty lists")
+        if any(not isinstance(item, str) or not item.strip() for item in rows):
+            raise ValueError("RUNTIME.json dependency entries must be nonempty strings")
+    return data
+
+
 def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
     import unicodedata
 
@@ -123,6 +141,9 @@ def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
     if not VERSION.fullmatch(version):
         raise ValueError("invalid VERSION")
     validate_frontmatter(entries["SKILL.md"], skill)
+    runtime = None
+    if "RUNTIME.json" in entries:
+        runtime = validate_runtime_manifest(entries["RUNTIME.json"])
     # Only explicitly admitted repository roots may be bundled. Never chase arbitrary links.
     for shared in policy["shared_roots"]:
         identifier(shared)
@@ -151,6 +172,11 @@ def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
         "files": {name: digest(data) for name, data in sorted(entries.items())},
         "runtime_acceptance": "not_assessed",
     }
+    if runtime is not None:
+        manifest["runtime_requirements"] = {
+            "python": runtime["python"],
+            "dependencies": runtime.get("dependencies", {}),
+        }
     manifest["payload_sha256"] = digest(canonical({"files": manifest["files"], "policy_sha256": manifest["policy_sha256"]}))
     return entries, manifest
 
@@ -235,11 +261,18 @@ def inspect_archive(blob: bytes) -> dict:
                 raise ValueError("package manifest exceeds budget")
             manifest = json.loads(raw, object_pairs_hook=unique, parse_constant=invalid_number)
             required = {"schema", "skill", "version", "policy_sha256", "files", "runtime_acceptance", "payload_sha256"}
-            optional = {"source_revision", "source_tree"}
+            optional = {"source_revision", "source_tree", "runtime_requirements"}
             if not isinstance(manifest, dict) or not required <= manifest.keys() or not manifest.keys() <= required | optional:
                 raise ValueError("invalid package manifest fields")
             if manifest["schema"] != "cometweb.package/v1" or manifest["runtime_acceptance"] != "not_assessed":
                 raise ValueError("package metadata cannot assert runtime acceptance")
+            if "runtime_requirements" in manifest:
+                req = manifest["runtime_requirements"]
+                if not isinstance(req, dict) or not isinstance(req.get("python"), str):
+                    raise ValueError("invalid runtime_requirements")
+                deps = req.get("dependencies", {})
+                if not isinstance(deps, dict):
+                    raise ValueError("invalid runtime_requirements.dependencies")
             if not isinstance(manifest["skill"], str):
                 raise ValueError("invalid package identity")
             identifier(manifest["skill"])
@@ -248,9 +281,10 @@ def inspect_archive(blob: bytes) -> dict:
             for field in ("policy_sha256", "payload_sha256"):
                 if not isinstance(manifest[field], str) or not re.fullmatch(r"[0-9a-f]{64}", manifest[field]):
                     raise ValueError("invalid manifest fingerprint")
-            present = optional & manifest.keys()
+            provenance = {"source_revision", "source_tree"}
+            present = provenance & manifest.keys()
             if present:
-                if present != optional:
+                if present != provenance:
                     raise ValueError("incomplete source provenance")
                 revision, state = manifest["source_revision"], manifest["source_tree"]
                 # Release provenance admits only clean trees pinned to a full SHA.
@@ -264,6 +298,14 @@ def inspect_archive(blob: bytes) -> dict:
             for name in ("SKILL.md", "VERSION", "LICENSE"):
                 if not entries.get(name, b"").strip():
                     raise ValueError("required package identity file missing")
+            if "RUNTIME.json" in entries:
+                runtime = validate_runtime_manifest(entries["RUNTIME.json"])
+                declared = manifest.get("runtime_requirements")
+                expected = {"python": runtime["python"], "dependencies": runtime.get("dependencies", {})}
+                if declared != expected:
+                    raise ValueError("runtime_requirements disagree with RUNTIME.json")
+            elif "runtime_requirements" in manifest:
+                raise ValueError("runtime_requirements without RUNTIME.json")
             validate_frontmatter(entries["SKILL.md"], manifest["skill"])
             if entries["VERSION"].decode("utf-8").strip() != manifest["version"]:
                 raise ValueError("manifest version disagrees with VERSION")

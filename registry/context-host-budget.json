@@ -1,0 +1,19 @@
+{
+  "schema": "cometweb.context-host-budget/v1",
+  "unit": "front_door_bytes",
+  "note": "Provisional ceilings from measured 2026-09-23 front doors (max observed 21992). Raise only with an explicit host acceptance note; these are absolute floors of waste, not regression deltas.",
+  "hosts": {
+    "openai-codex": {
+      "frontdoor_budget_bytes": 24000
+    },
+    "chatgpt": {
+      "frontdoor_budget_bytes": 24000
+    },
+    "cursor": {
+      "frontdoor_budget_bytes": 28000
+    },
+    "claude-code": {
+      "frontdoor_budget_bytes": 28000
+    }
+  }
+}

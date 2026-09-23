@@ -81,7 +81,45 @@ def parse_frontmatter(path: Path) -> dict:
     return data
 
 
-def compute_support(entry: dict, host: dict, *, format_ok: bool) -> dict[str, object]:
+def load_runtime(skill_dir: Path) -> dict | None:
+    path = skill_dir / "RUNTIME.json"
+    if not path.is_file():
+        return None
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if data.get("schema") != "cometweb.skill-runtime/v1":
+        raise ValueError(f"{skill_dir.name}: unsupported RUNTIME.json schema")
+    if not isinstance(data.get("python"), str) or not data["python"].strip():
+        raise ValueError(f"{skill_dir.name}: RUNTIME.json missing python")
+    deps = data.get("dependencies", {})
+    if not isinstance(deps, dict):
+        raise ValueError(f"{skill_dir.name}: RUNTIME.json dependencies must be an object")
+    return data
+
+
+def verify_runtime_imports(requirements: dict) -> str:
+    """Best-effort local import probe — not a substitute for host acceptance."""
+    mapping = {
+        "pypdf": "pypdf",
+        "jsonschema": "jsonschema",
+    }
+    deps = requirements.get("dependencies") or {}
+    if not deps:
+        return "NONE"
+    missing: list[str] = []
+    for stage, rows in deps.items():
+        for spec in rows:
+            name = re.split(r"[<>=!~\[]", spec, maxsplit=1)[0].strip()
+            module = mapping.get(name, name.replace("-", "_"))
+            try:
+                __import__(module)
+            except ImportError:
+                missing.append(f"{stage}:{spec}")
+    if missing:
+        return "MISSING:" + ",".join(missing)
+    return "PRESENT"
+
+
+def compute_support(entry: dict, host: dict, *, format_ok: bool, runtime: dict | None = None) -> dict[str, object]:
     """Return deterministic format/runtime support for one skill x host pair.
 
     Host capabilities describe the platform-level surface, not a guarantee that a
@@ -95,6 +133,9 @@ def compute_support(entry: dict, host: dict, *, format_ok: bool) -> dict[str, ob
             "declared_runtime_support": "UNSUPPORTED",
             "runtime": "UNSUPPORTED",
             "verified_runtime_acceptance": "NOT_TESTED",
+            "python_requirement": None,
+            "dependencies": [],
+            "runtime_dependency_status": "NONE",
             "missing_required": [],
             "missing_optional": [],
         }
@@ -106,18 +147,25 @@ def compute_support(entry: dict, host: dict, *, format_ok: bool) -> dict[str, ob
     missing_optional = sorted(cap for cap in optional if cap not in available)
 
     if missing_required:
-        runtime = "UNSUPPORTED"
+        runtime_status = "UNSUPPORTED"
     elif missing_optional:
-        runtime = "DEGRADED"
+        runtime_status = "DEGRADED"
     else:
-        runtime = "FULL"
+        runtime_status = "FULL"
+
+    deps: list[str] = []
+    for rows in (runtime or {}).get("dependencies", {}).values():
+        deps.extend(rows)
 
     return {
         "format_support": "FULL",
         "format": "FULL",
-        "declared_runtime_support": runtime,
-        "runtime": runtime,
+        "declared_runtime_support": runtime_status,
+        "runtime": runtime_status,
         "verified_runtime_acceptance": "NOT_TESTED",
+        "python_requirement": (runtime or {}).get("python"),
+        "dependencies": deps,
+        "runtime_dependency_status": verify_runtime_imports(runtime or {}),
         "missing_required": missing_required,
         "missing_optional": missing_optional,
     }
@@ -180,6 +228,11 @@ def main() -> None:
         skill_dir = SKILLS / sid
         fm = parse_frontmatter(skill_dir / "SKILL.md")
         desc = fm.get("description", "")
+        try:
+            runtime = load_runtime(skill_dir)
+        except ValueError as exc:
+            errors.append(str(exc))
+            runtime = None
 
         for host_name in host_targets(entry):
             profile = hosts.get(host_name)
@@ -193,10 +246,15 @@ def main() -> None:
             if host_name in {"openai-codex", "chatgpt"} and "agents_file" in profile:
                 warnings.extend(check_openai_yaml(sid, skill_dir / profile["agents_file"], profile))
 
-            support = compute_support(entry, profile, format_ok=format_ok)
+            support = compute_support(entry, profile, format_ok=format_ok, runtime=runtime)
             if support["runtime"] == "UNSUPPORTED" and support["missing_required"]:
                 missing = ", ".join(support["missing_required"])
                 warnings.append(f"{sid}@{host_name}: runtime unsupported; missing required capabilities: {missing}")
+            if isinstance(support.get("runtime_dependency_status"), str) and support["runtime_dependency_status"].startswith("MISSING:"):
+                warnings.append(
+                    f"{sid}@{host_name}: declared runtime deps not importable here "
+                    f"({support['runtime_dependency_status']})"
+                )
 
         for rel in hosts["package"]["required_files"]:
             if not (skill_dir / rel).is_file():
