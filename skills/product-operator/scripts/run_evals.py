@@ -8,11 +8,20 @@ import pathlib
 from typing import Any
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+
+
+def _load(name: str, path: pathlib.Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
 KERNEL_PATH = ROOT / "scripts" / "operator_kernel.py"
-spec = importlib.util.spec_from_file_location("operator_kernel", KERNEL_PATH)
-kernel = importlib.util.module_from_spec(spec)
-assert spec.loader is not None
-spec.loader.exec_module(kernel)
+kernel = _load("operator_kernel", KERNEL_PATH)
+prepare_brief = _load("prepare_brief", ROOT / "scripts" / "prepare_brief.py")
+self_check = _load("self_check", ROOT / "scripts" / "self_check.py")
 
 
 def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
@@ -43,6 +52,36 @@ def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
     if kind == "validate_status":
         actual = kernel.validate_report(payload)["status"]
         return actual == expected, actual
+    if kind == "brief_readiness":
+        result = prepare_brief.assemble(payload)
+        actual = result["report"]["readiness"]["status"]
+        return actual == expected, actual
+    if kind == "brief_no_now_without_verify":
+        result = prepare_brief.assemble(payload)
+        has_now = bool(result["report"]["now"])
+        has_verify = bool(result["report"]["verify_now"])
+        ok = (not has_now) and has_verify and result["validation"]["status"] != "FAIL"
+        return ok == expected, {"now": has_now, "verify_now": has_verify, "validation": result["validation"]["status"]}
+    if kind == "brief_manifest_roundtrip":
+        result = prepare_brief.assemble(payload)
+        files = prepare_brief.artifacts(result)
+        manifest = json.loads(files["BRIEF-MANIFEST.json"])
+        ok = all(
+            __import__("hashlib").sha256(files[name]).hexdigest() == digest
+            for name, digest in manifest["files"].items()
+        )
+        return ok == expected, sorted(manifest["files"])
+    if kind == "self_check_status":
+        # Drive the package smoke path without spawning a nested process.
+        required = [
+            "SKILL.md", "VERSION", "LICENSE", "agents/openai.yaml", "assets/icon.svg",
+            "scripts/prepare_brief.py", "scripts/self_check.py", "scripts/operator_kernel.py",
+        ]
+        ok = all((ROOT / name).is_file() and (ROOT / name).stat().st_size > 0 for name in required)
+        sample = prepare_brief.read(ROOT / "examples" / "brief.synthetic.pl.json")
+        assembled = prepare_brief.assemble(sample)
+        ok = ok and assembled["validation"]["status"] != "FAIL"
+        return ok == expected, ok
     raise ValueError(f"unknown case kind: {kind}")
 
 
