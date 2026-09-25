@@ -23,7 +23,7 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `repo-to-roadmap` | 15,185 B | 3,796 | 52,948 B | 13,237 | 12 | 0.78 |
 | `web-app-auditor` | 13,469 B | 3,367 | 49,484 B | 12,371 | 15 | 0.79 |
 | `ai-humanize` | 13,274 B | 3,318 | 56,978 B | 14,244 | 11 | 0.81 |
-| `seo-geo-aeo-maxxing` | 12,842 B | 3,210 | 71,103 B | 17,775 | 19 | 0.85 |
+| `seo-geo-aeo-maxxing` | 12,842 B | 3,210 | 72,097 B | 18,024 | 19 | 0.85 |
 | `cometweb-context` | 12,501 B | 3,125 | 16,292 B | 4,073 | 7 | 0.57 |
 | `portfolio-operator` | 11,791 B | 2,947 | 16,180 B | 4,045 | 6 | 0.58 |
 | `ebook-publisher` | 10,850 B | 2,712 | 35,735 B | 8,933 | 6 | 0.77 |
