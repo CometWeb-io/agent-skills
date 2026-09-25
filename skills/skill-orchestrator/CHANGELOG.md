@@ -1,5 +1,13 @@
 # Changelog — skill-orchestrator
 
+## [1.1.2] - Unreleased
+
+### Fixed
+
+- Keep the vendored CW-AIP protocol packageable by linking to the public
+  WhyKit integration guide instead of a repository-relative document.
+- Clarify that multiagent envelope checks fail closed without schema support.
+
 ## [1.1.1] - 2026-09-08
 
 ### Changed

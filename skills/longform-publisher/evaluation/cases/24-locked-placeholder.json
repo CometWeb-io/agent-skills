@@ -1,0 +1,11 @@
+{
+  "scenario": "locked_placeholder",
+  "expect": {
+    "validation": [],
+    "manuscript": [
+      "UNRESOLVED_PLACEHOLDER"
+    ],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

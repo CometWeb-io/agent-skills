@@ -6,6 +6,44 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Changed
+
+- Broadened deterministic routing evaluation to 129 cases, including natural
+  Polish requests and positive coverage for every catalog skill. The proxy is
+  not a substitute for model or host-level routing acceptance.
+- The three roasters now verify all ten shared scripts and protocol references
+  for byte-level drift, not only two scripts.
+- Expanded Product Operator and Longform Publisher golden cases around evidence
+  freshness, readiness, derived-artifact lineage, and manuscript placeholders.
+- CI now extracts every skill ZIP and executes available offline eval/smoke
+  entrypoints outside the checkout, including positive and negative multiagent
+  validator checks. Local validation also gates all shared roaster resources.
+- Package attestation now requires the full local gate, tree/history safety
+  scans and extracted-package helper checks before building release artifacts.
+
+### Fixed
+
+- Host installers reject conflicting directories, files, and foreign symlinks
+  by default before linking any skill. With `SKILLS_REPLACE_CONFLICTS=1`,
+  conflicting entries are moved to a dated backup and canonical links are
+  recreated idempotently across supported hosts.
+- Installers reject incomplete skill packages before changing any host target.
+- The multiagent envelope validator bundles its schema and fails closed when
+  the schema or `jsonschema` is missing; its alias dependency is explicit.
+- The canonical orchestrator ZIP no longer contains an unresolved
+  repository-only documentation link.
+- Installers reject targets overlapping their source skill tree, including
+  symlink aliases, before moving a package. The multiagent install guide now
+  states its sibling-skill and Python dependency requirements.
+- Product Operator golden evals now pin snapshot hash and state fingerprint
+  tampering. Skill Auditor routing covers additional Polish paraphrases with
+  adjacent negative controls.
+- Product Operator no longer promotes actions whose prerequisites are missing;
+  its golden suite now covers 60 cases, including dependency chains, cycles,
+  STOP/LATER exclusions, plan caps, and malformed candidate records.
+- Product Operator 2.3.1 preserves DECISION NOW through report generation and
+  bilingual rendering; inferred action types no longer crash the brief bridge.
+
 ## [2.0.1] - 2026-09-22
 
 ### Added

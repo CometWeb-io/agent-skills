@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.3.1] - 2026-09-25
+
+- Hold actions with missing prerequisites, including downstream dependents;
+  a missing dependency is not evidence of completed work.
+- Exercise plan readiness, STOP/LATER exclusions, dependency cycles, immediate
+  and next limits, malformed records, and snapshot integrity in golden evals.
+- Preserve DECISION NOW in the report, snapshot and bilingual brief, including
+  unresolved options and delegation. Preselected decisions fail validation.
+- Accept the kernel's inferred action types without crashing the brief bridge;
+  include missing prerequisites in the rendered diagnostics.
+
 ## [2.3.0] - 2026-09-18
 
 ### Changed

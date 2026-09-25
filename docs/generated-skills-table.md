@@ -21,7 +21,7 @@
 | `feedback-integrator` | 1.7.0 | foundation | active | ACTIVE | 633 | False |
 | `longform-publisher` | 1.1.0 | domain | active | FROZEN | 224 | False |
 | `portfolio-operator` | 1.2.0 | foundation | active | ACTIVE | 647 | False |
-| `product-operator` | 2.3.0 | domain | active | ACTIVE | 808 | False |
+| `product-operator` | 2.3.1 | domain | active | ACTIVE | 808 | False |
 | `product-teardown` | 1.1.0 | domain | active | ACTIVE | 967 | False |
 | `quality-loop-operator` | 1.7.0 | foundation | active | ACTIVE | 867 | False |
 | `release-readiness` | 1.2.0 | domain | active | ACTIVE | 992 | False |
@@ -33,6 +33,6 @@
 | `seo-geo-aeo-maxxing` | 1.2.0 | domain | active | ACTIVE | 659 | False |
 | `skill-auditor` | 1.7.0 | foundation | active | ACTIVE | 751 | False |
 | `skill-evaluator` | 1.7.0 | foundation | active | ACTIVE | 742 | False |
-| `skill-orchestrator` | 1.1.1 | foundation | active | ACTIVE | 728 | False |
-| `skill-orchestrator-multiagent` | 1.1.1 | foundation | active | ACTIVE | 467 | False |
+| `skill-orchestrator` | 1.1.2 | foundation | active | ACTIVE | 728 | False |
+| `skill-orchestrator-multiagent` | 1.1.2 | foundation | active | ACTIVE | 467 | False |
 | `web-app-auditor` | 1.3.1 | domain | active | ACTIVE | 660 | False |

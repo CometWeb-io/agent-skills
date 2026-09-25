@@ -45,9 +45,9 @@
     },
     {
       "guards": 54,
-      "held": 28,
+      "held": 35,
       "id": "longform-publisher",
-      "strength": 0.519,
+      "strength": 0.648,
       "unexercised": []
     },
     {
@@ -58,10 +58,10 @@
       "unexercised": []
     },
     {
-      "guards": 165,
-      "held": 34,
+      "guards": 167,
+      "held": 64,
       "id": "product-operator",
-      "strength": 0.206,
+      "strength": 0.383,
       "unexercised": []
     },
     {

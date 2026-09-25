@@ -562,6 +562,10 @@ def build_plan(payload: dict[str, Any]) -> dict[str, Any]:
             continue
 
         deps = [str(dep) for dep in (ranked_row.get("depends_on") or []) if str(dep).strip()]
+        # Missing prerequisites are unknown, not completed. Holding this row
+        # also holds its dependents because it never enters immediate_actions.
+        if any(dep not in by_id for dep in deps):
+            continue
         unmet = [dep for dep in deps if dep in by_id]
         immediate_ids = {str(item["id"]) for item in immediate_actions}
 

@@ -91,8 +91,8 @@ jobs:
       - name: Public safety scan — complete history
         run: uv run python tooling/public_safety.py --root . --history
 
-      - name: Installation acceptance (RUNTIME skills)
-        run: uv run python tooling/installation_acceptance.py
+      - name: All-package installation and offline helper acceptance
+        run: uv run python tooling/installation_acceptance.py --all --run-helpers --trusted-checkout
 
       - name: Compile Python modules
         run: |

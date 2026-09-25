@@ -22,7 +22,7 @@ EXPECTED = {
     # dict field. No behaviour on valid input changed. See the exception note in
     # that acceptance record.
     "longform-publisher": ("1.1.0", "FROZEN"),
-    "product-operator": ("2.3.0", "ACTIVE"),
+    "product-operator": ("2.3.1", "ACTIVE"),
 }
 
 SUPPORTED_HOSTS = {

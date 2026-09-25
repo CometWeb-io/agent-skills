@@ -1,0 +1,13 @@
+{
+  "scenario": "derived_incomplete",
+  "expect": {
+    "validation": [
+      "STAGE_INFLATION"
+    ],
+    "manuscript": [],
+    "derived": [
+      "DERIVED_GENERATION_INCOMPLETE"
+    ],
+    "stage": "MASTER_LOCKED"
+  }
+}

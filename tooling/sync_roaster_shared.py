@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep shared roaster scripts byte-identical across the three packages."""
+"""Keep shared roaster scripts and references byte-identical across packages."""
 from __future__ import annotations
 
 import argparse
@@ -7,11 +7,22 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SHARED = ("scan_source_risks.py", "validate_evals.py")
-CANONICAL = ROOT / "skills" / "repo-roaster" / "scripts"
+SHARED = (
+    "scripts/scan_source_risks.py",
+    "scripts/validate_evals.py",
+    "references/adversarial-protocol.md",
+    "references/assurance-protocol.md",
+    "references/eval-protocol.md",
+    "references/handoff-contract.md",
+    "references/production-ops.md",
+    "references/revision-protocol.md",
+    "references/source-safety.md",
+    "references/workspace-ops.md",
+)
+CANONICAL = ROOT / "skills" / "repo-roaster"
 TARGETS = (
-    ROOT / "skills" / "content-roaster" / "scripts",
-    ROOT / "skills" / "science-roaster" / "scripts",
+    ROOT / "skills" / "content-roaster",
+    ROOT / "skills" / "science-roaster",
 )
 
 
@@ -29,7 +40,7 @@ def verify() -> list[str]:
                 errors.append(f"missing: {candidate.relative_to(ROOT)}")
                 continue
             if candidate.read_bytes() != expected:
-                errors.append(f"shared script drift: {candidate.relative_to(ROOT)}")
+                errors.append(f"shared resource drift: {candidate.relative_to(ROOT)}")
     return errors
 
 
@@ -61,7 +72,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"FAIL: {error}", file=sys.stderr)
     if errors:
         return 1
-    print(f"OK: {len(SHARED)} shared roaster scripts match across {1 + len(TARGETS)} packages")
+    print(f"OK: {len(SHARED)} shared roaster resources match across {1 + len(TARGETS)} packages")
     return 0
 
 

@@ -29,9 +29,11 @@ Then run the skill packaging validator.
 12. Specialist boundaries remain intact.
 13. Goal-relative blocker semantics: future gates never masquerade as current blockers.
 14. Suspected blockers without confirmed failure stay in VERIFY NOW.
-13. Consequential unresolved pricing/packaging/offer/strategic choices become `DECISION NOW`, not Product Operator recommendations.
-14. Human output stays bounded even when the sidecar/evidence set is deep.
-15. Non-impacting connector/tool-limit noise is not surfaced to the user.
+15. Consequential unresolved pricing/packaging/offer/strategic choices become `DECISION NOW`, not Product Operator recommendations.
+16. Human output stays bounded even when the sidecar/evidence set is deep.
+17. Non-impacting connector/tool-limit noise is not surfaced to the user.
+18. Missing prerequisites hold both the action and its downstream dependents;
+    unrelated, ready work remains actionable.
 
 ## Quality metrics for real-world iteration
 

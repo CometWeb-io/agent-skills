@@ -83,9 +83,9 @@ Before launching step *N+1*, validate step *N* output:
 python3 scripts/validate_envelope.py /tmp/step1-evidence.json --expect-type EvidenceEnvelope
 ```
 
-Ships with `skill-orchestrator-multiagent`. Requires `jsonschema` (repo
-dev dependency group / `uv sync --group dev`) for full schema check; falls
-back to required-field lint otherwise.
+Ships with `skill-orchestrator-multiagent` and its bundled core schema.
+Requires `jsonschema`; validation fails closed if the dependency or schema is
+missing. In the repository, install the dev group with `uv sync --group dev`.
 
 ## Verification before close
 

@@ -56,12 +56,13 @@ def assemble(payload: dict, *, previous: dict | None = None) -> dict:
     if mode not in kernel.ALLOWED_MODES or (mode == 'DELTA' and previous is None):
         raise kernel.InputError('DELTA requires a real baseline; use a supported mode')
     immediate = plan['immediate_actions']
-    verify_now = [r for r in immediate if r['action_type']=='verify']
-    now = [r for r in immediate if r['action_type']=='implement']
+    verify_now = [r for r in immediate if kernel.candidate_action_type(r)=='verify']
+    decision_now = [r for r in immediate if kernel.candidate_action_type(r)=='decision']
+    now = [r for r in immediate if kernel.candidate_action_type(r)=='implement']
     selected = {r['id'] for r in immediate + plan['next_actions']}
     ranked = kernel.rank_candidates(copy.deepcopy(source.get('candidates', [])))['ranked']
-    stop = [r for r in ranked if r['action_type']=='stop']
-    later = [r for r in ranked if r['id'] not in selected and r['action_type']!='stop']
+    stop = [r for r in ranked if kernel.candidate_action_type(r)=='stop']
+    later = [r for r in ranked if r['id'] not in selected and kernel.candidate_action_type(r)!='stop']
     coverage = copy.deepcopy(source.get('coverage', {}))
     for lane in ('github','notion','product_context','outcome_data'):
         coverage.setdefault(lane,'unavailable')
@@ -73,7 +74,7 @@ def assemble(payload: dict, *, previous: dict | None = None) -> dict:
         **{key:source[key] for key in ('target','goal','horizon','as_of')},
         'decision':decision, 'decision_origin':'provided' if 'decision' in source else 'derived', 'mutations':'read-only', 'coverage':coverage,
         'readiness':copy.deepcopy(plan['readiness']), 'blockers':copy.deepcopy(blockers),
-        'verify_now':verify_now, 'now':now, 'next':plan['next_actions'],
+        'verify_now':verify_now, 'decision_now':decision_now, 'now':now, 'next':plan['next_actions'],
         'later':later, 'stop':stop, 'watch':[], 'unknowns':copy.deepcopy(unknowns),
         'state_items':copy.deepcopy(source.get('state_items',[])),
         'drift':copy.deepcopy(plan['reconciliation']['issues']), 'delegations':[],
@@ -122,14 +123,16 @@ def assemble(payload: dict, *, previous: dict | None = None) -> dict:
 LABELS = {
     'pl': {'title':'Plan pracy produktu','scope':'Zakres: dostarczone zapisy; bez weryfikacji produktu na żywo.',
            'goal':'Cel','target':'Produkt / repo','horizon':'Horyzont','time':'Stan na','ready':'Gotowość do planowania',
-           'verify':'Sprawdź teraz','now':'Zrób teraz','next':'Następne kroki','later':'Poza bieżącą listą','stop':'Wstrzymane inicjatywy',
+           'verify':'Sprawdź teraz','decision':'Decyzje do podjęcia','now':'Zrób teraz','next':'Następne kroki','later':'Poza bieżącą listą','stop':'Wstrzymane inicjatywy',
+           'options':'Opcje','delegate':'Decyzja przekazana do',
            'id':'ID','action':'Działanie','why':'Dlaczego','done':'Warunek zakończenia','evidence':'Dowody','confidence':'Pewność',
            'none':'Brak wskazanych działań.','issues':'Blokady i luki','sources':'Pokrycie źródeł',
            'summary':'Decyzja operacyjna','delta':'Zmiany względem poprzedniej oceny','warning':'Uwagi walidatora',
            'foot':'Raport nie jest zgodą na wdrożenie. Hash potwierdza spójność treści, nie prawdziwość ani autorstwo dowodów.'},
     'en': {'title':'Product operating brief','scope':'Scope: supplied records; no live product verification.',
            'goal':'Goal','target':'Product / repository','horizon':'Horizon','time':'As of','ready':'Planning readiness',
-           'verify':'Verify now','now':'Now','next':'Next','later':'Outside the current shortlist','stop':'Stopped initiatives',
+           'verify':'Verify now','decision':'Decisions now','now':'Now','next':'Next','later':'Outside the current shortlist','stop':'Stopped initiatives',
+           'options':'Options','delegate':'Decision delegated to',
            'id':'ID','action':'Action','why':'Why','done':'Done when','evidence':'Evidence','confidence':'Confidence',
            'none':'No actions selected.','issues':'Blockers and gaps','sources':'Source coverage',
            'summary':'Operating decision','delta':'Changes since the previous assessment','warning':'Validator notes',
@@ -149,15 +152,19 @@ def render(result: dict, language: str = 'pl') -> str:
         lines += ['- '+plain(reason)]
     lines += ['',f"## {labels['summary']}",'',plain(report['decision'] if report.get('decision_origin')!='derived' or language=='en' else f"{report['readiness']['status']}: liczba działań do podjęcia od razu: {len(plan['immediate_actions'])}. Pozostała praca podlega zależnościom i warunkom dowodowym."),'',f"## {labels['sources']}",'', ('| Źródło | Stan |' if language=='pl' else '| Lane | State |'),'| --- | --- |']
     lines += [f'| {plain(k)} | {plain(v)} |' for k,v in sorted(report['coverage'].items())]
-    for field,label in [('verify_now','verify'),('now','now'),('next','next'),('later','later'),('stop','stop')]:
+    for field,label in [('verify_now','verify'),('decision_now','decision'),('now','now'),('next','next'),('later','later'),('stop','stop')]:
         rows=report[field];lines+=['',f"## {labels[label]}",'']
         if not rows:
             lines.append(labels['none']);continue
         for row in rows:
-            lines += [f"### {plain(row['id'])} — {plain(row['action'])}",'',
+            title = row.get('question') if kernel.candidate_action_type(row)=='decision' else row.get('action')
+            lines += [f"### {plain(row['id'])} — {plain(title or row.get('action','—'))}",'',
                       f"{labels['why']}: {plain(row.get('why_now',row.get('rationale','—')))}",'',
                       f"{labels['done']}: {plain(row['done_when'])}",'',
-                      f"{labels['confidence']}: {row['confidence']}",'']
+                      f"{labels['confidence']}: {plain(row.get('confidence','—'))}",'']
+            if kernel.candidate_action_type(row)=='decision':
+                lines += [f"{labels['options']}: {plain('; '.join(str(x) for x in row.get('options',[])))}",'',
+                          f"{labels['delegate']}: {plain(row.get('delegated_to','—'))}",'']
             if row.get('depends_on'):
                 lines += [('Wymaga: ' if language=='pl' else 'Depends on: ')+plain(', '.join(row['depends_on'])),'']
             for ev in row['evidence']:
@@ -166,6 +173,7 @@ def render(result: dict, language: str = 'pl') -> str:
     diagnostics={
         'blockers':report['blockers'], 'unknowns':report['unknowns'], 'drift':report['drift'],
         'blocked_by':plan['sequence']['blocked_by'],
+        'missing_dependencies':plan['sequence']['missing_dependencies'],
         'held_by_readiness_action_ids':plan['held_by_readiness_action_ids'],
         'not_shortlisted_ids':[r['id'] for r in report['later']],
     }

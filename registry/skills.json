@@ -234,7 +234,7 @@
       "routing_signals": [
         [
           12,
-          "artifact acceptance|acceptance gate.*(artifact|report|content)"
+          "artifact acceptance|acceptance gate.*(artifact|report|content)|report ready against its brief"
         ],
         [
           10,
@@ -413,7 +413,7 @@
       "routing_signals": [
         [
           20,
-          "vague request.*executable brief|acceptance criteria before"
+          "vague request.*executable brief|acceptance criteria before|vague.*(ebook|report|guide).*artifact brief"
         ],
         [
           12,
@@ -561,7 +561,7 @@
       "routing_signals": [
         [
           10,
-          "competitor watchlist|competitor digest|competitive intelligence"
+          "competitor watchlist|competitor digest|competitive intelligence|monitoruj konkurent"
         ],
         [
           10,
@@ -832,7 +832,7 @@
       "routing_signals": [
         [
           12,
-          "content writer|write.*(evidence.backed|informational) (guide|report|article)"
+          "content writer|write.*(evidence.backed|informational|evidence.aware) (guide|report|article|explainer article)"
         ],
         [
           10,
@@ -1197,7 +1197,7 @@
         ],
         [
           12,
-          "feedback integrator|integrate.*feedback"
+          "feedback integrator|integrate.*feedback|aggregate recurring reviewer findings"
         ],
         [
           10,
@@ -1392,7 +1392,7 @@
     },
     {
       "id": "product-operator",
-      "version": "2.3.0",
+      "version": "2.3.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1651,7 +1651,7 @@
         ],
         [
           14,
-          "quality loop operator|quality workflow"
+          "quality loop operator|quality workflow|full artifact quality loop"
         ],
         [
           12,
@@ -1716,7 +1716,7 @@
       "routing_signals": [
         [
           10,
-          "release candidate|release gate|go_with_controls|\\bno_go\\b"
+          "release candidate|release gate|go_with_controls|\\bno_go\\b|kandydat wydania"
         ],
         [
           10,
@@ -1816,7 +1816,7 @@
         ],
         [
           12,
-          "repair operator|repair set"
+          "repair operator|repair set|repair the accepted review findings"
         ],
         [
           10,
@@ -1904,7 +1904,7 @@
       "routing_signals": [
         [
           14,
-          "repo roaster|repository roast|roast.*(repo|codebase)"
+          "repo roaster|repository roast|roast.*(repo|codebase)|brutalny przeglad repo"
         ],
         [
           12,
@@ -2172,7 +2172,7 @@
       "routing_signals": [
         [
           14,
-          "science roaster|scientific peer review|reviewer.?2"
+          "science roaster|scientific peer review|reviewer.{0,3}2"
         ],
         [
           12,
@@ -2323,7 +2323,7 @@
         ],
         [
           12,
-          "skill auditor|audit.*(agent skill|skill package|skill library)"
+          "skill auditor|audit.*(agent skill|skill package|skill library)|zaudytuj biblioteke skilli|przeanalizuj.{0,80}repo.{0,20}agent[ -]skills|(?:audyt|przejrzyj|zweryfikuj jakosc).{0,80}(?:skilli|katalogu umiejetnosci agentow)|sprawdz.{0,80}skill-[a-z-]+.{0,80}(?:test|kolid|routing)"
         ],
         [
           10,
@@ -2437,7 +2437,7 @@
     },
     {
       "id": "skill-orchestrator",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2547,7 +2547,7 @@
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
