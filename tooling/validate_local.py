@@ -25,6 +25,7 @@ CHECKS = (
     ("openai_plugin", "tooling/validate_openai_plugin.py", ()),
     ("registry", "tooling/validate_repo.py", ()),
     ("orchestrator", "tooling/sync_orchestrator.py", ("--check",)),
+    ("roaster_shared", "tooling/sync_roaster_shared.py", ("--check",)),
     ("compatibility", "tooling/compatibility.py", ()),
     ("adapters", "tooling/generate_adapters.py", ("--check",)),
     ("routing", "tooling/run_routing_evals.py", ()),

@@ -6,11 +6,13 @@ description: Alias for skill-orchestrator with execution_mode=isolated_subagents
 # Skill Orchestrator — Multiagent (alias)
 
 This package is a **thin alias**. Canonical planning and sequencing live in
-`skill-orchestrator`.
+`skill-orchestrator`, which must be installed alongside this package. If it is
+unavailable, stop and ask the user to install it; do not improvise the missing
+planning contract.
 
 Immediately load and follow:
 
-[`../skill-orchestrator/SKILL.md`](../skill-orchestrator/SKILL.md)
+the installed `skill-orchestrator` skill entrypoint
 
 with:
 
@@ -20,8 +22,7 @@ execution_mode: isolated_subagents
 
 Shared references (do not fork):
 
-- `../skill-orchestrator/references/workflow-archetypes.md`
-- `../skill-orchestrator/references/sequencing-rules.md`
+- `skill-orchestrator` workflow archetypes and sequencing rules from its installed package
 - `references/multiagent-execution.md`
 - `references/subagent-prompt-template.md`
 

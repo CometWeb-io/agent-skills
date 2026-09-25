@@ -1,0 +1,10 @@
+{
+  "schema": "cometweb.skill-runtime/v1",
+  "python": ">=3.10",
+  "dependencies": {
+    "validate": [
+      "jsonschema>=4.18,<5"
+    ]
+  },
+  "notes": "scripts/validate_envelope.py requires jsonschema and the bundled references/envelope.core.schema.json."
+}

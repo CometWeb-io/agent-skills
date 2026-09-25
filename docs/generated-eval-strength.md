@@ -25,7 +25,7 @@ gate — and those are listed rather than hidden.
 | `skill-auditor` | 2 | 2 | 1.00 |
 | `skill-evaluator` | 5 | 5 | 1.00 |
 | `portfolio-operator` | 61 | 55 | 0.90 |
-| `longform-publisher` | 54 | 28 | 0.52 |
-| `product-operator` | 165 | 34 | 0.21 |
+| `longform-publisher` | 54 | 35 | 0.65 |
+| `product-operator` | 167 | 64 | 0.38 |
 
-**14 harnesses.** 194 of 357 reachable guards are held (54% if every skill counted equally, which they do not).
+**14 harnesses.** 231 of 359 reachable guards are held (64% if every skill counted equally, which they do not).

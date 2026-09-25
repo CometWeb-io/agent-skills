@@ -5,9 +5,14 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/skills.sh
 source "$ROOT/scripts/lib/skills.sh"
+# shellcheck source=lib/install.sh
+source "$ROOT/scripts/lib/install.sh"
 
 TARGET="${CODEX_SKILLS_DIR:-$HOME/.codex/skills}"
-mkdir -p "$TARGET"
+skill_names="$(list_skills)"
+[[ -n "$skill_names" ]] || { echo "FAIL: no skill packages found" >&2; exit 1; }
+prepare_install_target "$TARGET" "$ROOT/skills"
+preflight_install_conflicts "$TARGET" "$ROOT/skills" "$skill_names"
 count=0
 while IFS= read -r name; do
   [[ -z "$name" ]] && continue
@@ -17,14 +22,8 @@ while IFS= read -r name; do
     echo "FAIL: missing skill directory $src" >&2
     exit 1
   fi
-  if [[ -L "$dest" ]]; then
-    rm "$dest"
-  elif [[ -e "$dest" ]]; then
-    echo "FAIL: $dest exists and is not a symlink — move it aside first" >&2
-    exit 1
-  fi
-  ln -s "$src" "$dest"
-  echo "linked $name -> $src"
+  install_skill_link "$src" "$dest" "$name"
   count=$((count + 1))
-done < <(list_skills)
+done <<< "$skill_names"
+print_install_backup_summary
 echo "OK: $count Codex skills installed in $TARGET"

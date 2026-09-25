@@ -36,7 +36,7 @@ Validators:
 Finalized `EvidenceEnvelope` and `DecisionEnvelope` handoffs can be rendered as
 unreviewed WhyKit drafts with `tooling/whykit_draft.py`. The adapter never
 allocates ledger IDs or approves a record; see
-[`docs/WHYKIT-INTEGRATION.md`](../../docs/WHYKIT-INTEGRATION.md).
+[`docs/WHYKIT-INTEGRATION.md`](https://github.com/CometWeb-io/agent-skills/blob/main/docs/WHYKIT-INTEGRATION.md).
 
 ## Enum conventions
 

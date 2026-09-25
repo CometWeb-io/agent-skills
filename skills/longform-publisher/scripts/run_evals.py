@@ -116,6 +116,18 @@ def build_scenario(name: str) -> tuple[dict, str]:
         r["claim_uses"][0]["evidence_refs"] = ["src-missing"]
     elif name == "valid_pdf_release":
         r["derived_artifacts"] = [{"id": "p1", "format": "PDF", "path": "guide.pdf", "master_sha256": r["canonical_master"]["sha256"], "generation_status": "COMPLETE", "qa_required": True, "qa_status": "PASS", "parity_status": "PASS", "direct_material_edit": False}]
+    elif name == "derived_incomplete":
+        r["derived_artifacts"][0]["generation_status"] = "PENDING"
+    elif name == "derived_master_mismatch":
+        r["derived_artifacts"][0]["master_sha256"] = "0" * 64
+    elif name == "source_ready_not_outlined":
+        r["lifecycle"]["outline_locked"] = False
+        r["current_stage"] = "SOURCE_READY"
+    elif name == "locked_placeholder":
+        text += "\n[TODO: verify layout]\n"
+        h = hashlib.sha256(text.encode()).hexdigest()
+        r["canonical_master"]["sha256"] = h
+        r["derived_artifacts"][0]["master_sha256"] = h
     else:
         raise ValueError(name)
     return r, text

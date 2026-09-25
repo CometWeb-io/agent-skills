@@ -2,11 +2,12 @@
   "schema": "cometweb.eval-strength-policy/v1",
   "default_min_strength": 0.5,
   "critical_skills": {
+    "longform-publisher": 0.6,
     "portfolio-operator": 0.9,
-    "product-operator": 0.2,
+    "product-operator": 0.38,
     "rubric-designer": 0.9,
     "skill-auditor": 0.9
   },
   "allow_unexercised_scripts": {},
-  "note": "Absolute floors ratchet quality; raise critical floors as harnesses improve. product-operator floor is provisional after bringing prepare_brief/self_check into the harness (more guards measured)."
+  "note": "Absolute floors ratchet quality. Product Operator and Longform Publisher floors reflect the 2026-09-25 golden-case expansion; held-guard counts remain the primary regression gate."
 }

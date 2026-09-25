@@ -13,8 +13,7 @@ try:
 except ImportError:  # pragma: no cover
     jsonschema = None  # type: ignore
 
-ROOT = Path(__file__).resolve().parents[3]
-SCHEMA = ROOT / "protocol" / "schemas" / "envelope.core.schema.json"
+SCHEMA = Path(__file__).resolve().parents[1] / "references" / "envelope.core.schema.json"
 
 REQUIRED_BY_TYPE: dict[str, list[str]] = {
     "EvidenceEnvelope": ["payload"],
@@ -37,18 +36,19 @@ def validate_envelope(data: dict, expected_type: str | None = None) -> list[str]
     errors: list[str] = []
     if expected_type and data.get("type") != expected_type:
         errors.append(f"type: expected {expected_type!r}, got {data.get('type')!r}")
-    if jsonschema and SCHEMA.is_file():
-        schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    if jsonschema is None:
+        errors.append("jsonschema dependency is required for envelope validation")
+    elif not SCHEMA.is_file():
+        errors.append("bundled envelope schema is missing")
+    else:
         try:
+            schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+            jsonschema.Draft202012Validator.check_schema(schema)
             jsonschema.validate(data, schema)
+        except (OSError, json.JSONDecodeError, jsonschema.SchemaError) as exc:
+            errors.append(f"schema unavailable or invalid: {exc}")
         except jsonschema.ValidationError as exc:
             errors.append(f"schema: {exc.message}")
-    else:
-        for key in ("id", "type", "producer", "protocol_version", "subject", "as_of"):
-            if key not in data:
-                errors.append(f"missing required field: {key}")
-        if data.get("protocol_version") != "1.0":
-            errors.append("protocol_version must be '1.0'")
     env_type = data.get("type")
     if isinstance(env_type, str) and env_type in REQUIRED_BY_TYPE:
         if "payload" not in data or not isinstance(data.get("payload"), dict):

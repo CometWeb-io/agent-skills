@@ -1,0 +1,9 @@
+{
+  "scenario": "source_ready_not_outlined",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "SOURCE_READY"
+  }
+}

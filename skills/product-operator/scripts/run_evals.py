@@ -45,6 +45,28 @@ def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
     if kind == "readiness_status":
         actual = kernel.readiness_report(payload)["status"]
         return actual == expected, actual
+    if kind == "plan_contract":
+        # Each case overrides a valid, fully covered synthetic plan.
+        source = {
+            "target": "fixture/product", "goal": "Verify plan safety",
+            "horizon": "one week", "as_of": "2026-09-25T00:00:00Z",
+            "coverage": {"github": "verified", "notion": "verified", "product_context": "verified"},
+            **payload,
+        }
+        try:
+            result = kernel.build_plan(source)
+        except kernel.InputError as exc:
+            actual = {"error": str(exc)}
+        else:
+            actual = {
+                "immediate": [row["id"] for row in result["immediate_actions"]],
+                "next": [row["id"] for row in result["next_actions"]],
+                "held": result["held_by_readiness_action_ids"],
+            }
+        return actual == expected, actual
+    if kind == "freshness_status":
+        actual = kernel.evidence_freshness(payload["evidence"], payload["as_of"])
+        return actual == expected, actual
     if kind == "delta_thrash":
         result = kernel.delta_reports(payload["old"], payload["new"])
         actual = bool(result["priority_thrash"])
@@ -71,6 +93,17 @@ def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
             for name, digest in manifest["files"].items()
         )
         return ok == expected, sorted(manifest["files"])
+    if kind == "snapshot_integrity":
+        snapshot = kernel.snapshot_report(payload["report"])
+        if payload.get("tamper_field"):
+            snapshot[payload["tamper_field"]] = "tampered"
+        try:
+            kernel.unwrap_report(snapshot)
+        except kernel.InputError:
+            actual = "rejected"
+        else:
+            actual = "accepted"
+        return actual == expected, actual
     if kind == "self_check_status":
         # Drive the package smoke path without spawning a nested process.
         required = [

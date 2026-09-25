@@ -37,6 +37,13 @@ jobs:
             exit 1
           fi
 
+      - name: Validate release candidate before attestation
+        run: |
+          uv run python tooling/validate_local.py --trusted-checkout --output "$RUNNER_TEMP/agent-skills-release-validation" --timeout 900
+          uv run python tooling/public_safety.py --root .
+          uv run python tooling/public_safety.py --root . --history
+          uv run python tooling/installation_acceptance.py --all --run-helpers --trusted-checkout
+
       - name: Build skill packages
         run: |
           mkdir -p dist

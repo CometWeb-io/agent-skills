@@ -34,14 +34,26 @@ Run the local repository gate. It writes per-check logs and a JUnit report
 outside the checkout, and refuses to pass if the working tree changes underneath it:
 
 ```bash
-python3 tooling/validate_local.py --trusted-checkout --output ../agent-skills-validation-run-01 --timeout 900
+uv run python tooling/validate_local.py --trusted-checkout --output ../agent-skills-validation-run-01 --timeout 900
 ```
 
 Choose a new output directory outside the checkout for each run. The report is
 `../agent-skills-validation-run-01/report.json`. A check is only `passed` when it
 exits zero **and** nothing was skipped — an unproven test is not a green one.
 The GitHub Actions workflow has a small number of additional checks; run the
-public-safety scan below locally as well.
+public-safety scan below locally as well. Before a release, exercise the actual
+ZIPs with the locked development environment:
+
+```bash
+uv run python tooling/installation_acceptance.py --all --run-helpers --trusted-checkout
+```
+
+This builds and extracts all packages, then runs bundled `run_evals.py` and
+`self_check.py` entrypoints from a separate working directory. The multiagent
+validator additionally must accept a valid envelope, reject malformed data,
+and fail closed without `jsonschema`. Packages without those offline checks
+report helper execution as `not_assessed`; no result proves live host/model
+acceptance. This executes trusted repository code, not a security sandbox.
 
 To run pieces individually while iterating:
 

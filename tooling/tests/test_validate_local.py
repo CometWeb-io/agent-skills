@@ -105,6 +105,7 @@ def test_command_plan_does_not_generate_publish_or_install(checkout):
     rows = dict(local.commands(local.inventory(checkout), Path("/report")))
     assert rows["adapters"][-1] == "--check"
     assert rows["orchestrator"][-1] == "--check"
+    assert rows["roaster_shared"][-1] == "--check"
     assert "--import-mode=importlib" in rows["pytest"]
     assert "addopts=" in rows["pytest"]
     for command in rows.values():
