@@ -7,6 +7,9 @@ AEO is not a guarantee of snippets, PAA, voice answers, or AI citation.
 
 For pages that answer a question/task, check whether the relevant section gives the answer promptly
 and then expands with evidence/context. Do not enforce magic fixed-length answer blocks or a rigid first-sentence length.
+Do not require a labelled answer template (for example "Short answer:"); a short hook before the
+answer is acceptable when the answer follows promptly in the same opening. Do penalise an answer that
+is split across a rhetorical fragment and a following paragraph that no longer names its subject.
 
 ## AEO-02 - Section discoverability where natural
 
