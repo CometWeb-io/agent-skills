@@ -195,3 +195,42 @@ def test_installer_rejects_target_overlapping_source_tree(
     assert entrypoint.is_file()
     assert not (skill / "host-skills").exists()
     assert not (tmp_path / "backups").exists()
+
+
+@pytest.mark.parametrize("host", ["cursor", "codex"])
+def test_installer_rejects_dotdot_path_escape(host: str, tmp_path: Path) -> None:
+    """SKILLS_DIR values with a '..' component must fail closed in the shared helper."""
+    intended = tmp_path / "intended-skills"
+    intended.mkdir()
+    # Keep the literal ".." component; Path.resolve() would collapse it.
+    escape_target = intended / "nested" / ".." / ".." / "outside-escape"
+    outside = tmp_path / "outside-escape"
+    backup = tmp_path / "backups"
+    rules_escape = intended / ".." / ".." / "rules-escape"
+
+    result = install(
+        host,
+        escape_target,
+        backup,
+        rules=rules_escape if host == "cursor" else tmp_path / "rules",
+    )
+    assert result.returncode != 0, result.stdout
+    assert ".." in result.stderr
+    assert not outside.exists()
+    assert not (tmp_path / "rules-escape").exists()
+    assert list(intended.iterdir()) == [] or {p.name for p in intended.iterdir()} <= {"nested"}
+    if (intended / "nested").exists():
+        assert list((intended / "nested").iterdir()) == []
+    assert not backup.exists()
+
+
+def test_cursor_installer_rejects_dotdot_rules_dir(tmp_path: Path) -> None:
+    target = tmp_path / "skills"
+    backup = tmp_path / "backups"
+    rules_escape = target / ".." / ".." / "rules-escape"
+    result = install("cursor", target, backup, rules=rules_escape)
+    assert result.returncode != 0
+    assert ".." in result.stderr
+    assert not (tmp_path / "rules-escape").exists()
+    assert not target.exists() or not list(target.iterdir())
+    assert not backup.exists()

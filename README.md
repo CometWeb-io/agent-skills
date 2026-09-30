@@ -18,6 +18,8 @@ This repository contains 32 reusable skill packages for compatible agent hosts.
 git clone https://github.com/CometWeb-io/agent-skills.git
 cd agent-skills
 ./scripts/install-codex.sh
+# Reinstall when an existing skill path conflicts (fail-closed default unchanged):
+# SKILLS_REPLACE_CONFLICTS=1 ./scripts/install-codex.sh
 ```
 
 Use `./scripts/install-claude.sh` for Claude Code or `./scripts/install-cursor.sh` for Cursor. For all supported hosts, use `./scripts/install-all.sh`. See [installation and host setup](INSTALL.md).

@@ -66,6 +66,28 @@ def test_invalid_catalog_fails_before_decision(mutation):
     with pytest.raises(ValueError):route('hello',registry,POLICY)
 
 
+def test_readme_product_operator_starter_prompt_routes():
+    prompt = (
+        "Use product-operator to compare this repo with the roadmap.\n"
+        "Give me the three most useful next actions and how to verify each one."
+    )
+    result = route(prompt, REGISTRY, POLICY)
+    assert result["status"] == "single_skill", result
+    assert result["primary_skill"] == "product-operator", result
+
+
+def test_near_tie_multi_intent_does_not_collapse_to_one_specialist():
+    prompt = (
+        "Create a full roadmap from scratch and also what should we do this week "
+        "given the roadmap"
+    )
+    result = route(prompt, REGISTRY, POLICY)
+    assert result["status"] == "ambiguous", result
+    assert result["primary_skill"] is None
+    assert "product-operator" in result["candidates"]
+    assert "repo-to-roadmap" in result["candidates"]
+
+
 def test_forbidden_only_case_is_executed_not_silently_ignored():
     report=evaluate(REGISTRY,POLICY,{'cases':[dict(id='negative',prompt='fix typos',must_not_trigger=['ai-humanize'])]})
     assert report['passed']==1

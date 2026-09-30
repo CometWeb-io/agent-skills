@@ -27,7 +27,7 @@ python3 -m pytest -q tests
 
 Official source guidance checked 2026-09-12:
 
-- Codex local personal scope: `~/.agents/skills/product-operator/SKILL.md`;
+- Codex local personal scope: `~/.codex/skills/product-operator/SKILL.md`;
   project scope: `.agents/skills/product-operator/SKILL.md`.
 - Claude Code local personal scope: `~/.claude/skills/product-operator/SKILL.md`;
   project scope: `.claude/skills/product-operator/SKILL.md`.

@@ -17,7 +17,10 @@ RULE_SRC="$ROOT/docs/generated-cursor-routing.mdc"
 if [[ ! -f "$RULE_SRC" ]]; then
   RULE_SRC="$ROOT/extras/cursor-routing.mdc"
 fi
-RULE_DEST="${CURSOR_RULES_DIR:-$HOME/.cursor/rules}/cometweb-agent-skills.mdc"
+RULES_DIR="${CURSOR_RULES_DIR:-$HOME/.cursor/rules}"
+# Same path-escape gate as skill targets (shared helper; no .. climb-out).
+resolved_install_path "$RULES_DIR" >/dev/null
+RULE_DEST="$RULES_DIR/cometweb-agent-skills.mdc"
 if [[ -f "$RULE_SRC" && -L "$RULE_DEST" ]]; then
   preflight_existing_path "$RULE_DEST" "$RULE_SRC"
 fi
