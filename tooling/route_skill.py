@@ -108,6 +108,12 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
     for sid in active:
         if re.search(r"(?<![\w-])[$@]" + re.escape(sid) + r"(?![\w-])", text):
             explicit.add(sid)
+        # Natural "use product-operator" / "run evidence-researcher" invocations.
+        if re.search(
+            r"(?<![\w-])(?:use|run|invoke|load)\s+(?:the\s+)?" + re.escape(sid) + r"(?![\w-])",
+            text,
+        ):
+            explicit.add(sid)
         if any(matches(p, text) for p in policy.get("explicit_patterns", {}).get(sid, [])):
             explicit.add(sid)
         if _denied_by_name(sid, text) or any(matches(p, text) for p in policy.get("denied_patterns", {}).get(sid, [])):
@@ -137,22 +143,43 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
         total = sum(weight for weight, pattern in entry.get("routing_signals", []) if matches(pattern, text))
         if total or sid in explicit:
             scores[sid] = total
+    def _canonical(sid: str) -> str:
+        current = sid
+        seen: set[str] = set()
+        while current in active and current not in seen:
+            seen.add(current)
+            alias = active[current].get("alias_of")
+            if not alias:
+                return current
+            current = alias
+        return current
+
+    workflow = policy["workflow_skill"]
     candidates = sorted(explicit & scores.keys())
     if not candidates and scores:
         highest = max(scores.values())
-        candidates = sorted(sid for sid, score in scores.items() if score == highest)
+        # Exact top score first. Near-ties among incompatible specialists (within
+        # one point of the highest) must not silently collapse to the winner.
+        top = [sid for sid, score in scores.items() if score == highest]
+        near = [sid for sid, score in scores.items() if score >= highest - 1]
+        specialist_canons = {
+            _canonical(sid) for sid in near if _canonical(sid) != workflow
+        }
+        if len(specialist_canons) > 1:
+            candidates = sorted(sid for sid in near if _canonical(sid) != workflow)
+        else:
+            candidates = sorted(top)
     primary, kind = None, "no_skill"
     if len(candidates) > 1:
         if len(explicit & scores.keys()) > 1:
             kind = "workflow"
-            workflow = policy["workflow_skill"]
             primary = workflow if workflow in active and workflow not in blocked else None
         else:
             kind = "ambiguous"
     elif candidates:
         primary = candidates[0]
-        canonical = active[primary].get("alias_of") or primary
-        kind = "workflow" if canonical == policy["workflow_skill"] else "single_skill"
+        canonical = _canonical(primary)
+        kind = "workflow" if canonical == workflow else "single_skill"
     return {"status": kind, "primary_skill": primary, "candidates": candidates, "scores": scores, "blocked": blocked, "mode": "deterministic_proxy", "runtime_acceptance": "not_assessed"}
 
 

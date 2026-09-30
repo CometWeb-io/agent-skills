@@ -11,6 +11,15 @@ resolved_install_path() {
   local path="$1" base resolved index
   local -a missing=()
 
+  # Reject climb-out before dirname collapsing can turn .. into a parent path.
+  # Custom absolute targets without a ".." component remain allowed.
+  case "/${path}/" in
+    */../*)
+      echo "FAIL: install target must not contain '..' path components: $path" >&2
+      return 1
+      ;;
+  esac
+
   while [[ ! -d "$path" ]]; do
     if [[ -L "$path" ]]; then
       echo "FAIL: install target contains a broken symlink: $path" >&2
@@ -24,7 +33,10 @@ resolved_install_path() {
     base="${missing[index]}"
     case "$base" in
       .|"") ;;
-      ..) resolved="$(dirname "$resolved")" ;;
+      ..)
+        echo "FAIL: install target must not contain '..' path components: $1" >&2
+        return 1
+        ;;
       *) resolved="${resolved%/}/$base" ;;
     esac
   done

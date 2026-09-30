@@ -23,6 +23,13 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Fixed
 
+- Install targets that contain a `..` path component are rejected in the shared
+  helper, including `CURSOR_RULES_DIR`. Absolute directories without `..` still
+  install.
+- A near-tie between incompatible specialists returns `ambiguous` instead of
+  silently picking one skill. `use <skill-id>` counts as an explicit invoke.
+- Product Operator's install note uses `~/.codex/skills`, the same Codex path
+  as the root installer.
 - Host installers reject conflicting directories, files, and foreign symlinks
   by default before linking any skill. With `SKILLS_REPLACE_CONFLICTS=1`,
   conflicting entries are moved to a dated backup and canonical links are

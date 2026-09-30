@@ -53,6 +53,46 @@ def test_registry_order_does_not_break_ties():
     assert first["status"] == "ambiguous"
 
 
+def test_near_tie_incompatible_specialists_are_ambiguous():
+    data = registry()
+    data["skills"].extend([
+        {
+            "id": "product-operator",
+            "lifecycle": "active",
+            "routing_signals": [[10, "what should we do this week"]],
+        },
+        {
+            "id": "repo-to-roadmap",
+            "lifecycle": "active",
+            "routing_signals": [[9, "full roadmap from scratch"]],
+        },
+    ])
+    result = route(
+        "Create a full roadmap from scratch and also what should we do this week",
+        data,
+        POLICY,
+    )
+    assert result["status"] == "ambiguous"
+    assert result["primary_skill"] is None
+    assert set(result["candidates"]) == {"product-operator", "repo-to-roadmap"}
+
+
+def test_use_skill_id_is_explicit_invocation():
+    data = registry()
+    data["skills"].append({
+        "id": "product-operator",
+        "lifecycle": "active",
+        "routing_signals": [[10, "what should we do this week"]],
+    })
+    result = route(
+        "Use product-operator to compare this repo with the roadmap.",
+        data,
+        POLICY,
+    )
+    assert result["status"] == "single_skill"
+    assert result["primary_skill"] == "product-operator"
+
+
 def test_polish_normalization_including_l_stroke():
     assert normalize("ŁÓDŹ Żółć") == "lodz zolc"
 
