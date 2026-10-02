@@ -15,7 +15,10 @@ registry/skills.json               # routing and compatibility metadata
 
 The marketplace entry uses `source.path: "./"`, relative to the repository
 root. This is intentional: `skills/` remains the only skill payload and the
-registry remains the metadata source of truth.
+registry remains the metadata source of truth. The entry also carries the
+`policy` (`installation`, `authentication`) and `category` fields that OpenAI's
+marketplace format asks for on every plugin; `tooling/validate_openai_plugin.py`
+rejects an entry without them.
 
 ## ChatGPT workspace import
 

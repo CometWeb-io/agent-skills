@@ -20,6 +20,8 @@ SHARED_REFS = ("workflow-archetypes.md", "multiagent-execution.md", "subagent-pr
 # Bundled reference name -> canonical protocol schema.
 PROTOCOL_COPIES = {
     "envelope.core.schema.json": ROOT / "protocol" / "cw-aip-v1" / "schemas" / "envelope.core.schema.json",
+    "evidence-envelope.schema.json": ROOT / "protocol" / "cw-aip-v1" / "schemas" / "evidence-envelope.schema.json",
+    "decision-handoff.schema.json": ROOT / "protocol" / "cw-aip-v1" / "schemas" / "decision-handoff.schema.json",
     "cw-aip-v2.core.schema.json": ROOT / "protocol" / "cw-aip-v2" / "core.schema.json",
 }
 

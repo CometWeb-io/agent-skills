@@ -1,0 +1,27 @@
+{
+  "scenario": "manifest_lanes",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  },
+  "manifest_includes": [
+    "BLOCKER",
+    "- Resolve the open citation",
+    "NOW",
+    "- Regenerate the PDF \u2014 Done: parity PASS",
+    "WAITING",
+    "- Approve the cover?",
+    "DELEGATE",
+    "- 42",
+    "- RELEASE_READY",
+    "| Derived | HTML |"
+  ],
+  "manifest_excludes": [
+    "STOP",
+    "VERIFY NOW",
+    "DECISION NOW",
+    "NEXT MILESTONE"
+  ]
+}

@@ -10,6 +10,8 @@
 6. Interaction graph
 7. Prioritization principles
 8. Common transfer traps
+9. What is not a candidate
+10. Red-team checklist
 
 ## 1. Pattern taxonomy
 
@@ -154,3 +156,38 @@ Use `REVIEW_REQUIRED` for unresolved mandatory legal/IP/security/privacy constra
 - **Measurement blindness** - no baseline or success rule.
 - **License blindness** - accessible code/assets assumed reusable.
 - **Destination amnesia** - source evidence replaces target problem evidence.
+
+## 9. What is not a candidate
+
+A candidate pattern must express
+`problem -> mechanism -> implementation shape -> expected effect -> conditions -> failure modes`.
+
+Reject entries that are only:
+
+- "they have feature X";
+- a visual imitation with no mechanism;
+- a library/framework name with no product or engineering tradeoff;
+- speculative business rationale presented as fact;
+- a generic best practice that did not require teardown evidence;
+- a code technique with no destination problem.
+
+## 10. Red-team checklist
+
+Read this section before assigning verdicts to the top patterns. For each top pattern, test at least:
+
+- cargo-cult adoption;
+- source success attribution error;
+- hidden scale/data/brand/ecosystem dependency;
+- business-model mismatch;
+- architecture transplant;
+- local optimum mismatch;
+- complexity import;
+- maintenance/support burden;
+- parity trap;
+- measurement blindness;
+- stale/deprecated source behavior;
+- license/IP/trade-dress risk;
+- security/privacy regression;
+- interaction conflict with another recommended pattern.
+
+A valid teardown may conclude that the most useful lesson is **what not to copy**.

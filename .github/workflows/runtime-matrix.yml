@@ -28,6 +28,9 @@ jobs:
           - skill: web-app-auditor
             deps: "jsonschema>=4.18,<5"
             test: skills/web-app-auditor/tests
+          - skill: skill-orchestrator-multiagent
+            deps: "jsonschema>=4.18,<5"
+            test: skills/skill-orchestrator-multiagent/tests
     name: ${{ matrix.package.skill }} / py${{ matrix.python }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
@@ -63,3 +66,45 @@ jobs:
         env:
           SKILL_TESTS: ${{ matrix.package.test }}
         run: .runtime-venv/bin/python -m pytest -q "$SKILL_TESTS"
+
+  # Every other skill claims the standard library only. Run their tests and the
+  # bundled-script CLI contract on each supported Python with nothing but pytest
+  # installed, so an undeclared import or a 3.11+-only API fails here. The
+  # skills ignored below declare dependencies in RUNTIME.json and are covered by
+  # the job above; tooling/tests/test_skill_script_cli_contract.py keeps the two
+  # lists in step.
+  stdlib-skills:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10", "3.11", "3.12", "3.13"]
+    name: stdlib skills / py${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python }}
+
+      - name: Create a venv with pytest only
+        env:
+          PYTHON_VERSION: ${{ matrix.python }}
+        run: |
+          uv venv --python "$PYTHON_VERSION" .runtime-venv
+          uv pip install --python .runtime-venv pytest
+
+      - name: Run stdlib-only skill tests
+        run: >-
+          .runtime-venv/bin/python -m pytest -q skills
+          --ignore=skills/ebook-publisher
+          --ignore=skills/skill-orchestrator-multiagent
+          --ignore=skills/web-app-auditor
+
+      - name: Check every bundled script's command line
+        run: .runtime-venv/bin/python -m pytest -q tooling/tests/test_skill_script_cli_contract.py

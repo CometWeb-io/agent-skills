@@ -163,12 +163,16 @@
         [
           5,
           "fix typos"
+        ],
+        [
+          9,
+          "\\bsound (?:more )?(?:natural|human)\\b|\\bless robotic\\b"
         ]
       ]
     },
     {
       "id": "artifact-acceptance",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -251,12 +255,16 @@
         [
           7,
           "acceptance contract.*evidence"
+        ],
+        [
+          10,
+          "\\bfinal acceptance\\b.{0,40}\\b(?:report|artifact|candidate|contract|brief|deliverable)\\b"
         ]
       ]
     },
     {
       "id": "benchmark-curator",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -347,7 +355,7 @@
     },
     {
       "id": "brief-architect",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -438,6 +446,10 @@
         [
           7,
           "underspecified.*(artifact|report|guide)"
+        ],
+        [
+          10,
+          "\\b(?:executable|execution|artifact) contract\\b"
         ]
       ]
     },
@@ -500,7 +512,7 @@
         ],
         [
           11,
-          "aktualny stan|potrzebuj[eę] kontekstu|contextenvelope|context-only"
+          "aktualny stan\\b.{0,30}\\b(?:insight|cometweb|cometbase|cometpen|cometlens|notion|repo|projekt|produkt|portfel)|potrzebuj[eę] kontekstu|contextenvelope|context-only"
         ],
         [
           10,
@@ -526,12 +538,12 @@
     },
     {
       "id": "competitive-intelligence",
-      "version": "1.0.2",
+      "version": "1.1.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior scan, track pricing/product/positioning/SEO/ads/reviews/company changes, maintain a competitor watchlist, produce recurring competitor digests, verify competitor claims, analyze cross-competitor trends, or turn observed deltas into product/GTM/sales implications. Use it when temporal state, snapshots, deltas, alerts, freshness, evidence provenance, or recurring intelligence operations matter. Do not use for a one-time initial deep profile with no monitoring intent (prefer a dedicated competitor-profiling skill when one is installed), for writing comparison pages or sales battlecards, for setting your own prices, or for a full search-visibility audit (use seo-geo-aeo-maxxing).",
+      "description": "Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior scan, track pricing/product/positioning/SEO/ads/reviews/company changes, maintain a competitor watchlist, produce recurring competitor digests, verify competitor claims, analyze cross-competitor trends, or turn observed deltas into product/GTM/sales implications. Use it when temporal state, snapshots, deltas, alerts, freshness, evidence provenance, or recurring intelligence operations matter. Do not use for a one-time initial deep profile with no monitoring intent (prefer a dedicated competitor-profiling skill when one is installed), for extracting a competitor's mechanisms to adapt into your own product (use product-teardown), for writing comparison pages or sales battlecards, for setting your own prices, or for a full search-visibility audit (use seo-geo-aeo-maxxing).",
       "explicit_only": false,
       "owns": [
         "competitor watchlist",
@@ -581,21 +593,21 @@
         ],
         [
           9,
-          "competitor.*pricing page|summarize competitor pricing"
+          "competitor\\w*\\b.{0,40}\\bpricing pages?\\b.{0,60}\\b(?:changed|since|snapshot|digest|monitor\\w*|track\\w*|delta)\\b|\\b(?:what changed|changes?|monitor\\w*|track\\w*|watch\\w*|summari[sz]e|diff)\\b.{0,40}\\bcompetitor\\w*.{0,30}\\bpricing\\b|summarize competitor pricing"
         ],
         [
           8,
           "competitor dropped|should we respond strategically"
         ],
         [
-          7,
-          "monitor competitors|competitor delta"
+          8,
+          "\\b(?:monitor|track|watch)\\w*\\b.{0,40}\\bcompetitors?\\b|competitor delta"
         ]
       ]
     },
     {
       "id": "content-reviewer",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -683,12 +695,16 @@
         [
           7,
           "constructive review.*content"
+        ],
+        [
+          10,
+          "\\breview (?:this|the|my) (?:draft|article|report|paragraph|section|text|copy|post|chapter)\\b.{0,40}\\bagainst (?:the|its|our|this) brief\\b"
         ]
       ]
     },
     {
       "id": "content-roaster",
-      "version": "6.0.1",
+      "version": "6.1.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -775,7 +791,7 @@
         ],
         [
           12,
-          "(?:roast|tear (?:it |this |them )?apart|rip (?:it )?apart|red.team|stress.test|poke holes in|(?:brutal|harsh|ruthless|savage)(?:ly)? (?:critique|review|roast)).{0,60}(?:\\b(?:landing|pricing|product|home|sales|procurement|trust|comparison|trial|feature)[ -]?page|\\b(?:e-?mails?|newsletter|outbound|sales deck|pitch deck|deck|post|linkedin|blog|article|case study|one.pager|brochure|ad copy|headline|cta|offer|copy|messaging|positioning)\\b)"
+          "(?:roast|tear (?:it |this |them )?apart|rip (?:it )?apart|red.team|stress.test|poke holes in|(?:brutal|harsh|ruthless|savage)(?:ly)? (?:critique|review|roast)).{0,60}(?:\\b(?:landing|pricing|product|home|sales|procurement|trust|comparison|trial|feature)[ -]?page|\\b(?:e-?mails?|newsletter|outbound|sales deck|pitch deck|deck|post|linkedin|blog|article|case study|one.pager|brochure|ad copy|headline|cta|offer|copy|messaging|positioning|(?:marketing|sales|launch|product) claims?)\\b)"
         ],
         [
           18,
@@ -783,7 +799,7 @@
         ],
         [
           11,
-          "\\b(?:re-?check|re-?review|re-?roast|re-?audit).{0,40}(?:landing page|homepage|pricing page|product page|sales page|\\bcopy\\b|\\boffer\\b|e-?mail|\\bdeck\\b)"
+          "\\b(?:re-?check|re-?review|re-?roast|re-?audit).{0,40}(?:landing page|homepage|pricing page|product page|sales page|\\bcopy\\b|\\boffer\\b|e-?mail|\\bdeck\\b|case stud|announcement|\\barticle|blog post|newsletter|white ?paper|e-?book|lead magnet)"
         ],
         [
           10,
@@ -801,7 +817,7 @@
     },
     {
       "id": "content-writer",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -890,12 +906,12 @@
     },
     {
       "id": "customer-ops",
-      "version": "2.1.1",
+      "version": "2.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run the operational customer-to-resolution loop across support conversations, customer cases, incidents, account risk, commitments, internal handoffs, feedback clusters, and GitHub engineering work. Use when asked to triage an inbox or ticket queue, investigate a customer problem, detect or coordinate an incident, build an operational account 360, watch churn/non-renewal signals, find overdue promises or stalled escalations, dedupe customer-reported bugs into GitHub, produce customer-ops briefs, or verify that a fix actually resolved the customer-visible symptom. Composes with Gmail/support tools, HubSpot/CRM, billing, product analytics, GitHub, Notion/incident records, and connected files. Do not use for broad VOC/persona research, retention-program design, general CRM architecture, analytics implementation, product roadmap prioritization, or security exploitation; hand those workflows to the specialist skill.",
+      "description": "Run the operational customer-to-resolution loop across support conversations, customer cases, incidents, account risk, commitments, internal handoffs, feedback clusters, and GitHub engineering work. Use when asked to triage an inbox or ticket queue, investigate a customer problem, detect or coordinate an incident, build an operational account 360, watch churn/non-renewal signals, find overdue promises or stalled escalations, dedupe customer-reported bugs into GitHub, produce customer-ops briefs, or verify that a fix actually resolved the customer-visible symptom. Composes with Gmail/support tools, HubSpot/CRM, billing, product analytics, GitHub, Notion/incident records, and connected files. Do not use for broad VOC/persona research, retention-program design, general CRM architecture, analytics implementation, product roadmap prioritization (Product Operator), release-candidate GO/NO_GO (Release Readiness), or security exploitation; hand those workflows to the specialist skill.",
       "explicit_only": false,
       "owns": [
         "support triage",
@@ -933,7 +949,7 @@
       "routing_signals": [
         [
           10,
-          "support queue|customer case|account 360"
+          "support queue|\\bcustomer cases?\\b(?! stud)|account 360"
         ],
         [
           9,
@@ -941,7 +957,7 @@
         ],
         [
           8,
-          "support.*engineering|dedupe github issues"
+          "\\bsupport\\b.{0,40}\\b(?:to|into|->|handoff to|escalat\\w* to)\\b.{0,15}\\bengineering\\b|\\bengineering handoff\\b|dedupe github issues"
         ],
         [
           8,
@@ -1006,7 +1022,7 @@
       "routing_signals": [
         [
           10,
-          "design partner|learning contract|partner charter"
+          "\\b(?:find|source|shortlist|qualify|score|rank|recruit|select|vet|identify|compare|evaluate|prioriti[sz]e|screen|manage)\\w*\\b.{0,40}\\bdesign[ -]partner|\\bdesign[ -]partners? (?:discovery|shortlist|candidates?|cohort|readiness|program(?:me)?|pipeline|search|criteria|fit)\\b|learning contract|partner charter"
         ],
         [
           9,
@@ -1089,7 +1105,11 @@
         ],
         [
           15,
-          "(ebook|e-book|white.?paper|poradnik pdf|workbook)"
+          "\\b(?:write|draft|create|make|produce|research|prepare|design|redesign|edit|verify|validate|fact-check|outline|plan|zrob|napisz|przygotuj|stworz|zweryfikuj|popraw|zredaguj|zaprojektuj)\\w{0,3} (?:[\\w'-]{1,30} ){0,4}(?:e-?books?|e-?booka|white ?papers?|(?:pdf|practical|printable) workbooks?)\\b|\\bporadnik\\w* pdf\\b"
+        ],
+        [
+          12,
+          "\\b(?:an?|new) (?:e-?book|white ?paper) (?:on|about|o|dla|for)\\b|\\bresearch\\b.{0,20}\\b(?:do|for)\\b.{0,12}\\be-?book"
         ],
         [
           14,
@@ -1161,7 +1181,7 @@
         ],
         [
           8,
-          "contradiction|derivative source"
+          "\\bcontradict\\w*\\b.{0,40}\\b(?:sources?|claims?|evidence|reports?|studies|filings?)\\b|\\b(?:sources?|claims?|evidence|reports?|studies)\\b.{0,40}\\bcontradict|derivative source"
         ],
         [
           7,
@@ -1179,7 +1199,7 @@
     },
     {
       "id": "feedback-integrator",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1248,12 +1268,16 @@
           "recurring (failure patterns?|mistakes|findings)|same mistakes across"
         ],
         [
+          9,
+          "\\b(?:eval|skill) runs?\\b.{0,40}\\bfail\\w*|\\bskill improvements?\\b"
+        ],
+        [
           20,
           "retrospective.*quality incidents"
         ],
         [
           12,
-          "feedback integrator|integrate.*feedback|aggregate recurring reviewer findings"
+          "feedback integrator|\\bintegrat\\w*\\b.{0,40}\\bfeedback\\b.{0,60}\\b(?:skills?|skill runs?|evals?|routing|instructions|regression tests?)\\b|aggregate recurring reviewer findings"
         ],
         [
           10,
@@ -1275,7 +1299,7 @@
     },
     {
       "id": "longform-publisher",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1342,7 +1366,7 @@
       "routing_signals": [
         [
           11,
-          "regenerate.*(docx|pdf)|(existing|current|old|previous) (ebook|white paper|report|handbook|playbook|guide).*(manuscript|edition|docx|pdf)"
+          "\\bregenerat\\w*\\b.{0,30}\\b(?:docx|pdf|html)\\b.{0,10}(?:\\band\\b|/|,) ?(?:the )?(?:docx|pdf|html)\\b|\\bregenerat\\w*\\b.{0,30}\\bderived\\b|(existing|current|old|previous) (ebook|white paper|report|handbook|playbook|guide)\\b.{0,80}\\b(?:manuscript|edition)\\b"
         ],
         [
           12,
@@ -1350,7 +1374,7 @@
         ],
         [
           11,
-          "(ebook|white paper|playbook|handbook|report).*(refresh|publication-ready|release ready)"
+          "(ebook|white paper|playbook|handbook|guide|report)\\b.{0,60}\\b(?:publication.ready|release.ready|new edition|\\d{4} edition)"
         ],
         [
           10,
@@ -1358,17 +1382,21 @@
         ],
         [
           10,
-          "through manuscript|manuscript.*(docx|pdf)"
+          "\\b(?:e-?book|white paper|report|handbook|playbook|guide)\\b.{0,80}\\b(?:docx|pdf) ?(?:/|and|,|&) ?(?:the )?(?:docx|pdf)\\b"
+        ],
+        [
+          10,
+          "through (?:the )?manuscript|manuscript\\b.{0,60}\\b(?:derived|lineage|regenerat\\w*|rebuil\\w*|edition)\\b|\\b(?:docx|pdf)\\b.{0,40}\\bfrom (?:the |one |a |its )?(?:canonical |single )?manuscript"
         ],
         [
           9,
-          "refresh.*(ebook|report|guide)|derived artifacts?.*(docx|pdf)"
+          "\\brefresh\\w*\\b.{0,30}\\b(?:e-?book|white paper|handbook|playbook|guide)\\b|\\brefresh\\w*\\b.{0,30}\\breport\\b.{0,40}\\b(?:edition|manuscript|docx|pdf)\\b|derived artifacts?.*(docx|pdf)"
         ]
       ]
     },
     {
       "id": "portfolio-operator",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1450,18 +1478,18 @@
         ],
         [
           9,
-          "focus on across (all )?(my|our) (projects|commitments)|across (all )?(my|our) (projects|commitments).{0,40}(focus|pause|drop|delegate)"
+          "focus on across (all )?(my|our) (projects|commitments)|across (all )?(my|our) (projects|commitments).{0,40}(focus|pause|drop|delegate)|\\bacross (?:all )?(?:my|our)\\b.{0,80}\\b(?:what should (?:i|we) (?:focus|pause|drop|delegate)|focus on for the next)"
         ]
       ]
     },
     {
       "id": "product-operator",
-      "version": "2.3.2",
+      "version": "2.4.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Evidence-governed product operating system that reconciles GitHub implementation and release state, Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what the team should do next. Use for questions such as what remains, what to build/fix/verify next, how to finish or unstick a product, what is actually done, whether roadmap and repo agree, how to plan the next product cycle, what changed since the last review, or what should wait/stop. Produces bounded BLOCKER/VERIFY NOW/DECISION NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness, immutable snapshots/deltas, confidence, done conditions, and specialist handoffs. Read-only by default; delegate deep audits and consequential decisions instead of duplicating specialist skills. Do not use for a first-time whole-project roadmap baseline (repo-to-roadmap), a release-candidate GO/NO_GO (release-readiness), or allocating capacity across several products and commitments (portfolio-operator).",
+      "description": "Evidence-governed product operating system that reconciles GitHub implementation and release state, Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what one product team should do next. Use for questions such as what remains, what to build/fix/verify next, how to finish or unstick a product, what is actually done, whether roadmap and repo agree, how to plan the next product cycle, what changed since the last review, or what should wait/stop. Produces bounded BLOCKER/VERIFY NOW/DECISION NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness, immutable snapshots/deltas, and specialist handoffs. Read-only by default; delegates deep audits and consequential decisions. Do not use for a first-time whole-project roadmap baseline (repo-to-roadmap), a release-candidate GO/NO_GO (release-readiness), allocating capacity across several products and commitments (portfolio-operator), or customer support triage (customer-ops).",
       "explicit_only": false,
       "owns": [
         "weekly control loop",
@@ -1504,7 +1532,7 @@
       "routing_signals": [
         [
           10,
-          "what (should we|to) (do|build|fix|verify) (next|this week)"
+          "what (should we|to|do we) (do|build|fix|verify) (next|this week)"
         ],
         [
           10,
@@ -1516,7 +1544,7 @@
         ],
         [
           10,
-          "priorytetyzowa[cć].*sprint|w sprincie|ship .* this week"
+          "priorytetyzowa[cć].*sprint|w sprincie|\\bship\\b.{0,40}\\bthis week\\b"
         ],
         [
           9,
@@ -1532,11 +1560,11 @@
         ],
         [
           9,
-          "weekly (product|sprint)|control loop|existing roadmap"
+          "weekly (product|sprint)|(?:weekly|product|operating) control loop|existing roadmap"
         ],
         [
           8,
-          "blocker|verify now|now/next/later/stop"
+          "\\bblocker\\w*\\b.{0,60}\\b(?:verify now|sprint|roadmap|this week|w tym tygodniu)|\\b(?:sprint|roadmap|this week|w tym tygodniu)\\b.{0,60}\\bblocker|verify now|now/next/later/stop"
         ],
         [
           8,
@@ -1584,12 +1612,12 @@
     },
     {
       "id": "product-teardown",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Analyze external products, websites, apps, APIs, documentation, and source repositories to extract evidence-backed, transferable, implementable product and engineering patterns rather than generic competitor summaries. Use when the user asks to teardown, reverse-engineer at a product/architecture level, benchmark, study, or learn from another product/repo; asks what workflows, UX mechanics, architecture, onboarding, monetization, developer experience, operations, reliability, or implementation ideas are worth adapting; asks \"what can we borrow/learn/implement from X\" or Polish equivalents such as \"przeanalizuj produkt/repo\", \"wyciagnij wzorce\", or \"co warto wdrozyc\". Also use for multi-product pattern synthesis and source-to-target adaptation. Do not use as the primary skill for ongoing competitor monitoring/delta analysis, broad competitor dossiers, external-facing comparison pages, or a roadmap of the user's own repo with no external/reference target.",
+      "description": "Analyze external products, websites, apps, APIs, documentation, and source repositories to extract evidence-backed, transferable, implementable product and engineering patterns rather than generic competitor summaries. Use when the user asks to teardown, reverse-engineer at a product/architecture level, benchmark, study, or learn from another product/repo; asks what workflows, UX mechanics, architecture, onboarding, monetization, developer experience, operations, reliability, or implementation ideas are worth adapting; asks \"what can we borrow/learn/implement from X\" or Polish equivalents such as \"przeanalizuj produkt/repo\", \"wyciagnij wzorce\", or \"co warto wdrozyc\". Also use for multi-product pattern synthesis and source-to-target adaptation. Do not use for ongoing competitor monitoring/delta analysis (competitive-intelligence), broad competitor dossiers, external-facing comparison pages, or a roadmap of the user's own repo with no external reference target (repo-to-roadmap).",
       "explicit_only": false,
       "owns": [
         "external product patterns",
@@ -1625,11 +1653,11 @@
       "routing_signals": [
         [
           10,
-          "\\bteardown\\b|reverse-engineer"
+          "(?<!fixture )(?<!test )\\bteardown\\b(?! (?:method|function|fixture|hook|step|phase|code|logic|runs?)\\b)|reverse.engineer\\w*\\b.{0,50}\\b(?:products?|onboarding|pricing|architecture|ux|flows?|docs|documentation|growth|positioning|features?|funnel|website|saas)\\b"
         ],
         [
           9,
-          "transferable pattern|what can we (borrow|learn) from"
+          "transferable pattern|what can we (borrow|learn) from|\\b(?:patterns?|ideas?) (?:that )?(?:we|i) (?:can|could|should) (?:borrow|adopt|reuse)\\b"
         ],
         [
           8,
@@ -1643,7 +1671,7 @@
     },
     {
       "id": "quality-loop-operator",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1735,18 +1763,18 @@
         ],
         [
           12,
-          "run (the )?quality loop|\\bquality loop\\b.{0,60}(brief|review|roast|repair|accept)"
+          "run (?:the )?(?:full |complete |whole |entire )?quality loop|\\bquality loop\\b.{0,60}(brief|review|roast|repair|accept)"
         ]
       ]
     },
     {
       "id": "release-readiness",
-      "version": "1.2.1",
+      "version": "1.3.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Assess whether a specific release candidate, build, artifact, application, service, mobile/desktop build, or API is ready for production in a named environment and issue an evidence-backed GO / GO_WITH_CONTROLS / NO_GO / DEFER verdict across product acceptance, QA, security, operations/reliability, documentation, billing/entitlements, and support/incident readiness. Use when the user names or implies a concrete candidate (version, build ID, branch/tag, artifact digest, deploy target) for launch/release gates, pre-deploy audits, \"is this build ready to ship?\", hotfix readiness, post-incident releases, and repeated delta/revalidation reviews. Do not use for first-time whole-project roadmap baselines or \"analyze the entire repo\" — use Repo to Roadmap. Do not use for ongoing weekly prioritization on an existing roadmap — use Product Operator. Do not use to gate a report, ebook, or other knowledge deliverable — use Artifact Acceptance. Never replaces security scans, live QA, legal review, or deploy approval.",
+      "description": "Assess whether a specific release candidate (version, build ID, branch/tag, commit, artifact digest) of an application, service, mobile/desktop build, library, or API is ready for production in a named environment and issue an evidence-backed GO / GO_WITH_CONTROLS / NO_GO / DEFER verdict across product acceptance, QA, security, operations/reliability, documentation, billing/entitlements, and support/incident readiness. Use when the user names or implies a concrete candidate for launch/release gates, pre-deploy audits, \"is this build ready to ship?\", hotfix readiness, post-incident releases, and delta/revalidation reviews. Do not use for first-time whole-project baselines or \"analyze the entire repo\" (Repo to Roadmap), weekly prioritization on an existing roadmap (Product Operator), site/app QA with no named candidate (Web App Auditor), or gating a report, ebook, or other knowledge deliverable (Artifact Acceptance). Never replaces security scans, live QA, legal review, or deploy approval.",
       "explicit_only": false,
       "owns": [
         "pinned RC gate",
@@ -1788,7 +1816,7 @@
         ],
         [
           10,
-          "\\brc[\\s.-]?\\d|build v?\\d+\\.\\d+|artifact digest"
+          "\\brc[\\s.-]?\\d|\\bbuild v?\\d+\\.\\d+\\b.{0,80}\\b(?:ready|ship|production|prod|release|deploy|gate|go\\b)|\\b(?:ready|ship|production|release|deploy|gate)\\b.{0,60}\\bbuild v?\\d+\\.\\d+|artifact digest"
         ],
         [
           9,
@@ -1814,7 +1842,7 @@
     },
     {
       "id": "repair-operator",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1904,6 +1932,10 @@
         ],
         [
           10,
+          "\\brepair (?:the )?findings?\\b"
+        ],
+        [
+          10,
           "(fix|repair|close) (the |these |all )?(accepted )?(review|roast|audit|acceptance) findings"
         ],
         [
@@ -1914,7 +1946,7 @@
     },
     {
       "id": "repo-roaster",
-      "version": "6.0.1",
+      "version": "6.1.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2013,6 +2045,10 @@
         [
           10,
           "\\b(?:forensic|hostile|adversarial|brutal|ruthless) (?:repo|code|codebase|pr) (?:review|audit|roast)"
+        ],
+        [
+          10,
+          "\\b(?:forensic|deep) (?:code |repo )?(?:review|audit)\\b.{0,40}\\b(?:worker|service|module|repo|repository|codebase|code|queue|handler|migration)s?\\b"
         ],
         [
           6,
@@ -2118,7 +2154,7 @@
     },
     {
       "id": "rubric-designer",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2213,7 +2249,7 @@
     },
     {
       "id": "science-roaster",
-      "version": "6.0.1",
+      "version": "6.1.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2280,7 +2316,11 @@
       "routing_signals": [
         [
           14,
-          "science roaster|scientific peer review|reviewer.{0,3}2"
+          "science roaster|scientific peer review|reviewer.{0,3}2|\\breviewer (?:#|no\\.? |number )?(?:2|two)\\b"
+        ],
+        [
+          10,
+          "\\bauthors?'? response\\b|\\bresponse to (?:the )?reviewers\\b|\\brebuttal letter\\b"
         ],
         [
           12,
@@ -2288,7 +2328,7 @@
         ],
         [
           10,
-          "red.team.*(scientific|study|method)"
+          "red.team.*(scientific|study|method|validation (?:split|study|design|set)|confound)"
         ],
         [
           9,
@@ -2322,7 +2362,7 @@
     },
     {
       "id": "seo-geo-aeo-maxxing",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2363,7 +2403,7 @@
       "routing_signals": [
         [
           12,
-          "seo/geo/aeo|seo geo aeo|seo/ geo/ aeo"
+          "seo/geo/aeo|seo geo aeo|seo/ geo/ aeo|\\bseo\\b.{0,12}\\bgeo\\b.{0,12}\\baeo\\b"
         ],
         [
           10,
@@ -2371,7 +2411,7 @@
         ],
         [
           9,
-          "indexable|canonical|search visibility audit"
+          "search visibility audit|\\b(?:check|audit|verify|diagnos\\w*|inspect|review)\\w*\\b.{0,60}\\b(?:indexab\\w*|canonicals?\\b(?! manuscript))"
         ],
         [
           8,
@@ -2381,7 +2421,7 @@
     },
     {
       "id": "skill-auditor",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2473,7 +2513,7 @@
     },
     {
       "id": "skill-evaluator",
-      "version": "1.7.0",
+      "version": "1.7.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2543,7 +2583,11 @@
         ],
         [
           12,
-          "skill evaluator|evaluate.*skill"
+          "skill evaluator|\\bevaluat\\w*\\b.{0,40}\\b(?:this|the|our|new|agent|an?) (?:[\\w-]{1,40} )?skill\\b(?! gaps?\\b| levels?\\b| sets?\\b)"
+        ],
+        [
+          12,
+          "\\b(?:measure|test|check|experiment\\w*)\\b.{0,60}\\bskill\\b.{0,40}\\b(?:improves?|lifts?|helps?|better than|beats?|baseline)\\b"
         ],
         [
           10,
@@ -2551,11 +2595,11 @@
         ],
         [
           9,
-          "measure.*(behavioral lift|trigger precision|recall)"
+          "measure.{0,40}(?:behavioral lift|trigger (?:precision|recall)|(?:discovery|trigger|routing) (?:rate|accuracy)|trigger precision and recall)"
         ],
         [
           8,
-          "compare.*(no.skill|baseline).*skill"
+          "compare.*(no.skill|baseline).*skill|\\bcompar\\w*\\b.{0,40}\\bskill\\b.{0,60}\\b(?:no.skill|baseline|prior version)\\b"
         ],
         [
           7,
@@ -2621,7 +2665,7 @@
         ],
         [
           14,
-          "najpierw .* potem"
+          "najpierw\\b.{0,80}\\bpotem\\b.{0,60}\\b(?:audyt|research|evidence|dowod|council|rad[aeyz]|release|readiness|roadmap|skill|weryfik|ocen)|najpierw\\b.{0,40}\\b(?:audyt|research|evidence|dowod|weryfik)\\w*.{0,60}\\bpotem\\b"
         ],
         [
           12,
@@ -2629,7 +2673,7 @@
         ],
         [
           11,
-          "\\borchestrat(e|:|\\b)"
+          "\\borchestrate:|\\borchestrat\\w*\\b.{0,80}\\b(?:then|potem|skills?|specialists?|workflow|council|evidence|audit|release|readiness)\\b|\\borchestrat\\w*\\b.{0,80}(?:→|->)"
         ],
         [
           10,
@@ -2653,7 +2697,7 @@
         ],
         [
           9,
-          "full workflow|end.to.end|ca[łl][yąa] workflow"
+          "full workflow|\\bend.to.end (?:flow|workflow|run)s?\\b|ca[łl][yąa] workflow"
         ],
         [
           9,
@@ -2724,7 +2768,7 @@
         ],
         [
           12,
-          "\\bmultiagent\\b|\\bmulti-agent\\b|\\bmulti agent\\b"
+          "\\bmulti.?agent\\b(?::|.{0,60}\\b(?:orchestrat\\w*|mode|workflow|execution|skills?|specialists?|agents? per|subagents?|separate agents?|potem|then)\\b)|\\b(?:run|use|orchestrat\\w*|execute|invoke)\\b.{0,40}\\bmulti.?agent\\b"
         ],
         [
           11,
@@ -2746,7 +2790,7 @@
     },
     {
       "id": "web-app-auditor",
-      "version": "1.3.2",
+      "version": "1.3.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2788,7 +2832,7 @@
       "routing_signals": [
         [
           10,
-          "click through|click-through|web app audit|live app audit"
+          "\\bclick[ -]?through\\b(?! rates?\\b| ctr\\b)|web app audit|live app audit"
         ],
         [
           9,
@@ -2809,6 +2853,10 @@
         [
           9,
           "\\b(ux|ui) audit of (our|the|this) (dashboard|checkout|signup|web app|app)|audit (our|the|this) (dashboard|checkout|signup flow) (ux|ui)"
+        ],
+        [
+          9,
+          "\\bqa\\b (?:the |our |this )?(?:web ?app|site|dashboard|checkout|signup|sign-up|app)\\b|\\b(?:qa|audit|inspect)\\w*\\b.{0,50}\\b(?:web ?app|webapp|saas app|dashboard|checkout|signup|sign-up|onboarding|login|registration)\\b.{0,80}\\b(?:browser|ui|ux|accessibility|keyboard|broken states?|defects?|regressions?|usability)\\b"
         ]
       ]
     }

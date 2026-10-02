@@ -92,3 +92,12 @@ def test_attestation_cannot_precede_release_checks():
     attest = next(i for i, step in enumerate(steps) if step.get("uses", "").startswith("actions/attest@"))
     assert gate < attest
     assert "public_safety.py --root . --history" in steps[gate]["run"]
+
+
+def test_multiagent_helper_smoke_passes_on_repository_package():
+    """The bundled kind schemas make the kind-payload negative smoke reject."""
+    package = Path(__file__).resolve().parents[2] / "skills" / "skill-orchestrator-multiagent"
+    result = mod.helper_smoke(package, "skill-orchestrator-multiagent")
+    checks = {row["check"]: row["status"] for row in result["checks"]}
+    assert checks.get("invalid_kind_payload") == "passed", result
+    assert checks.get("valid_envelope") == "passed", result

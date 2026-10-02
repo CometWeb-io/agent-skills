@@ -9,9 +9,12 @@
   },
   "narrow_intent_guards": {
     "ai-humanize": {"when": "\\b(?:fix typos|correct spelling|proofread only|popraw literowki)\\b", "unless": "\\b(?:humanize|humanise|humanizacja|rewrite|przepisz|naturalizuj)\\b"},
+    "ebook-publisher": {"when": "\\bconvert\\w{0,3}\\b.{0,60}\\b(?:to|into)\\s{1,3}(?:epub|mobi|azw3?|kindle|pdf|docx|html)\\b|\\b(?:epub|mobi|azw3?|pdf|docx)\\s{1,3}(?:to|into|do|na)\\s{1,3}(?:epub|mobi|azw3?|kindle|pdf|docx)\\b|\\bkonwert\\w{0,6}\\b.{0,60}\\b(?:epub|mobi|pdf|docx)\\b", "unless": "\\b(?:research|write|draft|edit|redesign|cover|validate|verify|manuscript|publication|napisz|zrob|okladk\\w{0,3}|zweryfikuj)\\b"},
+    "seo-geo-aeo-maxxing": {"when": "\\b(?:add|set|fix|update|insert|remove|write|generate|dodaj|ustaw|popraw|napraw|usun|wstaw)\\b.{0,40}\\b(?:canonical|meta (?:description|title|tags?)|schema markup|json-ld|hreflang|robots meta|noindex)", "unless": "\\b(?:audit|audyt\\w{0,2}|visibility|widocznos\\w{0,2}|maxxing|seo/geo/aeo|seo geo aeo|aeo|diagnos\\w{0,6})\\b"},
     "competitive-intelligence": {"when": "one.time.*(?:deep )?profile|jednorazow.{0,30}profil", "unless": "monitor|since|delta|zmian"},
     "content-roaster": {"when": "click.through|\\b(?:live|deployed) (?:ux|ui|app|site|flow)|\\b(?:ux|ui|usability|accessibility)\\b", "unless": "\\b(?:copy|copywriting|claims?|proof|messaging|offer|cta|headline|wording|positioning)\\b"}
   },
+  "negation": {"note": "Clause-scoped negation for routing signals only. A signal match whose start lies after a cue and before the end of that clause does not score. Explicit invocations, denied_patterns and narrow_intent_guards are unaffected. See evals/routing/README.md.", "cues": ["^\\s{0,3}(?:(?:please|pls|ok|okay|so|now|prosze|teraz|na razie)\\s{1,3}){0,2}(?:do not|don['’]?t|dont|never|skip|no(?=\\s)|nie)\\b", "\\b(?:(?:do not|don['’]?t|dont)\\s{1,3}(?:want|need|have to)|no need to|not necessary to)\\b", "\\b(?:instead of|rather than|zamiast)\\b", "\\bnie\\s{1,3}(?:chce|chcemy|potrzebuje|potrzebujemy|trzeba|musisz|rob|robcie|zrob|uzywaj|uruchamiaj|odpalaj|przeprowadzaj|roastuj|piecz|recenzuj|audytuj|sprawdzaj|przegladaj|oceniaj|ruszaj|zmieniaj)\\b"], "boundary": "[.;:!?,()\\[\\]]|\\s-\\s|[–—]|\\b(?:but|just|only|instead(?! of)|then|and|until|unless|before|after|once|if|when|while|so that|tylko|jedynie|ale|lecz|natomiast|potem|nastepnie|i|oraz|zanim|dopoki|az|jesli|jezeli|gdy|kiedy|chyba ze)\\b", "max_scope_chars": 80},
   "ties": "ambiguous",
   "workflow_skill": "skill-orchestrator"
 }

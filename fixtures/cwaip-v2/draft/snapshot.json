@@ -1,0 +1,8 @@
+{
+  "schema": "cometweb.snapshot/v2-draft",
+  "snapshot_id": "snap-2",
+  "baseline_id": "snap-1",
+  "delta_of": "snap-1",
+  "snapshot_hash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+  "captured_at": "2026-09-08T12:00:00Z"
+}

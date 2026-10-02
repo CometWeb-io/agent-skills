@@ -3,12 +3,17 @@
 
 Accepts both protocol versions, dispatching on ``protocol_version``:
 
-- ``1.0`` — checked against the bundled v1 core schema.
+- ``1.0`` — checked against the bundled v1 core schema, or, for a kind with a
+  v1 kind schema (``EvidenceEnvelope``, ``DecisionHandoff``), against that kind
+  schema, which includes the core.
 - ``2.0`` — checked against the bundled v2 core schema, and the canonical
   ``payload_hash`` is recomputed unless it is the draft marker ``pending``.
 
-Typed payload semantics (evidence graph, decision gates) stay with the producing
-skill; this gate checks the envelope shape a parent needs before step N+1.
+For both versions an authorizing verdict (``GO``, and for releases
+``GO_WITH_CONTROLS``) next to a non-empty ``blockers`` list is rejected. Full v2
+payload semantics (evidence graph, decision gates) stay with the producing skill
+and ``tooling/validate_envelope.py``; this gate checks what a parent needs before
+step N+1.
 """
 
 from __future__ import annotations
@@ -29,6 +34,18 @@ REFERENCES = Path(__file__).resolve().parents[1] / "references"
 SCHEMA = REFERENCES / "envelope.core.schema.json"
 SCHEMA_V2 = REFERENCES / "cw-aip-v2.core.schema.json"
 SCHEMAS = {"1.0": SCHEMA, "2.0": SCHEMA_V2}
+# v1 kinds whose kind schema adds payload rules on top of the core. Each one
+# references the core by $id, so the bundled core is registered alongside it.
+V1_KIND_SCHEMAS = {
+    "EvidenceEnvelope": REFERENCES / "evidence-envelope.schema.json",
+    "DecisionHandoff": REFERENCES / "decision-handoff.schema.json",
+}
+# v2 kinds and the verdicts that authorize action. A blocker next to any of
+# them is incoherent; controls bound residual risk but do not clear a blocker.
+V2_AUTHORIZING_VERDICTS: dict[str, frozenset[str]] = {
+    "DecisionEnvelope": frozenset({"GO"}),
+    "ReleaseEnvelope": frozenset({"GO", "GO_WITH_CONTROLS"}),
+}
 
 REQUIRED_BY_TYPE: dict[str, list[str]] = {
     "EvidenceEnvelope": ["payload"],
@@ -81,32 +98,74 @@ def check_payload_hash(data: dict, final: bool) -> list[str]:
     return []
 
 
+def check_authorizing_verdict(data: dict) -> list[str]:
+    """v2 Decision/Release: an authorizing verdict cannot carry open blockers.
+
+    The v1 ``DecisionHandoff`` kind schema expresses the same rule in JSON Schema.
+    """
+    verdicts = V2_AUTHORIZING_VERDICTS.get(data.get("type"))  # type: ignore[arg-type]
+    payload = data.get("payload")
+    if not verdicts or not isinstance(payload, dict):
+        return []
+    verdict = payload.get("verdict")
+    if verdict in verdicts and isinstance(payload.get("blockers"), list) and payload["blockers"]:
+        return [f"payload.blockers: {verdict} cannot have blockers"]
+    return []
+
+
+def load_schema(path: Path) -> dict:
+    schema = json.loads(path.read_text(encoding="utf-8"))
+    jsonschema.Draft202012Validator.check_schema(schema)
+    return schema
+
+
+def build_validator(core_path: Path, kind_path: Path | None) -> "jsonschema.Draft202012Validator":
+    core = load_schema(core_path)
+    if kind_path is None:
+        return jsonschema.Draft202012Validator(core)
+    from referencing import Registry, Resource
+
+    registry = Registry().with_resource(core["$id"], Resource.from_contents(core))
+    return jsonschema.Draft202012Validator(load_schema(kind_path), registry=registry)
+
+
+def schema_errors(data: dict, version: object) -> list[str]:
+    schema_path = SCHEMAS.get(version) if isinstance(version, str) else None
+    if jsonschema is None:
+        return ["jsonschema dependency is required for envelope validation"]
+    if schema_path is None:
+        return [f"schema: unsupported protocol_version {version!r} (expected '1.0' or '2.0')"]
+    if not schema_path.is_file():
+        return ["bundled envelope schema is missing"]
+    env_type = data.get("type")
+    kind_path = V1_KIND_SCHEMAS.get(env_type) if version == "1.0" and isinstance(env_type, str) else None
+    if kind_path is not None and not kind_path.is_file():
+        # Falling back to the core would silently drop the payload rules.
+        return [f"bundled kind schema is missing: {kind_path.name}"]
+    try:
+        validator = build_validator(schema_path, kind_path)
+        found = sorted(
+            validator.iter_errors(data), key=lambda e: ([str(part) for part in e.absolute_path], e.message)
+        )
+    except (OSError, json.JSONDecodeError, KeyError, jsonschema.SchemaError) as exc:
+        return [f"schema unavailable or invalid: {exc}"]
+    except Exception as exc:  # e.g. an unresolvable $ref: fail closed, never pass
+        return [f"schema unavailable or invalid: {type(exc).__name__}: {exc}"]
+    return [f"schema: {error.json_path}: {error.message}" for error in found]
+
+
 def validate_envelope(data: dict, expected_type: str | None = None, *, final: bool = False) -> list[str]:
     errors: list[str] = []
     version = data.get("protocol_version")
     if expected_type and not type_matches(expected_type, data.get("type"), version):
         errors.append(f"type: expected {expected_type!r}, got {data.get('type')!r}")
-    schema_path = SCHEMAS.get(version) if isinstance(version, str) else None
-    if jsonschema is None:
-        errors.append("jsonschema dependency is required for envelope validation")
-    elif schema_path is None:
-        errors.append(f"schema: unsupported protocol_version {version!r} (expected '1.0' or '2.0')")
-    elif not schema_path.is_file():
-        errors.append("bundled envelope schema is missing")
-    else:
-        try:
-            schema = json.loads(schema_path.read_text(encoding="utf-8"))
-            jsonschema.Draft202012Validator.check_schema(schema)
-            jsonschema.validate(data, schema)
-        except (OSError, json.JSONDecodeError, jsonschema.SchemaError) as exc:
-            errors.append(f"schema unavailable or invalid: {exc}")
-        except jsonschema.ValidationError as exc:
-            errors.append(f"schema: {exc.message}")
+    errors.extend(schema_errors(data, version))
     env_type = data.get("type")
     if version == "1.0" and isinstance(env_type, str) and env_type in REQUIRED_BY_TYPE:
         if "payload" not in data or not isinstance(data.get("payload"), dict):
             errors.append(f"{env_type} requires object payload")
     if version == "2.0":
+        errors.extend(check_authorizing_verdict(data))
         errors.extend(check_payload_hash(data, final))
     return errors
 

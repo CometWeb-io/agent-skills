@@ -8,7 +8,10 @@ ever consulted. Counting cases would not have shown that; counting which guards
 a case can still be broken past does.
 
 Method: copy the package to a temporary directory, replace one `if` guard at a
-time with `if False:`, and run the package's own harness against the copy. A
+time with `if False:`, and run the package's own harness against the copy. That
+includes `elif` branches and one-line guards (`if not ok: errors.append(...)`):
+the compact kernels write most of their rules that way, and counting only
+block-form `if` lines once reported rubric-designer at 2 guards when it has 29. A
 guard the harness still passes without is a guard nothing is holding. The
 working tree is never edited, so an interrupted run cannot leave a broken kernel
 behind.
@@ -20,6 +23,7 @@ reachable only through the CLI. They are recorded, not explained away.
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import shutil
@@ -36,19 +40,82 @@ POLICY = ROOT / "registry" / "eval-strength-policy.json"
 TIMEOUT = 120
 
 # Guards a harness cannot reach by construction, not ones it fails to cover.
-SKIP_PREFIXES = ("if __name__", "if args.")
+SKIP_PREFIXES = ("if __name__", "if args.", "elif args.")
+
+
+def _condition_end(body: str) -> int | None:
+    """Index of the colon that ends an `if` condition, or None.
+
+    Brackets and string literals are skipped, so a slice, a dict literal or a
+    lambda inside the condition does not end it early.
+    """
+    depth = 0
+    quote = None
+    escaped = False
+    for index, char in enumerate(body):
+        if quote:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in "'\"":
+            quote = char
+        elif char in "([{":
+            depth += 1
+        elif char in ")]}":
+            depth -= 1
+        elif char == ":" and depth == 0:
+            return index
+    return None
+
+
+def _split_guard(line: str) -> tuple[str, str, str] | None:
+    """(keyword, condition, rest) for an `if`/`elif` line whose condition ends on it."""
+    stripped = line.strip()
+    for keyword in ("if ", "elif "):
+        if stripped.startswith(keyword):
+            body = stripped[len(keyword):]
+            end = _condition_end(body)
+            if end is None:
+                return None
+            return keyword, body[:end].strip(), body[end + 1:]
+    return None
 
 
 def guard_lines(text: str) -> list[int]:
+    """0-based lines holding an `if`/`elif` statement whose condition ends there.
+
+    The syntax tree decides what is a statement, so a docstring or comment line
+    that happens to start with "if " is never mistaken for a guard, and a
+    conditional expression (`a if b else c`) is not a branch.
+    """
+    lines = text.splitlines()
     rows = []
-    for index, line in enumerate(text.splitlines()):
-        stripped = line.strip()
-        if not (stripped.startswith("if ") and stripped.endswith(":")):
+    for node in ast.walk(ast.parse(text)):
+        if not isinstance(node, ast.If):
             continue
-        if stripped in {"if False:", "if True:"} or stripped.startswith(SKIP_PREFIXES):
+        index = node.lineno - 1
+        parts = _split_guard(lines[index])
+        if parts is None:
+            continue
+        _, condition, _ = parts
+        if condition in {"False", "True"} or lines[index].strip().startswith(SKIP_PREFIXES):
             continue
         rows.append(index)
-    return rows
+    return sorted(set(rows))
+
+
+def disable(line: str) -> str:
+    """The same guard with its condition replaced by False, body kept."""
+    parts = _split_guard(line)
+    if parts is None:
+        raise ValueError(f"not a guard: {line!r}")
+    keyword, _, rest = parts
+    indent = len(line) - len(line.lstrip())
+    return " " * indent + keyword + "False:" + rest.rstrip("\n") + "\n"
 
 
 # A harness reaches a module by naming it: `from portfolio_kernel import ...` or
@@ -87,9 +154,8 @@ def measure(package: Path) -> dict:
             original = kernel.read_text(encoding="utf-8")
             lines = original.splitlines(keepends=True)
             for index in guard_lines(original):
-                indent = len(lines[index]) - len(lines[index].lstrip())
                 kernel.write_text(
-                    "".join(lines[:index] + [" " * indent + "if False:\n"] + lines[index + 1:]),
+                    "".join(lines[:index] + [disable(lines[index])] + lines[index + 1:]),
                     encoding="utf-8")
                 proc = subprocess.run([sys.executable, "-B", str(harness)], cwd=ROOT,
                                       capture_output=True, stdin=subprocess.DEVNULL,

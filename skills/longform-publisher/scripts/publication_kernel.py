@@ -105,12 +105,62 @@ def in_set(value, allowed) -> bool:
     return isinstance(value, str) and value in allowed
 
 
+_OBJECT_FIELDS = ("publication", "source_policy", "lifecycle", "canonical_master", "fidelity",
+                  "scientific_readiness", "actions")
+_OBJECT_LIST_FIELDS = ("sources", "claim_uses", "unresolved_gaps", "derived_artifacts",
+                       "edit_history", "protected_facts")
+
+
+def _is_scalar(value: Any) -> bool:
+    return value is None or isinstance(value, (str, int, float, bool))
+
+
+def _is_scalar_list(value: Any) -> bool:
+    return value is None or (isinstance(value, list) and all(_is_scalar(x) for x in value))
+
+
+def shape_errors(report: Any) -> list[str]:
+    """Report fields whose JSON type the checks below cannot read.
+
+    A wrongly typed field must come back as an error code, not as an
+    AttributeError or TypeError from deep inside a check.
+    """
+    if not isinstance(report, dict):
+        return ["REPORT_NOT_AN_OBJECT"]
+    errors: list[str] = []
+    for key in _OBJECT_FIELDS:
+        if report.get(key) is not None and not isinstance(report[key], dict):
+            errors.append(f"FIELD_TYPE_INVALID:{key}")
+    for key in _OBJECT_LIST_FIELDS:
+        value = report.get(key)
+        if value is not None and (not isinstance(value, list) or any(not isinstance(x, dict) for x in value)):
+            errors.append(f"FIELD_TYPE_INVALID:{key}")
+    if "FIELD_TYPE_INVALID:sources" not in errors and any(
+            not _is_scalar(s.get("id")) for s in report.get("sources") or []):
+        errors.append("FIELD_TYPE_INVALID:sources.id")
+    if "FIELD_TYPE_INVALID:claim_uses" not in errors and any(
+            not _is_scalar_list(c.get("evidence_refs")) for c in report.get("claim_uses") or []):
+        errors.append("FIELD_TYPE_INVALID:claim_uses.evidence_refs")
+    policy = report.get("source_policy")
+    if isinstance(policy, dict) and not _is_scalar_list(policy.get("authorized_source_ids")):
+        errors.append("FIELD_TYPE_INVALID:source_policy.authorized_source_ids")
+    actions = report.get("actions")
+    if isinstance(actions, dict) and any(
+            actions.get(key) is not None and not isinstance(actions[key], list) for key, _ in LANE_TITLES):
+        errors.append("FIELD_TYPE_INVALID:actions")
+    readiness = report.get("scientific_readiness")
+    if isinstance(readiness, dict) and not _is_scalar(readiness.get("evidence_ref")):
+        errors.append("FIELD_TYPE_INVALID:scientific_readiness.evidence_ref")
+    return errors
+
+
 def validate_report(report: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     # A report file that is a list or a bare value must come back as an error
     # code like anything else, not as an AttributeError from the first .get().
-    if not isinstance(report, dict):
-        return ["REPORT_NOT_AN_OBJECT"]
+    shape = shape_errors(report)
+    if shape:
+        return shape
     if report.get("protocol_version") != "longform-publisher/1":
         errors.append("PROTOCOL_VERSION_INVALID")
 
@@ -185,6 +235,9 @@ _PLACEHOLDER_PATTERNS = [
 
 
 def check_manuscript(report: dict[str, Any], manuscript_text: str) -> list[str]:
+    shape = shape_errors(report)
+    if shape:
+        return shape
     errors: list[str] = []
     master = report.get("canonical_master") or {}
     expected_hash = master.get("sha256")
@@ -206,7 +259,7 @@ def check_manuscript(report: dict[str, Any], manuscript_text: str) -> list[str]:
     for claim in report.get("claim_uses") or []:
         if claim.get("citation_state") == "REQUIRED":
             marker = claim.get("citation_marker")
-            if not marker or marker not in manuscript_text:
+            if not isinstance(marker, str) or not marker or marker not in manuscript_text:
                 errors.append("CITATION_MARKER_MISSING")
 
     rewrite_types = {"AI_HUMANIZE", "STRONG_REWRITE", "DEEP_REWRITE", "SUBSTANTIAL_REWRITE"}
@@ -219,6 +272,9 @@ def check_manuscript(report: dict[str, Any], manuscript_text: str) -> list[str]:
 
 
 def check_derived(report: dict[str, Any]) -> list[str]:
+    shape = shape_errors(report)
+    if shape:
+        return shape
     errors: list[str] = []
     master_hash = (report.get("canonical_master") or {}).get("sha256")
     for item in report.get("derived_artifacts") or []:
@@ -344,6 +400,9 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     report = _load_json(args.report_json)
+    shape = shape_errors(report)
+    if shape:
+        return _emit_errors(shape)
 
     if args.command == "validate":
         return _emit_errors(validate_report(report))

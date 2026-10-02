@@ -73,3 +73,30 @@ Do not assume every forward technical transition is progress toward the user goa
 3. Verify the current system of record.
 4. If unresolved and material, convert to `VERIFY NOW` and lower readiness.
 5. Do not synthesize a midpoint or choose the most convenient source.
+
+## Product State Ledger
+
+Start from the stated goal, active release/cycle, recent relevant implementation, known blockers, customer
+commitments, and dependencies. Do not inventory the whole repository or every backlog row unless the goal
+requires it. For `DEEP`, expand to all material product surfaces and critical dependencies, not every file.
+
+For each material capability/work item record:
+
+```text
+ID
+Capability / work item
+Why it matters
+Intent:       PRESENT | ABSENT | UNKNOWN | N/A
+Planned:      TODO | IN_PROGRESS | DONE | ABSENT | UNKNOWN | N/A
+Implemented:  PRESENT | ABSENT | UNKNOWN | N/A
+Verified:     PASS | FAIL | PARTIAL | UNKNOWN | N/A
+Shipped:      PRESENT | ABSENT | UNKNOWN | N/A
+Outcome:      POSITIVE | NEGATIVE | MIXED | UNKNOWN | N/A
+outcome_required: true | false
+Evidence[]
+Contradictions[]
+Dependencies[]
+```
+
+A contradiction is not automatically a defect. It is a state uncertainty or drift. Escalate it only if it can
+change the current critical path, release safety, trust, or resource allocation.

@@ -1,0 +1,11 @@
+{
+  "scenario": "lifecycle_gap:sources_admitted:SOURCE_READY",
+  "expect": {
+    "validation": [
+      "STAGE_INFLATION"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "BRIEFED"
+  }
+}

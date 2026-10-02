@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
-from route_skill import route, normalize
+from route_skill import route, normalize, negated_spans, mask_negated
 from run_policy_evals import evaluate
 
 POLICY = json.loads((TOOLS.parent / "registry/routing-policy.json").read_text())
@@ -105,3 +105,64 @@ def test_eval_rejects_empty_suite():
 def test_unknown_policy_fails_closed():
     with pytest.raises(ValueError):
         route("humanize", registry(), {"schema":"unknown"})
+
+
+def _without_negation():
+    policy = json.loads(json.dumps(POLICY))
+    policy.pop("negation")
+    return policy
+
+
+def test_negation_suppresses_a_signal_only_inside_the_negated_clause():
+    assert route("Do not humanize this paragraph.", registry(), _without_negation())["primary_skill"] == "ai-humanize"
+    assert route("Do not humanize this paragraph.", registry(), POLICY)["status"] == "no_skill"
+    assert route("Fix the intro, then humanize this paragraph.", registry(), POLICY)["primary_skill"] == "ai-humanize"
+
+
+@pytest.mark.parametrize("prompt", [
+    "find what's not working, humanize it",          # a bare "not" is no cue
+    "sprawdz, czy strona nie dziala; humanize",      # mid-clause "nie" + non-listed verb
+    "don't ship until you humanize it",              # "until" closes the scope
+    "don't hold back: humanize it",                  # punctuation closes the scope
+    "nie oszczedzaj mnie, humanize",
+])
+def test_negation_scope_ends_at_the_clause(prompt):
+    assert route(prompt, registry(), POLICY)["primary_skill"] == "ai-humanize"
+
+
+def test_greedy_signal_cannot_reach_into_a_negated_clause():
+    data = registry()
+    data["skills"].append({"id": "repo-roaster", "lifecycle": "active", "routing_signals": [[10, "roast.*codebase"]]})
+    prompt = "Roast only the README claims; do not review the codebase."
+    assert route(prompt, data, _without_negation())["primary_skill"] == "repo-roaster"
+    assert "repo-roaster" not in route(prompt, data, POLICY)["scores"]
+
+
+def test_negated_spans_are_capped_and_offsets_preserved():
+    policy = json.loads(json.dumps(POLICY))
+    policy["negation"]["max_scope_chars"] = 5
+    text = normalize("Do not humanize this paragraph")
+    [(start, end)] = negated_spans(text, policy)
+    assert end - start == 5
+    masked = mask_negated(text, policy)
+    assert masked == "do not     nize this paragraph"
+
+
+def test_negated_exception_does_not_lift_a_narrow_guard():
+    report = route("Don't humanize it, just fix typos", registry(), POLICY)
+    assert report["blocked"].get("ai-humanize") == "outside_declared_scope"
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda n: n.update(max_scope_chars=0),
+    lambda n: n.update(max_scope_chars=True),
+    lambda n: n.update(cues=[]),
+    lambda n: n.pop("boundary"),
+    lambda n: n.update(cues=["(?:do not\\s+)+"]),   # nested quantifier
+    lambda n: n.update(boundary="x" * 5000),         # length cap
+])
+def test_invalid_negation_rules_are_rejected(mutate):
+    policy = json.loads(json.dumps(POLICY))
+    mutate(policy["negation"])
+    with pytest.raises(ValueError):
+        route("hello", registry(), policy)

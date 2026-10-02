@@ -25,6 +25,8 @@ PAYLOAD_SCHEMAS = {
 # Payload types whose semantic validator also enforces the full schema when
 # jsonschema is unavailable.
 OWN_FALLBACK = frozenset({"ContextEnvelope", "EvidenceEnvelope", "DecisionEnvelope"})
+# Release verdicts that authorize shipping; neither may sit next to an open blocker.
+RELEASE_AUTHORIZING_VERDICTS = frozenset({"GO", "GO_WITH_CONTROLS"})
 HASH_RE = re.compile(r"^(sha256:)?[a-fA-F0-9]{64}$|^pending$")
 RFC3339_RE = re.compile(
     r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}"
@@ -231,8 +233,12 @@ def semantic_payload(envelope_type: str, payload: dict[str, Any]) -> None:
     if envelope_type == "ReleaseEnvelope":
         if payload.get("schema") != "cometweb.release/v2":
             fail("release:schema must be cometweb.release/v2")
-        if payload.get("verdict") not in {"GO", "NO_GO", "DEFER", "GO_WITH_CONTROLS"}:
+        verdict = payload.get("verdict")
+        if verdict not in {"GO", "NO_GO", "DEFER", "GO_WITH_CONTROLS"}:
             fail("release:verdict must be GO|NO_GO|DEFER|GO_WITH_CONTROLS")
+        if verdict in RELEASE_AUTHORIZING_VERDICTS and payload.get("blockers"):
+            # Controls bound residual risk; they do not neutralize an open blocker.
+            fail(f"release: {verdict} cannot have blockers")
         return
 
 

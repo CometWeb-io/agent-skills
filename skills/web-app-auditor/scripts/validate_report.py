@@ -16,7 +16,12 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator
+try:
+    from jsonschema import Draft202012Validator
+except ImportError:  # declared in RUNTIME.json; main() reports it without a traceback
+    Draft202012Validator = None
+
+MISSING_DEPENDENCY = "jsonschema>=4.18 is required for schema validation (see RUNTIME.json); install it with: pip install 'jsonschema>=4.18,<5'"
 
 FINDING_ID = re.compile(r"^F-[0-9]{3}$")
 EVIDENCE_ID = re.compile(r"^E-[0-9]{3}$")
@@ -80,6 +85,9 @@ def validate(report: dict[str, Any]) -> Result:
     finding = json.loads((assets / "finding.schema.json").read_text(encoding="utf-8"))
     finding.pop("$id", None)
     schema["properties"]["findings"]["items"] = finding
+    if Draft202012Validator is None:
+        r.error(MISSING_DEPENDENCY)  # fail closed: no schema check means no pass
+        return r
     Draft202012Validator.check_schema(schema)
     for error in Draft202012Validator(schema).iter_errors(report):
         path = ".".join(str(part) for part in error.absolute_path) or "report"
@@ -342,6 +350,9 @@ def main() -> int:
     parser.add_argument("report", type=Path)
     parser.add_argument("--json", action="store_true", help="emit machine-readable validation result")
     args = parser.parse_args()
+    if Draft202012Validator is None:
+        print(f"ERROR: {MISSING_DEPENDENCY}", file=sys.stderr)
+        return 2
 
     try:
         report = json.loads(args.report.read_text(encoding="utf-8"), object_pairs_hook=_unique_pairs, parse_constant=_reject_nonfinite)

@@ -6,6 +6,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 
 # Metadata for a release is written into sync_skill_registry.OVERRIDES before
@@ -15,15 +17,17 @@ ROOT = Path(__file__).resolve().parents[2]
 EXPECTED = {
     "founder-led-sales-operator": ("1.1.2", "FROZEN"),
     "research-program-operator": ("1.3.1", "FROZEN"),
-    "portfolio-operator": ("1.2.0", "ACTIVE"),
+    "portfolio-operator": ("1.2.1", "ACTIVE"),
     # 1.1.0 moved a frozen baseline. The freeze rationale in
     # docs/acceptance/longform-publisher-1.0.0.md allows a contract change, and
     # validate_report declares "-> list[str]" yet raised TypeError on a list or
     # dict field. No behaviour on valid input changed. See the exception note in
     # that acceptance record. 1.1.1 made the description host-neutral and
-    # bounded it against ebook-publisher; see the 1.1.1 exception there.
-    "longform-publisher": ("1.1.1", "FROZEN"),
-    "product-operator": ("2.3.2", "ACTIVE"),
+    # bounded it against ebook-publisher; see the 1.1.1 exception there. 1.1.2
+    # turned tracebacks on wrongly typed nested fields into error codes; see the
+    # 1.1.2 exception.
+    "longform-publisher": ("1.1.2", "FROZEN"),
+    "product-operator": ("2.4.0", "ACTIVE"),
 }
 
 SUPPORTED_HOSTS = {
@@ -123,3 +127,38 @@ def test_descriptions_do_not_route_to_unshipped_packages():
     for skill_id, entry in registry_by_id().items():
         named = sorted(p for p in unshipped if p in entry["description"])
         assert not named, f"{skill_id} description routes to unshipped {named}"
+
+
+def _yaml_description(skill_md: Path) -> str:
+    import yaml
+
+    text = skill_md.read_text(encoding="utf-8")
+    block = text.split("---", 2)[1]
+    return " ".join(yaml.safe_load(block)["description"].split())
+
+
+def test_registry_description_is_what_a_yaml_host_reads():
+    # Hosts parse SKILL.md with YAML; the registry must carry the same text.
+    module = _sync_module()
+    for skill_md in sorted((ROOT / "skills").glob("*/SKILL.md")):
+        assert module.parse_description(skill_md) == _yaml_description(skill_md), skill_md
+
+
+@pytest.mark.parametrize("frontmatter", [
+    "description: >\n  First paragraph.\n\n  Second paragraph.\n",
+    "description: |\n  Line one\n  line two\n",
+    'description: "Quoted: with a \\"nested\\" quote"\n',
+    "description: Plain text  # trailing comment\n",
+    "description: >-\n  Folded\n    more-indented line\n  back\n",
+])
+def test_parse_description_agrees_with_yaml_on_edge_cases(tmp_path, frontmatter):
+    skill_md = tmp_path / "SKILL.md"
+    skill_md.write_text(f"---\nname: x\n{frontmatter}---\n\n# X\n", encoding="utf-8")
+    assert _sync_module().parse_description(skill_md) == _yaml_description(skill_md)
+
+
+def test_parse_description_rejects_a_duplicate_description(tmp_path):
+    skill_md = tmp_path / "SKILL.md"
+    skill_md.write_text("---\nname: x\ndescription: one\ndescription: two\n---\n", encoding="utf-8")
+    with pytest.raises(ValueError):
+        _sync_module().parse_description(skill_md)

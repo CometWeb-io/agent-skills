@@ -66,7 +66,10 @@ def test_scaffold_harness_is_executable_and_answers_help(scaffolded: Path) -> No
     assert harness.stat().st_mode & 0o111, "harness is not executable"
     proc = subprocess.run([sys.executable, str(harness), "--help"],
                           cwd=scaffolded, capture_output=True, text=True, timeout=120)
-    assert proc.returncode == 2 and "usage" in (proc.stdout + proc.stderr).lower()
+    assert proc.returncode == 0 and "usage" in proc.stdout.lower()
+    proc = subprocess.run([sys.executable, str(harness), "--no-such-option"],
+                          cwd=scaffolded, capture_output=True, text=True, timeout=120)
+    assert proc.returncode == 2 and "unrecognized arguments: --no-such-option" in proc.stderr
 
 
 def test_scaffold_harness_fails_until_an_assertion_exists(scaffolded: Path) -> None:

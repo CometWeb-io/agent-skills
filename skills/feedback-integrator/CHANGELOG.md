@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.7.1] - 2026-10-03
+
+- `scripts/run_evals.py --help` exits 0 with a usage line instead of exit 2; any other argument is still rejected with exit 2 and the unrecognized argument named.
+- Eval cases pin the invalid-record reason, the watch reason and the
+  retirement reason, not only the status. Added promotion cases for every
+  input rule (missing or equal versions, zero or boolean case counts, negative
+  improvements or regressions, blank scope, a safety regression), timestamps
+  that are not strings or carry no timezone, a duplicated record that must not
+  add independence, and `min_count: 1`. Held guards: 23 of 33 -> 31 of 33.
+
 ## [1.7.0] - 2026-09-22
 
 - Preserve minimized reproductions and bisection evidence when converting failures into regression proposals.

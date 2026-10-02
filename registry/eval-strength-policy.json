@@ -1,13 +1,16 @@
 {
   "schema": "cometweb.eval-strength-policy/v1",
-  "default_min_strength": 0.5,
+  "default_min_strength": 0.75,
   "critical_skills": {
-    "longform-publisher": 0.6,
+    "benchmark-curator": 0.9,
+    "content-writer": 0.9,
+    "feedback-integrator": 0.9,
+    "longform-publisher": 0.9,
     "portfolio-operator": 0.9,
-    "product-operator": 0.38,
+    "product-operator": 0.7,
     "rubric-designer": 0.9,
     "skill-auditor": 0.9
   },
   "allow_unexercised_scripts": {},
-  "note": "Absolute floors ratchet quality. Product Operator and Longform Publisher floors reflect the 2026-09-25 golden-case expansion; held-guard counts remain the primary regression gate."
+  "note": "Absolute floors ratchet quality. Since 2026-10-02 the measurement counts one-line and elif guards, which the compact kernels use for most rules; floors were raised to match the cases added that day. Held-guard counts remain the primary regression gate."
 }

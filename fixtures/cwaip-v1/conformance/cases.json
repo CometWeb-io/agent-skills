@@ -23,6 +23,11 @@
       "expect": "accept"
     },
     {
+      "file": "valid/decision-handoff-no-go-with-blockers.json",
+      "expect": "accept",
+      "note": "blockers are expected next to a non-authorizing verdict"
+    },
+    {
       "file": "invalid/unknown-top-level-field.json",
       "expect": "reject",
       "layer": "core",
@@ -97,6 +102,34 @@
       "expect": "reject",
       "layer": "kind",
       "error": "verdict"
+    },
+    {
+      "file": "invalid/evidence-missing-payload.json",
+      "expect": "reject",
+      "layer": "kind",
+      "error": "payload",
+      "note": "kinds with a kind schema require payload since spec revision 1.0.1"
+    },
+    {
+      "file": "invalid/decision-handoff-missing-payload.json",
+      "expect": "reject",
+      "layer": "kind",
+      "error": "payload",
+      "note": "kinds with a kind schema require payload since spec revision 1.0.1"
+    },
+    {
+      "file": "invalid/decision-handoff-go-with-blockers.json",
+      "expect": "reject",
+      "layer": "kind",
+      "error": "blockers",
+      "note": "an authorizing verdict cannot carry open blockers"
+    },
+    {
+      "file": "invalid/decision-handoff-go-with-controls-with-blockers.json",
+      "expect": "reject",
+      "layer": "kind",
+      "error": "blockers",
+      "note": "GO_WITH_CONTROLS requires no open blocker, like GO"
     }
   ]
 }

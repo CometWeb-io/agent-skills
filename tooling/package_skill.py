@@ -57,9 +57,8 @@ def validate_frontmatter(blob: bytes, skill: str) -> None:
     match = re.match(r"\A---\s*\n(.*?)\n---(?:\n|\Z)", blob.decode("utf-8"), re.S)
     if not match:
         raise ValueError("SKILL.md is missing YAML frontmatter")
-    from compatibility import UniqueLoader
-    # UniqueLoader subclasses yaml.SafeLoader; duplicate keys are rejected.
-    data = yaml.load(match.group(1), Loader=UniqueLoader)  # nosec B506
+    from compatibility import safe_load_unique
+    data = safe_load_unique(match.group(1))
     if not isinstance(data, dict) or data.get("name") != skill:
         raise ValueError("frontmatter name must match the skill directory")
     desc = data.get("description")

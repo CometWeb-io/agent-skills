@@ -163,7 +163,17 @@ For a material change, perform a separate search for evidence that could defeat 
 - customer-logo page without active-customer confirmation,
 - third-party estimate that conflicts with first-party reporting.
 
-Record unresolved contradictions explicitly.
+For every `CRITICAL` or `HIGH` event, and for any claim likely to change a product/GTM decision, search
+for confirming evidence and, separately, for contradiction, rollback, regional limitation, grandfathering,
+beta/preview status, or qualification language. Then distinguish:
+
+- global availability from segment/plan/region-specific availability;
+- announced intent from shipped capability;
+- list price from effective customer economics;
+- hiring intent from realized strategic execution.
+
+If material ambiguity remains, keep the event `LIKELY`, `UNVERIFIED`, or `DISPUTED` and state the unresolved
+crux. Record unresolved contradictions explicitly.
 
 ## 7. Access and privacy controls
 

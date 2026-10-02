@@ -63,7 +63,7 @@ def assemble(payload: dict, *, previous: dict | None = None) -> dict:
     ranked = kernel.rank_candidates(copy.deepcopy(source.get('candidates', [])))['ranked']
     stop = [r for r in ranked if kernel.candidate_action_type(r)=='stop']
     later = [r for r in ranked if r['id'] not in selected and kernel.candidate_action_type(r)!='stop']
-    coverage = copy.deepcopy(source.get('coverage', {}))
+    coverage = copy.deepcopy(source.get('coverage') or {})
     for lane in ('github','notion','product_context','outcome_data'):
         coverage.setdefault(lane,'unavailable')
     decision = source.get('decision', f"{plan['readiness']['status']}: {len(immediate)} immediate action(s); remaining work follows dependencies and evidence gates.")

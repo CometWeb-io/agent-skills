@@ -104,7 +104,20 @@ Suggested mapping:
 
 Route by job-to-be-done:
 
+Skills in this repository:
+
 | Trigger from CI | Handoff |
+|---|---|
+| Material strategic response | `ai-council` |
+| SEO/content/AI-visibility movement | `seo-geo-aeo-maxxing` |
+| A competitor mechanism worth adapting into our product | `product-teardown` |
+| Claim needs broader primary-source investigation | `evidence-researcher` |
+| Competitor move changes what our product team does next | `product-operator` |
+
+Skills that are not part of this repository; hand off only when the host has one installed, otherwise
+state the handoff as out of scope:
+
+| Trigger from CI | Handoff (when installed) |
 |---|---|
 | Need initial deep baseline | `competitor-profiling` |
 | Need public comparison/alternative page | `competitors` |
@@ -112,10 +125,8 @@ Route by job-to-be-done:
 | Competitor price move may require our pricing change | `pricing` |
 | New positioning/category threat | `product-marketing` / `copywriting` |
 | Ads/creative shift | `ads` / `ad-creative` |
-| SEO/content movement | `seo-audit`, `ai-seo`, `seo-geo-aeo-maxxing` |
 | Review or win/loss pattern | `customer-research` |
-| Material strategic response | `ai-council` |
-| Recurring operational workflow | `marketing-loops` / scheduler |
+| Recurring operational workflow | a scheduler or automation tool |
 
 Pass only accepted facts, timestamps, source references, and clearly labeled hypotheses into the next skill.
 

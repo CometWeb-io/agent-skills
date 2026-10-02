@@ -50,6 +50,12 @@
       "final": true
     },
     {
+      "file": "valid/release-no-go-with-blockers.json",
+      "expect": "accept",
+      "final": true,
+      "note": "blockers are expected next to NO_GO"
+    },
+    {
       "file": "invalid/pending-hash-under-final.json",
       "expect": "reject",
       "final": true,
@@ -226,6 +232,19 @@
       "expect": "reject",
       "final": false,
       "error": "src-404"
+    },
+    {
+      "file": "invalid/release-go-with-blockers.json",
+      "expect": "reject",
+      "final": false,
+      "error": "GO cannot have blockers"
+    },
+    {
+      "file": "invalid/release-go-with-controls-with-blockers.json",
+      "expect": "reject",
+      "final": false,
+      "error": "GO_WITH_CONTROLS cannot have blockers",
+      "note": "GO_WITH_CONTROLS requires no open blocker; controls do not neutralize one"
     }
   ]
 }

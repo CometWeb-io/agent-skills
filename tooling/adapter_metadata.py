@@ -4,7 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 
 import yaml
-from compatibility import UniqueLoader
+from compatibility import safe_load_unique
 
 MANAGED_INTERFACE_KEYS = frozenset({
     "display_name",
@@ -16,8 +16,7 @@ MANAGED_INTERFACE_KEYS = frozenset({
 
 
 def merge_openai(entry: dict, existing: str | None, interface: dict) -> str:
-    # UniqueLoader subclasses yaml.SafeLoader; duplicate keys are rejected.
-    old = yaml.load(existing, Loader=UniqueLoader) if existing else {}  # nosec B506
+    old = safe_load_unique(existing) if existing else {}
     if old is None:
         old = {}
     if not isinstance(old, dict):

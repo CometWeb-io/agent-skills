@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [6.1.0] - 2026-10-02
+
+- Front door cut from 18,696 to 12,103 bytes by progressive disclosure: the full step procedure and lens definitions move to `references/workflow.md`, and the review setup (steps 1A-1D), closure audit, and production guidance move to the new shared `references/review-operations.md`. The core contract, BLOCKER admission gate, tone default, `outcome_basis` rule, hard boundaries, and every load trigger stay in `SKILL.md`.
+- `tests/front-door-rules.json` inventories every must-keep rule and every normative front-door sentence, checked by `tooling/tests/test_front_door_rules.py`, so later trimming cannot drop one silently; `tooling/tests/test_roaster_front_doors.py` pins the 21-rule core contract, the workflow step index and reference reachability.
+
 ## [6.0.1] - 2026-10-02
 
 - The handoff contract no longer names `integration/validate_handoff.py`, which never shipped; it now states that the document is the normative definition and that consumers check its invariants themselves.

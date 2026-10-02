@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.1] - 2026-10-03
+
+- `scripts/run_evals.py --help` exits 0 with a usage line instead of exit 2; any other argument is still rejected with exit 2 and the unrecognized argument named.
+
 ## [1.7.0] - 2026-09-22
 
 - Structured breaking-change migration plans and comparable-history regression bisection.

@@ -10,6 +10,8 @@
 6. Alert policy
 7. Re-baselining
 8. Cost and coverage budgets
+9. Continuous monitoring semantics
+10. Failure modes to actively prevent
 
 ## 1. Watch design
 
@@ -132,3 +134,30 @@ Prioritize collection by expected decision value:
 If the research budget is constrained, reduce low-value source breadth before weakening verification on high-impact claims.
 
 Report coverage explicitly: `checked / expected / stale / failed / not configured` by competitor and signal area when the user needs operational health.
+
+## 9. Continuous monitoring semantics
+
+A skill run is not a daemon. "Continuous" means a repeatable intelligence loop with persisted state plus an
+external scheduler. For a recurring watch:
+
+1. Save the watch configuration and baseline.
+2. Define cadence by competitor tier and signal volatility.
+3. Execute this skill in `WATCH` mode on each run.
+4. Alert only on newly accepted material events.
+5. Emit a digest on a lower-frequency cadence even when there are no critical alerts.
+6. Periodically re-baseline fields whose source structure changed.
+
+Prefer condition-based notification for high-severity events and time-based digests for routine intelligence.
+
+## 10. Failure modes to actively prevent
+
+- Alerting on cookie banners, dates, counters, A/B copy, tracking parameters, or layout-only changes.
+- Treating an SEO/traffic estimate as a verified business fact.
+- Equating a feature page with actual feature availability.
+- Treating one social post or review as representative market evidence.
+- Mixing observations from different regions, plans, or dates.
+- Replacing historical snapshots instead of appending a new version.
+- Generating repeated alerts for the same transition.
+- Hiding missing coverage behind confident prose.
+- Turning every competitor move into a roadmap recommendation.
+- Claiming background monitoring when no scheduler exists.

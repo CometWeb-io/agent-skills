@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.1] - 2026-10-03
+
+- `scripts/run_evals.py` answers `--help` and rejects unknown arguments instead of ignoring them and running.
+
 ## [1.2.0] - 2026-09-18
 
 ### Changed

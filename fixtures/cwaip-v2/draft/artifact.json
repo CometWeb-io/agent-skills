@@ -1,0 +1,8 @@
+{
+  "schema": "cometweb.artifact/v2-draft",
+  "artifact_kind": "audit-report",
+  "artifact_hash": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+  "locator": "https://example.com/reports/audit.json",
+  "media_type": "application/json",
+  "size_bytes": 2048
+}

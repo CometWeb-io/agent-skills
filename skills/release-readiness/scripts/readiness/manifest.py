@@ -215,7 +215,18 @@ def _normalize_scope(raw: Any, profile: str) -> Tuple[Dict[str, Any], List[str],
     audience = str(raw.get("audience", "unknown")).lower().strip()
     if audience not in AUDIENCES:
         raise ManifestError(f"scope.audience invalid: {audience!r}")
-    commercial = str(raw.get("commercial", "unknown")).lower().strip()
+    raw_commercial = raw.get("commercial")
+    alias = raw.get("commercial_model")
+    if alias is not None:
+        # Earlier SKILL.md text named this field `commercial_model`. A manifest
+        # written from it lost the answer silently: billing gates were not
+        # derived and the scope read as unresolved. Accept the alias, refuse a
+        # contradiction.
+        if raw_commercial is not None and str(raw_commercial).lower().strip() != str(alias).lower().strip():
+            raise ManifestError("scope.commercial and scope.commercial_model disagree")
+        if raw_commercial is None:
+            raw_commercial = alias
+    commercial = str("unknown" if raw_commercial is None else raw_commercial).lower().strip()
     if commercial not in COMMERCIAL:
         raise ManifestError(f"scope.commercial invalid: {commercial!r}")
 

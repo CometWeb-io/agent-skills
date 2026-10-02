@@ -1,0 +1,216 @@
+{
+  "skill": "product-teardown",
+  "note": "Normative rules the skill must keep. Front-door rules live in SKILL.md; the rest sit in a reference SKILL.md points to with a load trigger. Removing or moving a rule means editing this inventory deliberately.",
+  "rules": [
+    {
+      "id": "chain-intact",
+      "text": "Never collapse the stages",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "ui-proves-behavior",
+      "text": "Seeing UI proves only visible behavior/state",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "code-proves-version",
+      "text": "Seeing code proves implementation in the inspected version",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "success-not-cause",
+      "text": "does not prove the pattern caused success",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "prevalence-not-effect",
+      "text": "proves prevalence, not effectiveness",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "source-only-no-adopt",
+      "text": "never emit `ADOPT` without destination evidence",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-scope-creep",
+      "text": "Do not expand scope merely because more material is available",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-destination-cap",
+      "text": "cap action at `CANDIDATE` or `REJECT`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "decision-contract",
+      "text": "whether claims must hold \"as of now\"",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-version-mixing",
+      "text": "Never silently combine evidence from incompatible releases, plans, platforms, cohorts, or branches",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "private-search",
+      "text": "Never send private source chunks into public search",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "destination-minimal",
+      "text": "Do not turn the destination pass into a repo-wide roadmap or general product audit",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-copying",
+      "text": "Do not recommend copying proprietary text, visual assets, distinctive trade dress, private implementation, or source code beyond what license/permission allows",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-averaging-profiles",
+      "text": "Do not write N mini-profiles and then average them",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "destination-need",
+      "text": "If that evidence is unavailable or weak, keep the pattern `CANDIDATE`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "score-not-evidence",
+      "text": "a score is never evidence and cannot override a blocker or proof-burden rule",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-invented-paths",
+      "text": "Never invent destination file paths; inspect the destination repo before naming files",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "interactions",
+      "text": "do not rank patterns as if they were independent",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "evidence-ceiling",
+      "text": "Do not let a numeric score upgrade a pattern past its evidence ceiling",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-mechanical-ab",
+      "text": "Do not use an A/B test mechanically when the uncertainty is architectural rather than behavioral",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "verdict-divergence",
+      "text": "a final human verdict that differs from the suggested action must explain why",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "validator-limits",
+      "text": "The validator checks structure, not factual truth",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "q-inferred",
+      "text": "Never state inferred architecture as observed fact",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "q-causal",
+      "text": "Never state causal outcome without outcome evidence",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "q-marketing",
+      "text": "Never treat repeated marketing claims as independent confirmation",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "q-license",
+      "text": "Never recommend source-code reuse before license/provenance review",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "q-adopt-evidence",
+      "text": "Never recommend `ADOPT` without destination problem evidence",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "q-adopt-gate",
+      "text": "Never recommend `ADOPT` when a mandatory legal/IP/security/privacy gate is unresolved",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "q-invent",
+      "text": "Never invent destination paths, metrics, or baselines",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "q-prevalence",
+      "text": "Never treat multi-source prevalence as proof of effectiveness",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "q-quota",
+      "text": "Never fill a pattern quota with weak observations",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "q-reject",
+      "text": "Never hide high-value `REJECT` findings",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "redteam-cargo",
+      "text": "cargo-cult adoption;",
+      "where": "references/pattern-transfer.md"
+    },
+    {
+      "id": "redteam-license",
+      "text": "license/IP/trade-dress risk;",
+      "where": "references/pattern-transfer.md"
+    },
+    {
+      "id": "redteam-interaction",
+      "text": "interaction conflict with another recommended pattern",
+      "where": "references/pattern-transfer.md"
+    },
+    {
+      "id": "not-a-pattern",
+      "text": "\"they have feature X\"",
+      "where": "references/pattern-transfer.md"
+    },
+    {
+      "id": "readme-not-proof",
+      "text": "treat README and marketing claims as documentation claims until\ncode/tests/runtime evidence corroborate them",
+      "where": "references/evidence-model.md"
+    },
+    {
+      "id": "trackers-planned",
+      "text": "issue/project trackers are evidence of planned, not shipped,\nwork",
+      "where": "references/evidence-model.md"
+    },
+    {
+      "id": "destination-discipline",
+      "text": "If this evidence is unavailable, emit `CANDIDATE` and list the minimum destination discovery needed",
+      "where": "references/evidence-model.md"
+    },
+    {
+      "id": "transfer-packet",
+      "text": "Rollback/kill criteria",
+      "where": "references/implementation-transfer.md"
+    },
+    {
+      "id": "experiment-fields",
+      "text": "What result changes the verdict",
+      "where": "references/implementation-transfer.md"
+    },
+    {
+      "id": "synthesis-families",
+      "text": "## 3. Pattern families",
+      "where": "references/multi-target-synthesis.md"
+    }
+  ]
+}

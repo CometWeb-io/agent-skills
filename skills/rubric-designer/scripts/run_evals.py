@@ -25,8 +25,19 @@ def case_passes(got,case):
     for path,value in case.get('expect_paths',{}).items():
         if get_path(got,path)!=value:return False
     return True
+def _cli_args():
+    """Return an exit code when argv asks for help or is invalid, else None."""
+    args=sys.argv[1:]
+    usage='usage: run_evals.py [-h]\n\nRun the bundled offline eval cases; takes no other arguments.'
+    if args in (['-h'],['--help']):
+        print(usage); return 0
+    if args:
+        print(f"{usage}\nrun_evals.py: error: unrecognized arguments: {' '.join(args)}",file=sys.stderr); return 2
+    return None
+
 def main():
-    if len(sys.argv)>1: print('usage: run_evals.py',file=sys.stderr); return 2
+    code=_cli_args()
+    if code is not None: return code
     cases=json.loads((ROOT/'evals/cases.json').read_text(encoding='utf-8')); failures=[]
     for case in cases:
         try:

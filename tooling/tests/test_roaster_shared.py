@@ -29,7 +29,7 @@ def test_reference_drift_is_detected_and_repaired(tmp_path: Path) -> None:
             path.write_text("same script", encoding="utf-8")
         for name in (
             "adversarial-protocol.md", "assurance-protocol.md", "eval-protocol.md",
-            "handoff-contract.md", "production-ops.md", "revision-protocol.md",
+            "handoff-contract.md", "production-ops.md", "review-operations.md", "revision-protocol.md",
             "source-safety.md", "workspace-ops.md",
         ):
             path = base / "references" / name

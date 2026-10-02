@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.3 — 2026-10-03
+
+- `validate_report.py` no longer needs `jsonschema` to print `--help`; without it, validation exits 2 with an install hint (and `validate()` fails closed) instead of an ImportError traceback.
+
 ## 1.3.2 — 2026-10-02
 
 - The description invited "roast" requests for any page without saying where copy critique and search-visibility audits go. It now names content-roaster and seo-geo-aeo-maxxing for those.

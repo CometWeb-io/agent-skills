@@ -1,0 +1,11 @@
+{
+  "scenario": "protocol_version_invalid",
+  "expect": {
+    "validation": [
+      "PROTOCOL_VERSION_INVALID"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

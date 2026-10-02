@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.3.0] - 2026-10-02
+
+### Changed
+
+- Front door cut from 16.7 KB to 11.1 KB. Each workflow step now names the
+  reference to open and when; detail that SKILL.md repeated from its references
+  (evidence fields, specialist routing, revalidation and delta lists, output
+  fields) lives only there. The red-team checklist moved to the new
+  `references/red-team.md`, read before every final verdict; release context to
+  capture moved to `references/risk-routing.md`; the list of engine guarantees
+  moved to `references/manifest-schema.md`.
+- `tests/front-door-rules.json` inventories every MUST/NEVER/gate and where it
+  lives; `tooling/tests/test_front_door_rules.py` fails if one is dropped,
+  reworded, or left behind a pointer with no load trigger.
+- The description also sends site/app QA with no named candidate to Web App
+  Auditor.
+
+### Fixed
+
+- SKILL.md named the scope field `commercial_model`; the engine reads
+  `scope.commercial` and ignored the other key, so a manifest written from the
+  skill lost its answer — `paid` became `unknown` and the billing gate was never
+  derived. SKILL.md now uses `scope.commercial`, and the engine accepts
+  `commercial_model` as an alias and rejects the two keys disagreeing.
+
 ## [1.2.1] - 2026-10-02
 
 ### Changed

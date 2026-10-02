@@ -1,0 +1,9 @@
+{
+  "scenario": "lifecycle_gap:master_locked:EDITED",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "EDITED"
+  }
+}

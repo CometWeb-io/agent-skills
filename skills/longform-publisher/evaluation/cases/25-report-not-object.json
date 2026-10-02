@@ -1,0 +1,11 @@
+{
+  "scenario": "report_not_object",
+  "expect": {
+    "validation": [
+      "REPORT_NOT_AN_OBJECT"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "BRIEFED"
+  }
+}

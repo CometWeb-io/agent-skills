@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/v2/draft/snapshot.schema.json",
+  "title": "DRAFT CW-AIP v2 SnapshotMetadata payload (not enforced)",
+  "description": "Draft only. No validator applies this schema and a v2 SnapshotMetadata envelope is still rejected; keep emitting SnapshotMetadata as v1 until this draft is promoted. Fields may change without notice.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "snapshot_id", "baseline_id", "delta_of", "snapshot_hash"],
+  "properties": {
+    "schema": { "const": "cometweb.snapshot/v2-draft" },
+    "snapshot_id": { "type": "string", "minLength": 1 },
+    "baseline_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Baseline this snapshot belongs to; equals snapshot_id for a baseline"
+    },
+    "delta_of": {
+      "type": ["string", "null"],
+      "description": "snapshot_id this snapshot is a delta of, or null for a baseline"
+    },
+    "snapshot_hash": { "type": "string", "minLength": 1 },
+    "captured_at": { "type": "string" },
+    "locator": { "type": "string" }
+  }
+}

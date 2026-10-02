@@ -1423,6 +1423,759 @@
         "science-roaster"
       ],
       "reason": "A marketing case study is not a scientific study"
+    },
+    {
+      "id": "ebook-format-conversion-goes-to-ebook-publisher",
+      "prompt": "Convert this ebook from EPUB to MOBI.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "A file-format conversion needs no skill; ebook-publisher's signals need an authoring verb or publication intent, and its narrow intent guard keeps conversion-only prompts out of scope (was a known gap)"
+    },
+    {
+      "id": "single-canonical-tag-goes-to-seo-audit",
+      "prompt": "Add canonical tags to the blog templates.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Adding canonical tags is an isolated implementation task; seo-geo-aeo-maxxing's canonical/indexability signal needs a diagnostic verb and its narrow intent guard blocks isolated tag edits (was a known gap)"
+    },
+    {
+      "id": "ship-this-week-without-filler-misses-product-operator",
+      "prompt": "Given the current roadmap for this one product, what should the team ship this week?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "portfolio-operator",
+        "repo-to-roadmap"
+      ],
+      "reason": "'ship this week' with nothing in between is still a weekly product-operator question (was a known gap)"
+    },
+    {
+      "id": "signal-ebook-spreadsheet-workbook",
+      "prompt": "Open the Excel workbook and sum column B for each region.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "A spreadsheet workbook is not a PDF workbook publication"
+    },
+    {
+      "id": "signal-ebook-translate-white-paper",
+      "prompt": "Translate this white paper abstract into German.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "Translating an existing paper is not producing a publication"
+    },
+    {
+      "id": "signal-longform-single-invoice-pdf",
+      "prompt": "Regenerate the invoice PDF for order 1042.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "longform-publisher"
+      ],
+      "reason": "Regenerating one business PDF is not derived DOCX/PDF manuscript lineage"
+    },
+    {
+      "id": "signal-longform-dashboard-report-refresh",
+      "prompt": "Set up a weekly report refresh in Power BI.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "longform-publisher"
+      ],
+      "reason": "A BI report refresh schedule is not a publication refresh"
+    },
+    {
+      "id": "signal-seo-fix-rel-canonical",
+      "prompt": "Fix the rel=canonical on our paginated category pages.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "A single canonical implementation fix is an isolated meta task, not a multi-pillar audit"
+    },
+    {
+      "id": "signal-product-operator-pid-control-loop",
+      "prompt": "Tune the PID control loop on the thermostat firmware.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "An engineering control loop is not the weekly product control loop"
+    },
+    {
+      "id": "signal-product-operator-blocker-stack-trace",
+      "prompt": "This bug is a blocker for me, can you explain the stack trace?",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "The bare word 'blocker' without a roadmap or sprint is not product operations"
+    },
+    {
+      "id": "signal-design-partner-cold-email",
+      "prompt": "Write a cold email to our design partner about the next pilot call.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "design-partner-finder"
+      ],
+      "reason": "Outbound copy to an existing design partner is not partner discovery or qualification"
+    },
+    {
+      "id": "signal-customer-ops-case-study",
+      "prompt": "Write a customer case study about how Acme cut onboarding time.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "A customer case study is marketing content, not a support case"
+    },
+    {
+      "id": "signal-customer-ops-support-feature",
+      "prompt": "Add customer support for engineering-grade CSV exports to the roadmap doc.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "'support' as a product feature is not a support-to-engineering handoff"
+    },
+    {
+      "id": "signal-orchestrator-docker",
+      "prompt": "Orchestrate the Docker containers with docker compose for local dev.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator"
+      ],
+      "reason": "Container orchestration is not multi-skill orchestration"
+    },
+    {
+      "id": "signal-orchestrator-e2e-tests",
+      "prompt": "Write end-to-end tests for the checkout flow with Playwright.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator"
+      ],
+      "reason": "End-to-end tests are not an end-to-end skill workflow"
+    },
+    {
+      "id": "signal-orchestrator-pl-first-then-shell",
+      "prompt": "Najpierw zainstaluj zależności, potem uruchom testy.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator"
+      ],
+      "reason": "A plain first/then instruction with no skill work is not orchestration"
+    },
+    {
+      "id": "signal-multiagent-marl-explainer",
+      "prompt": "Explain multi-agent reinforcement learning in simple terms.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator-multiagent"
+      ],
+      "reason": "Multi-agent RL as a topic is not a request for isolated-subagent execution"
+    },
+    {
+      "id": "signal-web-app-auditor-ctr",
+      "prompt": "How can I improve the click-through rate of our Google Ads?",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "Click-through rate is an ads metric, not a click-through QA audit"
+    },
+    {
+      "id": "signal-skill-evaluator-career-skills",
+      "prompt": "Evaluate my skills for a senior frontend role and suggest what to learn.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Personal skills are not Agent Skills"
+    },
+    {
+      "id": "signal-skill-evaluator-classifier-recall",
+      "prompt": "Measure the precision and recall of my spam classifier.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Classifier recall is not skill trigger recall"
+    },
+    {
+      "id": "signal-feedback-integrator-draft-edits",
+      "prompt": "Integrate the reviewer feedback into the next draft of the article.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "feedback-integrator"
+      ],
+      "reason": "Applying edits to one draft is not cross-run failure-pattern synthesis"
+    },
+    {
+      "id": "signal-teardown-obfuscated-js",
+      "prompt": "Reverse-engineer this obfuscated JavaScript to see what it sends home.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Code-level reverse engineering is not a product/architecture teardown"
+    },
+    {
+      "id": "signal-teardown-pytest-fixture",
+      "prompt": "The pytest fixture teardown runs before my assertions; why?",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "A test fixture teardown is not a product teardown"
+    },
+    {
+      "id": "signal-evidence-poem-contradiction",
+      "prompt": "There is a contradiction between these two lines of my poem; fix it.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "A contradiction in prose is not conflicting sources or claims"
+    },
+    {
+      "id": "signal-release-build-docs",
+      "prompt": "Build 2.0 of the API docs with mkdocs.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Building versioned docs is not a release-candidate gate"
+    },
+    {
+      "id": "signal-context-pl-weather",
+      "prompt": "Jaki jest aktualny stan pogody w Warszawie?",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "cometweb-context"
+      ],
+      "reason": "'aktualny stan' without a CometWeb project is not a context snapshot"
+    },
+    {
+      "id": "signal-ci-own-pricing-page-design",
+      "prompt": "Design our pricing page so it looks better than the competitor pricing page.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Designing our own page is not monitoring competitor changes"
+    },
+    {
+      "id": "signal-product-operator-ship-this-week",
+      "prompt": "What should we ship this week on the billing product?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness",
+        "portfolio-operator"
+      ],
+      "reason": "Weekly shipping priority for one product, phrased without filler"
+    },
+    {
+      "id": "signal-product-operator-what-do-we-build-next",
+      "prompt": "Given our roadmap for this product, what do we build next?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "'what do we build next' against an existing roadmap is weekly product operations"
+    },
+    {
+      "id": "signal-design-partner-find-and-rank",
+      "prompt": "Find five design partners for a pre-PMF observability tool and rank them by evidence of pain.",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Discovery and ranking verbs anchor design-partner-finder"
+    },
+    {
+      "id": "signal-content-roaster-rereview-case-study",
+      "prompt": "Re-review the revised customer case study against the old roast and list what actually closed.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "A re-review of marketing content after a roast; 'customer case study' is not a support case"
+    },
+    {
+      "id": "signal-content-roaster-readme-marketing-claims",
+      "prompt": "Roast only the marketing claims in this README.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Marketing claims are content, even when they sit in a README"
+    },
+    {
+      "id": "signal-science-roaster-validation-split",
+      "prompt": "Red-team our cross-validation split for confounding by recruitment site.",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Validation design and confounding are methodological review"
+    },
+    {
+      "id": "signal-science-roaster-reviewer-number-two",
+      "prompt": "Reviewer number two: are the confounders in this cohort analysis handled?",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Spelled-out 'reviewer number two' is the Reviewer #2 persona"
+    },
+    {
+      "id": "signal-web-app-auditor-qa-dashboard",
+      "prompt": "QA the dashboard of our web app for broken states and accessibility issues.",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "QA of a web-app surface for UI defects"
+    },
+    {
+      "id": "signal-skill-evaluator-humanize-lift",
+      "prompt": "Design an experiment to measure whether the humanize skill actually improves output quality.",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize"
+      ],
+      "reason": "Measuring a skill's lift is skill-evaluator even when the skill's name is mentioned"
+    },
+    {
+      "id": "signal-skill-evaluator-version-vs-baseline",
+      "prompt": "Compare the new skill version against the no-skill baseline on discovery and task success.",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor"
+      ],
+      "reason": "Version-vs-baseline comparison is a skill experiment"
+    },
+    {
+      "id": "signal-seo-comma-pillars",
+      "prompt": "Run a full SEO, GEO and AEO audit of example.com and compare it with two competitors.",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "The three pillars written as a list still name the multi-pillar audit"
+    },
+    {
+      "id": "signal-ci-monitor-weekly-digest",
+      "prompt": "Monitor our three main competitors and send me a weekly digest of what changed.",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Recurring monitoring of competitors, worded loosely"
+    },
+    {
+      "id": "signal-teardown-patterns-to-borrow",
+      "prompt": "Study how Vercel structures its docs and extract patterns we could borrow.",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Extracting borrowable patterns from an external product"
+    },
+    {
+      "id": "signal-portfolio-across-client-and-phd",
+      "prompt": "Across my client work, product and PhD, what should I focus on for the next 14 days?",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Cross-domain focus over a fixed horizon"
+    },
+    {
+      "id": "signal-ebook-write-evidence-backed",
+      "prompt": "Write an evidence-backed ebook on Core Web Vitals for small agencies.",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Authoring verb plus ebook object"
+    },
+    {
+      "id": "signal-longform-drifted-docx-pdf",
+      "prompt": "Our handbook exists as DOCX and PDF that have drifted apart; reconcile them from a single canonical manuscript.",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "Derived-format lineage from one manuscript"
+    },
+    {
+      "id": "signal-quality-loop-complete",
+      "prompt": "Run the complete quality loop on this guide, from brief through acceptance.",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "artifact-acceptance"
+      ],
+      "reason": "'complete quality loop' is the same request as 'full quality loop'"
+    },
+    {
+      "id": "signal-repair-named-findings",
+      "prompt": "Repair findings F2 and F3 in the latest candidate and verify the fix.",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Repairing named findings"
+    },
+    {
+      "id": "signal-content-reviewer-section-against-brief",
+      "prompt": "Review this section against its brief without rewriting it.",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize"
+      ],
+      "reason": "Constructive review against a brief for any content unit"
+    },
+    {
+      "id": "signal-artifact-acceptance-final-acceptance",
+      "prompt": "Run final acceptance on the white paper candidate against contract C3.",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness",
+        "ebook-publisher"
+      ],
+      "reason": "Final acceptance of a knowledge artifact candidate"
+    },
+    {
+      "id": "signal-brief-architect-artifact-contract",
+      "prompt": "I only have a rough idea for a vendor-evaluation guide; turn it into an artifact contract before anyone writes.",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "An artifact/execution contract is the brief"
+    },
+    {
+      "id": "signal-feedback-integrator-failed-runs",
+      "prompt": "Several eval runs failed on the same fixture; turn that into a skill improvement proposal.",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Repeated failed runs turned into an improvement"
+    },
+    {
+      "id": "negation-en-do-not-review-codebase",
+      "prompt": "Do not review the codebase, just fix the failing test.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "The review is refused in a negated clause; fixing one test needs no skill"
+    },
+    {
+      "id": "negation-en-dont-roast-landing-page",
+      "prompt": "Don't roast my landing page, just summarise it.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Roast is negated; a summary needs no skill"
+    },
+    {
+      "id": "negation-en-please-dont-roast-manuscript",
+      "prompt": "Please don't roast this manuscript; I only need the abstract shortened.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster"
+      ],
+      "reason": "Negated roast of a manuscript must not score for science-roaster"
+    },
+    {
+      "id": "negation-en-dont-need-peer-review",
+      "prompt": "We don't need a scientific peer review of the paper, just format the references.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster"
+      ],
+      "reason": "'don't need' negates the peer review clause; reference formatting needs no skill"
+    },
+    {
+      "id": "negation-en-never-click-through",
+      "prompt": "Never click through the checkout; list the routes from the sitemap instead.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "The click-through is prohibited; listing routes is not a QA audit"
+    },
+    {
+      "id": "negation-en-skip-seo-audit",
+      "prompt": "Skip the SEO audit and add alt text to the hero image.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "'Skip' negates the audit clause; 'and' ends the negation scope"
+    },
+    {
+      "id": "negation-en-instead-of-brutal-repo-review",
+      "prompt": "Instead of a brutal review of the repo, write release notes for v2.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "'Instead of' names the unwanted task"
+    },
+    {
+      "id": "negation-pl-nie-rob-przegladu-repo",
+      "prompt": "Nie rób brutalnego przeglądu repo, tylko popraw literówki w README.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Polish clause-initial 'nie' negates the repo review; 'tylko' ends the scope"
+    },
+    {
+      "id": "negation-pl-nie-zroastuj-manuskryptu",
+      "prompt": "Nie zroastuj tego manuskryptu, tylko skróć abstrakt.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster"
+      ],
+      "reason": "Polish negated roast of a manuscript"
+    },
+    {
+      "id": "negation-pl-zamiast-oceny-kodu",
+      "prompt": "Zamiast brutalnej oceny kodu w repo napisz notatki do wydania.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Polish 'zamiast' names the unwanted task"
+    },
+    {
+      "id": "negation-en-redirect-to-content-roaster",
+      "prompt": "Don't roast the codebase; roast the landing page copy instead.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Negating the codebase clause leaves the copy roast as the only request"
+    },
+    {
+      "id": "negation-pl-redirect-to-content-roaster",
+      "prompt": "Nie rób brutalnego przeglądu repo, tylko zroastuj ofertę na landingu.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Polish: negated repo review, positive offer roast after 'tylko'"
+    },
+    {
+      "id": "negation-positive-dont-hold-back",
+      "prompt": "Don't hold back: roast this repo.",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "The colon ends the negated clause; the roast itself is requested"
+    },
+    {
+      "id": "negation-positive-dont-be-gentle",
+      "prompt": "Don't be gentle and roast my landing page copy.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "'and' ends the negated clause; the copy roast is requested"
+    },
+    {
+      "id": "negation-positive-dont-ship-until-gate",
+      "prompt": "Don't ship v3.1 until release readiness gives a GO verdict for production.",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "'until' ends the negation; the release gate is the request"
+    },
+    {
+      "id": "negation-positive-not-working-click-through",
+      "prompt": "Find what's not working in our checkout flow and click through it.",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "A bare 'not' is not a negation cue"
+    },
+    {
+      "id": "negation-positive-roast-but-dont-touch-docs",
+      "prompt": "Roast the repo, but don't touch the docs.",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Negation after 'but' covers only the docs clause"
+    },
+    {
+      "id": "negation-positive-dont-just-summarise",
+      "prompt": "Don't just summarise it, roast the codebase.",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "'just' ends the negated clause; the roast is requested"
+    },
+    {
+      "id": "negation-positive-pl-nie-oszczedzaj",
+      "prompt": "Nie oszczędzaj mnie, upiecz to repo.",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Polish: comma ends the negated clause; the roast is requested"
+    },
+    {
+      "id": "negation-positive-pl-ale-nie-zmieniaj",
+      "prompt": "Zrób brutalny przegląd repo, ale nie zmieniaj kodu.",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Polish: negation after 'ale' covers only the code-change clause"
+    },
+    {
+      "id": "negation-positive-dash-boundary",
+      "prompt": "Don't summarise the paper — roast the manuscript's methods.",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "A dash ends the negated clause"
+    },
+    {
+      "id": "seo-guard-audit-with-canonical-fix",
+      "prompt": "Run an SEO audit of the blog and fix the canonical tags it finds.",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "An explicit audit lifts the isolated-meta-task guard"
+    },
+    {
+      "id": "seo-guard-pl-dodaj-canonical",
+      "prompt": "Dodaj tag canonical do szablonów bloga.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Polish isolated canonical edit stays out of the audit skill"
+    },
+    {
+      "id": "ebook-guard-write-then-convert",
+      "prompt": "Write an ebook on onboarding and convert the final draft to EPUB.",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "longform-publisher"
+      ],
+      "reason": "Writing the ebook is in scope; the conversion is a final step"
+    },
+    {
+      "id": "ebook-guard-pl-konwersja",
+      "prompt": "Konwertuj ten poradnik PDF do EPUB.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "Polish format conversion of an existing guide needs no skill"
+    },
+    {
+      "id": "reviewer-two-spelled-out-goes-to-science-roaster",
+      "prompt": "Act as reviewer two on this manuscript's statistics.",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "A spelled-out 'reviewer two' on a manuscript is the science-roaster persona; science-roaster's reviewer-number signal now accepts the spelled-out form (was a known gap)"
     }
   ]
 }

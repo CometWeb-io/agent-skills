@@ -1,0 +1,9 @@
+{
+  "scenario": "lifecycle_gap:edited_complete:CLAIMS_RECONCILED",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "CLAIMS_RECONCILED"
+  }
+}

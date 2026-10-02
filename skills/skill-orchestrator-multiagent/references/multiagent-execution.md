@@ -86,14 +86,18 @@ python3 scripts/validate_envelope.py /tmp/step1-evidence.json --expect-type Evid
 
 - It accepts CW-AIP v1 (`protocol_version: "1.0"`) and v2 (`"2.0"`) and checks the
   matching bundled core schema. Any other `protocol_version` fails.
-- v1: every kind also needs an object `payload`.
+- v1: every kind needs an object `payload`. `EvidenceEnvelope` and `DecisionHandoff`
+  are checked against their bundled kind schemas, so a missing `research_contract`
+  or `verdict` fails here, not in the next step.
 - v2: `payload_hash` is recomputed and must match; `pending` passes only without
   `--final`. Pass `--final` for the last step and for anything leaving the workflow.
+- Both versions: a `GO` verdict (and a release `GO_WITH_CONTROLS`) that lists
+  blockers fails. Controls do not clear a blocker.
 - `--expect-type` takes the kind from the plan. A step planned as `DecisionHandoff`
   also accepts a v2 `DecisionEnvelope` (Council) or `ReleaseEnvelope` (Release
   Readiness); no other cross-version mapping exists.
-- It checks the envelope, not domain semantics. Typed payload rules (evidence graph,
-  decision gates) belong to the producing skill; in the repository,
+- Beyond that it checks the envelope, not domain semantics. Full typed payload rules
+  (evidence graph, decision gates) belong to the producing skill; in the repository,
   `tooling/validate_envelope.py` runs them for v2.
 
 Requires `jsonschema`; validation fails closed if the dependency or a schema is

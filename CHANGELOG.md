@@ -30,9 +30,33 @@ tags use `vMAJOR.MINOR.PATCH`.
   name, signed JWTs, and Stripe, npm, PyPI, GitLab, Hugging Face, Slack app and
   Azure storage credentials.
 
+- The router ignores routing signals inside a refused clause ("do not review
+  the codebase, just fix the test", "nie rób przeglądu repo, tylko…"), in
+  English and Polish. Scope ends at the clause, so "don't hold back: roast this
+  repo" still routes. Rules live in `registry/routing-policy.json` under
+  `negation`.
+- `tooling/routing_coverage.py --confusion` reports misroutes and false
+  positives over every labelled prompt in the repository, split into stable
+  tune and holdout halves.
+- Per-skill `tests/front-door-rules.json` inventories, checked by
+  `tooling/tests/test_front_door_rules.py`: every must-keep rule has to stay in
+  the file it is listed under, a rule moved to a reference needs a pointer with
+  a load trigger in `SKILL.md`, and every normative sentence in a front door has
+  to be inventoried. The three roasters, Product Operator, Release Readiness,
+  Customer Ops, Product Teardown and Competitive Intelligence use it.
+- Every bundled skill script answers `--help` with exit 0 and rejects unknown
+  arguments; `tooling/tests/test_skill_script_cli_contract.py` checks all of
+  them and that each script imports only the standard library, its siblings or
+  dependencies declared in `RUNTIME.json`. A runtime-matrix workflow runs the
+  skills that declare dependencies against those dependencies alone.
+- Draft CW-AIP v2 schemas for the reserved `artifact`, `snapshot` and
+  `specialist-handoff` kinds, with fixtures.
+- Tests that the paths in `registry/hosts.json` exist and that an installer
+  rerun over an older install upgrades it cleanly.
+
 ### Changed
 
-- Broadened deterministic routing evaluation to 209 cases, including natural
+- Broadened deterministic routing evaluation to 284 cases, including natural
   Polish requests and positive coverage for every catalog skill. The proxy is
   not a substitute for model or host-level routing acceptance.
 - Roaster routing signals now pair adversarial verbs (roast, tear apart,
@@ -62,8 +86,45 @@ tags use `vMAJOR.MINOR.PATCH`.
   to the job that needs them, third-party actions are pinned by commit, and
   matrix values reach shell steps through environment variables.
 
+- Routing signals for 18 skills are narrower: bare nouns such as "ebook",
+  "canonical", "blocker" or "orchestrate" no longer claim a prompt without the
+  skill's verb or object, so a file conversion, a single canonical-tag edit or
+  a Docker compose request reaches no skill. `parse_description` reads
+  `SKILL.md` with a YAML parser, as hosts do.
+- The roaster front doors (6.1.0) are 35–42% smaller; the step procedure moved
+  to `references/workflow.md` per roaster and review setup to a shared
+  `references/review-operations.md`. Product Operator 2.4.0, Release Readiness
+  1.3.0, Customer Ops 2.2.0, Product Teardown 1.2.0 and Competitive Intelligence
+  1.1.0 moved detail behind their front doors the same way.
+- `tooling/eval_strength.py` finds guards the AST way and measures 888 guards
+  (was 359); 765 are held by the skills' own harnesses after new eval cases
+  for benchmark-curator, content-writer, feedback-integrator, rubric-designer,
+  product-operator and longform-publisher.
+- The multiagent CW-AIP gate checks v1 envelopes against their kind schemas,
+  requires a v1 payload, and rejects a `GO`/`GO_WITH_CONTROLS` verdict that
+  lists blockers. CW-AIP spec revisions 1.0.1 and 2.0.1.
+- YAML frontmatter and host metadata are read with `yaml.safe_load` plus a
+  duplicate-key pass; no `nosec` suppression remains.
+- The OpenAI marketplace manifest declares its install policy and category.
+- Ruff 0.16.10 and four development dependency patch updates.
+
 ### Fixed
 
+- Product Operator's report validator accepted an action confidence outside
+  0–1; its kernel rejects a non-object `coverage` and a string `depends_on`
+  (which was read letter by letter as dependencies) instead of crashing.
+- Release Readiness documented `commercial_model` while the engine read
+  `scope.commercial`, so a paid release lost its billing gate; the engine now
+  accepts the alias and rejects the two keys disagreeing.
+- Longform Publisher reports a wrongly typed nested report field as
+  `FIELD_TYPE_INVALID:<field>` instead of a traceback (frozen-release
+  exception 1.1.2). `score_maxx.py` and `compare_scores.py` reject malformed
+  score files with a message instead of a traceback, and Web App Auditor's
+  `validate_report.py --help` works without `jsonschema`.
+- Installers skip a skill directory that holds only `__pycache__` residue
+  (what `git pull` leaves after a skill is retired) instead of failing, and a
+  Cursor routing rule linked to the legacy `extras/cursor-routing.mdc` is
+  re-pointed to the generated rule.
 - Validators no longer pass malformed input: the coverage ledger rejects
   non-object rows, blank evidence references and unknown check IDs with a
   specific message; the decision validator rejects GO while human approval is

@@ -1,0 +1,11 @@
+{
+  "scenario": "master_path_missing",
+  "expect": {
+    "validation": [
+      "CANONICAL_MASTER_REQUIRED"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

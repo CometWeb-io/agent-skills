@@ -1,0 +1,11 @@
+{
+  "scenario": "manuscript_edited_after_lock",
+  "expect": {
+    "validation": [],
+    "manuscript": [
+      "MASTER_HASH_MISMATCH"
+    ],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

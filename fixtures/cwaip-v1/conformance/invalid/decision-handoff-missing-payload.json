@@ -1,0 +1,12 @@
+{
+  "id": "example-producer:DecisionHandoff:no-payload",
+  "type": "DecisionHandoff",
+  "producer": "release-readiness",
+  "protocol_version": "1.0",
+  "subject": "example.com pricing page",
+  "as_of": "2026-09-08T12:00:00Z",
+  "confidence": "high",
+  "dependencies": [
+    "example-producer:FindingEnvelope:conformance"
+  ]
+}

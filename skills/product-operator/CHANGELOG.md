@@ -1,5 +1,40 @@
 # Changelog
 
+## [2.4.0] - 2026-10-03
+
+### Changed
+
+- Front door cut from 16.2 KB to 9.1 KB. All eight control-plane references
+  were already read every run, so SKILL.md repeated them; it now keeps the run
+  loop, kernel entry points, escalation, output budgets and hard boundaries.
+  The operating contract moved to `modes.md`, the Product State Ledger to
+  `state-model.md`, candidate generation and contract to `prioritization.md`,
+  the stop rule and definition of done to `control-loop.md`, and sidecar
+  validation to `output-contract.md`.
+- `references/local-workflow.md` shipped but nothing pointed to it; SKILL.md
+  now loads it when running the kernel or brief bridge on local files.
+- The description sends customer support triage to customer-ops.
+- `tests/front-door-rules.json` pins every hard boundary and moved rule.
+
+### Fixed
+
+- `operator_kernel.py plan` rejects a non-object `coverage` and a non-list `depends_on` with an input error (exit 2). A string `depends_on` such as `"AB"` was read letter by letter as dependencies `A` and `B`, and a number crashed with a traceback; `sequence` and `readiness` apply the same checks.
+- `prepare_brief.py` treats `"coverage": null` as absent instead of crashing.
+- `scripts/self_check.py` answers `--help` and rejects unknown arguments instead of ignoring them and running.
+- `validate_report` accepted an action confidence of 1.5 or -0.5: it tested
+  `clamp(confidence, 0, 1) < 0`, and clamping pulls both into range, so only a
+  non-number failed. Out-of-range and non-finite values now fail.
+
+### Evals
+
+- 79 golden cases added (60 -> 139): two pin the input checks above, and a `validate_report` kind pins the exact
+  error and warning lists against a valid base report changed one field at a
+  time, covering actions, blockers, decisions, evidence freshness, lane caps,
+  the 2.2-only blocker checks, mutations and state-item contradictions.
+  `delta_fields` and `unwrap_kind` cover state transitions, volatile
+  timestamps, scope changes and blocker resolution, and bare reports versus
+  snapshots. Held guards: 71 of 187 -> 140 of 189.
+
 ## [2.3.2] - 2026-10-02
 
 - The description had no exclusions. It now hands first-time whole-project

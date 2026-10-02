@@ -1,0 +1,9 @@
+{
+  "scenario": "lifecycle_gap:release_ready:FORMAT_READY",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "FORMAT_READY"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "scenario": "malformed_readiness_ref",
+  "expect": {
+    "validation": [
+      "FIELD_TYPE_INVALID:scientific_readiness.evidence_ref"
+    ],
+    "manuscript": [
+      "FIELD_TYPE_INVALID:scientific_readiness.evidence_ref"
+    ],
+    "derived": [
+      "FIELD_TYPE_INVALID:scientific_readiness.evidence_ref"
+    ],
+    "stage": "RELEASE_READY"
+  }
+}

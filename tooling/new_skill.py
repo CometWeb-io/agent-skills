@@ -116,8 +116,14 @@ def run_case(case: dict) -> tuple[bool, str]:
 
 
 def main() -> int:
-    if len(sys.argv) > 1:
-        print("usage: run_evals.py\\n  Takes no arguments.", file=sys.stderr)
+    args = sys.argv[1:]
+    usage = "usage: run_evals.py [-h]\\n  Runs evals/cases.json; takes no other arguments."
+    if args in (["-h"], ["--help"]):
+        print(usage)
+        return 0
+    if args:
+        print(f"{{usage}}\\nrun_evals.py: error: unrecognized arguments: {{' '.join(args)}}",
+              file=sys.stderr)
         return 2
     rows = cases()
     if not rows:

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import sys
@@ -11,7 +12,15 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
 
-from publication_kernel import check_derived, check_manuscript, infer_stage, validate_report
+from publication_kernel import (
+    check_brief,
+    check_derived,
+    check_manuscript,
+    infer_stage,
+    render_manifest,
+    shape_errors,
+    validate_report,
+)
 
 
 def base_text() -> str:
@@ -123,36 +132,107 @@ def build_scenario(name: str) -> tuple[dict, str]:
     elif name == "source_ready_not_outlined":
         r["lifecycle"]["outline_locked"] = False
         r["current_stage"] = "SOURCE_READY"
+    elif name == "report_not_object":
+        return ["not", "a", "report"], text
+    elif name == "protocol_version_invalid":
+        r["protocol_version"] = "longform-publisher/2"
+    elif name == "mode_invalid":
+        r["mode"] = "PUBLISH"
+    elif name == "mode_unhashable":
+        r["mode"] = ["BUILD"]
+    elif name == "master_path_missing":
+        del r["canonical_master"]["path"]
+    elif name == "current_stage_invalid":
+        r["current_stage"] = "DONE"
+    elif name == "manuscript_edited_after_lock":
+        text += "\nA sentence added after the master was hashed.\n"
+    elif name == "html_qa_required_missing":
+        r["derived_artifacts"][0]["qa_required"] = True
+        r["derived_artifacts"][0]["qa_status"] = "MISSING"
+    elif name == "html_qa_not_required_but_failed":
+        r["derived_artifacts"][0]["qa_status"] = "FAIL"
+    elif name == "no_derived_artifacts":
+        r["derived_artifacts"] = []
+    elif name.startswith("lifecycle_gap:"):
+        # One lifecycle flag false, later flags left true, declared stage set to what
+        # the gap allows: the stage must stop at the first missing step.
+        flag, declared = name.split(":", 2)[1:]
+        r["lifecycle"][flag] = False
+        r["current_stage"] = declared
+    elif name == "manifest_lanes":
+        r["actions"]["blockers"] = ["Resolve the open citation"]
+        r["actions"]["now"] = [{"action": "Regenerate the PDF", "done_when": "parity PASS"}]
+        r["actions"]["waiting"] = [{"question": "Approve the cover?"}]
+        r["actions"]["delegate"] = [42]
     elif name == "locked_placeholder":
         text += "\n[TODO: verify layout]\n"
         h = hashlib.sha256(text.encode()).hexdigest()
         r["canonical_master"]["sha256"] = h
         r["derived_artifacts"][0]["master_sha256"] = h
+    elif name == "malformed_sources_not_list":
+        r["sources"] = "src-user"
+    elif name == "malformed_publication_not_object":
+        r["publication"] = ["Practical Guide"]
+    elif name == "malformed_source_id":
+        r["sources"][0]["id"] = ["src-user"]
+    elif name == "malformed_evidence_ref":
+        r["claim_uses"][0]["evidence_refs"] = [{"id": "src-web"}]
+    elif name == "malformed_authorized_ids":
+        r["source_policy"]["authorized_source_ids"] = [["src-user"]]
+    elif name == "malformed_action_lane":
+        r["actions"]["now"] = "Ship it"
+    elif name == "malformed_readiness_ref":
+        r["scientific_readiness"] = {"status": "PASS", "evidence_ref": ["src-user"]}
     else:
         raise ValueError(name)
     return r, text
 
 
+REQUIRED_EXPECT = ("validation", "manuscript", "derived", "stage")
+
+
 def run_case(path: Path) -> tuple[bool, str]:
     case = json.loads(path.read_text(encoding="utf-8"))
     report, text = build_scenario(case["scenario"])
-    actual = {
-        "validation": sorted(validate_report(report)),
-        "manuscript": sorted(check_manuscript(report, text)),
-        "derived": sorted(check_derived(report)),
-        "stage": infer_stage(report),
-    }
     expected = case["expect"]
-    expected = {
-        "validation": sorted(expected.get("validation", [])),
-        "manuscript": sorted(expected.get("manuscript", [])),
-        "derived": sorted(expected.get("derived", [])),
-        "stage": expected.get("stage", actual["stage"]),
-    }
-    return actual == expected, f"expected={expected} actual={actual}"
+    # Every case states all four results. A key left out used to default to the
+    # actual value, which is an assertion that cannot fail.
+    missing = [key for key in REQUIRED_EXPECT if key not in expected]
+    if missing:
+        return False, f"expect is missing {missing}"
+    if not isinstance(report, dict):
+        # Only the validator promises to survive a non-object report; it must say so
+        # with a code, and the stage of nothing is the first stage.
+        actual = {"validation": sorted(validate_report(report)), "manuscript": [], "derived": [],
+                  "stage": infer_stage({})}
+    else:
+        actual = {
+            "validation": sorted(validate_report(report)),
+            "manuscript": sorted(check_manuscript(report, text)),
+            "derived": sorted(check_derived(report)),
+            "stage": infer_stage(report),
+        }
+    want = {key: sorted(expected[key]) if key != "stage" else expected[key] for key in REQUIRED_EXPECT}
+    if actual != want:
+        return False, f"expected={want} actual={actual}"
+    if isinstance(report, dict) and not shape_errors(report):
+        # A wrongly typed report never reaches render-manifest: the CLI stops at
+        # FIELD_TYPE_INVALID first, so only well-shaped reports round-trip.
+        manifest = render_manifest(report)
+        # The manifest a report renders must check against that report, and a brief
+        # that differs from it must not.
+        if check_brief(report, manifest) != [] or check_brief(report, manifest + "edited\n") != ["BRIEF_MISMATCH"]:
+            return False, "check_brief disagrees with render_manifest"
+        lines = manifest.splitlines()
+        absent = [line for line in case.get("manifest_includes", []) if line not in lines]
+        present = [line for line in case.get("manifest_excludes", []) if line in lines]
+        if absent or present:
+            return False, f"manifest missing={absent} unexpected={present}\n{manifest}"
+    return True, ""
 
 
 def main() -> int:
+    argparse.ArgumentParser(description="Run the bundled offline long-form publication eval cases.").parse_args()
     cases = sorted((ROOT / "evaluation" / "cases").glob("*.json"))
     failures = 0
     for path in cases:

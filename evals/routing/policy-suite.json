@@ -238,6 +238,40 @@
       "expected_status": "workflow",
       "expected_primary_skill": "skill-orchestrator-multiagent",
       "must_not_trigger": []
+    },
+    {
+      "id": "negation-dont-humanize-fix-typos",
+      "prompt": "Don't humanize it, just fix typos",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "negation-do-not-humanize",
+      "prompt": "Do not humanize this paragraph.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-humanize"
+      ]
+    },
+    {
+      "id": "negation-until-ends-scope",
+      "prompt": "Don't ship until the release gate passes.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "release-readiness",
+      "must_not_trigger": []
+    },
+    {
+      "id": "negation-pl-tylko-ends-scope",
+      "prompt": "Nie rób click-through, tylko evidence pack.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "evidence-researcher",
+      "must_not_trigger": [
+        "web-app-auditor"
+      ]
     }
   ]
 }

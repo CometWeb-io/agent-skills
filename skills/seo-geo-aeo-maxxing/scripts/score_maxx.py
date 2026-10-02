@@ -68,7 +68,7 @@ def validate_evidence(items, evidence_classes, cid):
             fail(f"{cid} evidence item {idx} must be an object")
         cls = item.get("class")
         artifact = str(item.get("artifact", "")).strip()
-        if cls not in evidence_classes:
+        if not isinstance(cls, str) or cls not in evidence_classes:
             fail(f"{cid} evidence item {idx} has unknown class: {cls}")
         if not artifact:
             fail(f"{cid} evidence item {idx} requires artifact")
@@ -178,6 +178,8 @@ def score_audit(audit, root, as_of=None):
     source_registry = load_json(root / "references" / "live-source-registry.json")
     evidence_classes = registry.get("evidence_classes", {})
 
+    if not isinstance(audit, dict):
+        fail("audit must be a JSON object")
     if audit.get("registry_version") != registry["version"]:
         fail(
             f"Audit registry_version {audit.get('registry_version')!r} does not match current registry {registry['version']}; "
@@ -212,8 +214,8 @@ def score_audit(audit, root, as_of=None):
     active = audit.get("active_pillars")
     if active is None:
         active = list(PILLARS) if mode == "FULL" else list(PILLARS)
-    if not isinstance(active, list) or not active:
-        fail("active_pillars must be a non-empty list")
+    if not isinstance(active, list) or not active or any(not isinstance(x, str) for x in active):
+        fail("active_pillars must be a non-empty list of strings")
     if len(active) != len(set(active)):
         fail("active_pillars contains duplicates")
     unknown_pillars = [p for p in active if p not in PILLARS]
@@ -223,8 +225,8 @@ def score_audit(audit, root, as_of=None):
         fail("FULL mode requires all five pillars")
 
     target_surfaces = audit.get("target_surfaces", registry.get("default_surfaces", []))
-    if not isinstance(target_surfaces, list):
-        fail("target_surfaces must be a list")
+    if not isinstance(target_surfaces, list) or any(not isinstance(x, str) for x in target_surfaces):
+        fail("target_surfaces must be a list of strings")
     if len(target_surfaces) != len(set(target_surfaces)):
         fail("target_surfaces contains duplicates")
     unknown_surfaces = sorted(set(target_surfaces) - set(registry.get("surfaces", [])))
@@ -245,13 +247,13 @@ def score_audit(audit, root, as_of=None):
             fail("Each check must be an object")
         cid = row.get("id")
         verdict = row.get("verdict")
-        if cid not in check_defs:
+        if not isinstance(cid, str) or cid not in check_defs:
             fail(f"Unknown check id: {cid}")
         if cid in seen:
             fail(f"Duplicate check id: {cid}")
         seen.add(cid)
         cdef = check_defs[cid]
-        if verdict not in VALID_VERDICTS:
+        if not isinstance(verdict, str) or verdict not in VALID_VERDICTS:
             fail(f"Invalid verdict for {cid}: {verdict}")
 
         na_policy = cdef.get("na_policy", "conditional")
@@ -323,7 +325,7 @@ def score_audit(audit, root, as_of=None):
         profile = "custom"
     else:
         profile = audit.get("profile", "balanced")
-        if profile not in registry["profiles"]:
+        if not isinstance(profile, str) or profile not in registry["profiles"]:
             fail(f"Unknown profile: {profile}")
         weights = validate_weights(registry["profiles"][profile], active)
 

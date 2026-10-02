@@ -2,6 +2,23 @@
 
 Use this file to determine profile, scope completeness, risk tier, mode floor, required gate families, and governance surfaces.
 
+## 0. Release context to capture
+
+Capture only known facts; do not invent unknown values. Beyond the required
+identity (release ID, target environment, `as_of`, one immutable artifact identity),
+capture when relevant:
+
+- base/head commit and high-risk diff;
+- deployment topology and rollout mechanism;
+- database/schema/data migration scope;
+- auth/access-control changes;
+- paid/free model and billing provider;
+- public API compatibility impact;
+- supported browsers/devices/platforms;
+- production config/feature flags;
+- incident history related to the change;
+- launch commitments and customer migrations.
+
 ## 1. Profiles
 
 | Profile | Typical release unit | Baseline interpretation |

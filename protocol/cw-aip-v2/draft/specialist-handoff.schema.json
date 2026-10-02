@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/v2/draft/specialist-handoff.schema.json",
+  "title": "DRAFT CW-AIP v2 SpecialistHandoff payload (not enforced)",
+  "description": "Draft only. No validator applies this schema and a v2 SpecialistHandoff envelope is still rejected; keep emitting SpecialistHandoff as v1 until this draft is promoted. Fields may change without notice.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "skill", "scope", "stop_rule", "return_contract"],
+  "properties": {
+    "schema": { "const": "cometweb.specialist/v2-draft" },
+    "skill": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Registry id of the specialist skill being delegated to"
+    },
+    "scope": { "type": "string", "minLength": 1 },
+    "stop_rule": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Condition at which the specialist stops and returns, e.g. first blocker"
+    },
+    "return_contract": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Envelope kind the specialist must return, e.g. FindingEnvelope"
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "IDs of envelopes the specialist should read"
+    },
+    "constraints": { "type": "array", "items": { "type": "string" } },
+    "deadline": { "type": ["string", "null"] }
+  }
+}

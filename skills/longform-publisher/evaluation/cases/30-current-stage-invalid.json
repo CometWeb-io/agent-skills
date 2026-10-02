@@ -1,0 +1,11 @@
+{
+  "scenario": "current_stage_invalid",
+  "expect": {
+    "validation": [
+      "CURRENT_STAGE_INVALID"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

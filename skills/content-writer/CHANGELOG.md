@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.1] - 2026-10-03
+
+- `scripts/run_evals.py --help` exits 0 with a usage line instead of exit 2; any other argument is still rejected with exit 2 and the unrecognized argument named.
+- Eval cases pin the exact `errors` list. Added a null basis list, a basis
+  pointing at an unknown claim, a non-object evidence floor, DRAFT mode never
+  being release-eligible, a grade equal to the floor, and a high-risk claim
+  measured against the critical floor. Held guards: 41 of 52 -> 50 of 52.
+
 ## [1.7.0] - 2026-09-22
 
 - Compatibility release for v1.7 shared statistical, failure-operations, handoff and release-governance contracts.

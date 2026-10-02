@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -13,6 +14,7 @@ from portfolio_kernel import (classify_lane, detect_capacity_conflicts, rank_ite
 
 
 def main() -> int:
+    argparse.ArgumentParser(description='Run the bundled Portfolio Operator golden cases.').parse_args()
     cases = json.loads((ROOT / 'evals' / 'golden-cases.json').read_text(encoding='utf-8'))
     failures: list[str] = []
     for case in cases:

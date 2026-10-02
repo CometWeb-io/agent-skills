@@ -24,6 +24,33 @@ prepare_brief = _load("prepare_brief", ROOT / "scripts" / "prepare_brief.py")
 self_check = _load("self_check", ROOT / "scripts" / "self_check.py")
 
 
+_EVIDENCE = {"source": "github", "locator": "src/a.py", "claim": "exists", "claim_type": "implementation",
+             "freshness_status": "CURRENT"}
+
+# A report that validates PASS with no warning. validate_report cases override it
+# one field at a time, so the exact error list a case pins belongs to that field.
+VALID_REPORT: dict[str, Any] = {
+    "protocol_version": "2.2", "as_of": "2026-09-25T12:00:00Z", "mode": "STANDARD",
+    "target": "fixture/product", "goal": "Verify plan safety", "horizon": "one week",
+    "decision": "verify the release path",
+    "coverage": {"github": "verified", "notion": "verified", "product_context": "verified",
+                 "outcome_data": "not-required"},
+    "readiness": {"status": "READY", "reasons": []},
+    "blockers": [], "verify_now": [], "decision_now": [],
+    "now": [{"id": "A", "action": "Ship A", "done_when": "A deployed", "why_now": "on the path",
+             "confidence": 0.8, "evidence": [_EVIDENCE]}],
+    "next": [], "later": [], "stop": [], "watch": [],
+}
+
+
+def _override(base: dict[str, Any], payload: dict[str, Any]) -> dict[str, Any]:
+    out = json.loads(json.dumps(base))
+    for key in payload.get("__drop__", []):
+        out.pop(key, None)
+    out.update({key: value for key, value in payload.items() if key != "__drop__"})
+    return out
+
+
 def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
     kind = case["kind"]
     payload = case["input"]
@@ -73,6 +100,23 @@ def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
         return actual == expected, actual
     if kind == "validate_status":
         actual = kernel.validate_report(payload)["status"]
+        return actual == expected, actual
+    if kind == "validate_report":
+        # Status alone passes whenever any other rule also fails; the exact error and
+        # warning lists say which rule fired.
+        result = kernel.validate_report(_override(VALID_REPORT, payload) if isinstance(payload, dict) else payload)
+        return result == expected, result
+    if kind == "delta_fields":
+        result = kernel.delta_reports(payload["old"], payload["new"])
+        actual = {key: result.get(key) for key in expected}
+        return bool(expected) and actual == expected, actual
+    if kind == "unwrap_kind":
+        try:
+            _, integrity = kernel.unwrap_report(payload)
+        except kernel.InputError as exc:
+            actual = {"error": str(exc)}
+        else:
+            actual = {"kind": integrity["kind"]}
         return actual == expected, actual
     if kind == "brief_readiness":
         result = prepare_brief.assemble(payload)

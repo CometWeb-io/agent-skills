@@ -1,0 +1,15 @@
+{
+  "scenario": "malformed_action_lane",
+  "expect": {
+    "validation": [
+      "FIELD_TYPE_INVALID:actions"
+    ],
+    "manuscript": [
+      "FIELD_TYPE_INVALID:actions"
+    ],
+    "derived": [
+      "FIELD_TYPE_INVALID:actions"
+    ],
+    "stage": "RELEASE_READY"
+  }
+}

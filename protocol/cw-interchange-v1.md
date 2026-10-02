@@ -36,7 +36,7 @@ kept for existing links; a test fails if they drift.
 | `confidence` | no | Producer-local: a number in `[0, 1]` or a non-empty band label such as `high`. Never averaged across gates |
 | `status` | no | Producer-local lifecycle state; free text |
 | `dependencies` | no | Array of upstream envelope or claim IDs (strings) |
-| `payload` | no in the core schema | JSON object with the kind-specific body. See [Validation](#validation) for when it is required |
+| `payload` | per kind | JSON object with the kind-specific body. Optional in the core schema; required by the kind schemas. See [Validation](#validation) |
 
 Enum values are uppercase and case-sensitive. v2 uses lowercase enums; adapters
 MUST normalize at the boundary rather than mix conventions in one document.
@@ -74,7 +74,7 @@ Two kinds have a kind schema that adds payload requirements on top of the core:
 | Kind | Schema | Required payload fields |
 | --- | --- | --- |
 | `EvidenceEnvelope` | [`schemas/evidence-envelope.schema.json`](schemas/evidence-envelope.schema.json) | `research_contract`, `material_claims[]` (`claim_id`, `text`, `epistemic_kind` = `FACT`/`INFERENCE`, `status`), `evidence_pack_hash` |
-| `DecisionHandoff` | [`schemas/decision-handoff.schema.json`](schemas/decision-handoff.schema.json) | `verdict` |
+| `DecisionHandoff` | [`schemas/decision-handoff.schema.json`](schemas/decision-handoff.schema.json) | `verdict`; `blockers` MUST be empty when `verdict` is `GO` or `GO_WITH_CONTROLS` |
 
 The other kinds are constrained by the core schema only; their payload shape is
 defined by the producing skill's output contract.
@@ -83,13 +83,17 @@ defined by the producing skill's output contract.
 
 - The core schema sets `additionalProperties: false`. A top-level field not listed
   above makes the envelope invalid; producer-specific data MUST go inside `payload`.
-- The kind schemas constrain `payload` only when it is present, because v1 does not
-  require `payload` in the core. Producers of a kind with a kind schema MUST emit a
-  `payload` that satisfies it.
+- The core schema leaves `payload` optional. Each kind schema requires it, so an
+  `EvidenceEnvelope` or `DecisionHandoff` without a `payload` is invalid.
+- An authorizing verdict cannot carry open blockers: a `DecisionHandoff` whose
+  `verdict` is `GO` or `GO_WITH_CONTROLS` MUST have an empty or absent `blockers`
+  array. Controls bound residual risk; they do not clear a blocker. Other verdict
+  strings (`NO_GO`, `DEFER`, Council verdicts other than `GO`) MAY list blockers.
 - The orchestrator's between-step gate
-  (`skills/skill-orchestrator-multiagent/scripts/validate_envelope.py`) checks the
-  core schema and additionally requires an object `payload` for every v1 kind. It
-  does not apply the kind schemas; the producing skill owns payload semantics.
+  (`skills/skill-orchestrator-multiagent/scripts/validate_envelope.py`) validates
+  each envelope against its kind schema when the kind has one, and against the core
+  schema otherwise. It also requires an object `payload` for every v1 kind. It needs
+  `jsonschema` and fails closed without it, or when a bundled schema is missing.
 - Conformance cases, valid and invalid, live in `fixtures/cwaip-v1/conformance/`
   and are run by `tooling/tests/test_cwaip_conformance.py`.
 
@@ -112,7 +116,32 @@ Product Operator → SpecialistHandoff → specialist skills
 ## Versioning
 
 - **Protocol** (`protocol_version`): bumped only when core fields or envelope kinds change.
+- **Spec revision**: a third component (`1.0.1`) records tightened kind-schema rules
+  and clarifications. It never appears on the wire; envelopes keep
+  `protocol_version: "1.0"`. A revision MAY tighten a kind schema to reject
+  documents that were incoherent under the earlier text; it MUST NOT change the
+  meaning of a field or reject the output of a shipped producer.
 - **Skill** (`VERSION` file per skill): independent release cadence; tag `skill-name-vX.Y.Z`.
+
+## Spec revisions
+
+### 1.0.1 — 2026-10-02
+
+- The `EvidenceEnvelope` and `DecisionHandoff` kind schemas require `payload`.
+  Earlier they constrained it only when present, so an envelope with no `payload`
+  passed the kind check while carrying no evidence or verdict, although the text
+  already required producers to emit one. Every shipped producer and conformance
+  fixture sends it.
+- `DecisionHandoff`: `GO` and `GO_WITH_CONTROLS` reject a non-empty `blockers` array.
+- The orchestrator gate applies the kind schemas instead of the core schema only.
+- New conformance cases: `evidence-missing-payload`, `decision-handoff-missing-payload`,
+  `decision-handoff-go-with-blockers`, `decision-handoff-go-with-controls-with-blockers`
+  (invalid) and `decision-handoff-no-go-with-blockers` (valid).
+
+### 1.0.0
+
+- Initial core envelope, six kinds, and the `EvidenceEnvelope` and
+  `DecisionHandoff` kind schemas.
 
 ## Migration
 

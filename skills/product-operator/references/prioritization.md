@@ -77,3 +77,33 @@ Across repeated runs, priorities should change because product state, goal, evid
 ## Anti-score-theater
 
 Never inflate dimensions to force a preferred answer. Cap confidence by evidence. Do not treat effort as permission to ignore a blocker. Do not reward generic telemetry/research; reward decision-relevant learning only.
+
+## Candidate generation
+
+An action must close at least one of:
+
+- a confirmed blocker;
+- a critical-path dependency;
+- a gap between intent/plan/implementation/verification/shipping;
+- a decision-relevant evidence gap;
+- an outcome/learning gap tied to the current goal;
+- material stale/contradictory planning state;
+- orphaned work;
+- duplicate/superseded/premature work that should stop or wait.
+
+Do not create generic "best practice" actions.
+
+Candidate contract:
+
+```text
+id, action, rationale, done_when,
+impact 0-5, goal_alignment 0-5, urgency 0-5,
+dependency_leverage 0-5, risk_reduction 0-5, learning_value 0-5,
+effort 0.5-5, confidence 0-1, evidence_strength 0-1,
+blocker, blocks_current_goal, blocked_item, future_gate, trust_critical, verify_first, stop,
+decision_required, decision_domain,
+depends_on[], evidence[]
+```
+
+Use `learning_value` only for information that can change a material decision or reduce important uncertainty.
+Do not reward telemetry or research merely because it exists.

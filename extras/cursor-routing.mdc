@@ -1,9 +1,13 @@
 ---
-description: Route CometWeb Agent Skills — 14-skill evidence-driven operating system. Use when product, research, QA, release, customer, or strategic work needs the right specialist skill.
+description: Route CometWeb Agent Skills (fallback rule; the full generated catalog is docs/generated-cursor-routing.mdc). Use when product, research, QA, release, customer, or strategic work needs the right specialist skill.
 alwaysApply: true
 ---
 
 # CometWeb Agent Skills routing
+
+Fallback for checkouts without `docs/generated-cursor-routing.mdc`, which is generated
+from `registry/skills.json` and lists every skill. The table below covers the most-used
+routes only.
 
 Load skills from `~/.cursor/skills/` (symlinked from `platforms/agent-skills`). Prefer
 **one primary skill** per turn unless the user wants a multi-step workflow — then use

@@ -41,6 +41,55 @@ copying. Near-duplicates (token overlap ≥ 0.8) are listed but not failed.
 held to the copy rule; `policy-suite.json` is a policy-admission contract run
 against both a synthetic and the real registry.
 
+## Negation
+
+`registry/routing-policy.json` → `negation` keeps a routing signal from scoring
+when the words it matches sit inside a negated clause, so "Do not review the
+codebase, just fix the failing test" or "Nie rób przeglądu repo, tylko popraw
+literówki" no longer route to the skill they turn down. The rule is
+deterministic and bounded:
+
+1. The normalized prompt is cut into clauses at `boundary`: punctuation
+   (`. , ; : ! ? ( ) [ ]`), a spaced hyphen or dash, and contrast or
+   subordinating words — `but`, `just`, `only`, `then`, `and`, `until`,
+   `unless`, `before`, `after`, `if`, `when`, `while`, `tylko`, `jedynie`,
+   `ale`, `lecz`, `potem`, `i`, `oraz`, `zanim`, `dopóki`, `aż`, `jeśli`,
+   `gdy`, `kiedy`, `chyba że`, and so on. Polish `i` ("and") also matches the
+   English pronoun "I" after casefolding; that can only shorten a scope.
+2. In each clause the earliest `cues` match opens the negation, which runs to
+   the end of that clause and never further than `max_scope_chars` (80).
+   Cues are: a clause-initial prohibition (`do not`, `don't`, `never`, `skip`,
+   `no`, `nie`, optionally after `please`/`proszę`); `don't want|need|have
+   to`, `no need to`; `instead of`, `rather than`, `zamiast`; and Polish
+   `nie` + a listed imperative or need verb (`nie rób`, `nie chcę`,
+   `nie potrzebuję`, …) anywhere in the clause.
+3. Negated text is blanked (offsets kept) before routing signals are matched,
+   so a greedy signal such as `roast.*codebase` cannot start in a positive
+   clause and finish in a negated one. A narrow-intent guard's `unless`
+   exception is read from the same blanked text: "Don't humanize it, just fix
+   typos" does not lift the `ai-humanize` guard.
+
+What it deliberately does not do:
+
+- A bare `not` is not a cue: "find what's not working" still scores.
+- `without` and `bez` are not cues. They usually qualify a request ("close
+  findings without regressions", "shipped without outcome evidence") rather
+  than refuse one.
+- Mid-clause `nie` with a verb outside the list ("czy strona nie działa")
+  is not a cue.
+- Explicit invocations (`$skill`, `use <skill-id>`, `explicit_patterns`),
+  `_denied_by_name` and `denied_patterns` keep their own rules; negation
+  only touches signals and guard exceptions.
+- Scope ends at the clause: "Don't hold back: roast this repo", "Don't ship
+  v3.1 until release readiness gives a GO verdict" and "Roast the repo, but
+  don't touch the docs" still route to the requested skill.
+
+Cue and boundary patterns go through the same safe-regex check as signals (no
+nested quantifiers, 4096-character cap); `max_scope_chars` must be 1–400 and
+there are at most 32 cues. `suite.json` (`negation-*`) and
+`policy-suite.json` hold the positive and negated near-miss cases in English
+and Polish.
+
 ## Known gaps
 
 `known-gaps.json` pins prompts the deterministic router misroutes today, with
@@ -57,3 +106,20 @@ so the result is a deterministic-proxy discovery estimate, not a model result.
 floors in `TRIGGER_EVAL_FLOORS` (in `tooling/routing_coverage.py`), set just
 under the measured numbers; raise a floor when routing improves, never lower
 one to make a signal change pass.
+
+## Confusion report
+
+```bash
+uv run python tooling/routing_coverage.py --confusion          # table
+uv run python tooling/routing_coverage.py --confusion --json   # full rows
+```
+
+Replays every routing label the repository already holds — `suite.json`, each
+skill's `evals/trigger-evals.json`, natural (not force-invoked) prompts in
+`evals/real-host.json`, and registry trigger/negative examples — and lists the
+expected-to-routed pairs, per-skill recall and false positives, and every
+misroute. Each prompt falls in a stable `tune` or `holdout` half (by hash of the
+normalized prompt). When tuning routing signals, read only the tune half's
+failures and report the holdout half's numbers before and after, so a signal
+that memorizes one phrasing shows up as a holdout that did not move. Known gaps
+are not replayed here; `--check` already pins them.
