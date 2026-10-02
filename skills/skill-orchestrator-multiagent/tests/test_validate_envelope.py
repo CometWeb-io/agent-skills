@@ -80,6 +80,9 @@ def test_relocated_package_rejects_invalid_envelope(tmp_path: Path, remove_schem
 
 
 def test_multiagent_package_contains_usable_validator() -> None:
+    # Packaging is repository tooling, not this skill's runtime: the isolated
+    # runtime-matrix venv installs only RUNTIME.json dependencies.
+    pytest.importorskip("yaml", reason="repository packaging tooling needs PyYAML")
     sys.path.insert(0, str(ROOT.parents[1] / "tooling"))
     from package_skill import payload
 
