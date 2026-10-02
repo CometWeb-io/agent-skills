@@ -17,6 +17,7 @@ dev = [
     "ruff>=0.16",
     "bandit>=1.8",
     "pip-audit>=2.7",
+    "pytest-xdist>=3.6",
 ]
 
 [tool.uv]

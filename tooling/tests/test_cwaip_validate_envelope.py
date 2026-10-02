@@ -227,3 +227,70 @@ def test_standard_library_fallback_rejects_schema_forbidden_properties(tmp_path,
 
     assert proc.returncode == 1
     assert "unexpected" in proc.stderr
+
+
+def _envelope_text(payload_json: str, digest: str) -> str:
+    return (
+        '{"id": "ev-1", "type": "EvidenceEnvelope", "producer": "evidence-researcher",'
+        ' "producer_version": "1.0.2", "protocol_version": "2.0", "subject": "pricing",'
+        ' "generated_at": "2026-09-08T12:00:00Z", "as_of": "2026-09-08T12:00:00Z",'
+        ' "sensitivity": "internal", "dependencies": [],'
+        f' "payload": {payload_json}, "payload_hash": "{digest}"}}'
+    )
+
+
+def _run_cli(path: Path, *extra: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [sys.executable, str(ROOT / "validate_envelope.py"), str(path), *extra],
+        capture_output=True,
+        text=True,
+    )
+
+
+def test_cli_rejects_duplicate_keys_that_other_parsers_resolve_differently(tmp_path):
+    # Python keeps the last "mode", so the hash matches here; a first-wins
+    # parser would read a different payload under the same verified hash.
+    payload = _evidence_payload()
+    digest = mod.payload_hash(payload)
+    body = json.dumps(payload)
+    duplicated = body.replace('"mode": "QUICK"', '"mode": "DEEP", "mode": "QUICK"', 1)
+    assert duplicated != body
+    path = tmp_path / "dup.json"
+    path.write_text(_envelope_text(duplicated, digest), encoding="utf-8")
+
+    proc = _run_cli(path, "--final")
+
+    assert proc.returncode == 1
+    assert "duplicate JSON key: 'mode'" in proc.stderr
+    assert "Traceback" not in proc.stderr
+
+
+def test_cli_rejects_non_finite_numbers(tmp_path):
+    payload = _evidence_payload()
+    payload["gaps"] = [{"weight": 0}]
+    body = json.dumps(payload).replace('"weight": 0', '"weight": NaN')
+    path = tmp_path / "nan.json"
+    path.write_text(_envelope_text(body, "pending"), encoding="utf-8")
+
+    proc = _run_cli(path)
+
+    assert proc.returncode == 1
+    assert "non-finite JSON number: NaN" in proc.stderr
+
+
+def test_cli_reports_missing_file_without_traceback(tmp_path):
+    proc = _run_cli(tmp_path / "absent.json")
+
+    assert proc.returncode == 1
+    assert proc.stderr.startswith("FAIL: cannot read")
+    assert "Traceback" not in proc.stderr
+
+
+def test_print_hash_rejects_non_object_document(tmp_path):
+    path = tmp_path / "list.json"
+    path.write_text("[]", encoding="utf-8")
+
+    proc = _run_cli(path, "--print-hash")
+
+    assert proc.returncode == 1
+    assert "envelope must be an object" in proc.stderr

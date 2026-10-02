@@ -1,0 +1,149 @@
+{
+  "schema": "cometweb.readme-catalog/v1",
+  "note": "Grouping and one-line summaries for the README skill catalog. Versions, links and the skill set itself come from registry/skills.json; tooling/generate_adapters.py renders the README block and fails when this file and the registry disagree.",
+  "groups": [
+    {
+      "title": "Foundation and orchestration",
+      "skills": [
+        {
+          "id": "ai-council",
+          "summary": "Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts."
+        },
+        {
+          "id": "cometweb-context",
+          "summary": "Fresh, provenance-aware context snapshots before work that depends on current project state."
+        },
+        {
+          "id": "evidence-researcher",
+          "summary": "Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs."
+        },
+        {
+          "id": "portfolio-operator",
+          "summary": "Cross-project focus, capacity conflicts, and pause / delegate decisions."
+        },
+        {
+          "id": "skill-orchestrator",
+          "summary": "Multi-skill workflows with ordered steps and CW-AIP handoffs."
+        },
+        {
+          "id": "skill-orchestrator-multiagent",
+          "summary": "Isolated subagent execution for multi-skill workflows."
+        },
+        {
+          "id": "benchmark-curator",
+          "summary": "Benchmark corpora, holdouts, contamination controls, and revision hashes."
+        },
+        {
+          "id": "feedback-integrator",
+          "summary": "Recurring failure patterns, improvement proposals, and regression tests."
+        },
+        {
+          "id": "quality-loop-operator",
+          "summary": "Briefing, review, repair, acceptance, measurement, and quality lifecycle control."
+        },
+        {
+          "id": "rubric-designer",
+          "summary": "Observable evaluation criteria, evidence floors, blocker rules, and rubric locks."
+        },
+        {
+          "id": "skill-auditor",
+          "summary": "Skill routing, portability, package hygiene, and supply-chain audits."
+        },
+        {
+          "id": "skill-evaluator",
+          "summary": "Fair skill experiments, behavioral lift, resource cost, and host comparisons."
+        }
+      ]
+    },
+    {
+      "title": "Product, research, and partnerships",
+      "skills": [
+        {
+          "id": "ai-humanize",
+          "summary": "Natural English and Polish rewrites that preserve meaning and voice."
+        },
+        {
+          "id": "competitive-intelligence",
+          "summary": "Competitor watchlists, change detection, and recurring delta digests."
+        },
+        {
+          "id": "design-partner-finder",
+          "summary": "Finding, qualifying, and managing design partners and early adopters."
+        },
+        {
+          "id": "product-operator",
+          "summary": "Weekly product control loops, roadmap drift, and now / next / later / stop actions."
+        },
+        {
+          "id": "product-teardown",
+          "summary": "Evidence-backed product, UX, architecture, and implementation pattern analysis."
+        },
+        {
+          "id": "repo-to-roadmap",
+          "summary": "Whole-project baselines, gap inventories, dependencies, and target-state roadmaps."
+        },
+        {
+          "id": "brief-architect",
+          "summary": "Explicit artifact contracts, evidence policies, risks, and acceptance criteria."
+        },
+        {
+          "id": "content-writer",
+          "summary": "Evidence-aware reader-facing articles, guides, reports, and documentation."
+        },
+        {
+          "id": "content-reviewer",
+          "summary": "Constructive editorial QA with evidence-backed, actionable findings."
+        },
+        {
+          "id": "content-roaster",
+          "summary": "Adversarial content review, proof debt, objections, and repair verification."
+        },
+        {
+          "id": "science-roaster",
+          "summary": "Reviewer #2-style critique of methods, inference, validity, and reproducibility."
+        },
+        {
+          "id": "repo-roaster",
+          "summary": "Adversarial repository review with invariants, reachability, and repair contracts."
+        },
+        {
+          "id": "repair-operator",
+          "summary": "Minimal dependency-aware repairs and fresh verification of closed findings."
+        },
+        {
+          "id": "artifact-acceptance",
+          "summary": "Final evidence-backed acceptance gates for knowledge artifacts."
+        }
+      ]
+    },
+    {
+      "title": "Publication, operations, QA, and release",
+      "skills": [
+        {
+          "id": "customer-ops",
+          "summary": "Support triage, incidents, account risk, commitments, and engineering handoffs."
+        },
+        {
+          "id": "ebook-publisher",
+          "summary": "Research-backed ebooks, white papers, workbooks, and publication QA."
+        },
+        {
+          "id": "longform-publisher",
+          "summary": "Canonical long-form manuscripts and release-ready derived documents."
+        },
+        {
+          "id": "release-readiness",
+          "summary": "Candidate-bound production gates and GO / GO_WITH_CONTROLS / NO_GO / DEFER verdicts."
+        },
+        {
+          "id": "seo-geo-aeo-maxxing",
+          "summary": "Multi-pillar SEO / GEO / AEO visibility audits."
+        },
+        {
+          "id": "web-app-auditor",
+          "summary": "Evidence-driven click-through QA for websites and web applications."
+        }
+      ]
+    }
+  ]
+}

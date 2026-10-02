@@ -6,11 +6,42 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Added
+
+- Every host installer accepts `--dry-run` (run all checks, print the plan,
+  write nothing) and `--uninstall` (remove only links into this checkout's
+  `skills/`). All six hosts share one code path in `scripts/lib/install.sh`;
+  rerunning an install prunes links to retired skills, and `install-all.sh`
+  previews every host before changing any of them.
+- `tooling/routing_coverage.py --check` reports positive and negative routing
+  cases per skill, enforces a per-skill floor, and rejects duplicate IDs,
+  near-identical prompts and prompts copied from registry examples.
+  `evals/routing/known-gaps.json` records prompts the router still misroutes;
+  a gap that starts passing fails the check until it is promoted to the suite.
+- CW-AIP v1 and v2 conformance fixtures (valid and invalid) under
+  `fixtures/cwaip-v{1,2}/conformance/`, run against the validators in the test
+  suite. The multiagent envelope gate now accepts v2 envelopes.
+- The README skill catalog is generated from `registry/skills.json` and
+  `registry/readme-catalog.json` by `generate_adapters.py`, and repository
+  Markdown links are checked by the test suite.
+- `tooling/new_skill.py --root` scaffolds into another checkout.
+- Public safety scanning flags personal email addresses (RFC 2606 domains and
+  the project contact are allowed), any home-directory path with a real account
+  name, signed JWTs, and Stripe, npm, PyPI, GitLab, Hugging Face, Slack app and
+  Azure storage credentials.
+
 ### Changed
 
-- Broadened deterministic routing evaluation to 129 cases, including natural
+- Broadened deterministic routing evaluation to 209 cases, including natural
   Polish requests and positive coverage for every catalog skill. The proxy is
   not a substitute for model or host-level routing acceptance.
+- Roaster routing signals now pair adversarial verbs (roast, tear apart,
+  red-team, stress-test, brutal critique, Polish `zroastuj`/`upiecz`/`rozjedź`)
+  with each roaster's own objects. Deterministic-proxy recall on the skills'
+  trigger evals rose from 5, 3 and 9 of 18 to 15, 16 and 15 of 18 for content-,
+  repo- and science-roaster, with no new false positives; `routing_coverage.py
+  --check` now enforces those floors, and a scope guard keeps live-UX roasts with
+  web-app-auditor.
 - The three roasters now verify all ten shared scripts and protocol references
   for byte-level drift, not only two scripts.
 - Expanded Product Operator and Longform Publisher golden cases around evidence
@@ -21,7 +52,41 @@ tags use `vMAJOR.MINOR.PATCH`.
 - Package attestation now requires the full local gate, tree/history safety
   scans and extracted-package helper checks before building release artifacts.
 
+- Skill descriptions for evidence-researcher, longform-publisher,
+  competitive-intelligence, design-partner-finder, ebook-publisher,
+  product-operator, release-readiness, science-roaster and web-app-auditor are
+  host-neutral, state when not to use the skill, and no longer route to
+  packages this catalog does not ship. Customer Ops replaces its restated
+  per-mode procedures with one table that points at the existing references.
+- Unit tests run in parallel (`pytest -n auto`). Workflow permissions are scoped
+  to the job that needs them, third-party actions are pinned by commit, and
+  matrix values reach shell steps through environment variables.
+
 ### Fixed
+
+- Validators no longer pass malformed input: the coverage ledger rejects
+  non-object rows, blank evidence references and unknown check IDs with a
+  specific message; the decision validator rejects GO while human approval is
+  required, pending or denied, and duplicate `gate_id` rows. Envelope and
+  ledger CLIs print `FAIL:` with a reason instead of a traceback, and
+  `validate_evidence_envelope.py` / `validate_decision_envelope.py --help`
+  print usage instead of treating the flag as a file name.
+- `doctor.py` reports skills that are missing from the registry, missing from
+  disk or not installed instead of returning a clean result.
+- The standard-library fallback in `tooling/validate_envelope.py` refuses
+  schemas that use keywords it cannot enforce rather than ignoring them.
+- `sync_skill_registry.py --apply` no longer reverts routing signals and
+  descriptions that had been edited only in `registry/skills.json`; a test now
+  requires the command to be a no-op on the committed registry.
+- Per-skill `INSTALL.md` files named `scripts/package-releases.sh`, which does
+  not exist; they now give the `tooling/package_skill.py` command, and a test
+  checks that every repository path they name exists.
+- The shared roaster handoff contract no longer cites a nonexistent
+  `integration/validate_handoff.py`.
+- Behavior evals and the orchestrator drift-guard tests no longer depend on the
+  contributor's git configuration or mutate the checkout while other tests read
+  it. The blind eval report carries a fixture fingerprint that ignores the run
+  timestamp.
 
 - Install targets that contain a `..` path component are rejected in the shared
   helper, including `CURSOR_RULES_DIR`. Absolute directories without `..` still

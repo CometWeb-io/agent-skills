@@ -1,0 +1,13 @@
+{
+  "id": "example-producer:SnapshotMetadata:conformance",
+  "type": "SnapshotMetadata",
+  "producer": "example-producer",
+  "protocol_version": "1.0",
+  "subject": "example.com pricing page",
+  "as_of": "2026-09-08T12:00:00Z",
+  "payload": {
+    "baseline_id": "snap-1",
+    "delta_of": null,
+    "hash": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+  }
+}

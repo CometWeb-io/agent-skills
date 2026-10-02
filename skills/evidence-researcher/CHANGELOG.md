@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3] - 2026-10-02
+
+### Changed
+
+- Description no longer names a single host ("Use when ChatGPT must"); the
+  package targets every host in the registry and routes on the same wording.
+
 ## Unreleased — kernel 2.0.1, 2026-09-13
 
 ### Fixed

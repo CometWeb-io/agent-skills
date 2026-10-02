@@ -1,8 +1,8 @@
-# Installation — Product Operator 1.2.0-rc.1 candidate
+# Installation — Product Operator
 
 Keep the entire directory named `product-operator`: SKILL.md, references, scripts,
-agents, assets, examples and tests. The archive is a candidate, not a release or
-proof that the current chat has loaded the skill.
+agents, assets, examples and tests. The installed version is in `VERSION`; an
+archive on disk is not proof that the current chat has loaded the skill.
 
 ## Local execution, independent of an agent host
 

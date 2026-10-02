@@ -5,6 +5,7 @@ Writes:
   - docs/generated-skills-table.md
   - docs/generated-cursor-routing.mdc
   - docs/generated-compatibility-matrix.md
+  - the skill catalog block in README.md (with registry/readme-catalog.json)
   - skills/<id>/agents/openai.yaml interface block
 """
 from __future__ import annotations
@@ -116,6 +117,68 @@ def build_docs(skills: list[dict]) -> str:
             f"{len(skill.get('description', ''))} | {skill.get('explicit_only', False)} |"
         )
     return "\n".join(rows) + "\n"
+
+
+README_BEGIN = "<!-- BEGIN GENERATED: skill catalog (tooling/generate_adapters.py) -->"
+README_END = "<!-- END GENERATED: skill catalog -->"
+
+
+def build_readme_catalog(skills: list[dict], catalog: dict) -> str:
+    """Render the README catalog: grouping and summaries from the catalog file,
+    the skill set, versions and status from the registry.
+
+    The two files must name exactly the same skills. A skill added to the
+    registry without a summary, or a summary left behind for a removed skill,
+    is drift, so it stops generation instead of being skipped.
+    """
+    by_id = {entry["id"]: entry for entry in skills}
+    listed: list[str] = [row["id"] for group in catalog["groups"] for row in group["skills"]]
+    duplicates = sorted({sid for sid in listed if listed.count(sid) > 1})
+    missing = sorted(set(by_id) - set(listed))
+    unknown = sorted(set(listed) - set(by_id))
+    if duplicates or missing or unknown:
+        raise SystemExit(
+            "registry/readme-catalog.json disagrees with registry/skills.json: "
+            f"missing={missing} unknown={unknown} duplicated={duplicates}"
+        )
+    lines = [
+        README_BEGIN,
+        "<!-- Edit registry/readme-catalog.json or registry/skills.json, then run generate_adapters.py. -->",
+        "",
+        f"**{len(skills)} skills.** Versions come from each package's `VERSION`; "
+        "the [compatibility matrix](docs/generated-compatibility-matrix.md) lists host support.",
+    ]
+    for group in catalog["groups"]:
+        lines += ["", f"### {group['title']}", "", "| Skill | Use it for | Version |", "| --- | --- | ---: |"]
+        for row in group["skills"]:
+            entry = by_id[row["id"]]
+            summary = row["summary"].strip()
+            notes = []
+            if entry.get("explicit_only"):
+                notes.append("runs only when named")
+            if entry.get("release_status") == "FROZEN":
+                notes.append("frozen")
+            if notes:
+                summary += f" *({'; '.join(notes)})*"
+            lines.append(f"| [`{row['id']}`](skills/{row['id']}/) | {summary} | {entry['version']} |")
+    lines += ["", README_END]
+    return "\n".join(lines)
+
+
+def render_readme(current: str, skills: list[dict], catalog: dict) -> str:
+    """Replace the marked catalog block in README.md; everything else is untouched."""
+    start, end = current.find(README_BEGIN), current.find(README_END)
+    if start < 0 or end < start:
+        raise SystemExit(f"README.md has no catalog block; expected {README_BEGIN!r} ... {README_END!r}")
+    return current[:start] + build_readme_catalog(skills, catalog) + current[end + len(README_END):]
+
+
+def readme_file() -> Path:
+    return ROOT / "README.md"
+
+
+def readme_catalog_file() -> Path:
+    return ROOT / "registry" / "readme-catalog.json"
 
 
 def build_cursor(skills: list[dict]) -> str:
@@ -289,6 +352,13 @@ def expected_artifacts(skills: list[dict]) -> dict[Path, str]:
     if hosts_path.is_file():
         hosts = json.loads(hosts_path.read_text(encoding="utf-8"))["hosts"]
         artifacts[out_compat()] = build_compatibility_matrix(skills, hosts)
+    # Same reasoning for the README catalog: a reduced tree without the
+    # catalog file has nothing to render, which is not an error.
+    catalog_path, readme = readme_catalog_file(), readme_file()
+    if catalog_path.is_file():
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+        current = readme.read_text(encoding="utf-8") if readme.is_file() else ""
+        artifacts[readme] = render_readme(current, skills, catalog)
     for entry in skills:
         path = SKILLS / entry["id"] / "agents" / "openai.yaml"
         existing = path.read_text(encoding="utf-8") if path.is_file() else None
@@ -308,7 +378,10 @@ def main() -> None:
     if args.check:
         artifacts = expected_artifacts(skills)
         if args.skip_openai:
-            artifacts = {path: text for path, text in artifacts.items() if path in {OUT_DOCS, OUT_CURSOR, out_compat()}}
+            artifacts = {
+                path: text for path, text in artifacts.items()
+                if path in {OUT_DOCS, OUT_CURSOR, out_compat(), readme_file()}
+            }
         changed = []
         for path, expected in artifacts.items():
             if not path.is_file() or path.read_text(encoding="utf-8") != expected:
@@ -328,6 +401,11 @@ def main() -> None:
         compat = out_compat()
         compat.write_text(build_compatibility_matrix(skills, hosts), encoding="utf-8")
         written_docs.append(compat)
+    if readme_catalog_file().is_file():
+        catalog = json.loads(readme_catalog_file().read_text(encoding="utf-8"))
+        readme = readme_file()
+        readme.write_text(render_readme(readme.read_text(encoding="utf-8"), skills, catalog), encoding="utf-8")
+        written_docs.append(readme)
     written = [] if args.skip_openai else write_openai_yamls(skills)
     msg = "OK: wrote " + ", ".join(str(d.relative_to(ROOT)) for d in written_docs)
     if written:

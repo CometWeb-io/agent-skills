@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.2] - 2026-10-02
+
+### Changed
+
+- Description adds an explicit do-not-use boundary (one-time profiles without
+  monitoring intent, comparison pages, own pricing, full visibility audits) and
+  no longer presents `competitor-profiling`, which this catalog does not ship,
+  as a sibling the host can route to.
+
 ## [1.0.1] - 2026-09-18
 
 ### Fixed

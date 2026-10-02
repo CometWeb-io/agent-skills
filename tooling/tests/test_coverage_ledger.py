@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 import pytest
@@ -61,3 +62,63 @@ def test_duplicate_checks_are_not_double_counted():
     data["checks"].append(data["checks"][0])
     with pytest.raises(ValueError):
         validate(data)
+
+
+@pytest.mark.parametrize("change", [
+    {"inventory": [{"name": "frontend"}]},
+    {"inventory": ["frontend"]},
+    {"inventory": [{"id": ["frontend"]}]},
+    {"inventory": [{"id": ""}]},
+    {"checks": ["frontend"]},
+    {"checks": [{"id": ["frontend"], "status": "inspected"}]},
+    {"checks": [{"id": "frontend", "status": ["inspected"]}]},
+    {"inventory_status": ["complete"]},
+    {"claim": ["bounded"]},
+], ids=lambda c: next(iter(c)))
+def test_malformed_rows_are_reported_not_crashed(change):
+    # These used to escape as KeyError/TypeError/AttributeError.
+    data=ledger()
+    data.update(change)
+    with pytest.raises(ValueError):
+        validate(data)
+
+
+@pytest.mark.parametrize("refs", ["fixture-source", [""], ["  "], [None], {}])
+def test_evidence_refs_must_name_something(refs):
+    # A bare string or blank entries are truthy yet reference no evidence.
+    data=ledger()
+    data["checks"][0]["evidence_refs"]=refs
+    with pytest.raises(ValueError, match="frontend"):
+        validate(data)
+
+
+@pytest.mark.parametrize("execution_ref", ["", "   ", ["fixture-run"]])
+def test_execution_ref_must_be_a_nonblank_string(execution_ref):
+    data=ledger()
+    data["checks"][1]["execution_ref"]=execution_ref
+    with pytest.raises(ValueError, match="execution record"):
+        validate(data)
+
+
+def test_errors_name_the_offending_check():
+    data=ledger()
+    data["checks"][0]["id"]="mobile"
+    with pytest.raises(ValueError, match="unknown inventory ID: 'mobile'"):
+        validate(data)
+    data=ledger()
+    data["checks"][0]["status"]="done"
+    with pytest.raises(ValueError, match="'frontend' has unknown status: 'done'"):
+        validate(data)
+
+
+def test_cli_exit_codes_and_messages(tmp_path, capsys):
+    from validate_coverage import main
+    good=tmp_path/"good.json"
+    good.write_text(json.dumps(ledger()))
+    assert main([str(good)]) == 0
+    bad=tmp_path/"bad.json"
+    bad.write_text(json.dumps({**ledger(), "inventory": [{}]}))
+    assert main([str(bad)]) == 1
+    assert main([str(tmp_path/"absent.json")]) == 1
+    err=capsys.readouterr().err
+    assert "FAIL: every inventory entry" in err and "FAIL: cannot read" in err

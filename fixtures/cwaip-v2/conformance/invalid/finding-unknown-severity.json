@@ -1,0 +1,26 @@
+{
+  "id": "example:FindingEnvelope:conformance",
+  "type": "FindingEnvelope",
+  "producer": "example-producer",
+  "producer_version": "1.0.0",
+  "protocol_version": "2.0",
+  "subject": "example.com pricing page",
+  "generated_at": "2026-09-08T12:00:00Z",
+  "as_of": "2026-09-08T12:00:00Z",
+  "sensitivity": "public",
+  "dependencies": [],
+  "payload": {
+    "schema": "cometweb.finding/v2",
+    "finding_id": "F-001",
+    "severity": "critical",
+    "title": "Checkout button has no accessible name",
+    "summary": "Screen readers announce 'button'.",
+    "evidence_refs": [
+      "screenshot-1"
+    ],
+    "status": "open",
+    "area": "checkout",
+    "locator": "https://example.com/cart"
+  },
+  "payload_hash": "sha256:52b890a0ad78b37714687177fb2e759b951ca3a9f57847f02d4cfae81b811ca4"
+}

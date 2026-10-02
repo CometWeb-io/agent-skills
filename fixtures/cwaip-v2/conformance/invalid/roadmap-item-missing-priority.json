@@ -1,0 +1,30 @@
+{
+  "id": "example:RoadmapEnvelope:conformance",
+  "type": "RoadmapEnvelope",
+  "producer": "example-producer",
+  "producer_version": "1.0.0",
+  "protocol_version": "2.0",
+  "subject": "example.com pricing page",
+  "generated_at": "2026-09-08T12:00:00Z",
+  "as_of": "2026-09-08T12:00:00Z",
+  "sensitivity": "public",
+  "dependencies": [],
+  "payload": {
+    "schema": "cometweb.roadmap/v2",
+    "baseline_id": "rm-2026-09-08",
+    "target_state": "Public beta",
+    "mode": "BASELINE",
+    "items": [
+      {
+        "item_id": "R1",
+        "title": "Ship billing"
+      }
+    ],
+    "coverage": {
+      "areas_inspected": 4
+    },
+    "snapshot_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "delta_of": null
+  },
+  "payload_hash": "sha256:8800ea2ef1511f9740db755afa0134c1518594b1a0e237246b19aafc3c2e3431"
+}

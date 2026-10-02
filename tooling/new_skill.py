@@ -149,7 +149,7 @@ def title_from(skill_id: str) -> str:
     return " ".join(special.get(w, w.capitalize()) for w in skill_id.split("-"))
 
 
-def create(skill_id: str, description: str, force: bool) -> Path:
+def create(skill_id: str, description: str, force: bool, root: Path = ROOT) -> Path:
     if not SKILL_ID.fullmatch(skill_id):
         raise SystemExit(f"invalid skill id {skill_id!r}: use lowercase words joined by hyphens")
     if len(description.strip()) < 80:
@@ -160,9 +160,9 @@ def create(skill_id: str, description: str, force: bool) -> Path:
     if len(description.strip()) > 1024:
         raise SystemExit("description exceeds the 1024-character Codex limit")
 
-    target = ROOT / "skills" / skill_id
+    target = root / "skills" / skill_id
     if target.exists() and not force:
-        raise SystemExit(f"{target.relative_to(ROOT)} already exists; pass --force to overwrite")
+        raise SystemExit(f"{target.relative_to(root)} already exists; pass --force to overwrite")
     import datetime as dt
     today = dt.datetime.now(dt.timezone.utc).date().isoformat()
 
@@ -181,6 +181,7 @@ def create(skill_id: str, description: str, force: bool) -> Path:
     harness.chmod(0o755)
 
     # Every other skill carries these two; copying beats generating a licence.
+    # They come from this checkout even when the skill is written elsewhere.
     shutil.copy2(ROOT / "skills" / "ai-council" / "LICENSE", target / "LICENSE")
     shutil.copy2(ROOT / "skills" / "ai-council" / "assets" / "icon.svg", target / "assets" / "icon.svg")
     return target
@@ -192,18 +193,24 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--description", required=True,
                         help="80-1024 characters; this is what routes the skill")
     parser.add_argument("--force", action="store_true", help="overwrite an existing directory")
+    parser.add_argument("--root", type=Path, default=ROOT,
+                        help="repository root to write skills/<id> into (default: this checkout)")
     args = parser.parse_args(argv)
 
-    target = create(args.skill_id, args.description, args.force)
-    print(f"OK: scaffolded {target.relative_to(ROOT)}")
+    root = args.root.resolve()
+    target = create(args.skill_id, args.description, args.force, root)
+    print(f"OK: scaffolded {target.relative_to(root)}")
     print()
     print("It is not a registered skill yet. Next:")
     print(f"  1. Write the real SKILL.md, then add routing signals for {args.skill_id!r}")
     print("     to registry/skills.json (owns, does_not_own, trigger_examples,")
-    print("     negative_trigger_examples, routing_signals).")
-    print("  2. python3 tooling/generate_adapters.py")
-    print("  3. python3 tooling/context_budget.py --update")
-    print("  4. python3 tooling/validate_local.py --output .validation --timeout 900")
+    print("     negative_trigger_examples, routing_signals), and a one-line summary")
+    print("     to registry/readme-catalog.json for the README catalog.")
+    print("  2. uv run python tooling/generate_adapters.py")
+    print("  3. uv run python tooling/context_budget.py --update --table docs/generated-context-budget.md")
+    print("     uv run python tooling/eval_strength.py --update --table docs/generated-eval-strength.md")
+    print("  4. uv run python tooling/validate_local.py --trusted-checkout \\")
+    print("       --output ../agent-skills-validation --timeout 900")
     print()
     print("The eval harness fails until you implement run_case(); that is deliberate.")
     return 0

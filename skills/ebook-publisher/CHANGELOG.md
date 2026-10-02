@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.1] - 2026-10-02
+
+### Changed
+
+- Description names the boundary with `longform-publisher`: refreshing or
+  reconciling an existing publication through a canonical manuscript and
+  derived DOCX/PDF belongs there. The closing honesty rule moved out of the
+  description; sections 5 and 6 of `SKILL.md` already state it.
+
 ## 1.0.0 — 2026-09-14
 
 Initial private CometWeb ebook workflow: scoped modes; traceable research; substantive

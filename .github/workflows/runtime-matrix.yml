@@ -44,8 +44,9 @@ jobs:
         env:
           SKILL_ID: ${{ matrix.package.skill }}
           SKILL_DEPS: ${{ matrix.package.deps }}
+          PYTHON_VERSION: ${{ matrix.python }}
         run: |
-          uv venv --python "${{ matrix.python }}" .runtime-venv
+          uv venv --python "$PYTHON_VERSION" .runtime-venv
           # shellcheck disable=SC2086
           uv pip install --python .runtime-venv ${SKILL_DEPS} pytest
           .runtime-venv/bin/python - <<PY
@@ -59,4 +60,6 @@ jobs:
           PY
 
       - name: Run skill tests against declared runtime
-        run: .runtime-venv/bin/python -m pytest -q ${{ matrix.package.test }}
+        env:
+          SKILL_TESTS: ${{ matrix.package.test }}
+        run: .runtime-venv/bin/python -m pytest -q "$SKILL_TESTS"

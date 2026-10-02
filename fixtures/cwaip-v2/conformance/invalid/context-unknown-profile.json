@@ -1,0 +1,67 @@
+{
+  "id": "example:ContextEnvelope:conformance",
+  "type": "ContextEnvelope",
+  "producer": "example-producer",
+  "producer_version": "1.0.0",
+  "protocol_version": "2.0",
+  "subject": "example.com pricing page",
+  "generated_at": "2026-09-08T12:00:00Z",
+  "as_of": "2026-09-08T12:00:00Z",
+  "sensitivity": "public",
+  "dependencies": [],
+  "payload": {
+    "schema": "cometweb.context/v2",
+    "snapshot_id": "ctx-conformance",
+    "generated_at": "2026-09-08T12:00:00Z",
+    "goal": "Weekly status",
+    "mode": "standard",
+    "profile": "strategy",
+    "baseline": {
+      "status": "not_requested",
+      "ref": null
+    },
+    "sources": [
+      {
+        "source_id": "src-1",
+        "source_type": "github",
+        "authority": "system_of_record",
+        "access": "connector",
+        "retrieved_at": "2026-09-08T11:00:00Z",
+        "effective_at": null,
+        "freshness": "fresh",
+        "sensitivity": "public",
+        "summary": "Repository default branch",
+        "evidence_ref": "example/repo@0000000"
+      }
+    ],
+    "facts": [
+      {
+        "fact_id": "f-1",
+        "statement": "The default branch is main.",
+        "source_ids": [
+          "src-1"
+        ],
+        "confidence": "high",
+        "sensitivity": "public"
+      }
+    ],
+    "deltas": [],
+    "conflicts": [],
+    "gaps": [],
+    "blocked_public_claims": [],
+    "governance": {
+      "first_principles": {
+        "required": false,
+        "status": "not_required",
+        "source_ref": null,
+        "reason": null
+      }
+    },
+    "handoff": {
+      "recommended_next_skill": null,
+      "dependencies": [],
+      "constraints": []
+    }
+  },
+  "payload_hash": "sha256:c762f6c589711c2b80e9bfc0c30deea1b99c4197f47f6d3151ab5358798c80a0"
+}

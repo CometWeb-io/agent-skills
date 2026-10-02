@@ -6,6 +6,51 @@ set -euo pipefail
 
 INSTALL_BACKUP_ROOT="${SKILLS_BACKUP_DIR:-$HOME/.local/share/agent-skills/backups}"
 INSTALL_BACKUP_DIR=""
+# Set by parse_install_args: "install" or "uninstall", and 1 for a no-write preview.
+INSTALL_MODE="install"
+INSTALL_DRY_RUN=0
+
+install_usage() {
+  cat <<USAGE
+Usage: $(basename "$0") [--dry-run] [--uninstall] [--help]
+
+Links every skills/*/SKILL.md package of this checkout into the host's skills
+directory. Reruns are no-ops; conflicting paths stop the run before any change.
+
+  -n, --dry-run   run every check and print the planned changes without writing
+  --uninstall     remove only links that point into this checkout's skills/
+  -h, --help      show this help
+
+Environment:
+  SKILLS_REPLACE_CONFLICTS=1  back up and replace conflicting paths
+  SKILLS_BACKUP_DIR=PATH      backup root (default ~/.local/share/agent-skills/backups)
+USAGE
+}
+
+parse_install_args() {
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+      -n|--dry-run) INSTALL_DRY_RUN=1 ;;
+      --uninstall) INSTALL_MODE="uninstall" ;;
+      -h|--help) install_usage; exit 0 ;;
+      *)
+        echo "FAIL: unknown argument: $arg" >&2
+        install_usage >&2
+        return 2
+        ;;
+    esac
+  done
+}
+
+# Prints the action verb, prefixed with "would " in dry-run mode.
+plan_verb() {
+  if [[ "$INSTALL_DRY_RUN" == "1" ]]; then
+    printf 'would %s' "$1"
+  else
+    printf '%s' "$2"
+  fi
+}
 
 resolved_install_path() {
   local path="$1" base resolved index
@@ -55,7 +100,9 @@ prepare_install_target() {
     echo "FAIL: install target overlaps the source skill tree: $target" >&2
     return 1
   fi
-  mkdir -p "$target"
+  if [[ "$INSTALL_DRY_RUN" != "1" ]]; then
+    mkdir -p "$target"
+  fi
 }
 
 preflight_existing_path() {
@@ -101,6 +148,10 @@ backup_existing_path() {
     return 1
   fi
 
+  if [[ "$INSTALL_DRY_RUN" == "1" ]]; then
+    echo "would back up $path"
+    return 0
+  fi
   ensure_install_backup_dir
   destination="$INSTALL_BACKUP_DIR/$label"
   if [[ -e "$destination" || -L "$destination" ]]; then
@@ -116,7 +167,9 @@ install_skill_link() {
   local name="$3"
   local current_target
 
-  mkdir -p "$(dirname "$destination")"
+  if [[ "$INSTALL_DRY_RUN" != "1" ]]; then
+    mkdir -p "$(dirname "$destination")"
+  fi
   if [[ -L "$destination" ]]; then
     current_target="$(readlink "$destination")"
     if [[ "$current_target" == "$source" ]]; then
@@ -128,8 +181,97 @@ install_skill_link() {
     backup_existing_path "$destination" "$name"
   fi
 
-  ln -s -- "$source" "$destination"
-  echo "linked $name -> $source"
+  if [[ "$INSTALL_DRY_RUN" != "1" ]]; then
+    ln -s -- "$source" "$destination"
+  fi
+  echo "$(plan_verb link linked) $name -> $source"
+}
+
+# A link is managed by this checkout only when it is a symlink whose literal
+# target is <source_root>/<its own name>. Anything else belongs to the user.
+is_managed_link() {
+  local path="$1" source_root="$2"
+  [[ -L "$path" && "$(readlink "$path")" == "$source_root/$(basename "$path")" ]]
+}
+
+# Removes managed links whose skill package no longer exists in the checkout,
+# so a renamed or retired skill does not leave a dangling entry behind.
+prune_stale_links() {
+  local target="$1" source_root="$2" entry
+  [[ -d "$target" ]] || return 0
+  for entry in "$target"/*; do
+    is_managed_link "$entry" "$source_root" || continue
+    [[ -f "$(readlink "$entry")/SKILL.md" ]] && continue
+    if [[ "$INSTALL_DRY_RUN" != "1" ]]; then
+      rm -- "$entry"
+    fi
+    echo "$(plan_verb prune pruned) stale link $(basename "$entry")"
+  done
+}
+
+uninstall_skill_links() {
+  local target="$1" source_root="$2" entry count=0
+  resolved_install_path "$target" >/dev/null
+  UNINSTALL_COUNT=0
+  [[ -d "$target" ]] || return 0
+  for entry in "$target"/*; do
+    if is_managed_link "$entry" "$source_root"; then
+      if [[ "$INSTALL_DRY_RUN" != "1" ]]; then
+        rm -- "$entry"
+      fi
+      echo "$(plan_verb unlink unlinked) $(basename "$entry")"
+      count=$((count + 1))
+    elif [[ -e "$entry" || -L "$entry" ]] && [[ -f "$source_root/$(basename "$entry")/SKILL.md" ]]; then
+      echo "skip $(basename "$entry"): not a link to this checkout"
+    fi
+  done
+  UNINSTALL_COUNT=$count
+}
+
+# Shared entry point for every host installer. Optional per-host hooks:
+#   host_preflight  — extra checks; must not write
+#   host_apply      — extra install steps after the skills are linked
+#   host_uninstall  — extra removal steps
+run_host_installer() {
+  local label="$1" target="$2" source_root="$ROOT/skills" skill_names name count=0
+  shift 2
+  parse_install_args "$@"
+
+  if [[ "$INSTALL_MODE" == "uninstall" ]]; then
+    uninstall_skill_links "$target" "$source_root"
+    if declare -F host_uninstall >/dev/null; then
+      host_uninstall
+    fi
+    echo "OK: $(plan_verb "remove" "removed") $UNINSTALL_COUNT $label skill links from $target"
+    return 0
+  fi
+
+  skill_names="$(list_skills)"
+  [[ -n "$skill_names" ]] || { echo "FAIL: no skill packages found" >&2; return 1; }
+  prepare_install_target "$target" "$source_root"
+  preflight_install_conflicts "$target" "$source_root" "$skill_names"
+  if declare -F host_preflight >/dev/null; then
+    host_preflight
+  fi
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    if [[ ! -d "$source_root/$name" ]]; then
+      echo "FAIL: missing skill directory $source_root/$name" >&2
+      return 1
+    fi
+    install_skill_link "$source_root/$name" "$target/$name" "$name"
+    count=$((count + 1))
+  done <<< "$skill_names"
+  prune_stale_links "$target" "$source_root"
+  if declare -F host_apply >/dev/null; then
+    host_apply
+  fi
+  print_install_backup_summary
+  if [[ "$INSTALL_DRY_RUN" == "1" ]]; then
+    echo "OK: dry run, $count $label skills would be installed in $target (nothing written)"
+  else
+    echo "OK: $count $label skills installed in $target"
+  fi
 }
 
 print_install_backup_summary() {

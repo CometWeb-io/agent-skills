@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.1] - 2026-10-02
+
+### Changed
+
+- Description is host-neutral (it read "Use when ChatGPT must") and states
+  when not to use the skill, including the boundary with `ebook-publisher`.
+  The front-door release line said 1.0.0 while `VERSION` said 1.1.0.
+  No workflow, kernel or report-contract behaviour changed; see the freeze
+  exception in `docs/acceptance/longform-publisher-1.0.0.md`.
+
 ## [1.1.0] - 2026-09-18
 
 ### Fixed

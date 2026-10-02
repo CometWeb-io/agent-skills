@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.1] - 2026-10-02
+
+### Changed
+
+- The description now sends knowledge deliverables (reports, ebooks) to
+  Artifact Acceptance. "Artifact" in the candidate list read as any artifact,
+  so a request to gate a document could select a software release gate.
+- `INSTALL.md` pointed at `scripts/package-releases.sh`, which does not exist;
+  it now names `tooling/package_skill.py`. The heading no longer carries a
+  stale version.
+
 ## [1.2.0] - 2026-09-18
 
 ### Fixed

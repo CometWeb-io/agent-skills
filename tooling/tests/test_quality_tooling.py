@@ -190,3 +190,39 @@ def test_wrong_package_identity_cannot_verify_installation(root):
 def test_adapter_merge_rejects_duplicate_keys():
     with pytest.raises(ValueError):
         merge_openai({},"policy: {}\npolicy: {}\n",{})
+
+
+def test_doctor_does_not_pass_an_unknown_skill(root):
+    # A typo or a deleted skill used to return no issues and exit 0.
+    result = inspect(root, "missing-skill")
+    assert result["source"] == "missing"
+    assert {"not_in_registry", "source_missing"} <= set(result["issues"])
+
+
+def test_doctor_flags_source_missing_for_registered_skill(root):
+    (root / "skills/demo/SKILL.md").unlink()
+    assert inspect(root, "demo")["issues"] == ["source_missing"]
+
+
+def test_doctor_flags_requested_installation_that_is_absent(root):
+    result = inspect(root, "demo", root / "installed")
+    assert result["installed"] == "missing"
+    assert "not_installed" in result["issues"]
+
+
+@pytest.mark.parametrize("inventory", [[], {"schema":"cometweb.session-inventory/v1","observed_at":20260912,"session_id":"s","host":"h","skills":[]}])
+def test_doctor_malformed_session_inventory_is_value_error(root, inventory):
+    with pytest.raises(ValueError):
+        inspect(root, "demo", session_inventory=inventory)
+
+
+def test_doctor_cli_reports_bad_input_without_traceback(root, capsys):
+    from doctor import main as doctor_main
+    assert doctor_main(["demo", "--root", str(root)]) == 0
+    assert doctor_main(["Not_A_Skill", "--root", str(root)]) == 2
+    bad = root / "inventory.json"
+    bad.write_text("{not json")
+    assert doctor_main(["demo", "--root", str(root), "--session-inventory", str(bad)]) == 2
+    assert doctor_main(["missing-skill", "--root", str(root)]) == 1
+    err = capsys.readouterr().err
+    assert err.count("FAIL: ") == 2 and "Traceback" not in err

@@ -1,7 +1,7 @@
 ---
 name: science-roaster
 description: >-
-  Run an adversarial Reviewer #2-style critique of scientific manuscripts, papers, protocols, theses, methods, analyses, reviewer responses, validation studies, and research drafts. Use when the user asks to roast, peer-review, red-team, stress-test, re-review a revision of, or challenge scientific work and wants every material criticism anchored to exact source evidence, inferential type, validity domain, counterevidence search, minimum repair burden, and an observable verification condition. Do not use for generic content critique, repository/code review, one-off claim verification, or research-program planning; route those to content-roaster, repo-roaster, evidence-researcher, or research-program-operator.
+  Run an adversarial Reviewer #2-style critique of scientific manuscripts, papers, protocols, theses, methods, analyses, reviewer responses, validation studies, and research drafts. Use when the user asks to roast, peer-review, red-team, stress-test, re-review a revision of, or challenge scientific work and wants every material criticism anchored to exact source evidence, inferential type, validity domain, counterevidence search, minimum repair burden, and an observable verification condition. Do not use for generic content critique, repository/code review, one-off claim verification, or research-program planning; route the first three to content-roaster, repo-roaster, or evidence-researcher, and leave program planning to the user.
 ---
 
 # Science Roaster
@@ -256,7 +256,7 @@ The validator enforces structural and evidence-discipline invariants. It cannot 
 Open `references/handoffs.md` when ownership changes:
 
 - `science-roaster -> evidence-researcher` for external novelty/citation/standard verification;
-- `science-roaster -> research-program-operator` for stage gates and next-study planning;
+- stage gates and next-study planning stay with the user: hand back accepted findings as open program questions, because no research-program skill ships in this catalog;
 - `science-roaster -> longform-publisher` for publication workflow after scientific repair;
 - `science-roaster -> ai-humanize` for prose work that must not change scientific meaning;
 - `repo-roaster` for engineering review of code/pipelines.

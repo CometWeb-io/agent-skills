@@ -1,6 +1,7 @@
 ---
 name: evidence-researcher
-description: Build auditable Evidence Packs for consequential research, fact-checking, due diligence, verification, and cross-skill evidence handoff. Use when ChatGPT must decompose a question into material claims, inspect primary or system-of-record sources, verify currentness/effective dates/versions, distinguish source artifacts from claim-specific evidence, search for falsifiers and negative evidence, resolve contradictions, detect derivative or non-independent sources, identify evidence gaps, compare evidence deltas, or prepare reusable evidence for AI Council, product, technical, audit, SEO/GEO/AEO, sales, or customer workflows. Do not use for casual single-fact lookup or as the final decision-maker when a dedicated decision skill exists.
+description: >-
+  Build auditable Evidence Packs for consequential research, fact-checking, due diligence, verification, and cross-skill evidence handoff. Use when a question must be decomposed into material claims and checked against primary or system-of-record sources: verify currentness/effective dates/versions, distinguish source artifacts from claim-specific evidence, search for falsifiers and negative evidence, resolve contradictions, detect derivative or non-independent sources, identify evidence gaps, compare evidence deltas, or prepare reusable evidence for AI Council, product, technical, audit, SEO/GEO/AEO, sales, or customer workflows. Do not use for casual single-fact lookup or as the final decision-maker when a dedicated decision skill exists.
 ---
 
 # Evidence Researcher v2

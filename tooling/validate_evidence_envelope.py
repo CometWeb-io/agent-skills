@@ -105,8 +105,23 @@ def validate_schema(data: dict[str, Any]) -> None:
     validate_fallback(data)
 
 
+def unique_ids(rows: object, key: str) -> set[str]:
+    seen: set[str] = set()
+    for row in rows or []:
+        if not isinstance(row, dict):
+            continue
+        value = row.get(key)
+        if value in seen:
+            # Edges resolve sources and claims by ID; a repeated ID makes the
+            # target ambiguous and lets two records disagree under one name.
+            fail(f"duplicate {key}: {value}")
+        seen.add(value)
+    return seen
+
+
 def validate_semantics(data: dict[str, Any]) -> None:
-    source_ids = {s.get("source_id") for s in data.get("sources") or [] if isinstance(s, dict)}
+    source_ids = unique_ids(data.get("sources"), "source_id")
+    unique_ids(data.get("evidence_edges"), "edge_id")
     claim_ids = set()
     for claim in data.get("material_claims") or []:
         cid = claim.get("claim_id")
@@ -116,11 +131,20 @@ def validate_semantics(data: dict[str, Any]) -> None:
         if claim.get("epistemic_kind") == "INFERENCE" and claim.get("status") == "VERIFIED":
             fail(f"{cid}: INFERENCE cannot be VERIFIED")
 
+    supported = set()
     for edge in data.get("evidence_edges") or []:
         if edge.get("claim_id") not in claim_ids:
             fail(f"edge {edge.get('edge_id')} unknown claim_id")
         if edge.get("source_id") not in source_ids:
             fail(f"edge {edge.get('edge_id')} unknown source_id")
+        if edge.get("direction") == "SUPPORT" and edge.get("admission") == "ACCEPTED":
+            supported.add(edge.get("claim_id"))
+
+    # VERIFIED means the FACT has accepted evidence (evidence-graph.md); a
+    # label with no accepted SUPPORT edge behind it is an assertion, not a result.
+    for claim in data.get("material_claims") or []:
+        if claim.get("status") == "VERIFIED" and claim.get("claim_id") not in supported:
+            fail(f"{claim.get('claim_id')}: VERIFIED requires an ACCEPTED SUPPORT evidence edge")
 
     if data.get("readiness") == "READY":
         for gap in data.get("gaps") or []:
@@ -139,16 +163,30 @@ def validate(data: dict[str, Any]) -> None:
     validate_semantics(data)
 
 
-def main() -> None:
-    if len(sys.argv) != 2:
-        print("usage: validate_evidence_envelope.py <file.json>", file=sys.stderr)
-        raise SystemExit(2)
-    data = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
-    # Accept full CW-AIP core wrapper or bare payload
-    payload = data.get("payload") if data.get("type") == "EvidenceEnvelope" and "payload" in data else data
-    validate(payload)
+def main(argv: list[str] | None = None) -> int:
+    args = sys.argv[1:] if argv is None else argv
+    usage = "usage: validate_evidence_envelope.py <file.json>"
+    if args in (["-h"], ["--help"]):
+        print(usage)
+        print("Validate a cometweb.evidence/v2 payload, bare or wrapped in a CW-AIP envelope.")
+        return 0
+    if len(args) != 1:
+        print(usage, file=sys.stderr)
+        return 2
+    try:
+        data = json.loads(pathlib.Path(args[0]).read_text(encoding="utf-8"))
+        # Accept full CW-AIP core wrapper or bare payload
+        wrapped = isinstance(data, dict) and data.get("type") == "EvidenceEnvelope" and "payload" in data
+        validate(data["payload"] if wrapped else data)
+    except OSError as exc:
+        print(f"FAIL: cannot read {args[0]}: {exc.strerror or exc}", file=sys.stderr)
+        return 1
+    except ValueError as exc:  # includes JSONDecodeError and UnicodeDecodeError
+        print(f"FAIL: {exc}", file=sys.stderr)
+        return 1
     print("OK: cometweb.evidence/v2")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

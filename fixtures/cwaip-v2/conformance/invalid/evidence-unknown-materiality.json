@@ -1,0 +1,73 @@
+{
+  "id": "example:EvidenceEnvelope:conformance",
+  "type": "EvidenceEnvelope",
+  "producer": "example-producer",
+  "producer_version": "1.0.0",
+  "protocol_version": "2.0",
+  "subject": "example.com pricing page",
+  "generated_at": "2026-09-08T12:00:00Z",
+  "as_of": "2026-09-08T12:00:00Z",
+  "sensitivity": "public",
+  "dependencies": [],
+  "payload": {
+    "schema": "cometweb.evidence/v2",
+    "research_contract": "Is the listed plan price current?",
+    "mode": "STANDARD",
+    "as_of": "2026-09-08T12:00:00Z",
+    "material_claims": [
+      {
+        "claim_id": "c1",
+        "text": "The Basic plan costs 10 EUR per month.",
+        "epistemic_kind": "FACT",
+        "status": "VERIFIED",
+        "materiality": "high"
+      },
+      {
+        "claim_id": "c2",
+        "text": "The price changed this quarter.",
+        "epistemic_kind": "INFERENCE",
+        "status": "SUPPORTED",
+        "materiality": "supporting"
+      }
+    ],
+    "sources": [
+      {
+        "source_id": "s1",
+        "locator": "https://example.com/pricing"
+      }
+    ],
+    "evidence_edges": [
+      {
+        "edge_id": "e1",
+        "claim_id": "c1",
+        "source_id": "s1",
+        "direction": "SUPPORT",
+        "admission": "ACCEPTED"
+      },
+      {
+        "edge_id": "e2",
+        "claim_id": "c2",
+        "source_id": "s1",
+        "direction": "CONTEXT",
+        "admission": "CONTEXT_ONLY"
+      }
+    ],
+    "gaps": [
+      {
+        "gap_id": "g1",
+        "blocking": false,
+        "statement": "No archived copy before 2026-07."
+      }
+    ],
+    "contradictions": [],
+    "readiness": "READY",
+    "evidence_pack_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "handoff": {
+      "recommended_next_skill": "ai-council",
+      "constraints": [
+        "re-verify c1 before publishing"
+      ]
+    }
+  },
+  "payload_hash": "sha256:0287115729ed623f37beec6469f72d2e335d3a1dd106d46790ecc1769a06c93a"
+}

@@ -1,4 +1,4 @@
-# Installation — repo-to-roadmap v1.0.0
+# Installation — repo-to-roadmap
 
 Distributable unit: the whole `repo-to-roadmap/` directory (keep `SKILL.md`, `references/`, `scripts/`, `agents/` paths intact).
 
@@ -30,7 +30,7 @@ Or symlink only this skill into `~/.claude/skills/`.
 
 ## ChatGPT / Codex
 
-Upload a ZIP of this skill folder (see repo `scripts/package-releases.sh`) or copy into the host's skills path. Metadata: `agents/openai.yaml`.
+Build a ZIP from the repo root with `uv run python tooling/package_skill.py repo-to-roadmap` (written to `dist/repo-to-roadmap/<version>/skill.zip`) and upload it, or copy this folder into the host's skills path. Metadata: `agents/openai.yaml`.
 
 ## Invoke
 

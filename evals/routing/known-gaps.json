@@ -1,0 +1,40 @@
+{
+  "schema": "cometweb.routing-known-gaps/v1",
+  "description": "Prompts the deterministic router misroutes today. Not counted as routing coverage. Each must keep reproducing its recorded misroute; when a routing fix makes one pass, tooling/routing_coverage.py --check fails until it is moved into suite.json.",
+  "cases": [
+    {
+      "id": "ebook-format-conversion-goes-to-ebook-publisher",
+      "prompt": "Convert this ebook from EPUB to MOBI.",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "observed_primary_skill": "ebook-publisher",
+      "observed_status": "single_skill",
+      "reason": "A file-format conversion needs no skill; ebook-publisher's description excludes simple PDF/file handling but its bare noun signal still fires"
+    },
+    {
+      "id": "single-canonical-tag-goes-to-seo-audit",
+      "prompt": "Add canonical tags to the blog templates.",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "observed_primary_skill": "seo-geo-aeo-maxxing",
+      "observed_status": "single_skill",
+      "reason": "seo-geo-aeo-maxxing excludes isolated schema/meta tasks, yet its unanchored 'canonical' signal fires on any canonical mention"
+    },
+    {
+      "id": "ship-this-week-without-filler-misses-product-operator",
+      "prompt": "Given the current roadmap for this one product, what should the team ship this week?",
+      "expected_primary_skill": "product-operator",
+      "must_not_trigger": [
+        "portfolio-operator",
+        "repo-to-roadmap"
+      ],
+      "observed_primary_skill": null,
+      "observed_status": "no_skill",
+      "reason": "product-operator's 'ship .* this week' pattern needs a word between 'ship' and 'this week', so the plainest phrasing routes to no skill"
+    }
+  ]
+}

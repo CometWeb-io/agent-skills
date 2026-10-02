@@ -20,9 +20,10 @@ EXPECTED = {
     # docs/acceptance/longform-publisher-1.0.0.md allows a contract change, and
     # validate_report declares "-> list[str]" yet raised TypeError on a list or
     # dict field. No behaviour on valid input changed. See the exception note in
-    # that acceptance record.
-    "longform-publisher": ("1.1.0", "FROZEN"),
-    "product-operator": ("2.3.1", "ACTIVE"),
+    # that acceptance record. 1.1.1 made the description host-neutral and
+    # bounded it against ebook-publisher; see the 1.1.1 exception there.
+    "longform-publisher": ("1.1.1", "FROZEN"),
+    "product-operator": ("2.3.2", "ACTIVE"),
 }
 
 SUPPORTED_HOSTS = {
@@ -95,3 +96,30 @@ def test_new_entries_declare_capability_contract():
         entry = registry[skill_id]
         assert isinstance(entry["required_capabilities"], list)
         assert isinstance(entry["optional_capabilities"], list)
+
+
+def test_documented_regeneration_is_a_no_op():
+    # CONTRIBUTING tells contributors to run `sync_skill_registry.py --apply`
+    # after any registry change. OVERRIDES replaces routing signals wholesale,
+    # so a signal added only to registry/skills.json is silently reverted by
+    # that command. The two must agree for the documented workflow to be safe.
+    module = _sync_module()
+    current = json.loads((ROOT / "registry" / "skills.json").read_text(encoding="utf-8"))
+    desired = module.desired_registry(current)
+    before = {entry["id"]: entry for entry in current["skills"]}
+    drift = {
+        entry["id"]: key
+        for entry in desired["skills"]
+        for key in entry
+        if entry.get(key) != before.get(entry["id"], {}).get(key)
+    }
+    assert desired == current, f"sync_skill_registry --apply would rewrite: {drift}"
+
+
+def test_descriptions_do_not_route_to_unshipped_packages():
+    # A description is what a host reads to pick a skill, so naming a package
+    # that has not landed sends users to something they cannot install.
+    unshipped = pending()
+    for skill_id, entry in registry_by_id().items():
+        named = sorted(p for p in unshipped if p in entry["description"])
+        assert not named, f"{skill_id} description routes to unshipped {named}"

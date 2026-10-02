@@ -43,6 +43,13 @@ def structural_report(suite: dict) -> dict:
     }
 
 
+def fingerprint(reports: list[dict]) -> str:
+    """Identity of the fixture inventory; the run timestamp is not part of it,
+    so an unchanged inventory fingerprints the same on every run."""
+    blob = json.dumps(reports, ensure_ascii=False, sort_keys=True)
+    return hashlib.sha256(blob.encode()).hexdigest()[:16]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--skill", default=None)
@@ -66,8 +73,7 @@ def main() -> None:
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "reports": reports,
     }
-    blob = json.dumps(payload, ensure_ascii=False, sort_keys=True)
-    payload["fingerprint"] = hashlib.sha256(blob.encode()).hexdigest()[:16]
+    payload["fingerprint"] = fingerprint(reports)
 
     if args.baseline and args.baseline.is_file():
         baseline = json.loads(args.baseline.read_text(encoding="utf-8"))

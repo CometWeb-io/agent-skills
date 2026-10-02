@@ -58,21 +58,21 @@ acceptance. This executes trusted repository code, not a security sandbox.
 To run pieces individually while iterating:
 
 ```bash
-python3 -m ruff check .                     # lint: defect rules, not house style
-python3 -m pytest -q                        # full suite
-python3 tooling/validate_repo.py            # registry is the source of truth
-python3 tooling/compatibility.py            # host capability contract
-python3 tooling/generate_adapters.py        # regenerate adapters and tables
-python3 tooling/generate_adapters.py --check
-python3 tooling/run_routing_evals.py        # routing signals from the registry
-python3 tooling/run_behavior_evals.py       # executable behavior assertions
-python3 tooling/public_safety.py --root .   # leak gate over the working tree
+uv run ruff check .                         # lint: defect rules, not house style
+uv run pytest -q                            # full suite
+uv run python tooling/validate_repo.py            # registry is the source of truth
+uv run python tooling/compatibility.py            # host capability contract
+uv run python tooling/generate_adapters.py        # regenerate adapters and tables
+uv run python tooling/generate_adapters.py --check
+uv run python tooling/run_routing_evals.py        # routing signals from the registry
+uv run python tooling/run_behavior_evals.py       # executable behavior assertions
+uv run python tooling/public_safety.py --root .   # leak gate over the working tree
 ```
 
 Before tagging a release, also run the history pass:
 
 ```bash
-python3 tooling/public_safety.py --history --root .
+uv run python tooling/public_safety.py --history --root .
 ```
 
 It applies the same leak rules to every reachable commit, not just the working
@@ -113,9 +113,9 @@ skill opens one. So the front door is the expensive part, and detail belongs
 behind it.
 
 ```bash
-python3 tooling/context_budget.py                 # the current table
-python3 tooling/context_budget.py --check         # gate: unexplained growth fails
-python3 tooling/context_budget.py --update        # accept a new cost deliberately
+uv run python tooling/context_budget.py                 # the current table
+uv run python tooling/context_budget.py --check         # gate: unexplained growth fails
+uv run python tooling/context_budget.py --update        # accept a new cost deliberately
 ```
 
 `registry/context-baseline.json` records what each front door costs today. The
@@ -143,9 +143,9 @@ The three packages that ship `scripts/run_evals.py` are already executed by
 visible. What was missing is whether those runs hold anything.
 
 ```bash
-python3 tooling/eval_strength.py                  # the current table
-python3 tooling/eval_strength.py --check          # gate: a rule that stopped being pinned fails
-python3 tooling/eval_strength.py --update --table docs/generated-eval-strength.md
+uv run python tooling/eval_strength.py                  # the current table
+uv run python tooling/eval_strength.py --check          # gate: a rule that stopped being pinned fails
+uv run python tooling/eval_strength.py --update --table docs/generated-eval-strength.md
 ```
 
 `eval_strength.py` copies each package to a temporary directory, replaces one
@@ -166,12 +166,21 @@ freely; a fall fails the gate.
 `registry/skills.json` is the source of truth for descriptions, versions,
 ownership boundaries and routing signals. Do not hand-edit generated adapters
 or tables; change the registry (or the skill's `SKILL.md` and `VERSION`) and
-regenerate:
+regenerate. The README skill catalog is generated too: the block between the
+`BEGIN GENERATED` / `END GENERATED` markers takes versions and the skill set
+from the registry, and grouping and one-line summaries from
+`registry/readme-catalog.json`. Generation fails if the two files name
+different skills.
 
 ```bash
-python3 tooling/sync_skill_registry.py --apply
-python3 tooling/generate_adapters.py
+uv run python tooling/generate_adapters.py
 ```
+
+`tooling/sync_skill_registry.py` refreshes the entries for the skills listed in
+its own `OVERRIDES` table (version and description from the package, routing
+metadata from the table). Run it with `--check` first: `--apply` overwrites
+those entries' `routing_signals` and ownership fields with the table's copy, so
+review the diff of `registry/skills.json` before keeping it.
 
 `validate_repo.py` fails when a registry entry and its package disagree, so the
 two cannot drift apart silently.
@@ -179,19 +188,19 @@ two cannot drift apart silently.
 ## Adding a skill
 
 ```bash
-python3 tooling/new_skill.py my-new-skill --description "80-1024 characters; this is what routes it"
+uv run python tooling/new_skill.py my-new-skill --description "80-1024 characters; this is what routes it"
 ```
 
 That writes a package which already satisfies the shared surface, carries the
 icon the generated adapters need, and ships an eval harness. The harness fails
 until you implement `run_case()` — deliberately, because a harness that passes
-while asserting nothing is a decoration. The command prints the remaining steps:
-registry entry, `generate_adapters.py`, `context_budget.py --update`, then the
-full local gate.
+while asserting nothing is a decoration. The command prints the remaining steps;
+the full walk-through, with every command, is in
+[README → Write and evaluate a new skill](README.md#write-and-evaluate-a-new-skill).
 
-It does not write the registry itself. `sync_skill_registry.py` and
-`generate_adapters.py` own that, and a second writer would be a second source of
-truth.
+It does not write the registry itself: the entry for a new skill is added to
+`registry/skills.json` by hand, and `generate_adapters.py` derives everything
+else from it. A second writer would be a second source of truth.
 
 ## Adding a routing eval case
 
@@ -213,7 +222,7 @@ across skills — but a test module that imports a sibling will not collect.
 Build a deterministic, scanned package for a skill:
 
 ```bash
-python3 tooling/package_skill.py <skill-id>
+uv run python tooling/package_skill.py <skill-id>
 ```
 
 Publication is approval-gated per skill and has no safety-scan bypass; see

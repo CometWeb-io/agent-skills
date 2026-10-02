@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -328,20 +329,25 @@ def assert_ambiguity(cid: str, case: dict, planner, routing, validate_mod) -> No
 
 def assert_path_redaction(cid: str, case: dict, planner, routing, validate_mod) -> None:
     with tempfile.TemporaryDirectory() as tmp:
-        # Init a tiny git repo so snapshot succeeds
-        subprocess.run(["git", "init"], cwd=tmp, check=True, capture_output=True)
+        # Init a tiny git repo so snapshot succeeds. The contributor's own git
+        # config (commit signing, hooks, templates) must not decide whether an
+        # offline eval passes, so global and system config are shut out.
+        git_env = {
+            **os.environ,
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_AUTHOR_NAME": "t",
+            "GIT_AUTHOR_EMAIL": "t@example.com",
+            "GIT_COMMITTER_NAME": "t",
+            "GIT_COMMITTER_EMAIL": "t@example.com",
+        }
+        subprocess.run(["git", "init", "-q"], cwd=tmp, check=True, capture_output=True, env=git_env)
         subprocess.run(
-            ["git", "commit", "--allow-empty", "-m", "init"],
+            ["git", "-c", "commit.gpgsign=false", "commit", "--allow-empty", "-q", "-m", "init"],
             cwd=tmp,
             check=True,
             capture_output=True,
-            env={
-                **dict(**{k: v for k, v in __import__("os").environ.items()}),
-                "GIT_AUTHOR_NAME": "t",
-                "GIT_AUTHOR_EMAIL": "t@t",
-                "GIT_COMMITTER_NAME": "t",
-                "GIT_COMMITTER_EMAIL": "t@t",
-            },
+            env=git_env,
         )
         proc = subprocess.run(
             [sys.executable, str(SNAPSHOT), "--root", tmp, "--repo", ".", "--json"],

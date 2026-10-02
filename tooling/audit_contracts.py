@@ -323,6 +323,12 @@ def main(argv: list[str] | None = None) -> int:
         result = validate(data, artifacts_root=args.artifacts_root, expected_contract_sha256=args.expected_contract_sha256)
         print(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False))
         return 0 if result["result"] == "no_failures_in_declared_scope" else 1
+    except InvalidTrace as exc:
+        # Rule messages are fixed strings naming a field or rule, never input
+        # values, so they can be shown without echoing user-supplied content.
+        print(json.dumps({"validation": "invalid", "reason": str(exc), "result": "not_assessed",
+                          "release_authorization": "not_provided"}))
+        return 2
     except (OSError, ValueError, TypeError, KeyError, RecursionError):
         # Do not echo user-supplied text or contents of evidence files into logs.
         print(json.dumps({"validation": "invalid", "result": "not_assessed", "release_authorization": "not_provided"}))

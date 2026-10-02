@@ -25,17 +25,59 @@ SECRET_RULES = {
     "private-key": rb"-----BEGIN [A-Z ]*PRIVATE KEY-----",
     "bearer-token": rb"Bearer [A-Za-z0-9._-]{30,}",
     "database-credentials": rb"(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis)://[^\s\"']*:[^\s@\"']+@",
+    "stripe-key": rb"(?:rk|pk)_live_[A-Za-z0-9]{16,}|whsec_[A-Za-z0-9]{24,}",
+    "registry-token": rb"npm_[A-Za-z0-9]{36}|pypi-AgEIcHlwaS5vcmc[A-Za-z0-9_-]{50,}|glpat-[A-Za-z0-9_-]{20,}",
+    "huggingface-token": rb"hf_[A-Za-z]{34}",
+    "slack-app-token": rb"xapp-[0-9]-[A-Za-z0-9-]{10,}",
+    "azure-storage-key": rb"AccountKey=[A-Za-z0-9+/]{40,}",
+    # Three base64url segments, the first two opening with '{"' encoded: a
+    # signed JWT, which is a bearer credential until it expires.
+    "jwt": rb"eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}",
 }
 PRIVATE_RULES = {
     "notion-binding": rb"collection://[0-9a-f-]{36}|app\.notion\.com/p/[0-9a-f]{20,}|notion\.so/[0-9a-f]{32}",
     "linear-binding": rb"linear\.app/|(?:^|[^A-Za-z0-9])COM-[0-9]{1,5}(?:[^A-Za-z0-9]|$)",
-    "owner-path": rb"/Users/[A-Za-z0-9._-]+/(?:Github|Documents|Desktop)/",
+    # Any home directory: the account name is personal, whatever folder follows.
+    # Documentation placeholders are dropped by RULE_FILTERS below.
+    "owner-path": rb"(?:/Users/|/home/)([A-Za-z0-9._-]+)/|[A-Za-z]:\\{1,2}Users\\{1,2}([A-Za-z0-9._ -]+)\\",
+    "personal-email": rb"[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,})",
     # Assembled from fragments so this rule never contains, as a literal, the
     # path it searches for. A history rewrite that scrubs those paths would
     # otherwise rewrite the rule too and silently disarm the check.
     "private-vault": rb"personal/(?:gtm-cometweb|nauka)(?:/|\b)|internal/" + rb"comet" + rb"base(?:/|\b)",
     "private-host": rb"app-eu1\.hubspot|api\.betterwebhub\.com|hpanel\.hostinger",
 }
+# Placeholder account names that documentation uses for "your home directory".
+PLACEHOLDER_ACCOUNTS = frozenset({
+    "you", "me", "user", "username", "your-name", "yourname", "name", "example", "runner", "alice", "bob",
+})
+# RFC 2606 / RFC 6761 names that can never route to a real mailbox.
+RESERVED_EMAIL_TLDS = (".example", ".invalid", ".test", ".localhost")
+RESERVED_EMAIL_DOMAINS = frozenset({"example.com", "example.net", "example.org"})
+# The project's published contact, and GitHub's privacy relay for commit authors.
+PUBLIC_EMAILS = frozenset({"hello@cometweb.io"})
+PUBLIC_EMAIL_DOMAINS = frozenset({"users.noreply.github.com", "noreply.github.com"})
+
+
+def _personal_account(match: re.Match) -> bool:
+    name = (match.group(1) or match.group(2) or b"").decode("utf-8", "replace").strip()
+    return name.casefold() not in PLACEHOLDER_ACCOUNTS
+
+
+def _personal_email(match: re.Match) -> bool:
+    address = match.group(0).decode("ascii", "replace").casefold()
+    domain = match.group(1).decode("ascii", "replace").casefold()
+    # git@host is an SSH login in a clone URL, not a mailbox.
+    if address.startswith("git@") or address in PUBLIC_EMAILS or domain in PUBLIC_EMAIL_DOMAINS:
+        return False
+    if domain in RESERVED_EMAIL_DOMAINS or domain.endswith(tuple("." + d for d in RESERVED_EMAIL_DOMAINS)):
+        return False
+    return not domain.endswith(RESERVED_EMAIL_TLDS)
+
+
+# A rule listed here reports a match only when its predicate accepts it.
+RULE_FILTERS = {"owner-path": _personal_account, "personal-email": _personal_email}
+
 FORBIDDEN_NAMES = (
     ".bootstrap", ".env", ".env.*", "*.local.json", "*.pem", "*.key", "*.b64", "*.base64", "id_rsa*", "id_ed25519*",
     "*client_secret*", "*credentials*.json", "*service-account*.json", ".DS_Store",
@@ -103,7 +145,10 @@ def check_blob(name: str, blob: bytes, *, public: bool = True) -> list[dict]:
         findings.append({"path": name, "rule": "forbidden-name"})
     rules = {**SECRET_RULES, **(PRIVATE_RULES if public else {})}
     for label, pattern in rules.items():
+        accept = RULE_FILTERS.get(label)
         for match in re.finditer(pattern, blob):
+            if accept is not None and not accept(match):
+                continue
             findings.append({"path": name, "rule": label, "line": blob[:match.start()].count(b"\n") + 1})
             break
     return findings

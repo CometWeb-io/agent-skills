@@ -1,0 +1,31 @@
+{
+  "id": "example:ReleaseEnvelope:conformance",
+  "type": "ReleaseEnvelope",
+  "producer": "example-producer",
+  "producer_version": "1.0.0",
+  "protocol_version": "2.0",
+  "subject": "example.com pricing page",
+  "generated_at": "2026-09-08T12:00:00Z",
+  "as_of": "2026-09-08T12:00:00Z",
+  "sensitivity": "public",
+  "dependencies": [],
+  "payload": {
+    "schema": "cometweb.release/v2",
+    "release_candidate": "v1.4.0-rc.2",
+    "environment": "production",
+    "verdict": "GO_WITH_CONTROLS",
+    "gates": [
+      {
+        "gate_id": "qa",
+        "status": "CLEAR"
+      }
+    ],
+    "blockers": [],
+    "controls": [
+      "feature flag at 5%"
+    ],
+    "as_of": "2026-09-08T12:00:00Z",
+    "score": 0.82
+  },
+  "payload_hash": "sha256:e66b1fccde0b831a75fdbc6929f53b37e0a562b8718673aad1a0ab33b2ee28f0"
+}

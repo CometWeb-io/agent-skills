@@ -9,7 +9,8 @@
   },
   "narrow_intent_guards": {
     "ai-humanize": {"when": "\\b(?:fix typos|correct spelling|proofread only|popraw literowki)\\b", "unless": "\\b(?:humanize|humanise|humanizacja|rewrite|przepisz|naturalizuj)\\b"},
-    "competitive-intelligence": {"when": "one.time.*(?:deep )?profile|jednorazow.{0,30}profil", "unless": "monitor|since|delta|zmian"}
+    "competitive-intelligence": {"when": "one.time.*(?:deep )?profile|jednorazow.{0,30}profil", "unless": "monitor|since|delta|zmian"},
+    "content-roaster": {"when": "click.through|\\b(?:live|deployed) (?:ux|ui|app|site|flow)|\\b(?:ux|ui|usability|accessibility)\\b", "unless": "\\b(?:copy|copywriting|claims?|proof|messaging|offer|cta|headline|wording|positioning)\\b"}
   },
   "ties": "ambiguous",
   "workflow_skill": "skill-orchestrator"

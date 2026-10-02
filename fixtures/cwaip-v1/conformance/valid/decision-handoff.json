@@ -1,0 +1,21 @@
+{
+  "id": "example-producer:DecisionHandoff:conformance",
+  "type": "DecisionHandoff",
+  "producer": "release-readiness",
+  "protocol_version": "1.0",
+  "subject": "example.com pricing page",
+  "as_of": "2026-09-08T12:00:00Z",
+  "confidence": "high",
+  "dependencies": [
+    "example-producer:FindingEnvelope:conformance"
+  ],
+  "payload": {
+    "verdict": "GO_WITH_CONTROLS",
+    "blockers": [],
+    "controls": [
+      "feature flag at 5%"
+    ],
+    "release_candidate": "v1.4.0-rc.2",
+    "environment": "production"
+  }
+}
