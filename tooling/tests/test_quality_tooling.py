@@ -55,6 +55,14 @@ def test_semantically_identical_adapter_preserves_format():
     assert merge_openai({}, old, {"display_name":"Demo"}) == old
 
 
+def _source_snapshot(root):
+    return {
+        p.relative_to(root): p.read_bytes()
+        for p in root.rglob("*")
+        if p.is_file() and "__pycache__" not in p.parts
+    }
+
+
 def test_adapter_check_does_not_repair_before_check(root, monkeypatch):
     monkeypatch.setattr(adapters, "ROOT", root)
     monkeypatch.setattr(adapters, "REGISTRY", root / "registry/skills.json")
@@ -62,10 +70,11 @@ def test_adapter_check_does_not_repair_before_check(root, monkeypatch):
     monkeypatch.setattr(adapters, "OUT_DOCS", root / "docs/table.md")
     monkeypatch.setattr(adapters, "OUT_CURSOR", root / "docs/routing.mdc")
     monkeypatch.setattr(sys, "argv", ["generate_adapters.py", "--check"])
-    before = {p.relative_to(root):p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    # Bytecode caches written by the import machinery are not repairs.
+    before = _source_snapshot(root)
     with pytest.raises(SystemExit):
         adapters.main()
-    after = {p.relative_to(root):p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    after = _source_snapshot(root)
     assert before == after
 
 
