@@ -1,6 +1,7 @@
 ---
 name: competitive-intelligence
-description: Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior scan, track pricing/product/positioning/SEO/ads/reviews/company changes, maintain a competitor watchlist, produce recurring competitor digests, verify competitor claims, analyze cross-competitor trends, or turn observed deltas into product/GTM/sales implications. Prefer competitor-profiling for a one-time initial deep profile; use this skill when temporal state, snapshots, deltas, alerts, freshness, evidence provenance, or recurring intelligence operations matter.
+description: >-
+  Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior scan, track pricing/product/positioning/SEO/ads/reviews/company changes, maintain a competitor watchlist, produce recurring competitor digests, verify competitor claims, analyze cross-competitor trends, or turn observed deltas into product/GTM/sales implications. Use it when temporal state, snapshots, deltas, alerts, freshness, evidence provenance, or recurring intelligence operations matter. Do not use for a one-time initial deep profile with no monitoring intent (prefer a dedicated competitor-profiling skill when one is installed), for writing comparison pages or sales battlecards, for setting your own prices, or for a full search-visibility audit (use seo-geo-aeo-maxxing).
 ---
 
 # Competitive Intelligence

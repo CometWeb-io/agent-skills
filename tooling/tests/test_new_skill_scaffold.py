@@ -27,22 +27,21 @@ DESCRIPTION = (
 
 
 @pytest.fixture
-def scaffolded():
-    """Create the skill, yield its path, and remove it whatever happens."""
-    import shutil
+def scaffolded(tmp_path: Path):
+    """Create the skill in a private tree, never in this checkout.
+
+    Writing into the real skills/ directory made every repository-wide check
+    that ran meanwhile - eval baselines, context budget - see a phantom skill,
+    which fails as soon as tests run in parallel.
+    """
     skill_id = "scaffold-probe-skill"
-    target = ROOT / "skills" / skill_id
-    if target.exists():
-        shutil.rmtree(target)
     proc = subprocess.run(
-        [sys.executable, str(TOOL), skill_id, "--description", DESCRIPTION],
+        [sys.executable, str(TOOL), skill_id, "--description", DESCRIPTION, "--root", str(tmp_path)],
         cwd=ROOT, capture_output=True, text=True, timeout=120,
     )
     assert proc.returncode == 0, proc.stderr
-    try:
-        yield target
-    finally:
-        shutil.rmtree(target, ignore_errors=True)
+    assert not (ROOT / "skills" / skill_id).exists()
+    return tmp_path / "skills" / skill_id
 
 
 @pytest.mark.parametrize("relative", [

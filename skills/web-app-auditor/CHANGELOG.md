@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2 — 2026-10-02
+
+- The description invited "roast" requests for any page without saying where copy critique and search-visibility audits go. It now names content-roaster and seo-geo-aeo-maxxing for those.
+
 ## 1.3.1 — 2026-09-12
 
 - Correct installation dependency instructions; the schema-backed validator requires jsonschema.

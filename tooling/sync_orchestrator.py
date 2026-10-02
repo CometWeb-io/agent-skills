@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Keep skill-orchestrator-multiagent planner identical to skill-orchestrator."""
+"""Keep skill-orchestrator-multiagent planner identical to skill-orchestrator.
+
+Also keeps the CW-AIP schemas bundled with the multiagent envelope validator
+byte-identical to their canonical copies under protocol/.
+"""
 from __future__ import annotations
 
 import argparse
@@ -13,6 +17,11 @@ DST = ROOT / "skills" / "skill-orchestrator-multiagent" / "scripts" / "orchestra
 REF_SRC = ROOT / "skills" / "skill-orchestrator" / "references"
 REF_DST = ROOT / "skills" / "skill-orchestrator-multiagent" / "references"
 SHARED_REFS = ("workflow-archetypes.md", "multiagent-execution.md", "subagent-prompt-template.md")
+# Bundled reference name -> canonical protocol schema.
+PROTOCOL_COPIES = {
+    "envelope.core.schema.json": ROOT / "protocol" / "cw-aip-v1" / "schemas" / "envelope.core.schema.json",
+    "cw-aip-v2.core.schema.json": ROOT / "protocol" / "cw-aip-v2" / "core.schema.json",
+}
 
 
 def main() -> None:
@@ -42,6 +51,15 @@ def main() -> None:
         if left.read_bytes() != right.read_bytes():
             errors.append(f"references/{name} drift")
 
+    for name, canonical in PROTOCOL_COPIES.items():
+        bundled = REF_DST / name
+        if not canonical.is_file():
+            errors.append(f"canonical protocol schema missing: {canonical.relative_to(ROOT)}")
+        elif not bundled.is_file():
+            errors.append(f"references/{name} missing from skill-orchestrator-multiagent")
+        elif canonical.read_bytes() != bundled.read_bytes():
+            errors.append(f"references/{name} drift from {canonical.relative_to(ROOT)}")
+
     if args.check:
         if errors:
             print("FAIL: " + "; ".join(errors), file=sys.stderr)
@@ -56,7 +74,10 @@ def main() -> None:
         left = REF_SRC / name
         if left.is_file():
             shutil.copy2(left, REF_DST / name)
-    print("OK: synced orchestrator kernel + shared references into multiagent package")
+    for name, canonical in PROTOCOL_COPIES.items():
+        if canonical.is_file():
+            shutil.copy2(canonical, REF_DST / name)
+    print("OK: synced orchestrator kernel, shared references and protocol schemas into multiagent package")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
+# shellcheck source-path=SCRIPTDIR
 # Link canonical CometWeb skills into Qwen Code's native skills directory.
+# Auto-discovers skills/*/SKILL.md; run with --help for --dry-run and --uninstall.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -8,19 +10,4 @@ source "$ROOT/scripts/lib/skills.sh"
 # shellcheck source=lib/install.sh
 source "$ROOT/scripts/lib/install.sh"
 
-TARGET="${QWEN_SKILLS_DIR:-$HOME/.qwen/skills}"
-skill_names="$(list_skills)"
-[[ -n "$skill_names" ]] || { echo "FAIL: no skill packages found" >&2; exit 1; }
-prepare_install_target "$TARGET" "$ROOT/skills"
-preflight_install_conflicts "$TARGET" "$ROOT/skills" "$skill_names"
-count=0
-while IFS= read -r name; do
-  [[ -z "$name" ]] && continue
-  src="$ROOT/skills/$name"
-  dest="$TARGET/$name"
-  [[ -d "$src" ]] || { echo "FAIL: missing skill directory $src" >&2; exit 1; }
-  install_skill_link "$src" "$dest" "$name"
-  count=$((count + 1))
-done <<< "$skill_names"
-print_install_backup_summary
-echo "OK: $count Qwen Code skills installed in $TARGET"
+run_host_installer "Qwen Code" "${QWEN_SKILLS_DIR:-$HOME/.qwen/skills}" "$@"

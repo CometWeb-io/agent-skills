@@ -4,7 +4,7 @@ Machine handoffs use `references/handoff-contract.md` (`cometweb.roaster-handoff
 | Need | Owner | Handoff condition |
 | --- | --- | --- |
 | External novelty/citation/standard verification | `evidence-researcher` | The manuscript or review requires evidence outside supplied sources |
-| Research stage gates and next-study planning | `research-program-operator` | Accepted findings must become program decisions or next experiments |
+| Research stage gates and next-study planning | the user (no research-program skill ships in this catalog) | Accepted findings must become program decisions or next experiments; hand them back as open questions |
 | Publication workflow | `longform-publisher` | Scientific content is repaired and must be released across manuscript/derived formats |
 | Meaning-preserving prose rewrite | `ai-humanize` | Scientific meaning and uncertainty must remain invariant while prose changes |
 | Marketing/editorial critique | `content-roaster` | The artifact is not governed by a scientific inference contract |

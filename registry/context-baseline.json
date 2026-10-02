@@ -2,8 +2,8 @@
   "schema": "cometweb.context-budget/v1",
   "unit": "bytes; token counts are estimates at 4 bytes/token",
   "skill_count": 32,
-  "total_front_door_tokens_estimated": 82917,
-  "median_front_door_tokens_estimated": 2535,
+  "total_front_door_tokens_estimated": 82492,
+  "median_front_door_tokens_estimated": 2606,
   "max_front_door_tokens_estimated": 5498,
   "skills": [
     {
@@ -62,12 +62,12 @@
     },
     {
       "id": "competitive-intelligence",
-      "front_door_bytes": 15528,
-      "front_door_tokens_estimated": 3882,
+      "front_door_bytes": 15749,
+      "front_door_tokens_estimated": 3937,
       "depth_bytes": 32020,
       "depth_tokens_estimated": 8005,
       "reference_files": 6,
-      "deferred_ratio": 0.6734
+      "deferred_ratio": 0.6703
     },
     {
       "id": "content-reviewer",
@@ -82,10 +82,10 @@
       "id": "content-roaster",
       "front_door_bytes": 18696,
       "front_door_tokens_estimated": 4674,
-      "depth_bytes": 51541,
-      "depth_tokens_estimated": 12885,
+      "depth_bytes": 51680,
+      "depth_tokens_estimated": 12920,
       "reference_files": 18,
-      "deferred_ratio": 0.7338
+      "deferred_ratio": 0.7343
     },
     {
       "id": "content-writer",
@@ -98,39 +98,39 @@
     },
     {
       "id": "customer-ops",
-      "front_door_bytes": 19707,
-      "front_door_tokens_estimated": 4926,
+      "front_door_bytes": 16342,
+      "front_door_tokens_estimated": 4085,
       "depth_bytes": 120175,
       "depth_tokens_estimated": 30043,
       "reference_files": 16,
-      "deferred_ratio": 0.8591
+      "deferred_ratio": 0.8803
     },
     {
       "id": "design-partner-finder",
-      "front_door_bytes": 15496,
-      "front_door_tokens_estimated": 3874,
+      "front_door_bytes": 15521,
+      "front_door_tokens_estimated": 3880,
       "depth_bytes": 35735,
       "depth_tokens_estimated": 8933,
       "reference_files": 11,
-      "deferred_ratio": 0.6975
+      "deferred_ratio": 0.6972
     },
     {
       "id": "ebook-publisher",
-      "front_door_bytes": 10850,
-      "front_door_tokens_estimated": 2712,
+      "front_door_bytes": 10888,
+      "front_door_tokens_estimated": 2722,
       "depth_bytes": 35735,
       "depth_tokens_estimated": 8933,
       "reference_files": 6,
-      "deferred_ratio": 0.7671
+      "deferred_ratio": 0.7665
     },
     {
       "id": "evidence-researcher",
-      "front_door_bytes": 5169,
-      "front_door_tokens_estimated": 1292,
+      "front_door_bytes": 5181,
+      "front_door_tokens_estimated": 1295,
       "depth_bytes": 34481,
       "depth_tokens_estimated": 8620,
       "reference_files": 14,
-      "deferred_ratio": 0.8696
+      "deferred_ratio": 0.8694
     },
     {
       "id": "feedback-integrator",
@@ -143,12 +143,12 @@
     },
     {
       "id": "longform-publisher",
-      "front_door_bytes": 9432,
-      "front_door_tokens_estimated": 2358,
+      "front_door_bytes": 9964,
+      "front_door_tokens_estimated": 2491,
       "depth_bytes": 11289,
       "depth_tokens_estimated": 2822,
       "reference_files": 9,
-      "deferred_ratio": 0.5448
+      "deferred_ratio": 0.5312
     },
     {
       "id": "portfolio-operator",
@@ -161,12 +161,12 @@
     },
     {
       "id": "product-operator",
-      "front_door_bytes": 15989,
-      "front_door_tokens_estimated": 3997,
-      "depth_bytes": 34556,
-      "depth_tokens_estimated": 8639,
+      "front_door_bytes": 16208,
+      "front_door_tokens_estimated": 4052,
+      "depth_bytes": 34680,
+      "depth_tokens_estimated": 8670,
       "reference_files": 12,
-      "deferred_ratio": 0.6837
+      "deferred_ratio": 0.6815
     },
     {
       "id": "product-teardown",
@@ -188,12 +188,12 @@
     },
     {
       "id": "release-readiness",
-      "front_door_bytes": 16673,
-      "front_door_tokens_estimated": 4168,
+      "front_door_bytes": 16701,
+      "front_door_tokens_estimated": 4175,
       "depth_bytes": 61996,
       "depth_tokens_estimated": 15499,
       "reference_files": 10,
-      "deferred_ratio": 0.7881
+      "deferred_ratio": 0.7878
     },
     {
       "id": "repair-operator",
@@ -208,10 +208,10 @@
       "id": "repo-roaster",
       "front_door_bytes": 21992,
       "front_door_tokens_estimated": 5498,
-      "depth_bytes": 53678,
-      "depth_tokens_estimated": 13419,
+      "depth_bytes": 53817,
+      "depth_tokens_estimated": 13454,
       "reference_files": 18,
-      "deferred_ratio": 0.7094
+      "deferred_ratio": 0.7099
     },
     {
       "id": "repo-to-roadmap",
@@ -233,21 +233,21 @@
     },
     {
       "id": "science-roaster",
-      "front_door_bytes": 19860,
-      "front_door_tokens_estimated": 4965,
-      "depth_bytes": 54273,
-      "depth_tokens_estimated": 13568,
+      "front_door_bytes": 19963,
+      "front_door_tokens_estimated": 4990,
+      "depth_bytes": 54477,
+      "depth_tokens_estimated": 13619,
       "reference_files": 19,
-      "deferred_ratio": 0.7321
+      "deferred_ratio": 0.7318
     },
     {
       "id": "seo-geo-aeo-maxxing",
       "front_door_bytes": 12842,
       "front_door_tokens_estimated": 3210,
-      "depth_bytes": 71103,
-      "depth_tokens_estimated": 17775,
+      "depth_bytes": 72097,
+      "depth_tokens_estimated": 18024,
       "reference_files": 19,
-      "deferred_ratio": 0.847
+      "deferred_ratio": 0.8488
     },
     {
       "id": "skill-auditor",
@@ -269,30 +269,30 @@
     },
     {
       "id": "skill-orchestrator",
-      "front_door_bytes": 5418,
-      "front_door_tokens_estimated": 1354,
-      "depth_bytes": 8584,
-      "depth_tokens_estimated": 2146,
+      "front_door_bytes": 5684,
+      "front_door_tokens_estimated": 1421,
+      "depth_bytes": 9564,
+      "depth_tokens_estimated": 2391,
       "reference_files": 4,
-      "deferred_ratio": 0.6131
+      "deferred_ratio": 0.6272
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "front_door_bytes": 1255,
-      "front_door_tokens_estimated": 313,
-      "depth_bytes": 6646,
-      "depth_tokens_estimated": 1661,
+      "front_door_bytes": 1369,
+      "front_door_tokens_estimated": 342,
+      "depth_bytes": 7626,
+      "depth_tokens_estimated": 1906,
       "reference_files": 3,
-      "deferred_ratio": 0.8412
+      "deferred_ratio": 0.8478
     },
     {
       "id": "web-app-auditor",
-      "front_door_bytes": 13469,
-      "front_door_tokens_estimated": 3367,
+      "front_door_bytes": 13573,
+      "front_door_tokens_estimated": 3393,
       "depth_bytes": 49484,
       "depth_tokens_estimated": 12371,
       "reference_files": 15,
-      "deferred_ratio": 0.786
+      "deferred_ratio": 0.7848
     }
   ]
 }

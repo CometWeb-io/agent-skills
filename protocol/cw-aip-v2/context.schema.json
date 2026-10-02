@@ -33,6 +33,7 @@
       "type": "string",
       "enum": [
         "product",
+        "portfolio",
         "gtm",
         "outreach",
         "brand",
@@ -78,6 +79,25 @@
       "type": "array",
       "items": { "$ref": "#/$defs/blocked_claim" }
     },
+    "governance": {
+      "type": "object",
+      "description": "Optional governance preflight; describes what was loaded, never a verdict.",
+      "properties": {
+        "first_principles": {
+          "type": "object",
+          "required": ["required", "status"],
+          "properties": {
+            "required": { "type": "boolean" },
+            "status": {
+              "type": "string",
+              "enum": ["loaded", "not_required", "unavailable"]
+            },
+            "source_ref": { "type": ["string", "null"] },
+            "reason": { "type": ["string", "null"] }
+          }
+        }
+      }
+    },
     "handoff": {
       "type": "object",
       "additionalProperties": false,
@@ -122,6 +142,7 @@
             "crm",
             "gmail",
             "calendar",
+            "contacts",
             "insight",
             "website",
             "social",

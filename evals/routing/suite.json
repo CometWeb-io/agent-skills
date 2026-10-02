@@ -1134,7 +1134,7 @@
     },
     {
       "id": "boundary-seo-not-evidence",
-      "prompt": "Run SEO/GEO/AEO visibility audit on cometweb.io",
+      "prompt": "Run a visibility audit of cometweb.io across the SEO, GEO and AEO pillars.",
       "expected_primary_skill": "seo-geo-aeo-maxxing",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -1204,13 +1204,13 @@
     },
     {
       "id": "longform-report-through-manuscript-not-release-gate",
-      "prompt": "Build this evidence-backed report through manuscript, DOCX and PDF release readiness",
+      "prompt": "Take this evidence-backed handbook through manuscript, DOCX and PDF release readiness.",
       "expected_primary_skill": "longform-publisher",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
         "release-readiness"
       ],
-      "reason": "The phrase 'release readiness' inside a publication request is about the document's release, not a build's; this was the skill's own trigger example and it routed to release-readiness"
+      "reason": "The phrase 'release readiness' inside a publication request is about the document's release, not a build's; the skill's own trigger example once routed to release-readiness (the verbatim example is pinned by test_registry_self_consistency)"
     },
     {"id":"pl-skill-auditor","prompt":"Zaudytuj bibliotekę skilli: konflikty wyzwalania, przenośność i jakość paczek.","expected_primary_skill":"skill-auditor","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
     {"id":"pl-repo-roaster","prompt":"Zrób brutalny przegląd repo: sprawdź krytyczne inwarianty i osiągalność błędnych ścieżek.","expected_primary_skill":"repo-roaster","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
@@ -1236,6 +1236,193 @@
     {"id":"pl-skill-overlap-audit","prompt":"Sprawdź, czy skill-evaluator ma komplet testów i nie koliduje z skill-auditor.","expected_primary_skill":"skill-auditor","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator"],"reason":"Test coverage and overlap inspection of a skill is an audit, not an experiment"},
     {"id":"pl-agent-skills-catalog-quality","prompt":"Zweryfikuj jakość całego katalogu umiejętności agentów.","expected_primary_skill":"skill-auditor","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap"],"reason":"Catalog quality review belongs to skill-auditor"},
     {"id":"pl-team-skills-not-agent-skills","prompt":"Zrób audyt umiejętności zespołu sprzedaży.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["skill-auditor"],"reason":"Human team competencies are outside Agent Skills audit scope"},
-    {"id":"pl-app-tests-not-skill-tests","prompt":"Sprawdź testy aplikacji i jej logikę cenową.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["skill-auditor"],"reason":"Application QA is not a skill package audit"}
+    {"id":"pl-app-tests-not-skill-tests","prompt":"Sprawdź testy aplikacji i jej logikę cenową.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["skill-auditor"],"reason":"Application QA is not a skill package audit"},
+    {"id":"benchmark-curator-regression-corpus-dedupe","prompt":"Curate a regression corpus for the routing evals: dedupe near-identical prompts and record provenance for each case.","expected_primary_skill":"benchmark-curator","allowed_secondary_skills":["skill-evaluator"],"must_not_trigger":["skill-evaluator","rubric-designer"],"reason":"Corpus construction with dedupe and provenance is curation, not running the experiment or writing the rubric"},
+    {"id":"benchmark-curator-adversarial-challenge-set","prompt":"Build a challenge set of adversarial routing prompts and keep it out of the training examples.","expected_primary_skill":"benchmark-curator","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator","skill-auditor"],"reason":"Challenge-set design with isolation from known examples belongs to the benchmark curator"},
+    {"id":"benchmark-curator-holdout-contamination","prompt":"Check this holdout for contamination before we trust any score from it.","expected_primary_skill":"benchmark-curator","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator","evidence-researcher"],"reason":"Holdout leakage review precedes measurement; it is not the measurement itself"},
+    {"id":"skill-evaluator-no-skill-vs-with-skill","prompt":"Compare no-skill versus with-skill outputs for the release-readiness skill on the same host and model.","expected_primary_skill":"skill-evaluator","allowed_secondary_skills":["benchmark-curator"],"must_not_trigger":["benchmark-curator","skill-auditor"],"reason":"Matched baseline comparison is the evaluator's experiment, not a static audit or corpus work"},
+    {"id":"skill-evaluator-trigger-precision-recall","prompt":"Measure trigger precision and recall for content-roaster against its near misses.","expected_primary_skill":"skill-evaluator","allowed_secondary_skills":[],"must_not_trigger":["benchmark-curator","content-roaster"],"reason":"Measuring trigger behavior of a named skill must not route to that skill itself"},
+    {"id":"rubric-designer-pass-fail-semantics","prompt":"Design an evaluation rubric for the ebook drafts with explicit pass/fail semantics.","expected_primary_skill":"rubric-designer","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator","ebook-publisher"],"reason":"Rubric design wins over the ebook noun; grading ebook drafts is not producing an ebook"},
+    {"id":"rubric-designer-freeze-before-grading","prompt":"Freeze the rubric and record its rubric hash before anyone grades the outputs.","expected_primary_skill":"rubric-designer","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator","benchmark-curator"],"reason":"Freezing scoring criteria before grading is rubric work, not scoring"},
+    {"id":"brief-architect-underspecified-guide","prompt":"This request for a white-label guide is underspecified; pin audience, scope and acceptance criteria before research starts.","expected_primary_skill":"brief-architect","allowed_secondary_skills":["evidence-researcher"],"must_not_trigger":["content-writer","evidence-researcher"],"reason":"An underspecified artifact needs a contract before research or drafting"},
+    {"id":"brief-architect-evidence-policy-handoff","prompt":"Write an artifact brief with evidence policy and handoff fields for the pricing explainer.","expected_primary_skill":"brief-architect","allowed_secondary_skills":[],"must_not_trigger":["content-writer","quality-loop-operator"],"reason":"'Write' targets the brief, not the final explainer"},
+    {"id":"content-writer-article-from-approved-brief","prompt":"Write an evidence-backed article about Core Web Vitals from the approved brief, no invented numbers.","expected_primary_skill":"content-writer","allowed_secondary_skills":[],"must_not_trigger":["brief-architect","ai-humanize"],"reason":"The brief already exists; drafting the artifact is the writer's job"},
+    {"id":"content-writer-reader-facing-guide","prompt":"Create a reader-facing guide for onboarding admins from these source notes.","expected_primary_skill":"content-writer","allowed_secondary_skills":[],"must_not_trigger":["ai-humanize","brief-architect"],"reason":"Drafting a new reader-facing artifact, not rewriting existing prose"},
+    {"id":"content-reviewer-editorial-qa-guide","prompt":"Editorial QA on this onboarding guide: flag unclear claims and internal inconsistencies, constructively.","expected_primary_skill":"content-reviewer","allowed_secondary_skills":[],"must_not_trigger":["content-roaster","artifact-acceptance"],"reason":"Constructive editorial QA, not an adversarial roast or a final acceptance gate"},
+    {"id":"content-reviewer-pre-publication-findings","prompt":"Pre-publication review of this case study: actionable editorial findings only, no rewrite.","expected_primary_skill":"content-reviewer","allowed_secondary_skills":[],"must_not_trigger":["content-roaster","ai-humanize"],"reason":"Findings without a rewrite stay with the reviewer"},
+    {"id":"content-roaster-pricing-copy","prompt":"Roast this pricing page copy and tie every criticism to the exact sentence.","expected_primary_skill":"content-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer","science-roaster"],"reason":"Adversarial marketing-copy critique anchored to source text"},
+    {"id":"content-roaster-skeptical-buyer","prompt":"Red-team the sales offer: which claims would a skeptical buyer reject?","expected_primary_skill":"content-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer","evidence-researcher"],"reason":"Red-teaming an offer is adversarial content review, not claim research"},
+    {"id":"science-roaster-preprint-design","prompt":"Roast this preprint's study design and statistical claims like a hostile reviewer.","expected_primary_skill":"science-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-roaster","evidence-researcher"],"reason":"Scientific methods critique, not marketing-copy critique"},
+    {"id":"science-roaster-trial-protocol","prompt":"Scientific peer review of the randomized trial protocol before submission.","expected_primary_skill":"science-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-roaster","content-reviewer"],"reason":"Peer review of a protocol belongs to the science roaster"},
+    {"id":"repo-roaster-retry-double-charge","prompt":"Roast this codebase: where can a retry double-charge a customer?","expected_primary_skill":"repo-roaster","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap","release-readiness"],"reason":"Adversarial code review for a failure path, not a roadmap or a ship gate"},
+    {"id":"repo-roaster-sync-engine-blast-radius","prompt":"Adversarial codebase review of the sync engine with blast radius per finding.","expected_primary_skill":"repo-roaster","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap","web-app-auditor"],"reason":"Code-level adversarial review, not UI QA"},
+    {"id":"artifact-acceptance-research-report-contract","prompt":"Final artifact gate: does this research report meet its acceptance contract and evidence requirements?","expected_primary_skill":"artifact-acceptance","allowed_secondary_skills":[],"must_not_trigger":["release-readiness","content-reviewer"],"reason":"Knowledge-artifact acceptance, not a software release gate"},
+    {"id":"artifact-acceptance-sales-deck-verdict","prompt":"Artifact acceptance for the sales deck: READY_WITH_CONTROLS or NOT_READY?","expected_primary_skill":"artifact-acceptance","allowed_secondary_skills":[],"must_not_trigger":["release-readiness","ai-council"],"reason":"Artifact verdict vocabulary; must not drift to a release GO/NO_GO or a Council decision"},
+    {"id":"repair-operator-accepted-findings","prompt":"Repair the accepted review findings in this report and re-verify each one.","expected_primary_skill":"repair-operator","allowed_secondary_skills":[],"must_not_trigger":["repo-roaster","content-reviewer"],"reason":"Findings are already accepted; the task is repair plus verification, not another review"},
+    {"id":"repair-operator-root-cause-no-regression","prompt":"Fix these findings at the root cause and verify nothing regressed.","expected_primary_skill":"repair-operator","allowed_secondary_skills":[],"must_not_trigger":["repo-roaster","feedback-integrator"],"reason":"Single repair set, not a cross-incident retrospective"},
+    {"id":"feedback-integrator-recurring-reviewer-findings","prompt":"Aggregate recurring reviewer findings from the last six reviews into regression tests.","expected_primary_skill":"feedback-integrator","allowed_secondary_skills":[],"must_not_trigger":["repair-operator","skill-auditor"],"reason":"Cross-review pattern aggregation, not a one-off repair"},
+    {"id":"feedback-integrator-repeated-user-corrections","prompt":"Users keep correcting the same mistake; turn these repeated user corrections into a durable fix plan.","expected_primary_skill":"feedback-integrator","allowed_secondary_skills":[],"must_not_trigger":["repair-operator","ai-humanize"],"reason":"Repeated corrections across sessions are the integrator's input"},
+    {"id":"quality-loop-full-loop-ebook","prompt":"Run the full quality loop on this ebook draft: brief, review, roast, repair and acceptance.","expected_primary_skill":"quality-loop-operator","allowed_secondary_skills":["ebook-publisher"],"must_not_trigger":["skill-orchestrator","release-readiness"],"reason":"Named quality-loop stages outweigh the ebook noun and the generic orchestrator"},
+    {"id":"quality-loop-resume-after-repair","prompt":"Resume the quality workflow after the repair stage was approved.","expected_primary_skill":"quality-loop-operator","allowed_secondary_skills":[],"must_not_trigger":["skill-orchestrator","repair-operator"],"reason":"Resuming a staged quality workflow, not a fresh repair"},
+    {"id":"portfolio-capacity-conflicts","prompt":"I have capacity conflicts across multiple projects next month; what should I pause?","expected_primary_skill":"portfolio-operator","allowed_secondary_skills":[],"must_not_trigger":["product-operator","repo-to-roadmap"],"reason":"Cross-project allocation, not one product's weekly plan"},
+    {"id":"portfolio-next-30-days","prompt":"Plan my next 30 days across client work, the product and research commitments.","expected_primary_skill":"portfolio-operator","allowed_secondary_skills":[],"must_not_trigger":["product-operator","customer-ops"],"reason":"Portfolio horizon across domains"},
+    {"id":"longform-publication-report-sync","prompt":"Take this playbook through the publication workflow and keep publication-report.json in sync.","expected_primary_skill":"longform-publisher","allowed_secondary_skills":["ebook-publisher"],"must_not_trigger":["release-readiness","artifact-acceptance"],"reason":"Publication workflow with derived-format reconciliation"},
+    {"id":"longform-handbook-refresh","prompt":"Refresh this handbook into a publication-ready edition with the derived DOCX and PDF rebuilt.","expected_primary_skill":"longform-publisher","allowed_secondary_skills":[],"must_not_trigger":["ebook-publisher","release-readiness"],"reason":"Refreshing an existing long-form publication across formats"},
+    {"id":"ebook-poradnik-pdf","prompt":"Napisz poradnik PDF o dostępności cyfrowej, od researchu do gotowego pliku.","expected_primary_skill":"ebook-publisher","allowed_secondary_skills":["evidence-researcher"],"must_not_trigger":["longform-publisher","content-writer"],"reason":"Polish practical PDF guide from research to file is the ebook publisher's pipeline"},
+    {"id":"ebook-white-paper-claim-mapping","prompt":"Prepare a white paper on accessibility audits with claim-to-source mapping.","expected_primary_skill":"ebook-publisher","allowed_secondary_skills":["evidence-researcher"],"must_not_trigger":["content-writer","longform-publisher"],"reason":"White paper creation with claim-to-source mapping"},
+    {"id":"negative-business-benchmark-not-curator","prompt":"What's a good benchmark for a startup's churn rate?","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["benchmark-curator","skill-evaluator"],"reason":"Everyday use of 'benchmark' is not eval-corpus curation"},
+    {"id":"negative-teacher-rubric-not-designer","prompt":"Grade this essay with the rubric my teacher gave me.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["rubric-designer","content-reviewer"],"reason":"Applying someone else's rubric is neither rubric design nor editorial review"},
+    {"id":"negative-haiku-not-content-writer","prompt":"Write a haiku about autumn.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["content-writer","ai-humanize"],"reason":"Creative writing with no evidence or brief does not need the evidence-aware writer"},
+    {"id":"negative-birthday-roast-not-repo-roaster","prompt":"Roast me in a birthday toast for my brother.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["repo-roaster","content-roaster"],"reason":"Social 'roast' must not trigger adversarial review skills"},
+    {"id":"negative-p-value-explainer-not-science-roaster","prompt":"Explain what a p-value is.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["science-roaster","evidence-researcher"],"reason":"Conceptual statistics question, no artifact under review"},
+    {"id":"negative-stock-portfolio-not-portfolio-operator","prompt":"Rebalance my stock portfolio for retirement.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["portfolio-operator"],"reason":"Financial portfolio is not a project portfolio"},
+    {"id":"negative-denied-repo-roaster-by-name","prompt":"Don't use repo-roaster; just summarize what this diff changes.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["repo-roaster"],"reason":"An explicit exclusion by skill ID must win even when other wording is neutral"},
+    {"id":"negative-denied-quality-loop-by-name","prompt":"Without quality-loop-operator, list the stages a draft usually goes through.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["quality-loop-operator","skill-orchestrator"],"reason":"Exclusion by name; a descriptive question about stages is not a request to run the loop"},
+    {"id":"negative-meta-description-not-seo-audit","prompt":"Write a meta description for this single product page.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["seo-geo-aeo-maxxing","content-writer"],"reason":"Isolated meta task; seo-geo-aeo-maxxing excludes single schema/meta work"},
+    {"id":"negative-retro-sprint-not-feedback-integrator","prompt":"Run a sprint retrospective for the team: what went well and what didn't?","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["feedback-integrator","product-operator"],"reason":"A team retro is not a skill/quality-incident retrospective"},
+    {"id":"product-operator-week-not-portfolio","prompt":"What should we do this week on the Insight roadmap, given the open blockers?","expected_primary_skill":"product-operator","allowed_secondary_skills":[],"must_not_trigger":["portfolio-operator","repo-to-roadmap"],"reason":"One product's weekly control loop, not cross-project allocation or a fresh roadmap baseline"},
+    {"id":"portfolio-focus-across-projects","prompt":"What should I focus on across all my projects in the next 14 days?","expected_primary_skill":"portfolio-operator","allowed_secondary_skills":[],"must_not_trigger":["product-operator"],"reason":"Cross-project allocation phrased with 'across' before the horizon"},
+    {"id":"rubric-create-grading","prompt":"Design a grading rubric for support replies before we score them.","expected_primary_skill":"rubric-designer","allowed_secondary_skills":[],"must_not_trigger":["artifact-acceptance","skill-evaluator"],"reason":"Rubric must be designed and frozen before scoring; judging belongs elsewhere"},
+    {"id":"rubric-score-is-not-design","prompt":"Apply our existing rubric to grade this candidate answer.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["rubric-designer"],"reason":"Applying a rubric is a reviewer task, not rubric design"},
+    {"id":"repair-apply-roast-fixes","prompt":"Apply the fixes from the last roast and verify them.","expected_primary_skill":"repair-operator","allowed_secondary_skills":[],"must_not_trigger":["repo-roaster","content-roaster"],"reason":"Findings already exist; the user wants them closed, not a new roast"},
+    {"id":"repair-fix-review-findings","prompt":"Fix the review findings and verify each fix.","expected_primary_skill":"repair-operator","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer"],"reason":"Fixing accepted findings, not producing a new review"},
+    {"id":"quality-loop-run-article","prompt":"Run the quality loop on this article: brief, review, roast, repair, accept.","expected_primary_skill":"quality-loop-operator","allowed_secondary_skills":[],"must_not_trigger":["skill-orchestrator","content-roaster"],"reason":"Quality workflow entry point, not generic orchestration"},
+    {"id":"science-rereview-revision","prompt":"Re-review the revised manuscript against my earlier comments.","expected_primary_skill":"science-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer"],"reason":"Incremental scientific re-review of a revision"},
+    {"id":"repo-roaster-redteam-pr","prompt":"Red-team this pull request before merge.","expected_primary_skill":"repo-roaster","allowed_secondary_skills":[],"must_not_trigger":["release-readiness"],"reason":"Adversarial code review of a PR, not a release gate"},
+    {"id":"multiagent-separate-subagents","prompt":"Use separate subagents for each skill step: research then council.","expected_primary_skill":"skill-orchestrator-multiagent","allowed_secondary_skills":[],"must_not_trigger":[],"reason":"Isolation request selects the multiagent alias"},
+    {"id":"web-audit-signup-accessibility","prompt":"Check the accessibility of our signup form.","expected_primary_skill":"web-app-auditor","allowed_secondary_skills":[],"must_not_trigger":["seo-geo-aeo-maxxing"],"reason":"Runtime accessibility QA of a user-facing flow"},
+    {"id":"web-audit-dashboard-ux","prompt":"UX audit of our dashboard.","expected_primary_skill":"web-app-auditor","allowed_secondary_skills":[],"must_not_trigger":["product-teardown"],"reason":"Own-product UX audit, not an external teardown"},
+    {"id":"web-audit-not-seo-checkout","prompt":"Run SEO audit of our checkout page.","expected_primary_skill":"seo-geo-aeo-maxxing","allowed_secondary_skills":[],"must_not_trigger":["web-app-auditor"],"reason":"SEO wording keeps visibility audits out of web QA"},
+    {"id":"ci-monitor-pricing-delta","prompt":"Monitor our competitors' pricing pages and tell me what changed since last month","expected_primary_skill":"competitive-intelligence","allowed_secondary_skills":[],"must_not_trigger":["seo-geo-aeo-maxxing"],"reason":"Recurring delta against a prior snapshot is the temporal intelligence loop"},
+    {"id":"ci-one-time-profile-not-monitoring","prompt":"Do a one-time deep profile of competitor Acme's pricing","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["competitive-intelligence"],"reason":"One-time profile with no monitoring intent is outside competitive-intelligence's declared scope"},
+    {"id":"customer-ops-triage-inbox","prompt":"Triage the support inbox and rank what needs action today","expected_primary_skill":"customer-ops","allowed_secondary_skills":[],"must_not_trigger":["product-operator"],"reason":"Queue triage is the customer-ops triage-queue mode"},
+    {"id":"customer-ops-overdue-promises","prompt":"Which customer promises are overdue and who owns them?","expected_primary_skill":"customer-ops","allowed_secondary_skills":[],"must_not_trigger":[],"reason":"Commitment watch over customer-facing promises"},
+    {"id":"content-reviewer-draft-before-publish","prompt":"Review this article draft before we publish it","expected_primary_skill":"content-reviewer","allowed_secondary_skills":["artifact-acceptance"],"must_not_trigger":["content-roaster","content-writer"],"reason":"Constructive editorial review, not a roast or a rewrite"},
+    {"id":"brief-architect-brief-before-writing","prompt":"Write a brief for the new research report before anyone starts writing","expected_primary_skill":"brief-architect","allowed_secondary_skills":[],"must_not_trigger":["content-writer","evidence-researcher"],"reason":"The deliverable is the execution contract, not the report"},
+    {"id":"feedback-integrator-recurring-mistakes","prompt":"Our reviewers keep flagging the same mistakes across skill runs; find the recurring failure patterns","expected_primary_skill":"feedback-integrator","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer"],"reason":"Cross-run failure aggregation"},
+    {"id":"longform-regenerate-derived-formats","prompt":"Rebuild the existing white paper manuscript and regenerate the DOCX and PDF","expected_primary_skill":"longform-publisher","allowed_secondary_skills":["ebook-publisher"],"must_not_trigger":[],"reason":"Existing publication, canonical manuscript and derived-format lineage belong to the control plane"},
+    {"id":"ebook-new-from-research","prompt":"Zrób ebook o dostępności cyfrowej od researchu do PDF","expected_primary_skill":"ebook-publisher","allowed_secondary_skills":["evidence-researcher"],"must_not_trigger":["longform-publisher"],"reason":"New ebook from research through PDF"},
+    {"id":"dpf-early-adopters-paid-pilot","prompt":"Shortlist early adopters for a paid pilot of our beta","expected_primary_skill":"design-partner-finder","allowed_secondary_skills":[],"must_not_trigger":[],"reason":"Early-adopter pilot cohort is design-partner selection"},
+    {"id":"evidence-verify-vendor-claims","prompt":"Verify these vendor claims against primary sources before the board meeting","expected_primary_skill":"evidence-researcher","allowed_secondary_skills":[],"must_not_trigger":["ai-council"],"reason":"Claim verification against primary sources, not the decision itself"},
+    {"id":"context-what-changed-insight","prompt":"What changed in CometWeb Insight this week?","expected_primary_skill":"cometweb-context","allowed_secondary_skills":[],"must_not_trigger":["product-operator"],"reason":"Current-state delta across CometWeb sources"},
+    {"id":"longform-canonical-manuscript-regenerate","prompt":"Refresh the 2024 handbook and regenerate the derived DOCX and PDF from the canonical manuscript.","expected_primary_skill":"longform-publisher","allowed_secondary_skills":[],"must_not_trigger":["seo-geo-aeo-maxxing"],"reason":"'canonical manuscript' is a longform-publisher concept, not an SEO canonical tag"},
+    {
+      "id": "content-roaster-white-paper-roast",
+      "prompt": "Roast this white paper with evidence.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher",
+        "science-roaster"
+      ],
+      "reason": "An adversarial verb aimed at a white paper is a content roast; the bare noun 'white paper' alone still belongs to ebook-publisher (promoted from known-gaps)"
+    },
+    {
+      "id": "content-roaster-ebook-claims-roast",
+      "prompt": "Brutally roast this ebook's claims before launch.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher",
+        "science-roaster"
+      ],
+      "reason": "Critiquing an existing ebook's claims is a roast, not a publication run (promoted from known-gaps)"
+    },
+    {
+      "id": "content-roaster-email-tear-apart",
+      "prompt": "Tear apart our webinar invitation email; which claims would a CFO not believe?",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer",
+        "evidence-researcher"
+      ],
+      "reason": "Adversarial critique of an email's claims, not editorial QA or primary-source fact-checking"
+    },
+    {
+      "id": "content-roaster-pl-pricing-offer",
+      "prompt": "Zroastuj nasz cennik i stronę oferty, każda uwaga z cytatem.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize",
+        "web-app-auditor"
+      ],
+      "reason": "Polish roast verb aimed at pricing and offer copy"
+    },
+    {
+      "id": "web-app-auditor-live-ux-roast-not-content",
+      "prompt": "Click through the pricing page and roast the live UX and accessibility.",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Roasting live UX is runtime web QA; content-roaster's scope guard keeps it on copy and claims"
+    },
+    {
+      "id": "repo-roaster-redteam-branch-retry",
+      "prompt": "Red-team the retry logic in this branch before we merge it.",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness",
+        "repair-operator"
+      ],
+      "reason": "Adversarial review of unmerged code, not a ship gate or a repair run"
+    },
+    {
+      "id": "repo-roaster-pl-pull-request",
+      "prompt": "Bezlitośnie oceń ten pull request pod kątem wyścigów i idempotencji.",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "content-roaster"
+      ],
+      "reason": "Polish adversarial review of a pull request"
+    },
+    {
+      "id": "negative-repo-debt-roadmap-not-repo-roaster",
+      "prompt": "Build a roadmap for paying down concurrency debt across the whole repo.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Failure-mode vocabulary in a planning request must not pull in the roaster"
+    },
+    {
+      "id": "science-roaster-grant-stress-test",
+      "prompt": "Stress-test this grant proposal's aims and power analysis like a study section would.",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster",
+        "brief-architect"
+      ],
+      "reason": "Adversarial review of a grant proposal is scientific peer review"
+    },
+    {
+      "id": "science-roaster-pl-preprint",
+      "prompt": "Rozjedź ten preprint: założenia modelu i dobór kohorty.",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster",
+        "evidence-researcher"
+      ],
+      "reason": "Polish roast verb aimed at a preprint's model and cohort"
+    },
+    {
+      "id": "content-roaster-case-study-not-science",
+      "prompt": "Roast the case study on our pricing page for unproven ROI claims.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster"
+      ],
+      "reason": "A marketing case study is not a scientific study"
+    }
   ]
 }

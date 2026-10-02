@@ -1,0 +1,231 @@
+{
+  "description": "CW-AIP v2 conformance cases. Run by tooling/tests/test_cwaip_conformance.py.",
+  "cases": [
+    {
+      "file": "valid/evidence-ready.json",
+      "expect": "accept",
+      "final": true
+    },
+    {
+      "file": "valid/decision-test.json",
+      "expect": "accept",
+      "final": true
+    },
+    {
+      "file": "valid/finding-open.json",
+      "expect": "accept",
+      "final": true
+    },
+    {
+      "file": "valid/roadmap-baseline.json",
+      "expect": "accept",
+      "final": true
+    },
+    {
+      "file": "valid/release-go-with-controls.json",
+      "expect": "accept",
+      "final": true
+    },
+    {
+      "file": "valid/context-portfolio-governance.json",
+      "expect": "accept",
+      "final": true,
+      "note": "profile=portfolio and governance are part of the cometweb-context contract"
+    },
+    {
+      "file": "valid/hash-bare-uppercase-hex.json",
+      "expect": "accept",
+      "final": true,
+      "note": "the sha256: prefix is optional and hex comparison is case-insensitive"
+    },
+    {
+      "file": "valid/draft-pending-hash.json",
+      "expect": "accept",
+      "final": false,
+      "note": "drafts may carry pending outside --final"
+    },
+    {
+      "file": "valid/generated-at-offset.json",
+      "expect": "accept",
+      "final": true
+    },
+    {
+      "file": "invalid/pending-hash-under-final.json",
+      "expect": "reject",
+      "final": true,
+      "error": "pending"
+    },
+    {
+      "file": "invalid/hash-mismatch.json",
+      "expect": "reject",
+      "final": false,
+      "error": "payload_hash mismatch"
+    },
+    {
+      "file": "invalid/hash-unknown-algorithm.json",
+      "expect": "reject",
+      "final": false,
+      "error": "payload_hash"
+    },
+    {
+      "file": "invalid/core-missing-payload-hash.json",
+      "expect": "reject",
+      "final": false,
+      "error": "payload_hash"
+    },
+    {
+      "file": "invalid/core-unknown-property.json",
+      "expect": "reject",
+      "final": false,
+      "error": "unexpected",
+      "note": "extensions belong inside payload"
+    },
+    {
+      "file": "invalid/core-protocol-version-1.json",
+      "expect": "reject",
+      "final": false,
+      "error": "protocol_version"
+    },
+    {
+      "file": "invalid/core-generated-at-without-timezone.json",
+      "expect": "reject",
+      "final": false,
+      "error": "generated_at"
+    },
+    {
+      "file": "invalid/core-generated-at-date-only.json",
+      "expect": "reject",
+      "final": false,
+      "error": "generated_at"
+    },
+    {
+      "file": "invalid/core-sensitivity-uppercase.json",
+      "expect": "reject",
+      "final": false,
+      "error": "sensitivity",
+      "note": "v2 enums are lowercase"
+    },
+    {
+      "file": "invalid/core-type-without-payload-schema.json",
+      "expect": "reject",
+      "final": false,
+      "error": "SpecialistHandoff",
+      "note": "reserved in the core enum; no v2 payload schema exists yet"
+    },
+    {
+      "file": "invalid/core-dependencies-not-strings.json",
+      "expect": "reject",
+      "final": false,
+      "error": "dependencies"
+    },
+    {
+      "file": "invalid/evidence-verified-inference.json",
+      "expect": "reject",
+      "final": false,
+      "error": "INFERENCE cannot be VERIFIED"
+    },
+    {
+      "file": "invalid/evidence-edge-unknown-source.json",
+      "expect": "reject",
+      "final": false,
+      "error": "unknown source_id"
+    },
+    {
+      "file": "invalid/evidence-duplicate-claim-id.json",
+      "expect": "reject",
+      "final": false,
+      "error": "duplicate claim_id"
+    },
+    {
+      "file": "invalid/evidence-ready-with-blocking-gap.json",
+      "expect": "reject",
+      "final": false,
+      "error": "blocking gaps"
+    },
+    {
+      "file": "invalid/evidence-ready-with-unresolved-contradiction.json",
+      "expect": "reject",
+      "final": false,
+      "error": "unresolved material contradictions"
+    },
+    {
+      "file": "invalid/evidence-unknown-materiality.json",
+      "expect": "reject",
+      "final": false,
+      "error": "materiality"
+    },
+    {
+      "file": "invalid/decision-go-blocked-by-gate.json",
+      "expect": "reject",
+      "final": false,
+      "error": "GO blocked by gate"
+    },
+    {
+      "file": "invalid/decision-go-with-blockers.json",
+      "expect": "reject",
+      "final": false,
+      "error": "GO cannot have blockers"
+    },
+    {
+      "file": "invalid/decision-go-awaiting-human-approval.json",
+      "expect": "reject",
+      "final": false,
+      "error": "human_approval"
+    },
+    {
+      "file": "invalid/decision-release-verdict.json",
+      "expect": "reject",
+      "final": false,
+      "error": "verdict",
+      "note": "GO_WITH_CONTROLS is a release verdict, not a decision verdict"
+    },
+    {
+      "file": "invalid/finding-unknown-severity.json",
+      "expect": "reject",
+      "final": false,
+      "error": "severity"
+    },
+    {
+      "file": "invalid/finding-missing-status.json",
+      "expect": "reject",
+      "final": false,
+      "error": "status"
+    },
+    {
+      "file": "invalid/roadmap-lowercase-mode.json",
+      "expect": "reject",
+      "final": false,
+      "error": "mode"
+    },
+    {
+      "file": "invalid/roadmap-item-missing-priority.json",
+      "expect": "reject",
+      "final": false,
+      "error": "priority"
+    },
+    {
+      "file": "invalid/release-decision-verdict.json",
+      "expect": "reject",
+      "final": false,
+      "error": "verdict"
+    },
+    {
+      "file": "invalid/release-missing-manifest-hash.json",
+      "expect": "reject",
+      "final": false,
+      "error": "manifest_hash"
+    },
+    {
+      "file": "invalid/context-unknown-profile.json",
+      "expect": "reject",
+      "final": false,
+      "error": "profile"
+    },
+    {
+      "file": "invalid/context-fact-unknown-source.json",
+      "expect": "reject",
+      "final": false,
+      "error": "src-404"
+    }
+  ]
+}

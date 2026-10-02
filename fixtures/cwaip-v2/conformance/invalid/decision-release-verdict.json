@@ -1,0 +1,41 @@
+{
+  "id": "example:DecisionEnvelope:conformance",
+  "type": "DecisionEnvelope",
+  "producer": "example-producer",
+  "producer_version": "1.0.0",
+  "protocol_version": "2.0",
+  "subject": "example.com pricing page",
+  "generated_at": "2026-09-08T12:00:00Z",
+  "as_of": "2026-09-08T12:00:00Z",
+  "sensitivity": "public",
+  "dependencies": [],
+  "payload": {
+    "schema": "cometweb.decision/v2",
+    "decision_question": "Raise the Basic plan price?",
+    "profile": "STANDARD",
+    "as_of": "2026-09-08T12:00:00Z",
+    "verdict": "GO_WITH_CONTROLS",
+    "option": "A/B test +10% on new sign-ups",
+    "gates": [
+      {
+        "gate_id": "legal",
+        "status": "CLEAR"
+      },
+      {
+        "gate_id": "finance",
+        "status": "CLEAR_WITH_CONTROLS"
+      }
+    ],
+    "blockers": [],
+    "controls": [
+      "cap exposure at 10% of traffic"
+    ],
+    "evidence_deps": [
+      "example:EvidenceEnvelope:conformance"
+    ],
+    "snapshot_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "validity": "VALID",
+    "human_approval": "not_required"
+  },
+  "payload_hash": "sha256:973594d3a2717424051196a2e9426ffc23f0adeaa13df4ec36c12e7b61792a75"
+}

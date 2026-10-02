@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [6.0.1] - 2026-10-02
+
+- Stop routing research-program planning to `research-program-operator`, which does not ship in this catalog. The description, handoff list and handoff table now return those findings to the user as open program questions.
+- The handoff contract no longer names `integration/validate_handoff.py`, which never shipped; it now states that the document is the normative definition and that consumers check its invariants themselves.
+
 ## [6.0.0] - 2026-09-22
 
 - Add version-6 operational integration for incremental re-review, remediation handoffs, calibration feedback and campaign workflows while preserving the v6 report contract.

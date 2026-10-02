@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.3.2] - 2026-10-02
+
+- The description had no exclusions. It now hands first-time whole-project
+  baselines to repo-to-roadmap, release-candidate verdicts to
+  release-readiness, and cross-product capacity allocation to
+  portfolio-operator, the three skills whose requests it overlaps.
+- `INSTALL.md` still introduced the package as a 1.2.0-rc.1 candidate; it now
+  points at `VERSION`.
+
 ## [2.3.1] - 2026-09-25
 
 - Hold actions with missing prerequisites, including downstream dependents;

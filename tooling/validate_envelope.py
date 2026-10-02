@@ -22,6 +22,9 @@ PAYLOAD_SCHEMAS = {
     "RoadmapEnvelope": ROOT / "protocol" / "cw-aip-v2" / "roadmap.schema.json",
     "ReleaseEnvelope": ROOT / "protocol" / "cw-aip-v2" / "release.schema.json",
 }
+# Payload types whose semantic validator also enforces the full schema when
+# jsonschema is unavailable.
+OWN_FALLBACK = frozenset({"ContextEnvelope", "EvidenceEnvelope", "DecisionEnvelope"})
 HASH_RE = re.compile(r"^(sha256:)?[a-fA-F0-9]{64}$|^pending$")
 RFC3339_RE = re.compile(
     r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}"
@@ -72,6 +75,74 @@ def validate_jsonschema(schema_path: pathlib.Path, data: dict[str, Any], label: 
         path = ".".join(str(p) for p in first.path) or "<root>"
         fail(f"{label}:{path}: {first.message}")
     return True
+
+
+# Keywords the standard-library fallback understands. Annotation keywords carry no
+# assertion. Any other keyword in a payload schema makes the fallback refuse to
+# run instead of silently ignoring a constraint that jsonschema would enforce.
+SUBSET_ANNOTATIONS = frozenset({"$schema", "$id", "title", "description"})
+SUBSET_ASSERTIONS = frozenset(
+    {"type", "const", "enum", "required", "properties", "additionalProperties", "items", "minLength", "minItems"}
+)
+JSON_TYPES: dict[str, tuple[type, ...]] = {
+    "object": (dict,),
+    "array": (list,),
+    "string": (str,),
+    "number": (int, float),
+    "integer": (int,),
+    "boolean": (bool,),
+    "null": (type(None),),
+}
+
+
+def _is_json_type(value: Any, name: str) -> bool:
+    if isinstance(value, bool) and name in {"number", "integer"}:
+        return False
+    return isinstance(value, JSON_TYPES[name])
+
+
+def validate_schema_subset(schema: dict[str, Any], data: Any, label: str, path: str = "") -> None:
+    """Enforce the JSON Schema subset used by typed v2 payloads without jsonschema.
+
+    Mirrors Draft 2020-12 semantics for the keywords in SUBSET_ASSERTIONS so a
+    host without the optional dependency rejects the same documents.
+    """
+    unknown = sorted(set(schema) - SUBSET_ANNOTATIONS - SUBSET_ASSERTIONS)
+    if unknown:
+        fail(f"{label}: schema keyword(s) not supported by the stdlib fallback: {', '.join(unknown)}")
+    if not isinstance(schema.get("additionalProperties", True), bool):
+        fail(f"{label}: only boolean additionalProperties is supported by the stdlib fallback")
+    where = f"{label}:{path or '<root>'}"
+    if "type" in schema:
+        names = schema["type"] if isinstance(schema["type"], list) else [schema["type"]]
+        if not any(_is_json_type(data, name) for name in names):
+            fail(f"{where}: expected {' or '.join(names)}")
+    if "const" in schema and (data != schema["const"] or type(data) is not type(schema["const"])):
+        fail(f"{where}: must be {schema['const']!r}")
+    if "enum" in schema and not any(
+        data == option and type(data) is type(option) for option in schema["enum"]
+    ):
+        fail(f"{where}: {data!r} is not one of {schema['enum']}")
+    if isinstance(data, str) and len(data) < schema.get("minLength", 0):
+        fail(f"{where}: shorter than minLength {schema['minLength']}")
+    if isinstance(data, list):
+        if len(data) < schema.get("minItems", 0):
+            fail(f"{where}: fewer than minItems {schema['minItems']}")
+        if "items" in schema:
+            for index, item in enumerate(data):
+                validate_schema_subset(schema["items"], item, label, f"{path}.{index}" if path else str(index))
+    if isinstance(data, dict):
+        for key in schema.get("required", []):
+            if key not in data:
+                fail(f"{where}: {key!r} is a required property")
+        properties = schema.get("properties", {})
+        if schema.get("additionalProperties", True) is False:
+            unexpected = sorted(set(data) - set(properties))
+            if unexpected:
+                fail(f"{where}: unexpected properties: {', '.join(unexpected)}")
+        for key, subschema in properties.items():
+            if key in data:
+                validate_schema_subset(subschema, data[key], label, f"{path}.{key}" if path else key)
 
 
 def validate_core_fallback(data: dict[str, Any]) -> None:
@@ -177,10 +248,12 @@ def validate_envelope(data: dict[str, Any], *, final: bool = False) -> None:
     payload = data.get("payload")
     if not isinstance(payload, dict):
         fail("payload must be an object")
-    if not validate_jsonschema(PAYLOAD_SCHEMAS[envelope_type], payload, "payload"):
-        # Minimal fallback: require schema field when present on typed payloads
-        if "schema" in payload and not isinstance(payload["schema"], str):
-            fail("payload:schema must be a string")
+    schema_path = PAYLOAD_SCHEMAS[envelope_type]
+    if not validate_jsonschema(schema_path, payload, "payload") and envelope_type not in OWN_FALLBACK:
+        # Types with a dedicated validator module run their own stdlib fallback
+        # in semantic_payload(); the rest are checked against their schema file.
+        schema = json.loads(schema_path.read_text(encoding="utf-8"))
+        validate_schema_subset(schema, payload, "payload")
     semantic_payload(envelope_type, payload)
 
     digest = data.get("payload_hash")
@@ -197,6 +270,33 @@ def validate_envelope(data: dict[str, Any], *, final: bool = False) -> None:
             fail(f"payload_hash mismatch: got {digest}, expected {expected}")
 
 
+def _unique_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            fail(f"duplicate JSON key: {key!r}")
+        result[key] = value
+    return result
+
+
+def _reject_constant(name: str) -> None:
+    fail(f"non-finite JSON number: {name}")
+
+
+def load_envelope(path: pathlib.Path) -> Any:
+    """Parse strictly: the payload hash must mean the same thing to every reader.
+
+    Python keeps the last copy of a duplicated key while other parsers keep the
+    first, so one file could hash-verify here and carry a different payload
+    elsewhere. NaN/Infinity are not JSON and cannot be hashed canonically.
+    """
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        fail(f"cannot read {path}: {exc.strerror or exc}")
+    return json.loads(text, object_pairs_hook=_unique_keys, parse_constant=_reject_constant)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("file")
@@ -211,8 +311,10 @@ def main() -> None:
         help="Print canonical payload hash for the file's payload",
     )
     args = parser.parse_args()
-    data = json.loads(pathlib.Path(args.file).read_text(encoding="utf-8"))
+    data = load_envelope(pathlib.Path(args.file))
     if args.print_hash:
+        if not isinstance(data, dict):
+            fail("envelope must be an object")
         payload = data.get("payload") if isinstance(data.get("payload"), dict) else data
         print(payload_hash(payload))
         return

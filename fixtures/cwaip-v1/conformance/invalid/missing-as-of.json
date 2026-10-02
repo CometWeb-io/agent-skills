@@ -1,0 +1,8 @@
+{
+  "id": "example-producer:FindingEnvelope:conformance",
+  "type": "FindingEnvelope",
+  "producer": "example-producer",
+  "protocol_version": "1.0",
+  "subject": "example.com pricing page",
+  "payload": {}
+}

@@ -77,15 +77,29 @@ Use local Task for quick evidence/Council chains; use cloud when the step mutate
 
 ## Envelope validation between steps
 
-Before launching step *N+1*, validate step *N* output:
+Before launching step *N+1*, validate step *N* output. The gate ships with
+`skill-orchestrator-multiagent`; run it from that skill's directory:
 
 ```bash
 python3 scripts/validate_envelope.py /tmp/step1-evidence.json --expect-type EvidenceEnvelope
 ```
 
-Ships with `skill-orchestrator-multiagent` and its bundled core schema.
-Requires `jsonschema`; validation fails closed if the dependency or schema is
+- It accepts CW-AIP v1 (`protocol_version: "1.0"`) and v2 (`"2.0"`) and checks the
+  matching bundled core schema. Any other `protocol_version` fails.
+- v1: every kind also needs an object `payload`.
+- v2: `payload_hash` is recomputed and must match; `pending` passes only without
+  `--final`. Pass `--final` for the last step and for anything leaving the workflow.
+- `--expect-type` takes the kind from the plan. A step planned as `DecisionHandoff`
+  also accepts a v2 `DecisionEnvelope` (Council) or `ReleaseEnvelope` (Release
+  Readiness); no other cross-version mapping exists.
+- It checks the envelope, not domain semantics. Typed payload rules (evidence graph,
+  decision gates) belong to the producing skill; in the repository,
+  `tooling/validate_envelope.py` runs them for v2.
+
+Requires `jsonschema`; validation fails closed if the dependency or a schema is
 missing. In the repository, install the dev group with `uv sync --group dev`.
+On failure, return the step to its subagent with the `FAIL:` lines; do not repair
+the envelope in the parent.
 
 ## Verification before close
 

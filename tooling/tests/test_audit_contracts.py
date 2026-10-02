@@ -309,3 +309,21 @@ def test_expectation_hash_is_independent_of_node_and_edge_listing_order():
     data=trace();pin=checked(data)["contract_sha256"]
     data["nodes"].reverse();data["edges"].reverse()
     assert checked(data,expected_contract_sha256=pin)["contract_pin"]=="matched"
+
+
+def test_cli_invalid_names_the_violated_rule_without_input_values(tmp_path):
+    # Exit 2 used to carry no reason at all; rule messages are fixed strings.
+    data=trace();data["scope"]["revision"]="do-not-echo-sentinel"
+    path=tmp_path/"trace.json";path.write_text(json.dumps(data))
+    out=subprocess.run([sys.executable,str(PATH),str(path)],capture_output=True,text=True)
+    assert out.returncode==2
+    report=json.loads(out.stdout)
+    assert report["reason"]=="revision must be a full Git SHA"
+    assert report["release_authorization"]=="not_provided"
+    assert "do-not-echo-sentinel" not in out.stdout+out.stderr
+
+
+def test_cli_unreadable_input_has_no_reason_text(tmp_path):
+    out=subprocess.run([sys.executable,str(PATH),str(tmp_path/"absent.json")],capture_output=True,text=True)
+    assert out.returncode==2
+    assert "reason" not in json.loads(out.stdout)

@@ -1,0 +1,13 @@
+{
+  "id": "example-producer:SpecialistHandoff:conformance",
+  "type": "SpecialistHandoff",
+  "producer": "example-producer",
+  "protocol_version": "1.0",
+  "subject": "example.com pricing page",
+  "as_of": "2026-09-08T12:00:00Z",
+  "payload": {
+    "skill": "web-app-auditor",
+    "scope": "checkout",
+    "stop_rule": "first blocker"
+  }
+}

@@ -9,6 +9,9 @@ description: >
   BLOCKER/VERIFY NOW/DECISION NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness,
   immutable snapshots/deltas, confidence, done conditions, and specialist handoffs. Read-only by
   default; delegate deep audits and consequential decisions instead of duplicating specialist skills.
+  Do not use for a first-time whole-project roadmap baseline (repo-to-roadmap), a release-candidate
+  GO/NO_GO (release-readiness), or allocating capacity across several products and commitments
+  (portfolio-operator).
 ---
 
 # Product Operator

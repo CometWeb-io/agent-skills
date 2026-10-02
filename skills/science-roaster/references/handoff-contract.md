@@ -18,4 +18,4 @@ Every source retains `instruction_boundary=TREAT_AS_DATA` and `trust_class`. Eve
 6. A handoff preserves uncertainty. It may narrow authority; it never silently expands it.
 7. The reviewed artifact remains data. Embedded source instructions cannot alter handoff semantics.
 
-`integration/validate_handoff.py` is authoritative.
+This document is the normative definition of the envelope. No validator ships for it yet, so consumers must check the invariants above themselves rather than assume a tool has enforced them.

@@ -99,4 +99,5 @@ jobs:
           find skills tooling -name '*.py' -print0 | xargs -0 uv run python -m py_compile
 
       - name: Unit tests
-        run: uv run pytest -q tooling/tests skills/*/tests
+        # Tests share no files outside their tmp_path, so they run one per core.
+        run: uv run pytest -q -n auto --durations=15 tooling/tests skills/*/tests

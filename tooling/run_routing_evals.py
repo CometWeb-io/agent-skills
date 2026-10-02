@@ -14,6 +14,7 @@ POLICY = ROOT / "registry" / "routing-policy.json"
 
 sys.path.insert(0, str(ROOT / "tooling"))
 from route_skill import route  # noqa: E402
+from routing_coverage import structural_problems  # noqa: E402
 
 
 def load_signals() -> dict[str, list[tuple[int, str]]]:
@@ -65,7 +66,10 @@ def main() -> int:
     SIGNALS = load_signals()
     data = load_suite()
     known = set(SIGNALS)
-    failures: list[str] = []
+    # Duplicates, unknown skill IDs and registry copies make a green run hollow;
+    # report them before routing a single prompt.
+    failures: list[str] = structural_problems(
+        data["cases"], json.loads(REGISTRY.read_text(encoding="utf-8")))
     for index, case in enumerate(data["cases"]):
         validate_case(case, index)
         expected = case["expected_primary_skill"]

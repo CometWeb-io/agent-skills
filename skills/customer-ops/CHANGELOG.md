@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.1] - 2026-10-02
+
+### Changed
+
+- `SKILL.md` sections 6-15 restated per-mode procedures that each already lives
+  in a reference (`triage-priority.md`, `incidents.md`, `feedback-churn.md`,
+  `commitments-and-handoffs.md`, `metrics-and-sla.md`, `github-loop.md`,
+  `outputs.md`). They are now one mode table that names the reference and keeps
+  only the rules a mode must never drop. The front door shrank from 19.7 KB to
+  16.2 KB; no rule was removed from the package. Composability, output
+  discipline and hard boundaries are renumbered 7-9.
+
 ## 2.1.0 — 2026-09-12
 
 - Add scoped currentness, evidence, safety and domain acceptance contracts.

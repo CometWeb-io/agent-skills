@@ -249,172 +249,35 @@ After resolution, check whether the case creates:
 
 Route the specialist work instead of expanding Customer Ops into a monolith.
 
-## 6. Queue triage
+## 6. Mode rules
 
-For `triage-queue`:
+Each mode's full procedure lives in its reference; load it before acting. The rules below
+are the ones a mode must never drop, even when the reference is not loaded.
 
-1. inventory the in-scope queue;
-2. identify risk gates and incident candidates;
-3. dedupe cases/problem clusters;
-4. use provider-native SLA/deadline state;
-5. classify operational priority;
-6. calculate account escalation and retention risk separately;
-7. surface unowned, blocked, stale, repeatedly reassigned, and overdue items;
-8. return a ranked action queue with owner + next action, not a narrative dump.
+| Mode | Read | Never drop |
+|---|---|---|
+| `triage-queue` | [triage-priority.md](references/triage-priority.md) | Inventory the full scope before deep reads; run risk gates before ranking; surface unowned, blocked, stale, repeatedly reassigned, and overdue items; return a ranked queue with owner + next action, not a narrative. Account value never erases severe harm to a lower-value customer. |
+| `incident` | [incidents.md](references/incidents.md) | Declare on coordinated-response need and customer impact, not ticket count. Track customer exposure apart from the technical timeline. Restore service before perfecting the root-cause story when a safe mitigation exists. Verify customer-visible recovery before closure. |
+| `feedback` | [feedback-churn.md](references/feedback-churn.md) | Extract the failed job before the requested feature; cluster by shared workflow and failure mode, not keyword similarity; label support-derived evidence as support-biased. Produce an evidence pack, not a roadmap verdict. |
+| `churn-watch` | [feedback-churn.md](references/feedback-churn.md) | Ordinal operational heuristic from observed account evidence only. One angry message cannot make HIGH/CRITICAL alone. No automatic discounts, credits, or roadmap promises. Assign the intervention owner from the actual driver. |
+| `commitment-watch`, `handoff-watch` | [commitments-and-handoffs.md](references/commitments-and-handoffs.md) | A promise is an obligation only when the source shows a real commitment. A handoff is owned only once accepted (`PROPOSED → ACCEPTED → IN_PROGRESS → BLOCKED / DONE`). Overdue or ownerless items rank ahead of ordinary backlog. |
+| SLA-sensitive work | [metrics-and-sla.md](references/metrics-and-sla.md) | Provider/contract state is the SLA source of truth; never rebuild office-hours, pause, or reopen semantics from `start_at + target_minutes`. Customer SLA is not an internal handoff target. |
+| `github-loop` | [github-loop.md](references/github-loop.md) | Search duplicates and follow repo conventions before creating work; separate symptom from suspected cause; internal IDs, not raw PII. A merged PR or closed issue is not customer resolution. |
+| `account-360` | [outputs.md](references/outputs.md) §10 | Answer one concrete operational question with current, sourced fields; do not dump the CRM. |
+| `ops-brief` | [outputs.md](references/outputs.md) §11 | Now / Next / Watch / Closed loop / Quality / Data quality, ranked by actionability and customer impact. One critical case is never buried under aggregates. |
+| metrics | [metrics-and-sla.md](references/metrics-and-sla.md) | Only metrics with a definition and source timestamps; always show window and denominator; warn before comparing periods with different coverage or policy. |
 
-Do not use account value to erase severe harm to lower-value customers. Use commercial
-context as a relationship/escalation dimension, not as incident severity.
+Route deep VOC/persona work, retention-program mechanics (cancel flows, save offers,
+dunning, win-back), and product allocation through [composability.md](references/composability.md).
 
-## 7. Incident operations
-
-For `incident`, read `incidents.md`.
-
-- Declare based on coordinated-response need and customer impact, not ticket count alone.
-- Track affected-account exposure separately from the incident's technical timeline.
-- Keep facts, hypotheses, and unknowns separate.
-- Reassess severity when scope/impact/workaround changes.
-- Restore service before perfect root-cause narrative when a safe mitigation exists.
-- Align customer support replies with the canonical incident communication state.
-- Never invent an ETA, cause, affected population, or recovery claim.
-- Route security/privacy/legal/data-loss handling to the specialist gate.
-- Verify customer-visible recovery before closure.
-
-## 8. Feedback and problem clustering
-
-For `feedback`:
-
-- extract the failed job/outcome before the customer's proposed feature;
-- separate `problem evidence`, `solution request`, `support load`, and `market breadth`;
-- cluster by shared workflow/context/failure mode, not keyword similarity;
-- preserve `account_count`, `case_count`, segments, recency, contradictions, and workaround;
-- label support-derived evidence as support-biased rather than representative market data;
-- produce a product evidence pack, not a roadmap verdict.
-
-Route broad VOC/persona/JTBD/external-review work to `customer-research` and product
-allocation to `product-operator` when available.
-
-## 9. Churn/non-renewal watch
-
-For `churn-watch`:
-
-- use only observed account-level evidence;
-- output an **ordinal operational risk heuristic**, never a probability unless a validated
-  model actually produced one;
-- separate expressed exit intent from leading indicators;
-- show evidence grade and decision/renewal time pressure separately;
-- do not let one angry message or sentiment score create HIGH/CRITICAL risk by itself;
-- do not automatically offer discounts, credits, or roadmap promises;
-- assign an intervention owner based on the actual driver.
-
-Route retention-system design, cancel flows, save offers, dunning, and win-back mechanics
-to `churn-prevention`.
-
-## 10. Commitments and handoffs
-
-For `commitment-watch` or `handoff-watch`, read `commitments-and-handoffs.md`.
-
-A customer-facing promise is an obligation only when the source shows a real commitment.
-Track explicit owner, due/checkpoint, state, and source. Surface overdue or ownerless
-commitments ahead of ordinary backlog.
-
-For cross-team escalations, distinguish:
-
-`PROPOSED → ACCEPTED → IN_PROGRESS → BLOCKED / DONE`
-
-A support case moved to engineering is not actually owned by engineering until the handoff
-has an accepted owner or the organization's tooling defines ownership automatically.
-
-## 11. SLA and timing
-
-For SLA-sensitive work, read `metrics-and-sla.md`.
-
-- Prefer the support provider/contract/policy as source of truth for SLA state.
-- Do not reconstruct provider office-hours, pause, reopen, first/next-response, or
-  resolution semantics from `start_at + target_minutes` alone.
-- Use the kernel only with an authoritative `due_at`/native state or a fully specified
-  continuous clock.
-- Distinguish customer SLA from internal handoff/group ownership targets.
-- State the metric definition, denominator, business-hours semantics, and time window.
-
-## 12. GitHub customer-to-engineering loop
-
-For `github-loop`, read `github-loop.md`.
-
-Before new issue creation:
-
-1. inspect repository conventions/templates/types/labels when available;
-2. search duplicates and related work;
-3. separate symptom from suspected cause;
-4. include impact, breadth, evidence/reproduction state, environment, workaround, and
-   verification criteria;
-5. use internal case/cluster IDs instead of raw PII;
-6. run best-effort privacy preflight when code execution is available;
-7. use issue relationships/sub-issues/dependencies only when the repository/tool supports
-   them and they model real work.
-
-After a fix, confirm release/deployment state where relevant and verify the original
-customer symptom. A closed issue/merged PR is not proof of customer resolution.
-
-## 13. Account 360
-
-`account-360` must answer a concrete operational question; do not dump the CRM.
-
-Include only relevant, current, sourced fields:
-
-- account/commercial state from the proper SoR,
-- open cases and incident exposure,
-- product usage/health evidence when available,
-- current retention-risk evidence,
-- open GitHub/engineering dependencies,
-- commitments and stalled handoffs,
-- recent verified feedback/sentiment,
-- next operational action,
-- stale/conflicted/missing sources.
-
-## 14. Ops brief
-
-For `ops-brief`, use:
-
-- **Now** — incidents, safety gates, P0/P1, breached/near-breach SLA, explicit exit intent,
-  overdue commitments, blocked handoffs.
-- **Next** — unresolved clusters, engineering dependencies, upcoming commitments/follow-up.
-- **Watch** — emerging but below-threshold risks/signals.
-- **Closed loop** — verified fixes, completed follow-up, regressions/reopens.
-- **Quality** — requester wait, reopens, handoff delay, promise breaches, verification rate.
-- **Data quality** — missing owners, stale/conflicted records, incomplete coverage.
-
-Rank by actionability and customer impact. Do not bury one critical case under aggregates.
-
-## 15. Metrics without metric theater
-
-Calculate only metrics supported by definitions and source timestamps. Prefer provider-
-native values when semantics are provider-specific.
-
-Useful families include:
-
-- volume/backlog/aging,
-- first/next response and requester wait,
-- resolution and reopen quality,
-- reassignment/handoff delay,
-- SLA hit/miss/at-risk state,
-- incident detect/ack/mitigate/recover/verify,
-- repeated-problem clusters,
-- verified-fix rate,
-- follow-up completion,
-- overdue commitment rate,
-- retention-watch movement.
-
-Always show the window and denominator. Warn before comparing periods with materially
-different coverage, routing, SLA policy, or instrumentation.
-
-## 16. Composability
+## 7. Composability
 
 Use `composability.md` when adjacent skills may own the deeper workflow. Customer Ops owns
 **operational evidence → safe routing → verified closure**. It should hand off, not absorb,
 deep market research, product allocation, analytics implementation, retention mechanics,
 security assessment, release readiness, or CRM architecture.
 
-## 17. Output discipline
+## 8. Output discipline
 
 Use `outputs.md`. Every material output should expose, when relevant:
 
@@ -432,7 +295,7 @@ Use `outputs.md`. Every material output should expose, when relevant:
 Prefer a short ranked operating queue when the user needs to act. Use narrative only where
 it improves diagnosis or decision quality.
 
-## 18. Hard boundaries
+## 9. Hard boundaries
 
 - Never invent customer identity, account value, usage, renewal date, contract/SLA, or ETA.
 - Never call a heuristic retention score a churn probability or validated model output.

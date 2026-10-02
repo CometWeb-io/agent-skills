@@ -31,6 +31,9 @@ VALIDATORS = [
     ("skills/repo-to-roadmap/scripts/roadmap_kernel.py", "validate_acceptance:2"),
     ("skills/repo-to-roadmap/scripts/roadmap_kernel.py", "validate_target_contract"),
     ("tooling/validate_envelope.py", "validate_envelope"),
+    ("tooling/validate_evidence_envelope.py", "validate"),
+    ("tooling/validate_decision_envelope.py", "validate"),
+    ("tooling/validate_coverage.py", "validate"),
 ]
 
 # Shapes a hostile or simply broken JSON file can produce. The enum-ish keys are

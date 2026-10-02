@@ -49,3 +49,4 @@ they differ from what the registry produces. Change the registry and regenerate.
 - [`generated-skills-table.md`](generated-skills-table.md)
 - [`generated-compatibility-matrix.md`](generated-compatibility-matrix.md)
 - `generated-cursor-routing.mdc`
+- the skill catalog block in [`../README.md`](../README.md#skill-catalog) — grouping and summaries from `registry/readme-catalog.json`

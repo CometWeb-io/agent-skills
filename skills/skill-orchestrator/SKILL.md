@@ -89,10 +89,14 @@ request the pin before gating.
 1. Build subagent payload (`skills/skill-orchestrator-multiagent/scripts/orchestrate_multiagent_kernel.py`
    when available; it ships with the multiagent skill, not this one).
 2. Launch host Task/subagent; do **not** run domain work in the parent.
-3. Validate returned envelope type; append to `prior_envelopes`.
+3. Validate the returned envelope with the multiagent gate
+   (`skills/skill-orchestrator-multiagent/scripts/validate_envelope.py --expect-type <planned type>`;
+   accepts CW-AIP v1 and v2, see `references/multiagent-execution.md`). Append it to
+   `prior_envelopes` only when it passes.
 
 Protocol: [`protocol/cw-interchange-v1.md`](../../protocol/cw-interchange-v1.md)
-(prefer CW-AIP v2 wrappers when producers emit them).
+(prefer CW-AIP v2 wrappers when producers emit them; record each envelope's
+`protocol_version`).
 
 ### 4. Close
 

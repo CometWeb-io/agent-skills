@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1] - 2026-10-02
+
+### Changed
+
+- Description ends in an explicit do-not-use boundary instead of handing work
+  to `prospecting`, `customer-research` and `cold-email` as if they shipped
+  with this catalog; they are now named as optional skills when installed.
+
 ## [1.1.0] - 2026-09-18
 
 ### Changed

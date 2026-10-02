@@ -1,0 +1,21 @@
+{
+  "id": "example-producer:EvidenceEnvelope:conformance",
+  "type": "EvidenceEnvelope",
+  "producer": "example-producer",
+  "protocol_version": "1.0",
+  "subject": "example.com pricing page",
+  "as_of": "2026-09-08T12:00:00Z",
+  "payload": {
+    "material_claims": [
+      {
+        "claim_id": "c1",
+        "text": "The Basic plan costs 10 EUR per month.",
+        "epistemic_kind": "FACT",
+        "status": "VERIFIED"
+      }
+    ],
+    "gaps": [],
+    "contradictions": [],
+    "evidence_pack_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}

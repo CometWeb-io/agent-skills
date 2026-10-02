@@ -3,6 +3,14 @@
 Minimal shared envelope for handoffs between CometWeb Agent Skills. Skills remain
 standalone; consumers MAY apply stricter gates than the producer recorded.
 
+The key words MUST, MUST NOT, SHOULD and MAY are used as described in RFC 2119.
+New typed envelopes use CW-AIP v2 (`protocol/cw-aip-v2/README.md`); v1 stays valid for
+existing producers.
+
+The canonical copy of this document and its schemas is `protocol/cw-aip-v1/`.
+`protocol/cw-interchange-v1.md` and `protocol/schemas/` are byte-identical mirrors
+kept for existing links; a test fails if they drift.
+
 ## Design rules
 
 1. **Envelope, not monolith** — only metadata + typed payload reference; skill-specific bodies stay in each skill's output contract.
@@ -14,20 +22,24 @@ standalone; consumers MAY apply stricter gates than the producer recorded.
 
 | Field | Required | Description |
 | --- | --- | --- |
-| `id` | yes | Stable envelope ID (UUID or `{producer}:{kind}:{slug}`) |
-| `type` | yes | Envelope kind (see below) |
-| `producer` | yes | Skill name, e.g. `evidence-researcher` |
-| `protocol_version` | yes | Always `1.0` for this spec |
-| `subject` | yes | What the payload is about (repo, RC, competitor, account, decision question) |
-| `as_of` | yes | ISO-8601 timestamp or pinned ref the producer used |
-| `source` | no | Primary system-of-record class (`github`, `notion`, `gsc`, `live-app`, …) |
+| `id` | yes | Non-empty string. SHOULD be stable: a UUID or `{producer}:{kind}:{slug}` |
+| `type` | yes | Envelope kind; exactly one of the kinds listed below |
+| `producer` | yes | Non-empty skill name, e.g. `evidence-researcher` |
+| `protocol_version` | yes | The JSON string `"1.0"` (not the number `1.0`) |
+| `subject` | yes | Non-empty string: what the payload is about (repo, RC, competitor, account, decision question) |
+| `as_of` | yes | Non-empty string. SHOULD be an RFC 3339 timestamp; MAY be a pinned ref (commit, snapshot ID) the producer used |
+| `source` | no | Primary system-of-record class (`github`, `notion`, `gsc`, `live-app`, …); free text |
 | `locator` | no | URI, commit, path, or internal pointer |
 | `claim` | no | Human-readable summary when the envelope wraps a single claim |
-| `authority` | no | `PRIMARY`, `DERIVATIVE`, `HEURISTIC`, `USER_ASSERTED`, … |
-| `freshness` | no | `CURRENT`, `STALE`, `UNKNOWN`, `NOT_YET_EFFECTIVE`, `SUPERSEDED` |
-| `confidence` | no | Producer-local score or band; never averaged across gates |
-| `status` | no | Producer-local lifecycle state |
-| `dependencies` | no | List of upstream envelope or claim IDs |
+| `authority` | no | Closed set: `PRIMARY`, `DERIVATIVE`, `HEURISTIC`, `USER_ASSERTED`, `UNKNOWN` |
+| `freshness` | no | Closed set: `CURRENT`, `STALE`, `UNKNOWN`, `NOT_YET_EFFECTIVE`, `SUPERSEDED` |
+| `confidence` | no | Producer-local: a number in `[0, 1]` or a non-empty band label such as `high`. Never averaged across gates |
+| `status` | no | Producer-local lifecycle state; free text |
+| `dependencies` | no | Array of upstream envelope or claim IDs (strings) |
+| `payload` | no in the core schema | JSON object with the kind-specific body. See [Validation](#validation) for when it is required |
+
+Enum values are uppercase and case-sensitive. v2 uses lowercase enums; adapters
+MUST normalize at the boundary rather than mix conventions in one document.
 
 JSON Schema: [`schemas/envelope.core.schema.json`](schemas/envelope.core.schema.json).
 
@@ -57,7 +69,29 @@ Delegation packet from Product Operator / Customer Ops / Competitive Intelligenc
 
 Pointer to an immutable snapshot plus diff lineage (`baseline_id`, `delta_of`, `hash`).
 
-Kind-specific required fields: see schemas in `protocol/schemas/`.
+Two kinds have a kind schema that adds payload requirements on top of the core:
+
+| Kind | Schema | Required payload fields |
+| --- | --- | --- |
+| `EvidenceEnvelope` | [`schemas/evidence-envelope.schema.json`](schemas/evidence-envelope.schema.json) | `research_contract`, `material_claims[]` (`claim_id`, `text`, `epistemic_kind` = `FACT`/`INFERENCE`, `status`), `evidence_pack_hash` |
+| `DecisionHandoff` | [`schemas/decision-handoff.schema.json`](schemas/decision-handoff.schema.json) | `verdict` |
+
+The other kinds are constrained by the core schema only; their payload shape is
+defined by the producing skill's output contract.
+
+## Validation
+
+- The core schema sets `additionalProperties: false`. A top-level field not listed
+  above makes the envelope invalid; producer-specific data MUST go inside `payload`.
+- The kind schemas constrain `payload` only when it is present, because v1 does not
+  require `payload` in the core. Producers of a kind with a kind schema MUST emit a
+  `payload` that satisfies it.
+- The orchestrator's between-step gate
+  (`skills/skill-orchestrator-multiagent/scripts/validate_envelope.py`) checks the
+  core schema and additionally requires an object `payload` for every v1 kind. It
+  does not apply the kind schemas; the producing skill owns payload semantics.
+- Conformance cases, valid and invalid, live in `fixtures/cwaip-v1/conformance/`
+  and are run by `tooling/tests/test_cwaip_conformance.py`.
 
 ## Canonical flows
 

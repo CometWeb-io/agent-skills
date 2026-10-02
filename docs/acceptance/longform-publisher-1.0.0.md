@@ -55,3 +55,18 @@ frozen control-plane workflow is untouched, and the release stays `FROZEN`.
 
 Guarded by `tooling/tests/test_validators_survive_malformed_input.py`, which
 sweeps every validator in the repo, not only this one.
+
+## Freeze exception — 1.1.1, 2026-10-02
+
+The front-door description opened with "Use when ChatGPT must", although the
+package is registered for every supported host, and it had no do-not-use
+boundary. It claimed every ebook and white paper, overlapping `ebook-publisher`,
+so a request to rebuild an existing white paper's manuscript and regenerate its
+DOCX and PDF routed away from the control plane that owns that lifecycle. The
+`SKILL.md` release line also still said 1.0.0.
+
+Treated as a concrete regression in routing, not speculative hardening. Only
+the description, the release line and the registry routing signals changed; the
+workflow, kernel and report contract are untouched and the release stays
+`FROZEN`. Guarded by the `longform-regenerate-derived-formats` and
+`ebook-new-from-research` cases in `evals/routing/suite.json`.

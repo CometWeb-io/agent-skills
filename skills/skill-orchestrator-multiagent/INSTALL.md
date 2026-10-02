@@ -21,7 +21,7 @@ ln -s "$(pwd)/skills/skill-orchestrator-multiagent" ~/.cursor/skills/skill-orche
 
 For extracted ZIP packages, place both extracted skill directories in the
 host's skills directory. The envelope validator also needs the Python package
-listed in `requirements.txt`; the ZIP includes its schema but cannot install
+listed in `requirements.txt`; the ZIP includes the CW-AIP v1 and v2 core schemas but cannot install
 Python dependencies into the host. For a one-off validation from this skill's
 directory, use:
 

@@ -1,0 +1,102 @@
+{
+  "description": "CW-AIP v1 conformance cases. Run by tooling/tests/test_cwaip_conformance.py.",
+  "cases": [
+    {
+      "file": "valid/evidence-envelope.json",
+      "expect": "accept"
+    },
+    {
+      "file": "valid/decision-handoff.json",
+      "expect": "accept"
+    },
+    {
+      "file": "valid/finding-envelope.json",
+      "expect": "accept",
+      "note": "FindingEnvelope has no kind schema in v1; only the core applies"
+    },
+    {
+      "file": "valid/specialist-handoff.json",
+      "expect": "accept"
+    },
+    {
+      "file": "valid/snapshot-metadata.json",
+      "expect": "accept"
+    },
+    {
+      "file": "invalid/unknown-top-level-field.json",
+      "expect": "reject",
+      "layer": "core",
+      "error": "Additional properties",
+      "note": "extensions belong inside payload"
+    },
+    {
+      "file": "invalid/missing-as-of.json",
+      "expect": "reject",
+      "layer": "core",
+      "error": "as_of"
+    },
+    {
+      "file": "invalid/protocol-version-number.json",
+      "expect": "reject",
+      "layer": "core",
+      "error": "1.0",
+      "note": "protocol_version is the string '1.0'"
+    },
+    {
+      "file": "invalid/authority-lowercase.json",
+      "expect": "reject",
+      "layer": "core",
+      "error": "primary",
+      "note": "v1 enums are uppercase"
+    },
+    {
+      "file": "invalid/freshness-unknown.json",
+      "expect": "reject",
+      "layer": "core",
+      "error": "FRESH"
+    },
+    {
+      "file": "invalid/confidence-above-one.json",
+      "expect": "reject",
+      "layer": "core",
+      "error": "confidence"
+    },
+    {
+      "file": "invalid/confidence-empty-band.json",
+      "expect": "reject",
+      "layer": "core",
+      "error": "confidence"
+    },
+    {
+      "file": "invalid/unknown-type.json",
+      "expect": "reject",
+      "layer": "core",
+      "error": "DecisionEnvelope",
+      "note": "DecisionEnvelope is a v2 kind"
+    },
+    {
+      "file": "invalid/id-not-string.json",
+      "expect": "reject",
+      "layer": "core",
+      "error": "17"
+    },
+    {
+      "file": "invalid/evidence-missing-research-contract.json",
+      "expect": "reject",
+      "layer": "kind",
+      "error": "research_contract"
+    },
+    {
+      "file": "invalid/evidence-unknown-epistemic-kind.json",
+      "expect": "reject",
+      "layer": "kind",
+      "error": "OPINION"
+    },
+    {
+      "file": "invalid/decision-handoff-missing-verdict.json",
+      "expect": "reject",
+      "layer": "kind",
+      "error": "verdict"
+    }
+  ]
+}

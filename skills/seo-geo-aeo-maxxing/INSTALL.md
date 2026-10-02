@@ -1,4 +1,4 @@
-# Installation — seo-geo-aeo-maxxing v1.0.0
+# Installation — seo-geo-aeo-maxxing
 
 Distributable unit: the whole `seo-geo-aeo-maxxing/` directory (keep `SKILL.md`, `references/`, `scripts/`, `agents/` paths intact).
 
@@ -30,7 +30,7 @@ Or symlink only this skill into `~/.claude/skills/`.
 
 ## ChatGPT / Codex
 
-Upload a ZIP of this skill folder (see repo `scripts/package-releases.sh`) or copy into the host's skills path. Metadata: `agents/openai.yaml`.
+Build a ZIP from the repo root with `uv run python tooling/package_skill.py seo-geo-aeo-maxxing` (written to `dist/seo-geo-aeo-maxxing/<version>/skill.zip`) and upload it, or copy this folder into the host's skills path. Metadata: `agents/openai.yaml`.
 
 ## Invoke
 

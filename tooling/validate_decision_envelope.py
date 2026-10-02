@@ -96,15 +96,29 @@ def validate_schema(data: dict[str, Any]) -> None:
     validate_fallback(data)
 
 
+# A GO is only coherent when approval is not needed or has been given; a
+# required, pending or denied approval cannot sit next to an authorizing verdict.
+GO_COMPATIBLE_APPROVAL = {None, "not_required", "granted"}
+
+
 def validate_semantics(data: dict[str, Any]) -> None:
+    seen_gates: set[str] = set()
+    for gate in data.get("gates") or []:
+        gate_id = gate.get("gate_id")
+        if gate_id in seen_gates:
+            # Two rows for one gate let a CLEAR copy mask a BLOCK in consumers
+            # that index gates by ID.
+            fail(f"duplicate gate_id: {gate_id}")
+        seen_gates.add(gate_id)
     if data.get("verdict") == "GO":
         for gate in data.get("gates") or []:
             if gate.get("status") in {"BLOCK", "COUNSEL_REQUIRED"}:
                 fail(f"GO blocked by gate {gate.get('gate_id')} status={gate.get('status')}")
         if data.get("blockers"):
             fail("GO cannot have blockers")
-    if data.get("human_approval") == "required" and data.get("verdict") == "GO":
-        fail("GO requires human_approval before authorization semantics")
+        approval = data.get("human_approval")
+        if approval not in GO_COMPATIBLE_APPROVAL:
+            fail(f"GO is incompatible with human_approval={approval}; use DEFER until approval is granted")
 
 
 def validate(data: dict[str, Any]) -> None:
@@ -114,15 +128,29 @@ def validate(data: dict[str, Any]) -> None:
     validate_semantics(data)
 
 
-def main() -> None:
-    if len(sys.argv) != 2:
-        print("usage: validate_decision_envelope.py <file.json>", file=sys.stderr)
-        raise SystemExit(2)
-    data = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
-    payload = data.get("payload") if data.get("type") == "DecisionEnvelope" and "payload" in data else data
-    validate(payload)
+def main(argv: list[str] | None = None) -> int:
+    args = sys.argv[1:] if argv is None else argv
+    usage = "usage: validate_decision_envelope.py <file.json>"
+    if args in (["-h"], ["--help"]):
+        print(usage)
+        print("Validate a cometweb.decision/v2 payload, bare or wrapped in a CW-AIP envelope.")
+        return 0
+    if len(args) != 1:
+        print(usage, file=sys.stderr)
+        return 2
+    try:
+        data = json.loads(pathlib.Path(args[0]).read_text(encoding="utf-8"))
+        wrapped = isinstance(data, dict) and data.get("type") == "DecisionEnvelope" and "payload" in data
+        validate(data["payload"] if wrapped else data)
+    except OSError as exc:
+        print(f"FAIL: cannot read {args[0]}: {exc.strerror or exc}", file=sys.stderr)
+        return 1
+    except ValueError as exc:  # includes JSONDecodeError and UnicodeDecodeError
+        print(f"FAIL: {exc}", file=sys.stderr)
+        return 1
     print("OK: cometweb.decision/v2")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

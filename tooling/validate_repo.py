@@ -30,7 +30,13 @@ def parse_frontmatter(path: Path) -> dict:
 def load_json(path: Path) -> dict:
     if not path.is_file():
         fail(f"missing {path.relative_to(ROOT)}")
-    return json.loads(path.read_text(encoding="utf-8"))
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except ValueError as exc:  # JSONDecodeError and UnicodeDecodeError
+        fail(f"invalid JSON in {path.relative_to(ROOT)}: {exc}")
+    if not isinstance(data, dict):
+        fail(f"{path.relative_to(ROOT)}: top-level JSON must be an object")
+    return data
 
 
 def main() -> None:
@@ -40,6 +46,8 @@ def main() -> None:
     if not isinstance(skills, list) or not skills:
         fail("registry.skills must be a non-empty list")
 
+    if not all(isinstance(s, dict) and isinstance(s.get("id"), str) for s in skills):
+        fail("every registry.skills entry must be an object with a string id")
     ids = [s.get("id") for s in skills]
     if len(ids) != len(set(ids)):
         fail("duplicate skill ids in registry")

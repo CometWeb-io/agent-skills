@@ -55,6 +55,14 @@ def test_semantically_identical_adapter_preserves_format():
     assert merge_openai({}, old, {"display_name":"Demo"}) == old
 
 
+def _source_snapshot(root):
+    return {
+        p.relative_to(root): p.read_bytes()
+        for p in root.rglob("*")
+        if p.is_file() and "__pycache__" not in p.parts
+    }
+
+
 def test_adapter_check_does_not_repair_before_check(root, monkeypatch):
     monkeypatch.setattr(adapters, "ROOT", root)
     monkeypatch.setattr(adapters, "REGISTRY", root / "registry/skills.json")
@@ -62,10 +70,11 @@ def test_adapter_check_does_not_repair_before_check(root, monkeypatch):
     monkeypatch.setattr(adapters, "OUT_DOCS", root / "docs/table.md")
     monkeypatch.setattr(adapters, "OUT_CURSOR", root / "docs/routing.mdc")
     monkeypatch.setattr(sys, "argv", ["generate_adapters.py", "--check"])
-    before = {p.relative_to(root):p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    # Bytecode caches written by the import machinery are not repairs.
+    before = _source_snapshot(root)
     with pytest.raises(SystemExit):
         adapters.main()
-    after = {p.relative_to(root):p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    after = _source_snapshot(root)
     assert before == after
 
 
@@ -190,3 +199,39 @@ def test_wrong_package_identity_cannot_verify_installation(root):
 def test_adapter_merge_rejects_duplicate_keys():
     with pytest.raises(ValueError):
         merge_openai({},"policy: {}\npolicy: {}\n",{})
+
+
+def test_doctor_does_not_pass_an_unknown_skill(root):
+    # A typo or a deleted skill used to return no issues and exit 0.
+    result = inspect(root, "missing-skill")
+    assert result["source"] == "missing"
+    assert {"not_in_registry", "source_missing"} <= set(result["issues"])
+
+
+def test_doctor_flags_source_missing_for_registered_skill(root):
+    (root / "skills/demo/SKILL.md").unlink()
+    assert inspect(root, "demo")["issues"] == ["source_missing"]
+
+
+def test_doctor_flags_requested_installation_that_is_absent(root):
+    result = inspect(root, "demo", root / "installed")
+    assert result["installed"] == "missing"
+    assert "not_installed" in result["issues"]
+
+
+@pytest.mark.parametrize("inventory", [[], {"schema":"cometweb.session-inventory/v1","observed_at":20260912,"session_id":"s","host":"h","skills":[]}])
+def test_doctor_malformed_session_inventory_is_value_error(root, inventory):
+    with pytest.raises(ValueError):
+        inspect(root, "demo", session_inventory=inventory)
+
+
+def test_doctor_cli_reports_bad_input_without_traceback(root, capsys):
+    from doctor import main as doctor_main
+    assert doctor_main(["demo", "--root", str(root)]) == 0
+    assert doctor_main(["Not_A_Skill", "--root", str(root)]) == 2
+    bad = root / "inventory.json"
+    bad.write_text("{not json")
+    assert doctor_main(["demo", "--root", str(root), "--session-inventory", str(bad)]) == 2
+    assert doctor_main(["missing-skill", "--root", str(root)]) == 1
+    err = capsys.readouterr().err
+    assert err.count("FAIL: ") == 2 and "Traceback" not in err
