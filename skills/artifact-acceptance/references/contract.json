@@ -1,0 +1,183 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md",
+    "references/gate-model.md",
+    "references/policy-packs-and-waivers.md",
+    "references/traceability.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "MODES": "mode",
+        "PROFILES": "profile",
+        "VALID_STATES": "state",
+        "GRADE": "minimum_gate_evidence_grade",
+        "GATE_GRADES": "evidence_grade",
+        "FINDING_SEVERITY": "findings.severity",
+        "CONTROL_SEVERITY": "controls.severity"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "schema": {
+      "unread": true
+    },
+    "mode": {
+      "enum": [
+        "STANDARD",
+        "DEEP",
+        "DELTA"
+      ]
+    },
+    "profile": {
+      "enum": [
+        "CUSTOM",
+        "GENERAL",
+        "EDITORIAL",
+        "RESEARCH",
+        "SALES",
+        "TECHNICAL_DOCS"
+      ]
+    },
+    "candidate": {},
+    "id": {},
+    "version_or_hash": {
+      "unread": true
+    },
+    "candidate_id": {},
+    "base_candidate_id": {
+      "unread": true
+    },
+    "contract": {},
+    "brief_id": {
+      "unread": true
+    },
+    "contract_id": {},
+    "as_of": {},
+    "policy_lock": {},
+    "pack_id": {},
+    "revision": {},
+    "sha256": {},
+    "locked_before_evaluation": {},
+    "expected_policy_hash": {},
+    "minimum_gate_evidence_grade": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "criteria_ids": {},
+    "traceability": {},
+    "criterion_id": {},
+    "gates": {},
+    "gate_id": {},
+    "required": {},
+    "state": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN",
+        "N/A"
+      ]
+    },
+    "evidence": {},
+    "source": {},
+    "locator": {},
+    "observed_at": {},
+    "evidence_grade": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "na_allowed": {},
+    "na_rationale": {},
+    "findings": {},
+    "findings.severity": {
+      "enum": [
+        "BLOCKER",
+        "MAJOR",
+        "MINOR",
+        "NOTE"
+      ]
+    },
+    "open": {},
+    "blocks_acceptance": {},
+    "controls": {},
+    "controls.severity": {
+      "enum": [
+        "MINOR",
+        "NOTE"
+      ]
+    },
+    "issue": {},
+    "owner": {},
+    "revisit_condition": {},
+    "required_gate_bypass": {},
+    "waiver": {},
+    "approver": {},
+    "approved_at": {},
+    "expires_at": {},
+    "stale_if_changed": {
+      "unread": true
+    },
+    "next_skill": {
+      "unread": true
+    }
+  },
+  "outputs": {
+    "verdict": {
+      "enum": [
+        "READY",
+        "READY_WITH_CONTROLS",
+        "NOT_READY",
+        "DEFER"
+      ]
+    },
+    "errors": {},
+    "profile": {
+      "enum": [
+        "CUSTOM",
+        "GENERAL",
+        "EDITORIAL",
+        "RESEARCH",
+        "SALES",
+        "TECHNICAL_DOCS"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "STANDARD",
+        "DEEP",
+        "DELTA"
+      ]
+    }
+  },
+  "internal": [
+    "input"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.verdict",
+      "pass": [
+        "READY",
+        "READY_WITH_CONTROLS"
+      ]
+    }
+  ]
+}

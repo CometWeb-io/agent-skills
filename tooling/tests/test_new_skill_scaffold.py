@@ -208,13 +208,15 @@ def test_cli_prints_every_file_it_wrote(tmp_path: Path) -> None:
     assert written and printed == written
 
 
-def test_readme_walkthrough_names_every_placeholder_file() -> None:
+def test_contributing_walkthrough_names_every_placeholder_file() -> None:
+    # The walkthrough has one home, CONTRIBUTING; the README links to it.
     new_skill = load_tool(TOOL, "scaffold_new_skill_readme")
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    start = readme.index("## Write and evaluate a new skill")
-    section = readme[start:readme.index("\n## ", start + 1)]
+    guide = (ROOT / "CONTRIBUTING.md").read_text(encoding="utf-8")
+    start = guide.index("## Adding a skill")
+    section = guide[start:guide.index("\n## ", start + 1)]
     for relative, _ in new_skill.PLACEHOLDER_FILES:
-        assert relative in section, f"README walkthrough omits {relative}"
+        assert relative in section, f"CONTRIBUTING walkthrough omits {relative}"
+    assert "plugin version" in section.lower()
 
 
 def test_every_file_stating_the_skill_count_is_generated() -> None:
@@ -223,7 +225,7 @@ def test_every_file_stating_the_skill_count_is_generated() -> None:
     adapters = load_tool(ROOT / "tooling" / "generate_adapters.py", "scaffold_generate_adapters")
     registry = json.loads((ROOT / "registry" / "skills.json").read_text(encoding="utf-8"))
     count = len(registry["skills"])
-    stating = re.compile(rf"\({count} packages\)|skills-{count}-|contains {count} reusable")
+    stating = re.compile(rf"\({count} packages\)|skills-{count}-|contains {count} reusable|OK: {count} Claude Code")
     candidates = [*ROOT.glob("*.md"), *ROOT.glob(".*-plugin/*.json"), ROOT / "plugin.json"]
     found = {p for p in candidates if p.is_file() and stating.search(p.read_text(encoding="utf-8"))}
     assert found, "pattern matched nothing; the count wording changed"

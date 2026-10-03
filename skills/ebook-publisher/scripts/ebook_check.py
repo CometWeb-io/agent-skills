@@ -24,7 +24,18 @@ CHECKS = {
 }
 BINDINGS = {'research': ('research',), 'manuscript': ('research', 'manuscript'),
             'release': ('research', 'manuscript', 'pdf')}
+CHECK_IDS = tuple(item for items in CHECKS.values() for item in items)
 CORE = ('publication', 'scope', 'chapters', 'sources', 'claims')
+QUESTION_STATUSES = ('covered', 'open', 'excluded')
+SOURCE_TYPES = ('primary', 'secondary', 'discovery', 'provided', 'experiment')
+# Each claim kind admits only its own conclusions.
+CLAIM_CONCLUSIONS = {'fact': ('supported', 'qualified'), 'recommendation': ('recommended',),
+                     'inference': ('inferred',), 'synthetic': ('illustrative',)}
+CLAIM_KINDS = tuple(CLAIM_CONCLUSIONS)
+CONCLUSIONS = tuple(c for allowed in CLAIM_CONCLUSIONS.values() for c in allowed)
+MATERIALITY = ('critical', 'material', 'background')
+RELATIONS = ('supports', 'contradicts', 'context')
+REVIEW_METHODS = ('manual', 'self_review', 'automated')
 MAX_JSON = 4 * 1024 * 1024
 MAX_MANUSCRIPT = 16 * 1024 * 1024
 MAX_PDF = 128 * 1024 * 1024
@@ -224,7 +235,7 @@ def check_scope(v: Review, manifest: dict) -> tuple[dict, dict]:
     for qid, question in questions.items():
         v.text(question, 'question', qid)
         state = string(question.get('status'), f'{qid}.status')
-        v.require(state in ('covered', 'open', 'excluded'), 'invalid_question_status', qid)
+        v.require(state in QUESTION_STATUSES, 'invalid_question_status', qid)
         v.require(state != 'open', 'open_question', qid)
         linked = v.ids(question.get('chapter_ids'), f'{qid}.chapter_ids')
         if state == 'excluded':
@@ -256,8 +267,7 @@ def check_sources(v: Review, manifest: dict) -> dict:
         for key in ('title', 'origin'):
             v.text(source, key, sid)
         stype = string(source.get('source_type'), f'{sid}.source_type')
-        v.require(stype in ('primary', 'secondary', 'discovery', 'provided', 'experiment'),
-                  'invalid_source_type', sid)
+        v.require(stype in SOURCE_TYPES, 'invalid_source_type', sid)
         boolean(source.get('inspected'), f'{sid}.inspected')
         accessed = v.day(source.get('accessed_on', ''), f'{sid}.accessed_on')
         if source.get('published_on') is not None:
@@ -285,8 +295,7 @@ def check_sources(v: Review, manifest: dict) -> dict:
 def check_claims(v: Review, manifest: dict, chapters: dict, sources: dict) -> dict:
     claims = v.indexed(manifest.get('claims'), 'claims')
     v.require(bool(claims), 'empty_claims', 'A research record requires a nonempty claim ledger')
-    expected = {'fact': ('supported', 'qualified'), 'recommendation': ('recommended',),
-                'inference': ('inferred',), 'synthetic': ('illustrative',)}
+    expected = CLAIM_CONCLUSIONS
     for cid, claim in claims.items():
         v.text(claim, 'text', cid)
         chapter = string(claim.get('chapter_id'), f'{cid}.chapter_id')
@@ -295,7 +304,7 @@ def check_claims(v: Review, manifest: dict, chapters: dict, sources: dict) -> di
         importance = string(claim.get('materiality'), f'{cid}.materiality')
         conclusion = string(claim.get('conclusion'), f'{cid}.conclusion')
         v.require(kind in expected, 'invalid_claim_kind', cid)
-        v.require(importance in ('critical', 'material', 'background'), 'invalid_materiality', cid)
+        v.require(importance in MATERIALITY, 'invalid_materiality', cid)
         v.require(conclusion in expected.get(kind, ()), 'claim_conclusion', f'{cid}: {kind}/{conclusion}')
         if conclusion == 'qualified':
             v.text(claim, 'qualification', cid)
@@ -320,7 +329,7 @@ def check_claims(v: Review, manifest: dict, chapters: dict, sources: dict) -> di
             sid = string(edge.get('source_id'), f'{cid}.source_id')
             relation = string(edge.get('relation'), f'{cid}.relation')
             v.require(sid in sources, 'unknown_source', f'{cid}: {sid}')
-            v.require(relation in ('supports', 'contradicts', 'context'), 'invalid_relation', cid)
+            v.require(relation in RELATIONS, 'invalid_relation', cid)
             v.text(edge, 'locator', f'{cid}/{sid}')
             v.text(edge, 'explanation', f'{cid}/{sid}')
             if relation == 'supports':
@@ -440,9 +449,8 @@ def check_manuscript(v: Review, manifest: dict, chapters: dict, sources: dict, c
 
 def check_reviews(v: Review, manifest: dict, stage: str, fp: dict) -> None:
     reviews = v.indexed(manifest.get('checks'), 'checks')
-    known = {item for items in CHECKS.values() for item in items}
     for key in reviews:
-        v.require(key in known, 'unknown_check', key)
+        v.require(key in CHECK_IDS, 'unknown_check', key)
     for level in STAGES[:STAGES.index(stage) + 1]:
         for key in CHECKS[level]:
             if key not in reviews:
@@ -452,7 +460,7 @@ def check_reviews(v: Review, manifest: dict, stage: str, fp: dict) -> None:
             v.require(review.get('status') == 'pass', 'check_not_pass', key)
             for field in ('reviewer', 'notes'):
                 v.text(review, field, key)
-            v.require(review.get('method') in ('manual', 'self_review', 'automated'), 'invalid_review_method', key)
+            v.require(review.get('method') in REVIEW_METHODS, 'invalid_review_method', key)
             v.day(review.get('checked_on', ''), f'{key}.checked_on')
             v.artifact(review.get('evidence_file'), review.get('evidence_sha256'), key)
             recorded = obj(review.get('fingerprints'), f'{key}.fingerprints')

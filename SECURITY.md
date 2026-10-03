@@ -8,12 +8,28 @@ Report privately — do not open a public issue.
 - Email: hello@cometweb.io
 
 Please include the affected version or commit, what an attacker gains, and the
-smallest reproduction you have. We aim to acknowledge within 5 working days.
+smallest reproduction you have. We aim to acknowledge within 5 working days;
+the full timeline is under [Disclosure timeline](#disclosure-timeline).
 
 ## Supported versions
 
-The `main` branch is supported. Fixes land on `main` first; older tags are not
-patched.
+Security fixes land on `main` first and ship in the next plugin version. Older
+releases are not patched in place: a fix reaches users when they update to the
+release that contains it.
+
+| Version | Supported | How fixes arrive |
+| --- | --- | --- |
+| `main` | Yes | Directly, with a regression test |
+| Latest plugin release (highest `v2.*` tag) | Yes | In the next plugin version; update the plugin to receive it |
+| Earlier `v2.*` releases | No | Update to the latest release |
+| `v1.*` and earlier | No | Update to the latest release |
+
+A skill's own `VERSION` follows the plugin it ships in; there is no separate
+support line per skill. Packages built locally with `--dev` are never supported.
+
+The plugin version gates delivery: hosts that cache the plugin only replace it
+when its version changes, so every fix to a shipped skill also bumps the plugin
+version (see `CONTRIBUTING.md`).
 
 ## What this repository does and does not protect
 
@@ -38,8 +54,18 @@ Security-relevant properties this repo does enforce:
   oversized inputs before anything is packaged. Versioned releases require a
   **clean Git working tree** pinned to a full commit SHA; experimental builds
   use `--dev` and never write the immutable release path.
-- **Reproducible CI deps.** `uv.lock` is the source of truth; Validate runs
-  `uv sync --frozen` plus `pip-audit` and Bandit (medium+).
+- **Reproducible, audited CI deps.** `uv.lock` is the source of truth and
+  carries a SHA-256 for every artifact; CI installs with `uv sync --frozen`.
+  `tooling/audit_deps.py` runs `pip-audit --require-hashes` on the exact pins
+  of every dependency group, and fails if a package a skill declares in
+  `RUNTIME.json` or `requirements.txt` is not locked at a version inside its
+  declared range. Every GitHub Action is pinned to a full commit SHA. The only
+  unlocked installs are the runtime matrix's, which resolve each skill's
+  declared range fresh on Python 3.10-3.13 on purpose.
+- **Static analysis.** Bandit (medium+) and ShellCheck, plus repository semgrep
+  rules (`tooling/sast/`) run offline by `tooling/sast.py` with an exactly
+  pinned engine installed from the lock's hashes into an isolated environment.
+  Each rule is tested against positive and negative cases on every run.
 - **Declared vs verified support.** Compatibility cells are host-profile
   declarations. `verified_runtime_acceptance` stays `not_assessed` until an
   explicit host/model eval records otherwise.
@@ -61,10 +87,14 @@ What is explicitly **not** in scope:
 - Third-party hosts, marketplaces and connectors that distribute or load these
   skills.
 - **Full cryptographic authenticity of every local package build.** SHA-256
-  digests detect bit-rot and accidental mutation. GitHub/Sigstore attestations
-  for release `skill.zip` artifacts are produced by the `attest-packages`
-  workflow when packages are built in CI; local `--dev` packages are not
-  attested.
+  digests detect bit-rot and accidental mutation. For packages built in CI, the
+  `attest-packages` workflow produces GitHub/Sigstore build-provenance
+  attestations for every release `skill.zip`, writes a CycloneDX 1.6 SBOM of the
+  plugin (`tooling/sbom.py`: each skill with its package digest, and the
+  optional libraries skills declare), attests that SBOM against the packages,
+  and uploads packages and SBOM as a workflow artifact. Verify a package with
+  `gh attestation verify skill.zip --repo CometWeb-io/agent-skills`. Local
+  `--dev` packages are not attested.
 
 ## Threat model
 
@@ -142,9 +172,28 @@ them.
 2. The fix lands with a regression test that fails without it, plus an entry in
    the affected skill's `CHANGELOG.md`.
 3. For a real vulnerability we publish a GitHub security advisory once the fix is
-   on `main`, and credit the reporter if they want credit.
-4. Please hold public disclosure until the fix is on `main`. If that is taking
+   released, request a CVE through GitHub when one applies, and credit the
+   reporter if they want credit.
+4. Please hold public disclosure until the fix is released. If that is taking
    too long, tell us at hello@cometweb.io.
+
+### Disclosure timeline
+
+Days are counted from the day a private report arrives. These are targets, not
+guarantees; if one slips, we tell the reporter why and when to expect the next
+update.
+
+| Step | Target |
+| --- | --- |
+| Acknowledge the report | 5 working days |
+| Confirm or decline, with a severity assessment | 10 working days |
+| Fix released for critical or high severity | 30 days |
+| Fix released for medium or low severity | 90 days |
+| Public advisory | When the fix is released |
+| Coordinated disclosure deadline | 90 days, or earlier once the fix is released; extended only by agreement with the reporter |
+
+If a vulnerability is already public or being exploited, we skip the embargo
+and publish the fix and advisory as soon as they are ready.
 
 ## Reporting something that is not a vulnerability
 

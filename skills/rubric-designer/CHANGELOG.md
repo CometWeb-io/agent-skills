@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2] - 2026-10-03
+
+- `references/output-contract.md` now lists the rubric payload `scripts/kernel.py` validates, and new `references/contract.json` declares it. None of the 22 fields the kernel reads was named in any reference: `rubric_id`, `revision`, `purpose`, `target_type`, `mode`, `candidate_blind`, `frozen_before_review`, `required_dimensions`, the criterion keys (`id`, `dimension`, `description`, `observable`, `pass_condition`, `fail_condition`, `evidence_floor`, `materiality`, `blocker`, `weight`) and `anti_gaming` with `no_hidden_criteria` and `no_post_hoc_changes`. The lower-case `materiality` tokens (`critical|material|supporting`), the outputs (`rubric_hash`, `criteria_count`, `blocker_count`, `missing_dimensions`, `frozen`) and what the hash covers are written down.
+- The front door says a dimension can be declared out of scope; the reference now says how (leave it out of `required_dimensions`), since the kernel has no out-of-scope field.
+- A non-string `mode`, `evidence_floor` or `materiality` is `mode:invalid` / `criteria[i]:evidence_floor` / `criteria[i]:materiality` instead of a `TypeError`. Two eval cases pin it.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.7.1] - 2026-10-03
 
 - `scripts/run_evals.py --help` exits 0 with a usage line instead of exit 2; any other argument is still rejected with exit 2 and the unrecognized argument named.

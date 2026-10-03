@@ -1,7 +1,14 @@
 ---
 name: science-roaster
 description: >-
-  Run an adversarial Reviewer #2-style critique of scientific manuscripts, papers, protocols, theses, methods, analyses, reviewer responses, validation studies, and research drafts. Use when the user asks to roast, peer-review, red-team, stress-test, re-review a revision of, or challenge scientific work and wants every material criticism anchored to exact source evidence, inferential type, validity domain, counterevidence search, minimum repair burden, and an observable verification condition. Do not use for generic content critique, repository/code review, one-off claim verification, or research-program planning; route the first three to content-roaster, repo-roaster, or evidence-researcher, and leave program planning to the user.
+  Run an adversarial Reviewer #2-style critique of scientific manuscripts, papers, protocols, theses,
+  methods, analyses, reviewer responses, validation studies, and research drafts. Do not use for
+  generic content critique, repository/code review, one-off claim verification, or research-program
+  planning; route the first three to content-roaster, repo-roaster, or evidence-researcher, and leave
+  program planning to the user. Use when the user asks to roast, peer-review, red-team, stress-test,
+  re-review a revision of, or challenge scientific work and wants every material criticism anchored to
+  exact source evidence, inferential type, validity domain, counterevidence search, minimum repair
+  burden, and an observable verification condition.
 ---
 
 # Science Roaster

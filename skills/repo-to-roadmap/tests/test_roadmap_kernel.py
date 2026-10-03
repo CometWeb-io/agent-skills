@@ -283,6 +283,38 @@ class EvidenceTests(unittest.TestCase):
         self.assertEqual(report["status"], "SUPPORTED")
 
 
+    def test_unrecognized_absence_status_is_named_in_a_warning(self):
+        # A misspelled outcome such as "VERIFIED" used to read only as an
+        # incomplete protocol, with nothing pointing at the value itself.
+        claim = {
+            "claim_id": "C-abs",
+            "text": "Export route is absent",
+            "claim_lane": "implementation",
+            "claim_type": "absence",
+            "materiality": "high",
+            "evidence": [{
+                "source_type": "inventory",
+                "direction": "support",
+                "directness": "direct",
+                "freshness": "NOT_TIME_SENSITIVE",
+                "scope_match": "exact",
+                "independence_key": "tree",
+            }],
+            "absence_check": {
+                "status": "VERIFIED",
+                "inventory_complete": True,
+                "scopes_checked": ["apps/web"],
+                "dynamic_registration_checked": True,
+                "generated_or_config_driven_paths_checked": True,
+            },
+        }
+        report = k.evidence_report(claim)
+        self.assertEqual(report["status"], "INSUFFICIENT_VERIFICATION")
+        self.assertEqual(report["warnings"], [
+            "absence claim lacks a complete ABSENCE_VERIFIED protocol",
+            "absence_check.status 'VERIFIED' is not one of: ABSENCE_VERIFIED, INCOMPLETE_SEARCH, NOT_FOUND_IN_SEARCH, UNKNOWN",
+        ])
+
 class PriorityTests(unittest.TestCase):
     def base_item(self):
         item = valid_item()

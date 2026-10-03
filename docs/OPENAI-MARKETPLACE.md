@@ -22,7 +22,8 @@ rejects an entry without them.
 
 ## ChatGPT workspace import
 
-A workspace admin can import the public marketplace from:
+A workspace admin can import the public marketplace under **Workspace
+settings → Plugins → Add → Import marketplace** from:
 
 ```text
 https://github.com/CometWeb-io/agent-skills

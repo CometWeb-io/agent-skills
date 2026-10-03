@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.1 — 2026-10-03
+
+- The verdict was documented only as human labels ("do not ship", "ship with fixes") in `SKILL.md`, `references/evidence-and-report.md` and the report template, while `scripts/validate_report.py` and the schema accept only `do_not_ship`, `ship_with_fixes`, `ship`, `incomplete`; a report written from the docs failed validation. The same split existed for coverage (`policy-blocked` vs `coverage.policyBlocked`, `environment-blocked` vs `coverage.environmentBlocked`), counts (`needs-repro` vs `counts.needsRepro`) and out-of-scope, which is not a coverage counter but a top-level `outOfScope[]` of at most 3 notes. `references/evidence-and-report.md` §10 now maps each label to its JSON token and lists every field the two schemas declare.
+- New `references/contract.json` binds the validator's enum constants to the bundled JSON Schemas and points at that section; `tooling/skill_contracts.py` checks the three against each other and against `tests/report-valid.json`.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## 1.4.0 — 2026-10-03
 
 - Front door slimmed from 13,573 to 11,653 bytes with no rule removed. With the untrusted-content block added, reference links are written as plain paths. The per-pass checklists (Pass 0–5) moved to a new "Universal passes" section of `references/modes.md`; the evidence-manifest field block and the report/schema/`validator: not run` fallback moved into `references/evidence-and-report.md` (§1, §10), replacing a duplicate in SKILL.md. SKILL.md keeps the pass spine, the safety prohibitions, and pointers that say when to open each reference.

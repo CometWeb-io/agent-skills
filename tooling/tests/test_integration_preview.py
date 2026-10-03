@@ -25,6 +25,9 @@ def put(root, name, text):
 def setup(tmp_path):
     root=tmp_path/'checkout'; root.mkdir(); git(root,'init','-q')
     git(root,'config','core.filemode','true')
+    # Newer Git starts background auto-maintenance after commits; it writes
+    # .git/objects/maintenance.lock and would break the unchanged-tree checks.
+    git(root,'config','maintenance.auto','false');git(root,'config','gc.auto','0')
     put(root,'README.md','one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\n')
     put(root,'.github/workflows/validate.yml','name: original\n')
     put(root,'LICENSE','Original license\n')

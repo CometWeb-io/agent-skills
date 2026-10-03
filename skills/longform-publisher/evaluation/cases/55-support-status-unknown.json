@@ -1,0 +1,12 @@
+{
+  "scenario": "support_status_unknown",
+  "expect": {
+    "validation": [
+      "FIELD_VALUE_INVALID:claim_uses.support_status",
+      "MATERIAL_CLAIM_UNSUPPORTED"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

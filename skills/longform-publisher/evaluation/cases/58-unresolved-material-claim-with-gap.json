@@ -1,0 +1,11 @@
+{
+  "scenario": "unresolved_claim_with_gap",
+  "expect": {
+    "validation": [
+      "MATERIAL_CLAIM_UNSUPPORTED"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

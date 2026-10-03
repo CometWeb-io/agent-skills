@@ -1106,5 +1106,96 @@
       },
       "mode": "FINAL"
     }
+  },
+  {
+    "id": "supported-on-unresolved-basis-fails-v172",
+    "input": {
+      "mode": "DRAFT",
+      "claims": [
+        {
+          "claim_id": "c1",
+          "status": "UNRESOLVED",
+          "material": true
+        },
+        {
+          "claim_id": "c2",
+          "status": "SUPPORTED",
+          "material": true,
+          "basis_claim_ids": [
+            "c1"
+          ],
+          "evidence": [
+            {
+              "source": "https://example.com/report",
+              "locator": "p. 4"
+            }
+          ]
+        }
+      ]
+    },
+    "expect": {
+      "status": "FAIL",
+      "errors": [
+        "claim[1]:basis-unresolved:c1"
+      ]
+    }
+  },
+  {
+    "id": "inferred-on-unsupported-basis-fails-v172",
+    "input": {
+      "mode": "DRAFT",
+      "claims": [
+        {
+          "claim_id": "c1",
+          "status": "UNSUPPORTED",
+          "material": true
+        },
+        {
+          "claim_id": "c2",
+          "status": "INFERRED",
+          "material": true,
+          "basis_claim_ids": [
+            "c1"
+          ]
+        }
+      ]
+    },
+    "expect": {
+      "status": "FAIL",
+      "errors": [
+        "claim[1]:basis-unresolved:c1"
+      ]
+    }
+  },
+  {
+    "id": "nonmaterial-unresolved-basis-allowed-v172",
+    "input": {
+      "mode": "DRAFT",
+      "claims": [
+        {
+          "claim_id": "c1",
+          "status": "UNRESOLVED",
+          "material": false
+        },
+        {
+          "claim_id": "c2",
+          "status": "SUPPORTED",
+          "material": true,
+          "basis_claim_ids": [
+            "c1"
+          ],
+          "evidence": [
+            {
+              "source": "https://example.com/report",
+              "locator": "p. 4"
+            }
+          ]
+        }
+      ]
+    },
+    "expect": {
+      "status": "PASS",
+      "errors": []
+    }
   }
 ]

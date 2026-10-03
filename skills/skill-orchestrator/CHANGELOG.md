@@ -1,5 +1,17 @@
 # Changelog — skill-orchestrator
 
+## [1.1.4] - 2026-10-03
+
+### Fixed
+
+- The planner's JSON output was documented nowhere: no reference named `archetype`, `goal_summary`, `steps[]` (`skill`, `purpose`, `envelope_out`, `read_skill`), `boundaries` or `single_skill_alternative`. `references/workflow-archetypes.md` (shared with the multiagent alias) now lists them under "Kernel output", including the closed `archetype` and `envelope_out` vocabularies.
+- `scripts/orchestrate_kernel.py` exposes that vocabulary as `ARCHETYPES` and `ENVELOPE_TYPES` and writes each step's keys explicitly instead of through `dataclasses.asdict`; output is unchanged. A new test pins every plan's keys and values to the documented lists.
+- New `references/contract.json` (`cometweb.skill-contract/v1`) holds the kernel and the reference to each other under `tooling/skill_contracts.py`; it binds `archetype` to `ARCHETYPES` and `envelope_out` to `ENVELOPE_TYPES`, so a planner value the reference does not list fails the check.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.1.3] - 2026-10-03
 
 ### Security

@@ -12,7 +12,7 @@ from .constants import (
     ROLE_REGISTRY,
     SPECIALIST_RULES,
 )
-from .contract import infer_jurisdictions, infer_risk_surfaces, mode_budget
+from .contract import check_contract_values, infer_jurisdictions, infer_risk_surfaces, mode_budget
 from .util import _dedupe, _mode_name, _norm
 
 def route_experts(profile: dict[str, Any], max_experts: int | None = None) -> list[str]:
@@ -102,6 +102,7 @@ def detect_missing_perspectives(query: str, existing_experts: list[str] | None =
 
 
 def route_roles(contract: dict[str, Any], mode: str) -> dict[str, Any]:
+    check_contract_values(contract)
     mode = _mode_name(mode)
     budget = mode_budget(mode)
     profile = {
@@ -158,6 +159,7 @@ def route_roles(contract: dict[str, Any], mode: str) -> dict[str, Any]:
 
 
 def select_frameworks(query: str, profile: dict[str, Any], routed_experts: list[str], max_frameworks: int = 3) -> dict[str, Any]:
+    check_contract_values(profile)
     matches = []
     secondary = set(profile.get("secondary_domains") or [])
     for order, fw in enumerate(FRAMEWORKS):

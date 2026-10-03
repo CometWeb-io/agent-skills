@@ -1,0 +1,167 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "MODES": "mode",
+        "EXECUTION": "execution_mode",
+        "AGREEMENT": "judge_agreement.status",
+        "PARETO": "pareto_status",
+        "PAIRED": "paired_analysis.status",
+        "STABILITY": "stability.status"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "skill_id": {},
+    "candidate_version": {},
+    "baseline_version": {},
+    "mode": {
+      "enum": [
+        "DEEP",
+        "STANDARD"
+      ]
+    },
+    "execution_mode": {
+      "enum": [
+        "LOCAL_DETERMINISTIC",
+        "REAL_HOST",
+        "SPEC_ONLY"
+      ]
+    },
+    "rubric_hash": {},
+    "benchmark_hash": {},
+    "suite_hash": {},
+    "baseline_suite_hash": {},
+    "declared_case_ids": {},
+    "executed_case_ids": {},
+    "negative_control_count": {},
+    "discovery_case_count": {},
+    "forced_case_count": {},
+    "runs_per_case": {},
+    "runtime_executed": {},
+    "uses_llm_judge": {},
+    "judge_agreement": {},
+    "judge_agreement.status": {
+      "enum": [
+        "CALIBRATED",
+        "INSUFFICIENT_DATA",
+        "NEEDS_REVIEW",
+        "NOT_USED"
+      ]
+    },
+    "pareto_status": {
+      "enum": [
+        "DOMINATED",
+        "FRONTIER",
+        "NOT_COMPUTED",
+        "UNKNOWN"
+      ]
+    },
+    "paired_analysis": {},
+    "paired_analysis.status": {
+      "enum": [
+        "INCONCLUSIVE",
+        "INSUFFICIENT_DATA",
+        "NONINFERIOR",
+        "NOT_USED",
+        "SIGNIFICANT_IMPROVEMENT",
+        "SIGNIFICANT_REGRESSION"
+      ]
+    },
+    "stability": {},
+    "stability.status": {
+      "enum": [
+        "FLAKY",
+        "INSUFFICIENT_DATA",
+        "NOT_USED",
+        "STABLE"
+      ]
+    },
+    "config": {},
+    "baseline_config": {},
+    "host": {},
+    "model": {},
+    "harness_version": {},
+    "reasoning_effort": {},
+    "candidate": {},
+    "baseline": {},
+    "passed": {},
+    "total": {},
+    "trigger_tp": {},
+    "trigger_fp": {},
+    "trigger_fn": {},
+    "tokens": {},
+    "duration_s": {},
+    "invariant_regressions": {},
+    "promotion_policy": {},
+    "min_pass_rate_delta": {},
+    "trigger_precision_floor": {},
+    "trigger_recall_floor": {},
+    "max_token_ratio": {},
+    "max_duration_ratio": {}
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "DESIGN_READY",
+        "IMPROVED",
+        "INSUFFICIENT_EVIDENCE",
+        "INVALID",
+        "NO_MATERIAL_CHANGE",
+        "REGRESSION",
+        "TRADEOFF"
+      ]
+    },
+    "errors": {},
+    "promotion_eligible": {},
+    "empirical_claim_allowed": {},
+    "paired_status": {},
+    "stability_status": {},
+    "tradeoff": {
+      "enum": [
+        "FLAKY_BEHAVIOR",
+        "PARETO_DOMINATED",
+        "RESOURCE_BUDGET",
+        "TRIGGER_QUALITY"
+      ]
+    },
+    "pass_rate_delta": {},
+    "trigger_precision": {},
+    "trigger_recall": {},
+    "token_ratio": {},
+    "duration_ratio": {}
+  },
+  "internal": [
+    "input"
+  ],
+  "doc_terms": [
+    "baseline_only",
+    "candidate_only"
+  ],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "DESIGN_READY",
+        "IMPROVED",
+        "INSUFFICIENT_EVIDENCE",
+        "NO_MATERIAL_CHANGE",
+        "REGRESSION",
+        "TRADEOFF"
+      ]
+    }
+  ]
+}

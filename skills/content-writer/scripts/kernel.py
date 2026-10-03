@@ -7,6 +7,9 @@ VALID_POLICIES={'SOURCE_BOUND','EVIDENCE_REQUIRED','CONTEXTUAL_DRAFT','CREATIVE'
 FRESH={'CURRENT','NEAR_EXPIRY'}
 AUTHORITATIVE={'PRIMARY','OFFICIAL','SYSTEM_OF_RECORD'}
 GRADE={'D':1,'C':2,'B':3,'A':4}
+# Accepted grades for each evidence_floor key; one constant per key so each is bound in the contract.
+CRITICAL_FLOOR=MATERIAL_FLOOR=SUPPORTING_FLOOR=frozenset(GRADE)
+FLOORS=(('critical',CRITICAL_FLOOR),('material',MATERIAL_FLOOR),('supporting',SUPPORTING_FLOOR))
 
 
 def _text(value): return isinstance(value,str) and bool(value.strip())
@@ -44,6 +47,13 @@ def _dependency_errors(claims):
             if dep not in ids: errors.append(f'claim[{i}]:basis-missing:{dep}')
             clean.append(dep)
         graph[c['claim_id']]=clean
+    # A material conclusion cannot rest on a material claim that is unresolved or unsupported.
+    weak={c.get('claim_id') for c in claims if isinstance(c,dict) and c.get('material') is True and c.get('status') in {'UNRESOLVED','UNSUPPORTED'}}
+    for i,c in enumerate(claims):
+        if not isinstance(c,dict) or c.get('material') is not True or c.get('status') not in {'SUPPORTED','INFERRED'}: continue
+        deps=c.get('basis_claim_ids')
+        for dep in deps if isinstance(deps,list) else []:
+            if _text(dep) and dep in weak: errors.append(f'claim[{i}]:basis-unresolved:{dep}')
     visiting=set(); visited=set()
     def dfs(node):
         if node in visiting: return True
@@ -98,8 +108,8 @@ def validate(report):
     if floors is not None:
         if not isinstance(floors,dict): errors.append('evidence_floor:not-object'); floors={}
         else:
-            for key in ('critical','material','supporting'):
-                if key in floors and floors[key] not in GRADE: errors.append(f'evidence_floor:{key}')
+            for key,accepted in FLOORS:
+                if key in floors and floors[key] not in accepted: errors.append(f'evidence_floor:{key}')
     for i,claim in enumerate(claims):
         if not isinstance(claim,dict): errors.append(f'claim[{i}]:not-object'); continue
         cid=claim.get('claim_id')

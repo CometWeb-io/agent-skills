@@ -1,13 +1,13 @@
 interface:
-  display_name: Brief Architect
-  short_description: artifact brief and execution contract
-  default_prompt: 'Use the Brief Architect skill for: Turn an ambiguous request for a content, research, sales, documentation, or knowledge artifact into an explicit execution contract with audience, objective, evidence policy, constraints, acceptance cr'
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  display_name: "Brief Architect"
+  short_description: "artifact brief and execution contract"
+  default_prompt: "Use $brief-architect for explicit artifact contracts, evidence policies, risks, and acceptance criteria."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true

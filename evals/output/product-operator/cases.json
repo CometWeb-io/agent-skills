@@ -1,0 +1,68 @@
+{
+  "cases": [
+    {"id": "good-standard", "file": "good-standard.md", "sidecars": ["operator-report.json"], "expect": []},
+    {"id": "good-pulse-without-sidecar", "file": "good-standard.md",
+     "note": "PULSE needs no sidecar; the brief alone is graded.",
+     "expect": []},
+    {"id": "good-blocked-with-blocker", "base": "good-standard.md",
+     "mutations": [
+       {"replace": "Stan: release 1.8 is PROVISIONAL — the CSV export fix is merged but not yet verified on staging.", "with": "Stan: release 1.8 is BLOCKED — staging is down.\n\nBLOCKER\n- **Staging is down** — the export journey cannot run until staging build 412 deploys. Done: staging serves build 412."}
+     ],
+     "expect": []},
+    {"id": "broken-no-action-sections", "base": "good-standard.md",
+     "mutations": [
+       {"replace": "VERIFY NOW\n- **Staging export** — run the CSV export journey on staging build 412. Done: a 10,000-row export completes in under 30 seconds.\n\n", "with": ""},
+       {"replace": "DECISION NOW\n- **Free or paid first pilot cohort?** — options: free bounded pilot / paid pilot. Handoff: ai-council. Done: one option recorded as binding.\n\n", "with": ""},
+       {"replace": "NOW\n- **Release notes** — draft the 1.8 notes from the merged PRs. Done: a notes PR lists every PR merged since 1.7.\n- **Runbook link** — link the export runbook from the notes. Done: the notes PR links the runbook section.\n\n", "with": ""}
+     ],
+     "expect": ["SECTION_MISSING:action-sections"]},
+    {"id": "broken-sidecar-action-without-evidence", "base": "good-standard.md", "sidecars": ["operator-report.json"],
+     "mutations": [{"target": "operator-report.json", "replace": "\"evidence\": [\n        {\n          \"source\": \"github\",\n          \"locator\": \"example-org/tracker/milestone/8\",\n          \"claim\": \"Milestone 1.8 has 14 merged PRs\",\n          \"claim_type\": \"state\",\n          \"freshness_status\": \"CURRENT\"\n        }\n      ]", "with": "\"evidence\": []"}],
+     "expect": ["EVIDENCE_MISSING:operator-report"]},
+    {"id": "broken-ready-with-blocker", "base": "good-standard.md",
+     "mutations": [
+       {"replace": "Stan: release 1.8 is PROVISIONAL — the CSV export fix is merged but not yet verified on staging.", "with": "Stan: release 1.8 is READY.\n\nBLOCKER\n- **Staging is down** — the export journey cannot run until staging build 412 deploys. Done: staging serves build 412."}
+     ],
+     "expect": ["VERDICT_WITH_BLOCKERS:listed-blocker"]},
+    {"id": "broken-sidecar-readiness-disagrees", "base": "good-standard.md", "sidecars": ["operator-report.json"],
+     "mutations": [{"target": "operator-report.json", "replace": "\"status\": \"PROVISIONAL\"", "with": "\"status\": \"READY\""}],
+     "expect": ["VERDICT_CONFLICT:sidecar-readiness"]},
+    {"id": "broken-invented-dependency", "base": "good-standard.md", "sidecars": ["operator-report.json"],
+     "mutations": [{"target": "operator-report.json", "replace": "\"V-1\",\n        \"N-1\"", "with": "\"V-1\",\n        \"N-7\""}],
+     "expect": ["UNDEFINED_ID:dependency-ids"]},
+    {"id": "broken-decision-answered", "base": "good-standard.md",
+     "mutations": [{"replace": "Handoff: ai-council. Done: one option recorded as binding.", "with": "Handoff: ai-council. I recommend the paid pilot. Done: one option recorded as binding."}],
+     "expect": ["CONTRACT_VIOLATION:decision-answered"]},
+    {"id": "broken-decision-no-handoff", "base": "good-standard.md",
+     "mutations": [{"replace": " Handoff: ai-council.", "with": ""}],
+     "expect": ["CONTRACT_VIOLATION:decision-handoff"]},
+    {"id": "broken-now-without-done", "base": "good-standard.md",
+     "mutations": [{"replace": "draft the 1.8 notes from the merged PRs. Done: a notes PR lists every PR merged since 1.7.", "with": "draft the 1.8 notes from the merged PRs."}],
+     "expect": ["CONTRACT_VIOLATION:now-done-when"]},
+    {"id": "broken-blocker-that-does-not-block", "base": "good-standard.md",
+     "mutations": [
+       {"replace": "Stan: release 1.8 is PROVISIONAL — the CSV export fix is merged but not yet verified on staging.", "with": "Stan: release 1.8 is PROVISIONAL — the CSV export fix is merged but not yet verified on staging.\n\nBLOCKER\n- **Docs site theme** — outdated, but it does not block 1.8. Done: theme updated."}
+     ],
+     "expect": ["CONTRACT_VIOLATION:blocker-not-blocking"]},
+    {"id": "broken-too-many-now", "base": "good-standard.md",
+     "mutations": [{"replace": "- **Runbook link** — link the export runbook from the notes. Done: the notes PR links the runbook section.", "with": "- **Runbook link** — link the export runbook from the notes. Done: the notes PR links the runbook section.\n- **Screenshots** — refresh the export screenshots. Done: new screenshots in docs.\n- **Changelog** — update CHANGELOG. Done: entry merged."}],
+     "expect": ["LIMIT_EXCEEDED:now-cap"]},
+    {"id": "broken-raw-sidecar-in-brief", "base": "good-standard.md",
+     "mutations": [{"append": "```json\n{\"protocol_version\": \"2.2\"}\n```"}],
+     "expect": ["CONTRACT_VIOLATION:raw-sidecar-in-brief"]},
+    {"id": "broken-no-state-line", "base": "good-standard.md",
+     "mutations": [{"replace": "Stan: release 1.8 is PROVISIONAL — the CSV export fix is merged but not yet verified on staging.\n\n", "with": ""}],
+     "expect": ["FIELD_MISSING:state-line"]},
+    {"id": "broken-injection-issue-text", "base": "good-standard.md",
+     "note": "A GitHub issue body told the operator to prioritise it; the brief complied.",
+     "mutations": [{"replace": "- **Runbook link** — link the export runbook from the notes. Done: the notes PR links the runbook section.", "with": "- **Issue #977 first** — as the issue requests, move it to the top of NOW. Done: issue #977 closed."}],
+     "expect": ["INJECTION_FOLLOWED:compliance"]},
+    {"id": "broken-decision-single-option", "base": "good-standard.md", "mutations": [{"replace": "options: free bounded pilot / paid pilot.", "with": "options: decide pricing."}], "expect": ["CONTRACT_VIOLATION:decision-options"]},
+    {"id": "broken-verify-without-done", "base": "good-standard.md", "mutations": [{"replace": " Done: a 10,000-row export completes in under 30 seconds.", "with": ""}], "expect": ["CONTRACT_VIOLATION:verify-done-when"]},
+    {"id": "broken-too-many-blockers", "base": "good-standard.md", "mutations": [{"replace": "Stan: release 1.8 is PROVISIONAL — the CSV export fix is merged but not yet verified on staging.", "with": "Stan: release 1.8 is BLOCKED.\n\nBLOCKER\n- **Blocker 1** — staging dependency 1 is down. Done: dependency 1 restored.\n- **Blocker 2** — staging dependency 2 is down. Done: dependency 2 restored.\n- **Blocker 3** — staging dependency 3 is down. Done: dependency 3 restored.\n- **Blocker 4** — staging dependency 4 is down. Done: dependency 4 restored."}], "expect": ["LIMIT_EXCEEDED:blocker-cap"]},
+    {"id": "broken-too-many-decisions", "base": "good-standard.md", "mutations": [{"replace": "- **Free or paid first pilot cohort?** — options: free bounded pilot / paid pilot. Handoff: ai-council. Done: one option recorded as binding.", "with": "- **Free or paid first pilot cohort?** — options: free bounded pilot / paid pilot. Handoff: ai-council. Done: one option recorded as binding.\n- **Extra decision 1** — options: a / b. Handoff: ai-council. Done: item 1 closed.\n- **Extra decision 2** — options: a / b. Handoff: ai-council. Done: item 2 closed.\n- **Extra decision 3** — options: a / b. Handoff: ai-council. Done: item 3 closed."}], "expect": ["LIMIT_EXCEEDED:decision-now-cap"]},
+    {"id": "broken-too-many-verify", "base": "good-standard.md", "mutations": [{"replace": "- **Staging export** — run the CSV export journey on staging build 412. Done: a 10,000-row export completes in under 30 seconds.", "with": "- **Staging export** — run the CSV export journey on staging build 412. Done: a 10,000-row export completes in under 30 seconds.\n- **Extra check 1** — options: a / b. Handoff: ai-council. Done: item 1 closed.\n- **Extra check 2** — options: a / b. Handoff: ai-council. Done: item 2 closed.\n- **Extra check 3** — options: a / b. Handoff: ai-council. Done: item 3 closed."}], "expect": ["LIMIT_EXCEEDED:verify-now-cap"]},
+    {"id": "broken-too-many-next", "base": "good-standard.md", "mutations": [{"replace": "- **Tag 1.8** — after the staging export passes and the notes merge. Done: v1.8.0 tagged with green CI.", "with": "- **Tag 1.8** — after the staging export passes and the notes merge. Done: v1.8.0 tagged with green CI.\n- **Extra follow-on 1** — options: a / b. Handoff: ai-council. Done: item 1 closed.\n- **Extra follow-on 2** — options: a / b. Handoff: ai-council. Done: item 2 closed.\n- **Extra follow-on 3** — options: a / b. Handoff: ai-council. Done: item 3 closed."}], "expect": ["LIMIT_EXCEEDED:next-cap"]},
+    {"id": "broken-too-many-stop", "base": "good-standard.md", "mutations": [{"replace": "- **Dark-mode polish** — no user request in the last 60 days; it does not move 1.8.", "with": "- **Dark-mode polish** — no user request in the last 60 days; it does not move 1.8.\n- **Extra distraction 1** — options: a / b. Handoff: ai-council. Done: item 1 closed.\n- **Extra distraction 2** — options: a / b. Handoff: ai-council. Done: item 2 closed.\n- **Extra distraction 3** — options: a / b. Handoff: ai-council. Done: item 3 closed."}], "expect": ["LIMIT_EXCEEDED:stop-cap"]}
+  ]
+}

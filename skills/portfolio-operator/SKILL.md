@@ -1,6 +1,6 @@
 ---
 name: portfolio-operator
-description: Evidence-grounded cross-domain portfolio control plane for deciding what a user or small team should focus on across products, client work, research/academic commitments, growth, operations, and side projects. Use when the user asks what to do this week/next 7-30 days across multiple projects, how to allocate limited capacity, which commitments conflict, what to pause/drop/delegate, how to reconcile client deadlines with product/research work, or for a portfolio-wide review. Do not use for deep prioritization inside one product/repo, release GO/NO-GO, or executing a multi-skill workflow when a specialist/control-plane skill owns that task.
+description: Evidence-grounded cross-domain portfolio control plane for deciding what a user or small team should focus on across products, client work, research/academic commitments, growth, operations, and side projects. Do not use for deep prioritization inside one product/repo, release GO/NO-GO, or executing a multi-skill workflow when a specialist/control-plane skill owns that task. Use when the user asks what to do this week/next 7-30 days across multiple projects, how to allocate limited capacity, which commitments conflict, what to pause/drop/delegate, how to reconcile client deadlines with product/research work, or for a portfolio-wide review.
 ---
 
 # Portfolio Operator

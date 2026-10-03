@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.5.1] - 2026-10-03
+
+### Fixed
+
+- `conflicts[].status` was unchecked: only the literal `resolved` triggered the
+  basis rule, so `Resolved`, `closed` or a missing status passed and read as
+  settled downstream. `validate_context_envelope.py` now requires
+  `unresolved_conflict` or `resolved` (`CONFLICT_STATUS`, the token SKILL.md
+  already used); tests pin the rejection.
+- `references/context-envelope.md` showed `conflicts`, `gaps` and
+  `blocked_public_claims` as bare `[]` although the validator reads
+  `conflicts[].status`/`basis`, `gaps[].kind`/`missing_authority` and
+  `blocked_public_claims[].reason`. The reference now lists them, the
+  confidential statement cap, the time-order and delta/baseline rules, and
+  marks `governance.first_principles.source_ref`/`reason` as informational.
+- `references/source-registry.md` said the planner returns `primary`; it
+  returns `profile`. The planner and repo snapshot outputs are now documented
+  in `references/context-envelope.md`.
+- Fact `confidence` is checked against a named `CONFIDENCE` constant, and
+  `repo_snapshot.py` writes its keys as literals (output unchanged).
+- New `references/contract.json` binds every validator enum constant to the
+  documented vocabulary under `tooling/skill_contracts.py`.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.5.0] - 2026-10-03
 
 ### Changed

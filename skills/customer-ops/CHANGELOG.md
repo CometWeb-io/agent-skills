@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.2.1] - 2026-10-03
+
+### Fixed
+
+- The kernel read 42 payload keys that no reference or SKILL.md named, among
+  them the priority gate signals, the retention evidence counts, the `case-gate`
+  stage requirements, `customer_followup_status`,
+  `privacy_preflight_status`, `remedy_ref`, `warning_minutes`, `pause_minutes`,
+  and the `dedupe-pair` `left`/`right` objects. They are now listed per command in
+  the new `references/kernel-inputs.md`, which SKILL.md points to beside the kernel.
+- `commitment-status` treated any unrecognized `state` (for example a misspelled
+  `DONE`) as open and ran the clock, reporting OVERDUE for a promise the source
+  had closed. It now returns UNKNOWN and names the accepted states. A unit test
+  and a golden case pin this.
+- `references/contract.json` declares the payload fields, outputs and status
+  values, and binds `stage`, `entity`, `state` and `customer_followup_status` to
+  the kernel constants that enforce them (`CASE_GATE_STAGES`, `TRANSITION_MAPS`,
+  `COMMITMENT_TRANSITIONS`, `CUSTOMER_FOLLOWUP_STATUSES`). The case-gate stages
+  and follow-up statuses moved from inline literals into those constants without
+  changing behaviour. `tests/golden-cases.json` is checked against the contract.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [2.2.0] - 2026-10-02
 
 ### Changed

@@ -1,13 +1,13 @@
 interface:
   display_name: "Skill Orchestrator Multiagent"
   short_description: "alias for isolated_subagents execution"
-  default_prompt: "Run the multi-skill workflow with execution_mode=isolated_subagents (one Task/subagent per specialist skill)."
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  default_prompt: "Use $skill-orchestrator-multiagent to run my multi-skill workflow with one isolated subagent per specialist step."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true

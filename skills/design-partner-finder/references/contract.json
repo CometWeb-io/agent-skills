@@ -1,0 +1,165 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/kernel-inputs.md"
+  ],
+  "scripts": {
+    "scripts/assess_partner_health.py": {
+      "input": "json",
+      "role": "kernel"
+    },
+    "scripts/score_candidate.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "STAGES": "stage",
+        "ENGAGEMENT_MODES": "engagement_mode"
+      }
+    },
+    "scripts/select_cohort.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "SELECTION_STAGES": "selection_stage"
+      }
+    }
+  },
+  "fields": {
+    "stage": {
+      "enum": [
+        "research",
+        "live"
+      ]
+    },
+    "engagement_mode": {
+      "enum": [
+        "RESEARCH_PARTNER",
+        "DESIGN_PARTNER",
+        "BETA_PARTNER",
+        "PAID_PILOT",
+        "LIGHTHOUSE"
+      ]
+    },
+    "candidate": {},
+    "dimension_confidence": {
+      "map": true
+    },
+    "ratings": {},
+    "problem_evidence": {},
+    "representativeness": {},
+    "urgency": {},
+    "learning_value": {},
+    "implementation_plausibility": {},
+    "stakeholder_path": {},
+    "credibility": {},
+    "commercial_optionality": {},
+    "reference_network_value": {},
+    "evidence_confidence": {},
+    "contradiction_risk": {},
+    "customization_risk": {},
+    "conflict_risk": {},
+    "professional_contact_path": {},
+    "exploration_mode": {},
+    "problem_confirmed": {},
+    "urgency_confirmed": {},
+    "user_champion_access": {},
+    "implementation_readiness": {},
+    "feedback_commitment": {},
+    "decision_procurement_feasibility": {},
+    "mutual_value_alignment": {},
+    "pilot_measurability": {},
+    "transferability": {},
+    "live_evidence_confirmed": {},
+    "security_privacy_blocker": {},
+    "legal_contract_blocker": {},
+    "commercial_commitment": {},
+    "reference_permission": {},
+    "selection_stage": {
+      "enum": [
+        "outreach_slate",
+        "active_cohort"
+      ]
+    },
+    "size": {},
+    "max_per_segment": {},
+    "max_per_duplicate_key": {},
+    "replication_threshold": {},
+    "include_alignment_required": {},
+    "questions": {},
+    "id": {},
+    "weight": {},
+    "desired_replications": {},
+    "must_cover": {},
+    "question_weights": {
+      "opaque": true
+    },
+    "candidates": {},
+    "company": {},
+    "status": {},
+    "score": {},
+    "segment": {},
+    "duplicate_key": {},
+    "effort": {},
+    "risk": {},
+    "learning_coverage": {
+      "opaque": true
+    },
+    "learning_questions": {},
+    "workflow_usage": {},
+    "learning_yield": {},
+    "user_champion_engagement": {},
+    "implementation_progress": {},
+    "feedback_quality": {},
+    "value_signal": {},
+    "partner": {},
+    "bespoke_pressure": {},
+    "support_burden": {},
+    "blocker_persistence": {},
+    "willingness_to_buy": {},
+    "product_ready_for_conversion": {},
+    "timing_capacity_blocker": {}
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "PRIORITY_DISCOVERY",
+        "DISCOVERY",
+        "WATCHLIST",
+        "HOLD_VERIFY",
+        "REJECT",
+        "PARTNER_READY",
+        "ALIGNMENT_REQUIRED",
+        "PAUSE",
+        "CONTINUE",
+        "REPAIR",
+        "EXIT_REVIEW",
+        "CONVERSION_CANDIDATE"
+      ]
+    },
+    "base_score": {},
+    "recommended_action": {},
+    "sub_scores": {},
+    "caps_applied": {},
+    "hard_reasons": {},
+    "hold_reasons": {},
+    "alignment_reasons": {},
+    "low_confidence_dimensions": {},
+    "selected": {},
+    "coverage_summary": {},
+    "met": {},
+    "coverage_ratio": {},
+    "must_cover_unmet": {},
+    "cohort_complete": {},
+    "excluded": {},
+    "not_selected": {},
+    "health_score": {},
+    "risk_penalty": {},
+    "reasons": {},
+    "error": {}
+  },
+  "internal": [
+    "caps"
+  ],
+  "doc_terms": [],
+  "evals": []
+}

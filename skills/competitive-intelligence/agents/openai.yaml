@@ -1,13 +1,13 @@
 interface:
   display_name: "Competitive Intelligence"
   short_description: "competitor watchlist; delta digest; normalized competitor state"
-  default_prompt: "Use the Competitive Intelligence skill for: Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior sc"
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  default_prompt: "Use $competitive-intelligence for competitor watchlists, change detection, and recurring delta digests."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true

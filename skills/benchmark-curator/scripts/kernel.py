@@ -1,7 +1,7 @@
 from __future__ import annotations
 import hashlib,json,math,re
 HEX64=re.compile(r'^[0-9a-f]{64}$'); LEAK={'CLEAN','SUSPECT','CONTAMINATED'}
-MODES={'STANDARD','DEEP'}; CLASSES={'discovery','forced','negative-control','adversarial','regression'}; DIFF={'easy','medium','hard','edge'}; SPLITS={'dev','holdout'}; CONTAM={'CLEAN','SUSPECTED','KNOWN'}; LANES={'SYNTHETIC','REAL_TASK','INCIDENT','USER_SUPPLIED'}
+MODES={'STANDARD','DEEP'}; CLASSES={'discovery','forced','negative-control','adversarial','regression'}; DIFF={'easy','medium','hard','edge'}; SPLITS={'dev','holdout'}; CONTAM={'CLEAN','SUSPECTED','KNOWN'}; LANES={'SYNTHETIC','REAL_TASK','INCIDENT','USER_SUPPLIED'}; REQUIRED_CLASSES=CLASSES
 def _text(v):return isinstance(v,str) and bool(v.strip())
 def _norm(v):return ' '.join(str(v or '').casefold().split())
 def _hash(v):return hashlib.sha256(json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
@@ -12,7 +12,7 @@ def validate(x):
     for k in ('benchmark_id','revision','objective','target_skill'):
         if not _text(x.get(k)):e.append(f'{k}:required')
     required=x.get('required_classes',[])
-    if not isinstance(required,list) or not required or not all(v in CLASSES for v in required):e.append('required_classes')
+    if not isinstance(required,list) or not required or not all(v in REQUIRED_CLASSES for v in required):e.append('required_classes')
     cases=x.get('cases')
     if not isinstance(cases,list) or not cases:e.append('cases:required');cases=[]
     ids=[]; prompts=[]; cls={}; split={'dev':0,'holdout':0}; contaminated_holdout=0; provenance=0
@@ -47,21 +47,23 @@ def validate(x):
     n=len(cases)
     leakage=x.get('leakage_scan')
     leakage_status=None
-    if mode=='DEEP':
-        if not isinstance(leakage,dict):e.append('deep:leakage-scan-required')
-        else:
-            leakage_status=leakage.get('status')
-            if leakage_status not in LEAK:e.append('deep:leakage-status')
-            fp=leakage.get('corpus_fingerprint')
-            if leakage_status=='CLEAN' and (not isinstance(fp,str) or not HEX64.fullmatch(fp)):e.append('deep:leakage-fingerprint')
-            if leakage_status=='CONTAMINATED':e.append('holdout:leakage-contaminated')
-            elif leakage_status=='SUSPECT':e.append('holdout:leakage-suspect')
+    # DEEP requires a scan; a scan supplied in STANDARD is checked too, never ignored.
+    scope='deep:leakage-' if mode=='DEEP' else 'leakage:'
+    if mode=='DEEP' and not isinstance(leakage,dict):e.append('deep:leakage-scan-required')
+    elif leakage is not None and not isinstance(leakage,dict):e.append('leakage:not-object')
+    elif leakage is not None:
+        leakage_status=leakage.get('status')
+        if leakage_status not in LEAK:e.append(scope+'status')
+        fp=leakage.get('corpus_fingerprint')
+        if leakage_status=='CLEAN' and (not isinstance(fp,str) or not HEX64.fullmatch(fp)):e.append(scope+'fingerprint')
+        if leakage_status=='CONTAMINATED':e.append('holdout:leakage-contaminated')
+        elif leakage_status=='SUSPECT':e.append('holdout:leakage-suspect')
     if mode=='DEEP' and n:
         min_hold=max(2,math.ceil(n*0.2))
         if split['holdout']<min_hold:e.append('deep:holdout-too-small')
         if cls and max(cls.values())/n>0.70:e.append('deep:class-dominance')
     if e:
-        status='CONTAMINATED' if any(v in {'holdout:contaminated','holdout:leakage-contaminated'} for v in e) else ('INVALID' if any(v in {'deep:leakage-status','deep:leakage-fingerprint'} for v in e) else ('NEEDS_REVISION' if 'holdout:leakage-suspect' in e or 'deep:leakage-scan-required' in e else ('NEEDS_REBALANCE' if 'required_classes' not in e and any(v.startswith('deep:') or v=='classes:missing' for v in e) and all(not v.startswith('cases:') and ':required' not in v for v in e) else 'INVALID')))
+        status='CONTAMINATED' if any(v in {'holdout:contaminated','holdout:leakage-contaminated'} for v in e) else ('INVALID' if any(v in {'deep:leakage-status','deep:leakage-fingerprint','leakage:status','leakage:fingerprint','leakage:not-object'} for v in e) else ('NEEDS_REVISION' if 'holdout:leakage-suspect' in e or 'deep:leakage-scan-required' in e else ('NEEDS_REBALANCE' if 'required_classes' not in e and any(v.startswith('deep:') or v=='classes:missing' for v in e) and all(not v.startswith('cases:') and ':required' not in v for v in e) else 'INVALID')))
         return {'status':status,'errors':e,'split_counts':split,'missing_classes':missing,'contaminated_holdout':contaminated_holdout}
     canonical={k:x.get(k) for k in ('benchmark_id','revision','objective','target_skill','mode','required_classes','cases')}
     return {'status':'READY_TO_FREEZE','errors':[],'benchmark_hash':_hash(canonical),'case_count':n,'class_counts':cls,'split_counts':split,'provenance_coverage':round(provenance/n,3) if n else 0,'leakage_status':leakage_status or 'NOT_REQUIRED'}

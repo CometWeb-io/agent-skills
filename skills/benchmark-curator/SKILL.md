@@ -1,7 +1,14 @@
 ---
 name: benchmark-curator
 description: >-
-  Design, curate, version, and quality-control benchmark or evaluation corpora for Agent Skills and quality workflows, including task taxonomies, discovery/forced/negative controls, adversarial and regression cases, difficulty strata, holdout isolation, provenance, duplication, contamination risk, coverage balance, and immutable benchmark hashes. Use when the user asks to build or maintain an eval dataset, golden set, benchmark suite, regression corpus, holdout, challenge set, or representative test cases. Do not use to execute the model experiment or claim lift (use skill-evaluator), to design the grading rubric (use rubric-designer), to edit the candidate skill (use skill-creator), or to treat leaked/known cases as a clean holdout.
+  Design, curate, version, and quality-control benchmark or evaluation corpora for Agent Skills and
+  quality workflows, including task taxonomies, discovery/forced/negative controls, adversarial and
+  regression cases, difficulty strata, holdout isolation, provenance, duplication, contamination risk,
+  coverage balance, and immutable benchmark hashes. Do not use to execute the model experiment or
+  claim lift (use skill-evaluator), to design the grading rubric (use rubric-designer), to edit the
+  candidate skill (use skill-creator), or to treat leaked/known cases as a clean holdout. Use when the
+  user asks to build or maintain an eval dataset, golden set, benchmark suite, regression corpus,
+  holdout, challenge set, or representative test cases.
 ---
 
 # Benchmark Curator

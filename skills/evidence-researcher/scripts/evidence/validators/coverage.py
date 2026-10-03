@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
+from ..constants import GAP_SEVERITIES
 from .context import LedgerValidationState
 
 
@@ -19,7 +20,7 @@ def validate(ledger: Dict[str, Any], state: LedgerValidationState) -> None:
         cid = gap.get("claim_id")
         if cid and cid not in claim_ids:
             errors.append(f"{gid} references unknown claim_id {cid}")
-        if gap.get("severity") not in {"critical", "material", "minor"}:
+        if gap.get("severity") not in GAP_SEVERITIES:
             errors.append(f"{gid}.severity is invalid")
         if not gap.get("what_closes_it"):
             warnings.append(f"{gid} has no what_closes_it")

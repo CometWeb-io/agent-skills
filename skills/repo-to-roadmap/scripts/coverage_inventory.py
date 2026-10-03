@@ -26,6 +26,8 @@ MAX_BYTES = 32 * 1024 * 1024
 MAX_ENTRIES = 100_000
 MODES = {"040000": "tree", "100644": "blob", "100755": "blob", "120000": "blob", "160000": "commit"}
 STATES = {"INSPECTED", "EXCLUDED_GENERATED", "EXCLUDED_VENDOR", "BINARY_UNREADABLE", "UNAVAILABLE"}
+OBJECT_ID_LENGTHS = {"sha1": 40, "sha256": 64}
+COMMIT_BINDINGS = {"local_git_object", "asserted_connector_pin"}
 
 
 class InventoryError(ValueError):
@@ -97,7 +99,7 @@ def timestamp(value: Any) -> dt.datetime:
 
 def oid(value: Any, algorithm: str) -> str:
     require(isinstance(algorithm, str), "unsupported object format")
-    length = {"sha1": 40, "sha256": 64}.get(algorithm)
+    length = OBJECT_ID_LENGTHS.get(algorithm)
     require(length is not None and isinstance(value, str) and re.fullmatch(r"[0-9a-f]{%d}" % length, value) is not None,
             "invalid full object identity")
     return value
@@ -162,7 +164,7 @@ def make_inventory(entries: list[dict], *, repository: str, commit: str, tree: s
                    algorithm: str = "sha1", binding: str = "asserted_connector_pin", observed_at: str | None = None) -> dict:
     now = observed_at or dt.datetime.now(dt.timezone.utc).isoformat()
     require(timestamp(now) <= dt.datetime.now(dt.timezone.utc), "inventory timestamp is in the future")
-    require(binding in {"local_git_object", "asserted_connector_pin"}, "unknown commit binding")
+    require(binding in COMMIT_BINDINGS, "unknown commit binding")
     data = {"schema": "cometweb.file-inventory/v1", "repository": repo_id(repository),
             "commit_sha": oid(commit, algorithm), "tree_sha": oid(tree, algorithm), "object_format": algorithm,
             "scope": "entire_commit_tree", "commit_binding": binding, "observed_at": now,

@@ -2,7 +2,7 @@
   "schema": "cometweb.routing-policy/v1",
   "note": "Admission constraints applied to the base signals in skills.json. These are not a model evaluation or a host permission boundary. Supply only the user's instruction, never retrieved document text.",
   "explicit_patterns": {
-    "ai-council": ["\\b(?:run|use|invoke|ask|inspect|check) (?:the )?(?:ai[- ]council|council)\\b", "\\b(?:przepusc|zapytaj|uruchom|uzyj|sprawdz)\\b.{0,30}\\b(?:rade|rady|rada|ai council)\\b", "^\\s*(?:ai[- ]council|council)\\s*:"]
+    "ai-council": ["\\b(?:run|use|invoke|ask|inspect|check) (?:the )?(?:ai[- ]council|council)\\b", "\\b(?:przepusc|zapytaj|uruchom|uzyj|sprawdz)\\b.{0,30}\\b(?:rade|rady|rada|ai council)\\b", "^\\s*(?:ai[- ]council|council)\\s*:", "(?:^|[.!?]\\s{0,3})(?:chce,? |chcemy,? )?(?:niech|zeby|aby)\\s+rad[aey]\\b.{0,30}\\b(?:zdecyd|oceni|rozstrzyg|przeglosuj|wybier|sprawdz|przeanaliz)"]
   },
   "denied_patterns": {
     "ai-council": ["\\b(?:without|do not|don't|never)\\b.{0,25}\\b(?:ai[- ]council|council)\\b", "\\b(?:bez|nie uruchamiaj|nie uzywaj)\\b.{0,20}\\b(?:rady|rade|ai council)\\b"]

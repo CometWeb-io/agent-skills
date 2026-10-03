@@ -1695,5 +1695,79 @@
       "errors": [],
       "closed": 1
     }
+  },
+  {
+    "id": "mode-unknown-is-not-silently-standard",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "Regression passes",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "Bad guard",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "diff clean"
+              ],
+              "fresh": true,
+              "method": "render-and-compare",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ],
+      "mode": "deep"
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "mode:invalid"
+      ],
+      "strict_closure": false
+    }
+  },
+  {
+    "id": "mode-standard-valid",
+    "input": {
+      "candidate_id": "cand-1",
+      "items": [
+        {
+          "done_when": "Regression passes",
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "root_cause": "Bad guard",
+          "status": "CLOSED",
+          "verification_evidence": [
+            {
+              "candidate_id": "cand-1",
+              "evidence": [
+                "diff clean"
+              ],
+              "fresh": true,
+              "method": "render-and-compare",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "result": "PASS"
+            }
+          ]
+        }
+      ],
+      "mode": "STANDARD"
+    },
+    "expect": {
+      "status": "VALID",
+      "errors": [],
+      "closed": 1
+    }
   }
 ]

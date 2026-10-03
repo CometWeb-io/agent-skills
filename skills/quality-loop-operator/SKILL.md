@@ -2,14 +2,15 @@
 name: quality-loop-operator
 description: >-
   Orchestrate the CometWeb artifact/repository/skill quality loop across briefing, creation, review,
-  adversarial testing, repair, acceptance, measurement, selective revalidation, and skill runtime lifecycle
-  while preserving candidate/contract identity, frozen policy/rubric locks, finding lineage, rollout state,
-  rollback readiness, disagreement state, and quality debt. Use when the user wants one entry point to run
-  or resume the full quality workflow, coordinate quality specialists, process a batch/campaign, reconcile
-  findings, or govern a measured skill candidate through canary/staged rollout. Do not use for general
+  adversarial testing, repair, acceptance, measurement, selective revalidation, and skill runtime
+  lifecycle while preserving candidate/contract identity, frozen policy/rubric locks, finding lineage,
+  rollout state, rollback readiness, disagreement state, and quality debt. Do not use for general
   multi-skill orchestration outside quality workflows, to replace specialist analysis, to make
-  consequential strategy decisions, or to declare software production readiness; use skill-orchestrator,
-  ai-council, or release-readiness for those cases.
+  consequential strategy decisions, or to declare software production readiness; use
+  skill-orchestrator, ai-council, or release-readiness for those cases. Use when the user wants one
+  entry point to run or resume the full quality workflow, coordinate quality specialists, process a
+  batch/campaign, reconcile findings, or govern a measured skill candidate through canary/staged
+  rollout.
 ---
 
 # Quality Loop Operator

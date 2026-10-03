@@ -1,13 +1,13 @@
 interface:
-  display_name: Benchmark Curator
-  short_description: benchmark and eval corpus design
-  default_prompt: 'Use the Benchmark Curator skill for: Design, curate, version, and quality-control benchmark or evaluation corpora for Agent Skills and quality workflows, including task taxonomies, discovery/forced/negative controls, adversarial and regr'
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  display_name: "Benchmark Curator"
+  short_description: "benchmark and eval corpus design"
+  default_prompt: "Use $benchmark-curator for benchmark corpora, holdouts, contamination controls, and revision hashes."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true

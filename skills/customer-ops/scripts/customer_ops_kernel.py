@@ -43,6 +43,10 @@ RETENTION_DIMENSIONS = (
 
 TERMINAL_COMMITMENT_STATES = {"FULFILLED", "RENEGOTIATED", "CANCELLED"}
 
+CASE_GATE_STAGES = ("TRIAGED", "GITHUB_READY", "RESOLVED", "VERIFIED", "CLOSED", "CUSTOMER_SEND")
+
+CUSTOMER_FOLLOWUP_STATUSES = ("sent", "confirmed", "waived", "not_required")
+
 CASE_TRANSITIONS = {
     "NEW": {"TRIAGED", "DUPLICATE", "MERGED", "CANCELLED"},
     "TRIAGED": {"OWNED", "IN_PROGRESS", "WAITING_CUSTOMER", "WAITING_INTERNAL", "ENGINEERING", "INCIDENT", "RESOLVED", "DUPLICATE", "MERGED", "CANCELLED"},
@@ -679,6 +683,13 @@ def dedupe_pair(data: Dict[str, Any]) -> Dict[str, Any]:
 
 def commitment_status(data: Dict[str, Any]) -> Dict[str, Any]:
     current_state = str(data.get("state") or "OPEN").strip().upper()
+    if current_state not in COMMITMENT_TRANSITIONS:
+        return {
+            "kernel_version": VERSION,
+            "method": "customer_ops_commitment_status_v2",
+            "status": "UNKNOWN",
+            "reason": "state must be one of: " + ", ".join(COMMITMENT_TRANSITIONS),
+        }
     if current_state in TERMINAL_COMMITMENT_STATES:
         return {
             "kernel_version": VERSION,
@@ -763,6 +774,8 @@ def case_gate(data: Dict[str, Any]) -> Dict[str, Any]:
     stage = str(data.get("stage") or "").strip().upper()
     if not stage:
         raise ValueError("stage is required")
+    if stage not in CASE_GATE_STAGES:
+        raise ValueError("stage must be one of " + ", ".join(CASE_GATE_STAGES))
 
     missing: List[str] = []
     warnings: List[str] = []
@@ -818,7 +831,7 @@ def case_gate(data: Dict[str, Any]) -> Dict[str, Any]:
         if not verified and not (allow_unverified and exception_reason):
             blockers.append("case must be verified or have explicit approved unverified-close reason")
         follow = str(data.get("customer_followup_status") or "").strip().casefold()
-        if follow not in {"sent", "confirmed", "waived", "not_required"}:
+        if follow not in CUSTOMER_FOLLOWUP_STATUSES:
             blockers.append("customer_followup_status must be sent, confirmed, waived, or not_required")
         open_commitments = _int_dimension(data, "open_commitments_count", 0, 100000, default=0)
         if open_commitments > 0 and not _nonempty(data.get("open_commitments_exception_reason")):
@@ -840,8 +853,8 @@ def case_gate(data: Dict[str, Any]) -> Dict[str, Any]:
         if data.get("canonical_incident_comms_conflict") is True:
             blockers.append("message conflicts with canonical incident communication")
 
-    else:
-        raise ValueError("stage must be one of TRIAGED, GITHUB_READY, RESOLVED, VERIFIED, CLOSED, CUSTOMER_SEND")
+    else:  # pragma: no cover - guarded by CASE_GATE_STAGES above
+        raise ValueError("stage must be one of " + ", ".join(CASE_GATE_STAGES))
 
     missing = sorted(set(missing))
     blockers = sorted(set(blockers))

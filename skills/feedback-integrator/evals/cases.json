@@ -1044,5 +1044,50 @@
         }
       ]
     }
+  },
+  {
+    "id": "min-count-not-integer-invalid-v172",
+    "input": {
+      "records": [],
+      "min_count": "2"
+    },
+    "expect": {
+      "status": "INVALID",
+      "invalid": [
+        {
+          "reason": "min_count:invalid"
+        }
+      ]
+    }
+  },
+  {
+    "id": "min-count-zero-invalid-v172",
+    "input": {
+      "records": [],
+      "min_count": 0
+    },
+    "expect": {
+      "status": "INVALID",
+      "invalid": [
+        {
+          "reason": "min_count:invalid"
+        }
+      ]
+    }
+  },
+  {
+    "id": "min-count-bool-invalid-v172",
+    "input": {
+      "records": [],
+      "min_count": true
+    },
+    "expect": {
+      "status": "INVALID",
+      "invalid": [
+        {
+          "reason": "min_count:invalid"
+        }
+      ]
+    }
   }
 ]

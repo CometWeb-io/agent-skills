@@ -39,6 +39,8 @@ LIVE_WEIGHTS = {
     "transferability": 5.0,
 }
 
+STAGES = ("research", "live")
+
 ENGAGEMENT_MODES = {
     "RESEARCH_PARTNER",
     "DESIGN_PARTNER",
@@ -363,17 +365,17 @@ def score_live(payload: dict[str, Any]) -> dict[str, Any]:
 
 def score(payload: dict[str, Any], stage: str) -> dict[str, Any]:
     stage = stage.lower()
+    if stage not in STAGES:
+        raise ValueError("stage must be research or live")
     if stage == "research":
         return score_research(payload)
-    if stage == "live":
-        return score_live(payload)
-    raise ValueError("stage must be research or live")
+    return score_live(payload)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", help="Input JSON file; omit to read stdin")
-    parser.add_argument("--stage", choices=("research", "live"), help="Override payload stage")
+    parser.add_argument("--stage", choices=STAGES, help="Override payload stage")
     parser.add_argument("--pretty", action="store_true", help="Pretty-print JSON")
     args = parser.parse_args()
 

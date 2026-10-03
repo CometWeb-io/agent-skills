@@ -216,6 +216,24 @@ CASES = [
      "expected_errors": ["status: complete contradicts a non-empty not_verified"]},
 ]
 
+# The one machine-readable statement of the contract above, checked against the
+# validator, references/output-contract.md and evals/cases.json by
+# tooling/skill_contracts.py.
+CONTRACT = {
+    "schema": "cometweb.skill-contract/v1",
+    "docs": ["references/output-contract.md"],
+    "scripts": {
+        "scripts/output_contract.py": {"input": "json", "role": "validator", "enums": {"STATUSES": "status"}},
+        "scripts/run_evals.py": {"input": "none", "role": "eval-harness"},
+    },
+    "fields": {"summary": {}, "status": {"enum": ["complete", "partial", "blocked"]}, "not_verified": {}},
+    "outputs": {},
+    "internal": [],
+    "doc_terms": [],
+    "evals": [{"path": "evals/cases.json", "cases": "", "input": "input",
+               "errors": "expected_errors", "pass": ["pass"]}],
+}
+
 PLACEHOLDER = "Scaffold placeholder from tooling/new_skill.py; replace with a real case"
 
 # Package files whose content is a working placeholder. next_steps() names each
@@ -226,6 +244,7 @@ PLACEHOLDER_FILES = (
     ("references/output-contract.md", "what the skill returns, and in what shape"),
     ("scripts/output_contract.py", "the deterministic rules; eval_strength.py mutates this module"),
     ("evals/cases.json", "one case per rule, pinning the exact `expected_errors` list"),
+    ("references/contract.json", "every payload field and enum, bound to the validator's constants"),
 )
 
 
@@ -286,6 +305,7 @@ def create(skill_id: str, description: str, force: bool, root: Path = ROOT) -> P
     (target / "CHANGELOG.md").write_text(CHANGELOG.format(today=today), encoding="utf-8")
     (target / "references" / "output-contract.md").write_text(OUTPUT_CONTRACT, encoding="utf-8")
     (target / "evals" / "cases.json").write_text(json.dumps(CASES, indent=2) + "\n", encoding="utf-8")
+    (target / "references" / "contract.json").write_text(json.dumps(CONTRACT, indent=2) + "\n", encoding="utf-8")
     (target / "scripts" / "output_contract.py").write_text(KERNEL.format(skill_id=skill_id), encoding="utf-8")
     harness = target / "scripts" / "run_evals.py"
     harness.write_text(RUN_EVALS.format(skill_id=skill_id), encoding="utf-8")

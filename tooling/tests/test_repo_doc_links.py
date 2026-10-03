@@ -1,11 +1,11 @@
-"""Links in the repository's own documentation have to resolve.
+"""Links in every Markdown file in the repository have to resolve.
 
-test_skill_doc_references.py covers paths inside SKILL.md. The front-of-house
-documents — README, CONTRIBUTING, INSTALL, docs/, profiles/, protocol/ — are
-what a visitor reads first, and a link there that 404s on GitHub is the first
-thing they notice. Relative targets must exist, and a `#fragment` must match a
-heading in the target file the way GitHub slugs it. External URLs are not
-fetched: the suite runs offline.
+That is the front-of-house documents (README, CONTRIBUTING, INSTALL, docs/,
+profiles/, protocol/), the routing and eval notes, the host rule files
+(`.mdc`), and every skill package's own Markdown. A link that 404s on GitHub
+or inside an installed package is the first thing a reader notices. Relative
+targets must exist, and a `#fragment` must match a heading in the target file
+the way GitHub slugs it. External URLs are not fetched: the suite runs offline.
 """
 
 from __future__ import annotations
@@ -22,13 +22,14 @@ sys.path.insert(0, str(ROOT / "tooling"))
 
 from markdown_resources import destinations, without_code  # noqa: E402
 
+# Build output, caches and environments are not documentation.
+SKIP_PARTS = {".git", ".venv", "venv", "node_modules", "dist", "build", "__pycache__",
+              ".pytest_cache", ".ruff_cache", ".mypy_cache"}
 DOCS = sorted(
-    {
-        *(ROOT / name for name in ("README.md", "CONTRIBUTING.md", "INSTALL.md", "SECURITY.md", "AGENTS.md")),
-        *ROOT.glob("docs/**/*.md"),
-        *ROOT.glob("profiles/**/*.md"),
-        *ROOT.glob("protocol/**/*.md"),
-    }
+    path
+    for pattern in ("*.md", "*.mdc")
+    for path in ROOT.rglob(pattern)
+    if path.is_file() and not SKIP_PARTS.intersection(path.relative_to(ROOT).parts)
 )
 EXTERNAL = re.compile(r"^(?:[a-z][a-z0-9+.-]*:|//)", re.I)
 
@@ -77,9 +78,13 @@ def test_relative_links_resolve(doc: Path) -> None:
 
 def test_the_sweep_covers_the_front_door() -> None:
     # A glob that silently matched nothing would turn this file into a no-op.
-    names = {str(p.relative_to(ROOT)) for p in DOCS}
-    assert {"README.md", "CONTRIBUTING.md", "docs/README.md", "profiles/cometweb/PROFILE.md"} <= names
-    assert sum(len(destinations(p.read_text(encoding="utf-8"))) for p in DOCS) >= 50
+    names = {p.relative_to(ROOT).as_posix() for p in DOCS}
+    assert {"README.md", "CONTRIBUTING.md", "docs/README.md", "docs/ROUTING.md", "profiles/cometweb/PROFILE.md",
+            "evals/routing/README.md", ".github/PULL_REQUEST_TEMPLATE.md", "extras/cursor-routing.mdc",
+            "skills/ai-council/SKILL.md"} <= names
+    # Every Markdown file the repository tracks is swept, skill packages included.
+    assert len(names) >= 500, len(names)
+    assert sum(len(destinations(p.read_text(encoding="utf-8"))) for p in DOCS) >= 200
 
 
 def test_checker_reports_a_missing_file_and_a_missing_heading(tmp_path: Path) -> None:

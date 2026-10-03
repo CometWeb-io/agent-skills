@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2] - 2026-10-03
+
+- `mode` was documented as `STANDARD|DEEP`, but the kernel only compared it with `DEEP`, so `mode: deep` (or any typo) silently fell back to standard closure without strict evidence checks. Any other value now returns `mode:invalid`.
+- `references/output-contract.md` names the kernel's full output (`closed`, `open`, `strict_closure`, `portfolio_mode`, `effort_units`) and the five ledger fields the kernel does not check (`schema`, `base_candidate_id`, `protected_invariants`, `regressions`, `remaining_open`).
+- New `references/contract.json` declares the ledger once; `tooling/skill_contracts.py` checks it against the kernel, the reference and every eval case. Two cases added (unknown mode, explicit `STANDARD`).
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.7.1] - 2026-10-03
 
 - `references/output-contract.md` is now the one ledger schema and matches `scripts/kernel.py`. It previously omitted fields the kernel requires (`done_when`, `reopen_of`, `verification_plan{method, checks[]}`, `protected_invariant_checks`, `decision_source.expires_at`, the portfolio fields), and `references/repair-contract.md` documented `dependencies[]` where the kernel reads `depends_on`, so dependencies written as documented were ignored. `SKILL.md` lists `ROLLBACK` and says `root_cause`, not `root_cause_id`. `scripts/kernel.py` runs as a command on a JSON file or stdin.

@@ -2,12 +2,12 @@
 name: seo-geo-aeo-maxxing
 description: >
   Run evidence-governed, multi-pillar website visibility audits across technical SEO, relevance,
-  authority/trust, GEO/AI citation readiness, and AEO/answer extraction. Use when the user explicitly
-  asks for SEO+GEO+AEO or "maxxing", a broad end-to-end search/AI visibility audit, cross-pillar
-  diagnosis, same-rubric competitor comparison, or repeat/delta audit. Use PILLAR only when this skill
-  is explicitly requested for one pillar. Do not use for isolated schema/meta tasks, ongoing competitor
-  monitoring, whole-product roadmapping, or release-candidate GO/NO-GO; hand accepted findings to the
-  corresponding specialist. Diagnosis only; never mutate live sites.
+  authority/trust, GEO/AI citation readiness, and AEO/answer extraction. Do not use for isolated
+  schema/meta tasks, ongoing competitor monitoring, whole-product roadmapping, or release-candidate
+  GO/NO-GO; hand accepted findings to the corresponding specialist. Use when the user explicitly asks
+  for SEO+GEO+AEO or "maxxing", a broad end-to-end search/AI visibility audit, cross-pillar diagnosis,
+  same-rubric competitor comparison, or repeat/delta audit. Use PILLAR only when this skill is
+  explicitly requested for one pillar. Diagnosis only; never mutate live sites.
 ---
 
 # SEO / GEO / AEO Maxxing

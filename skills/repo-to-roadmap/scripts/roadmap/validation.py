@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Tuple
 
 from .constants import (
+    ASSESSMENT_MODES,
     CAPABILITY_STATES,
     EFFORT_FACTORS,
     GATE_STATUSES,
@@ -96,7 +97,7 @@ def validate_roadmap(payload: Dict[str, Any], *, expected_scope_sha256: str | No
     elif not normalized(assessment.get("mode", "")):
         warnings.append("assessment.mode missing")
 
-    if isinstance(assessment, dict) and "mode" in assessment and (not isinstance(assessment["mode"], str) or normalized_upper(assessment["mode"]) not in {"STANDARD", "EXHAUSTIVE", "DELTA", "FOCUSED"}):
+    if isinstance(assessment, dict) and "mode" in assessment and (not isinstance(assessment["mode"], str) or normalized_upper(assessment["mode"]) not in ASSESSMENT_MODES):
         errors.append("assessment.mode is unknown")
     contract_hash = assessment_contract_sha256(payload) if isinstance(assessment, dict) else None
     if expected_scope_sha256 is not None and expected_scope_sha256 != contract_hash:

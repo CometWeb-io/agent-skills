@@ -1,0 +1,146 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/benchmark-model.md",
+    "references/output-contract.md",
+    "references/leakage-detection.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "MODES": "mode",
+        "REQUIRED_CLASSES": "required_classes",
+        "LEAK": "leakage_scan.status",
+        "CLASSES": "class",
+        "DIFF": "difficulty",
+        "SPLITS": "split",
+        "CONTAM": "contamination_status",
+        "LANES": "source_lane"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "benchmark_id": {},
+    "revision": {},
+    "objective": {},
+    "target_skill": {},
+    "mode": {
+      "enum": [
+        "STANDARD",
+        "DEEP"
+      ]
+    },
+    "required_classes": {
+      "enum": [
+        "discovery",
+        "forced",
+        "negative-control",
+        "adversarial",
+        "regression"
+      ]
+    },
+    "leakage_scan": {},
+    "leakage_scan.status": {
+      "enum": [
+        "CLEAN",
+        "SUSPECT",
+        "CONTAMINATED"
+      ]
+    },
+    "corpus_fingerprint": {},
+    "cases": {},
+    "id": {},
+    "class": {
+      "enum": [
+        "discovery",
+        "forced",
+        "negative-control",
+        "adversarial",
+        "regression"
+      ]
+    },
+    "difficulty": {
+      "enum": [
+        "easy",
+        "medium",
+        "hard",
+        "edge"
+      ]
+    },
+    "split": {
+      "enum": [
+        "dev",
+        "holdout"
+      ]
+    },
+    "contamination_status": {
+      "enum": [
+        "CLEAN",
+        "SUSPECTED",
+        "KNOWN"
+      ]
+    },
+    "source_lane": {
+      "enum": [
+        "SYNTHETIC",
+        "REAL_TASK",
+        "INCIDENT",
+        "USER_SUPPLIED"
+      ]
+    },
+    "provenance_ref": {},
+    "prompt": {},
+    "expected_behavior": {},
+    "assertions": {},
+    "rubric_hash": {
+      "unread": true
+    }
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "READY_TO_FREEZE",
+        "NEEDS_REBALANCE",
+        "NEEDS_REVISION",
+        "CONTAMINATED",
+        "INVALID"
+      ]
+    },
+    "errors": {},
+    "benchmark_hash": {},
+    "case_count": {},
+    "class_counts": {},
+    "split_counts": {},
+    "provenance_coverage": {},
+    "leakage_status": {
+      "enum": [
+        "CLEAN",
+        "NOT_REQUIRED"
+      ]
+    },
+    "missing_classes": {},
+    "contaminated_holdout": {}
+  },
+  "internal": [
+    "input",
+    "holdout"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "READY_TO_FREEZE"
+      ]
+    }
+  ]
+}

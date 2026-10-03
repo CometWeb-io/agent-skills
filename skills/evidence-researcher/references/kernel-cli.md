@@ -32,3 +32,21 @@ With `--require-ready`, exit 0 means the deterministic research gate is READY; e
 Zero-cache temporal checks accept `--research-id` and `--research-started-at`; full ledger commands read `research_id` and `research_contract.started_at`. See [freshness.md](freshness.md) for migration and admission rules. Missing verification data must be gathered, not generated to satisfy validation.
 
 `refresh-plan.dependent_claim_ids` lists dependent inferences affected by source refresh. The kernel does not execute refresh work. A migrated v1 falsifier flag is only historical metadata; its reminder is incomplete until a real search is performed and recorded.
+
+## Output keys
+
+```text
+validate        valid, errors, warnings
+coverage        material_claim_count, critical_gaps, material_gaps,
+                unresolved_critical_contradictions, unresolved_material_contradictions,
+                claims[] (claim_id, status, ready, freshness_admissible, ...)
+audit           research_status (READY | PARTIAL | REFRESH_REQUIRED | BLOCKED_BY_CONTRADICTION),
+                reason, validation, coverage, pack_hash
+temporal        temporal_status (CURRENT | NEAR_EXPIRY | STALE | SUPERSEDED | DRAFT |
+                NOT_YET_EFFECTIVE | UNKNOWN), reason, computed_expires_at
+refresh-plan    dependent_claim_ids, items[] (claim_id, source_id, temporal_status, action,
+                computed_expires_at, reason)
+stop            stop, reason, research_status
+```
+
+The ledger field definitions live in `evidence-graph.md`, `research-contract.md` and `freshness.md`; v1 input keys accepted by `migrate-v1` are listed in `migration-v1-v2.md`.

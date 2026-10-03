@@ -11,9 +11,16 @@ PROFILES={
  'SKILL_QUALITY':['skill-auditor','rubric-designer','benchmark-curator','skill-evaluator'],
 }
 MODES={'LIGHT','STANDARD','DEEP','DELTA'}
+RECOMMENDED_MODES=MODES
 STATES={'PENDING','RUNNING','PASS','CHANGES_REQUIRED','BLOCKED','DEFER','SKIPPED'}
 HEX64=re.compile(r'^[0-9a-f]{64}$')
 DEBT_SEV={'BLOCKER','MAJOR','MINOR','NOTE'};DEBT_STATUS={'OPEN','CLOSED','SUPERSEDED'}
+DEBT_KINDS={'FINDING','WAIVER','CONTROL','TEST_GAP','EVIDENCE_GAP'}
+REPLAY_STATUS={'REPRODUCIBLE','DRIFT','INCOMPLETE'}
+CACHE_DECISIONS={'REUSE','RECOMPUTE'}
+RECONCILIATION_CLASSES={'CONSENSUS','NEAR_CONSENSUS','CONFLICT','UNIQUE'}
+EVALUATOR_RESULTS={'IMPROVED','NO_MATERIAL_CHANGE','TRADEOFF','REGRESSION','INSUFFICIENT_EVIDENCE','DESIGN_READY'}
+STAGE_SKILLS={skill for stages in PROFILES.values() for skill in stages}
 ROLLOUT_STATES={'NOT_REQUESTED','READY_FOR_CANARY','CANARY_RUNNING','READY_FOR_STAGED','STAGED_RUNNING','READY_FOR_FULL','FULL','ROLLBACK_REQUIRED','DEPRECATED','BLOCKED'}
 COMPAT_STATES={'BACKWARD_COMPATIBLE','BREAKING','UNKNOWN'}
 HOST_SUPPORT={'REAL_HOST_VERIFIED','STATIC_SHAPE_ONLY','DEGRADED','UNSUPPORTED','UNKNOWN'}
@@ -53,14 +60,15 @@ def validate(payload):
     errors.extend(lock_errors)
     adaptive=payload.get('adaptive_depth')
     if adaptive is not None:
-        if not isinstance(adaptive,dict) or adaptive.get('recommended_mode') not in MODES: errors.append('adaptive_depth:invalid')
+        if not isinstance(adaptive,dict) or adaptive.get('recommended_mode') not in RECOMMENDED_MODES: errors.append('adaptive_depth:invalid')
         elif adaptive.get('recommended_mode')!=mode and not (adaptive.get('override_approved') is True and _text(adaptive.get('override_rationale'))): errors.append('adaptive_depth:mode-mismatch')
     replay=payload.get('replay_status')
-    if replay not in {None,'REPRODUCIBLE','DRIFT','INCOMPLETE'}: errors.append('replay_status:invalid')
+    if replay is not None and replay not in REPLAY_STATUS: errors.append('replay_status:invalid')
     cache=payload.get('cache_reuse',[])
     if not isinstance(cache,list): errors.append('cache_reuse:not-list'); cache=[]
     for i,row in enumerate(cache):
         if not isinstance(row,dict): errors.append(f'cache[{i}]:not-object'); continue
+        if not isinstance(row.get('decision'),str) or row.get('decision') not in CACHE_DECISIONS: errors.append(f'cache[{i}]:decision'); continue
         if row.get('decision')=='REUSE' and row.get('fingerprint_match') is not True: errors.append(f'cache[{i}]:unsafe-reuse')
         if row.get('decision')=='REUSE' and row.get('source_status')!='PASS': errors.append(f'cache[{i}]:source-not-pass')
     as_of=_dt(payload.get('as_of')) if payload.get('quality_debt') is not None else None
@@ -73,6 +81,7 @@ def validate(payload):
         sev=row.get('severity');status=row.get('status')
         if sev not in DEBT_SEV: errors.append(f'debt[{i}]:severity'); continue
         if status not in DEBT_STATUS: errors.append(f'debt[{i}]:status'); continue
+        if row.get('kind') is not None and (not isinstance(row.get('kind'),str) or row.get('kind') not in DEBT_KINDS): errors.append(f'debt[{i}]:kind'); continue
         due=_dt(row.get('due_at')) if row.get('due_at') is not None else None
         expired=bool(status=='OPEN' and due and as_of and due<=as_of)
         if status=='OPEN' and (sev=='BLOCKER' or (expired and (sev=='MAJOR' or row.get('kind') in {'WAIVER','CONTROL'}))): blocking_debt+=1
@@ -84,9 +93,9 @@ def validate(payload):
     for i,row in enumerate(rows):
         if not isinstance(row,dict): errors.append(f'stage[{i}]:not-object'); continue
         skill=row.get('skill'); state=row.get('state')
-        if skill not in required: errors.append(f'stage[{i}]:unexpected-skill'); continue
+        if not isinstance(skill,str) or skill not in required: errors.append(f'stage[{i}]:unexpected-skill'); continue
         if skill in by: errors.append(f'stage[{i}]:duplicate-skill'); continue
-        if state not in STATES: errors.append(f'stage[{i}]:state'); continue
+        if not isinstance(state,str) or state not in STATES: errors.append(f'stage[{i}]:state'); continue
         idx=required.index(skill)
         if idx<last_index: errors.append(f'stage[{i}]:out-of-order')
         last_index=max(last_index,idx); by[skill]=row
@@ -103,6 +112,7 @@ def validate(payload):
         if isinstance(bm,dict) and bm.get('state')=='PASS':
             if not isinstance(bm_hash,str) or not HEX64.fullmatch(bm_hash): errors.append('skill-quality:benchmark-hash')
             if rub_hash is None or bm.get('rubric_hash')!=rub_hash: errors.append('skill-quality:benchmark-rubric-mismatch')
+        if isinstance(ev,dict) and ev.get('result') is not None and (not isinstance(ev.get('result'),str) or ev.get('result') not in EVALUATOR_RESULTS): errors.append('skill-quality:evaluator-result')
         if isinstance(ev,dict) and ev.get('state')=='PASS':
             if rub_hash is None or ev.get('rubric_hash')!=rub_hash: errors.append('skill-quality:evaluator-rubric-mismatch')
             if bm_hash is None or ev.get('benchmark_hash')!=bm_hash: errors.append('skill-quality:evaluator-benchmark-mismatch')
@@ -141,6 +151,7 @@ def validate(payload):
     for i,row in enumerate(conflicts):
         if not isinstance(row,dict): errors.append(f'reconciliation[{i}]:not-object'); continue
         if row.get('candidate_id') not in {None,cid}: errors.append(f'reconciliation[{i}]:candidate-mismatch')
+        if not isinstance(row.get('status'),str) or row.get('status') not in RECONCILIATION_CLASSES: errors.append(f'reconciliation[{i}]:status')
         if row.get('status')=='CONFLICT' and row.get('resolved') is not True: unresolved+=1
         if row.get('resolved') is True and not _text(row.get('resolution_basis')): errors.append(f'reconciliation[{i}]:resolution-without-basis')
     if errors: return {'status':'INVALID','next_stage':None,'errors':errors,'unresolved_conflicts':unresolved,'blocking_quality_debt':blocking_debt}

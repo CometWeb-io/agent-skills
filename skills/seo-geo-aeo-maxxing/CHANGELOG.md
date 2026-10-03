@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.1 — 2026-10-03
+
+- `score_maxx.py` merged each check row over its registry definition, so a row carrying `weight`, `pillar`, `na_policy` or any other registry field silently rescored the check: a FAIL with `"weight": 0` left MAXX unchanged. Such a row is now rejected with `<id> cannot override registry field(s): ...`; `tests/test_score_maxx.py` pins the exact message.
+- The audit input was defined only by the template generator and the scorer. `references/scoring.md` now lists every input key (including `custom_weights`, `needed`, `reason`, `distribution`, the single-`source` override form and the `MAXX_AS_OF_DATE` fallback) and the score output keys `compare_scores.py` reads.
+- New `references/contract.json` binds `mode`, `verdict` and `active_pillars` to the scorer's `MODES`, `VALID_VERDICTS` and `PILLARS`, and checks `tests/sample_audit.json` against the documented input.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## 1.3.0 — 2026-10-03
 
 - Front door cut from 12,842 to 11,894 bytes. With the untrusted-content block added, the eleven-line workflow summary is replaced by one line; Steps 0-10 carry the same order. The two-object GEO-06 evidence example moved to `references/evidence-policy.md` (which gains a Contents section), the `freshness_overrides` example to the "Refresh protocol" section of `references/live-source-registry.md`, and the bundled-modules tree was dropped because every module is already named where it is used. The quality preflight now names when to load the runtime policy instead of "once per task".

@@ -19,7 +19,7 @@ and exits non-zero if any gate fails or if a gate modified the checkout.
 
 | Option | Effect |
 | --- | --- |
-| `--fast` | Leave out pytest, eval strength, the plugin-version record, package builds, the history leak scan and `pip-audit` |
+| `--fast` | Leave out pytest, eval strength, the plugin-version record, package builds, the history leak scan, semgrep (`sast`) and `pip-audit` |
 | `--fix` | Run the selected gates' generators first: registry sync, adapters and README catalog, shared copies, context table, `uv lock` |
 | `--only ids` / `--skip ids` | Comma-separated gate ids; `--list` shows them all |
 | `--verbose` | Print the output of passing gates too |
@@ -59,17 +59,35 @@ uv run python tooling/check_all.py --fast      # passes immediately
 ```
 
 This writes the package and registers it: the `registry/skills.json` entry, the
-README catalog row, three positive and two negative routing cases, and this
-skill's rows in the context and eval-strength baselines (no other skill's rows
-are re-recorded). Generated adapters are rebuilt by `generate_adapters.py`.
+README catalog row, three positive and two negative routing cases, an eval
+harness that pins a small output-contract validator, and this skill's rows in
+the context and eval-strength baselines (no other skill's rows are
+re-recorded). `--no-register` writes the package only. Everything it writes is
+a placeholder that works. Replace it in this order:
 
-Everything it writes is a placeholder that works. Replace, in this order:
-`SKILL.md` and `references/output-contract.md` (copy a changed description
-into the registry entry too); the validator in
-`scripts/output_contract.py` with one case per rule in `evals/cases.json`
-(pin the exact `errors` list); and the `my-new-skill-scaffold-*` routing cases,
-`routing_signals`, `owns` and trigger examples. Then run the flow above.
-`--no-register` writes the package only.
+1. **Write the skill.** Replace the template text in `skills/my-new-skill/SKILL.md`
+   and `references/output-contract.md`; keep `SKILL.md` short, depth goes in
+   `references/`. A changed description goes into `registry/skills.json` as
+   well; `validate_repo.py` compares the two.
+2. **Make the evals real.** Replace `scripts/output_contract.py` and
+   `evals/cases.json` with the skill's real rules, one case per rule, pinning
+   the exact error list. `eval_strength.py` replaces each `if` guard in the
+   modules the harness imports with `if False:`, one at a time, and fails a
+   harness that still passes; rules written inside `run_evals.py` itself are
+   never measured, and a harness that holds no guard fails the suite. Keep
+   `references/contract.json` in step: it lists every payload field and enum
+   once, and `tooling/skill_contracts.py` fails when the validator, the
+   reference or an eval case disagrees with it.
+3. **Make routing real.** Replace the `my-new-skill-scaffold-*` cases in
+   `evals/routing/suite.json` and the `routing_signals`, `owns` and trigger
+   examples in `registry/skills.json`. Each skill needs three prompts it must
+   claim and two it must not; [docs/ROUTING.md](docs/ROUTING.md) explains how
+   they are scored.
+4. **Bump the plugin version.** A new skill changes what the plugin ships; see
+   [Plugin version](#plugin-version).
+5. **Regenerate and run every gate** with the [flow](#the-flow) above. A grown
+   front door or a changed eval-strength count is accepted deliberately; the
+   summary prints the command that records it.
 
 ## Adding a routing eval case
 
@@ -77,7 +95,8 @@ Add the case to `evals/routing/suite.json`. Routing signals are read from
 `registry/skills.json` only — there is no second signal list in the runner. Use
 `"expected_primary_skill": null` to assert that **no** skill should claim a
 prompt. Every active skill needs at least three positive cases and two that
-forbid it.
+forbid it. [docs/ROUTING.md](docs/ROUTING.md#adding-a-case) covers reproducing a
+route and where each kind of case belongs.
 
 ## Registry and generated files
 
@@ -88,9 +107,13 @@ edit `OVERRIDES`, not the registry. Never hand-edit generated output: the
 adapters, the `docs/generated-*` tables, the host routing files
 (`extras/cursor-routing.mdc`, `extras/AGENTS.snippet.md`), each skill's
 `agents/openai.yaml` interface block (its `short_description` is built to fit
-the 25-64 characters Codex shows), the README skill catalog and skill count,
-and the package list in the host plugin manifests all come from the registry
-and `registry/readme-catalog.json` via `--fix`.
+the 25-64 characters Codex shows, and its `default_prompt` is one sentence that
+invokes the skill as `$skill-id`), the README skill catalog and every skill
+count in the README, and the package list in the host plugin manifests all
+come from the registry and `registry/readme-catalog.json` via `--fix`. When
+wording that carries a generated number is rewritten so the generator can no
+longer find it, `generate_adapters.py` stops with an error rather than leaving
+a stale number behind.
 
 ## Skill quality bar
 
@@ -104,6 +127,16 @@ and `registry/readme-catalog.json` via `--fix`.
 Harnesses in `scripts/run_evals.py` run under pytest through
 `tooling/tests/test_skill_eval_harnesses.py`; the eval-strength baseline is the list
 of skills that must ship one.
+
+**One contract per skill.** A skill that ships a script declares its payload in
+`references/contract.json`: every field, every enum bound to the script constant
+that enforces it, the reference that documents it, and the eval corpora whose
+inputs must conform. `tooling/skill_contracts.py --check` fails when a script
+reads an undeclared key, an enum drifts, the reference names a field the
+contract lacks (or omits one it has, or spells an enum value differently), or an
+eval case expects a pass on off-contract input. Start one with
+`tooling/skill_contracts.py --draft <skill>`; its module docstring lists the
+keys.
 
 **A green suite proves nothing on its own.** `eval_strength.py` copies each
 package to a temporary directory, replaces one `if` guard at a time with
@@ -140,11 +173,10 @@ across skills — but a test module that imports a sibling will not collect.
 
 ## Plugin version
 
-Claude Code and Codex cache an installed plugin under the `version` in its
-manifest. `claude plugin update` replaces the cached copy only when that
-version changes; with the same version it keeps the old skills and says the
-plugin is already up to date. A skill change merged without a plugin version
-bump therefore never reaches anyone who installed the plugin.
+Hosts cache an installed plugin under the `version` in its manifest and
+replace it only when that version changes ([INSTALL.md](INSTALL.md#plugin-marketplaces)
+shows what a user sees). A skill change merged without a plugin version bump
+therefore never reaches anyone who installed the plugin.
 
 The rule: any change to the **shipped skill set** (a package added, removed or
 renamed under `skills/`) or to **any skill's `VERSION`** bumps the plugin

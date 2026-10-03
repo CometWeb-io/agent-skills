@@ -1,7 +1,13 @@
 ---
 name: rubric-designer
 description: >-
-  Design, normalize, lint, and freeze evaluation rubrics before substantive review or benchmarking, with observable criteria, explicit pass/fail semantics, evidence floors, materiality, blocker rules, scope boundaries, and immutable rubric hashes. Use when the user asks to create grading criteria, an evaluation rubric, acceptance scoring framework, reviewer scorecard, red-team rubric, or repeatable assessment contract. Do not use to judge the candidate itself, to write the artifact, to run empirical skill benchmarks, or to move criteria after seeing the result; use the relevant reviewer, artifact-acceptance, skill-evaluator, or quality-loop-operator for those tasks.
+  Design, normalize, lint, and freeze evaluation rubrics before substantive review or benchmarking,
+  with observable criteria, explicit pass/fail semantics, evidence floors, materiality, blocker rules,
+  scope boundaries, and immutable rubric hashes. Do not use to judge the candidate itself, to write
+  the artifact, to run empirical skill benchmarks, or to move criteria after seeing the result; use
+  the relevant reviewer, artifact-acceptance, skill-evaluator, or quality-loop-operator for those
+  tasks. Use when the user asks to create grading criteria, an evaluation rubric, acceptance scoring
+  framework, reviewer scorecard, red-team rubric, or repeatable assessment contract.
 ---
 
 # Rubric Designer

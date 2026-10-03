@@ -25,6 +25,20 @@ EFFORT_PENALTY = {
     'UNKNOWN': 2.5,
 }
 
+DEPTHS = (
+    'product', 'release', 'support', 'customer-ops', 'evidence',
+    'strategic-decision', 'portfolio-decision', 'orchestration',
+)
+SCOPE_LEVELS = ('portfolio', 'specialist')
+# Keys whose value changes ranking, lanes, conflicts or delegation. An unknown
+# value used to fall through silently: "hard-external" ranked as optional and a
+# lower-case "xl" never counted toward a capacity conflict.
+ITEM_ENUMS = {
+    'commitment_type': tuple(COMMITMENT_WEIGHT),
+    'effort_class': tuple(EFFORT_PENALTY),
+    'depth_required': DEPTHS,
+    'scope_level': SCOPE_LEVELS,
+}
 HARD_COMMITMENTS = {'hard_external', 'hard_internal'}
 LARGE_EFFORT = {'L', 'XL'}
 SUBSTANTIAL_EFFORT = {'M', 'L', 'XL'}
@@ -49,6 +63,21 @@ KNOWN_SPECIALISTS = {
 }
 USER_FACING_FIELDS = ('portfolio_outcome', 'action', 'done_when', 'reason', 'condition', 'question', 'return_contract')
 SPECIALIST_DETAIL_KEYS = {'substeps', 'internal_steps', 'implementation_steps', 'component_tasks', 'technical_details'}
+
+
+def _enum_errors(item: dict[str, Any]) -> list[str]:
+    errors = []
+    for key, allowed in ITEM_ENUMS.items():
+        value = item.get(key)
+        if value is not None and value not in allowed:
+            errors.append(f"{key} {value!r} is not one of {', '.join(allowed)}")
+    return errors
+
+
+def _check_item(item: dict[str, Any]) -> None:
+    errors = _enum_errors(item)
+    if errors:
+        raise ValueError(f"{item.get('id')}: " + '; '.join(errors))
 
 
 def _urgency(days_to_deadline: Any) -> float:
@@ -104,6 +133,7 @@ def _gate_rank(item: dict[str, Any]) -> int:
 def rank_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     ranked = []
     for raw in items:
+        _check_item(raw)
         item = deepcopy(raw)
         item['priority_score'] = _score(item)
         item['gate_rank'] = _gate_rank(item)
@@ -112,6 +142,7 @@ def rank_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def classify_lane(item: dict[str, Any]) -> str:
+    _check_item(item)
     if item.get('future_gate') and not item.get('blocks_current_goal'):
         return 'WAITING'
     if item.get('pause') or item.get('drop') or item.get('stop'):
@@ -128,11 +159,13 @@ def classify_lane(item: dict[str, Any]) -> str:
 
 
 def route_delegation(item: dict[str, Any]) -> str | None:
+    _check_item(item)
     explicit = item.get('delegated_to')
     if explicit:
         return explicit
     depth = item.get('depth_required')
-    domain = item.get('domain')
+    # The documented domain tags are upper case (PRODUCT); accept either spelling.
+    domain = str(item.get('domain') or '').strip().casefold()
     if depth == 'product' or (domain == 'product' and item.get('needs_product_reconciliation')):
         return 'product-operator'
     if depth == 'release' or item.get('release_verdict_required'):
@@ -170,6 +203,8 @@ def detect_capacity_conflicts(
     capacity_source: str = 'unknown',
 ) -> list[dict[str, Any]]:
     by_deadline: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for item in items:
+        _check_item(item)
     for item in items:
         deadline = item.get('deadline')
         if not deadline:
@@ -252,13 +287,26 @@ def validate_report(report: dict[str, Any]) -> list[str]:
     if capacity.get('source') == 'unknown' and capacity.get('hours') is not None:
         errors.append('capacity.hours must be absent when capacity source is unknown')
 
+    user_lanes = (
+        'must_do', 'capacity_conflicts', 'now', 'delegate', 'delegate_candidate',
+        'waiting', 'pause_drop', 'next', 'decision_now'
+    )
+    malformed: set[int] = set()
+    for lane in user_lanes:
+        for index, item in enumerate(report.get(lane, []) or []):
+            item_errors = _enum_errors(item)
+            if item_errors:
+                malformed.add(id(item))
+                errors.extend(f'{lane}[{index}]: {error}' for error in item_errors)
+
     for lane in ('must_do', 'now'):
         for index, item in enumerate(report.get(lane, []) or []):
             if not item.get('done_when'):
                 errors.append(f'{lane}[{index}].done_when is required')
             if not item.get('evidence'):
                 errors.append(f'{lane}[{index}].evidence is required')
-            specialist = route_delegation(item)
+            # route_delegation refuses off-contract values, already reported above.
+            specialist = None if id(item) in malformed else route_delegation(item)
             if specialist:
                 if item.get('scope_level') != 'portfolio':
                     errors.append(
@@ -282,10 +330,6 @@ def validate_report(report: dict[str, Any]) -> list[str]:
         if item.get('future_gate') and not item.get('blocks_current_goal'):
             errors.append('future gate cannot appear in must_do unless it blocks the current goal')
 
-    user_lanes = (
-        'must_do', 'capacity_conflicts', 'now', 'delegate', 'delegate_candidate',
-        'waiting', 'pause_drop', 'next', 'decision_now'
-    )
     for lane in user_lanes:
         for index, item in enumerate(report.get(lane, []) or []):
             if _has_numeric_claim(item) and not _has_claim_provenance(item):
@@ -377,14 +421,16 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if args.command == 'rank':
-        payload = rank_items(_load_json(args.items_json))
-        json.dump(payload, sys.stdout, ensure_ascii=False, indent=2)
-        sys.stdout.write('\n')
-        return
-
-    if args.command == 'conflicts':
-        payload = detect_capacity_conflicts(_load_json(args.items_json), capacity_source=args.capacity_source)
+    if args.command in {'rank', 'conflicts'}:
+        try:
+            items = _load_json(args.items_json)
+            if args.command == 'rank':
+                payload = rank_items(items)
+            else:
+                payload = detect_capacity_conflicts(items, capacity_source=args.capacity_source)
+        except ValueError as exc:
+            print(json.dumps({'error': str(exc)}, ensure_ascii=False), file=sys.stderr)
+            raise SystemExit(2) from None
         json.dump(payload, sys.stdout, ensure_ascii=False, indent=2)
         sys.stdout.write('\n')
         return

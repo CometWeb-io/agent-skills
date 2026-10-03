@@ -1,0 +1,205 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/report-contract.md",
+    "references/claim-use.md",
+    "references/format-lineage.md",
+    "references/source-policy.md"
+  ],
+  "scripts": {
+    "scripts/publication_kernel.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "VALID_MODES": "mode",
+        "STAGES": "current_stage",
+        "MATERIALITY": "materiality",
+        "CLAIM_KINDS": "claim_kind",
+        "SUPPORT_STATUSES": "support_status",
+        "CITATION_STATES": "citation_state"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "protocol_version": {},
+    "as_of": {
+      "unread": true
+    },
+    "status_reason": {},
+    "publication": {},
+    "audience": {
+      "unread": true
+    },
+    "objective": {
+      "unread": true
+    },
+    "title": {},
+    "source_policy": {},
+    "authorized_source_ids": {},
+    "sources": {},
+    "system": {
+      "unread": true
+    },
+    "locator": {
+      "unread": true
+    },
+    "authorized": {},
+    "observed_at": {
+      "unread": true
+    },
+    "lifecycle": {},
+    "brief_complete": {},
+    "sources_admitted": {},
+    "outline_locked": {},
+    "draft_complete": {},
+    "claims_reconciled": {},
+    "edited_complete": {},
+    "master_locked": {},
+    "release_ready": {},
+    "canonical_master": {},
+    "path": {},
+    "version": {
+      "unread": true
+    },
+    "sha256": {},
+    "sections": {
+      "unread": true
+    },
+    "heading": {
+      "unread": true
+    },
+    "claim_uses": {},
+    "section_id": {
+      "unread": true
+    },
+    "claim_text": {
+      "unread": true
+    },
+    "evidence_refs": {},
+    "citation_marker": {},
+    "volatile_current": {},
+    "freshness_state": {
+      "unread": true
+    },
+    "protected_facts": {},
+    "value": {},
+    "required": {},
+    "fidelity": {},
+    "passed": {},
+    "checked_at": {
+      "unread": true
+    },
+    "edit_history": {},
+    "unresolved_gaps": {},
+    "derived_artifacts": {},
+    "format": {},
+    "master_sha256": {},
+    "generation_status": {},
+    "qa_required": {},
+    "qa_status": {},
+    "parity_status": {},
+    "direct_material_edit": {},
+    "scientific_readiness": {},
+    "source": {},
+    "evidence_ref": {},
+    "publication_evidence": {},
+    "prior_publication_evidence": {
+      "unread": true
+    },
+    "actions": {},
+    "blockers": {},
+    "verify_now": {},
+    "decision_now": {},
+    "now": {},
+    "next_milestone": {},
+    "delegate": {},
+    "waiting": {},
+    "stop": {},
+    "action": {},
+    "question": {},
+    "label": {},
+    "done_when": {},
+    "id": {},
+    "type": {},
+    "status": {},
+    "mode": {
+      "enum": [
+        "BUILD",
+        "SOURCE_BOUND",
+        "RESEARCH_EXPAND",
+        "REFRESH"
+      ]
+    },
+    "current_stage": {
+      "enum": [
+        "BRIEFED",
+        "SOURCE_READY",
+        "OUTLINE_LOCKED",
+        "DRAFTED",
+        "CLAIMS_RECONCILED",
+        "EDITED",
+        "MASTER_LOCKED",
+        "FORMAT_READY",
+        "RELEASE_READY",
+        "PUBLISHED"
+      ]
+    },
+    "materiality": {
+      "enum": [
+        "CRITICAL",
+        "MATERIAL",
+        "SUPPORTING"
+      ]
+    },
+    "claim_kind": {
+      "enum": [
+        "FACT",
+        "AUTHOR_ASSERTION",
+        "OPINION",
+        "SYNTHESIS"
+      ]
+    },
+    "support_status": {
+      "enum": [
+        "SUPPORTED",
+        "UNRESOLVED",
+        "SCOPED_OUT",
+        "NOT_REQUIRED"
+      ]
+    },
+    "citation_state": {
+      "enum": [
+        "REQUIRED",
+        "PRESENT",
+        "NOT_REQUIRED"
+      ]
+    },
+    "freshness": {
+      "enum": [
+        "CURRENT",
+        "NEAR_EXPIRY",
+        "STALE",
+        "SUPERSEDED",
+        "UNKNOWN",
+        "NOT_REQUIRED"
+      ],
+      "enforced": false
+    }
+  },
+  "outputs": {},
+  "internal": [],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "examples/example-report.json",
+      "expect": "pass",
+      "pass": [
+        "pass"
+      ]
+    }
+  ]
+}

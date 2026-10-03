@@ -22,6 +22,8 @@ DESTINATION_LANES = {
     "destination_constraint",
     "destination_baseline",
 }
+CLAIM_LANES = SOURCE_LANES | DESTINATION_LANES
+SUBJECTS = {"source", "destination"}
 VERDICTS = {"CANDIDATE", "ADOPT", "EXPERIMENT", "BACKLOG", "REJECT", "REVIEW_REQUIRED"}
 GATES = {"clear", "not_required", "review", "block", "unknown"}
 TRANSFER_MODES = {"INSPIRE", "REIMPLEMENT", "INTEGRATE", "REUSE_CODE", "REUSE_ASSET"}
@@ -171,7 +173,7 @@ def validate(payload: Any) -> list[str]:
             evidence_by_id[eid] = item
 
         subject = item.get("subject")
-        if not in_set(subject, {"source", "destination"}):
+        if not in_set(subject, SUBJECTS):
             errors.append(f"{p}.subject must be source or destination")
 
         target_id = item.get("target_id")

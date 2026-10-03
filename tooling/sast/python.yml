@@ -1,0 +1,42 @@
+# Repository SAST rules for Python, run by tooling/sast.py (check_all gate `sast`).
+# They cover defect classes found in this repository that bandit does not
+# report. Each rule has positive and negative cases in tests/python.py, checked
+# with `semgrep --test` on every run.
+rules:
+  - id: cw-predictable-temp-path
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Temporary file at a predictable name beside its target: a file or symlink
+      planted there first can redirect the write. Create it with
+      tempfile.mkstemp(dir=target.parent) and move it into place with os.replace.
+    patterns:
+      - pattern-either:
+          - pattern: $P.with_suffix($P.suffix + "$S")
+          - pattern: $P.with_suffix("$S")
+          - pattern: $P.with_name($P.name + "$S")
+          - pattern: str($P) + "$S"
+      - metavariable-regex:
+          metavariable: $S
+          regex: ^\.(tmp|temp|part|new|swp)$
+
+  - id: cw-archive-extractall
+    languages: [python]
+    severity: ERROR
+    message: >-
+      extractall() trusts member names and link targets (path traversal, links
+      out of the destination). Validate every member first and say so with a
+      nosemgrep comment, or use tarfile's filter="data".
+    patterns:
+      - pattern: $A.extractall(...)
+      - pattern-not: $A.extractall(..., filter="data", ...)
+
+  - id: cw-urlopen-without-timeout
+    languages: [python]
+    severity: ERROR
+    message: >-
+      urlopen() without a timeout can hang a gate or a skill script forever on a
+      stalled server. Pass timeout=.
+    patterns:
+      - pattern: urllib.request.urlopen(...)
+      - pattern-not: urllib.request.urlopen(..., timeout=$T, ...)

@@ -1,0 +1,678 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md"
+  ],
+  "json_schemas": [
+    "references/report.schema.json"
+  ],
+  "scripts": {
+    "scripts/validate_roast.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "OUTCOMES": "review_outcome",
+        "MODES": "mode",
+        "TONES": "tone",
+        "LENSES": "lens",
+        "PROFILES": "review_profile",
+        "SOURCE_KIND": "source_manifest.kind",
+        "SOURCE_ROLE": "source_manifest.role",
+        "VERSION_STATE": "version_state",
+        "INSTRUCTION_BOUNDARY": "instruction_boundary",
+        "TRUST_CLASS": "trust_class",
+        "ASSURANCE_MODES": "assurance.mode",
+        "INDEPENDENCE": "independence",
+        "SECOND_PASS_STATUS": "second_pass_status",
+        "PASS_ROLES": "pass_records.role",
+        "PASS_STATUSES": "pass_records.status",
+        "EVIDENCE_KINDS": "evidence_register.kind",
+        "REGISTER_STRENGTH": "strength",
+        "CONFLICT_DISPOSITION": "disposition",
+        "DECISION_COST": "decision_cost",
+        "COVERAGE": "level",
+        "SCOPE": "scope_basis",
+        "COVERAGE_CONFIDENCE": "coverage_confidence",
+        "GATE_STATUS": "quality_gates",
+        "CLAIM_TYPES": "claim_type",
+        "DECISION_ROLES": "decision_role",
+        "PROOF": "proof_status",
+        "BURDEN": "proof_burden",
+        "ANCHORS": "anchor.type",
+        "DIAGNOSIS_CLASS": "diagnosis_class",
+        "REPAIR_OWNER": "repair_owner",
+        "DEBT_TYPES": "debt_type",
+        "DEBT_STATUS": "proof_debt_ledger.status",
+        "OBJECTION_STATUS": "objection_ledger.status",
+        "SEVERITIES": "severity",
+        "CATEGORIES": "category",
+        "STATES": "evidence_state",
+        "EVIDENCE_STRENGTH": "evidence_strength",
+        "SCOPE_SENSITIVITY": "scope_sensitivity",
+        "CONF": "confidence",
+        "DECISION_IMPACT": "decision_impact",
+        "MATERIAL_CENTRALITY": "centrality",
+        "MATERIAL_CONSEQUENCE": "consequence",
+        "MATERIAL_REVERSIBILITY": "reversibility",
+        "REPAIR": "repair_class",
+        "VERIFY": "verification.type",
+        "FALSIFIER": "result",
+        "SEVERITY_RANK": "downgraded_from",
+        "CONF_DIRECTNESS": "directness",
+        "CONF_SCOPE_SUPPORT": "scope_support",
+        "COUNTEREVIDENCE_STATUS": "counterevidence_status",
+        "RESIDUAL_RISK": "after_repair",
+        "RESOLUTION": "resolution_ledger.status",
+        "RESOLUTION_VERIFICATION": "verification_status",
+        "RESOLUTION_CHANGE_BASIS": "change_basis"
+      }
+    },
+    "scripts/select_review_packs.py": {
+      "input": "args",
+      "role": "helper"
+    },
+    "scripts/scan_source_risks.py": {
+      "input": "files",
+      "role": "helper"
+    },
+    "scripts/validate_evals.py": {
+      "input": "files",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "schema": {},
+    "artifact": {},
+    "review_outcome": {
+      "enum": [
+        "INSUFFICIENT_EVIDENCE",
+        "MATERIAL_FINDINGS",
+        "NO_MATERIAL_FINDINGS"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "DELTA",
+        "FULL",
+        "QUICK",
+        "RED_TEAM"
+      ]
+    },
+    "tone": {
+      "enum": [
+        "BRUTAL",
+        "DRY",
+        "SURGICAL"
+      ]
+    },
+    "lens": {
+      "enum": [
+        "CONVERSION",
+        "EDITORIAL",
+        "GENERAL",
+        "OFFER",
+        "POSITIONING",
+        "TECHNICAL_DOCUMENTATION",
+        "TRUST"
+      ]
+    },
+    "review_profile": {
+      "enum": [
+        "ARTICLE",
+        "CASE_STUDY",
+        "DOCUMENTATION",
+        "EMAIL",
+        "GENERAL",
+        "LANDING_PAGE",
+        "LONGFORM",
+        "OFFER",
+        "PRICING",
+        "PRODUCT_PAGE",
+        "SALES_DECK"
+      ]
+    },
+    "comparison": {},
+    "base_artifact": {},
+    "head_artifact": {},
+    "source_manifest": {},
+    "id": {},
+    "source_manifest.kind": {
+      "enum": [
+        "ANALYTICS",
+        "DECK",
+        "DOCUMENT",
+        "EMAIL",
+        "OTHER",
+        "PAGE",
+        "RESEARCH",
+        "SCREENSHOT_TRANSCRIPTION"
+      ]
+    },
+    "locator": {},
+    "source_manifest.role": {
+      "enum": [
+        "CONTEXT",
+        "PRIMARY",
+        "SUPPORTING"
+      ]
+    },
+    "version_state": {
+      "enum": [
+        "MOVING",
+        "PINNED",
+        "UNKNOWN"
+      ]
+    },
+    "instruction_boundary": {
+      "enum": [
+        "TREAT_AS_DATA"
+      ]
+    },
+    "trust_class": {
+      "enum": [
+        "EXTERNAL_REFERENCE",
+        "GENERATED",
+        "SYSTEM_OF_RECORD",
+        "TOOL_RESULT",
+        "UNKNOWN",
+        "USER_SUPPLIED"
+      ]
+    },
+    "sha256": {},
+    "review_plan": {},
+    "objective": {},
+    "must_inspect": {},
+    "attack_surfaces": {},
+    "stop_conditions": {},
+    "sampling_strategy": {},
+    "escalation_conditions": {},
+    "assurance": {},
+    "assurance.mode": {
+      "enum": [
+        "BLIND_DUAL_REVIEW",
+        "SECOND_PASS",
+        "SINGLE_REVIEW"
+      ]
+    },
+    "independence": {
+      "enum": [
+        "NONE",
+        "SAME_CONTEXT",
+        "SEPARATE_CONTEXT"
+      ]
+    },
+    "second_pass_status": {
+      "enum": [
+        "COMPLETED",
+        "NOT_RUN",
+        "UNAVAILABLE"
+      ]
+    },
+    "disagreement_summary": {},
+    "limitations": {},
+    "pass_records": {},
+    "pass_id": {},
+    "pass_records.role": {
+      "enum": [
+        "ARBITER",
+        "PRIMARY",
+        "SECONDARY"
+      ]
+    },
+    "pass_records.status": {
+      "enum": [
+        "COMPLETED",
+        "FAILED",
+        "UNAVAILABLE"
+      ]
+    },
+    "context_ref": {},
+    "blind_to_prior_findings": {},
+    "source_refs": {},
+    "evidence_register": {},
+    "source_id": {},
+    "evidence_register.kind": {
+      "enum": [
+        "ABSENCE_PROOF",
+        "CONTEXT",
+        "COUNTEREVIDENCE",
+        "OBSERVATION",
+        "VERIFICATION"
+      ]
+    },
+    "summary": {},
+    "strength": {
+      "enum": [
+        "MODERATE",
+        "STRONG",
+        "WEAK"
+      ]
+    },
+    "evidence_conflicts": {},
+    "evidence_refs": {},
+    "conflict": {},
+    "disposition": {
+      "enum": [
+        "OUT_OF_SCOPE",
+        "RESOLVED",
+        "UNRESOLVED"
+      ]
+    },
+    "residual_uncertainty": {},
+    "review_contract": {},
+    "audience": {},
+    "desired_action": {},
+    "decision_stage": {},
+    "decision_cost": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM",
+        "UNKNOWN"
+      ]
+    },
+    "known_constraints": {},
+    "unknowns": {},
+    "coverage": {},
+    "level": {
+      "enum": [
+        "COMPLETE",
+        "PARTIAL",
+        "SUBSTANTIAL"
+      ]
+    },
+    "scope_basis": {
+      "enum": [
+        "ARTIFACT_SET",
+        "EXCERPT",
+        "FULL_ARTIFACT",
+        "MIXED",
+        "SAMPLED"
+      ]
+    },
+    "coverage_confidence": {
+      "enum": [
+        "high",
+        "low",
+        "medium"
+      ]
+    },
+    "inspected": {},
+    "not_inspected": {},
+    "quality_gates": {
+      "enum": [
+        "BLOCKED",
+        "PASS",
+        "WARN"
+      ]
+    },
+    "quality_gates.scope": {},
+    "quality_gates.contract": {},
+    "quality_gates.source_integrity": {},
+    "quality_gates.evidence": {},
+    "quality_gates.challenge": {},
+    "quality_gates.assurance": {},
+    "quality_gates.severity": {},
+    "quality_gates.repair": {},
+    "quality_gates.boundary": {},
+    "message_chain": {},
+    "problem": {},
+    "promise": {},
+    "mechanism": {},
+    "proof": {},
+    "objection_handling": {},
+    "action": {},
+    "central_promise": {},
+    "claim_map": {},
+    "claim": {},
+    "claim_type": {
+      "enum": [
+        "COMPARATIVE",
+        "FACTUAL",
+        "GUARANTEE",
+        "MECHANISM",
+        "OUTCOME",
+        "QUANTITATIVE",
+        "SUBJECTIVE"
+      ]
+    },
+    "decision_role": {
+      "enum": [
+        "PRIMARY",
+        "SUPPORTING"
+      ]
+    },
+    "proof_status": {
+      "enum": [
+        "ABSENT",
+        "EXTERNAL_REQUIRED",
+        "PRESENT",
+        "WEAK"
+      ]
+    },
+    "proof_burden": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM",
+        "VERY_HIGH"
+      ]
+    },
+    "anchor": {},
+    "anchor.type": {
+      "enum": [
+        "claim",
+        "cta",
+        "metric",
+        "missing_element",
+        "quote",
+        "section"
+      ]
+    },
+    "value": {},
+    "diagnosis_ledger": {},
+    "claim_refs": {},
+    "diagnosis_class": {
+      "enum": [
+        "AUDIENCE",
+        "COPY",
+        "MIXED",
+        "OFFER",
+        "POSITIONING",
+        "PRODUCT",
+        "PROOF",
+        "STRUCTURE",
+        "UX"
+      ]
+    },
+    "repair_owner": {
+      "enum": [
+        "CONTENT",
+        "EVIDENCE",
+        "MIXED",
+        "OFFER",
+        "PRODUCT",
+        "UX"
+      ]
+    },
+    "proof_debt_ledger": {},
+    "claim_ref": {},
+    "debt_type": {
+      "enum": [
+        "ABSENT_PROOF",
+        "EXTERNAL_VERIFICATION",
+        "MISMATCHED_PROOF",
+        "OVERCLAIM",
+        "WEAK_PROOF"
+      ]
+    },
+    "proof_debt_ledger.status": {
+      "enum": [
+        "CLOSED",
+        "NOT_APPLICABLE",
+        "OPEN",
+        "PARTIAL"
+      ]
+    },
+    "required_evidence": {},
+    "why_it_matters": {},
+    "objection_ledger": {},
+    "objection": {},
+    "relevance": {},
+    "objection_ledger.status": {
+      "enum": [
+        "ANSWERED",
+        "NOT_APPLICABLE",
+        "PARTIAL",
+        "UNANSWERED"
+      ]
+    },
+    "root_causes": {},
+    "label": {},
+    "no_material_findings": {},
+    "first_attack_id": {},
+    "findings": {},
+    "finding_key": {},
+    "finding_aliases": {},
+    "severity": {
+      "enum": [
+        "BLOCKER",
+        "MAJOR",
+        "MINOR"
+      ]
+    },
+    "category": {
+      "enum": [
+        "audience",
+        "claim_evidence",
+        "credibility",
+        "cta",
+        "differentiation",
+        "hierarchy",
+        "logic",
+        "objection",
+        "offer",
+        "positioning",
+        "promise",
+        "readability",
+        "redundancy",
+        "specificity",
+        "technical_documentation",
+        "voice"
+      ]
+    },
+    "evidence_state": {
+      "enum": [
+        "INFERRED",
+        "MISSING",
+        "OBSERVED",
+        "VERIFY_EXTERNAL"
+      ]
+    },
+    "evidence_strength": {
+      "enum": [
+        "MODERATE",
+        "STRONG",
+        "WEAK"
+      ]
+    },
+    "scope_sensitivity": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "low",
+        "medium"
+      ]
+    },
+    "omission_basis": {},
+    "inference_basis": {},
+    "root_cause_id": {},
+    "diagnosis_ref": {},
+    "decision_impact": {
+      "enum": [
+        "ACTION",
+        "COMPREHENSION",
+        "DECISION",
+        "DISCOVERY",
+        "TRUST"
+      ]
+    },
+    "materiality": {},
+    "centrality": {
+      "enum": [
+        "CENTRAL",
+        "LOCAL",
+        "SUPPORTING"
+      ]
+    },
+    "consequence": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "reversibility": {
+      "enum": [
+        "EASY",
+        "HARD",
+        "MODERATE",
+        "UNKNOWN"
+      ]
+    },
+    "observation": {},
+    "failure_mode": {},
+    "roast_line": {},
+    "repair": {},
+    "repair_class": {
+      "enum": [
+        "COPY",
+        "EXTERNAL_VERIFICATION",
+        "OFFER",
+        "PROOF",
+        "SECTION",
+        "STRUCTURE",
+        "UX"
+      ]
+    },
+    "verification": {},
+    "verification.type": {
+      "enum": [
+        "ANALYTICS",
+        "AUTOMATED_CHECK",
+        "EXPERIMENT",
+        "MANUAL_INSPECTION",
+        "READER_TEST",
+        "SOURCE_CHECK"
+      ]
+    },
+    "method": {},
+    "success_condition": {},
+    "failure_signal": {},
+    "falsifier_check": {},
+    "challenge": {},
+    "searched_for": {},
+    "counterevidence": {},
+    "alternative_explanations": {},
+    "result": {
+      "enum": [
+        "DOWNGRADED",
+        "SURVIVES",
+        "UNRESOLVED",
+        "WITHDRAWN"
+      ]
+    },
+    "notes": {},
+    "downgraded_from": {
+      "enum": [
+        "BLOCKER",
+        "MAJOR",
+        "MINOR"
+      ]
+    },
+    "confidence_basis": {},
+    "directness": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "scope_support": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "counterevidence_status": {
+      "enum": [
+        "ADDRESSED",
+        "PARTIAL",
+        "UNKNOWN"
+      ]
+    },
+    "rationale": {},
+    "residual_risk": {},
+    "after_repair": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM",
+        "UNKNOWN"
+      ]
+    },
+    "closure_dependency": {},
+    "outcome_basis": {},
+    "surviving_finding_ids": {},
+    "withdrawn_candidate_count": {},
+    "unresolved_candidate_count": {},
+    "reason": {},
+    "resolution_ledger": {},
+    "resolution_ledger.status": {
+      "enum": [
+        "NOT_ASSESSABLE",
+        "OPEN",
+        "PARTIAL",
+        "REGRESSED",
+        "RESOLVED"
+      ]
+    },
+    "evidence": {},
+    "verification_status": {
+      "enum": [
+        "FAILED",
+        "NOT_RUN",
+        "PARTIAL",
+        "PASSED"
+      ]
+    },
+    "change_basis": {
+      "enum": [
+        "ARTIFACT_CHANGED",
+        "JUDGMENT_CORRECTED",
+        "MIXED",
+        "SCOPE_CHANGED",
+        "UNKNOWN"
+      ]
+    },
+    "verification_queue": {},
+    "question": {},
+    "evidence_needed": {},
+    "preserve": {},
+    "core_fix": {}
+  },
+  "outputs": {
+    "root": {},
+    "files_scanned": {},
+    "files_skipped": {},
+    "flags": {},
+    "path": {},
+    "line": {},
+    "kind": {},
+    "excerpt": {},
+    "note": {}
+  },
+  "internal": [
+    "activation",
+    "profiles",
+    "signals",
+    "skill"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "tests/report-valid.json",
+      "expect": "pass",
+      "pass": [
+        "pass"
+      ]
+    }
+  ]
+}

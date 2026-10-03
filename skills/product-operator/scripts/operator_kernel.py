@@ -36,6 +36,8 @@ READINESS_VALUES = {"READY", "PROVISIONAL", "BLOCKED"}
 PRIORITY_TIERS = {"BLOCKER", "VERIFY_NOW", "DECISION_NOW", "NOW", "NEXT", "LATER", "STOP"}
 TIER_ORDER = {"BLOCKER": 0, "VERIFY_NOW": 1, "DECISION_NOW": 2, "NOW": 3, "NEXT": 4, "LATER": 5, "STOP": 6}
 STAGES = ("intent", "planned", "implemented", "verified", "shipped", "outcome")
+ACTION_TYPES = ("verify", "implement", "decision", "stop")
+MUTATION_VALUES = ("read-only", "none")
 IMMEDIATE_CAPS = {"verify": 3, "implement": 3, "decision": 3}
 NEXT_CAP = 5
 JSON_NODE_BUDGET = 100000
@@ -194,6 +196,10 @@ def evidence_freshness(ev: dict[str, Any], as_of: str | None = None) -> str:
     explicit = norm(ev.get("freshness_status") or ev.get("temporal_status"))
     if explicit in FRESHNESS_VALUES:
         return explicit
+    if explicit:
+        # An unrecognised label is not evidence of freshness; computing CURRENT
+        # from the dates would let a typo pass as an explicit claim.
+        return "UNKNOWN"
     if boolish(ev.get("not_required")):
         return "NOT_REQUIRED"
     observed = parse_time(ev.get("observed_at") or ev.get("verified_at"))
@@ -375,6 +381,12 @@ def reconcile_item(item: dict[str, Any], as_of: str | None = None) -> list[dict[
         "shipped": {"PRESENT", "DONE"},
         "outcome": {"POSITIVE", "NEGATIVE", "MIXED", "PRESENT"},
     }
+    for ev in item.get("evidence") or []:
+        label = str(ev.get("stage") or "").strip().lower() if isinstance(ev, dict) else ""
+        if label and label not in STAGES:
+            # Evidence under an unknown stage is never counted, so the stage it
+            # meant to prove would otherwise read as missing evidence only.
+            add("EVIDENCE_STAGE_UNKNOWN", "medium", f"Evidence stage {label!r} is not one of {list(STAGES)}.", label)
     for stage in STAGES:
         if state_value(item, stage) not in positive_states[stage]:
             continue
@@ -501,7 +513,7 @@ def readiness_report(payload: dict[str, Any]) -> dict[str, Any]:
 
 def candidate_action_type(row: dict[str, Any]) -> str:
     explicit = str(row.get("action_type") or "").strip().lower()
-    if explicit in {"verify", "implement", "decision", "stop"}:
+    if explicit in ACTION_TYPES:
         return explicit
     if boolish(row.get("stop")) or norm(row.get("priority_tier")) == "STOP":
         return "stop"
@@ -523,6 +535,11 @@ def build_plan(payload: dict[str, Any]) -> dict[str, Any]:
         raise InputError("as_of must be an ISO-8601 timestamp with timezone")
 
     candidates = unique_rows(source.get("candidates", []), "candidates")
+    for idx, row in enumerate(candidates):
+        explicit = str(row.get("action_type") or "").strip().lower()
+        if explicit and explicit not in ACTION_TYPES:
+            # An unknown type used to fall through to inference and ran as implement.
+            raise InputError(f"candidates[{idx}].action_type must be one of {sorted(ACTION_TYPES)}")
     if source.get("coverage") is not None:
         object_value(source["coverage"], "coverage")
     state_items = list_value(source.get("state_items", []), "state_items")
@@ -805,6 +822,11 @@ def validate_evidence(ev: Any, path: str, errors: list[str], warnings: list[str]
     for key in ("source", "locator", "claim", "claim_type"):
         if not str(ev.get(key) or "").strip():
             errors.append(f"{path}.{key} is required")
+    for key in ("freshness_status", "temporal_status"):
+        label = norm(ev.get(key))
+        if label and label not in FRESHNESS_VALUES:
+            errors.append(f"{path}.{key} must be one of {sorted(FRESHNESS_VALUES)}")
+            break
     freshness = evidence_freshness(ev, as_of)
     if freshness == "UNKNOWN" and boolish(ev.get("required_current")):
         errors.append(f"{path} requires current evidence but freshness is UNKNOWN")
@@ -950,7 +972,7 @@ def validate_report(report: Any) -> dict[str, Any]:
         errors.append("unknowns may contain at most 3 material gaps")
 
     mutations = str(report.get("mutations") or "read-only").lower()
-    if mutations not in {"read-only", "none"}:
+    if mutations not in MUTATION_VALUES:
         errors.append("Product Operator v2 must report mutations as read-only/none")
 
     state_items = report.get("state_items") or []

@@ -1,0 +1,71 @@
+{
+  "skill": "repo-roaster",
+  "contract": "skills/repo-roaster/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "what-repo", "title": "What this repo appears to be", "aliases": ["what this repo"], "required": true},
+    {"id": "invariants", "title": "System / critical invariant summary", "aliases": ["system", "critical invariant", "invariant summary"], "required": true},
+    {"id": "first-attack", "title": "First thing a hostile staff engineer attacks", "aliases": ["first thing"], "required_when_verdict": ["MATERIAL_FINDINGS"]},
+    {"id": "findings", "title": "Critical / major / minor findings", "aliases": ["critical / major / minor", "findings"], "required": true},
+    {"id": "root-causes", "title": "Root causes", "aliases": ["root causes"]},
+    {"id": "gaps", "title": "Absence / verification gaps", "aliases": ["absence", "verification gaps"], "required": true},
+    {"id": "resolution-ledger", "title": "Resolution ledger", "aliases": ["resolution ledger"], "required_when_verdict": []},
+    {"id": "survives", "title": "What survives", "aliases": ["what survives"], "required": true},
+    {"id": "core-fix", "title": "Core engineering fix", "aliases": ["core engineering fix", "core fix"], "required": true},
+    {"id": "handoffs", "title": "Handoffs", "aliases": ["handoffs"]}
+  ],
+  "verdict": {
+    "tokens": ["MATERIAL_FINDINGS", "NO_MATERIAL_FINDINGS", "INSUFFICIENT_EVIDENCE"],
+    "authorizing": ["NO_MATERIAL_FINDINGS", "INSUFFICIENT_EVIDENCE"],
+    "required": false,
+    "primary": {"line": "^\\s*[-*]?\\s*\\**(?:Review )?Outcome\\**\\s*:"},
+    "json": [
+      {"rule": "sidecar-outcome", "path": "review_outcome", "when": {"schema": "cometweb.repo-roaster/v6"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "listed-finding", "type": "section_items", "section": "findings",
+     "none_pattern": "^(?:none|no material finding)"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "inspected-ref", "section": "what-repo",
+     "pattern": "\\bref\\b|commit|@[0-9a-f]{7}", "message": "the report does not name the inspected ref"},
+    {"type": "items_require", "rule": "finding-anchor", "section": "findings", "none_pattern": "^(?:none|no material finding)",
+     "pattern": "Anchor:\\s*`?[\\w./-]+", "code": "EVIDENCE_MISSING", "message": "a finding has no source anchor"},
+    {"type": "items_require", "rule": "finding-evidence", "section": "findings", "none_pattern": "^(?:none|no material finding)",
+     "pattern": "\\bEV-\\d+\\b", "code": "EVIDENCE_MISSING", "message": "a finding cites no evidence ref (EV-NN)"},
+    {"type": "items_require", "rule": "severity", "section": "findings", "none_pattern": "^(?:none|no material finding)",
+     "pattern": "\\A[^\\n]*\\b(?:CRITICAL|MAJOR|MINOR)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a finding heading carries no severity (CRITICAL | MAJOR | MINOR)"},
+    {"type": "items_require", "rule": "critical-admission", "section": "findings",
+     "when_item": "\\A[^\\n]*\\bCRITICAL\\b", "pattern": "Reachability:\\s*(?:PROVEN|PLAUSIBLE)",
+     "code": "CONTRACT_VIOLATION", "message": "CRITICAL requires PROVEN or PLAUSIBLE reachability"},
+    {"type": "items_require", "rule": "falsifier", "section": "findings", "none_pattern": "^(?:none|no material finding)",
+     "pattern": "Falsifier", "code": "CONTRACT_VIOLATION", "message": "a finding records no falsifier pass"},
+    {"type": "items_require", "rule": "verification", "section": "findings", "none_pattern": "^(?:none|no material finding)",
+     "pattern": "Verification:\\s*\\S", "code": "CONTRACT_VIOLATION", "message": "a finding has no executable verification"},
+    {"type": "doc_forbid", "rule": "absence-from-search-miss",
+     "pattern": "there (?:is|are) no [\\w -]{1,30} (?:in|anywhere in) (?:this|the) (?:repo|repository|codebase)",
+     "message": "a search miss is not absence; record NOT_FOUND with a bounded absence proof, or a verification gap"},
+    {"type": "doc_forbid", "rule": "personal-attack",
+     "pattern": "\\b(?:developer|engineer|author|maintainer|you|team)\\b.{0,40}\\b(?:stupid|idiot|moron|lazy|incompetent|clueless|fraud)\\b",
+     "message": "attack the code, not the people"}
+  ],
+  "ids": [
+    {"rule": "finding-ids", "pattern": "\\bRR-\\d{3}\\b",
+     "defined_in": [{"section": "findings", "as": "subheading"}],
+     "refs_json": ["findings[*].id", "outcome_basis.surviving_finding_ids[*]", "first_attack_id"],
+     "defined_by": "no '### RR-NNN' finding with that ID is in the findings section"},
+    {"rule": "invariant-ids", "pattern": "\\bINV-\\d+\\b",
+     "defined_in": [{"section": "invariants", "as": "list_lead"}],
+     "refs_json": ["invariant_ledger[*].id"],
+     "defined_by": "the invariant summary declares no invariant with that ID"},
+    {"rule": "evidence-ids", "pattern": "\\bEV-\\d+\\b",
+     "defined_in": [{"json": "evidence_register[*].id", "when": {"schema": "cometweb.repo-roaster/v6"}}],
+     "defined_by": "the v6 evidence_register has no entry with that ID"}
+  ],
+  "sidecars": [
+    {"rule": "repo-roast-v6", "detect": {"equals": {"schema": "cometweb.repo-roaster/v6"}},
+     "validator": "skills/repo-roaster/scripts/validate_repo_roast.py", "function": "validate"}
+  ]
+}

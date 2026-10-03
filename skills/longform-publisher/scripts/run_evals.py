@@ -185,6 +185,21 @@ def build_scenario(name: str) -> tuple[dict, str]:
         r["actions"]["now"] = "Ship it"
     elif name == "malformed_readiness_ref":
         r["scientific_readiness"] = {"status": "PASS", "evidence_ref": ["src-user"]}
+    elif name == "claim_materiality_lowercase":
+        r["claim_uses"][0]["materiality"] = "material"; r["claim_uses"][0]["evidence_refs"] = []
+    elif name == "claim_kind_lowercase":
+        r["claim_uses"][0]["claim_kind"] = "fact"; r["claim_uses"][0]["evidence_refs"] = []
+    elif name == "support_status_unknown":
+        r["claim_uses"][0]["support_status"] = "VERIFIED"
+    elif name == "citation_state_lowercase":
+        r["claim_uses"][0]["citation_state"] = "required"
+        text = text.replace(" [1]", "")
+        r["canonical_master"]["sha256"] = hashlib.sha256(text.encode()).hexdigest(); r["derived_artifacts"][0]["master_sha256"] = r["canonical_master"]["sha256"]
+    elif name == "gap_materiality_lowercase":
+        r["unresolved_gaps"] = [{"id": "g1", "materiality": "critical", "status": "OPEN"}]
+    elif name == "unresolved_claim_with_gap":
+        r["claim_uses"][0]["support_status"] = "UNRESOLVED"; r["claim_uses"][0]["evidence_refs"] = []
+        r["unresolved_gaps"] = [{"id": "g1", "materiality": "MATERIAL", "status": "OPEN"}]
     else:
         raise ValueError(name)
     return r, text

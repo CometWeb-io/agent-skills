@@ -7,12 +7,46 @@ from .constants import (
     ARCHETYPE_RULES,
     COUNCIL_VERSION,
     DECISION_KIND,
+    DECISION_KINDS,
+    DECISION_TYPES,
     DOMAIN_KEYWORDS,
     DOMAIN_ORDER,
     KERNEL_VERSION,
+    REVERSIBILITY_LEVELS,
+    RISK_LEVELS,
     RISK_SURFACE_RULES,
+    RISK_SURFACES,
 )
 from .util import _clamp01, _dedupe, _hits, _mode_name, _norm
+
+_CONTRACT_SCALARS = (
+    ("decision_type", DECISION_TYPES), ("reversibility", REVERSIBILITY_LEVELS), ("risk_level", RISK_LEVELS),
+    ("primary_domain", set(DOMAIN_ORDER)), ("decision_kind", DECISION_KINDS),
+)
+_CONTRACT_LISTS = (("risk_surfaces", RISK_SURFACES), ("secondary_domains", set(DOMAIN_ORDER)))
+
+
+def check_contract_values(record: Any) -> None:
+    """Reject routed contract/profile values the kernel does not know.
+
+    Absent or empty values keep their documented defaults; a supplied unknown
+    value is an input error rather than a silent fallback.
+    """
+    if not isinstance(record, dict):
+        raise ValueError("decision contract must be an object")
+    for name, allowed in _CONTRACT_SCALARS:
+        value = record.get(name)
+        if value in (None, ""):
+            continue
+        if value not in allowed:
+            raise ValueError(f"{name} must be one of: {', '.join(sorted(allowed))}")
+    for name, allowed in _CONTRACT_LISTS:
+        values = record.get(name)
+        if values in (None, ""):
+            continue
+        if not isinstance(values, list) or any(v not in allowed for v in values):
+            raise ValueError(f"{name} must be drawn from: {', '.join(sorted(allowed))}")
+
 
 def infer_decision_archetype(query: str, options: Any = None) -> str:
     text = _norm(query)
@@ -82,6 +116,7 @@ def profile_problem(query: str) -> dict[str, Any]:
 
 def compile_decision_contract(question: str, context: dict[str, Any] | None = None) -> dict[str, Any]:
     context = dict(context or {})
+    check_contract_values(context)
     profile = profile_problem(question)
     options = context.get("options") or []
     if isinstance(options, str):
@@ -130,6 +165,7 @@ def compile_decision_contract(question: str, context: dict[str, Any] | None = No
 
 def decision_value_score(profile_or_contract: dict[str, Any], financial_impact: float = 0.5,
                          uncertainty: float = 0.5, strategic_impact: float | None = None) -> float:
+    check_contract_values(profile_or_contract)
     risk = {"low": 0.2, "medium": 0.5, "high": 0.8}.get(profile_or_contract.get("risk_level"), 0.5)
     irreversible = 1.0 if profile_or_contract.get("reversibility") == "hard_to_reverse" else 0.0
     fin = _clamp01(profile_or_contract.get("financial_impact", financial_impact))
@@ -196,6 +232,7 @@ def critical_evidence_areas(contract: dict[str, Any]) -> list[str]:
 
 def required_confidence(profile_or_contract: dict[str, Any], evidence_coverage: float,
                         decision_value: float = 0.5) -> float:
+    check_contract_values(profile_or_contract)
     risk_bonus = {"low": 0.0, "medium": 0.06, "high": 0.12}.get(profile_or_contract.get("risk_level"), 0.06)
     reverse_bonus = 0.10 if profile_or_contract.get("reversibility") == "hard_to_reverse" else 0.0
     coverage_penalty = 0.15 * (1.0 - _clamp01(evidence_coverage))
@@ -208,6 +245,7 @@ def required_confidence(profile_or_contract: dict[str, Any], evidence_coverage: 
 
 def plan_council(contract: dict[str, Any], mode: str | None = None) -> dict[str, Any]:
     from .routing import route_legal_risk, route_roles, select_frameworks
+    check_contract_values(contract)
     selected_mode = _mode_name(mode or choose_council_mode(contract))
     budget = mode_budget(selected_mode)
     roles = route_roles(contract, selected_mode)

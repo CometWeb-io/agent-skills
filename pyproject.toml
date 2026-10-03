@@ -1,6 +1,6 @@
 [project]
 name = "cometweb-agent-skills"
-version = "2.1.0"
+version = "2.2.0"
 description = "CometWeb Labs specialist skills for research, product operations, quality workflows, QA, release readiness, and evidence-based decisions."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -18,7 +18,19 @@ dev = [
     "bandit>=1.8",
     "pip-audit>=2.7",
     "pytest-xdist>=3.6",
+    # tooling/sbom.py validates against the CycloneDX schemas this bundles.
+    "cyclonedx-python-lib>=11",
+    # tooling/audit_deps.py parses skill runtime requirements.
+    "packaging>=24",
+]
+# Static analysis engine for tooling/sast.py. Kept out of `dev` because it pins
+# its own dependency versions; check_all runs it in an isolated environment
+# built from the hashes in uv.lock. Pinned exactly: the rules in
+# tooling/sast/ are tested against this engine version.
+sast = [
+    "semgrep==1.179.0",
 ]
 
 [tool.uv]
 package = false
+conflicts = [[{ group = "dev" }, { group = "sast" }]]

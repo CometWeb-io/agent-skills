@@ -1,0 +1,170 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/scoring.md",
+    "references/evidence-policy.md",
+    "references/live-source-registry.md"
+  ],
+  "scripts": {
+    "scripts/score_maxx.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "MODES": "mode",
+        "VALID_VERDICTS": "verdict",
+        "PILLARS": "active_pillars"
+      }
+    },
+    "scripts/build_audit_template.py": {
+      "input": "args",
+      "role": "helper"
+    },
+    "scripts/check_freshness.py": {
+      "input": "args",
+      "role": "helper"
+    },
+    "scripts/compare_scores.py": {
+      "input": "files",
+      "role": "kernel"
+    }
+  },
+  "fields": {
+    "registry_version": {},
+    "profile": {},
+    "subject": {},
+    "site_archetypes": {},
+    "target_surfaces": {},
+    "freshness_overrides": {
+      "map": true
+    },
+    "verified_at": {},
+    "sources": {},
+    "source": {},
+    "checks": {},
+    "id": {},
+    "evidence": {},
+    "reason": {},
+    "applicability_evidence": {},
+    "needed": {},
+    "distribution": {},
+    "pass": {},
+    "weak": {},
+    "fail": {},
+    "gates": {},
+    "class": {},
+    "artifact": {},
+    "mode": {
+      "enum": [
+        "RECON",
+        "FULL",
+        "PILLAR",
+        "VERSUS",
+        "DELTA"
+      ]
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "WEAK",
+        "FAIL",
+        "N/A",
+        "NOT_ASSESSED"
+      ]
+    },
+    "active_pillars": {
+      "enum": [
+        "foundation",
+        "relevance",
+        "authority",
+        "geo",
+        "aeo"
+      ]
+    },
+    "custom_weights": {
+      "opaque": true
+    },
+    "scope": {
+      "opaque": true
+    }
+  },
+  "outputs": {
+    "maxx": {},
+    "focused_score": {},
+    "score_name": {},
+    "tier": {},
+    "indicative_tier": {},
+    "provisional": {},
+    "overall_coverage": {},
+    "pillars": {},
+    "score": {},
+    "coverage": {},
+    "evidence_grade": {},
+    "check_results": {},
+    "points": {},
+    "gates_applied": {},
+    "freshness_used": {},
+    "group": {},
+    "state": {},
+    "weights": {},
+    "as_of": {},
+    "audit_fingerprint": {},
+    "scoring_engine_version": {}
+  },
+  "internal": [
+    "MAXX_AS_OF_DATE",
+    "allowed_evidence_classes",
+    "baseline_coverage",
+    "coverage_rules",
+    "current_coverage",
+    "default_surfaces",
+    "default_ttl_days",
+    "evidence_classes",
+    "evidence_quality",
+    "foundation",
+    "foundation_cap",
+    "freshness_trigger_surfaces",
+    "groups",
+    "label",
+    "last_verified",
+    "max",
+    "maxx_cap",
+    "min",
+    "na_policy",
+    "name",
+    "official_sources",
+    "pillar",
+    "platform",
+    "platform_source_group",
+    "profiles",
+    "provisional_below",
+    "publishable",
+    "required_target_evidence_classes",
+    "requires_fresh_policy",
+    "requires_nonpass_check_ids",
+    "surface",
+    "surfaces",
+    "tiers",
+    "ttl_days",
+    "version",
+    "weight",
+    "withhold_below"
+  ],
+  "doc_terms": [
+    "anthropic_crawlers",
+    "google_ai_search",
+    "google_structured_data",
+    "microsoft_ai_search",
+    "openai_agent",
+    "openai_search",
+    "perplexity_crawlers"
+  ],
+  "evals": [
+    {
+      "path": "tests/sample_audit.json",
+      "expect": "pass",
+      "pass": [
+        "pass"
+      ]
+    }
+  ]
+}

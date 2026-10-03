@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.6.1] - 2026-10-03
+
+### Fixed
+
+- The release gate and the red-team scorer disagreed on what a valid case is:
+  `release_check.py` only checked that six keys were present, so a case with
+  an unsupported `language` or an unknown key passed the gate and then made
+  `redteam_score.py` stop with exit 2. The gate now loads the manifest through
+  the scorer's own `load_cases`, and the accepted languages are a named
+  `LANGUAGES` constant. `tests/test_release_manifest_contract.py` pins both
+  rejections.
+- No reference listed the case keys (`mode_expectation`, `style_reference`,
+  `protected`, ...) or the JSON each script prints. `evaluation/README.md` now
+  lists the manifest keys and the scorer's per-case result,
+  `references/semantic-fidelity.md` the guard's JSON report, and
+  `references/mark-classes.md` the Layer A `--json` report.
+- `evaluation/redteam-protocol.md` named the unsupported claim
+  `watermark_removed`; the scorer flags the phrase `watermark removed`.
+- New `references/contract.json` holds the scripts, those references and
+  `evaluation/redteam-cases.json` to one contract under
+  `tooling/skill_contracts.py`.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [2.6.0] - 2026-10-03
 
 ### Changed

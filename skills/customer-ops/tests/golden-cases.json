@@ -60,6 +60,12 @@
     "expect": {"status": "OPEN"}
   },
   {
+    "name": "unknown commitment state is not silently open",
+    "command": "commitment-status",
+    "input": {"state": "DONE", "due_at": "2026-08-25T10:00:00+02:00", "now": "2026-08-25T11:00:00+02:00"},
+    "expect": {"status": "UNKNOWN"}
+  },
+  {
     "name": "github publication blocked by privacy preflight",
     "command": "case-gate",
     "input": {"stage": "GITHUB_READY", "customer_symptom": "export fails", "expected_behavior": "csv downloads", "actual_behavior": "empty file", "reproduction_state": "reproduced", "verification_criteria": "large export works", "dedupe_search_status": "done", "privacy_preflight_status": "blocked", "repo_conventions_status": "done"},

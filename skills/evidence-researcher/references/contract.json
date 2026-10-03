@@ -1,0 +1,445 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/evidence-graph.md",
+    "references/research-contract.md",
+    "references/freshness.md",
+    "references/contradiction-protocol.md",
+    "references/migration-v1-v2.md",
+    "references/kernel-cli.md",
+    "references/refresh-delta.md"
+  ],
+  "scripts": {
+    "scripts/evidence_kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "PROVENANCE_LANES": "privacy_lane",
+        "MATERIALITIES": "contradictions.severity",
+        "RESEARCH_STATUSES": "research_status",
+        "TEMPORAL_STATUSES": "temporal_status"
+      }
+    },
+    "scripts/evidence/constants.py": {
+      "input": "none",
+      "role": "helper",
+      "enums": {
+        "RESEARCH_MODES": "mode",
+        "CLAIM_TYPES": "claim_type",
+        "MATERIALITIES": "materiality",
+        "EPISTEMIC_KINDS": "epistemic_kind",
+        "TEMPORAL_SENSITIVITIES": "temporal_sensitivity",
+        "CLAIM_STATUSES": "claims.status",
+        "CONFIDENCE_LEVELS": "confidence",
+        "SOURCE_CLASSES": "source_class",
+        "SOURCE_ROLES": "source_role",
+        "PROVENANCE_LANES": "provenance_lane",
+        "SOURCE_STATES": "source_state",
+        "DIRECTIONS": "direction",
+        "ADMISSION_STATUSES": "admission",
+        "FIT_LEVELS": ["authority_fit", "directness", "scope_fit"],
+        "MEASUREMENT_LEVELS": "measurement_quality",
+        "CONTRADICTION_RESOLUTIONS": "resolution",
+        "SEARCH_PURPOSES": "purpose",
+        "SEARCH_LANES": "source_lane",
+        "GAP_SEVERITIES": "gaps.severity"
+      }
+    },
+    "scripts/evidence": {
+      "input": "json",
+      "role": "kernel"
+    }
+  },
+  "fields": {
+    "schema_version": {},
+    "research_id": {},
+    "research_contract": {},
+    "claims": {},
+    "sources": {},
+    "evidence": {},
+    "contradictions": {},
+    "searches": {},
+    "gaps": {},
+    "research_status": {},
+    "stop_reason": {},
+    "question": {},
+    "as_of": {},
+    "started_at": {},
+    "scope": {
+      "opaque": true
+    },
+    "mode": {
+      "enum": [
+        "DEEP",
+        "QUICK",
+        "STANDARD"
+      ]
+    },
+    "privacy_lane": {
+      "enum": [
+        "PRIVATE",
+        "PUBLIC",
+        "USER_SUPPLIED"
+      ]
+    },
+    "objective": {
+      "unread": true
+    },
+    "consumers": {
+      "unread": true
+    },
+    "constraints": {
+      "unread": true
+    },
+    "known_facts": {
+      "unread": true
+    },
+    "known_unknowns": {
+      "unread": true
+    },
+    "jurisdiction": {
+      "unread": true
+    },
+    "geography": {
+      "unread": true
+    },
+    "population": {
+      "unread": true
+    },
+    "product": {
+      "unread": true
+    },
+    "version": {
+      "unread": true
+    },
+    "time_window": {
+      "unread": true
+    },
+    "claim_id": {},
+    "claim_text": {},
+    "depends_on_claim_ids": {},
+    "contradiction_tested": {},
+    "notes": {},
+    "legacy_contradiction_tested": {},
+    "claim_type": {
+      "enum": [
+        "academic_evidence",
+        "company_announcement",
+        "competitor_pricing",
+        "current_fact",
+        "dataset_fact",
+        "doctrine_framework",
+        "historical_fact",
+        "internal_metric",
+        "internal_process_state",
+        "law_regulation",
+        "market_metric",
+        "official_technical_docs",
+        "product_behavior",
+        "qualitative_experience",
+        "regulatory_guidance",
+        "repository_behavior",
+        "security_advisory",
+        "service_status",
+        "vendor_policy"
+      ]
+    },
+    "materiality": {
+      "enum": [
+        "critical",
+        "material",
+        "supporting"
+      ]
+    },
+    "epistemic_kind": {
+      "enum": [
+        "FACT",
+        "INFERENCE"
+      ]
+    },
+    "temporal_sensitivity": {
+      "enum": [
+        "high",
+        "low",
+        "medium",
+        "static"
+      ]
+    },
+    "claims.status": {
+      "enum": [
+        "CONTRADICTED",
+        "PARTIAL",
+        "SUPPORTED_INFERENCE",
+        "UNKNOWN",
+        "UNSUPPORTED",
+        "VERIFIED"
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "low",
+        "medium"
+      ]
+    },
+    "source_id": {},
+    "title": {},
+    "canonical_ref": {},
+    "independence_group": {},
+    "independence_confidence": {},
+    "published_at": {},
+    "effective_from": {},
+    "effective_to": {},
+    "last_verified_at": {},
+    "expires_at": {},
+    "source_version": {},
+    "superseded_by_source_id": {},
+    "superseded_by": {},
+    "requires_live_verification": {},
+    "verified_for_research": {},
+    "verified_research_id": {},
+    "freshness_ttl_days": {},
+    "derived_from_source_ids": {},
+    "content_hash": {},
+    "source_class": {
+      "enum": [
+        "ACADEMIC_SOURCE",
+        "DATABASE_SYSTEM_OF_RECORD",
+        "DECISION_MEMORY",
+        "FRAMEWORK",
+        "HUMAN_EXPERT_EVIDENCE",
+        "LIVE_WEB",
+        "PRIVATE_KNOWLEDGE",
+        "REPOSITORY",
+        "USER_FILE"
+      ]
+    },
+    "source_role": {
+      "enum": [
+        "AGGREGATOR",
+        "DOCTRINE",
+        "EXPERT",
+        "OFFICIAL",
+        "PRIMARY",
+        "SECONDARY",
+        "SYSTEM_OF_RECORD"
+      ]
+    },
+    "provenance_lane": {
+      "enum": [
+        "PRIVATE",
+        "PUBLIC",
+        "USER_SUPPLIED"
+      ]
+    },
+    "source_state": {
+      "enum": [
+        "draft",
+        "final",
+        "superseded",
+        "withdrawn"
+      ]
+    },
+    "evidence_id": {},
+    "locator": {},
+    "evidence_form": {},
+    "summary": {},
+    "direction": {
+      "enum": [
+        "CONTEXT",
+        "CONTRADICT",
+        "SUPPORT"
+      ]
+    },
+    "admission": {
+      "enum": [
+        "ACCEPTED",
+        "CONTEXT_ONLY",
+        "REJECTED"
+      ]
+    },
+    "authority_fit": {
+      "enum": [
+        "high",
+        "low",
+        "medium",
+        "unknown"
+      ]
+    },
+    "directness": {
+      "enum": [
+        "high",
+        "low",
+        "medium",
+        "unknown"
+      ]
+    },
+    "scope_fit": {
+      "enum": [
+        "high",
+        "low",
+        "medium",
+        "unknown"
+      ]
+    },
+    "measurement_quality": {
+      "enum": [
+        "high",
+        "low",
+        "medium",
+        "not_applicable",
+        "unknown"
+      ]
+    },
+    "contradiction_id": {},
+    "evidence_ids": {},
+    "explanation": {},
+    "resolution_basis_evidence_ids": {
+      "unread": true
+    },
+    "resolution": {
+      "enum": [
+        "RESOLVED_AUTHORITY",
+        "RESOLVED_DEFINITION",
+        "RESOLVED_METHOD",
+        "RESOLVED_SCOPE",
+        "RESOLVED_SUPERSEDED",
+        "RESOLVED_TIME",
+        "UNRESOLVED"
+      ]
+    },
+    "contradictions.severity": {
+      "enum": [
+        "critical",
+        "material",
+        "supporting"
+      ]
+    },
+    "contradictions.type": {
+      "enum": [
+        "authority_mismatch",
+        "definition_mismatch",
+        "derivative_duplication",
+        "genuine_conflict",
+        "jurisdiction_mismatch",
+        "method_mismatch",
+        "population_mismatch",
+        "superseded_evidence",
+        "time_mismatch",
+        "unknown",
+        "version_mismatch"
+      ],
+      "enforced": false
+    },
+    "search_id": {},
+    "query_summary": {},
+    "completed": {},
+    "completed_at": {},
+    "result_source_ids": {},
+    "sanitized_for_external": {},
+    "absence_basis": {},
+    "expected_location": {},
+    "detection_logic": {},
+    "coverage_limitations": {},
+    "novelty_count": {
+      "unread": true
+    },
+    "purpose": {
+      "enum": [
+        "ABSENCE_TEST",
+        "FALSIFIER",
+        "LINEAGE",
+        "NEGATIVE_CASE",
+        "RETRACTION",
+        "SUPPORT",
+        "VERSION"
+      ]
+    },
+    "source_lane": {
+      "enum": [
+        "DATABASE",
+        "HUMAN",
+        "PRIVATE",
+        "PUBLIC",
+        "REPOSITORY",
+        "USER_SUPPLIED"
+      ]
+    },
+    "gap_id": {},
+    "what_closes_it": {},
+    "gap_type": {
+      "unread": true
+    },
+    "description": {
+      "unread": true
+    },
+    "gaps.severity": {
+      "enum": [
+        "critical",
+        "material",
+        "minor"
+      ]
+    },
+    "research_question": {},
+    "canonical_url": {},
+    "source_ref": {},
+    "supports_claim_ids": {},
+    "contradicts_claim_ids": {}
+  },
+  "outputs": {
+    "valid": {},
+    "errors": {},
+    "warnings": {},
+    "material_claim_count": {},
+    "critical_gaps": {},
+    "material_gaps": {},
+    "unresolved_critical_contradictions": {},
+    "unresolved_material_contradictions": {},
+    "ready": {},
+    "freshness_admissible": {},
+    "research_status": {
+      "enum": [
+        "BLOCKED_BY_CONTRADICTION",
+        "PARTIAL",
+        "READY",
+        "REFRESH_REQUIRED"
+      ]
+    },
+    "reason": {},
+    "validation": {},
+    "coverage": {},
+    "pack_hash": {},
+    "temporal_status": {
+      "enum": [
+        "CURRENT",
+        "DRAFT",
+        "NEAR_EXPIRY",
+        "NOT_YET_EFFECTIVE",
+        "STALE",
+        "SUPERSEDED",
+        "UNKNOWN"
+      ]
+    },
+    "computed_expires_at": {},
+    "dependent_claim_ids": {},
+    "items": {},
+    "action": {
+      "enum": [
+        "NO_ACTION",
+        "REFRESH_NOW",
+        "REFRESH_SOON",
+        "REVERIFY_ON_NEXT_MATERIAL_RUN"
+      ]
+    },
+    "stop": {}
+  },
+  "internal": [
+    "claim",
+    "dependency_ids",
+    "inference",
+    "local_gate",
+    "source"
+  ],
+  "doc_terms": [],
+  "evals": []
+}

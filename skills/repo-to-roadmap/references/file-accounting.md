@@ -83,6 +83,26 @@ remain gaps. Symlink targets are never followed: INSPECTED can describe the link
 itself only. A submodule/gitlink must stay UNAVAILABLE in the parent inventory;
 assess its pinned commit as a separate repository scope.
 
+## Record shapes
+
+Inventory and review files are exact objects; unexpected keys are rejected.
+
+```text
+inventory          schema (cometweb.file-inventory/v1), repository (owner/name), commit_sha,
+                   tree_sha, object_format (sha1 | sha256), scope (entire_commit_tree),
+                   commit_binding (local_git_object | asserted_connector_pin),
+                   observed_at, entries[], inventory_sha256
+entries[]          path, mode (040000 | 100644 | 100755 | 120000 | 160000),
+                   type (tree | blob | commit, must match mode), sha
+review ledger      schema (cometweb.file-review/v1), inventory_sha256, rows[]
+rows[]             path, sha, status, reason, reviewer, reviewed_at, evidence_ref,
+                   summary, scope_basis
+GitHub tree export sha, truncated, tree[] (path, mode, type, sha)
+```
+
+Row `status` is `INSPECTED`, `EXCLUDED_GENERATED`, `EXCLUDED_VENDOR`,
+`BINARY_UNREADABLE` or `UNAVAILABLE`. The audit `result` is one of the values below.
+
 ## Validate accounting
 
 Keep the inventory SHA-256 independently of the ledger and resulting report.

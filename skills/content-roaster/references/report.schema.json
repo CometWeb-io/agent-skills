@@ -20,11 +20,9 @@
     "claim_map",
     "proof_debt_ledger",
     "objection_ledger",
-    "root_causes",
     "no_material_findings",
     "first_attack_id",
     "findings",
-    "resolution_ledger",
     "verification_queue",
     "preserve",
     "core_fix",
@@ -68,6 +66,17 @@
         "SURGICAL",
         "DRY",
         "BRUTAL"
+      ]
+    },
+    "lens": {
+      "enum": [
+        "GENERAL",
+        "POSITIONING",
+        "CONVERSION",
+        "EDITORIAL",
+        "TRUST",
+        "OFFER",
+        "TECHNICAL_DOCUMENTATION"
       ]
     },
     "review_profile": {

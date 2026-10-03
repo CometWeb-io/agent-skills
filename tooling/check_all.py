@@ -68,8 +68,13 @@ GATES: tuple[Gate, ...] = (
     Gate("shellcheck", ("shellcheck", "{shell_scripts}"), "shell scripts", tool="shellcheck", cost=1.5),
     Gate("uv_lock", ("uv", "lock", "--check"), "uv.lock matches pyproject.toml", tool="uv",
          fix=("uv", "lock")),
-    Gate("pip_audit", _python("-m", "pip_audit"), "known vulnerabilities in locked dependencies "
-         "(network)", fast=False, cost=8),
+    Gate("sast", _python("tooling/sast.py"), "semgrep rules for Python and shell (pinned engine, offline)",
+         tool="uv", fast=False, cost=25),
+    Gate("runtime_deps_locked", _python("tooling/audit_deps.py", "--coverage"),
+         "skill RUNTIME.json dependencies are locked, so pip-audit covers them"),
+    Gate("sbom", _python("tooling/sbom.py", "--check"), "plugin CycloneDX SBOM builds and validates"),
+    Gate("pip_audit", _python("tooling/audit_deps.py"), "known vulnerabilities in every locked group, "
+         "hash-checked (network)", fast=False, cost=12),
     # Registry, generated files and copies that must stay byte-identical.
     Gate("registry_sync", _python("tooling/sync_skill_registry.py", "--check"),
          "registry entries owned by sync_skill_registry.OVERRIDES",
@@ -82,6 +87,8 @@ GATES: tuple[Gate, ...] = (
          "generated adapters, tables and README catalog",
          fix=_python("tooling/generate_adapters.py")),
     Gate("validate_repo", _python("tooling/validate_repo.py"), "registry agrees with packages"),
+    Gate("skill_contracts", _python("tooling/skill_contracts.py", "--check"),
+         "skill scripts, docs and eval cases match references/contract.json"),
     Gate("compatibility", _python("tooling/compatibility.py"), "host capability contract"),
     Gate("openai_plugin", _python("tooling/validate_openai_plugin.py"), "OpenAI plugin manifest"),
     # Not fast: a skill change is recorded once per pull request, after its
@@ -98,6 +105,8 @@ GATES: tuple[Gate, ...] = (
     Gate("routing_evals", _python("tooling/run_routing_evals.py"), "routing suite"),
     Gate("routing_coverage", _python("tooling/routing_coverage.py", "--check"),
          "routing floors per skill"),
+    Gate("routing_holdout", _python("tooling/routing_holdout.py", "--check"),
+         "frozen routing holdout unchanged and unseen by tuned sets"),
     Gate("policy_evals", _python("tooling/run_policy_evals.py"), "routing policy admission"),
     Gate("routing_adversarial", _python("tooling/run_policy_evals.py", "--suite",
                                         "evals/routing/adversarial-suite.json"),
@@ -105,6 +114,8 @@ GATES: tuple[Gate, ...] = (
     Gate("behavior_evals", _python("tooling/run_behavior_evals.py"), "behavior fixtures"),
     Gate("blind_eval_harness", _python("tooling/run_blind_eval_harness.py"),
          "behavior suites are well formed"),
+    Gate("output_grading", _python("tooling/grade_output.py", "--self-test"),
+         "golden skill outputs: good ones pass, broken ones fail with their exact codes"),
     Gate("envelope", _python("tooling/validate_envelope.py", "fixtures/cwaip-v2/evidence-final.json",
                              "--final"), "CW-AIP final envelope fixture"),
     Gate("eval_strength", _python("tooling/eval_strength.py", "--check"),

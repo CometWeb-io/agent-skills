@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any, Dict, Iterable, List, Tuple
 
 from .constants import (
+    ABSENCE_STATUSES,
     CLAIM_LANES,
     CLAIM_TYPES,
     CURRENT_ADMISSIBLE,
@@ -141,9 +142,13 @@ def evidence_report(claim: Dict[str, Any]) -> Dict[str, Any]:
     contradiction_strength = combine_independent(contradiction_groups.values())
 
     if claim_type == "absence":
-        complete_absence = absence_protocol_complete(claim.get("absence_check"))
+        check = claim.get("absence_check")
+        complete_absence = absence_protocol_complete(check)
         if not complete_absence:
             warnings.append("absence claim lacks a complete ABSENCE_VERIFIED protocol")
+        if isinstance(check, dict) and normalized_upper(check.get("status", "")) not in ABSENCE_STATUSES:
+            warnings.append(f"absence_check.status {normalized(check.get('status', ''))!r} is not one of: "
+                            + ", ".join(sorted(ABSENCE_STATUSES)))
     else:
         complete_absence = None
 

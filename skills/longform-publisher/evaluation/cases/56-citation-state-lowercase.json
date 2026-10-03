@@ -1,0 +1,11 @@
+{
+  "scenario": "citation_state_lowercase",
+  "expect": {
+    "validation": [
+      "FIELD_VALUE_INVALID:claim_uses.citation_state"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

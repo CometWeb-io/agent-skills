@@ -84,3 +84,22 @@ def test_confidential_statement_length_cap():
     )
     with pytest.raises(ValueError, match="summary limit"):
         module.validate(bad)
+
+
+# conflicts[].status is a closed vocabulary. Before it was checked, only the
+# literal "resolved" triggered the basis rule, so "Resolved" or "closed" read
+# as settled downstream without any basis.
+@pytest.mark.parametrize("status", ["Resolved", "closed", None])
+def test_conflict_status_outside_vocabulary_is_rejected(status):
+    conflict = {"basis": None} if status is None else {"status": status}
+    with pytest.raises(ValueError, match=r"conflicts\[0\] invalid status"):
+        module.validate(_base(conflicts=[conflict]))
+
+
+def test_unresolved_conflict_needs_no_basis():
+    module.validate(_base(conflicts=[{"status": "unresolved_conflict"}]))
+
+
+def test_confidence_vocabulary_is_a_bound_constant():
+    assert module.CONFIDENCE == {"high", "medium", "low"}
+    assert module.CONFLICT_STATUS == {"unresolved_conflict", "resolved"}

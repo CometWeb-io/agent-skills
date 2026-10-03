@@ -1,7 +1,13 @@
 ---
 name: content-reviewer
 description: >-
-  Review an existing piece of content constructively against its brief, intended reader, factual/evidence requirements, structure, clarity, specificity, usefulness, and internal consistency. Use when the user wants editorial QA, actionable findings, a pre-publication review, or a reasoned assessment of what must change. Do not use for adversarial roasting, full rewrites, evidence collection, humanization-only editing, or final release acceptance; route those to content-roaster, content-writer/ai-humanize, evidence-researcher, or artifact-acceptance.
+  Review an existing piece of content constructively against its brief, intended reader,
+  factual/evidence requirements, structure, clarity, specificity, usefulness, and internal
+  consistency. Do not use for adversarial roasting, full rewrites, evidence collection,
+  humanization-only editing, or final release acceptance; route those to content-roaster,
+  content-writer/ai-humanize, evidence-researcher, or artifact-acceptance. Use when the user wants
+  editorial QA, actionable findings, a pre-publication review, or a reasoned assessment of what must
+  change.
 ---
 
 # Content Reviewer

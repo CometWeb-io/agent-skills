@@ -37,6 +37,8 @@ def integrate(records,min_count=2,as_of=None,window_days=None,strict=False):
     now=_dt(as_of) if as_of is not None else None
     if as_of is not None and now is None:
         return {'status':'INVALID','proposal_count':0,'watch_count':0,'retired_count':0,'invalid_count':1,'proposals':[],'watch':[],'retired':[],'invalid':[{'reason':'as_of:invalid'}]}
+    if not isinstance(min_count,int) or isinstance(min_count,bool) or min_count<=0:
+        return {'status':'INVALID','proposal_count':0,'watch_count':0,'retired_count':0,'invalid_count':1,'proposals':[],'watch':[],'retired':[],'invalid':[{'reason':'min_count:invalid'}]}
     if window_days is not None and (not isinstance(window_days,int) or isinstance(window_days,bool) or window_days<=0):
         return {'status':'INVALID','proposal_count':0,'watch_count':0,'retired_count':0,'invalid_count':1,'proposals':[],'watch':[],'retired':[],'invalid':[{'reason':'window_days:invalid'}]}
     groups=defaultdict(list); invalid=[]; retired=[]

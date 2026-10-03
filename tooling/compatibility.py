@@ -93,6 +93,90 @@ def parse_frontmatter(path: Path) -> dict:
     return data
 
 
+def read_frontmatter(path: Path) -> dict:
+    """Return a SKILL.md frontmatter mapping without applying any host's rules."""
+    match = FRONTMATTER_RE.match(path.read_text(encoding="utf-8"))
+    if not match:
+        raise ValueError(f"missing YAML frontmatter: {path}")
+    data = safe_load_unique(match.group(1))
+    if not isinstance(data, dict):
+        raise ValueError("frontmatter must be a mapping")
+    return data
+
+
+def frontmatter_rules(hosts: dict, host_name: str) -> dict | None:
+    """Resolve a host's documented frontmatter constraints, following `inherits`."""
+    seen: list[str] = []
+    rules: dict = {}
+    current: str | None = host_name
+    while current is not None:
+        if current in seen:
+            raise ValueError(f"frontmatter inheritance cycle: {' -> '.join([*seen, current])}")
+        seen.append(current)
+        block = (hosts.get(current) or {}).get("frontmatter")
+        if block is None:
+            return None if current == host_name else rules
+        rules = {**{k: v for k, v in block.items() if k != "inherits"}, **rules}
+        current = block.get("inherits")
+    return rules
+
+
+def frontmatter_violations(data: dict, dir_name: str, rules: dict) -> list[str]:
+    """List every way one parsed frontmatter breaks one host's documented rules."""
+    problems: list[str] = []
+    for key in rules.get("required", []):
+        if key not in data:
+            problems.append(f"missing required key {key!r}")
+    allowed = rules.get("allowed_keys")
+    if allowed is not None:
+        for key in sorted(set(data) - set(allowed)):
+            problems.append(f"key {key!r} is not documented for this host")
+    name = data.get("name", dir_name)
+    if not isinstance(name, str) or not name:
+        problems.append("name must be a non-empty string")
+    else:
+        pattern = rules.get("name_pattern")
+        if pattern and not re.fullmatch(pattern, name):
+            problems.append(f"name {name!r} does not match {pattern}")
+        name_max = rules.get("name_max")
+        if name_max is not None and len(name) > name_max:
+            problems.append(f"name is {len(name)} characters, over {name_max}")
+        if rules.get("name_matches_dir") and name != dir_name:
+            problems.append(f"name {name!r} differs from directory {dir_name!r}")
+        if name.casefold() in {n.casefold() for n in rules.get("reserved_names", [])}:
+            problems.append(f"name {name!r} is reserved")
+    if "description" in data:
+        desc = data["description"]
+        if not isinstance(desc, str) or not desc.strip():
+            problems.append("description must be a non-empty string")
+        else:
+            desc_max = rules.get("description_max")
+            if desc_max is not None and len(desc) > desc_max:
+                problems.append(f"description is {len(desc)} characters, over {desc_max}")
+    if "compatibility" in data and rules.get("compatibility_max") is not None:
+        compat = data["compatibility"]
+        if not isinstance(compat, str) or not 1 <= len(compat) <= rules["compatibility_max"]:
+            problems.append(f"compatibility must be 1-{rules['compatibility_max']} characters")
+    return problems
+
+
+def frontmatter_matrix(hosts: dict, skills_dir: Path = SKILLS) -> dict[str, dict[str, list[str]]]:
+    """Check every SKILL.md against every host that documents frontmatter rules.
+
+    Returns {skill: {host: [violations]}}; an empty list is a pass.
+    """
+    host_rules = {
+        name: rules for name in sorted(hosts) if (rules := frontmatter_rules(hosts, name)) is not None
+    }
+    matrix: dict[str, dict[str, list[str]]] = {}
+    for skill_md in sorted(skills_dir.glob("*/SKILL.md")):
+        data = read_frontmatter(skill_md)
+        matrix[skill_md.parent.name] = {
+            host: frontmatter_violations(data, skill_md.parent.name, rules) for host, rules in host_rules.items()
+        }
+    return matrix
+
+
 def load_runtime(skill_dir: Path) -> dict | None:
     path = skill_dir / "RUNTIME.json"
     if not path.is_file():
@@ -272,13 +356,19 @@ def main() -> None:
             if not (skill_dir / rel).is_file():
                 errors.append(f"{sid}@package: missing {rel}")
 
+    matrix = frontmatter_matrix(hosts)
+    for sid, per_host in matrix.items():
+        for host_name, problems in per_host.items():
+            errors.extend(f"{sid}@{host_name}: frontmatter {problem}" for problem in problems)
+
     for w in warnings:
         print(f"WARN: {w}")
     if errors:
         for e in errors:
             print(f"FAIL: {e}", file=sys.stderr)
         raise SystemExit(1)
-    print(f"OK: compatibility ({len(registry['skills'])} skills)")
+    hosts_checked = len(next(iter(matrix.values()), {}))
+    print(f"OK: compatibility ({len(registry['skills'])} skills; frontmatter checked against {hosts_checked} host profiles)")
 
 
 if __name__ == "__main__":

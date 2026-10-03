@@ -1,7 +1,14 @@
 ---
 name: content-writer
 description: >-
-  Create evidence-aware informational or editorial prose such as articles, guides, reports, documentation, research-backed explainers, and other bounded knowledge content from an explicit brief or sufficiently clear request. Use when the user wants the actual written artifact and factual integrity, reader utility, structure, and claim discipline matter. Do not use primarily for persuasion-first landing-page copy, ads, lifecycle or cold email, generic copy-editing, humanization-only rewrites, long-form publication/release orchestration, hostile critique, or primary research collection; route those to the relevant copy, email, ai-humanize, longform-publisher, evidence-researcher, content-reviewer, or content-roaster specialist when available.
+  Create evidence-aware informational or editorial prose such as articles, guides, reports,
+  documentation, research-backed explainers, and other bounded knowledge content from an explicit
+  brief or sufficiently clear request. Do not use primarily for persuasion-first landing-page copy,
+  ads, lifecycle or cold email, generic copy-editing, humanization-only rewrites, long-form
+  publication/release orchestration, hostile critique, or primary research collection; route those to
+  the relevant copy, email, ai-humanize, longform-publisher, evidence-researcher, content-reviewer, or
+  content-roaster specialist when available. Use when the user wants the actual written artifact and
+  factual integrity, reader utility, structure, and claim discipline matter.
 ---
 
 # Content Writer

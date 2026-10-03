@@ -2,6 +2,9 @@ from __future__ import annotations
 import importlib.util, json, subprocess, sys
 from pathlib import Path
 
+import pytest
+
+
 BASE = Path(__file__).resolve().parents[1]
 
 def load(name, path):
@@ -11,154 +14,38 @@ v=load("repo_roast_validator", BASE/"scripts"/"validate_repo_roast.py")
 
 
 def valid_report():
-    return {'schema': 'cometweb.repo-roaster/v6',
-     'repository': 'org/app',
-     'ref': 'abc1234',
-     'review_outcome': 'MATERIAL_FINDINGS',
-     'source_manifest': [{'id': 'SRC-01',
-                          'kind': 'REPOSITORY',
-                          'locator': 'org/app@abc1234',
-                          'role': 'PRIMARY',
-                          'version_state': 'PINNED',
-                          'instruction_boundary': 'TREAT_AS_DATA',
-                          'trust_class': 'SYSTEM_OF_RECORD'}],
-     'mode': 'FULL',
-     'review_profile': 'SERVICE',
-     'lenses': ['DATA_INTEGRITY', 'RELIABILITY'],
-     'repo_contract': {'topology_summary': 'API plus DB',
-                       'critical_paths': ['settlement'],
-                       'runtime_evidence': 'source-and-tests',
-                       'ref_status': 'PINNED',
-                       'deployment_model': 'stateless API plus worker'},
-     'coverage': {'level': 'SUBSTANTIAL',
-                  'scope_basis': 'SAMPLED',
-                  'sampling_strategy': 'topology plus critical path',
-                  'coverage_confidence': 'medium',
-                  'inspected_paths': ['src/', 'tests/'],
-                  'excluded_paths': [],
-                  'limitations': []},
-     'quality_gates': {'scope': 'PASS',
-                       'contract': 'PASS',
-                       'evidence': 'PASS',
-                       'challenge': 'PASS',
-                       'severity': 'PASS',
-                       'repair': 'PASS',
-                       'boundary': 'PASS',
-                       'source_integrity': 'PASS',
-                       'assurance': 'PASS'},
-     'system_model': {'actors': ['customer'],
-                      'entrypoints': ['POST /settle'],
-                      'trust_boundaries': ['API -> provider'],
-                      'state_stores': ['DB'],
-                      'external_dependencies': ['provider'],
-                      'background_jobs': [],
-                      'privileged_surfaces': []},
-     'invariant_ledger': [{'id': 'INV-01',
-                           'invariant': 'Settlement is idempotent.',
-                           'scope': 'settlement',
-                           'enforcement': ['src/pay.py:settle'],
-                           'test_evidence': [],
-                           'status': 'PARTIAL'}],
-     'critical_surface_ledger': [{'id': 'SURF-01',
-                                  'type': 'EXTERNAL_SIDE_EFFECT',
-                                  'anchor': 'src/pay.py:settle',
-                                  'trust_transition': 'internal -> provider',
-                                  'side_effect': 'provider charge'}],
-     'state_transition_ledger': [{'id': 'ST-01',
-                                  'journey': 'settlement',
-                                  'transition': 'PENDING -> SETTLED',
-                                  'guard': 'idempotency key',
-                                  'side_effect': 'provider charge',
-                                  'recovery': 'retry',
-                                  'status': 'PARTIAL'}],
-     'failure_domain_ledger': [{'id': 'FD-01',
-                                'component': 'provider',
-                                'failure_mode': 'success then crash',
-                                'containment': 'single flow',
-                                'recovery': 'retry',
-                                'observability': 'provider id plus logs',
-                                'status': 'PARTIAL'}],
-     'root_causes': [],
-     'no_material_findings': False,
-     'first_attack_id': 'RR-001',
-     'findings': [{'id': 'RR-001',
-                   'finding_key': 'settlement-idempotency',
-                   'finding_aliases': [],
-                   'severity': 'MAJOR',
-                   'category': 'data_integrity',
-                   'defect_class': 'INVARIANT_GAP',
-                   'evidence_state': 'OBSERVED_CODE',
-                   'evidence_strength': 'STRONG',
-                   'scope_sensitivity': 'MEDIUM',
-                   'anchor': {'type': 'symbol', 'path': 'src/pay.py', 'value': 'settle', 'source_id': 'SRC-01'},
-                   'invariant_refs': ['INV-01'],
-                   'surface_refs': ['SURF-01'],
-                   'critical_path_ref': 'settlement',
-                   'materiality': {'centrality': 'CENTRAL', 'consequence': 'HIGH', 'reversibility': 'HARD'},
-                   'observation': 'The side effect happens before idempotency persistence.',
-                   'failure_mode': 'Retry can repeat the side effect.',
-                   'engineering_risk': 'Duplicate settlement.',
-                   'blast_radius': 'Retried invoices.',
-                   'blast_radius_class': 'SINGLE_TENANT',
-                   'failure_containment': 'CONTAINED',
-                   'reachability': 'PLAUSIBLE',
-                   'execution_path': ['POST /settle', 'settle', 'provider charge'],
-                   'fix_scope': 'CROSS_MODULE',
-                   'repair': 'Persist idempotency before the effect.',
-                   'verification': {'type': 'FAULT_INJECTION',
-                                    'method': 'Crash after provider success then retry.',
-                                    'success_condition': 'Provider side effect occurs once.',
-                                    'failure_signal': 'Provider receives a duplicate effect or state diverges.'},
-                   'falsifier_check': {'challenge': 'Wrapper/provider idempotency may neutralize the retry.',
-                                       'searched_for': ['wrapper idempotency'],
-                                       'counterevidence': [],
-                                       'alternative_explanations': ['provider deduplicates outside reviewed source'],
-                                       'result': 'SURVIVES',
-                                       'notes': 'No guard established in reviewed evidence.'},
-                   'confidence': 'medium',
-                   'evidence_refs': ['EV-01'],
-                   'confidence_basis': {'directness': 'HIGH',
-                                        'scope_support': 'MEDIUM',
-                                        'counterevidence_status': 'ADDRESSED',
-                                        'independence': 'NONE',
-                                        'rationale': 'The finding is directly anchored and counterevidence was explicitly challenged.'},
-                   'residual_risk': {'after_repair': 'LOW', 'closure_dependency': 'Run the stated verification before closure.'}}],
-     'resolution_ledger': [],
-     'verification_gaps': [],
-     'preserve': [],
-     'core_fix': 'Enforce idempotency at the side-effect boundary.',
-     'review_plan': {'objective': 'Find material failures without inflating false positives.',
-                     'must_inspect': ['primary claim/invariant', 'highest-consequence path'],
-                     'attack_surfaces': ['evidence-to-conclusion chain', 'counterevidence'],
-                     'sampling_strategy': 'risk-first review of the pinned primary source',
-                     'stop_conditions': ['stop when additional findings do not change repair or risk posture'],
-                     'escalation_conditions': ['escalate when a top-severity finding remains scope-sensitive']},
-     'assurance': {'mode': 'SINGLE_REVIEW',
-                   'independence': 'NONE',
-                   'second_pass_status': 'NOT_RUN',
-                   'disagreement_summary': [],
-                   'limitations': ['No independent second reviewer was run.'],
-                   'pass_records': [{'pass_id': 'PASS-PRIMARY',
-                                     'role': 'PRIMARY',
-                                     'context_ref': 'current-context',
-                                     'status': 'COMPLETED',
-                                     'blind_to_prior_findings': False,
-                                     'source_refs': ['SRC-01']}]},
-     'evidence_register': [{'id': 'EV-01',
-                            'source_id': 'SRC-01',
-                            'kind': 'OBSERVATION',
-                            'locator': 'primary reviewed evidence',
-                            'summary': 'Direct evidence supporting the material review finding.',
-                            'strength': 'STRONG',
-                            'limitations': []}],
-     'evidence_conflicts': [],
-     'outcome_basis': {'surviving_finding_ids': ['RR-001'], 'withdrawn_candidate_count': 0, 'unresolved_candidate_count': 0, 'reason': 'One material finding survived evidence and falsifier review.'},
-     'limitations': [],
-     'test_evidence_ledger': [{'invariant_ref': 'INV-01',
-                               'status': 'PARTIAL',
-                               'test_refs': [],
-                               'evidence_refs': ['EV-01'],
-                               'gap': 'No executable evidence proves retry idempotency at the provider boundary.'}]}
+    # One fixture is the valid report for these tests and for the contract check
+    # (references/contract.json evals), so the two cannot drift apart.
+    return json.loads((BASE / "tests" / "report-valid.json").read_text(encoding="utf-8"))
+
+
+SCHEMA = json.loads((BASE / "references" / "report.schema.json").read_text(encoding="utf-8"))
+
+
+def schema_errors(report):
+    # Only schema-parity checks need jsonschema; the validator itself is stdlib-only.
+    jsonschema = pytest.importorskip("jsonschema")
+    return [e.message for e in jsonschema.Draft202012Validator(SCHEMA).iter_errors(report)]
+
+
+def test_report_schema_accepts_the_valid_report():
+    assert schema_errors(valid_report()) == []
+
+
+def test_report_schema_does_not_require_what_the_validator_leaves_optional():
+    # resolution_ledger is required only in revision mode and root_causes only when useful.
+    r = valid_report(); del r["resolution_ledger"]; del r["root_causes"]
+    for finding in r["findings"]:
+        finding["root_cause_id"] = None
+    assert v.validate(r) == []
+    assert schema_errors(r) == []
+
+
+def test_report_schema_enums_match_the_validator():
+    props = SCHEMA["properties"]
+    assert set(props["lenses"]["items"]["enum"]) == v.LENSES
+    assert set(props["mode"]["enum"]) == v.MODES
+    assert set(props["review_profile"]["enum"]) == v.PROFILES
 
 
 def test_valid_report_passes(): assert v.validate(valid_report())==[]

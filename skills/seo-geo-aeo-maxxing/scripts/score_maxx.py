@@ -253,6 +253,11 @@ def score_audit(audit, root, as_of=None):
             fail(f"Duplicate check id: {cid}")
         seen.add(cid)
         cdef = check_defs[cid]
+        # The row is merged over its registry definition below; a supplied
+        # weight or pillar would otherwise rescore the check silently.
+        overridden = sorted(set(row) & (set(cdef) - {"id"}))
+        if overridden:
+            fail(f"{cid} cannot override registry field(s): " + ", ".join(overridden))
         if not isinstance(verdict, str) or verdict not in VALID_VERDICTS:
             fail(f"Invalid verdict for {cid}: {verdict}")
 

@@ -57,6 +57,8 @@ Statuses:
 - `HOLD_VERIFY` — evidence/credibility/conflict contradiction blocks action.
 - `REJECT` — hard reject or score <50.
 
+The exact `ratings` keys and payload for `scripts/score_candidate.py` are listed in `references/kernel-inputs.md`.
+
 Interpret Stage A as **who deserves a discovery conversation**, not who has agreed to participate.
 
 ## Stage B — Live Partner Readiness
@@ -79,6 +81,7 @@ Use only after direct conversation or direct company evidence. Rate each 0–5.
 
 Capture:
 
+- `live_evidence_confirmed` boolean — true only when direct conversation or company evidence exists; the scorer returns `HOLD_VERIFY` while it is false or missing,
 - `security_privacy_blocker` boolean,
 - `legal_contract_blocker` boolean,
 - `customization_risk` 0–5,

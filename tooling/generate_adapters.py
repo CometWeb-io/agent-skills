@@ -6,11 +6,14 @@ Writes:
   - docs/generated-cursor-routing.mdc
   - docs/generated-compatibility-matrix.md
   - the skill catalog block in README.md (with registry/readme-catalog.json)
-  - skills/<id>/agents/openai.yaml interface block
+    and every skill count outside it (README_FACTS; a reworded sentence fails)
+  - skills/<id>/agents/openai.yaml interface block, including a one-sentence
+    Codex `default_prompt` that invokes the skill as `$skill-id`
   - extras/cursor-routing.mdc (compact Cursor rule; fallback when the full rule is absent)
   - extras/AGENTS.snippet.md (routing block for AGENTS.md hosts such as Codex)
   - the skill list in the `description` of .cursor-plugin/plugin.json and
-    .claude-plugin/plugin.json (every other manifest field stays hand-owned)
+    .claude-plugin/plugin.json (every other manifest field stays hand-owned;
+    a description without the '(N packages): ...' tail fails)
 """
 from __future__ import annotations
 
@@ -49,28 +52,35 @@ DISPLAY_NAMES = {
     "longform-publisher": "Longform Publisher",
 }
 
+# Codex inserts `interface.default_prompt` when a user picks the skill, and its
+# skill-creator reference asks for one short sentence that names the skill
+# explicitly as `$skill-id`. Skills with a hand-tuned starting prompt are listed
+# here; every other skill gets one built from its README catalog summary.
 DEFAULT_PROMPTS = {
     "cometweb-context": (
-        "Refresh the minimal CometWeb context needed for my goal and return a "
-        "ContextEnvelope with sources, facts, conflicts, gaps, and handoff."
+        "Use $cometweb-context to refresh only the context my goal needs and return a "
+        "ContextEnvelope with sources, facts, conflicts and gaps."
     ),
     "evidence-researcher": (
-        "Build an Evidence Pack for my question: decompose claims, verify sources, "
-        "run falsifier passes, and report readiness without making the final decision."
+        "Use $evidence-researcher to build an Evidence Pack for my question, with verified "
+        "sources, falsifier passes and a readiness verdict."
     ),
     "skill-orchestrator": (
-        "Plan and execute the multi-skill workflow for my goal. Choose execution_mode "
-        "auto|single_thread|isolated_subagents and hand off via CW-AIP envelopes."
+        "Use $skill-orchestrator to plan and run the multi-skill workflow for my goal, "
+        "handing results between steps as CW-AIP envelopes."
     ),
     "skill-orchestrator-multiagent": (
-        "Run the multi-skill workflow with execution_mode=isolated_subagents "
-        "(one Task/subagent per specialist skill)."
+        "Use $skill-orchestrator-multiagent to run my multi-skill workflow with one "
+        "isolated subagent per specialist step."
     ),
     "ai-council": (
-        "Run AI Council on my decision question. Use the smallest profile "
-        "(LIGHT|STANDARD|DEEP) that protects the decision."
+        "Use $ai-council on my decision question with the smallest profile "
+        "(LIGHT, STANDARD or DEEP) that protects the decision."
     ),
 }
+DEFAULT_PROMPT_MAX = 160
+# A sentence end followed by more text: "Do X. Then Y." is two sentences.
+_SENTENCE_BREAK = re.compile(r"[.!?]\s+\S")
 
 
 def title_case_skill(skill_id: str) -> str:
@@ -114,7 +124,54 @@ def short_description(entry: dict) -> str:
     return text
 
 
-def render_openai_yaml(entry: dict, existing: str | None, skill_dir: Path | None = None) -> str:
+def _first_sentence(text: str) -> str:
+    text = " ".join(text.split())
+    match = _SENTENCE_BREAK.search(text)
+    return text[: match.start() + 1] if match else text
+
+
+def _invokes(skill_id: str, prompt: str) -> bool:
+    return re.search(r"(?<![\w$-])\$" + re.escape(skill_id) + r"(?![\w-])", prompt) is not None
+
+
+def default_prompt(entry: dict, summary: str | None = None) -> str:
+    """One sentence that invokes the skill as `$skill-id`, at most DEFAULT_PROMPT_MAX chars.
+
+    The catalog summary is a noun phrase ("Claim decomposition, source
+    verification ..."), so it reads as "Use $id for <summary>." Without one, the
+    first sentence of the description is used after a colon, which reads
+    correctly whether it opens with a verb or a noun. Text is clipped at a word
+    boundary, never mid-word. A hand-tuned prompt that loses its `$skill-id`,
+    grows past the limit or becomes two sentences stops generation.
+    """
+    skill_id = entry["id"]
+    if skill_id in DEFAULT_PROMPTS:
+        prompt = " ".join(DEFAULT_PROMPTS[skill_id].split())
+    else:
+        source, joiner = (summary, " for ") if summary and summary.strip() else (
+            _first_sentence(entry.get("description", "")), ": ")
+        source = source.strip().rstrip(".!? ")
+        # Lower-case an ordinary capitalised first word, but keep acronyms ("SEO").
+        if len(source) > 1 and source[0].isupper() and source[1].islower():
+            source = source[0].lower() + source[1:]
+        lead = f"Use ${skill_id}{joiner}"
+        body = _clip_words(source, DEFAULT_PROMPT_MAX - len(lead) - 1) if source else ""
+        prompt = (lead + body + ".") if body else f"Use ${skill_id} for my request."
+    problems = []
+    if not _invokes(skill_id, prompt):
+        problems.append(f"does not invoke ${skill_id}")
+    if len(prompt) > DEFAULT_PROMPT_MAX:
+        problems.append(f"is {len(prompt)} > {DEFAULT_PROMPT_MAX} characters")
+    if _SENTENCE_BREAK.search(prompt):
+        problems.append("is more than one sentence")
+    if problems:
+        raise SystemExit(f"{skill_id}: default_prompt " + "; ".join(problems) + f": {prompt!r}")
+    return prompt
+
+
+def render_openai_yaml(
+    entry: dict, existing: str | None, skill_dir: Path | None = None, summary: str | None = None
+) -> str:
     from adapter_metadata import merge_openai
 
     skill_id = entry["id"]
@@ -122,10 +179,7 @@ def render_openai_yaml(entry: dict, existing: str | None, skill_dir: Path | None
     interface = {
         "display_name": display,
         "short_description": short_description(entry),
-        "default_prompt": DEFAULT_PROMPTS.get(
-            skill_id,
-            f"Use the {display} skill for: {entry.get('description', skill_id)[:200]}",
-        ),
+        "default_prompt": default_prompt(entry, summary),
     }
     actual_dir = skill_dir or (SKILLS / skill_id)
     if (actual_dir / "assets" / "icon.svg").is_file():
@@ -204,9 +258,29 @@ def render_readme(current: str, skills: list[dict], catalog: dict) -> str:
     if start < 0 or end < start:
         raise SystemExit(f"README.md has no catalog block; expected {README_BEGIN!r} ... {README_END!r}")
     rendered = current[:start] + build_readme_catalog(skills, catalog) + current[end + len(README_END):]
-    # The badge and the opening sentence state the skill count too; keep them in step.
-    rendered = re.sub(r"(badge/skills-)\d+(-)", rf"\g<1>{len(skills)}\g<2>", rendered)
-    return re.sub(r"(contains )\d+( reusable skill packages)", rf"\g<1>{len(skills)}\g<2>", rendered)
+    return render_readme_facts(rendered, len(skills))
+
+
+# Every place outside the catalog block where README.md states the skill count.
+# Each pattern must still match: a reworded sentence would otherwise keep a stale
+# number forever, because a substitution that finds nothing changes nothing.
+README_FACTS = (
+    ("skills badge", re.compile(r"(badge/skills-)\d+(-)")),
+    ("opening sentence", re.compile(r"(contains )\d+( reusable skill packages)")),
+    ("installer output example", re.compile(r"(`OK: )\d+( Claude Code skills installed in )")),
+)
+
+
+def render_readme_facts(text: str, count: int) -> str:
+    missing = [name for name, pattern in README_FACTS if not pattern.search(text)]
+    if missing:
+        raise SystemExit(
+            f"README.md no longer states the skill count in: {', '.join(missing)}. "
+            "Restore the wording or update README_FACTS in tooling/generate_adapters.py."
+        )
+    for _, pattern in README_FACTS:
+        text = pattern.sub(rf"\g<1>{count}\g<2>", text)
+    return text
 
 
 HOST_PLUGIN_MANIFESTS = (".claude-plugin/plugin.json", ".cursor-plugin/plugin.json")
@@ -220,13 +294,17 @@ def host_manifests() -> list[Path]:
 def render_host_manifest(current: str, skills: list[dict]) -> str:
     """Keep the '(N packages): A, B, ...' tail of a host plugin description in step.
 
-    A manifest whose description does not end in that form is left untouched.
+    A host manifest whose description lost that tail is an error: leaving it
+    untouched would let the count and the list go stale without --check noticing.
     """
     data = json.loads(current)
     description = data.get("description")
     match = PACKAGE_LIST.search(description) if isinstance(description, str) else None
     if not match:
-        return current
+        raise SystemExit(
+            "host plugin manifest description must end in '(N packages): A, B, ...'; "
+            f"got {description!r}"
+        )
     names = ", ".join(title_case_skill(entry["id"]) for entry in sorted(skills, key=lambda e: e["id"]))
     data["description"] = description[:match.start()] + f"({len(skills)} packages): {names}."
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
@@ -454,15 +532,25 @@ def build_compatibility_matrix(skills: list[dict], hosts: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def catalog_summaries() -> dict[str, str]:
+    """README catalog summaries by skill id; empty for a tree without the catalog."""
+    path = readme_catalog_file()
+    if not path.is_file():
+        return {}
+    catalog = json.loads(path.read_text(encoding="utf-8"))
+    return {row["id"]: row["summary"] for group in catalog["groups"] for row in group["skills"]}
+
+
 def write_openai_yamls(skills: list[dict]) -> list[Path]:
     written: list[Path] = []
+    summaries = catalog_summaries()
     for entry in skills:
         skill_dir = SKILLS / entry["id"]
         agents = skill_dir / "agents"
         agents.mkdir(parents=True, exist_ok=True)
         path = agents / "openai.yaml"
         existing = path.read_text(encoding="utf-8") if path.is_file() else None
-        content = render_openai_yaml(entry, existing, skill_dir=skill_dir)
+        content = render_openai_yaml(entry, existing, skill_dir=skill_dir, summary=summaries.get(entry["id"]))
         if existing != content:
             path.write_text(content, encoding="utf-8")
             written.append(path)
@@ -531,10 +619,13 @@ def expected_artifacts(skills: list[dict]) -> dict[Path, str]:
         catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
         current = readme.read_text(encoding="utf-8") if readme.is_file() else ""
         artifacts[readme] = render_readme(current, skills, catalog)
+    summaries = catalog_summaries()
     for entry in skills:
         path = SKILLS / entry["id"] / "agents" / "openai.yaml"
         existing = path.read_text(encoding="utf-8") if path.is_file() else None
-        artifacts[path] = render_openai_yaml(entry, existing, skill_dir=SKILLS / entry["id"])
+        artifacts[path] = render_openai_yaml(
+            entry, existing, skill_dir=SKILLS / entry["id"], summary=summaries.get(entry["id"])
+        )
     return artifacts
 
 

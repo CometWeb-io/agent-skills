@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.1] - 2026-10-03
+
+### Changed
+
+- New `references/contract.json` declares every payload key `roadmap_kernel.py` and `coverage_inventory.py` read, their result keys and each enum, bound to the kernel constants that enforce them; `tooling/skill_contracts.py` fails when the references and kernels drift.
+- The references never named keys the kernel reads: item `target_blocker`, `lane` and `capability_refs`; coverage-row `name`, `status`, `weight` and `mandatory`; `snapshot_hash_short`; the inventory, entry and review-row keys of file accounting; and the 25 accepted `source_type` values, so any value outside an undocumented list failed. `output-contract.md` now carries a payload field reference and a result-key list, and `file-accounting.md` the record shapes.
+- Documented keys the kernel does not read are marked as such: evidence `source_ref`, absence-check `notes`, requirement `domain` and `source`, capability `name`, `criticality` and `confidence`, and `watch_dependencies`.
+- An `absence_check.status` outside `ABSENCE_VERIFIED`, `NOT_FOUND_IN_SEARCH`, `INCOMPLETE_SEARCH` and `UNKNOWN` now adds a warning naming the value; before, a misspelling read only as an incomplete protocol. Test: `test_unrecognized_absence_status_is_named_in_a_warning`.
+- Inline value sets became named constants (`ASSESSMENT_MODES`, `FILE_REVIEW_POLICIES`, `ABSENCE_STATUSES`, `OBJECT_ID_LENGTHS`, `COMMIT_BINDINGS`); accepted values are unchanged.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.1.0] - 2026-10-03
 
 ### Changed

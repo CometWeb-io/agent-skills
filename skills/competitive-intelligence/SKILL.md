@@ -1,7 +1,16 @@
 ---
 name: competitive-intelligence
 description: >-
-  Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior scan, track pricing/product/positioning/SEO/ads/reviews/company changes, maintain a competitor watchlist, produce recurring competitor digests, verify competitor claims, analyze cross-competitor trends, or turn observed deltas into product/GTM/sales implications. Use it when temporal state, snapshots, deltas, alerts, freshness, evidence provenance, or recurring intelligence operations matter. Do not use for a one-time initial deep profile with no monitoring intent (prefer a dedicated competitor-profiling skill when one is installed), for extracting a competitor's mechanisms to adapt into your own product (use product-teardown), for writing comparison pages or sales battlecards, for setting your own prices, or for a full search-visibility audit (use seo-geo-aeo-maxxing).
+  Continuous competitive intelligence and competitor change detection. Do not use for a one-time
+  initial deep profile with no monitoring intent (prefer a dedicated competitor-profiling skill when
+  one is installed), for extracting a competitor's mechanisms to adapt into your own product (use
+  product-teardown), for writing comparison pages or sales battlecards, for setting your own prices,
+  or for a full search-visibility audit (use seo-geo-aeo-maxxing). Use when the user asks to monitor
+  competitors over time, refresh existing competitor profiles, detect what changed since a prior scan,
+  track pricing/product/positioning/SEO/ads/reviews/company changes, maintain a competitor watchlist,
+  produce recurring competitor digests, verify competitor claims, analyze cross-competitor trends, or
+  turn observed deltas into product/GTM/sales implications. Use it when temporal state, snapshots,
+  deltas, alerts, freshness, evidence provenance, or recurring intelligence operations matter.
 ---
 
 # Competitive Intelligence
@@ -32,7 +41,7 @@ This skill performs one intelligence iteration per run; it does not claim to run
 | before writing any report or alert | `references/output-contract.md` |
 | when a connector, scheduler, or adjacent skill may be needed | `references/integrations.md` |
 
-`scripts/ci_kernel.py` does deterministic snapshot validation, hashing, delta detection, event classification, materiality scoring, freshness, and event keys. `evals/evals.json` holds behavioral regression cases.
+`scripts/ci_kernel.py` does deterministic snapshot validation, hashing, delta detection, event classification, materiality scoring, freshness, and event keys; the keys it reads are listed in `references/kernel-inputs.md`. `evals/evals.json` holds behavioral regression cases.
 
 ## Resolve context before research
 

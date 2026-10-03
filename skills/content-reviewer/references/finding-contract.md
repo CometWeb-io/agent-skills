@@ -3,20 +3,27 @@
 One object per distinct defect:
 
 ```text
-finding_id
+finding_id                          # unique
+fingerprint?                        # unique when present
+finding_status: NEW | CARRIED | REOPENED   # default NEW
+revalidated: true                   # required for CARRIED
 axis
 severity: BLOCKER | MAJOR | MINOR | NOTE
 confidence: HIGH | MEDIUM | LOW
 locator
 observation
 impact
-evidence[]: {kind: OBSERVATION|EXTERNAL|INFERENCE, source, locator}
+evidence[]: {kind: OBSERVATION|EXTERNAL|INFERENCE, source, locator, candidate_id?}
+evidence_grade?: A | B | C | D
 falsifier
 repair_direction
 style_preference: true|false
 brief_violation: true|false
 blocks_acceptance: true|false
 ```
+
+`confidence`, `observation`, `falsifier` and `repair_direction` are for the
+reader; the kernel does not check them.
 
 Rules:
 

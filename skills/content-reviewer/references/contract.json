@@ -1,0 +1,183 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md",
+    "references/finding-contract.md",
+    "references/modes-and-coverage.md",
+    "references/evidence-calibration.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "MODES": "mode",
+        "AXES": "axis",
+        "REQUIRED_AXES": "required_axes",
+        "COVERAGE_STATES": "coverage.state",
+        "FINDING_STATES": "finding_status",
+        "SEVERITIES": "severity",
+        "EVIDENCE_KINDS": "kind",
+        "GRADE": "evidence_grade"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "schema": {
+      "unread": true
+    },
+    "mode": {
+      "enum": [
+        "LIGHT",
+        "STANDARD",
+        "DEEP",
+        "DELTA"
+      ]
+    },
+    "candidate_id": {},
+    "base_candidate_id": {
+      "unread": true
+    },
+    "required_axes": {
+      "enum": [
+        "brief-compliance",
+        "reader-value",
+        "structure",
+        "claim-integrity",
+        "actionability",
+        "consistency",
+        "language-ux"
+      ]
+    },
+    "coverage": {},
+    "axis": {
+      "enum": [
+        "brief-compliance",
+        "reader-value",
+        "structure",
+        "claim-integrity",
+        "actionability",
+        "consistency",
+        "language-ux"
+      ]
+    },
+    "coverage.state": {
+      "enum": [
+        "COVERED",
+        "N/A",
+        "UNKNOWN"
+      ]
+    },
+    "rationale": {},
+    "enforce_evidence_floor": {},
+    "findings": {},
+    "finding_id": {},
+    "fingerprint": {},
+    "finding_status": {
+      "enum": [
+        "NEW",
+        "CARRIED",
+        "REOPENED"
+      ]
+    },
+    "revalidated": {},
+    "severity": {
+      "enum": [
+        "BLOCKER",
+        "MAJOR",
+        "MINOR",
+        "NOTE"
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "HIGH",
+        "MEDIUM",
+        "LOW"
+      ],
+      "unread": true
+    },
+    "locator": {},
+    "observation": {
+      "unread": true
+    },
+    "interpretation": {
+      "unread": true
+    },
+    "impact": {},
+    "evidence": {},
+    "kind": {
+      "enum": [
+        "OBSERVATION",
+        "EXTERNAL",
+        "INFERENCE"
+      ]
+    },
+    "source": {},
+    "evidence_grade": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "falsifier": {
+      "unread": true
+    },
+    "repair_direction": {
+      "unread": true
+    },
+    "style_preference": {},
+    "brief_violation": {},
+    "blocks_acceptance": {},
+    "verify": {
+      "unread": true
+    },
+    "recommended_next_skill": {
+      "unread": true
+    }
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "REVIEWED",
+        "CHANGES_REQUIRED",
+        "INVALID"
+      ]
+    },
+    "blockers": {},
+    "majors": {},
+    "errors": {},
+    "coverage_complete": {},
+    "covered_axes": {},
+    "mode": {
+      "enum": [
+        "LIGHT",
+        "STANDARD",
+        "DEEP",
+        "DELTA"
+      ]
+    }
+  },
+  "internal": [
+    "input"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "REVIEWED",
+        "CHANGES_REQUIRED"
+      ]
+    }
+  ]
+}

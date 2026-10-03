@@ -74,6 +74,25 @@ Runner nie cofa zmian wykonanych przez testy. Nie uruchamiaj równolegle edytora
 generatorów ani drugiej walidacji w tym samym checkoutcie. Logi mogą zawierać dane
 prywatne; katalog wyniku ma uprawnienia 0700 i wymaga przeglądu przed udostępnieniem.
 
+## Smoke w prawdziwych hostach
+
+`uv run python tooling/host_smoke.py` sprawdza, czy plugin ładuje się w CLI hostów,
+bez ani jednego zapytania do modelu. Każdy host pracuje na kopii drzewa, z `HOME`
+i katalogiem konfiguracji w katalogu tymczasowym, więc nie czyta ani nie zmienia
+prawdziwych instalacji.
+
+| Host | Co jest uruchamiane | Czego nie sprawdza |
+| --- | --- | --- |
+| Claude Code | `plugin validate --strict` (z kontrolą negatywną), `--plugin-dir … plugin details`, instalacja z lokalnego marketplace | wyboru skilla przez model |
+| Codex | `plugin marketplace add`, `plugin add`, `plugin list --json`, `debug prompt-input` (lista skilli widziana przez model) | wyboru skilla przez model |
+| Cursor | tylko statycznie: manifesty, układ `skills/`, frontmatter reguły `.mdc` | ładowania w Cursorze: `cursor-agent` listuje pluginy tylko przez marketplace konta |
+
+Host bez CLI dostaje SKIP; `--require claude,codex` zamienia brak w błąd. Binarkę
+Codexa spoza `PATH` wskazuje `--codex-bin` albo `CODEX_BIN` (tak samo testy w
+`tooling/tests/test_host_smoke.py`). Ograniczenia frontmattera per host są w
+`registry/hosts.json` (`frontmatter`, ze źródłem i datą) i sprawdza je bramka
+`compatibility`.
+
 ## Granice
 
 To narzędzie wspiera lokalną kontrolę aktualnego repo. Wynik runnera nie oznacza

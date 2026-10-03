@@ -10,6 +10,7 @@ COMPAT={'BACKWARD_COMPATIBLE','BREAKING','UNKNOWN','NOT_APPLICABLE'}
 HOST_STATUS={'STATIC_SHAPE_ONLY','REAL_HOST_VERIFIED','DEGRADED','UNSUPPORTED','UNKNOWN'}
 
 def _text(v): return isinstance(v,str) and bool(v.strip())
+def _member(v,allowed): return isinstance(v,str) and v in allowed
 def _list(v): return isinstance(v,list)
 def _semver(v):
     if not _text(v): return None
@@ -25,14 +26,14 @@ def validate(x):
     if not isinstance(x,dict): return {'status':'INVALID','errors':['payload:not-object'],'next_skill':None}
     errors=[];issues=[];unknown_material=0
     mode=x.get('mode','STANDARD');sid=x.get('skill_id')
-    if mode not in MODES:errors.append('mode:invalid')
+    if not _member(mode,MODES):errors.append('mode:invalid')
     if not _text(sid):errors.append('skill_id:required')
     cur=_semver(x.get('version'));prev=_semver(x.get('previous_version')) if x.get('previous_version') is not None else None
     if cur is None:errors.append('version:semver')
     if x.get('previous_version') is not None and prev is None:errors.append('previous_version:semver')
     if mode=='DELTA' and (not _text(x.get('baseline_version')) or x.get('baseline_version')==x.get('version')):errors.append('baseline_version:required-distinct')
     compat=x.get('contract_compatibility','NOT_APPLICABLE')
-    if compat not in COMPAT:errors.append('contract_compatibility:invalid')
+    if not _member(compat,COMPAT):errors.append('contract_compatibility:invalid')
     bump=_bump(prev,cur) if prev and cur else None
     if bump=='INVALID':errors.append('version:not-increasing')
     if compat=='BREAKING' and bump!='MAJOR':issues.append('version:breaking-requires-major')
@@ -47,7 +48,7 @@ def validate(x):
             if not isinstance(verifies,list) or not verifies or not all(_text(v) for v in verifies):issues.append('migration:verification-cases')
     if compat=='UNKNOWN':unknown_material+=1
     host_status=x.get('runtime_host_status')
-    if host_status is not None and host_status not in HOST_STATUS:errors.append('runtime_host_status:invalid')
+    if host_status is not None and not _member(host_status,HOST_STATUS):errors.append('runtime_host_status:invalid')
     if x.get('runtime_support_claimed') is True and host_status!='REAL_HOST_VERIFIED':issues.append('hosts:runtime-claim-without-real-host-evidence')
     pkg=x.get('package')
     if not isinstance(pkg,dict):errors.append('package:not-object');pkg={}
@@ -77,11 +78,12 @@ def validate(x):
     for i,row in enumerate(checks):
         if not isinstance(row,dict):errors.append(f'check[{i}]:not-object');continue
         status=row.get('status');sev=row.get('severity','NOTE');material=row.get('material') is True
-        if status not in CHECK_STATUSES:errors.append(f'check[{i}]:status');continue
-        if sev not in SEVERITIES:errors.append(f'check[{i}]:severity');continue
+        if not _member(status,CHECK_STATUSES):errors.append(f'check[{i}]:status');continue
+        if not _member(sev,SEVERITIES):errors.append(f'check[{i}]:severity');continue
         if status=='N_A' and not _text(row.get('rationale')):errors.append(f'check[{i}]:na-without-rationale')
         evidence=row.get('evidence',[])
         if material and status in {'PASS','FAIL'} and (not isinstance(evidence,list) or not evidence):errors.append(f'check[{i}]:material-without-evidence')
+        if not material and status=='FAIL' and sev in {'BLOCKER','MAJOR'} and (not isinstance(evidence,list) or not evidence):errors.append(f'check[{i}]:severe-without-evidence')
         if material and status=='UNKNOWN':unknown_material+=1
         if status=='FAIL' and sev in {'BLOCKER','MAJOR'}:issues.append(f'check[{i}]:{sev.lower()}')
     if mode=='DEEP':

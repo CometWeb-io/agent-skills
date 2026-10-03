@@ -25,7 +25,7 @@ Jeśli authoritative connector jest niedostępny, użyj najlepszego jawnego fall
 
 Authority: `system_of_record | canonical | primary | secondary | fallback`.
 
-Profile źródeł są definiowane w `source-registry.json` → `profiles.*.preferred_source_groups`. Planner odczytuje rejestr; przy wielu trafieniach zwraca `candidates` i `ambiguous`. `primary` jest pierwszą regułą dopasowania, nie wynikiem rankingu. CRM pozostaje zewnętrznym wiązaniem runtime.
+Profile źródeł są definiowane w `source-registry.json` → `profiles.*.preferred_source_groups`. Planner odczytuje rejestr; przy wielu trafieniach zwraca `candidates` i `ambiguous`. `profile` jest pierwszą regułą dopasowania, nie wynikiem rankingu. CRM pozostaje zewnętrznym wiązaniem runtime.
 
 ## 2. Governance i vault GTM
 

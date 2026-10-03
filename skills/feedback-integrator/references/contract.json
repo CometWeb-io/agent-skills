@@ -1,0 +1,160 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md",
+    "references/learning-contract.md",
+    "references/learning-windows.md",
+    "references/champion-challenger.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "SEVERITY": "severity",
+        "VALID_LAYER": "root_layer",
+        "OUTCOMES": "outcome"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "records": {},
+    "pattern": {},
+    "severity": {
+      "enum": [
+        "NOTE",
+        "MINOR",
+        "MAJOR",
+        "BLOCKER"
+      ]
+    },
+    "root_layer": {
+      "enum": [
+        "ROUTING",
+        "INSTRUCTION",
+        "REFERENCE",
+        "KERNEL",
+        "EVAL",
+        "HOST",
+        "PROCESS"
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "CONFIRMED",
+        "FALSE_POSITIVE",
+        "RESOLVED",
+        "UNKNOWN"
+      ]
+    },
+    "observed_at": {},
+    "context_id": {},
+    "run_id": {},
+    "systemic": {},
+    "evidence": {},
+    "regression_test": {},
+    "id": {},
+    "assertion": {},
+    "test_gap": {},
+    "owner": {},
+    "proposed_change": {},
+    "change": {},
+    "expected_effect": {},
+    "evaluation_plan": {},
+    "min_count": {},
+    "as_of": {},
+    "window_days": {},
+    "strict": {},
+    "baseline_version": {},
+    "challenger_version": {},
+    "frozen_case_count": {},
+    "repeated_runs": {},
+    "improvements": {},
+    "regressions": {},
+    "safety_regression": {},
+    "evaluation_scope": {},
+    "observations": {
+      "unread": true
+    },
+    "causal_hypothesis": {
+      "unread": true
+    },
+    "affected_skills": {
+      "unread": true
+    },
+    "proposal": {
+      "unread": true
+    },
+    "blast_radius": {
+      "unread": true
+    },
+    "compatibility_risk": {
+      "unread": true
+    },
+    "lifecycle_status": {
+      "enum": [
+        "WATCH",
+        "PROPOSED",
+        "ACCEPTED",
+        "IMPLEMENTED_UNVERIFIED",
+        "VERIFIED",
+        "REJECTED"
+      ],
+      "unread": true
+    }
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "NO_SIGNAL",
+        "WATCH",
+        "PROPOSED",
+        "RETIRED",
+        "INVALID",
+        "PROMOTE",
+        "HOLD"
+      ]
+    },
+    "proposal_count": {},
+    "watch_count": {},
+    "retired_count": {},
+    "invalid_count": {},
+    "proposals": {},
+    "watch": {},
+    "retired": {},
+    "invalid": {},
+    "independence_count": {},
+    "run_count": {},
+    "root_layers": {},
+    "false_positive_count": {},
+    "resolved_count": {},
+    "reason": {},
+    "index": {},
+    "errors": {}
+  },
+  "internal": [
+    "input",
+    "operation"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "NO_SIGNAL",
+        "WATCH",
+        "PROPOSED",
+        "RETIRED",
+        "PROMOTE",
+        "HOLD"
+      ]
+    }
+  ]
+}

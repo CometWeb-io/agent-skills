@@ -1,7 +1,15 @@
 ---
 name: repo-roaster
 description: >-
-  Run evidence-anchored adversarial reviews of software repositories, codebases, monorepos, pull requests, branches, modules, architecture, tests, configuration, CI/CD, migrations, data pipelines, infrastructure, and engineering hygiene. Use when the user asks to roast, tear apart, red-team, stress-test, re-check a repaired repo, or brutally critique a repo/codebase and wants concrete file/symbol evidence, critical-invariant reasoning, trust-boundary and state-transition analysis, execution-path reachability, blast radius, false-positive checks, repairs, and executable verification steps. Do not use as the primary skill for whole-project roadmapping, external-product pattern extraction, runtime web QA, or final release GO/NO_GO; route those to repo-to-roadmap, product-teardown, web-app-auditor, or release-readiness.
+  Run evidence-anchored adversarial reviews of software repositories, codebases, monorepos, pull
+  requests, branches, modules, architecture, tests, configuration, CI/CD, migrations, data pipelines,
+  infrastructure, and engineering hygiene. Do not use as the primary skill for whole-project
+  roadmapping, external-product pattern extraction, runtime web QA, or final release GO/NO_GO; route
+  those to repo-to-roadmap, product-teardown, web-app-auditor, or release-readiness. Use when the user
+  asks to roast, tear apart, red-team, stress-test, re-check a repaired repo, or brutally critique a
+  repo/codebase and wants concrete file/symbol evidence, critical-invariant reasoning, trust-boundary
+  and state-transition analysis, execution-path reachability, blast radius, false-positive checks,
+  repairs, and executable verification steps.
 ---
 
 # Repo Roaster

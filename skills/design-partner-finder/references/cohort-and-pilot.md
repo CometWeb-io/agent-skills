@@ -78,7 +78,7 @@ High learning with extreme cost can be inferior to a slightly lower-scoring part
 - effort/risk penalties,
 - coverage diagnostics.
 
-Treat the output as a transparent heuristic. Review any must-answer hypothesis left uncovered.
+Payload field names are listed in `references/kernel-inputs.md`. Treat the output as a transparent heuristic. Review any must-answer hypothesis left uncovered.
 
 ## Pilot success design
 

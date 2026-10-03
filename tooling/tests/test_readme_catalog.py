@@ -38,6 +38,13 @@ def entry(skill_id: str, version: str = "1.0.0", **extra) -> dict:
     return {"id": skill_id, "version": version, **extra}
 
 
+# The skill-count sentences render_readme keeps in step outside the catalog block.
+FACTS = (
+    "badge/skills-9-x contains 9 reusable skill packages "
+    "`OK: 9 Claude Code skills installed in /tmp/skills`\n"
+)
+
+
 def one_group(*rows: tuple[str, str]) -> dict:
     return {"groups": [{"title": "Group", "skills": [{"id": i, "summary": s} for i, s in rows]}]}
 
@@ -94,9 +101,9 @@ def test_status_notes_are_derived_from_the_registry() -> None:
 
 def test_only_the_marked_block_is_rewritten() -> None:
     gen = load_generator()
-    current = f"intro\n\n{gen.README_BEGIN}\nstale\n{gen.README_END}\n\noutro\n"
+    current = f"intro {FACTS}\n{gen.README_BEGIN}\nstale\n{gen.README_END}\n\noutro\n"
     rendered = gen.render_readme(current, [entry("alpha")], one_group(("alpha", "A.")))
-    assert rendered.startswith(f"intro\n\n{gen.README_BEGIN}\n")
+    assert rendered.startswith(f"intro {FACTS.replace('9', '1')}\n{gen.README_BEGIN}\n")
     assert rendered.endswith(f"{gen.README_END}\n\noutro\n")
     assert "stale" not in rendered
 
@@ -110,7 +117,7 @@ def test_a_readme_without_markers_is_an_error_not_a_silent_skip() -> None:
 def test_check_mode_reports_a_stale_readme(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     gen = load_generator()
     readme = tmp_path / "README.md"
-    readme.write_text(f"{gen.README_BEGIN}\nstale\n{gen.README_END}\n", encoding="utf-8")
+    readme.write_text(f"{FACTS}{gen.README_BEGIN}\nstale\n{gen.README_END}\n", encoding="utf-8")
     catalog_path = tmp_path / "readme-catalog.json"
     catalog_path.write_text(json.dumps(catalog()), encoding="utf-8")
     monkeypatch.setattr(gen, "readme_file", lambda: readme)

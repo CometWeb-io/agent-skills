@@ -1,0 +1,58 @@
+{
+  "skill": "ai-council",
+  "contract": "skills/ai-council/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "verdict", "title": "Verdict", "aliases": ["verdict", "werdykt"], "required": true},
+    {"id": "confidence-map", "title": "Confidence map", "aliases": ["confidence map", "mapa pewności", "mapa confidence"], "required": true},
+    {"id": "independence", "title": "Independence and forecasts", "aliases": ["independence", "niezależność"]},
+    {"id": "why", "title": "Why", "aliases": ["why", "dlaczego", "uzasadnienie"], "required": true},
+    {"id": "double-crux", "title": "Double-crux / minority", "aliases": ["double-crux", "double crux", "minority"]},
+    {"id": "gates", "title": "Gates / assumptions / evidence gaps", "aliases": ["gates", "bramki"], "required": true},
+    {"id": "what-changes", "title": "What changes the decision", "aliases": ["what changes the decision", "co zmienia decyzję", "co zmieni decyzję"], "required": true},
+    {"id": "test", "title": "TEST (Experiment Contract)", "aliases": ["test", "experiment contract", "kontrakt eksperymentu"], "required_when_verdict": ["TEST"], "ordered": false},
+    {"id": "memory", "title": "Memory", "aliases": ["memory", "pamięć"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["GO", "NO-GO", "TEST", "DEFER"],
+    "aliases": {"NO_GO": "NO-GO"},
+    "authorizing": ["GO"],
+    "primary": {"section": "verdict"},
+    "json": [
+      {"rule": "envelope-verdict", "path": "payload.verdict", "when": {"type": "DecisionEnvelope"}},
+      {"rule": "envelope-verdict", "path": "payload.verdict", "when": {"type": "DecisionHandoff"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "binding-gate", "type": "table_rows", "section": "gates", "column": ["status"],
+     "pattern": "^(BLOCK|COUNSEL_REQUIRED)\\b"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "as-of",
+     "pattern": "As Of\\**:?\\**\\s*\\d{4}-\\d{2}-\\d{2}[T ]\\d{2}:\\d{2}(?::\\d{2})?\\s*(?:Z|[+-]\\d{2}:?\\d{2}|UTC|\\(?[A-Z][a-z]+/[A-Za-z_]+)",
+     "message": "no 'As Of' with a timezone at the top of the report"},
+    {"type": "doc_require", "rule": "decision-confidence", "section": "verdict",
+     "pattern": "(?:Overall Decision Confidence|Decision Confidence|Pewność decyzji)\\D{0,12}\\d{1,3}\\s*%",
+     "message": "no Overall Decision Confidence 0-100% next to the verdict"},
+    {"type": "doc_require", "rule": "evidence-coverage", "section": "verdict",
+     "pattern": "Evidence Coverage|Pokrycie dowod", "code": "EVIDENCE_MISSING",
+     "message": "the verdict states no Evidence Coverage and Critical Gap"},
+    {"type": "section_count", "rule": "tagged-premises", "section": "why", "pattern": "\\[(?:F|A|I|FMW|O)\\]",
+     "min": 2, "code": "EVIDENCE_MISSING",
+     "message": "Why needs 2-5 premises tagged [F] [A] [I] [FMW] [O]"},
+    {"type": "max_items", "rule": "why-length", "section": "why", "max": 5},
+    {"type": "doc_forbid", "rule": "go-without-approval", "section": "verdict", "when_verdict": ["GO"],
+     "pattern": "Human Approval\\**:?\\**\\s*(?:required|pending|denied)", "code": "VERDICT_WITH_BLOCKERS",
+     "message": "GO is not admissible while human approval is required, pending or denied"},
+    {"type": "section_count", "rule": "experiment-contract", "section": "test", "when_verdict": ["TEST"],
+     "all_of": ["kill", "decision rule|reguła decyzji"], "code": "CONTRACT_VIOLATION",
+     "message": "a TEST verdict needs a full Experiment Contract with kill criteria and a decision rule"},
+    {"type": "doc_require", "rule": "decision-key", "section": "memory", "pattern": "Decision Key|Klucz decyzji",
+     "message": "Memory does not give the Decision Key"}
+  ],
+  "ids": [
+    {"rule": "watch-dependencies", "pattern": "\\bWD-\\d+\\b",
+     "defined_in": [{"section": "what-changes", "as": "list_lead"}],
+     "defined_by": "no Watch Dependency with that ID is proposed in 'What changes the decision'"}
+  ]
+}

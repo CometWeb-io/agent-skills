@@ -8,7 +8,7 @@ import json
 import re
 import sys
 import unicodedata
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from typing import Any
 
 
@@ -32,7 +32,15 @@ class WorkflowPlan:
         return {
             "archetype": self.archetype,
             "goal_summary": self.goal_summary,
-            "steps": [asdict(s) for s in self.steps],
+            "steps": [
+                {
+                    "skill": s.skill,
+                    "purpose": s.purpose,
+                    "envelope_out": s.envelope_out,
+                    "read_skill": s.read_skill,
+                }
+                for s in self.steps
+            ],
             "boundaries": self.boundaries,
             "single_skill_alternative": self.single_skill_alternative,
         }
@@ -90,6 +98,13 @@ ARCHETYPE_STEPS: dict[str, list[tuple[str, str, str | None]]] = {
     ],
     "disambiguate_only": [],
 }
+
+# The documented output vocabulary (references/workflow-archetypes.md), bound to
+# references/contract.json: every archetype and envelope type a plan can carry.
+ARCHETYPES: tuple[str, ...] = (*ARCHETYPE_STEPS, "single_skill")
+ENVELOPE_TYPES: frozenset[str] = frozenset(
+    envelope for steps in ARCHETYPE_STEPS.values() for _, _, envelope in steps if envelope
+)
 
 BOUNDARIES: dict[str, list[str]] = {
     "research_then_council": [

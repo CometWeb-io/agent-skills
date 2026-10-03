@@ -1,0 +1,74 @@
+{
+  "skill": "release-readiness",
+  "contract": "skills/release-readiness/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "verdict", "title": "Verdict", "aliases": ["verdict"], "required": true},
+    {"id": "scope", "title": "Scope and required-gate completeness", "aliases": ["scope and required", "required-gate completeness"], "required": true},
+    {"id": "binding-gates", "title": "Binding gates", "aliases": ["binding gates"], "required": true},
+    {"id": "governance", "title": "Governance gates", "aliases": ["governance gates"]},
+    {"id": "release-blockers", "title": "Release blockers", "aliases": ["release blockers"], "required": true},
+    {"id": "evidence-gaps", "title": "Evidence gaps", "aliases": ["evidence gaps"], "required": true},
+    {"id": "domain-readiness", "title": "Domain readiness", "aliases": ["domain readiness"], "required": true},
+    {"id": "controlled-risks", "title": "Controlled risks", "aliases": ["controlled risks"], "required_when_verdict": ["GO_WITH_CONTROLS"]},
+    {"id": "accepted-risks", "title": "Accepted risks", "aliases": ["accepted risks"]},
+    {"id": "closure-plan", "title": "Ship / closure plan", "aliases": ["ship / closure plan", "ship plan", "closure plan", "ship and closure plan"], "required": true},
+    {"id": "delta", "title": "Delta from previous assessment", "aliases": ["delta"]},
+    {"id": "post-release-debt", "title": "Post-release debt", "aliases": ["post-release debt"]},
+    {"id": "assurance-limits", "title": "Scope, confidence, and assurance limits", "aliases": ["scope, confidence", "assurance limits", "confidence and assurance"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["GO", "GO_WITH_CONTROLS", "NO_GO", "DEFER"],
+    "aliases": {"NO-GO": "NO_GO", "GO-WITH-CONTROLS": "GO_WITH_CONTROLS"},
+    "authorizing": ["GO", "GO_WITH_CONTROLS"],
+    "primary": {"section": "verdict"},
+    "also": [
+      {"rule": "final-line", "line": "^\\s*`?\\s*Decision:", "describe": "the final 'Decision:' line", "required": true}
+    ],
+    "json": [
+      {"rule": "envelope-verdict", "path": "payload.verdict", "when": {"type": "ReleaseEnvelope"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "listed-blocker", "type": "section_items", "section": "release-blockers",
+     "none_pattern": "no blocking implementation failure"},
+    {"rule": "unresolved-gate", "type": "table_rows", "section": "binding-gates", "column": ["status"],
+     "pattern": "^(FAIL|UNKNOWN|BLOCK)"},
+    {"rule": "governance-block", "type": "table_rows", "section": "governance", "column": ["status"],
+     "pattern": "^(BLOCK|COUNSEL_REQUIRED)"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "candidate", "section": "verdict", "pattern": "(?:candidate|artifact)[^\\n:]*:\\s*\\S",
+     "message": "the Verdict section does not name the exact candidate/artifact"},
+    {"type": "doc_require", "rule": "environment", "section": "verdict", "pattern": "environment[^\\n:]*:\\s*\\S",
+     "message": "the Verdict section does not name the target environment"},
+    {"type": "doc_require", "rule": "as-of", "section": "verdict", "pattern": "as[_ ]of[^\\n:]*:\\s*\\d{4}-\\d{2}-\\d{2}",
+     "message": "the Verdict section has no assessment as_of"},
+    {"type": "doc_require", "rule": "score", "section": "verdict", "pattern": "\\d+\\s*/\\s*100",
+     "message": "the Verdict section has no readiness score /100"},
+    {"type": "doc_require", "rule": "coverage", "section": "verdict", "pattern": "coverage[^\\n]*\\d+\\s*%",
+     "message": "the Verdict section has no evidence coverage %"},
+    {"type": "doc_require", "rule": "snapshot-hash", "section": "verdict", "pattern": "snapshot",
+     "message": "the Verdict section has no snapshot hash"},
+    {"type": "table_column_nonempty", "rule": "gate-evidence", "section": "binding-gates", "column": ["evidence"],
+     "when": {"column": ["status"], "pattern": "^PASS"}, "code": "EVIDENCE_MISSING",
+     "message": "a passing gate has no evidence"},
+    {"type": "table_column_nonempty", "rule": "gate-candidate-fit", "section": "binding-gates",
+     "column": ["candidate fit"], "when": {"column": ["status"], "pattern": "^PASS"}, "code": "EVIDENCE_MISSING",
+     "message": "a passing gate does not say which candidate its evidence is bound to"},
+    {"type": "items_require", "rule": "blocker-verification", "section": "release-blockers",
+     "none_pattern": "no blocking implementation failure", "pattern": "(?<![\\w])verif\\w*\\s+(?:to close|required)|(?<![\\w])verification\\s*:",
+     "code": "CONTRACT_VIOLATION", "message": "a blocker has no exact verification required to close it"},
+    {"type": "section_count", "rule": "recovery-trigger", "section": "closure-plan", "pattern": "recovery|rollback",
+     "when_verdict": ["GO", "GO_WITH_CONTROLS"], "code": "CONTRACT_VIOLATION",
+     "message": "a GO/GO_WITH_CONTROLS ship plan needs a recovery trigger"},
+    {"type": "doc_forbid", "rule": "vague-assurance",
+     "pattern": "looks safe|probably fine|should be fine|mostly ready",
+     "message": "the contract forbids vague assurance; use 'verified on candidate X' or 'not evidenced'"}
+  ],
+  "ids": [
+    {"rule": "gate-ids", "pattern": "`([a-z]+(?:_[a-z]+)+)`", "scope": ["binding-gates", "release-blockers"],
+     "defined_in": [{"python_literal": "skills/release-readiness/scripts/readiness/gates.py", "name": "GATES"}],
+     "defined_by": "it is not a canonical gate in readiness/gates.py"}
+  ]
+}

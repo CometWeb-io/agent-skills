@@ -31,3 +31,20 @@ Do not run Council for routine research or triage.
 | zrób wszystko / cały workflow | `orchestrated_goal` |
 | audit potem release | `audit_then_release` |
 | który skill / nie wiem co wybrać | `disambiguate_only` |
+
+## Kernel output
+
+`python3 scripts/orchestrate_kernel.py "<goal>" --json` takes the goal as its only
+argument (an empty goal is an error) and prints one plan:
+
+```text
+archetype: research_then_council|research_then_operator|audit_then_release|competitive_then_council|orchestrated_goal|single_skill|disambiguate_only
+goal_summary: the goal, trimmed
+steps[]: in execution order; empty for disambiguate_only
+  skill: the specialist skill id to run
+  purpose: one line for the handoff summary
+  envelope_out: EvidenceEnvelope|DecisionHandoff|FindingEnvelope|SpecialistHandoff|SnapshotMetadata, or null for the skill's own output contract
+  read_skill: always true; load that skill's SKILL.md before the step
+boundaries[]: rules the parent holds for this archetype
+single_skill_alternative: the skill id when archetype is single_skill, else null
+```

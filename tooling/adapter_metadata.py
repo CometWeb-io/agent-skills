@@ -46,4 +46,28 @@ def merge_openai(entry: dict, existing: str | None, interface: dict) -> str:
             raise ValueError("invalid MCP dependency metadata")
     if old == data and existing is not None:
         return existing  # avoid format-only churn; semantic changes are still checked
-    return yaml.safe_dump(data, allow_unicode=True, sort_keys=False, width=10000)
+    return yaml.dump(_quote_values(data), Dumper=_Dumper, allow_unicode=True, sort_keys=False, width=10000)
+
+
+class _Quoted(str):
+    """A string value; keys stay plain."""
+
+
+class _Dumper(yaml.SafeDumper):
+    pass
+
+
+# Codex's skill-creator reference asks for every string value in openai.yaml to
+# be quoted and keys left bare. Quoting also keeps values such as "#2-style" or
+# "Use $x: ..." from being read as comments or mappings by a looser parser.
+_Dumper.add_representer(_Quoted, lambda dumper, value: dumper.represent_scalar("tag:yaml.org,2002:str", str(value), style='"'))
+
+
+def _quote_values(value):
+    if isinstance(value, dict):
+        return {key: _quote_values(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_quote_values(item) for item in value]
+    if isinstance(value, str):
+        return _Quoted(value)
+    return value

@@ -1,0 +1,743 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md"
+  ],
+  "json_schemas": [
+    "references/report.schema.json"
+  ],
+  "scripts": {
+    "scripts/validate_review.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "OUTCOMES": "review_outcome",
+        "MODES": "mode",
+        "EVIDENCE_MODES": "evidence_mode",
+        "PROFILES": "study_profile",
+        "SOURCE_KIND": "source_manifest.kind",
+        "SOURCE_ROLE": "source_manifest.role",
+        "VERSION_STATE": "version_state",
+        "INSTRUCTION_BOUNDARY": "instruction_boundary",
+        "TRUST_CLASS": "trust_class",
+        "ASSURANCE_MODES": "assurance.mode",
+        "INDEPENDENCE": "independence",
+        "SECOND_PASS_STATUS": "second_pass_status",
+        "PASS_ROLES": "pass_records.role",
+        "PASS_STATUSES": "pass_records.status",
+        "EVIDENCE_KINDS": "evidence_register.kind",
+        "REGISTER_STRENGTH": "strength",
+        "CONFLICT_DISPOSITION": "disposition",
+        "REFERENCE_STATUS": "reference_status",
+        "COVERAGE": "level",
+        "SCOPE": "scope_basis",
+        "COVERAGE_CONFIDENCE": "coverage_confidence",
+        "GATE_STATUS": "quality_gates",
+        "ALIGNMENT": "alignment_status",
+        "INFERENTIAL_TYPES": "inferential_type",
+        "EVIDENCE_ROLES": "evidence_role",
+        "ANCHORS": "anchor.type",
+        "SUPPORT_STATUS": "support_status",
+        "MULTIPLICITY_STATUS": "multiplicity_status",
+        "IDENTIFICATION_STATUS": "identification_status",
+        "DATA_SPLIT_STATUS": "data_split_status",
+        "LEDGER_VALIDITY_DOMAINS": "domain",
+        "VALIDITY_STATUS": "validity_ledger.status",
+        "INTEGRITY_AREAS": "area",
+        "INTEGRITY_STATUS": "analysis_integrity_ledger.status",
+        "ALT_STATUS": "alternative_explanations.status",
+        "ROBUSTNESS_STATUS": "robustness_ledger.status",
+        "SEVERITIES": "severity",
+        "CATEGORIES": "category",
+        "VALIDITY_DOMAINS": "validity_domain",
+        "STATES": "evidence_state",
+        "EVIDENCE_STRENGTH": "evidence_strength",
+        "SCOPE_SENSITIVITY": "scope_sensitivity",
+        "CONF": "confidence",
+        "MATERIAL_CENTRALITY": "centrality",
+        "MATERIAL_CONSEQUENCE": "consequence",
+        "MATERIAL_REVERSIBILITY": "reversibility",
+        "REPAIR_LEVEL": "repair_level",
+        "VERIFY": "verification.type",
+        "FALSIFIER": "result",
+        "SEVERITY_RANK": "downgraded_from",
+        "CONF_DIRECTNESS": "directness",
+        "CONF_SCOPE_SUPPORT": "scope_support",
+        "COUNTEREVIDENCE_STATUS": "counterevidence_status",
+        "RESIDUAL_RISK": "after_repair",
+        "RESOLUTION": "resolution_ledger.status",
+        "RESOLUTION_VERIFICATION": "verification_status",
+        "RESOLUTION_CHANGE_BASIS": "change_basis",
+        "CLAIM_SURVIVAL": "claim_survival.status"
+      }
+    },
+    "scripts/select_review_packs.py": {
+      "input": "args",
+      "role": "helper"
+    },
+    "scripts/scan_source_risks.py": {
+      "input": "files",
+      "role": "helper"
+    },
+    "scripts/validate_evals.py": {
+      "input": "files",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "schema": {},
+    "artifact": {},
+    "review_outcome": {
+      "enum": [
+        "INSUFFICIENT_EVIDENCE",
+        "MATERIAL_FINDINGS",
+        "NO_MATERIAL_FINDINGS"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "FULL",
+        "QUICK",
+        "REVIEWER_2",
+        "REVISION"
+      ]
+    },
+    "evidence_mode": {
+      "enum": [
+        "SOURCE_BOUND",
+        "VERIFY_EXTERNAL"
+      ]
+    },
+    "study_profile": {
+      "enum": [
+        "COMPUTATIONAL",
+        "EXPERIMENTAL",
+        "METHODS",
+        "MIXED",
+        "OBSERVATIONAL",
+        "PREDICTIVE",
+        "PROTOCOL",
+        "REVIEW",
+        "VALIDATION"
+      ]
+    },
+    "comparison": {},
+    "base_artifact": {},
+    "head_artifact": {},
+    "source_manifest": {},
+    "id": {},
+    "source_manifest.kind": {
+      "enum": [
+        "CODE",
+        "DATA",
+        "LITERATURE",
+        "MANUSCRIPT",
+        "OTHER",
+        "PREREGISTRATION",
+        "PROTOCOL",
+        "REVIEWER_RESPONSE",
+        "SUPPLEMENT"
+      ]
+    },
+    "locator": {},
+    "source_manifest.role": {
+      "enum": [
+        "CONTEXT",
+        "PRIMARY",
+        "SUPPORTING"
+      ]
+    },
+    "version_state": {
+      "enum": [
+        "MOVING",
+        "PINNED",
+        "UNKNOWN"
+      ]
+    },
+    "instruction_boundary": {
+      "enum": [
+        "TREAT_AS_DATA"
+      ]
+    },
+    "trust_class": {
+      "enum": [
+        "EXTERNAL_REFERENCE",
+        "GENERATED",
+        "SYSTEM_OF_RECORD",
+        "TOOL_RESULT",
+        "UNKNOWN",
+        "USER_SUPPLIED"
+      ]
+    },
+    "sha256": {},
+    "review_plan": {},
+    "objective": {},
+    "must_inspect": {},
+    "attack_surfaces": {},
+    "stop_conditions": {},
+    "sampling_strategy": {},
+    "escalation_conditions": {},
+    "assurance": {},
+    "assurance.mode": {
+      "enum": [
+        "BLIND_DUAL_REVIEW",
+        "SECOND_PASS",
+        "SINGLE_REVIEW"
+      ]
+    },
+    "independence": {
+      "enum": [
+        "NONE",
+        "SAME_CONTEXT",
+        "SEPARATE_CONTEXT"
+      ]
+    },
+    "second_pass_status": {
+      "enum": [
+        "COMPLETED",
+        "NOT_RUN",
+        "UNAVAILABLE"
+      ]
+    },
+    "disagreement_summary": {},
+    "limitations": {},
+    "pass_records": {},
+    "pass_id": {},
+    "pass_records.role": {
+      "enum": [
+        "ARBITER",
+        "PRIMARY",
+        "SECONDARY"
+      ]
+    },
+    "pass_records.status": {
+      "enum": [
+        "COMPLETED",
+        "FAILED",
+        "UNAVAILABLE"
+      ]
+    },
+    "context_ref": {},
+    "blind_to_prior_findings": {},
+    "source_refs": {},
+    "evidence_register": {},
+    "source_id": {},
+    "evidence_register.kind": {
+      "enum": [
+        "ABSENCE_PROOF",
+        "CONTEXT",
+        "COUNTEREVIDENCE",
+        "OBSERVATION",
+        "VERIFICATION"
+      ]
+    },
+    "summary": {},
+    "strength": {
+      "enum": [
+        "MODERATE",
+        "STRONG",
+        "WEAK"
+      ]
+    },
+    "evidence_conflicts": {},
+    "evidence_refs": {},
+    "conflict": {},
+    "disposition": {
+      "enum": [
+        "OUT_OF_SCOPE",
+        "RESOLVED",
+        "UNRESOLVED"
+      ]
+    },
+    "residual_uncertainty": {},
+    "study_contract": {},
+    "research_question": {},
+    "target_construct": {},
+    "population": {},
+    "analysis_population": {},
+    "unit_of_analysis": {},
+    "reference": {},
+    "reference_status": {
+      "enum": [
+        "CALIBRATED",
+        "NOT_APPLICABLE",
+        "OPERATIONAL_CALIBRATED",
+        "OPERATIONAL_UNCALIBRATED",
+        "UNKNOWN",
+        "VALIDATED"
+      ]
+    },
+    "estimand": {},
+    "primary_endpoint": {},
+    "evidence_status": {},
+    "preregistration_status": {},
+    "novelty_claim": {},
+    "missingness_strategy": {},
+    "multiplicity_strategy": {},
+    "dependence_structure": {},
+    "coverage": {},
+    "level": {
+      "enum": [
+        "COMPLETE",
+        "PARTIAL",
+        "SUBSTANTIAL"
+      ]
+    },
+    "scope_basis": {
+      "enum": [
+        "ARTIFACT_SET",
+        "EXCERPT",
+        "FULL_ARTIFACT",
+        "MIXED",
+        "SAMPLED"
+      ]
+    },
+    "coverage_confidence": {
+      "enum": [
+        "high",
+        "low",
+        "medium"
+      ]
+    },
+    "inspected": {},
+    "not_inspected": {},
+    "quality_gates": {
+      "enum": [
+        "BLOCKED",
+        "PASS",
+        "WARN"
+      ]
+    },
+    "quality_gates.scope": {},
+    "quality_gates.contract": {},
+    "quality_gates.source_integrity": {},
+    "quality_gates.evidence": {},
+    "quality_gates.challenge": {},
+    "quality_gates.assurance": {},
+    "quality_gates.severity": {},
+    "quality_gates.repair": {},
+    "quality_gates.boundary": {},
+    "measurement_chain": {},
+    "construct": {},
+    "operationalization": {},
+    "transformation": {},
+    "endpoint": {},
+    "alignment_status": {
+      "enum": [
+        "ALIGNED",
+        "NOT_APPLICABLE",
+        "PARTIAL",
+        "UNRESOLVED"
+      ]
+    },
+    "claim_map": {},
+    "central": {},
+    "claim": {},
+    "inferential_type": {
+      "enum": [
+        "ASSOCIATIONAL",
+        "CAUSAL",
+        "DESCRIPTIVE",
+        "MECHANISTIC",
+        "PREDICTIVE",
+        "TRANSPORT"
+      ]
+    },
+    "evidence_role": {
+      "enum": [
+        "BACKGROUND",
+        "EXPLORATORY",
+        "POST_HOC",
+        "PRIMARY",
+        "SECONDARY"
+      ]
+    },
+    "population_scope": {},
+    "endpoint_scope": {},
+    "analysis_set": {},
+    "anchor": {},
+    "anchor.type": {
+      "enum": [
+        "citation",
+        "external_source",
+        "figure",
+        "metric",
+        "missing_report",
+        "quote",
+        "section",
+        "table"
+      ]
+    },
+    "value": {},
+    "support_status": {
+      "enum": [
+        "CONTRADICTED",
+        "OVERSTATED",
+        "SUPPORTED",
+        "UNRESOLVED"
+      ]
+    },
+    "inferential_claim_ledger": {},
+    "claim_ref": {},
+    "independent_unit": {},
+    "uncertainty_basis": {},
+    "multiplicity_status": {
+      "enum": [
+        "CONTROLLED",
+        "DECLARED",
+        "NOT_APPLICABLE",
+        "NOT_REPORTED",
+        "UNCONTROLLED"
+      ]
+    },
+    "identification_status": {
+      "enum": [
+        "ASSUMPTION_DEPENDENT",
+        "DESCRIPTIVE_ONLY",
+        "IDENTIFIED",
+        "NOT_APPLICABLE",
+        "NOT_REPORTED"
+      ]
+    },
+    "data_split_status": {
+      "enum": [
+        "LOCKED",
+        "NOT_APPLICABLE",
+        "NOT_REPORTED",
+        "REUSED"
+      ]
+    },
+    "validity_ledger": {},
+    "domain": {
+      "enum": [
+        "CONSTRUCT",
+        "EXTERNAL",
+        "INTERNAL",
+        "REPORTING",
+        "REPRODUCIBILITY",
+        "STATISTICAL"
+      ]
+    },
+    "validity_ledger.status": {
+      "enum": [
+        "NOT_APPLICABLE",
+        "PARTIAL",
+        "SUPPORTED",
+        "THREATENED",
+        "UNRESOLVED"
+      ]
+    },
+    "basis": {},
+    "analysis_integrity_ledger": {},
+    "area": {
+      "enum": [
+        "DEPENDENCE",
+        "EXCLUSIONS_STOPPING",
+        "HOLDOUT",
+        "LEAKAGE",
+        "MISSINGNESS",
+        "MULTIPLICITY",
+        "OTHER",
+        "POWER_PRECISION",
+        "PREREGISTRATION"
+      ]
+    },
+    "analysis_integrity_ledger.status": {
+      "enum": [
+        "ADEQUATE",
+        "NOT_APPLICABLE",
+        "PARTIAL",
+        "PROBLEM",
+        "UNRESOLVED"
+      ]
+    },
+    "alternative_explanations": {},
+    "claim_refs": {},
+    "explanation": {},
+    "addressed_by": {},
+    "alternative_explanations.status": {
+      "enum": [
+        "ADDRESSED",
+        "NOT_APPLICABLE",
+        "PARTIAL",
+        "UNADDRESSED",
+        "UNKNOWN"
+      ]
+    },
+    "robustness_ledger": {},
+    "check": {},
+    "robustness_ledger.status": {
+      "enum": [
+        "NOT_APPLICABLE",
+        "NOT_RUN",
+        "ROBUST",
+        "SENSITIVE",
+        "UNKNOWN"
+      ]
+    },
+    "evidence": {},
+    "root_causes": {},
+    "label": {},
+    "no_material_findings": {},
+    "first_attack_id": {},
+    "findings": {},
+    "finding_key": {},
+    "finding_aliases": {},
+    "severity": {
+      "enum": [
+        "FATAL",
+        "MAJOR",
+        "MINOR"
+      ]
+    },
+    "category": {
+      "enum": [
+        "calibration",
+        "causal_inference",
+        "conflict_of_interest",
+        "construct_validity",
+        "controls",
+        "design",
+        "ethics_governance",
+        "external_validity",
+        "figures_tables",
+        "holdout",
+        "leakage",
+        "measurement",
+        "missingness",
+        "model_validation",
+        "multiplicity",
+        "novelty",
+        "power_precision",
+        "reporting",
+        "reproducibility",
+        "research_question",
+        "sampling",
+        "statistics"
+      ]
+    },
+    "validity_domain": {
+      "enum": [
+        "CONSTRUCT",
+        "EXTERNAL",
+        "INTERNAL",
+        "REPORTING",
+        "REPRODUCIBILITY",
+        "STATISTICAL"
+      ]
+    },
+    "evidence_state": {
+      "enum": [
+        "EXTERNAL_VERIFIED",
+        "INFERRED",
+        "NOT_REPORTED",
+        "OBSERVED"
+      ]
+    },
+    "evidence_strength": {
+      "enum": [
+        "MODERATE",
+        "STRONG",
+        "WEAK"
+      ]
+    },
+    "scope_sensitivity": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "low",
+        "medium"
+      ]
+    },
+    "what_cannot_be_assessed": {},
+    "inference_basis": {},
+    "root_cause_id": {},
+    "materiality": {},
+    "centrality": {
+      "enum": [
+        "CENTRAL",
+        "LOCAL",
+        "SUPPORTING"
+      ]
+    },
+    "consequence": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "reversibility": {
+      "enum": [
+        "EASY",
+        "HARD",
+        "MODERATE",
+        "UNKNOWN"
+      ]
+    },
+    "observation": {},
+    "scientific_risk": {},
+    "reviewer_attack": {},
+    "central_claim_impact": {},
+    "repair": {},
+    "repair_level": {
+      "enum": [
+        "NEW_DATA",
+        "REANALYSIS",
+        "REDESIGN",
+        "REPORTING_ONLY"
+      ]
+    },
+    "verification": {},
+    "verification.type": {
+      "enum": [
+        "CALIBRATION",
+        "CODE_RERUN",
+        "DATA_AUDIT",
+        "MANUAL_INSPECTION",
+        "PROTOCOL_CHECK",
+        "REANALYSIS",
+        "REPLICATION",
+        "SENSITIVITY_ANALYSIS",
+        "SOURCE_CHECK"
+      ]
+    },
+    "method": {},
+    "success_condition": {},
+    "failure_signal": {},
+    "falsifier_check": {},
+    "challenge": {},
+    "searched_for": {},
+    "counterevidence": {},
+    "result": {
+      "enum": [
+        "DOWNGRADED",
+        "SURVIVES",
+        "UNRESOLVED",
+        "WITHDRAWN"
+      ]
+    },
+    "notes": {},
+    "downgraded_from": {
+      "enum": [
+        "FATAL",
+        "MAJOR",
+        "MINOR"
+      ]
+    },
+    "confidence_basis": {},
+    "directness": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "scope_support": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "counterevidence_status": {
+      "enum": [
+        "ADDRESSED",
+        "PARTIAL",
+        "UNKNOWN"
+      ]
+    },
+    "rationale": {},
+    "residual_risk": {},
+    "after_repair": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM",
+        "UNKNOWN"
+      ]
+    },
+    "closure_dependency": {},
+    "outcome_basis": {},
+    "surviving_finding_ids": {},
+    "withdrawn_candidate_count": {},
+    "unresolved_candidate_count": {},
+    "reason": {},
+    "resolution_ledger": {},
+    "resolution_ledger.status": {
+      "enum": [
+        "NOT_ASSESSABLE",
+        "OPEN",
+        "PARTIAL",
+        "REGRESSED",
+        "RESOLVED"
+      ]
+    },
+    "verification_status": {
+      "enum": [
+        "FAILED",
+        "NOT_RUN",
+        "PARTIAL",
+        "PASSED"
+      ]
+    },
+    "change_basis": {
+      "enum": [
+        "ARTIFACT_CHANGED",
+        "JUDGMENT_CORRECTED",
+        "MIXED",
+        "SCOPE_CHANGED",
+        "UNKNOWN"
+      ]
+    },
+    "external_verification_queue": {},
+    "question": {},
+    "evidence_needed": {},
+    "why_it_matters": {},
+    "claim_survival": {},
+    "claim_survival.status": {
+      "enum": [
+        "CONTRADICTED",
+        "SURVIVES_AS_STATED",
+        "SURVIVES_NARROWED",
+        "UNRESOLVED"
+      ]
+    },
+    "survives": {},
+    "minimal_surviving_claim": {},
+    "core_fix": {}
+  },
+  "outputs": {
+    "root": {},
+    "files_scanned": {},
+    "files_skipped": {},
+    "flags": {},
+    "path": {},
+    "line": {},
+    "kind": {},
+    "excerpt": {},
+    "note": {}
+  },
+  "internal": [
+    "activation",
+    "profiles",
+    "signals",
+    "skill"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "tests/report-valid.json",
+      "expect": "pass",
+      "pass": [
+        "pass"
+      ]
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 interface:
-  display_name: CometWeb Context
-  short_description: context snapshot; provenance; conflicts/gaps; ContextEnvelope
-  default_prompt: Refresh the minimal CometWeb context needed for my goal and return a ContextEnvelope with sources, facts, conflicts, gaps, and handoff.
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  display_name: "CometWeb Context"
+  short_description: "context snapshot; provenance; conflicts/gaps; ContextEnvelope"
+  default_prompt: "Use $cometweb-context to refresh only the context my goal needs and return a ContextEnvelope with sources, facts, conflicts and gaps."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true

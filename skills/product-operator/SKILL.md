@@ -2,15 +2,16 @@
 name: product-operator
 description: >
   Evidence-governed product operating system that reconciles GitHub implementation and release state,
-  Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what one
-  product team should do next. Use for questions such as what remains, what to build/fix/verify next, how to
-  finish or unstick a product, what is actually done, whether roadmap and repo agree, how to plan the next
-  product cycle, what changed since the last review, or what should wait/stop. Produces bounded
-  BLOCKER/VERIFY NOW/DECISION NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift,
-  readiness, immutable snapshots/deltas, and specialist handoffs. Read-only by default; delegates deep audits
-  and consequential decisions. Do not use for a first-time whole-project roadmap baseline (repo-to-roadmap),
-  a release-candidate GO/NO_GO (release-readiness), allocating capacity across several products and
-  commitments (portfolio-operator), or customer support triage (customer-ops).
+  Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what
+  one product team should do next. Do not use for a first-time whole-project roadmap baseline
+  (repo-to-roadmap), a release-candidate GO/NO_GO (release-readiness), allocating capacity across
+  several products and commitments (portfolio-operator), or customer support triage (customer-ops).
+  Use for questions such as what remains, what to build/fix/verify next, how to finish or unstick a
+  product, what is actually done, whether roadmap and repo agree, how to plan the next product cycle,
+  what changed since the last review, or what should wait/stop. Produces bounded BLOCKER/VERIFY
+  NOW/DECISION NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness,
+  immutable snapshots/deltas, and specialist handoffs. Read-only by default; delegates deep audits and
+  consequential decisions.
 ---
 
 # Product Operator

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+
+import pytest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -69,8 +71,8 @@ def test_openai_yaml_includes_existing_icon_asset(tmp_path: Path):
         "explicit_only": False,
     }
     text = gen.render_openai_yaml(entry, existing=None, skill_dir=skill_dir)
-    assert "icon_small: ./assets/icon.svg" in text
-    assert "icon_large: ./assets/icon.svg" in text
+    assert 'icon_small: "./assets/icon.svg"' in text
+    assert 'icon_large: "./assets/icon.svg"' in text
 
 
 def test_generator_preserves_non_managed_openai_metadata(tmp_path: Path):
@@ -116,10 +118,23 @@ def test_readme_skill_counts_follow_the_registry():
                                                      {"id": "beta", "summary": "B."}]}]}
     current = ("![Skills](https://img.shields.io/badge/skills-7-informational.svg)\n"
                "This repository contains 7 reusable skill packages.\n"
+               "A run ends with `OK: 7 Claude Code skills installed in /home/you/.claude/skills`.\n"
                f"{gen.README_BEGIN}\nold\n{gen.README_END}\n")
     rendered = gen.render_readme(current, skills, catalog)
     assert "badge/skills-2-informational" in rendered
     assert "contains 2 reusable skill packages" in rendered
+    assert "`OK: 2 Claude Code skills installed in " in rendered
+
+
+@pytest.mark.parametrize("fact", ["skills-7-", "contains 7 reusable", "`OK: 7 Claude"])
+def test_a_reworded_readme_count_is_an_error_not_a_stale_number(fact: str):
+    # A substitution that finds nothing changes nothing, so a reworded sentence
+    # would keep its old number forever; generation must stop instead.
+    gen = load_generator()
+    current = ("badge/skills-7-informational\ncontains 7 reusable skill packages\n"
+               "`OK: 7 Claude Code skills installed in /tmp/x`\n").replace(fact, "reworded ")
+    with pytest.raises(SystemExit, match="no longer states the skill count"):
+        gen.render_readme_facts(current, 2)
 
 
 def test_host_manifest_package_list_follows_the_registry():
@@ -129,5 +144,6 @@ def test_host_manifest_package_list_follows_the_registry():
     rendered = json.loads(gen.render_host_manifest(manifest, [{"id": "repo-to-roadmap"}, {"id": "ai-council"}]))
     assert rendered["description"] == "Skills (2 packages): AI Council, Repo to Roadmap."
     assert rendered["version"] == "1"
-    untouched = json.dumps({"description": "No package list here."}) + "\n"
-    assert gen.render_host_manifest(untouched, [{"id": "ai-council"}]) == untouched
+    reworded = json.dumps({"description": "No package list here."}) + "\n"
+    with pytest.raises(SystemExit, match="must end in"):
+        gen.render_host_manifest(reworded, [{"id": "ai-council"}])

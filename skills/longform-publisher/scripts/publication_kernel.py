@@ -86,6 +86,15 @@ def infer_stage(report: dict[str, Any]) -> str:
 
 
 VALID_MODES = {"BUILD", "SOURCE_BOUND", "RESEARCH_EXPAND", "REFRESH"}
+# Claim and gap enums from references/claim-use.md. Only a value outside them is
+# rejected: a lowercase "material" or "critical" used to skip the support and
+# open-gap checks entirely instead of failing them.
+MATERIALITY = ("CRITICAL", "MATERIAL", "SUPPORTING")
+CLAIM_KINDS = ("FACT", "AUTHOR_ASSERTION", "OPINION", "SYNTHESIS")
+SUPPORT_STATUSES = ("SUPPORTED", "UNRESOLVED", "SCOPED_OUT", "NOT_REQUIRED")
+CITATION_STATES = ("REQUIRED", "PRESENT", "NOT_REQUIRED")
+_CLAIM_ENUMS = (("materiality", MATERIALITY), ("claim_kind", CLAIM_KINDS),
+                ("support_status", SUPPORT_STATUSES), ("citation_state", CITATION_STATES))
 
 
 def _stage_index(stage: str) -> int:
@@ -177,6 +186,9 @@ def validate_report(report: dict[str, Any]) -> list[str]:
             errors.append("SOURCE_BOUND_UNAUTHORIZED_SOURCE")
 
     for claim in report.get("claim_uses") or []:
+        for field, allowed in _CLAIM_ENUMS:
+            if claim.get(field) is not None and not in_set(claim.get(field), allowed):
+                errors.append(f"FIELD_VALUE_INVALID:claim_uses.{field}")
         refs = claim.get("evidence_refs") or []
         if any(ref not in source_by_id for ref in refs):
             errors.append("EVIDENCE_REF_UNRESOLVED")
@@ -189,6 +201,10 @@ def validate_report(report: dict[str, Any]) -> list[str]:
                 freshness = [source_by_id.get(ref, {}).get("freshness") for ref in refs]
                 if not any(in_set(x, {"CURRENT", "NEAR_EXPIRY"}) for x in freshness):
                     errors.append("VOLATILE_CLAIM_STALE_EVIDENCE")
+
+    for gap in report.get("unresolved_gaps") or []:
+        if gap.get("materiality") is not None and not in_set(gap.get("materiality"), MATERIALITY):
+            errors.append("FIELD_VALUE_INVALID:unresolved_gaps.materiality")
 
     lifecycle = report.get("lifecycle") or {}
     master = report.get("canonical_master") or {}

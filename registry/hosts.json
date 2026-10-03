@@ -5,7 +5,18 @@
       "frontmatter_keys": ["name", "description"],
       "name_pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
       "description_min": 80,
-      "description_max": 2048
+      "description_max": 2048,
+      "frontmatter": {
+        "required": ["name", "description"],
+        "allowed_keys": ["name", "description", "license", "compatibility", "metadata", "allowed-tools"],
+        "name_pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "name_max": 64,
+        "name_matches_dir": true,
+        "description_max": 1024,
+        "compatibility_max": 500,
+        "source": "https://agentskills.io/specification",
+        "verified_at": "2026-10-03"
+      }
     },
     "openai-codex": {
       "vendor": "openai",
@@ -22,7 +33,18 @@
       "routing_rule": "extras/AGENTS.snippet.md",
       "capabilities": ["filesystem", "code_execution", "git"],
       "profile_verified_at": "2026-09-11",
-      "profile_basis": "OpenAI Codex Agent Skills documentation"
+      "profile_basis": "OpenAI Codex Agent Skills documentation",
+      "frontmatter": {
+        "required": ["name", "description"],
+        "allowed_keys": ["name", "description"],
+        "name_pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "name_max": 64,
+        "name_matches_dir": true,
+        "description_max": 1024,
+        "note": "Codex documents only name and description in SKILL.md (other metadata lives in agents/openai.yaml) and no per-field length cap. The skill list shares one context budget, so descriptions are shortened when many skills are installed; 1024 is the Agent Skills limit.",
+        "source": "https://developers.openai.com/codex/skills",
+        "verified_at": "2026-10-03"
+      }
     },
     "chatgpt": {
       "vendor": "openai",
@@ -40,16 +62,33 @@
       "short_description_max": 64,
       "capabilities": ["managed_skills", "web", "files", "connectors", "code_execution"],
       "profile_verified_at": "2026-09-11",
-      "profile_basis": "OpenAI ChatGPT Skills documentation"
+      "profile_basis": "OpenAI ChatGPT Skills documentation",
+      "frontmatter": {"inherits": "openai-codex"}
     },
     "claude-code": {
       "vendor": "anthropic",
       "family": "local-agent",
-      "description_max": 2048,
+      "description_max": 1536,
       "skill_dirs": ["~/.claude/skills"],
       "capabilities": ["filesystem", "code_execution", "git"],
       "profile_verified_at": "2026-09-11",
-      "profile_basis": "Anthropic Agent Skills / Claude Code documentation"
+      "profile_basis": "Anthropic Agent Skills / Claude Code documentation",
+      "frontmatter": {
+        "required": [],
+        "allowed_keys": ["name", "description", "when_to_use", "argument-hint", "arguments",
+                         "disable-model-invocation", "user-invocable", "allowed-tools", "disallowed-tools",
+                         "model", "effort", "context", "agent", "background", "hooks", "paths", "shell",
+                         "metadata", "license", "compatibility"],
+        "name_pattern": null,
+        "name_max": null,
+        "name_matches_dir": false,
+        "reserved_names": ["synced", "anthropic-skills"],
+        "description_max": 1536,
+        "compatibility_max": 500,
+        "note": "Every field is optional and unknown fields are ignored without error; description plus when_to_use is truncated at 1,536 characters in the skill listing.",
+        "source": "https://code.claude.com/docs/en/skills",
+        "verified_at": "2026-10-03"
+      }
     },
     "cursor": {
       "vendor": "cursor",
@@ -61,7 +100,18 @@
       "package_optional_extras": ["extras/cursor-rule.mdc"],
       "capabilities": ["filesystem", "code_execution", "git"],
       "profile_verified_at": "2026-09-11",
-      "profile_basis": "Cursor Agent Skills documentation"
+      "profile_basis": "Cursor Agent Skills documentation",
+      "frontmatter": {
+        "required": ["name", "description"],
+        "allowed_keys": ["name", "description", "paths", "disable-model-invocation", "icon", "color", "metadata"],
+        "name_pattern": "^[a-z0-9-]+$",
+        "name_max": null,
+        "name_matches_dir": true,
+        "description_max": null,
+        "note": "Cursor documents no description length limit.",
+        "source": "https://cursor.com/docs/context/skills",
+        "verified_at": "2026-10-03"
+      }
     },
     "qwen-code": {
       "vendor": "alibaba",
@@ -70,7 +120,8 @@
       "skill_dirs": ["~/.qwen/skills"],
       "capabilities": ["filesystem", "code_execution", "git"],
       "profile_verified_at": "2026-09-11",
-      "profile_basis": "Qwen Code Skills documentation"
+      "profile_basis": "Qwen Code Skills documentation",
+      "frontmatter": {"inherits": "agentskills-common", "note": "Not re-checked against this host's own documentation."}
     },
     "qoder": {
       "vendor": "alibaba",
@@ -79,7 +130,8 @@
       "skill_dirs": ["~/.qoder/skills"],
       "capabilities": ["filesystem", "code_execution", "git"],
       "profile_verified_at": "2026-09-11",
-      "profile_basis": "Qoder Skills documentation"
+      "profile_basis": "Qoder Skills documentation",
+      "frontmatter": {"inherits": "agentskills-common", "note": "Not re-checked against this host's own documentation."}
     },
     "lingma": {
       "vendor": "alibaba",
@@ -88,7 +140,8 @@
       "skill_dirs": ["~/.lingma/skills"],
       "capabilities": ["filesystem", "code_execution", "git"],
       "profile_verified_at": "2026-09-11",
-      "profile_basis": "Alibaba Cloud Lingma Skills documentation"
+      "profile_basis": "Alibaba Cloud Lingma Skills documentation",
+      "frontmatter": {"inherits": "agentskills-common", "note": "Not re-checked against this host's own documentation."}
     },
     "alibaba-skills-portal": {
       "vendor": "alibaba",
@@ -97,7 +150,8 @@
       "install_mode": "managed_or_client_specific",
       "capabilities": ["managed_skills"],
       "profile_verified_at": "2026-09-11",
-      "profile_basis": "Alibaba Cloud Skills Portal documentation"
+      "profile_basis": "Alibaba Cloud Skills Portal documentation",
+      "frontmatter": {"inherits": "agentskills-common", "note": "Not re-checked against this host's own documentation."}
     },
     "package": {
       "required_files": ["SKILL.md", "VERSION", "LICENSE"]

@@ -15,7 +15,7 @@ objective
 target_skill
 mode: STANDARD|DEEP                      # default STANDARD
 required_classes[]: discovery|forced|negative-control|adversarial|regression
-leakage_scan: {status, corpus_fingerprint}   # required in DEEP
+leakage_scan: {status, corpus_fingerprint}   # required in DEEP; checked whenever supplied
   status: CLEAN|SUSPECT|CONTAMINATED     # result of the corpus-level scan
   corpus_fingerprint                     # 64 hex chars; required when CLEAN
 cases[]:
@@ -51,5 +51,25 @@ The first row that matches wins.
 | `NEEDS_REBALANCE` | Only coverage problems: a missing required class, too small a holdout, or class dominance |
 | `INVALID` | Anything else, including a malformed leakage status or fingerprint |
 
+A leakage scan supplied in STANDARD mode is checked the same way, so a
+`CONTAMINATED` or `SUSPECT` scan is never ignored; its malformed-scan errors are
+`leakage:status`, `leakage:fingerprint` and `leakage:not-object` (DEEP uses
+`deep:leakage-status` and `deep:leakage-fingerprint`).
+
 Run `python3 scripts/kernel.py benchmark.json` (or pipe the JSON on stdin). It
-exits non-zero for any status other than `READY_TO_FREEZE`.
+exits non-zero for any status other than `READY_TO_FREEZE`, and prints:
+
+```text
+status: READY_TO_FREEZE|NEEDS_REBALANCE|NEEDS_REVISION|CONTAMINATED|INVALID
+errors[]
+# READY_TO_FREEZE only:
+benchmark_hash                 # sha256 over the canonical case set
+case_count
+class_counts
+provenance_coverage            # share of cases with a provenance_ref
+leakage_status: CLEAN|NOT_REQUIRED   # NOT_REQUIRED when no scan was supplied
+# every other status:
+missing_classes[]
+contaminated_holdout           # holdout cases marked SUSPECTED or KNOWN
+split_counts                   # both shapes: {dev, holdout}
+```

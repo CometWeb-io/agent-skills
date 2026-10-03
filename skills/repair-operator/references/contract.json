@@ -1,0 +1,167 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "MODES": "mode",
+        "VALID_STATUS": "items.status",
+        "VALID_CLASS": "repair_class",
+        "PATCH_RISK": "patch_risk",
+        "EFFORT": "effort_band",
+        "BLAST": "blast_radius",
+        "REVERSIBILITY": "reversibility"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "schema": {
+      "unread": true
+    },
+    "mode": {
+      "enum": [
+        "STANDARD",
+        "DEEP"
+      ]
+    },
+    "strict_closure": {},
+    "portfolio_mode": {},
+    "candidate_id": {},
+    "base_candidate_id": {
+      "unread": true
+    },
+    "items": {},
+    "repair_id": {},
+    "finding_ids": {},
+    "supersedes_repair_id": {},
+    "repair_class": {
+      "enum": [
+        "PATCH",
+        "REWRITE",
+        "REANALYSIS",
+        "REDESIGN",
+        "VERIFY_FIRST",
+        "ROLLBACK",
+        "WONT_FIX"
+      ]
+    },
+    "patch_risk": {
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "rollback_plan": {},
+    "root_cause": {},
+    "done_when": {},
+    "depends_on": {},
+    "protected_invariants": {
+      "unread": true
+    },
+    "protected_invariant_checks": {},
+    "id": {},
+    "state": {},
+    "verification_plan": {},
+    "method": {},
+    "checks": {},
+    "verification_evidence": {},
+    "fresh": {},
+    "result": {},
+    "evidence": {},
+    "observed_at": {},
+    "regression_detected": {},
+    "items.status": {
+      "enum": [
+        "OPEN",
+        "PLANNED",
+        "IN_PROGRESS",
+        "UNVERIFIED",
+        "CLOSED",
+        "DEFERRED",
+        "WONT_FIX",
+        "REOPENED"
+      ]
+    },
+    "reopen_of": {},
+    "defer_reason": {},
+    "decision_source": {},
+    "owner": {},
+    "rationale": {},
+    "decided_at": {},
+    "expires_at": {},
+    "effort_band": {
+      "enum": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL"
+      ]
+    },
+    "blast_radius": {
+      "enum": [
+        "LOCAL",
+        "SECTION",
+        "CROSS_ARTIFACT",
+        "SYSTEM"
+      ]
+    },
+    "reversibility": {
+      "enum": [
+        "EASY",
+        "MODERATE",
+        "HARD",
+        "IRREVERSIBLE"
+      ]
+    },
+    "explicit_approval_required": {},
+    "regressions": {
+      "unread": true
+    },
+    "remaining_open": {
+      "unread": true
+    }
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "VALID",
+        "INVALID"
+      ]
+    },
+    "errors": {},
+    "closed": {},
+    "open": {},
+    "strict_closure": {},
+    "portfolio_mode": {},
+    "effort_units": {}
+  },
+  "internal": [
+    "input"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "VALID"
+      ],
+      "exempt": {
+        "non-portfolio-ignores-metadata-v14": "Portfolio fields are ignored outside portfolio_mode by design; the case pins that they are not validated there."
+      }
+    }
+  ]
+}

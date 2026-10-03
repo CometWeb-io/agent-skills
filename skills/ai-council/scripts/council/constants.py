@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 COUNCIL_VERSION = "5.0"
-KERNEL_VERSION = "5.0.2"
+KERNEL_VERSION = "5.0.3"
 
 VERDICTS = {"GO", "NO-GO", "TEST", "DEFER"}
 GATE_STATUSES = {"NOT_REQUIRED", "CLEAR", "CLEAR_WITH_CONTROLS", "COUNSEL_REQUIRED", "BLOCK"}
@@ -211,6 +211,16 @@ RISK_SURFACE_RULES = {
     "technical": ("architecture", "architektur", "api", "migration", "migrac", "infra", "system", "repo", "technical"),
     "people": ("employee", "pracownik", "team", "zespół", "zespol", "hiring", "zatrud", "organi"),
 }
+
+# Decision-contract values the kernel routes on. Anything else is an input
+# error: an unknown reversibility read as reversible and a misspelled risk
+# surface silently dropped its gatekeeper.
+DECISION_TYPES = {name for name, _ in ARCHETYPE_RULES} | {"binary", "option_selection", "sequencing"}
+REVERSIBILITY_LEVELS = {"reversible", "hard_to_reverse"}
+RISK_LEVELS = {"low", "medium", "high"}
+RISK_SURFACES = set(RISK_SURFACE_RULES)
+DECISION_KINDS = set(DECISION_KIND.values())
+WATCH_OPERATORS = {"changed", "gt", "gte", "lt", "lte", "pct_change_gt"}
 
 _MEMORY_ALLOWLIST_V4 = {
     "decision_key", "domain", "decision_kind", "decision_type", "risk", "risk_level", "reversibility",

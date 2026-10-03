@@ -1,0 +1,227 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/portfolio-model.md",
+    "references/output-contract.md"
+  ],
+  "scripts": {
+    "scripts/portfolio_kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "COMMITMENT_WEIGHT": "commitment_type",
+        "EFFORT_PENALTY": "effort_class",
+        "DEPTHS": "depth_required",
+        "SCOPE_LEVELS": "scope_level"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "id": {},
+    "project": {},
+    "days_to_deadline": {},
+    "deadline": {},
+    "goal_alignment": {},
+    "revenue": {},
+    "trust": {},
+    "dependency_leverage": {},
+    "learning": {},
+    "blocks_current_goal": {},
+    "future_gate": {},
+    "current_horizon": {},
+    "pause": {},
+    "drop": {},
+    "stop": {},
+    "needs_product_reconciliation": {},
+    "release_verdict_required": {},
+    "customer_incident": {},
+    "claim_verification_required": {},
+    "decision_required": {},
+    "multi_skill_execution": {},
+    "delegated_to": {},
+    "action": {},
+    "portfolio_outcome": {},
+    "condition": {},
+    "question": {},
+    "reason": {},
+    "return_contract": {},
+    "done_when": {},
+    "evidence": {},
+    "evidence_ref": {},
+    "user_defined": {},
+    "delegate_to": {},
+    "delegate_evidence_ref": {},
+    "delegate_candidate": {},
+    "capacity": {},
+    "source": {},
+    "hours": {},
+    "readiness": {},
+    "must_do": {},
+    "capacity_conflicts": {},
+    "now": {},
+    "delegate": {},
+    "waiting": {},
+    "pause_drop": {},
+    "next": {},
+    "decision_now": {},
+    "domain": {
+      "enum": [
+        "CLIENT",
+        "PRODUCT",
+        "RESEARCH",
+        "GROWTH",
+        "OPS",
+        "ADMIN",
+        "OTHER"
+      ],
+      "enforced": false
+    },
+    "commitment_type": {
+      "enum": [
+        "hard_external",
+        "hard_internal",
+        "strategic",
+        "optional"
+      ]
+    },
+    "effort_class": {
+      "enum": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL",
+        "UNKNOWN"
+      ]
+    },
+    "depth_required": {
+      "enum": [
+        "product",
+        "release",
+        "support",
+        "customer-ops",
+        "evidence",
+        "strategic-decision",
+        "portfolio-decision",
+        "orchestration"
+      ]
+    },
+    "scope_level": {
+      "enum": [
+        "portfolio",
+        "specialist"
+      ]
+    },
+    "readiness.status": {
+      "enum": [
+        "READY",
+        "PROVISIONAL",
+        "BLOCKED"
+      ],
+      "enforced": false
+    },
+    "strategic_value": {
+      "unread": true
+    },
+    "depends_on": {
+      "unread": true
+    },
+    "blocked_by": {
+      "unread": true
+    },
+    "protocol_version": {
+      "unread": true
+    },
+    "as_of": {
+      "unread": true
+    },
+    "horizon": {
+      "unread": true
+    },
+    "primary_goal": {
+      "unread": true
+    },
+    "portfolio_scope": {
+      "unread": true
+    },
+    "constraints": {
+      "unread": true
+    },
+    "coverage": {
+      "unread": true
+    },
+    "portfolio_items": {
+      "unread": true
+    },
+    "unknowns": {
+      "unread": true
+    },
+    "substeps": {},
+    "internal_steps": {},
+    "implementation_steps": {},
+    "component_tasks": {},
+    "technical_details": {}
+  },
+  "outputs": {
+    "priority_score": {},
+    "gate_rank": {},
+    "type": {
+      "enum": [
+        "HARD_COMMITMENT_OVERLAP",
+        "PORTFOLIO_HARD_LOAD"
+      ]
+    },
+    "item_ids": {},
+    "valid": {},
+    "errors": {},
+    "error": {}
+  },
+  "internal": [],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/golden-cases.json",
+      "cases": "",
+      "input": "items",
+      "expect": true,
+      "pass": [
+        true
+      ],
+      "exempt": {
+        "misspelled commitment_type is rejected, not ranked as optional": "Deliberately off-contract: pins the exact ValueError the kernel raises for an unknown enum value.",
+        "lower-case effort_class cannot hide a capacity conflict": "Deliberately off-contract: pins the exact ValueError the kernel raises for an unknown enum value."
+      },
+      "conform": "always"
+    },
+    {
+      "path": "evals/golden-cases.json",
+      "cases": "",
+      "input": "item",
+      "expect": true,
+      "pass": [
+        true
+      ],
+      "exempt": {
+        "misspelled depth_required is rejected, not left undelegated": "Deliberately off-contract: pins the exact ValueError the kernel raises for an unknown enum value."
+      },
+      "conform": "always"
+    },
+    {
+      "path": "evals/golden-cases.json",
+      "cases": "",
+      "input": "report",
+      "status": "expected_valid",
+      "pass": [
+        true
+      ],
+      "conform": "always",
+      "exempt": {
+        "report with off-contract enum values pins exact errors": "off-enum commitment_type and scope_level are the input under test; the case pins the exact rejection errors"
+      }
+    }
+  ]
+}

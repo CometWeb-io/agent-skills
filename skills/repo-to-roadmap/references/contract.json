@@ -1,0 +1,427 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md",
+    "references/evidence-model.md",
+    "references/roadmap-model.md",
+    "references/target-profiles.md",
+    "references/project-truth-model.md",
+    "references/discovery-and-coverage.md",
+    "references/file-accounting.md"
+  ],
+  "scripts": {
+    "scripts/roadmap/constants.py": {
+      "input": "none",
+      "role": "helper",
+      "enums": {
+        "ASSESSMENT_MODES": "assessment.mode",
+        "FILE_REVIEW_POLICIES": "file_review_policy",
+        "TARGET_PROFILES": "target_profile",
+        "TARGET_APPLICABILITY": "applicability",
+        "COVERAGE_FACTORS": "coverage.status",
+        "CLAIM_LANES": "claim_lane",
+        "CLAIM_TYPES": "claim_type",
+        "MATERIALITIES": "materiality",
+        "SOURCE_BASE": "source_type",
+        "DIRECTIONS": "direction",
+        "DIRECTNESS": "directness",
+        "FRESHNESS": "freshness",
+        "SCOPE_MATCH": "scope_match",
+        "ABSENCE_STATUSES": "absence_check.status",
+        "CAPABILITY_STATES": "state",
+        "ITEM_KINDS": "kind",
+        "EFFORT_FACTORS": "effort",
+        "VALID_LANES": "lane",
+        "GATE_TYPES": "mandatory_gate",
+        "GATE_STATUSES": "gate_status"
+      }
+    },
+    "scripts/roadmap_kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "MATERIALITIES": "severity"
+      }
+    },
+    "scripts/roadmap": {
+      "input": "json",
+      "role": "kernel"
+    },
+    "scripts/coverage_inventory.py": {
+      "input": "files",
+      "role": "validator",
+      "enums": {
+        "OBJECT_ID_LENGTHS": "object_format",
+        "COMMIT_BINDINGS": "commit_binding",
+        "MODES": "entries.mode",
+        "STATES": "rows.status"
+      }
+    }
+  },
+  "fields": {
+    "schema_version": {},
+    "assessment": {},
+    "target_contract": {},
+    "coverage": {},
+    "claims": {},
+    "capabilities": {},
+    "items": {},
+    "file_coverage": {},
+    "snapshot_hash": {},
+    "snapshot_hash_short": {},
+    "assessment.mode": {
+      "enum": [
+        "DELTA",
+        "EXHAUSTIVE",
+        "FOCUSED",
+        "STANDARD"
+      ]
+    },
+    "as_of": {},
+    "repos": {},
+    "file_review_policy": {
+      "enum": [
+        "all_inspected",
+        "allow_documented_exclusions"
+      ]
+    },
+    "name": {},
+    "ref": {},
+    "tree_sha": {},
+    "inventory_sha256": {},
+    "target_profile": {
+      "enum": [
+        "CLIENT_READY",
+        "CUSTOM",
+        "INTERNAL_BETA",
+        "PAID_PRODUCTION",
+        "PROTOTYPE",
+        "PUBLIC_BETA",
+        "SCALE_READY"
+      ]
+    },
+    "requirements": {},
+    "requirement": {},
+    "mandatory": {},
+    "reason": {},
+    "applicability": {
+      "enum": [
+        "APPLIES",
+        "NOT_APPLICABLE",
+        "UNKNOWN"
+      ]
+    },
+    "domain": {
+      "unread": true
+    },
+    "source": {
+      "unread": true
+    },
+    "coverage.status": {
+      "enum": [
+        "COMPLETE",
+        "NOT_APPLICABLE",
+        "PARTIAL",
+        "SAMPLED",
+        "UNAVAILABLE"
+      ]
+    },
+    "weight": {},
+    "not_applicable_reason": {},
+    "claim_id": {},
+    "text": {},
+    "current_sensitive": {},
+    "evidence": {},
+    "absence_check": {},
+    "independence_key": {},
+    "fingerprint": {},
+    "claim_lane": {
+      "enum": [
+        "external",
+        "implementation",
+        "intent",
+        "operational",
+        "outcome"
+      ]
+    },
+    "claim_type": {
+      "enum": [
+        "absence",
+        "behavior",
+        "external_current",
+        "intent",
+        "operational",
+        "outcome",
+        "presence",
+        "release"
+      ]
+    },
+    "materiality": {
+      "enum": [
+        "critical",
+        "high",
+        "low",
+        "medium"
+      ]
+    },
+    "source_type": {
+      "enum": [
+        "analytics",
+        "approved_decision",
+        "ci",
+        "code",
+        "commit",
+        "config",
+        "customer_research",
+        "deployment",
+        "documentation",
+        "experiment",
+        "external_primary",
+        "external_secondary",
+        "incident",
+        "inference",
+        "inventory",
+        "issue",
+        "migration",
+        "pr",
+        "product_context",
+        "release",
+        "runtime",
+        "support",
+        "test",
+        "user_requirement",
+        "vendor_official"
+      ]
+    },
+    "direction": {
+      "enum": [
+        "contradict",
+        "support"
+      ]
+    },
+    "directness": {
+      "enum": [
+        "direct",
+        "inferred",
+        "supporting"
+      ]
+    },
+    "freshness": {
+      "enum": [
+        "CURRENT",
+        "NEAR_EXPIRY",
+        "NOT_TIME_SENSITIVE",
+        "STALE",
+        "SUPERSEDED",
+        "UNKNOWN"
+      ]
+    },
+    "scope_match": {
+      "enum": [
+        "exact",
+        "partial",
+        "weak"
+      ]
+    },
+    "source_ref": {
+      "unread": true
+    },
+    "absence_check.status": {
+      "enum": [
+        "ABSENCE_VERIFIED",
+        "INCOMPLETE_SEARCH",
+        "NOT_FOUND_IN_SEARCH",
+        "UNKNOWN"
+      ]
+    },
+    "inventory_complete": {},
+    "scopes_checked": {},
+    "dynamic_registration_checked": {},
+    "generated_or_config_driven_paths_checked": {},
+    "notes": {
+      "unread": true
+    },
+    "capability_id": {},
+    "claim_refs": {},
+    "target_requirement_refs": {},
+    "state": {
+      "enum": [
+        "BROKEN",
+        "IMPLEMENTED_UNVERIFIED",
+        "MISSING",
+        "NOT_APPLICABLE",
+        "PARTIAL",
+        "STUBBED",
+        "UNKNOWN",
+        "VERIFIED_WORKING"
+      ]
+    },
+    "criticality": {
+      "unread": true
+    },
+    "confidence": {
+      "unread": true
+    },
+    "watch_dependencies": {
+      "unread": true
+    },
+    "id": {},
+    "title": {},
+    "outcome": {},
+    "acceptance_criteria": {},
+    "criterion": {},
+    "verify_with": {},
+    "proof": {},
+    "depends_on": {},
+    "problem_claim_refs": {},
+    "capability_refs": {},
+    "why_now": {},
+    "non_goal": {},
+    "success_signal": {},
+    "decomposition_note": {},
+    "evidence_confidence": {},
+    "gate_basis": {},
+    "target_blocker": {},
+    "impact": {},
+    "urgency": {},
+    "risk_reduction": {},
+    "strategic_alignment": {},
+    "enablement": {},
+    "reach": {},
+    "uncertainty": {},
+    "kind": {
+      "enum": [
+        "BUILD",
+        "DECIDE",
+        "DOCUMENT",
+        "FIX",
+        "HARDEN",
+        "INSTRUMENT",
+        "MIGRATE",
+        "RETIRE",
+        "VALIDATE",
+        "VERIFY"
+      ]
+    },
+    "effort": {
+      "enum": [
+        "L",
+        "M",
+        "S",
+        "XL",
+        "XS"
+      ]
+    },
+    "lane": {
+      "enum": [
+        "BLOCKER",
+        "LATER",
+        "NEXT",
+        "NOW",
+        "PARK",
+        "VALIDATE",
+        "VERIFY_NOW"
+      ]
+    },
+    "mandatory_gate": {
+      "enum": [
+        "core_flow",
+        "data_integrity",
+        "legal",
+        "privacy",
+        "release",
+        "security"
+      ]
+    },
+    "gate_status": {
+      "enum": [
+        "BLOCK",
+        "CLEAR",
+        "CLEAR_WITH_CONTROLS",
+        "NOT_REQUIRED",
+        "UNVERIFIED"
+      ]
+    },
+    "severity": {
+      "enum": [
+        "critical",
+        "high",
+        "low",
+        "medium"
+      ]
+    },
+    "schema": {},
+    "bundles": {},
+    "inventory": {},
+    "ledger": {},
+    "repository": {},
+    "commit_sha": {},
+    "scope": {},
+    "observed_at": {},
+    "entries": {},
+    "path": {},
+    "type": {},
+    "sha": {},
+    "rows": {},
+    "reviewer": {},
+    "reviewed_at": {},
+    "evidence_ref": {},
+    "summary": {},
+    "scope_basis": {},
+    "truncated": {},
+    "tree": {},
+    "object_format": {
+      "enum": [
+        "sha1",
+        "sha256"
+      ]
+    },
+    "commit_binding": {
+      "enum": [
+        "asserted_connector_pin",
+        "local_git_object"
+      ]
+    },
+    "entries.mode": {
+      "enum": [
+        "040000",
+        "100644",
+        "100755",
+        "120000",
+        "160000"
+      ]
+    },
+    "rows.status": {
+      "enum": [
+        "BINARY_UNREADABLE",
+        "EXCLUDED_GENERATED",
+        "EXCLUDED_VENDOR",
+        "INSPECTED",
+        "UNAVAILABLE"
+      ]
+    }
+  },
+  "outputs": {
+    "valid": {},
+    "errors": {},
+    "warnings": {},
+    "result": {},
+    "status": {},
+    "cycle_nodes": {},
+    "direct_unblocks": {},
+    "duplicate_ids": {},
+    "heuristic_confidence": {},
+    "missing_dependencies": {},
+    "priority_score": {},
+    "repositories": {},
+    "scope_claim": {},
+    "transitive_unblocks": {},
+    "verification_requirements_met": {},
+    "assessment_contract_sha256": {}
+  },
+  "internal": [],
+  "doc_terms": [
+    "last_verified_at"
+  ],
+  "evals": []
+}

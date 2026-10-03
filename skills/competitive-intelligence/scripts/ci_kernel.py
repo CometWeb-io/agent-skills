@@ -14,8 +14,10 @@ import datetime as dt
 import hashlib
 import json
 import math
+import os
 import re
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -271,16 +273,25 @@ def _score_number(value: Any, name: str) -> float:
     return number
 
 
+def _competitor_tier(value: Any) -> int:
+    # Booleans and non-integral values are not tiers; an unknown tier used to be
+    # scored silently as tier 1 or 3.
+    if not isinstance(value, bool):
+        try:
+            number = float(str(value).strip())
+        except ValueError:
+            number = math.nan
+        if number in TIER_FACTORS:
+            return int(number)
+    raise ValueError("competitor_tier must be 1, 2 or 3")
+
+
 def materiality_score(event: dict[str, Any]) -> dict[str, Any]:
     components: dict[str, float] = {}
     for name in SCORE_WEIGHTS:
         components[name] = _score_number(event.get(name, 0.0), name)
 
-    try:
-        tier = int(event.get("competitor_tier", 1))
-    except (TypeError, ValueError):
-        tier = 1
-    tier_factor = TIER_FACTORS.get(tier, TIER_FACTORS[3])
+    tier_factor = TIER_FACTORS[_competitor_tier(event.get("competitor_tier", 1))]
 
     base = sum(components[name] * weight for name, weight in SCORE_WEIGHTS.items())
     score = max(0, min(100, round(base * 100 * tier_factor)))
@@ -342,12 +353,27 @@ def freshness(last_verified_at: str | None, ttl_days: int, as_of: str | None = N
 
 
 def _atomic_write_json(path: Path, value: Any) -> None:
+    """Write JSON through a fresh temporary file in the target directory, then rename.
+
+    The temporary name is unpredictable and created with O_EXCL (``mkstemp``), so a
+    file or symlink planted beside the target cannot redirect the write. The result
+    is created with mode 0600: workspace files hold unpublished research.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(value, f, ensure_ascii=False, sort_keys=True, indent=2)
-        f.write("\n")
-    tmp.replace(path)
+    text = json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(text)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_name, path)
+    except BaseException:
+        try:
+            os.unlink(tmp_name)
+        except FileNotFoundError:
+            pass
+        raise
 
 
 def init_workspace(root: str | Path, subject_product: str | None = None) -> dict[str, Any]:

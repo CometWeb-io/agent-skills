@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MAX_MANIFEST_BYTES = 4 * 1024 * 1024
 MAX_OUTPUT_BYTES = 2 * 1024 * 1024
 CASE_ID = re.compile(r"[a-z0-9][a-z0-9_-]{0,127}\Z")
+LANGUAGES = {"en", "pl"}
 
 # These are conservative string flags, not verified accusations. Negated or
 # quoted occurrences may be legitimate; review them rather than rewriting them.
@@ -111,7 +112,7 @@ def load_cases(path: Path) -> list[dict[str, Any]]:
             if not isinstance(case[key], str) or not case[key].strip():
                 raise ValueError("case text fields must be nonempty strings")
             case[key].encode("utf-8", errors="strict")
-        if case["language"] not in {"en", "pl"}:
+        if case["language"] not in LANGUAGES:
             raise ValueError("unsupported case language")
         if "style_reference" in case and not isinstance(case["style_reference"], str):
             raise ValueError("style_reference must be text")

@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.2.1] - 2026-10-03
+
+### Fixed
+
+- The three scripts read payload keys no reference named. The rubric gives
+  dimension labels ("User + champion access") but not the `ratings` keys the
+  scorer requires (`user_champion_access`, `stakeholder_path`,
+  `decision_procurement_feasibility`, ...). Nothing documented `engagement_mode`,
+  `dimension_confidence`, any `select_cohort.py` field (`questions[]`,
+  `candidates[]`, `size`, caps, `replication_threshold`, `learning_coverage`) or
+  any `assess_partner_health.py` input. All of them are now listed per script in
+  the new `references/kernel-inputs.md`, which the rubric, `cohort-and-pilot.md` and
+  `partner-lifecycle.md` point to beside each script.
+- The Stage B gate list omitted `live_evidence_confirmed`, which the scorer
+  requires: a payload built from the rubric always came back `HOLD_VERIFY`. The
+  rubric now lists it, and a test pins that omitting it holds the candidate.
+- `references/contract.json` declares the fields, outputs and statuses and binds
+  `stage`, `engagement_mode` and `selection_stage` to `STAGES`, `ENGAGEMENT_MODES`
+  and `SELECTION_STAGES`. The two stage lists moved from inline literals into
+  those constants without changing behaviour; a test pins the unknown-stage
+  error. `evals/evals.json` holds prompt-level evals, not kernel inputs, so it
+  is not wired to the contract.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.2.0] - 2026-10-03
 
 ### Changed

@@ -1,0 +1,210 @@
+{
+  "skill": "evidence-researcher",
+  "contract": "skills/evidence-researcher/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {
+      "id": "research-status",
+      "title": "Research status",
+      "aliases": [
+        "research status",
+        "status"
+      ],
+      "required": true
+    },
+    {
+      "id": "bottom-line",
+      "title": "Bottom line",
+      "aliases": [
+        "bottom line"
+      ],
+      "required": true
+    },
+    {
+      "id": "claim-ledger",
+      "title": "Material Claim Ledger",
+      "aliases": [
+        "material claim ledger",
+        "claim ledger"
+      ],
+      "required": true
+    },
+    {
+      "id": "contradictions",
+      "title": "Contradictions and gaps",
+      "aliases": [
+        "contradictions"
+      ],
+      "required": true
+    },
+    {
+      "id": "coverage",
+      "title": "Coverage/readiness",
+      "aliases": [
+        "coverage"
+      ],
+      "required": true
+    },
+    {
+      "id": "handoff",
+      "title": "Handoff",
+      "aliases": [
+        "handoff"
+      ],
+      "required": true
+    }
+  ],
+  "verdict": {
+    "tokens": [
+      "READY",
+      "PARTIAL",
+      "REFRESH_REQUIRED",
+      "BLOCKED_BY_CONTRADICTION"
+    ],
+    "authorizing": [
+      "READY"
+    ],
+    "primary": {
+      "line": "^\\s*[-*]?\\s*\\**Status\\**\\s*:"
+    },
+    "json": [
+      {
+        "rule": "envelope-readiness",
+        "path": "payload.readiness",
+        "when": {
+          "type": "EvidenceEnvelope"
+        },
+        "compatible": {
+          "READY": [
+            "READY"
+          ],
+          "NOT_READY": [
+            "PARTIAL",
+            "REFRESH_REQUIRED",
+            "BLOCKED_BY_CONTRADICTION"
+          ],
+          "DEFER": [
+            "PARTIAL",
+            "REFRESH_REQUIRED",
+            "BLOCKED_BY_CONTRADICTION"
+          ]
+        }
+      }
+    ]
+  },
+  "blockers": [
+    {
+      "rule": "critical-contradiction",
+      "type": "items_matching",
+      "section": "contradictions",
+      "pattern": "(?=.*\\bcritical\\b)(?=.*\\bunresolved\\b)"
+    },
+    {
+      "rule": "unverified-critical-claim",
+      "type": "table_rows",
+      "section": "claim-ledger",
+      "column": [
+        "status"
+      ],
+      "pattern": "^(UNVERIFIED|CONTRADICTED|STALE)"
+    }
+  ],
+  "checks": [
+    {
+      "type": "doc_require",
+      "rule": "as-of",
+      "section": "research-status",
+      "pattern": "as[_ ]of\\W+\\d{4}-\\d{2}-\\d{2}",
+      "message": "Research status gives no as_of date for current claims"
+    },
+    {
+      "type": "doc_require",
+      "rule": "mode",
+      "section": "research-status",
+      "pattern": "mode",
+      "message": "Research status does not state the mode"
+    },
+    {
+      "type": "table_column_nonempty",
+      "rule": "claim-support",
+      "section": "claim-ledger",
+      "column": [
+        "best support"
+      ],
+      "when": {
+        "column": [
+          "status"
+        ],
+        "pattern": "^(VERIFIED|SUPPORTED)"
+      },
+      "code": "EVIDENCE_MISSING",
+      "message": "a verified/supported claim names no best support"
+    },
+    {
+      "type": "table_column_nonempty",
+      "rule": "claim-freshness",
+      "section": "claim-ledger",
+      "column": [
+        "freshness"
+      ],
+      "code": "EVIDENCE_MISSING",
+      "message": "a claim has no freshness state"
+    },
+    {
+      "type": "section_count",
+      "rule": "handoff-classes",
+      "section": "handoff",
+      "all_of": [
+        "safe for downstream",
+        "caveat",
+        "must not be treated as fact",
+        "re-verify"
+      ],
+      "code": "CONTRACT_VIOLATION",
+      "message": "Handoff must classify safe, caveated, not-a-fact and must-re-verify claims"
+    },
+    {
+      "type": "section_count",
+      "rule": "coverage-metrics",
+      "section": "coverage",
+      "all_of": [
+        "primary|system-of-record",
+        "falsifier",
+        "freshness"
+      ],
+      "code": "CONTRACT_VIOLATION",
+      "message": "Coverage/readiness must report primary, falsifier and freshness coverage"
+    }
+  ],
+  "ids": [
+    {
+      "rule": "claim-ids",
+      "pattern": "\\bC\\d+\\b",
+      "defined_in": [
+        {
+          "json": "payload.material_claims[*].claim_id",
+          "when": {
+            "type": "EvidenceEnvelope"
+          }
+        }
+      ],
+      "defined_by": "the Evidence Pack has no material claim with that ID"
+    },
+    {
+      "rule": "source-ids",
+      "pattern": "\\bS\\d+\\b",
+      "defined_in": [
+        {
+          "json": "payload.sources[*].source_id",
+          "when": {
+            "type": "EvidenceEnvelope"
+          }
+        }
+      ],
+      "defined_by": "the Evidence Pack has no source with that ID"
+    }
+  ],
+  "hooks": [
+    "evidence_safe_inference"
+  ]
+}

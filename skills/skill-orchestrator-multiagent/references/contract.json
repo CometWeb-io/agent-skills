@@ -1,0 +1,96 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/kernel-contract.md",
+    "references/workflow-archetypes.md"
+  ],
+  "json_schemas": [
+    "references/envelope.core.schema.json",
+    "references/evidence-envelope.schema.json",
+    "references/decision-handoff.schema.json",
+    "references/cw-aip-v2.core.schema.json"
+  ],
+  "scripts": {
+    "scripts/orchestrate_kernel.py": {
+      "input": "args",
+      "role": "helper",
+      "enums": {
+        "ARCHETYPES": "archetype",
+        "ENVELOPE_TYPES": "envelope_out"
+      }
+    },
+    "scripts/orchestrate_multiagent_kernel.py": {
+      "input": "args",
+      "role": "kernel"
+    },
+    "scripts/validate_envelope.py": {
+      "input": "json",
+      "role": "validator"
+    }
+  },
+  "fields": {
+    "verdict": {},
+    "blockers": {},
+    "gates": {},
+    "gate_id": {},
+    "human_approval": {}
+  },
+  "outputs": {
+    "execution_mode": {
+      "enum": [
+        "isolated_subagents"
+      ]
+    },
+    "parent_role": {
+      "enum": [
+        "orchestrator_only"
+      ]
+    },
+    "plan": {},
+    "subagent_tasks": {},
+    "step_index": {},
+    "step_total": {},
+    "skill": {},
+    "subagent_type": {
+      "enum": [
+        "generalPurpose",
+        "explore"
+      ]
+    },
+    "description": {},
+    "prompt": {},
+    "envelope_out": {
+      "enum": [
+        "EvidenceEnvelope",
+        "DecisionHandoff",
+        "FindingEnvelope",
+        "SpecialistHandoff",
+        "SnapshotMetadata"
+      ]
+    },
+    "run_in_background": {},
+    "parent_must_not": {},
+    "archetype": {
+      "enum": [
+        "research_then_council",
+        "research_then_operator",
+        "audit_then_release",
+        "competitive_then_council",
+        "orchestrated_goal",
+        "single_skill",
+        "disambiguate_only"
+      ]
+    },
+    "goal_summary": {},
+    "steps": {},
+    "purpose": {},
+    "read_skill": {},
+    "boundaries": {},
+    "single_skill_alternative": {}
+  },
+  "internal": [
+    "orchestrated_goal"
+  ],
+  "doc_terms": [],
+  "evals": []
+}

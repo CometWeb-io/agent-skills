@@ -1,5 +1,39 @@
 # Changelog
 
+## [2.4.1] - 2026-10-03
+
+### Fixed
+
+- An unknown candidate `action_type` (for example `verification`) fell through
+  to inference and ran as `implement`; `plan` now rejects it with
+  `candidates[N].action_type must be one of [...]`.
+- An unrecognised `freshness_status` / `temporal_status` label was ignored and
+  freshness was recomputed from the dates, so a typo could read as CURRENT. The
+  label now resolves to UNKNOWN, and `validate` reports
+  `<path>.freshness_status must be one of [...]`.
+- Evidence under a stage outside the six stages was silently dropped, leaving
+  only a misleading `<STAGE>_EVIDENCE_MISSING`; `reconcile` now also raises
+  `EVIDENCE_STAGE_UNKNOWN`.
+
+### Added
+
+- `references/contract.json` declares the kernel payload contract and binds
+  each enum to the kernel constant that enforces it (`ACTION_TYPES` and
+  `MUTATION_VALUES` are new constants for checks that were inline).
+- `references/local-workflow.md` lists every payload field. The kernel read 23
+  keys no reference named, among them `temporal_status`, `verified_at`,
+  `not_required`, `critical_blocker`, `goal_known`, `blocker_resolutions`
+  (`blocker_id` / `resolved_id`), the state-item drift flags and the forbidden
+  `selected_option`.
+
+### Evals
+
+- 4 golden cases (204 -> 208) pin the three fixes with exact errors and codes.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [2.4.0] - 2026-10-03
 
 ### Changed

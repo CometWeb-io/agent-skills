@@ -11,37 +11,37 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 
 | Skill | Front door | ~tokens | Depth | ~tokens | Refs | Deferred |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `design-partner-finder` | 11,995 B | 2,998 | 38,561 B | 9,640 | 11 | 0.76 |
-| `science-roaster` | 11,953 B | 2,988 | 66,395 B | 16,598 | 21 | 0.85 |
-| `repo-to-roadmap` | 11,946 B | 2,986 | 56,353 B | 14,088 | 12 | 0.83 |
-| `portfolio-operator` | 11,910 B | 2,977 | 16,180 B | 4,045 | 6 | 0.58 |
-| `seo-geo-aeo-maxxing` | 11,894 B | 2,973 | 73,434 B | 18,358 | 19 | 0.86 |
-| `repo-roaster` | 11,847 B | 2,961 | 67,633 B | 16,908 | 20 | 0.85 |
-| `content-roaster` | 11,826 B | 2,956 | 62,437 B | 15,609 | 20 | 0.84 |
-| `customer-ops` | 11,795 B | 2,948 | 124,365 B | 31,091 | 17 | 0.91 |
-| `ai-humanize` | 11,763 B | 2,940 | 58,468 B | 14,617 | 11 | 0.83 |
-| `web-app-auditor` | 11,653 B | 2,913 | 52,482 B | 13,120 | 15 | 0.82 |
-| `release-readiness` | 11,616 B | 2,904 | 65,912 B | 16,478 | 11 | 0.85 |
-| `cometweb-context` | 11,462 B | 2,865 | 18,886 B | 4,721 | 7 | 0.62 |
-| `ebook-publisher` | 11,420 B | 2,855 | 35,735 B | 8,933 | 6 | 0.76 |
-| `longform-publisher` | 10,496 B | 2,624 | 11,334 B | 2,833 | 9 | 0.52 |
-| `product-teardown` | 10,362 B | 2,590 | 56,436 B | 14,109 | 10 | 0.84 |
-| `product-operator` | 9,655 B | 2,413 | 39,475 B | 9,868 | 12 | 0.80 |
-| `ai-council` | 9,583 B | 2,395 | 42,363 B | 10,590 | 27 | 0.82 |
-| `competitive-intelligence` | 9,248 B | 2,312 | 35,080 B | 8,770 | 6 | 0.79 |
-| `quality-loop-operator` | 8,342 B | 2,085 | 10,167 B | 2,541 | 14 | 0.55 |
-| `skill-orchestrator` | 6,216 B | 1,554 | 10,534 B | 2,633 | 4 | 0.63 |
-| `content-writer` | 5,628 B | 1,407 | 6,681 B | 1,670 | 6 | 0.54 |
-| `brief-architect` | 5,608 B | 1,402 | 5,493 B | 1,373 | 5 | 0.49 |
-| `evidence-researcher` | 5,538 B | 1,384 | 34,481 B | 8,620 | 14 | 0.86 |
-| `skill-auditor` | 5,224 B | 1,306 | 5,678 B | 1,419 | 8 | 0.52 |
-| `feedback-integrator` | 5,074 B | 1,268 | 6,388 B | 1,597 | 7 | 0.56 |
-| `skill-evaluator` | 5,000 B | 1,250 | 7,243 B | 1,810 | 10 | 0.59 |
-| `repair-operator` | 4,976 B | 1,244 | 7,694 B | 1,923 | 6 | 0.61 |
-| `artifact-acceptance` | 4,834 B | 1,208 | 5,774 B | 1,443 | 7 | 0.54 |
-| `content-reviewer` | 4,501 B | 1,125 | 5,607 B | 1,401 | 7 | 0.55 |
-| `benchmark-curator` | 3,558 B | 889 | 5,595 B | 1,398 | 7 | 0.61 |
-| `rubric-designer` | 3,076 B | 769 | 832 B | 208 | 5 | 0.21 |
-| `skill-orchestrator-multiagent` | 1,369 B | 342 | 8,596 B | 2,149 | 3 | 0.86 |
+| `design-partner-finder` | 11,995 B | 2,998 | 43,890 B | 10,972 | 12 | 0.79 |
+| `science-roaster` | 11,967 B | 2,991 | 74,408 B | 18,602 | 21 | 0.86 |
+| `repo-to-roadmap` | 11,946 B | 2,986 | 61,545 B | 15,386 | 12 | 0.84 |
+| `portfolio-operator` | 11,910 B | 2,977 | 19,888 B | 4,972 | 6 | 0.63 |
+| `seo-geo-aeo-maxxing` | 11,894 B | 2,973 | 75,210 B | 18,802 | 19 | 0.86 |
+| `repo-roaster` | 11,863 B | 2,965 | 76,873 B | 19,218 | 20 | 0.87 |
+| `content-roaster` | 11,844 B | 2,961 | 69,060 B | 17,265 | 20 | 0.85 |
+| `customer-ops` | 11,843 B | 2,960 | 131,214 B | 32,803 | 18 | 0.92 |
+| `ai-humanize` | 11,763 B | 2,940 | 59,786 B | 14,946 | 11 | 0.84 |
+| `web-app-auditor` | 11,653 B | 2,913 | 54,613 B | 13,653 | 15 | 0.82 |
+| `release-readiness` | 11,616 B | 2,904 | 70,475 B | 17,618 | 11 | 0.86 |
+| `cometweb-context` | 11,462 B | 2,865 | 21,441 B | 5,360 | 7 | 0.65 |
+| `ebook-publisher` | 11,420 B | 2,855 | 36,012 B | 9,003 | 6 | 0.76 |
+| `longform-publisher` | 10,510 B | 2,627 | 14,510 B | 3,627 | 9 | 0.58 |
+| `product-teardown` | 10,362 B | 2,590 | 59,407 B | 14,851 | 10 | 0.85 |
+| `product-operator` | 9,657 B | 2,414 | 43,181 B | 10,795 | 12 | 0.82 |
+| `ai-council` | 9,583 B | 2,395 | 51,186 B | 12,796 | 27 | 0.84 |
+| `competitive-intelligence` | 9,329 B | 2,332 | 38,900 B | 9,725 | 7 | 0.81 |
+| `quality-loop-operator` | 8,344 B | 2,086 | 15,031 B | 3,757 | 14 | 0.64 |
+| `skill-orchestrator` | 6,216 B | 1,554 | 11,381 B | 2,845 | 4 | 0.65 |
+| `content-writer` | 5,642 B | 1,410 | 8,227 B | 2,056 | 6 | 0.59 |
+| `brief-architect` | 5,618 B | 1,404 | 7,335 B | 1,833 | 5 | 0.57 |
+| `evidence-researcher` | 5,552 B | 1,388 | 39,702 B | 9,925 | 14 | 0.88 |
+| `skill-auditor` | 5,224 B | 1,306 | 8,776 B | 2,194 | 8 | 0.63 |
+| `feedback-integrator` | 5,086 B | 1,271 | 9,074 B | 2,268 | 7 | 0.64 |
+| `skill-evaluator` | 5,000 B | 1,250 | 11,019 B | 2,754 | 10 | 0.69 |
+| `repair-operator` | 4,988 B | 1,247 | 8,195 B | 2,048 | 6 | 0.62 |
+| `artifact-acceptance` | 4,846 B | 1,211 | 8,384 B | 2,096 | 7 | 0.63 |
+| `content-reviewer` | 4,513 B | 1,128 | 6,991 B | 1,747 | 7 | 0.61 |
+| `benchmark-curator` | 3,572 B | 893 | 6,454 B | 1,613 | 7 | 0.64 |
+| `rubric-designer` | 3,088 B | 772 | 2,976 B | 744 | 5 | 0.49 |
+| `skill-orchestrator-multiagent` | 1,463 B | 365 | 12,706 B | 3,176 | 4 | 0.90 |
 
-**32 skills.** Loading every front door costs roughly 67,831 tokens before any work begins; the median skill costs ~2,404 and the largest ~2,998.
+**32 skills.** Loading every front door costs roughly 67,931 tokens before any work begins; the median skill costs ~2,404 and the largest ~2,998.

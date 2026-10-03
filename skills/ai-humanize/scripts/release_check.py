@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import importlib.util
-import json
 import re
 import subprocess
 import sys
@@ -95,19 +94,25 @@ def check_examples() -> None:
             )
 
 
-def check_redteam_manifest() -> None:
-    path = ROOT / "evaluation" / "redteam-cases.json"
-    cases = json.loads(path.read_text(encoding="utf-8"))
+def load_scorer():
+    path = ROOT / "scripts" / "redteam_score.py"
+    spec = importlib.util.spec_from_file_location("redteam_score", path)
+    if spec is None or spec.loader is None:
+        fail("cannot import redteam_score.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def check_redteam_manifest(path: Path | None = None) -> None:
+    """Hold the manifest to the scorer's own case contract, not a looser copy of it."""
+    path = path or ROOT / "evaluation" / "redteam-cases.json"
+    try:
+        cases = load_scorer().load_cases(path)
+    except (OSError, ValueError, UnicodeError) as exc:
+        fail(f"red-team manifest is invalid: {exc}")
     if len(cases) < 12:
         fail("red-team manifest should contain at least 12 cases")
-    ids = [case.get("id") for case in cases]
-    if len(ids) != len(set(ids)):
-        fail("red-team case IDs must be unique")
-    required = {"id", "language", "request", "mode_expectation", "source", "manual_checks"}
-    for case in cases:
-        missing = required - set(case)
-        if missing:
-            fail(f"red-team case {case.get('id')} missing fields: {sorted(missing)}")
 
 
 def run_tests() -> None:

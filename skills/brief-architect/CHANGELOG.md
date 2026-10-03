@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.7.2] - 2026-10-03
+
+- The brief documented `changed_fields[]` and
+  `downstream_revalidation_required` while `kernel.delta` returns
+  `material_changes` and `requires_downstream_revalidation`;
+  `references/output-contract.md` and `references/modes-and-versioning.md` now
+  use the kernel's names.
+- `references/output-contract.md` now documents every key the kernel reads
+  that it never mentioned: `verification_method` (required on a MUST criterion
+  with `evidence_required`), the `rubric_lock` fields, `consequential` on an
+  assumption, the `{id, type}` deliverable form, the `{id, rule}` invariant
+  form, the `assumption`/`decision`/`description` aliases, and the defaults
+  for `mode`, `risk_level` and `priority`. It also states what
+  `kernel.readiness` and `kernel.delta` return. `schema`, `exclusions`,
+  `freshness_boundary`, `known` and `recommended_next_skill` are marked as
+  reader-only fields the kernel does not check.
+- New `references/contract.json` binds the four enums to the kernel constants
+  that enforce them and checks every eval input, including both briefs of a
+  delta case, against the contract.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.7.1] - 2026-10-03
 
 - `scripts/run_evals.py --help` exits 0 with a usage line instead of exit 2; any other argument is still rejected with exit 2 and the unrecognized argument named.

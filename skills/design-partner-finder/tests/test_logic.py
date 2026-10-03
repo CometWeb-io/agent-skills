@@ -104,6 +104,18 @@ class ScoreLiveTests(unittest.TestCase):
         result = score_candidate.score(p, "live")
         self.assertEqual(result["status"], "HOLD_VERIFY")
 
+    def test_missing_live_evidence_flag_holds(self):
+        # kernel-inputs.md documents the default: omitting the flag is not live evidence.
+        p = self.good_payload()
+        del p["live_evidence_confirmed"]
+        result = score_candidate.score(p, "live")
+        self.assertEqual(result["status"], "HOLD_VERIFY")
+        self.assertIn("live_evidence_not_confirmed", result["hold_reasons"])
+
+    def test_unknown_stage_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "stage must be research or live"):
+            score_candidate.score(self.good_payload(), "qualified")
+
     def test_paid_pilot_requires_commercial_alignment(self):
         p = self.good_payload()
         p["engagement_mode"] = "PAID_PILOT"

@@ -59,7 +59,7 @@ Track at least:
 - blockers,
 - commercial signal separately from learning quality.
 
-Run `scripts/assess_partner_health.py` for a consistent review when useful.
+Run `scripts/assess_partner_health.py` for a consistent review when useful; its payload field names are listed in `references/kernel-inputs.md`.
 
 ## 7. Graduation
 

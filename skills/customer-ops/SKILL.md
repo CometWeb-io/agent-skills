@@ -1,18 +1,17 @@
 ---
 name: customer-ops
 description: >
-  Run the operational customer-to-resolution loop across support conversations, customer
-  cases, incidents, account risk, commitments, internal handoffs, feedback clusters, and
-  GitHub engineering work. Use when asked to triage an inbox or ticket queue, investigate
-  a customer problem, detect or coordinate an incident, build an operational account 360,
-  watch churn/non-renewal signals, find overdue promises or stalled escalations, dedupe
-  customer-reported bugs into GitHub, produce customer-ops briefs, or verify that a fix
-  actually resolved the customer-visible symptom. Composes with Gmail/support tools,
-  HubSpot/CRM, billing, product analytics, GitHub, Notion/incident records, and connected
-  files. Do not use for broad VOC/persona research, retention-program design, general CRM
-  architecture, analytics implementation, product roadmap prioritization (Product
-  Operator), release-candidate GO/NO_GO (Release Readiness), or security exploitation;
-  hand those workflows to the specialist skill.
+  Run the operational customer-to-resolution loop across support conversations, customer cases,
+  incidents, account risk, commitments, internal handoffs, feedback clusters, and GitHub engineering
+  work. Do not use for broad VOC/persona research, retention-program design, general CRM architecture,
+  analytics implementation, product roadmap prioritization (Product Operator), release-candidate
+  GO/NO_GO (Release Readiness), or security exploitation; hand those workflows to the specialist
+  skill. Use when asked to triage an inbox or ticket queue, investigate a customer problem, detect or
+  coordinate an incident, build an operational account 360, watch churn/non-renewal signals, find
+  overdue promises or stalled escalations, dedupe customer-reported bugs into GitHub, produce
+  customer-ops briefs, or verify that a fix actually resolved the customer-visible symptom. Composes
+  with Gmail/support tools, HubSpot/CRM, billing, product analytics, GitHub, Notion/incident records,
+  and connected files.
 ---
 
 # Customer Ops
@@ -51,7 +50,7 @@ Read when the trigger applies:
 | changing or testing this skill | `references/evaluation.md` |
 
 Do not load every reference or browse unrelated news. When code execution is available,
-use `scripts/customer_ops_kernel.py` for deterministic fallback priority, risk, severity,
+use `scripts/customer_ops_kernel.py` (payload fields in `references/kernel-inputs.md`) for deterministic fallback priority, risk, severity,
 deadline, dedupe, gate, commitment and transition checks, and privacy preflight. Do not claim the kernel ran unless it actually ran.
 
 ## 1. Choose the tightest operating mode
