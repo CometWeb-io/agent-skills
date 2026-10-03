@@ -26,3 +26,7 @@ v1 factual `VERIFIED/PARTIAL/UNSUPPORTED/CONTRADICTED/UNKNOWN` states map direct
 ## Snapshot policy
 
 Keep the original v1 artifact. Treat the migrated v2 pack as a new derived snapshot; do not pretend the v1 history was originally captured with v2 provenance granularity.
+
+## v1 keys `migrate-v1` reads
+
+Root: `research_question`, `as_of`, `mode`, `scope`, `claims`, `evidence`, `contradictions`, `gaps`. A v1 evidence row may carry `canonical_url` or `source_ref` (becoming `canonical_ref`) and lists `supports_claim_ids` / `contradicts_claim_ids` instead of separate edges. Other v1 row keys keep their v2 names. A v1 contradiction row keeps `type` and `explanation`.

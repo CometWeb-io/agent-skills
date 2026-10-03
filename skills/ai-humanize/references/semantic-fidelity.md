@@ -112,3 +112,17 @@ It is opt-in because the markers fire on faithful paraphrase too: turning
 token. Choose it when a missed inversion costs more than a false positive.
 
 Use `--protect` for exact names, labels, or normative phrases that heuristics cannot infer safely.
+
+Without `--summary` the guard prints one JSON object and exits `0` when `passed`, `1` otherwise (`2` on unreadable input):
+
+```text
+passed: the invariant verdict
+strict, fail_on_semantic_risk: the flags in force
+missing_invariants: {category: [{value, count}]} present before, absent after
+added_invariants: {category: [{value, count}]} introduced by the rewrite; fail only with --strict
+semantic_risk_markers: {negation|modality|scope: {removed: [...], added: [...]}}
+warnings[], limitations[]: plain-language notes for the reviewer
+version: guard version
+```
+
+Categories are the invariant kinds listed above (for example `urls`, `numbers`, `number_unit_pairs`, `quoted_spans`, `protected_terms`).

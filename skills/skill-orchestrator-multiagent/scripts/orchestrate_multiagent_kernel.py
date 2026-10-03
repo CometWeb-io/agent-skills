@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from typing import Any
 
 from orchestrate_kernel import WorkflowStep, plan_workflow
@@ -45,7 +45,16 @@ class SubagentTask:
     run_in_background: bool = False
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        return {
+            "step_index": self.step_index,
+            "step_total": self.step_total,
+            "skill": self.skill,
+            "subagent_type": self.subagent_type,
+            "description": self.description,
+            "prompt": self.prompt,
+            "envelope_out": self.envelope_out,
+            "run_in_background": self.run_in_background,
+        }
 
 
 def _skill_paths(skill: str) -> str:
@@ -132,7 +141,7 @@ def build_multiagent_plan(goal: str, workspace_root: str | None = None) -> dict[
         for i, step in enumerate(plan.steps, start=1)
     ]
     return {
-        "execution_mode": "multiagent",
+        "execution_mode": "isolated_subagents",
         "parent_role": "orchestrator_only",
         "plan": plan.to_dict(),
         "subagent_tasks": tasks,

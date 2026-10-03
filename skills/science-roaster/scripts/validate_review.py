@@ -64,6 +64,14 @@ CONF_DIRECTNESS = {"HIGH", "MEDIUM", "LOW"}
 CONF_SCOPE_SUPPORT = {"HIGH", "MEDIUM", "LOW"}
 COUNTEREVIDENCE_STATUS = {"ADDRESSED", "PARTIAL", "UNKNOWN"}
 RESIDUAL_RISK = {"LOW", "MEDIUM", "HIGH", "UNKNOWN"}
+# One named constant per report field: references/contract.json binds each to
+# the field it checks, so a constant shared by two fields gets an alias here.
+COVERAGE_CONFIDENCE = CONF
+REGISTER_STRENGTH = EVIDENCE_STRENGTH
+PASS_ROLES = {"PRIMARY", "SECONDARY", "ARBITER"}
+PASS_STATUSES = {"COMPLETED", "UNAVAILABLE", "FAILED"}
+INSTRUCTION_BOUNDARY = {"TREAT_AS_DATA"}
+LEDGER_VALIDITY_DOMAINS = VALIDITY_DOMAINS
 PERSONAL_ATTACK = re.compile(r"\b(?:author|researcher|scientist|you|your coauthors?|your team)\b.{0,40}\b(?:stupid|idiot|moron|lazy|incompetent|clueless|fraud)\b", re.I)
 
 
@@ -148,7 +156,7 @@ def _source_manifest(value: Any, evidence_mode: Any, errors: list[str]) -> set[s
             errors.append(f"{p}.version_state is invalid")
         if row.get("kind") == "LITERATURE" and evidence_mode == "SOURCE_BOUND" and row.get("role") == "PRIMARY":
             errors.append(f"{p}: external literature cannot silently become PRIMARY evidence in SOURCE_BOUND mode")
-        if row.get("instruction_boundary") != "TREAT_AS_DATA":
+        if row.get("instruction_boundary") not in INSTRUCTION_BOUNDARY:
             errors.append(f"{p}.instruction_boundary must equal TREAT_AS_DATA")
         if row.get("trust_class") not in TRUST_CLASS:
             errors.append(f"{p}.trust_class is invalid")
@@ -257,10 +265,10 @@ def _assurance(value: Any, errors: list[str], source_ids: set[str]) -> dict[str,
         else:
             pass_ids.add(pid)
         role = row.get("role")
-        if role not in {"PRIMARY", "SECONDARY", "ARBITER"}:
+        if role not in PASS_ROLES:
             errors.append(f"{p}.role is invalid")
         pstatus = row.get("status")
-        if pstatus not in {"COMPLETED", "UNAVAILABLE", "FAILED"}:
+        if pstatus not in PASS_STATUSES:
             errors.append(f"{p}.status is invalid")
         if not _text(row.get("context_ref")):
             errors.append(f"{p}.context_ref is required")
@@ -368,7 +376,7 @@ def _evidence_register(value: Any, source_ids: set[str], errors: list[str]) -> d
             errors.append(f"{p}.locator is required")
         if not _text(row.get("summary")):
             errors.append(f"{p}.summary is required")
-        if row.get("strength") not in EVIDENCE_STRENGTH:
+        if row.get("strength") not in REGISTER_STRENGTH:
             errors.append(f"{p}.strength is invalid")
         if not _slist(row.get("limitations")):
             errors.append(f"{p}.limitations must be a string list")
@@ -543,7 +551,7 @@ def validate(report: Any) -> list[str]:
             errors.append("coverage.level is invalid")
         if coverage.get("scope_basis") not in SCOPE:
             errors.append("coverage.scope_basis is invalid")
-        if coverage.get("coverage_confidence") not in CONF:
+        if coverage.get("coverage_confidence") not in COVERAGE_CONFIDENCE:
             errors.append("coverage.coverage_confidence is invalid")
         if not _text(coverage.get("sampling_strategy")):
             errors.append("coverage.sampling_strategy is required")
@@ -620,7 +628,7 @@ def validate(report: Any) -> list[str]:
             errors.append(f"{p} must be an object")
             continue
         domain = row.get("domain")
-        if domain not in VALIDITY_DOMAINS:
+        if domain not in LEDGER_VALIDITY_DOMAINS:
             errors.append(f"{p}.domain is invalid")
         elif domain in seen_validity:
             errors.append(f"{p}.domain must be unique")

@@ -1,0 +1,51 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/workflow-archetypes.md"
+  ],
+  "scripts": {
+    "scripts/orchestrate_kernel.py": {
+      "input": "args",
+      "role": "kernel",
+      "enums": {
+        "ARCHETYPES": "archetype",
+        "ENVELOPE_TYPES": "envelope_out"
+      }
+    }
+  },
+  "fields": {},
+  "outputs": {
+    "archetype": {
+      "enum": [
+        "research_then_council",
+        "research_then_operator",
+        "audit_then_release",
+        "competitive_then_council",
+        "orchestrated_goal",
+        "single_skill",
+        "disambiguate_only"
+      ]
+    },
+    "goal_summary": {},
+    "steps": {},
+    "skill": {},
+    "purpose": {},
+    "envelope_out": {
+      "enum": [
+        "EvidenceEnvelope",
+        "DecisionHandoff",
+        "FindingEnvelope",
+        "SpecialistHandoff",
+        "SnapshotMetadata"
+      ]
+    },
+    "read_skill": {},
+    "boundaries": {},
+    "single_skill_alternative": {}
+  },
+  "internal": [
+    "orchestrated_goal"
+  ],
+  "doc_terms": [],
+  "evals": []
+}

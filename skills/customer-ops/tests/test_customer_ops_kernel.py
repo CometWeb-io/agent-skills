@@ -217,6 +217,25 @@ class CommitmentTests(unittest.TestCase):
         })
         self.assertEqual(out["status"], "OVERDUE")
 
+    def test_unknown_state_is_not_silently_open(self):
+        # A misspelled terminal state used to fall through to the open-clock
+        # path and report OVERDUE for a promise the source says is closed.
+        out = mod.commitment_status({
+            "state": "DONE",
+            "due_at": "2026-08-25T11:00:00+02:00",
+            "now": "2026-08-25T12:00:00+02:00",
+        })
+        self.assertEqual(out["status"], "UNKNOWN")
+        self.assertIn("state must be one of", out["reason"])
+
+    def test_nonterminal_state_still_uses_the_clock(self):
+        out = mod.commitment_status({
+            "state": "due_soon",
+            "due_at": "2026-08-25T11:00:00+02:00",
+            "now": "2026-08-25T12:00:00+02:00",
+        })
+        self.assertEqual(out["status"], "OVERDUE")
+
 
 class TransitionAndGateTests(unittest.TestCase):
     def test_handoff_proposed_is_not_done(self):

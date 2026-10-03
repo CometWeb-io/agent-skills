@@ -1,6 +1,9 @@
 from __future__ import annotations
 import importlib.util
+import json
 from pathlib import Path
+
+import jsonschema
 
 BASE = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("science_roast_validator", BASE / "scripts" / "validate_review.py")
@@ -8,156 +11,36 @@ v = importlib.util.module_from_spec(spec); assert spec and spec.loader; spec.loa
 
 
 def valid_report():
-    return {'schema': 'cometweb.science-roaster/v6',
-     'artifact': 'paper-r16',
-     'review_outcome': 'MATERIAL_FINDINGS',
-     'source_manifest': [{'id': 'SRC-01',
-                          'kind': 'MANUSCRIPT',
-                          'locator': 'paper-r16',
-                          'role': 'PRIMARY',
-                          'version_state': 'PINNED',
-                          'instruction_boundary': 'TREAT_AS_DATA',
-                          'trust_class': 'SYSTEM_OF_RECORD'}],
-     'mode': 'FULL',
-     'evidence_mode': 'SOURCE_BOUND',
-     'study_profile': 'VALIDATION',
-     'study_contract': {'research_question': 'Can proxy X estimate Y?',
-                        'target_construct': 'Y',
-                        'population': 'tested profiles',
-                        'analysis_population': 'qualified site-runs',
-                        'unit_of_analysis': 'site-run',
-                        'reference': 'meter',
-                        'reference_status': 'OPERATIONAL_UNCALIBRATED',
-                        'estimand': 'holdout absolute error',
-                        'primary_endpoint': 'holdout error',
-                        'evidence_status': 'confirmatory',
-                        'preregistration_status': 'PARTIAL',
-                        'novelty_claim': 'failure-mode validation',
-                        'missingness_strategy': 'qualified complete domains',
-                        'multiplicity_strategy': 'no pooled family-wise claim',
-                        'dependence_structure': 'repeated site-runs'},
-     'coverage': {'level': 'COMPLETE',
-                  'scope_basis': 'FULL_ARTIFACT',
-                  'sampling_strategy': 'all sections',
-                  'coverage_confidence': 'high',
-                  'inspected': ['methods', 'results'],
-                  'not_inspected': ['raw data'],
-                  'limitations': []},
-     'quality_gates': {'scope': 'PASS',
-                       'contract': 'PASS',
-                       'evidence': 'PASS',
-                       'challenge': 'PASS',
-                       'severity': 'PASS',
-                       'repair': 'PASS',
-                       'boundary': 'PASS',
-                       'source_integrity': 'PASS',
-                       'assurance': 'PASS'},
-     'measurement_chain': {'construct': 'Y',
-                           'operationalization': 'meter delta',
-                           'reference': 'meter',
-                           'transformation': 'baseline subtraction',
-                           'endpoint': 'holdout error',
-                           'alignment_status': 'PARTIAL'},
-     'claim_map': [{'id': 'CL-01',
-                    'claim': 'The model estimates energy with acceptable error.',
-                    'central': True,
-                    'inferential_type': 'PREDICTIVE',
-                    'evidence_role': 'PRIMARY',
-                    'population_scope': 'holdout domains',
-                    'endpoint_scope': 'absolute error',
-                    'analysis_set': 'qualified complete domains',
-                    'anchor': {'type': 'section', 'value': 'Validation', 'source_id': 'SRC-01'},
-                    'support_status': 'OVERSTATED'}],
-     'validity_ledger': [{'domain': 'CONSTRUCT', 'status': 'THREATENED', 'basis': 'Reference uncertainty is not independently characterized.'}],
-     'analysis_integrity_ledger': [{'area': 'HOLDOUT', 'status': 'ADEQUATE', 'basis': 'Model freeze precedes holdout evaluation.'}],
-     'alternative_explanations': [{'id': 'AE-01',
-                                   'claim_refs': ['CL-01'],
-                                   'explanation': 'Reference instability contributes to error.',
-                                   'addressed_by': ['repeatability section'],
-                                   'status': 'PARTIAL'}],
-     'robustness_ledger': [{'claim_ref': 'CL-01',
-                            'check': 'constant comparator',
-                            'status': 'SENSITIVE',
-                            'evidence': 'Comparator is lower in the reported subset.'}],
-     'root_causes': [],
-     'no_material_findings': False,
-     'first_attack_id': 'SR-001',
-     'findings': [{'id': 'SR-001',
-                   'finding_key': 'reference-uncertainty',
-                   'finding_aliases': [],
-                   'severity': 'MAJOR',
-                   'category': 'calibration',
-                   'validity_domain': 'CONSTRUCT',
-                   'evidence_state': 'OBSERVED',
-                   'evidence_strength': 'STRONG',
-                   'scope_sensitivity': 'LOW',
-                   'anchor': {'type': 'section', 'value': 'No independent calibration was performed.', 'source_id': 'SRC-01'},
-                   'claim_refs': ['CL-01'],
-                   'materiality': {'centrality': 'CENTRAL', 'consequence': 'HIGH', 'reversibility': 'HARD'},
-                   'observation': 'The reference is not independently calibrated.',
-                   'scientific_risk': 'Absolute validity inherits unknown reference error.',
-                   'repair_level': 'NEW_DATA',
-                   'repair': 'Characterize reference uncertainty.',
-                   'verification': {'type': 'CALIBRATION',
-                                    'method': 'Run an independent calibration study.',
-                                    'success_condition': 'Reference uncertainty is reported and propagated.',
-                                    'failure_signal': 'Reference uncertainty remains unbounded or explains the claimed proxy error.'},
-                   'falsifier_check': {'challenge': 'Reference uncertainty may be bounded elsewhere.',
-                                       'searched_for': ['calibration appendix'],
-                                       'counterevidence': ['repeatability section'],
-                                       'alternative_explanations': ['relative validation may not need absolute calibration'],
-                                       'result': 'SURVIVES',
-                                       'notes': 'Repeatability is not absolute calibration.'},
-                   'confidence': 'high',
-                   'evidence_refs': ['EV-01'],
-                   'confidence_basis': {'directness': 'HIGH',
-                                        'scope_support': 'HIGH',
-                                        'counterevidence_status': 'ADDRESSED',
-                                        'independence': 'NONE',
-                                        'rationale': 'The finding is directly anchored and counterevidence was explicitly challenged.'},
-                   'residual_risk': {'after_repair': 'LOW', 'closure_dependency': 'Run the stated verification before closure.'}}],
-     'resolution_ledger': [],
-     'external_verification_queue': [],
-     'claim_survival': [{'claim_ref': 'CL-01', 'status': 'SURVIVES_NARROWED', 'reason': 'Relative failure-mode claim survives.'}],
-     'survives': ['Bounded failure modes in tested profiles.'],
-     'minimal_surviving_claim': 'The study identifies failure modes under the tested reference and profiles.',
-     'core_fix': 'Characterize the reference before extending the validity claim.',
-     'review_plan': {'objective': 'Find material failures without inflating false positives.',
-                     'must_inspect': ['primary claim/invariant', 'highest-consequence path'],
-                     'attack_surfaces': ['evidence-to-conclusion chain', 'counterevidence'],
-                     'sampling_strategy': 'risk-first review of the pinned primary source',
-                     'stop_conditions': ['stop when additional findings do not change repair or risk posture'],
-                     'escalation_conditions': ['escalate when a top-severity finding remains scope-sensitive']},
-     'assurance': {'mode': 'SINGLE_REVIEW',
-                   'independence': 'NONE',
-                   'second_pass_status': 'NOT_RUN',
-                   'disagreement_summary': [],
-                   'limitations': ['No independent second reviewer was run.'],
-                   'pass_records': [{'pass_id': 'PASS-PRIMARY',
-                                     'role': 'PRIMARY',
-                                     'context_ref': 'current-context',
-                                     'status': 'COMPLETED',
-                                     'blind_to_prior_findings': False,
-                                     'source_refs': ['SRC-01']}]},
-     'evidence_register': [{'id': 'EV-01',
-                            'source_id': 'SRC-01',
-                            'kind': 'OBSERVATION',
-                            'locator': 'primary reviewed evidence',
-                            'summary': 'Direct evidence supporting the material review finding.',
-                            'strength': 'STRONG',
-                            'limitations': []}],
-     'evidence_conflicts': [],
-     'outcome_basis': {'surviving_finding_ids': ['SR-001'], 'withdrawn_candidate_count': 0, 'unresolved_candidate_count': 0, 'reason': 'One material finding survived evidence and falsifier review.'},
-     'limitations': [],
-     'inferential_claim_ledger': [{'claim_ref': 'CL-01',
-                                   'estimand': 'holdout absolute error',
-                                   'independent_unit': 'site-run',
-                                   'analysis_population': 'qualified site-runs',
-                                   'uncertainty_basis': 'reported holdout error distribution',
-                                   'multiplicity_status': 'DECLARED',
-                                   'identification_status': 'ASSUMPTION_DEPENDENT',
-                                   'data_split_status': 'LOCKED',
-                                   'evidence_refs': ['EV-01']}]}
+    # One fixture is the valid report for these tests and for the contract check
+    # (references/contract.json evals), so the two cannot drift apart.
+    return json.loads((BASE / "tests" / "report-valid.json").read_text(encoding="utf-8"))
+
+
+SCHEMA = json.loads((BASE / "references" / "report.schema.json").read_text(encoding="utf-8"))
+
+
+def schema_errors(report):
+    return [e.message for e in jsonschema.Draft202012Validator(SCHEMA).iter_errors(report)]
+
+
+def test_report_schema_accepts_the_valid_report():
+    assert schema_errors(valid_report()) == []
+
+
+def test_report_schema_does_not_require_what_the_validator_leaves_optional():
+    # resolution_ledger is required only in revision mode and root_causes only when useful.
+    r = valid_report(); del r["resolution_ledger"]; del r["root_causes"]
+    for finding in r["findings"]:
+        finding["root_cause_id"] = None
+    assert v.validate(r) == []
+    assert schema_errors(r) == []
+
+
+def test_report_schema_enums_match_the_validator():
+    props = SCHEMA["properties"]
+    assert set(props["mode"]["enum"]) == v.MODES
+    assert set(props["evidence_mode"]["enum"]) == v.EVIDENCE_MODES
+    assert set(props["study_profile"]["enum"]) == v.PROFILES
 
 
 def test_valid_report_passes(): assert v.validate(valid_report()) == []

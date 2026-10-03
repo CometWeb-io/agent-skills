@@ -1,54 +1,94 @@
 # Documentation index
 
-This index says what each document is for, and which files are written by a tool
-rather than by a person.
+Each topic has one home; other documents link to it instead of repeating it.
+Read the sections in order the first time. Files marked *generated* are
+written by a tool and fail CI when edited by hand.
 
-## Repository direction
-
-| Document | What it covers |
-| --- | --- |
-| [`TARGET.md`](TARGET.md) | What this repository is, and what it is not. Start here. |
-| [`SKILL-QUALITY-OPERATIONS.md`](SKILL-QUALITY-OPERATIONS.md) | How deterministic repository evidence is kept separate from runtime claims. |
-| [`CONTRACT-TRACE-AND-SKILL-EVALS.md`](CONTRACT-TRACE-AND-SKILL-EVALS.md) | Contract tracing and how reviewed skill comparisons are run. |
-
-## Working locally
+## Start
 
 | Document | What it covers |
 | --- | --- |
-| [`LOCAL-VALIDATION.md`](LOCAL-VALIDATION.md) | Running the full gate without GitHub Actions. |
-| [`SIGNED-COMMITS.md`](SIGNED-COMMITS.md) | How to enable commit signing before flipping the ruleset. |
-| [`WHYKIT-INTEGRATION.md`](WHYKIT-INTEGRATION.md) | Converting finalized CW-AIP v2 evidence and decision envelopes into explicit, unreviewed WhyKit drafts. |
-| [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | The commands to run before a pull request, and the quality bar. |
+| [`../README.md`](../README.md) | What the skills are, the quickstart and the skill catalog. |
+| [`TARGET.md`](TARGET.md) | What this repository is, and what it is not. |
+| [`media/README.md`](media/README.md) | The overview diagram used by the README. |
+
+## Using skills per host
+
+| Document | What it covers |
+| --- | --- |
+| [`../INSTALL.md`](../INSTALL.md) | Installers for Claude Code, Cursor, Codex, Qwen Code, Qoder and Lingma; plugin marketplaces; dry run, upgrade and uninstall. |
+| [`OPENAI-MARKETPLACE.md`](OPENAI-MARKETPLACE.md) | Importing the repository as a ChatGPT or Codex workspace marketplace. |
+| [`ROUTING.md`](ROUTING.md) | How a prompt is matched to a skill, the routing policy blocks, known gaps and how to add a case. |
+| [`generated-compatibility-matrix.md`](generated-compatibility-matrix.md) | *Generated.* Declared support per skill and host. |
+| [`../extras/AGENTS.snippet.md`](../extras/AGENTS.snippet.md) | *Generated.* The routing block to paste into a project's `AGENTS.md` or `CLAUDE.md`. |
+
+## Writing a skill
+
+| Document | What it covers |
+| --- | --- |
+| [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | The check flow, adding a skill step by step, the quality bar, and which files are generated. |
+| [`QUALITY-SUITE-INTEGRATION.md`](QUALITY-SUITE-INTEGRATION.md) | How imported skill bundles join the one skill tree and registry. |
+| [`../AGENTS.md`](../AGENTS.md) | Standing repository rules for coding agents (in Polish). |
+| [`../CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) | How contributors are expected to behave. |
+
+## Evaluating
+
+| Document | What it covers |
+| --- | --- |
+| [`SKILL-QUALITY-OPERATIONS.md`](SKILL-QUALITY-OPERATIONS.md) | What CI proves, and how repository evidence is kept apart from runtime claims. |
+| [`../evals/routing/README.md`](../evals/routing/README.md) | Routing case files, coverage floors, negation and sequence rules, holdout tuning. |
+| [`CONTRACT-TRACE-AND-SKILL-EVALS.md`](CONTRACT-TRACE-AND-SKILL-EVALS.md) | Contract tracing and reviewed skill comparisons with a model. |
+| [`OUTPUT-GRADING.md`](OUTPUT-GRADING.md) | Grading a skill's actual output against its output contract, offline, with golden good and broken cases. |
+| [`LOCAL-VALIDATION.md`](LOCAL-VALIDATION.md) | A recorded run of every gate without GitHub Actions (in Polish). |
+| [`generated-eval-strength.md`](generated-eval-strength.md) | *Generated* by `tooling/eval_strength.py`. How many guards each harness pins. |
+| [`generated-context-budget.md`](generated-context-budget.md) | *Generated* by `tooling/context_budget.py`. What each skill costs a host in context. |
+| [`generated-skills-table.md`](generated-skills-table.md) | *Generated.* Version, tier and lifecycle per skill. |
+
+## Protocol (CW-AIP)
+
+| Document | What it covers |
+| --- | --- |
+| [`../protocol/cw-aip-v2/README.md`](../protocol/cw-aip-v2/README.md) | The current envelope format for handoffs between skills. |
+| [`../protocol/cw-aip-v1/cw-interchange-v1.md`](../protocol/cw-aip-v1/cw-interchange-v1.md) | v1, still valid for skills that have not migrated; its schemas sit beside it. |
+| [`WHYKIT-INTEGRATION.md`](WHYKIT-INTEGRATION.md) | Turning final evidence and decision envelopes into unreviewed WhyKit drafts. |
+
+## Security
+
+| Document | What it covers |
+| --- | --- |
 | [`../SECURITY.md`](../SECURITY.md) | Reporting a vulnerability, and what the leak gate does and does not promise. |
+| [`SIGNED-COMMITS.md`](SIGNED-COMMITS.md) | Enabling commit signing before the ruleset requires it. |
 
-## Publication and visual standards
+## Releasing
 
-Both are in Polish and record decisions made on 2026-09-12. They bind the
+| Document | What it covers |
+| --- | --- |
+| [`../CONTRIBUTING.md#plugin-version`](../CONTRIBUTING.md#plugin-version) | When the plugin version must change, and how the shipped set is recorded. |
+| [`../CONTRIBUTING.md#releases`](../CONTRIBUTING.md#releases) | Packaging a skill and the approval-gated publication path. |
+| [`../CHANGELOG.md`](../CHANGELOG.md) | What changed in each plugin release. |
+| [`RELEASE-READINESS-CANDIDATE-1.1.md`](RELEASE-READINESS-CANDIDATE-1.1.md) | Notes for the release-readiness 1.1.0 candidate. |
+| [`acceptance/longform-publisher-1.0.0.md`](acceptance/longform-publisher-1.0.0.md) | A recorded real-world acceptance of one skill release. |
+
+## Publication standards
+
+In Polish; they record decisions made on 2026-09-12 and bind the
 `ebook-publisher` and `longform-publisher` skills.
 
 | Document | What it covers |
 | --- | --- |
 | [`EDITORIAL_VISUAL_STANDARD.md`](EDITORIAL_VISUAL_STANDARD.md) | Brand marks, typography, colour tokens, status labels. |
 | [`COMETWEB-EBOOK-DESIGN-RULES.md`](COMETWEB-EBOOK-DESIGN-RULES.md) | Layout rules for covers, before/after views and status pills. |
+| [`../profiles/cometweb/PROFILE.md`](../profiles/cometweb/PROFILE.md) | The project overlay that applies these standards to CometWeb publications. |
 
-## Release records
+## Other generated files
 
-| Document | What it covers |
-| --- | --- |
-| [`RELEASE-READINESS-CANDIDATE-1.1.md`](RELEASE-READINESS-CANDIDATE-1.1.md) | Notes for the release-readiness 1.1.0 candidate. |
-| [`acceptance/`](acceptance/) | Per-release acceptance records. |
+Written by `tooling/generate_adapters.py` from `registry/skills.json`; change the
+registry and regenerate with `uv run python tooling/check_all.py --fix --fast`.
 
-## Generated — do not hand-edit
-
-`tooling/generate_adapters.py` writes these from `registry/skills.json`. Editing
-them directly is pointless: `generate_adapters.py --check` fails in CI the moment
-they differ from what the registry produces. Change the registry and regenerate.
-
-- [`generated-context-budget.md`](generated-context-budget.md) — written by `tooling/context_budget.py`
-- [`generated-eval-strength.md`](generated-eval-strength.md) — written by `tooling/eval_strength.py`
-- [`generated-skills-table.md`](generated-skills-table.md)
-- [`generated-compatibility-matrix.md`](generated-compatibility-matrix.md)
-- `generated-cursor-routing.mdc`
-- [`../extras/cursor-routing.mdc`](../extras/cursor-routing.mdc) and [`../extras/AGENTS.snippet.md`](../extras/AGENTS.snippet.md) — compact routing for Cursor and AGENTS.md hosts
-- the skill list in the `description` of `.cursor-plugin/plugin.json` and `.claude-plugin/plugin.json`
-- the skill catalog block in [`../README.md`](../README.md#skill-catalog) — grouping and summaries from `registry/readme-catalog.json`
+- `generated-cursor-routing.mdc`, the Cursor routing rule, and its compact
+  fallback [`../extras/cursor-routing.mdc`](../extras/cursor-routing.mdc)
+- each skill's `agents/openai.yaml` interface block
+- the skill list in the `description` of `.cursor-plugin/plugin.json` and
+  `.claude-plugin/plugin.json`
+- the [skill catalog](../README.md#skill-catalog) and every skill count in
+  `README.md`

@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.7.2] - 2026-10-03
+
+- A `leakage_scan` supplied in STANDARD mode was ignored: a `CONTAMINATED` or
+  `SUSPECT` scan, or a malformed one, still froze as READY_TO_FREEZE. The
+  kernel now checks a supplied scan in every mode (STANDARD errors are
+  `leakage:status`, `leakage:fingerprint` and `leakage:not-object`; DEEP keeps
+  its codes and still requires the scan). Four eval cases pin the exact
+  status and errors.
+- `references/benchmark-model.md` now documents what the kernel prints
+  (`benchmark_hash`, `case_count`, `class_counts`, `split_counts`,
+  `provenance_coverage`, `leakage_status`, `missing_classes`,
+  `contaminated_holdout`); only `benchmark_hash` was mentioned before.
+- New `references/contract.json` binds every documented enum to the kernel
+  constant that enforces it (`REQUIRED_CLASSES` names the class set used for
+  `required_classes`), marks `rubric_hash` as a report field the kernel does
+  not check, and checks every eval input against the payload contract.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.7.1] - 2026-10-03
 
 - `references/benchmark-model.md` now documents the payload `scripts/kernel.py` validates (every field and enum, the case-level versus corpus-level contamination vocabularies, and which status wins), and the `NEEDS_REVISION` status the kernel already returned is listed with the others. `scripts/kernel.py` runs as a command on a JSON file or stdin. `references/leakage-detection.md` no longer points at `tooling/benchmark_leakage.py`, which never shipped; it says the kernel catches exact duplicates only.

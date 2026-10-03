@@ -3,9 +3,11 @@ from datetime import datetime
 
 VALID_STATES={'PASS','FAIL','UNKNOWN','N/A'}
 CONTROL_SEVERITY={'MINOR','NOTE'}
+FINDING_SEVERITY={'BLOCKER','MAJOR','MINOR','NOTE'}
 MODES={'STANDARD','DEEP','DELTA'}
 PROFILES={'CUSTOM','GENERAL','EDITORIAL','RESEARCH','SALES','TECHNICAL_DOCS'}
 GRADE={'D':1,'C':2,'B':3,'A':4}
+GATE_GRADES=frozenset(GRADE)
 HEX64=__import__('re').compile(r'^[0-9a-f]{64}$')
 PROFILE_GATES={
  'CUSTOM':set(), 'GENERAL':{'brief_compliance','claim_integrity'},
@@ -126,7 +128,7 @@ def decide(payload):
                 if not isinstance(evidence,list) or not evidence or not all(_evidence_ok(ev,candidate_id,contract_id) for ev in evidence): gate_errors.append(f'gate[{i}]:pass-without-candidate-evidence')
                 if minimum_grade:
                     grade=gate.get('evidence_grade')
-                    if grade not in GRADE: gate_errors.append(f'gate[{i}]:evidence-grade-required')
+                    if grade not in GATE_GRADES: gate_errors.append(f'gate[{i}]:evidence-grade-required')
                     elif GRADE[grade]<GRADE[minimum_grade]: gate_errors.append(f'gate[{i}]:evidence-grade-below-floor')
             if state=='N/A':
                 if gate.get('na_allowed') is not True: gate_errors.append(f'gate[{i}]:required-na-not-allowed')
@@ -142,6 +144,7 @@ def decide(payload):
     if not isinstance(findings,list): return {'verdict':'DEFER','errors':['findings:not-list']}
     for i,finding in enumerate(findings):
         if not isinstance(finding,dict): return {'verdict':'DEFER','errors':[f'finding[{i}]:not-object']}
+        if finding.get('severity') not in FINDING_SEVERITY: return {'verdict':'DEFER','errors':[f'finding[{i}]:severity']}
         if finding.get('severity') in {'BLOCKER','MAJOR'} and finding.get('open',True) and finding.get('blocks_acceptance',True): return {'verdict':'NOT_READY','errors':[]}
     controls=payload.get('controls',[])
     if not isinstance(controls,list): return {'verdict':'DEFER','errors':['controls:not-list']}

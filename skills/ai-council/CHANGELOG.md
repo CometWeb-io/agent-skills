@@ -1,5 +1,22 @@
 # Changelog
 
+## [5.2.2] - 2026-10-03
+
+### Fixed
+
+- Routed decision-contract values were accepted unchecked. A caller-supplied `reversibility: "irreversible"` read as reversible (lower council mode and required confidence), and `risk_surfaces: ["Legal"]` routed no legal gatekeeper. `contract`, `plan`, `route`, `mode`, `threshold` and `select` now reject an unknown `decision_type`, `reversibility`, `risk_level`, `risk_surfaces`, `primary_domain`, `secondary_domains` or `decision_kind` as an input error (exit 2); absent values keep their defaults. Tests: `tests/test_contract_enums.py`.
+- Kernel version 5.0.3.
+
+### Changed
+
+- New `references/contract.json` declares every key the kernel reads from its JSON arguments, binds each checked enum to its kernel constant (`DECISION_TYPES`, `REVERSIBILITY_LEVELS`, `RISK_LEVELS`, `RISK_SURFACES`, `DECISION_KINDS`, `DOMAIN_ORDER`, `FRESHNESS_POLICIES`, `WATCH_OPERATORS`, `GATE_STATUSES`) and runs `tests/temporal-evals.json` and `tests/golden-decisions.json` inputs through it; `tooling/skill_contracts.py` fails when the references and kernel drift.
+- More than a hundred keys the kernel reads were named in no reference: the legal-router and regime context keys, memo, coverage-row, contradiction-claim, watch, validity, forecast, experiment, portfolio, handoff, tool-authority, provenance, eval-compare and Decision Memory row keys, and the `sanitize` allowlist. `kernel-admission.md` now lists them per command, with the checked enums and the values compared as given but not validated (memo `vote`, memory `verdict`, `outcome`, `decision_quality`, `memory_status`, `outcome_attribution`, `event_type`, `source_class`). `decision-contract.md` gains the `reversibility`, `risk_level` and `risk_surfaces` values.
+- Keys the kernel reads only from its own tables or computed records stay out of the payload contract: the mode budget (`adviser_count`, `max_*`, `premortem`, `counterfactual`, `minority_sentinel`), the role, framework, freshness-policy and internal-context registries, and intermediate rows (`score`, `_order`, `assigned_expert_ids`, `protection_score`, `grade`, `value_density`, `decision_archetype`).
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [5.2.1] - 2026-10-03
 
 ### Fixed

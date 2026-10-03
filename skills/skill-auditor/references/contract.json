@@ -1,0 +1,137 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "MODES": "mode",
+        "COMPAT": "contract_compatibility",
+        "HOST_STATUS": "runtime_host_status",
+        "CHECK_STATUSES": "checks.status",
+        "SEVERITIES": "checks.severity"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "skill_id": {},
+    "mode": {
+      "enum": [
+        "DEEP",
+        "DELTA",
+        "LIGHT",
+        "STANDARD"
+      ]
+    },
+    "version": {},
+    "previous_version": {},
+    "baseline_version": {},
+    "contract_compatibility": {
+      "enum": [
+        "BACKWARD_COMPATIBLE",
+        "BREAKING",
+        "NOT_APPLICABLE",
+        "UNKNOWN"
+      ]
+    },
+    "migration_guide_present": {},
+    "migration_plan": {},
+    "consumer_actions": {},
+    "rollback_ref": {},
+    "verification_cases": {},
+    "runtime_host_status": {
+      "enum": [
+        "DEGRADED",
+        "REAL_HOST_VERIFIED",
+        "STATIC_SHAPE_ONLY",
+        "UNKNOWN",
+        "UNSUPPORTED"
+      ]
+    },
+    "runtime_support_claimed": {},
+    "empirical_eval_required": {},
+    "package": {},
+    "skill_md_lines": {},
+    "broken_references": {},
+    "unresolved_dependencies": {},
+    "forbidden_artifacts": {},
+    "symlinks": {},
+    "behavior_eval_cases": {},
+    "negative_routing_cases": {},
+    "runtime_host_claims": {},
+    "runtime_verified_hosts": {},
+    "branch_coverage": {},
+    "mutation_score": {},
+    "checks": {},
+    "checks.status": {
+      "enum": [
+        "FAIL",
+        "N_A",
+        "PASS",
+        "UNKNOWN"
+      ]
+    },
+    "checks.severity": {
+      "enum": [
+        "BLOCKER",
+        "MAJOR",
+        "MINOR",
+        "NOTE"
+      ]
+    },
+    "material": {},
+    "evidence": {},
+    "rationale": {},
+    "deep_checks": {},
+    "topology_inventory": {},
+    "trigger_overlap": {},
+    "reference_integrity": {},
+    "dependency_graph": {},
+    "executable_coverage": {},
+    "package_unpacked": {},
+    "supply_chain": {},
+    "host_claims": {},
+    "version_contracts": {}
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "CHANGES_REQUIRED",
+        "DEFER",
+        "INVALID",
+        "PASS"
+      ]
+    },
+    "errors": {},
+    "issues": {},
+    "unknown_material": {},
+    "next_skill": {},
+    "version_bump": {},
+    "migration_required": {},
+    "empirical_effectiveness_proven": {}
+  },
+  "internal": [
+    "input"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "CHANGES_REQUIRED",
+        "DEFER",
+        "PASS"
+      ]
+    }
+  ]
+}

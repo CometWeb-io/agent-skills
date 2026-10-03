@@ -134,12 +134,13 @@ expected fails `--check` until it is moved into `suite.json`; a gap whose
 misroute changes must be re-recorded. Fix routing signals, do not delete gaps
 to make the check pass.
 
-The `holdout-*` gaps are Polish and multi-skill prompts from the hash-split
-holdout halves of the October 2026 routing pass. Signals were tuned only on the
-tune halves, and these are the held-out prompts that still misroute; they are
-recorded rather than tuned away so the measurement stays honest. Once someone
-tunes on them they stop being a holdout: write fresh prompts to measure the
-next change.
+The fifteen `holdout-*` gaps from the first Polish and multi-skill pass (October
+2026) now route correctly and live in `suite.json` under their old IDs. They
+were fixed with general signals during the round-4 pass, so they are tuned-on
+prompts now, not a holdout. The two `r4b-skill-orchestrator-*` gaps are
+multi-step requests whose later step names its target only by pronoun ("then
+roast it") or uses "roadmap" as a verb; no specialist reaches
+`min_step_score` there, so the sequence rule sees one step.
 
 `--trigger-evals` replays the roaster skills' own `evals/trigger-evals.json`
 through the same router. Those files were written for model-based triggering,
@@ -148,6 +149,67 @@ so the result is a deterministic-proxy discovery estimate, not a model result.
 floors in `TRIGGER_EVAL_FLOORS` (in `tooling/routing_coverage.py`), set just
 under the measured numbers; raise a floor when routing improves, never lower
 one to make a signal change pass.
+
+## Frozen holdout
+
+`holdout.json` is the honest number. Every other routing set here has been read
+while signals were edited, so its pass rate flatters the router; the October 2026
+confusion report's "holdout" half routed 308/308 while 144 freshly written
+prompts routed 93/144.
+
+```bash
+uv run python tooling/routing_holdout.py --check   # integrity (a check_all gate)
+uv run python tooling/routing_holdout.py           # aggregate accuracy
+```
+
+The protocol:
+
+1. The prompts were written before their author read the routing signals:
+   positives for every active skill, near-misses (a neighbouring skill or no
+   skill must win, and the tempting one is forbidden) and plain no-skill
+   requests, in English and Polish.
+2. The file is pinned by sha256 in `holdout.lock.json`. Any edit, whitespace
+   included, fails `--check` until `holdout_version` is bumped and
+   `--record` pins the new hash. `--record` will not give a recorded version a
+   second hash.
+3. Never tune on it. The tool prints aggregates (overall, per kind, per
+   language) and never which prompts failed; do not write one that does. Tune on
+   `suite.json`, the known gaps and fresh prompts of your own, then read the
+   holdout once and append the result with `--log "<label>"`. The measurement log
+   in the lock is append-only.
+4. No holdout prompt may appear, after normalization, in `suite.json`,
+   `known-gaps.json`, the canonical, policy or adversarial suites, or a registry
+   example. Near-duplicates (token overlap ≥ 0.8) may not grow past
+   `max_near_duplicates` in the lock (1, a no-skill prompt that happened to
+   resemble an older suite case).
+5. When the holdout has been read too often to mean anything, or a prompt
+   leaked, write a new version with fresh prompts rather than editing this one.
+
+A case passes when the primary skill equals `expected_primary_skill` and no
+`must_not_trigger` skill is primary or a candidate, the same rule
+`run_routing_evals.py` applies.
+
+| Holdout 1.0.0 (144 cases) | Baseline | After round 4 |
+| --- | ---: | ---: |
+| Overall | 93 (64.6%) | 112 (77.8%) |
+| Positive (100) | 60 | 76 |
+| Near-miss (26) | 15 | 18 |
+| No skill (18) | 18 | 18 |
+| English (100) | 58 | 73 |
+| Polish (44) | 35 | 39 |
+
+The round-4 column is the second of two reads, both in the lock's log. The
+first (113/144) came before two signal changes that pinned policy tests
+forced: "take it to the council" is not an explicit Council invocation, and a
+roadmap-plus-this-week prompt stays ambiguous. Neither change used holdout
+results.
+
+Round 4 tuned on 214 fresh prompts in three batches, each routed before any
+signal it motivated was written. Measured that way, the gain on unseen prompts
+was smaller than on the batch being tuned: the second batch routed 38/68 on the original router
+and 42/68 on the first round's signals, the third 22/44 and 28/44 on the
+signals written before it. Expect the next unseen set to land nearer those
+numbers than the 100% the tuned sets now show.
 
 ## Confusion report
 

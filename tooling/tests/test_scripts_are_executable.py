@@ -15,6 +15,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
+SAST_CASES = "tooling/sast/tests/"
 
 
 def _tracked_shell_scripts() -> list[tuple[str, str]]:
@@ -28,6 +29,9 @@ def _tracked_shell_scripts() -> list[tuple[str, str]]:
         # scripts/lib/ holds helpers that installers `source`; they are read,
         # never executed, so the bit would be noise rather than a guarantee.
         if "/lib/" in path:
+            continue
+        # tooling/sast/tests/ holds semgrep rule cases: data, never executed.
+        if path.startswith(SAST_CASES):
             continue
         rows.append((path, mode))
     return rows

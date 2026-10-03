@@ -130,8 +130,10 @@ preflight_install_conflicts() {
 
 ensure_install_backup_dir() {
   if [[ -z "$INSTALL_BACKUP_DIR" ]]; then
-    INSTALL_BACKUP_DIR="$INSTALL_BACKUP_ROOT/$(date -u +%Y%m%dT%H%M%SZ)-$$"
-    mkdir -p "$INSTALL_BACKUP_DIR"
+    mkdir -p -- "$INSTALL_BACKUP_ROOT"
+    # A fresh directory with an unpredictable suffix: a pre-created directory or
+    # symlink at a guessable name cannot receive the backups.
+    INSTALL_BACKUP_DIR="$(mktemp -d "$INSTALL_BACKUP_ROOT/$(date -u +%Y%m%dT%H%M%SZ)-XXXXXXXX")"
   fi
 }
 

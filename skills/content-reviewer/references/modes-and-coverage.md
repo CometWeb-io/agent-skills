@@ -17,4 +17,4 @@ Recommended axes: `brief-compliance`, `reader-value`, `structure`, `claim-integr
 
 ## Finding identity
 
-Preserve stable finding identity across re-review. Use `NEW`, `CARRIED`, or `REOPENED`. A carried finding may be treated as current only when it was revalidated against the current candidate.
+Preserve stable finding identity across re-review. Set `finding_status` to `NEW`, `CARRIED`, or `REOPENED`. A carried finding may be treated as current only when it was revalidated against the current candidate (`revalidated: true`).

@@ -45,6 +45,10 @@ DEFAULT_TTL_DAYS = {
 }
 
 MATERIALITIES = {"critical", "material", "supporting"}
+GAP_SEVERITIES = {"critical", "material", "minor"}
+RESEARCH_MODES = {"QUICK", "STANDARD", "DEEP"}
+# Compared case-insensitively by temporal_status.
+SOURCE_STATES = {"final", "draft", "superseded", "withdrawn"}
 TEMPORAL_SENSITIVITIES = {"high", "medium", "low", "static"}
 EPISTEMIC_KINDS = {"FACT", "INFERENCE"}
 CLAIM_STATUSES = {

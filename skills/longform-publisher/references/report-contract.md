@@ -18,6 +18,53 @@ Required top-level publication state:
 - `publication_evidence[]`;
 - `actions{blockers, verify_now, decision_now, now, next_milestone, delegate, waiting, stop}`.
 
+## Fields the kernel reads
+
+```text
+protocol_version: longform-publisher/1
+mode: BUILD|SOURCE_BOUND|RESEARCH_EXPAND|REFRESH
+status, status_reason, as_of
+publication: {id, title, type, audience, objective}
+source_policy: {mode, authorized_source_ids[]}
+sources[]: {id, system, locator, authorized: true|false, freshness, observed_at}
+lifecycle: {brief_complete, sources_admitted, outline_locked, draft_complete,
+            claims_reconciled, edited_complete, master_locked, release_ready}
+current_stage: BRIEFED|SOURCE_READY|OUTLINE_LOCKED|DRAFTED|CLAIMS_RECONCILED|EDITED|MASTER_LOCKED|FORMAT_READY|RELEASE_READY|PUBLISHED
+canonical_master: {path, version, sha256}
+sections[]: {id, heading, status}
+claim_uses[]                          # fields in claim-use.md
+protected_facts[]: {id, value, required: true|false}
+fidelity: {required, passed, checked_at}
+edit_history[]: {type, status}
+unresolved_gaps[]: {id, materiality: CRITICAL|MATERIAL|SUPPORTING, status}
+derived_artifacts[]                   # fields in format-lineage.md
+scientific_readiness: {status, source, evidence_ref}
+publication_evidence[]: {type, locator}
+prior_publication_evidence[]: {type, locator}
+actions: {blockers[], verify_now[], decision_now[], now[], next_milestone[],
+          delegate[], waiting[], stop[]}
+```
+
+Each `lifecycle` flag is a boolean that records one finished step, in the
+order of `references/state-model.md`. The kernel infers the stage from the
+first flag that is not `true` (plus fidelity and derived-format readiness), so a
+later flag set while an earlier one is false does not advance the stage, and a
+declared `current_stage` past the inferred one is `STAGE_INFLATION`.
+
+An `unresolved_gaps[]` entry with `materiality: CRITICAL` blocks
+`RELEASE_READY` until its `status` is `CLOSED`, `RESOLVED` or `SCOPED_OUT`; any
+other materiality value returns `FIELD_VALUE_INVALID:unresolved_gaps.materiality`.
+An `edit_history[]` entry with `status: COMPLETE` and `type` `AI_HUMANIZE`,
+`STRONG_REWRITE`, `DEEP_REWRITE` or `SUBSTANTIAL_REWRITE` requires
+`fidelity.required` and `fidelity.passed` to be `true`. A `protected_facts[]`
+entry with `required: true` must appear verbatim in the manuscript. An action
+item is a string or an object rendered from `action`, `question`, `label` or
+`id`, with an optional `done_when`.
+
+The report fields `status`, `status_reason`, `as_of`, `sections[]` and the
+evidence `type`/`locator` are carried for the reader; the kernel prints
+`status` and `status_reason` in the manifest but does not check them.
+
 ## Admission rules
 
 - SOURCE_BOUND may reference only authorized sources.

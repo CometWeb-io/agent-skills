@@ -1,0 +1,130 @@
+{
+  "protocol_version": "2.2",
+  "as_of": "2026-09-30T09:00:00+02:00",
+  "mode": "STANDARD",
+  "target": "example-org/tracker",
+  "goal": "Ship release 1.8 with the CSV export fix",
+  "horizon": "next release",
+  "mutations": "read-only",
+  "coverage": {
+    "github": "verified",
+    "notion": "not-required",
+    "product_context": "verified",
+    "outcome_data": "unavailable"
+  },
+  "readiness": {
+    "status": "PROVISIONAL",
+    "reasons": [
+      "export fix merged but not verified on staging"
+    ]
+  },
+  "decision": "Verify the export fix on staging, decide pilot pricing, then tag 1.8.",
+  "blockers": [],
+  "verify_now": [
+    {
+      "id": "V-1",
+      "action": "Run the CSV export journey on staging build 412",
+      "why_now": "The fix is merged but unverified and 1.8 depends on it",
+      "done_when": "A 10,000-row export completes in under 30 seconds on build 412",
+      "confidence": 0.8,
+      "evidence": [
+        {
+          "source": "github",
+          "locator": "example-org/tracker#412",
+          "claim": "Export fix merged in PR #412",
+          "claim_type": "state",
+          "freshness_status": "CURRENT"
+        }
+      ]
+    }
+  ],
+  "decision_now": [
+    {
+      "id": "D-1",
+      "question": "Should the first pilot cohort be free or paid?",
+      "decision_domain": "pricing",
+      "why_now": "The answer changes the 1.8 announcement",
+      "options": [
+        "free bounded pilot",
+        "paid pilot"
+      ],
+      "delegated_to": "ai-council",
+      "done_when": "One option is recorded as binding",
+      "evidence": [
+        {
+          "source": "product_context",
+          "locator": "docs/pilot.md",
+          "claim": "Pilot terms are undecided",
+          "claim_type": "state",
+          "freshness_status": "CURRENT"
+        }
+      ]
+    }
+  ],
+  "now": [
+    {
+      "id": "N-1",
+      "action": "Draft the 1.8 release notes from merged PRs",
+      "why_now": "Notes gate the tag",
+      "done_when": "A notes PR lists every PR merged since 1.7",
+      "confidence": 0.9,
+      "evidence": [
+        {
+          "source": "github",
+          "locator": "example-org/tracker/milestone/8",
+          "claim": "Milestone 1.8 has 14 merged PRs",
+          "claim_type": "state",
+          "freshness_status": "CURRENT"
+        }
+      ]
+    },
+    {
+      "id": "N-2",
+      "action": "Link the export runbook from the release notes",
+      "why_now": "Support needs it on release day",
+      "done_when": "The notes PR links the runbook section",
+      "confidence": 0.9,
+      "depends_on": [
+        "N-1"
+      ],
+      "evidence": [
+        {
+          "source": "github",
+          "locator": "example-org/tracker/docs/runbook.md",
+          "claim": "Runbook has an export section",
+          "claim_type": "state",
+          "freshness_status": "CURRENT"
+        }
+      ]
+    }
+  ],
+  "next": [
+    {
+      "id": "X-1",
+      "action": "Tag 1.8",
+      "why_now": "Tag after verification passes",
+      "done_when": "Tag v1.8.0 pushed with green CI",
+      "confidence": 0.8,
+      "depends_on": [
+        "V-1",
+        "N-1"
+      ],
+      "evidence": [
+        {
+          "source": "github",
+          "locator": "example-org/tracker/actions",
+          "claim": "CI green on main",
+          "claim_type": "state",
+          "freshness_status": "CURRENT"
+        }
+      ]
+    }
+  ],
+  "later": [],
+  "watch": [],
+  "stop": [],
+  "drift": [],
+  "delegations": [],
+  "unknowns": [],
+  "state_items": []
+}

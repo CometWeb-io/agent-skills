@@ -1,6 +1,6 @@
 ---
 name: ai-humanize
-description: Naturalize, edit, or substantially rewrite English and Polish prose while preserving meaning, factual constraints, and the author's intentional voice. Use specifically when the user asks to humanize text, sound less like generic AI writing, remove AI tells, perform a strong/deep/robust rewrite, clean suspicious invisible Unicode in prose or Markdown, or re-express text with provenance-aware caution. Supports blogs, articles, LinkedIn posts, emails, proposals, documentation, release notes, and READMEs. Do not use merely for generic proofreading, unrelated copywriting, or AI-authorship detection. Never claim human authorship, detector defeat, or watermark removal without an appropriate supported test.
+description: Naturalize, edit, or substantially rewrite English and Polish prose while preserving meaning, factual constraints, and the author's intentional voice. Do not use merely for generic proofreading, unrelated copywriting, or AI-authorship detection. Use specifically when the user asks to humanize text, sound less like generic AI writing, remove AI tells, perform a strong/deep/robust rewrite, clean suspicious invisible Unicode in prose or Markdown, or re-express text with provenance-aware caution. Supports blogs, articles, LinkedIn posts, emails, proposals, documentation, release notes, and READMEs. Never claim human authorship, detector defeat, or watermark removal without an appropriate supported test.
 ---
 
 # AI Humanize

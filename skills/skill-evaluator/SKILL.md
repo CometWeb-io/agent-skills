@@ -2,13 +2,13 @@
 name: skill-evaluator
 description: >-
   Design and evaluate Agent Skill experiments that measure whether a skill improves model behavior,
-  discovery, task success, reliability, cost, or latency relative to a no-skill/prior-version baseline,
-  including host/model comparisons, judge agreement, quality-cost Pareto trade-offs, and runtime drift
-  under frozen measurement identity. Use when the user asks to benchmark, A/B test, evaluate, compare,
-  prove, regress-test, or measure a skill across supported harnesses, or to prepare executable real-host
-  suites when execution is unavailable. Do not use for static package/routing audits (use skill-auditor),
-  to create/edit a skill (use skill-creator), to fabricate real-host results, or to claim universal
-  superiority from one configuration.
+  discovery, task success, reliability, cost, or latency relative to a no-skill/prior-version
+  baseline, including host/model comparisons, judge agreement, quality-cost Pareto trade-offs, and
+  runtime drift under frozen measurement identity. Do not use for static package/routing audits (use
+  skill-auditor), to create/edit a skill (use skill-creator), to fabricate real-host results, or to
+  claim universal superiority from one configuration. Use when the user asks to benchmark, A/B test,
+  evaluate, compare, prove, regress-test, or measure a skill across supported harnesses, or to prepare
+  executable real-host suites when execution is unavailable.
 ---
 
 # Skill Evaluator

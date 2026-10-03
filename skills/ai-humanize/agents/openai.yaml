@@ -1,13 +1,13 @@
 interface:
   display_name: "AI Humanize"
   short_description: "EN/PL humanize; AI-tell removal; semantic-fidelity guards"
-  default_prompt: "Use the AI Humanize skill for: Naturalize, edit, or substantially rewrite English and Polish prose while preserving meaning, factual constraints, and the author's intentional voice. Use specifically when the user asks to humanize t"
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  default_prompt: "Use $ai-humanize for natural English and Polish rewrites that preserve meaning and voice."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true

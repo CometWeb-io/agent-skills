@@ -17,8 +17,8 @@ For high-risk factual claims, prefer `PRIMARY`, `OFFICIAL`, or `SYSTEM_OF_RECORD
 
 ## Claim graph
 
-Use `depends_on_claim_ids` when a conclusion relies on intermediate claims. Reject dangling dependencies and cycles. A supported conclusion cannot remain supported if a material dependency becomes unresolved.
+Use `basis_claim_ids` when a conclusion relies on intermediate claims. Reject dangling dependencies and cycles. A material SUPPORTED or INFERRED claim cannot rest on a material UNRESOLVED or UNSUPPORTED claim; the kernel reports `claim[i]:basis-unresolved:<id>`.
 
 ## Protected invariants
 
-Record every protected invariant from the brief and an explicit `PASS|FAIL|UNKNOWN` check after substantial edits. Do not trade factual accuracy, required wording, legal/compliance boundaries, or user-specified exclusions for smoother prose.
+Record every protected invariant from the brief and an explicit `PASS|FAIL|UNKNOWN` check (`invariant_checks[]: {id, state}`) after substantial edits. Do not trade factual accuracy, required wording, legal/compliance boundaries, or user-specified exclusions for smoother prose.

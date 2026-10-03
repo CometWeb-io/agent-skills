@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.1] - 2026-10-03
+
+### Changed
+
+- New `references/contract.json` declares every manifest key the engine reads, its result keys and each enum, bound to the engine constants (`PROFILES`, `MODES`, `STATUSES`, `GOVERNANCE_STATUSES`, `EVIDENCE_LEVELS`, `TRI`, `GATES`, ...); `tooling/skill_contracts.py` fails when `references/manifest-schema.md` and the engine drift.
+- `manifest-schema.md` named the allowed values of check status, evidence level and freshness but not the keys that carry them (`evidence_level`, `required_evidence`, `freshness`), and never named `weight`, `title`, `owner`, the threshold keys `go_score` / `conditional_score` / `min_coverage`, the release keys `tag` / `deployment_id`, the risk-acceptance keys `status` / `approval_status` / `approved`, the governance-gate keys (`surface`, `rationale`, `control_owner`, `control_due`, and `control`, which a governance gate uses where a check uses `mitigation`), or the bootstrap context keys. A new field reference lists them, with defaults, the canonical gate families and every `evidence_issues` code; a result-key list covers the output.
+- Evidence `source_type` and `location` appear in the shape example but the engine does not read them; the reference now says so. "a known `environment`" now reads "a nonempty `environment`": the engine accepts any exact string.
+- `RISK_ACCEPTANCE_APPROVED` is exported from the `readiness` package so the contract can bind it. Engine behaviour is unchanged.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.3.0] - 2026-10-02
 
 ### Changed

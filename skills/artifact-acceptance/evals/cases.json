@@ -2314,5 +2314,80 @@
         "control[0]:expired"
       ]
     }
+  },
+  {
+    "id": "finding-unknown-severity-defers-v172",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ],
+      "findings": [
+        {
+          "severity": "CRITICAL",
+          "open": true
+        }
+      ]
+    },
+    "expect": {
+      "verdict": "DEFER",
+      "errors": [
+        "finding[0]:severity"
+      ]
+    }
+  },
+  {
+    "id": "finding-missing-severity-defers-v172",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ],
+      "findings": [
+        {
+          "open": true
+        }
+      ]
+    },
+    "expect": {
+      "verdict": "DEFER",
+      "errors": [
+        "finding[0]:severity"
+      ]
+    }
   }
 ]

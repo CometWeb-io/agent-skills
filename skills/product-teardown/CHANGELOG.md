@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.2.1] - 2026-10-03
+
+### Fixed
+
+- The references named the nine EXPERIMENT fields only as prose labels
+  ("Test type", "What result changes the verdict"), while the validator
+  requires the keys `test_type` ... `changes_verdict`; a ledger written from the
+  labels failed. `references/output-contract.md` now lists every key the
+  validator enforces, including `provenance_note` for REUSE_CODE/REUSE_ASSET,
+  which no reference mentioned.
+- `score_patterns.py` output (`heuristic_score`, `gate_state`,
+  `suggested_action`, `score_components`) was undocumented; it is now
+  described with the target-evidence ceiling.
+- `as_of`, `version`, `observed_at`, `independence_group` and `family_id`
+  appear in the ledger example but no script reads them; the reference now
+  says so.
+
+### Added
+
+- `references/contract.json` binds each ledger enum to the validator or scorer
+  constant that enforces it. New constants `CLAIM_LANES` (source plus
+  destination lanes) and `SUBJECTS` replace an inline set; behaviour is
+  unchanged.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.2.0] - 2026-10-02
 
 ### Changed

@@ -40,6 +40,7 @@ Outcome is required only when the current decision depends on learning whether s
 - `<STAGE>_EVIDENCE_WRONG_AUTHORITY` - evidence comes from the wrong claim lane.
 - `CURRENT_EVIDENCE_NOT_ADMISSIBLE` - material required-current evidence is stale/superseded/unknown.
 - `STALE_EVIDENCE` - evidence is stale but not necessarily binding.
+- `EVIDENCE_STAGE_UNKNOWN` - evidence names a stage outside the six above, so it proves none of them.
 
 ## Evidence strength
 

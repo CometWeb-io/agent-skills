@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.1.1] - 2026-10-03
+
+### Fixed
+
+- `score` scored an unknown `competitor_tier` silently: `"tier1"` or `null` as
+  tier 1 (factor 1.00) and `4` or `0` as tier 3 (factor 0.70). It now accepts
+  only 1, 2 or 3 (as an integer, integral float or digit string) and errors
+  otherwise. A unit test pins the error.
+- No reference named the payload key `competitor_tier` or the score keys
+  (`relevance`, `magnitude`, `confidence`, `novelty`, `persistence`); the
+  taxonomy gives only their headings, and "evidence confidence" is read as
+  `confidence`. The new `references/kernel-inputs.md` lists every key the kernel
+  reads per command, which keys it stores without checking (`category`,
+  `verification_state`, `disposition`, `status`), and which documented keys it
+  never reads. SKILL.md and `data-model.md` point to it.
+- The `data-model.md` event example used `disposition: DEEP_DIVE`, which is a
+  run mode; dispositions are the six response postures. It now uses `RESPOND`.
+- `references/contract.json` declares the contract and binds `competitor_tier`
+  to `TIER_FACTORS`. The snapshot fixtures in `tests/fixtures/` are checked
+  against it. `evals/evals.json` holds prompt-level evals, not kernel inputs,
+  so it is not wired.
+- `scripts/ci_kernel.py` no longer writes workspace JSON through a predictable
+  `<file>.tmp` path, which a planted symlink could redirect. Writes go through
+  `tempfile.mkstemp` in the target directory (unpredictable name, `O_EXCL`,
+  mode 0600), are fsynced, renamed with `os.replace`, and the temporary file is
+  removed if the rename fails. Serialization happens before any file is created.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.1.0] - 2026-10-02
 
 ### Changed

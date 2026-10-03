@@ -2,7 +2,7 @@
 
 In DEEP mode every material acceptance criterion must map to one or more evaluated gates, and every required gate must map back to the contract or an explicitly declared policy profile.
 
-Recommended relation:
+Each `traceability` row links one `criterion_id` from `criteria_ids` to one evaluated `gate_id`; a criterion covered by two gates gets two rows. Recommended relation:
 
 `criterion_id -> gate_id -> evidence[] -> result -> candidate_id -> verified_at`.
 

@@ -1,14 +1,14 @@
 ---
 name: skill-auditor
 description: >-
-  Audit an Agent Skill or a repository of skills for trigger quality, scope overlap, instruction conflicts,
-  progressive-disclosure cost, broken references/dependencies, eval blind spots, false-green paths,
-  semantic-version and public-contract compatibility, host-support overclaims, package hygiene,
-  supply-chain risks, migration/deprecation gaps, and drift between registry, docs, tests, and shipped
-  archives. Use when the user asks to audit, review, roast, harden, compare, or quality-check a skill or
-  skill library itself. Do not use to create/edit the skill (use skill-creator), to empirically benchmark
-  model behavior with-vs-without it (use skill-evaluator), to audit ordinary software (use repo-roaster),
-  or to issue a production release verdict.
+  Audit an Agent Skill or a repository of skills for trigger quality, scope overlap, instruction
+  conflicts, progressive-disclosure cost, broken references/dependencies, eval blind spots,
+  false-green paths, semantic-version and public-contract compatibility, host-support overclaims,
+  package hygiene, supply-chain risks, migration/deprecation gaps, and drift between registry, docs,
+  tests, and shipped archives. Do not use to create/edit the skill (use skill-creator), to empirically
+  benchmark model behavior with-vs-without it (use skill-evaluator), to audit ordinary software (use
+  repo-roaster), or to issue a production release verdict. Use when the user asks to audit, review,
+  roast, harden, compare, or quality-check a skill or skill library itself.
 ---
 
 # Skill Auditor

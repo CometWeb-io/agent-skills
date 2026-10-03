@@ -1,14 +1,14 @@
 ---
 name: web-app-auditor
 description: >
-  Evidence-driven QA and product audit for user-facing websites and web applications. Use when asked
-  to audit, review, inspect, QA, verify, click through, test, or "roast" a site/app/page/dashboard/
+  Evidence-driven QA and product audit for user-facing websites and web applications. Do not use for
+  backend-only review, greenfield implementation, whole-repo roadmapping, critique of page copy or
+  offers (content-roaster), search/AI-visibility audits (seo-geo-aeo-maxxing), or as the final
+  production-release gate; provide candidate-bound QA evidence to Release Readiness when relevant. Do
+  not perform penetration testing/exploitation with no product-audit goal. Use when asked to audit,
+  review, inspect, QA, verify, click through, test, or "roast" a site/app/page/dashboard/
   checkout/form, including UI/UX, accessibility, regression, data integrity, and critical flows.
-  Supports browser, browser+source, screenshot-only, source-only, and fetch-only environments. Do not
-  use for backend-only review, greenfield implementation, whole-repo roadmapping, critique of page
-  copy or offers (content-roaster), search/AI-visibility audits (seo-geo-aeo-maxxing), or as the final
-  production-release gate; provide candidate-bound QA evidence to Release Readiness when relevant.
-  Do not perform penetration testing/exploitation with no product-audit goal.
+  Supports browser, browser+source, screenshot-only, source-only, and fetch-only environments.
 ---
 
 # Web App Auditor

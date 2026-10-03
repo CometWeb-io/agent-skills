@@ -1,0 +1,34 @@
+# Repository SAST rules for shell scripts, run by tooling/sast.py next to
+# shellcheck. Cases live in tests/shell.sh and run with `semgrep --test`.
+rules:
+  - id: cw-shell-pid-temp-name
+    languages: [bash]
+    severity: ERROR
+    message: >-
+      $$ is predictable, so a path built from it can be planted in advance.
+      Create temporary files and directories with mktemp / mktemp -d.
+    pattern-regex: \$\$|\$\{\$\}|\$BASHPID
+
+  - id: cw-shell-pipe-to-shell
+    languages: [bash]
+    severity: ERROR
+    message: >-
+      Downloaded code piped straight into a shell runs unreviewed and unpinned.
+      Download to a file, verify a pinned checksum, then run it.
+    pattern-regex: \b(curl|wget)\b[^\n|]*\|\s*(sudo\s+)?(ba|z|da)?sh\b
+
+  - id: cw-shell-eval
+    languages: [bash]
+    severity: ERROR
+    message: >-
+      eval re-parses its argument as code; any data in it becomes a command.
+      Use arrays or a case statement instead.
+    pattern-regex: (^|[;&|({]\s*|\bthen\s+|\bdo\s+|\belse\s+)eval\s
+
+  - id: cw-shell-fixed-tmp-path
+    languages: [bash]
+    severity: ERROR
+    message: >-
+      A fixed name under /tmp is shared with every other user and process, and
+      can be planted in advance. Use mktemp / mktemp -d.
+    pattern-regex: (?<![\w$}])/tmp/[A-Za-z0-9._-]+

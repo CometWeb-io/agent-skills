@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from ..constants import PROVENANCE_LANES, SCHEMA_VERSION
+from ..constants import PROVENANCE_LANES, RESEARCH_MODES, SCHEMA_VERSION
 from .context import LedgerValidationState
 
 
@@ -18,7 +18,7 @@ def validate(ledger: Dict[str, Any], state: LedgerValidationState) -> None:
         contract = {}
     if not contract.get("question"):
         errors.append("research_contract.question is required")
-    if contract.get("mode") not in {"QUICK", "STANDARD", "DEEP"}:
+    if contract.get("mode") not in RESEARCH_MODES:
         errors.append("research_contract.mode must be QUICK, STANDARD, or DEEP")
     if contract.get("privacy_lane") and contract.get("privacy_lane") not in PROVENANCE_LANES:
         errors.append("research_contract.privacy_lane is invalid")

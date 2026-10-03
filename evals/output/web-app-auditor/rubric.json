@@ -1,0 +1,70 @@
+{
+  "skill": "web-app-auditor",
+  "contract": "skills/web-app-auditor/references/evidence-and-report.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "verdict", "title": "Verdict", "aliases": ["verdict"], "required": true},
+    {"id": "scope", "title": "Scope", "aliases": ["scope"], "required": true},
+    {"id": "counts", "title": "Counts", "aliases": ["counts"], "required": true},
+    {"id": "findings", "title": "Findings", "aliases": ["findings"], "required": true},
+    {"id": "contradiction-matrix", "title": "Contradiction matrix", "aliases": ["contradiction matrix"]},
+    {"id": "evidence-manifest", "title": "Evidence manifest", "aliases": ["evidence manifest"], "required": true},
+    {"id": "coverage", "title": "Coverage", "aliases": ["coverage"], "required": true},
+    {"id": "out-of-scope", "title": "Out of scope", "aliases": ["out of scope"]},
+    {"id": "next-audit", "title": "Recommended next audit", "aliases": ["recommended next audit"]}
+  ],
+  "verdict": {
+    "tokens": ["do not ship", "ship with fixes", "ship", "incomplete"],
+    "aliases": {"do_not_ship": "do not ship", "ship_with_fixes": "ship with fixes"},
+    "case_insensitive": true,
+    "authorizing": ["ship", "ship with fixes"],
+    "primary": {"line": "^\\s*[-*]\\s*\\**Verdict\\**\\s*:"},
+    "also": [
+      {"rule": "verdict-paragraph", "section": "verdict", "describe": "the Verdict paragraph"}
+    ],
+    "json": [
+      {"rule": "sidecar-verdict", "path": "verdict", "when": {"schemaVersion": "1.1"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "blocker-finding", "type": "items_matching", "section": "findings",
+     "pattern": "Kind:\\s*(?:defect|usability-risk).*Severity:\\s*blocker", "forbids": ["ship", "ship with fixes"]},
+    {"rule": "major-finding", "type": "items_matching", "section": "findings",
+     "pattern": "Kind:\\s*(?:defect|usability-risk).*Severity:\\s*major", "forbids": ["ship"]}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "environment", "pattern": "^\\s*[-*]\\s*Environment:\\s*\\S",
+     "message": "the header does not state the environment"},
+    {"type": "doc_require", "rule": "mutation-policy", "pattern": "^\\s*[-*]\\s*Mutation policy:\\s*(?:read-only|safe-test-only)",
+     "message": "the header does not state the mutation policy (read-only | safe-test-only)"},
+    {"type": "doc_require", "rule": "validator-status", "pattern": "^\\s*[-*]\\s*Validator:\\s*(?:passed|warnings|not run)",
+     "message": "the header does not say whether validate_report.py ran"},
+    {"type": "items_require", "rule": "finding-evidence", "section": "findings",
+     "when_item": "Kind:\\s*(?:defect|usability-risk)", "pattern": "Evidence:\\s*E-\\d{3}",
+     "code": "EVIDENCE_MISSING", "message": "a confirmed defect/usability-risk cites no E-NNN evidence"},
+    {"type": "items_require", "rule": "expected-basis", "section": "findings",
+     "pattern": "Expected basis:\\s*(?:product-requirement|user-instruction|arithmetic|observed-consistency|API-contract|accessibility-standard|platform-convention|heuristic)",
+     "code": "CONTRACT_VIOLATION", "message": "a finding states no Expected basis from the allowed set"},
+    {"type": "items_forbid", "rule": "non-defect-severity", "section": "findings",
+     "when_item": "Kind:\\s*(?:recommendation|needs-repro)", "pattern": "Severity:\\s*(?:blocker|major|minor|nit)",
+     "code": "CONTRACT_VIOLATION", "message": "recommendations and needs-repro items take severity n/a"},
+    {"type": "items_forbid", "rule": "heuristic-escalation", "section": "findings",
+     "when_item": "Expected basis:\\s*heuristic\\s*$", "pattern": "Severity:\\s*(?:blocker|major)",
+     "code": "CONTRACT_VIOLATION", "message": "a heuristic-only finding cannot be major or blocker"}
+  ],
+  "ids": [
+    {"rule": "finding-ids", "pattern": "\\bF-\\d{3}\\b",
+     "defined_in": [{"section": "findings", "as": "subheading"}],
+     "refs_json": ["findings[*].id", "evidence[*].supports[*]"],
+     "defined_by": "no '### F-NNN' finding with that ID is in Findings"},
+    {"rule": "evidence-ids", "pattern": "\\bE-\\d{3}\\b",
+     "defined_in": [{"section": "evidence-manifest", "as": "table_first_column"}],
+     "refs_json": ["findings[*].evidence[*]", "evidence[*].id"],
+     "defined_by": "the Evidence manifest has no row with that ID"}
+  ],
+  "sidecars": [
+    {"rule": "audit-report", "detect": {"has_keys": ["schemaVersion", "findings"]},
+     "validator": "skills/web-app-auditor/scripts/validate_report.py", "function": "validate"}
+  ],
+  "hooks": ["waa_counts"]
+}

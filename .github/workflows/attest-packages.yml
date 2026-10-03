@@ -55,7 +55,30 @@ jobs:
             uv run python tooling/package_skill.py "$id"
           done
 
-      - name: Attest packages
+      # CycloneDX 1.6: every shipped skill with the SHA-256 of its skill.zip, and
+      # the optional runtime libraries skills declare. Schema-validated before
+      # it is written; deterministic for a given commit.
+      - name: Write the plugin SBOM
+        run: uv run python tooling/sbom.py --dist dist --output dist/agent-skills.cdx.json
+
+      - name: Attest package provenance
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6  # v4.2.2
         with:
           subject-path: "dist/**/skill.zip"
+
+      - name: Attest the SBOM for every package
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6  # v4.2.2
+        with:
+          subject-path: "dist/*/*/skill.zip"
+          sbom-path: dist/agent-skills.cdx.json
+
+      - name: Upload packages and SBOM
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: agent-skills-packages
+          path: |
+            dist/agent-skills.cdx.json
+            dist/*/*/skill.zip
+            dist/*/*/skill.zip.sha256
+          if-no-files-found: error
+          retention-days: 90

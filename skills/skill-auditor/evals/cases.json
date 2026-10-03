@@ -1425,5 +1425,224 @@
       "skill_id": "s",
       "version": "2.0.0"
     }
+  },
+  {
+    "id": "blocker-fail-without-evidence-v172",
+    "input": {
+      "checks": [
+        {
+          "status": "FAIL",
+          "severity": "BLOCKER"
+        }
+      ],
+      "mode": "STANDARD",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "skill_id": "s",
+      "version": "1.4.0"
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "check[0]:severe-without-evidence"
+      ]
+    }
+  },
+  {
+    "id": "major-fail-empty-evidence-v172",
+    "input": {
+      "checks": [
+        {
+          "status": "FAIL",
+          "severity": "MAJOR",
+          "evidence": []
+        }
+      ],
+      "mode": "STANDARD",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "skill_id": "s",
+      "version": "1.4.0"
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "check[0]:severe-without-evidence"
+      ]
+    }
+  },
+  {
+    "id": "minor-fail-without-evidence-allowed-v172",
+    "input": {
+      "checks": [
+        {
+          "status": "FAIL",
+          "severity": "MINOR"
+        }
+      ],
+      "mode": "STANDARD",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "skill_id": "s",
+      "version": "1.4.0"
+    },
+    "expect": {
+      "status": "PASS"
+    }
+  },
+  {
+    "id": "top-level-enums-unhashable-v172",
+    "input": {
+      "checks": [
+        {
+          "evidence": [
+            "registry:1"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
+      "mode": [
+        "DEEP"
+      ],
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "skill_id": "s",
+      "version": "1.4.0",
+      "contract_compatibility": {
+        "x": 1
+      },
+      "runtime_host_status": [
+        "UNKNOWN"
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "mode:invalid",
+        "contract_compatibility:invalid",
+        "runtime_host_status:invalid"
+      ]
+    }
+  },
+  {
+    "id": "check-enums-unhashable-v172",
+    "input": {
+      "checks": [
+        {
+          "status": [
+            "PASS"
+          ]
+        },
+        {
+          "status": "PASS",
+          "severity": {
+            "x": 1
+          }
+        }
+      ],
+      "mode": "STANDARD",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "skill_id": "s",
+      "version": "1.4.0"
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "check[0]:status",
+        "check[1]:severity"
+      ]
+    }
+  },
+  {
+    "id": "material-blocker-fail-without-evidence-v172",
+    "input": {
+      "checks": [
+        {
+          "status": "FAIL",
+          "severity": "BLOCKER",
+          "material": true
+        }
+      ],
+      "mode": "STANDARD",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "skill_id": "s",
+      "version": "1.4.0"
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "check[0]:material-without-evidence"
+      ]
+    }
   }
 ]

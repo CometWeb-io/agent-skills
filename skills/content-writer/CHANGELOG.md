@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.7.2] - 2026-10-03
+
+- The sidecar in `references/output-contract.md` used names the kernel never
+  reads, so a sidecar written from it validated as if most rules were off:
+  `source_mode` (kernel: `evidence_policy`, so SOURCE_BOUND was never
+  applied), `approved_source_ids` (`approved_sources`), `claim_ledger`
+  (`claims`), `risk: LOW|MEDIUM|HIGH|CRITICAL` (`high_risk: true`),
+  `depends_on_claim_ids` (`basis_claim_ids`, also fixed in
+  `references/revision-and-invariants.md`) and `invariant_checks[]:
+  {invariant_id, status}` (`{id, state}`). The reference now uses the
+  kernel's names, documents `evidence_floor` and `evidence_grade`, the
+  defaults for `mode` and `evidence_policy`, and what `kernel.validate`
+  returns.
+- `references/revision-and-invariants.md` said a supported conclusion cannot
+  stay supported when a material dependency becomes unresolved, but the
+  kernel never checked it. A material SUPPORTED or INFERRED claim whose
+  `basis_claim_ids` names a material UNRESOLVED or UNSUPPORTED claim now fails
+  with `claim[i]:basis-unresolved:<id>`; three eval cases pin it, including
+  that a non-material unresolved basis is still allowed.
+- `references/evidence-calibration.md` states that the `supporting` floor is
+  validated but not applied, since the kernel grades only material claims.
+- New `references/contract.json` binds every enum to the kernel constant that
+  enforces it (one constant per `evidence_floor` key) and checks every eval
+  input against the contract.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.7.1] - 2026-10-03
 
 - `scripts/run_evals.py --help` exits 0 with a usage line instead of exit 2; any other argument is still rejected with exit 2 and the unrecognized argument named.

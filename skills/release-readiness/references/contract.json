@@ -1,0 +1,322 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/manifest-schema.md"
+  ],
+  "scripts": {
+    "scripts/readiness_engine.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "PROFILES": "profile",
+        "MODES": "mode",
+        "AUDIENCES": "audience",
+        "COMMERCIAL": "commercial",
+        "TRI": "risk_flags",
+        "DOMAINS": "domain",
+        "GATES": "gate",
+        "STATUSES": "checks.status",
+        "SEVERITIES": "severity",
+        "EVIDENCE_LEVELS": "evidence_level",
+        "FRESHNESS": "freshness",
+        "RISK_ACCEPTANCE_APPROVED": "risk_acceptance.status",
+        "GOVERNANCE_SURFACES": "surface",
+        "GOVERNANCE_STATUSES": "governance_gates.status"
+      }
+    },
+    "scripts/readiness/manifest.py": {
+      "input": "none",
+      "role": "helper",
+      "enums": {
+        "COMMERCIAL": "commercial_model",
+        "GOVERNANCE_SURFACES": "governance_surfaces",
+        "EVIDENCE_LEVELS": "required_evidence"
+      }
+    },
+    "scripts/readiness": {
+      "input": "json",
+      "role": "validator"
+    },
+    "scripts/bootstrap_manifest.py": {
+      "input": "json",
+      "role": "helper"
+    }
+  },
+  "fields": {
+    "manifest_version": {},
+    "release": {},
+    "scope": {},
+    "checks": {},
+    "governance_gates": {},
+    "thresholds": {},
+    "profile": {
+      "enum": [
+        "api_service",
+        "desktop_app",
+        "generic",
+        "internal_tool",
+        "mobile_app",
+        "oss_library",
+        "saas_web"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "deep",
+        "fast",
+        "standard"
+      ]
+    },
+    "domain_weights": {
+      "map": true
+    },
+    "id": {},
+    "environment": {},
+    "as_of": {},
+    "commit_sha": {},
+    "image_digest": {},
+    "artifact_id": {},
+    "build_number": {},
+    "config_digest": {},
+    "tag": {},
+    "deployment_id": {},
+    "audience": {
+      "enum": [
+        "external",
+        "internal",
+        "library_consumers",
+        "unknown"
+      ]
+    },
+    "commercial": {
+      "enum": [
+        "free",
+        "not_applicable",
+        "paid",
+        "unknown"
+      ]
+    },
+    "commercial_model": {
+      "enum": [
+        "free",
+        "not_applicable",
+        "paid",
+        "unknown"
+      ]
+    },
+    "governance_surfaces": {
+      "enum": [
+        "financial_risk",
+        "legal",
+        "platform_policy",
+        "privacy",
+        "reputation",
+        "responsible_ai"
+      ]
+    },
+    "risk_assessment_complete": {},
+    "notes": {},
+    "risk_flags": {
+      "map": true,
+      "enum": [
+        "no",
+        "unknown",
+        "yes"
+      ]
+    },
+    "first_production_release": {},
+    "auth_change": {},
+    "billing_change": {},
+    "schema_or_data_migration": {},
+    "sensitive_data_change": {},
+    "public_api_breaking_change": {},
+    "major_infra_change": {},
+    "mobile_store_release": {},
+    "incident_recovery_release": {},
+    "high_impact_ai_change": {},
+    "legal_or_regulatory_change": {},
+    "domain": {
+      "enum": [
+        "billing",
+        "docs",
+        "ops",
+        "product",
+        "qa",
+        "security",
+        "support"
+      ]
+    },
+    "gate": {
+      "enum": [
+        "ai_safety_behavior",
+        "api_compatibility",
+        "auth_access_control",
+        "billing_entitlements",
+        "billing_state_transitions",
+        "candidate_verification",
+        "consumer_docs",
+        "incident_regression",
+        "infra_resilience",
+        "migration_integrity",
+        "observability",
+        "operator_docs",
+        "recovery_strategy",
+        "release_delivery",
+        "release_scope_acceptance",
+        "security_release",
+        "sensitive_data_handling",
+        "store_delivery",
+        "support_path"
+      ]
+    },
+    "title": {},
+    "owner": {},
+    "binding": {},
+    "applicable": {},
+    "weight": {},
+    "na_reason": {},
+    "evidence": {},
+    "control_owner": {},
+    "mitigation": {},
+    "control_due": {},
+    "risk_acceptance": {},
+    "checks.status": {
+      "enum": [
+        "accepted_risk",
+        "fail",
+        "na",
+        "pass",
+        "pass_with_controls",
+        "unknown"
+      ]
+    },
+    "severity": {
+      "enum": [
+        "blocker",
+        "critical",
+        "major",
+        "minor"
+      ]
+    },
+    "evidence_level": {
+      "enum": [
+        "claimed",
+        "missing",
+        "supported",
+        "verified"
+      ]
+    },
+    "required_evidence": {
+      "enum": [
+        "claimed",
+        "missing",
+        "supported",
+        "verified"
+      ]
+    },
+    "freshness": {
+      "enum": [
+        "current",
+        "mismatched",
+        "stale",
+        "unknown"
+      ]
+    },
+    "summary": {},
+    "candidate_ref": {},
+    "last_verified_at": {},
+    "observed_at": {},
+    "expires_at": {},
+    "source_type": {
+      "unread": true
+    },
+    "location": {
+      "unread": true
+    },
+    "approved_by": {},
+    "rationale": {},
+    "approved": {},
+    "approval_status": {},
+    "risk_acceptance.status": {
+      "enum": [
+        "approved",
+        "granted"
+      ]
+    },
+    "surface": {
+      "enum": [
+        "financial_risk",
+        "legal",
+        "platform_policy",
+        "privacy",
+        "reputation",
+        "responsible_ai"
+      ]
+    },
+    "governance_gates.status": {
+      "enum": [
+        "block",
+        "clear",
+        "clear_with_controls",
+        "counsel_required",
+        "not_required"
+      ]
+    },
+    "control": {},
+    "go_score": {},
+    "conditional_score": {},
+    "min_coverage": {}
+  },
+  "outputs": {
+    "verdict": {
+      "enum": [
+        "DEFER",
+        "GO",
+        "GO_WITH_CONTROLS",
+        "NO_GO"
+      ]
+    },
+    "reason": {},
+    "contract_hash": {},
+    "contract_mismatch": {},
+    "snapshot_hash": {},
+    "gating_metrics": {},
+    "readiness_score": {},
+    "evidence_coverage": {},
+    "check_states": {},
+    "scope_gaps": {},
+    "scope_warnings": {},
+    "message": {},
+    "required_gates": {},
+    "missing_required_gates": {},
+    "binding_unknowns": {},
+    "blocking_failures": {},
+    "evidence_issues": {
+      "enum": [
+        "candidate_binding_missing_or_mismatched",
+        "configuration_missing_or_mismatched",
+        "environment_mismatched",
+        "environment_missing_or_mismatched",
+        "evidence_expired",
+        "evidence_summary_missing",
+        "expiry_before_observation",
+        "expiry_invalid",
+        "observation_after_assessment",
+        "observation_time_missing_or_invalid",
+        "observation_times_conflict"
+      ]
+    },
+    "unresolved_conditions": {},
+    "effective_status": {},
+    "resolved_blockers": {},
+    "removed_blockers": {},
+    "blockers_no_longer_proven_resolved": {},
+    "changed_check_requirements": {},
+    "no_longer_required_gates": {}
+  },
+  "internal": [],
+  "doc_terms": [
+    "governance_surface"
+  ],
+  "evals": []
+}

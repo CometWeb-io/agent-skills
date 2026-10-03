@@ -1,0 +1,786 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md"
+  ],
+  "json_schemas": [
+    "references/report.schema.json"
+  ],
+  "scripts": {
+    "scripts/validate_repo_roast.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "OUTCOMES": "review_outcome",
+        "MODES": "mode",
+        "PROFILES": "review_profile",
+        "LENSES": "lenses",
+        "SOURCE_KIND": "source_manifest.kind",
+        "SOURCE_ROLE": "source_manifest.role",
+        "VERSION_STATE": "version_state",
+        "INSTRUCTION_BOUNDARY": "instruction_boundary",
+        "TRUST_CLASS": "trust_class",
+        "ASSURANCE_MODES": "assurance.mode",
+        "INDEPENDENCE": "independence",
+        "SECOND_PASS_STATUS": "second_pass_status",
+        "PASS_ROLES": "pass_records.role",
+        "PASS_STATUSES": "pass_records.status",
+        "EVIDENCE_KINDS": "evidence_register.kind",
+        "REGISTER_STRENGTH": "strength",
+        "CONFLICT_DISPOSITION": "disposition",
+        "REF_STATUS": "ref_status",
+        "COVERAGE": "level",
+        "SCOPE": "scope_basis",
+        "COVERAGE_CONFIDENCE": "coverage_confidence",
+        "GATE_STATUS": "quality_gates",
+        "INV_STATUS": "invariant_ledger.status",
+        "TEST_STATUS": "test_evidence_ledger.status",
+        "CHANGE_RISK": "risk",
+        "SURFACE_TYPES": "critical_surface_ledger.type",
+        "LEDGER_STATUS": "state_transition_ledger.status",
+        "FAILURE_DOMAIN_STATUS": "failure_domain_ledger.status",
+        "SEVERITIES": "severity",
+        "CATEGORIES": "category",
+        "DEFECT": "defect_class",
+        "STATES": "evidence_state",
+        "EVIDENCE_STRENGTH": "evidence_strength",
+        "SCOPE_SENSITIVITY": "scope_sensitivity",
+        "CONF": "confidence",
+        "ANCHORS": "anchor.type",
+        "MATERIAL_CENTRALITY": "centrality",
+        "MATERIAL_CONSEQUENCE": "consequence",
+        "MATERIAL_REVERSIBILITY": "reversibility",
+        "BLAST_CLASS": "blast_radius_class",
+        "CONTAINMENT": "failure_containment",
+        "REACH": "reachability",
+        "FIX_SCOPE": "fix_scope",
+        "VERIFY": "verification.type",
+        "FALSIFIER": "result",
+        "SEVERITY_RANK": "downgraded_from",
+        "CONF_DIRECTNESS": "directness",
+        "CONF_SCOPE_SUPPORT": "scope_support",
+        "COUNTEREVIDENCE_STATUS": "counterevidence_status",
+        "RESIDUAL_RISK": "after_repair",
+        "RESOLUTION": "resolution_ledger.status",
+        "RESOLUTION_VERIFICATION": "verification_status",
+        "RESOLUTION_CHANGE_BASIS": "change_basis"
+      }
+    },
+    "scripts/select_review_packs.py": {
+      "input": "args",
+      "role": "helper"
+    },
+    "scripts/scan_source_risks.py": {
+      "input": "files",
+      "role": "helper"
+    },
+    "scripts/inventory_repo.py": {
+      "input": "files",
+      "role": "helper"
+    },
+    "scripts/compare_inventories.py": {
+      "input": "files",
+      "role": "helper"
+    },
+    "scripts/validate_evals.py": {
+      "input": "files",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "schema": {},
+    "repository": {},
+    "ref": {},
+    "review_outcome": {
+      "enum": [
+        "INSUFFICIENT_EVIDENCE",
+        "MATERIAL_FINDINGS",
+        "NO_MATERIAL_FINDINGS"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "DIFF",
+        "FORENSIC",
+        "FULL",
+        "QUICK",
+        "RECHECK"
+      ]
+    },
+    "review_profile": {
+      "enum": [
+        "AI_AGENT_SYSTEM",
+        "CLI",
+        "DATA_PIPELINE",
+        "DESKTOP_APP",
+        "FULL_REPO",
+        "INFRA",
+        "LIBRARY",
+        "MIGRATION",
+        "MOBILE_APP",
+        "MONOREPO",
+        "PR",
+        "SERVICE"
+      ]
+    },
+    "lenses": {
+      "enum": [
+        "ARCHITECTURE",
+        "BUILD_RELEASE",
+        "CORRECTNESS",
+        "DATA_INTEGRITY",
+        "DX",
+        "GENERAL",
+        "MAINTAINABILITY",
+        "OPERABILITY",
+        "PERFORMANCE",
+        "RELIABILITY",
+        "SECURITY_REVIEW",
+        "SUPPLY_CHAIN",
+        "TESTABILITY"
+      ]
+    },
+    "comparison": {},
+    "base_ref": {},
+    "head_ref": {},
+    "prior_report": {},
+    "current_ref": {},
+    "change_surface": {},
+    "public_api": {},
+    "schema_data": {},
+    "migrations": {},
+    "configuration": {},
+    "dependencies": {},
+    "rollout": {},
+    "rollback": {},
+    "build_release": {},
+    "source_manifest": {},
+    "id": {},
+    "source_manifest.kind": {
+      "enum": [
+        "DEPLOYMENT_CONFIG",
+        "DIFF",
+        "LOG",
+        "METRIC",
+        "OTHER",
+        "REPOSITORY",
+        "RUNTIME",
+        "TEST_RESULT"
+      ]
+    },
+    "locator": {},
+    "source_manifest.role": {
+      "enum": [
+        "CONTEXT",
+        "PRIMARY",
+        "SUPPORTING"
+      ]
+    },
+    "version_state": {
+      "enum": [
+        "MOVING",
+        "PINNED",
+        "UNKNOWN"
+      ]
+    },
+    "instruction_boundary": {
+      "enum": [
+        "TREAT_AS_DATA"
+      ]
+    },
+    "trust_class": {
+      "enum": [
+        "EXTERNAL_REFERENCE",
+        "GENERATED",
+        "SYSTEM_OF_RECORD",
+        "TOOL_RESULT",
+        "UNKNOWN",
+        "USER_SUPPLIED"
+      ]
+    },
+    "sha256": {},
+    "review_plan": {},
+    "objective": {},
+    "must_inspect": {},
+    "attack_surfaces": {},
+    "stop_conditions": {},
+    "sampling_strategy": {},
+    "escalation_conditions": {},
+    "assurance": {},
+    "assurance.mode": {
+      "enum": [
+        "BLIND_DUAL_REVIEW",
+        "SECOND_PASS",
+        "SINGLE_REVIEW"
+      ]
+    },
+    "independence": {
+      "enum": [
+        "NONE",
+        "SAME_CONTEXT",
+        "SEPARATE_CONTEXT"
+      ]
+    },
+    "second_pass_status": {
+      "enum": [
+        "COMPLETED",
+        "NOT_RUN",
+        "UNAVAILABLE"
+      ]
+    },
+    "disagreement_summary": {},
+    "limitations": {},
+    "pass_records": {},
+    "pass_id": {},
+    "pass_records.role": {
+      "enum": [
+        "ARBITER",
+        "PRIMARY",
+        "SECONDARY"
+      ]
+    },
+    "pass_records.status": {
+      "enum": [
+        "COMPLETED",
+        "FAILED",
+        "UNAVAILABLE"
+      ]
+    },
+    "context_ref": {},
+    "blind_to_prior_findings": {},
+    "source_refs": {},
+    "evidence_register": {},
+    "source_id": {},
+    "evidence_register.kind": {
+      "enum": [
+        "ABSENCE_PROOF",
+        "CONTEXT",
+        "COUNTEREVIDENCE",
+        "OBSERVATION",
+        "VERIFICATION"
+      ]
+    },
+    "summary": {},
+    "strength": {
+      "enum": [
+        "MODERATE",
+        "STRONG",
+        "WEAK"
+      ]
+    },
+    "evidence_conflicts": {},
+    "evidence_refs": {},
+    "conflict": {},
+    "disposition": {
+      "enum": [
+        "OUT_OF_SCOPE",
+        "RESOLVED",
+        "UNRESOLVED"
+      ]
+    },
+    "residual_uncertainty": {},
+    "repo_contract": {},
+    "topology_summary": {},
+    "runtime_evidence": {},
+    "deployment_model": {},
+    "ref_status": {
+      "enum": [
+        "MOVING",
+        "PINNED",
+        "UNKNOWN"
+      ]
+    },
+    "critical_paths": {},
+    "coverage": {},
+    "level": {
+      "enum": [
+        "COMPLETE",
+        "PARTIAL",
+        "SUBSTANTIAL"
+      ]
+    },
+    "scope_basis": {
+      "enum": [
+        "DIFF_ONLY",
+        "FULL_TREE",
+        "MIXED",
+        "SAMPLED"
+      ]
+    },
+    "coverage_confidence": {
+      "enum": [
+        "high",
+        "low",
+        "medium"
+      ]
+    },
+    "inspected_paths": {},
+    "excluded_paths": {},
+    "quality_gates": {
+      "enum": [
+        "BLOCKED",
+        "PASS",
+        "WARN"
+      ]
+    },
+    "quality_gates.scope": {},
+    "quality_gates.contract": {},
+    "quality_gates.source_integrity": {},
+    "quality_gates.evidence": {},
+    "quality_gates.challenge": {},
+    "quality_gates.assurance": {},
+    "quality_gates.severity": {},
+    "quality_gates.repair": {},
+    "quality_gates.boundary": {},
+    "system_model": {},
+    "actors": {},
+    "entrypoints": {},
+    "trust_boundaries": {},
+    "state_stores": {},
+    "external_dependencies": {},
+    "background_jobs": {},
+    "privileged_surfaces": {},
+    "invariant_ledger": {},
+    "invariant": {},
+    "scope": {},
+    "enforcement": {},
+    "test_evidence": {},
+    "invariant_ledger.status": {
+      "enum": [
+        "BROKEN",
+        "PARTIAL",
+        "UNVERIFIED",
+        "VERIFIED"
+      ]
+    },
+    "test_evidence_ledger": {},
+    "invariant_ref": {},
+    "test_evidence_ledger.status": {
+      "enum": [
+        "ABSENT",
+        "COVERED",
+        "PARTIAL",
+        "UNKNOWN"
+      ]
+    },
+    "test_refs": {},
+    "gap": {},
+    "change_risk_ledger": {},
+    "surface": {},
+    "invariant_refs": {},
+    "risk": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM",
+        "UNKNOWN"
+      ]
+    },
+    "reason": {},
+    "verification": {},
+    "critical_surface_ledger": {},
+    "critical_surface_ledger.type": {
+      "enum": [
+        "BUILD_RELEASE",
+        "ENTRYPOINT",
+        "EXTERNAL_SIDE_EFFECT",
+        "JOB",
+        "MIGRATION",
+        "PRIVILEGED_OPERATION",
+        "PUBLIC_API",
+        "STATE_MUTATION",
+        "TRUST_BOUNDARY"
+      ]
+    },
+    "anchor": {},
+    "trust_transition": {},
+    "side_effect": {},
+    "state_transition_ledger": {},
+    "journey": {},
+    "transition": {},
+    "guard": {},
+    "recovery": {},
+    "state_transition_ledger.status": {
+      "enum": [
+        "BROKEN",
+        "NOT_APPLICABLE",
+        "PARTIAL",
+        "UNVERIFIED",
+        "VERIFIED"
+      ]
+    },
+    "failure_domain_ledger": {},
+    "component": {},
+    "failure_mode": {},
+    "containment": {},
+    "observability": {},
+    "failure_domain_ledger.status": {
+      "enum": [
+        "BROKEN",
+        "NOT_APPLICABLE",
+        "PARTIAL",
+        "UNVERIFIED",
+        "VERIFIED"
+      ]
+    },
+    "root_causes": {},
+    "label": {},
+    "no_material_findings": {},
+    "first_attack_id": {},
+    "findings": {},
+    "finding_key": {},
+    "finding_aliases": {},
+    "severity": {
+      "enum": [
+        "CRITICAL",
+        "MAJOR",
+        "MINOR"
+      ]
+    },
+    "category": {
+      "enum": [
+        "architecture",
+        "build_release",
+        "configuration",
+        "correctness",
+        "data_integrity",
+        "dependencies",
+        "documentation",
+        "dx",
+        "error_handling",
+        "isolation",
+        "maintainability",
+        "migrations",
+        "observability",
+        "performance",
+        "recovery",
+        "security",
+        "supply_chain",
+        "testing"
+      ]
+    },
+    "defect_class": {
+      "enum": [
+        "ARCHITECTURE_DEBT",
+        "BUG",
+        "BUILD_RELEASE_RISK",
+        "DX_DEBT",
+        "INVARIANT_GAP",
+        "OPERABILITY_GAP",
+        "PERFORMANCE_RISK",
+        "SECURITY_RISK",
+        "SUPPLY_CHAIN_RISK",
+        "TEST_GAP"
+      ]
+    },
+    "evidence_state": {
+      "enum": [
+        "INFERRED",
+        "NOT_FOUND",
+        "OBSERVED_CODE",
+        "OBSERVED_CONFIG",
+        "OBSERVED_HISTORY",
+        "OBSERVED_LOG",
+        "OBSERVED_METRIC",
+        "OBSERVED_RUNTIME",
+        "OBSERVED_TEST"
+      ]
+    },
+    "evidence_strength": {
+      "enum": [
+        "MODERATE",
+        "STRONG",
+        "WEAK"
+      ]
+    },
+    "scope_sensitivity": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "confidence": {
+      "enum": [
+        "high",
+        "low",
+        "medium"
+      ]
+    },
+    "anchor.type": {
+      "enum": [
+        "absence",
+        "commit",
+        "config",
+        "file",
+        "line_range",
+        "log",
+        "metric",
+        "runtime",
+        "symbol",
+        "test"
+      ]
+    },
+    "path": {},
+    "value": {},
+    "absence_proof": {},
+    "searched_scope": {},
+    "queries_or_locations": {},
+    "sufficiency_basis": {},
+    "inference_basis": {},
+    "surface_refs": {},
+    "critical_path_ref": {},
+    "root_cause_id": {},
+    "materiality": {},
+    "centrality": {
+      "enum": [
+        "CENTRAL",
+        "LOCAL",
+        "SUPPORTING"
+      ]
+    },
+    "consequence": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "reversibility": {
+      "enum": [
+        "EASY",
+        "HARD",
+        "MODERATE",
+        "UNKNOWN"
+      ]
+    },
+    "observation": {},
+    "engineering_risk": {},
+    "blast_radius": {},
+    "blast_radius_class": {
+      "enum": [
+        "GLOBAL",
+        "LOCAL",
+        "MULTI_TENANT",
+        "SINGLE_TENANT",
+        "SINGLE_USER",
+        "UNKNOWN"
+      ]
+    },
+    "failure_containment": {
+      "enum": [
+        "CONTAINED",
+        "PROPAGATES",
+        "UNKNOWN"
+      ]
+    },
+    "reachability": {
+      "enum": [
+        "PLAUSIBLE",
+        "PROVEN",
+        "STATIC_ONLY",
+        "UNKNOWN"
+      ]
+    },
+    "execution_path": {},
+    "roast_line": {},
+    "repair": {},
+    "fix_scope": {
+      "enum": [
+        "ARCHITECTURAL",
+        "BUILD_RELEASE",
+        "CROSS_MODULE",
+        "DATA_MIGRATION",
+        "DEPENDENCY",
+        "LOCAL",
+        "OPERATIONAL"
+      ]
+    },
+    "verification.type": {
+      "enum": [
+        "CONCURRENCY_TEST",
+        "CONTRACT_TEST",
+        "FAULT_INJECTION",
+        "INTEGRATION_TEST",
+        "LOAD_TEST",
+        "MANUAL_INSPECTION",
+        "MIGRATION_TEST",
+        "PROPERTY_TEST",
+        "ROLLBACK_TEST",
+        "RUNTIME_REPRO",
+        "STATIC_CHECK",
+        "UNIT_TEST"
+      ]
+    },
+    "method": {},
+    "success_condition": {},
+    "failure_signal": {},
+    "falsifier_check": {},
+    "challenge": {},
+    "searched_for": {},
+    "counterevidence": {},
+    "alternative_explanations": {},
+    "result": {
+      "enum": [
+        "DOWNGRADED",
+        "SURVIVES",
+        "UNRESOLVED",
+        "WITHDRAWN"
+      ]
+    },
+    "notes": {},
+    "downgraded_from": {
+      "enum": [
+        "CRITICAL",
+        "MAJOR",
+        "MINOR"
+      ]
+    },
+    "confidence_basis": {},
+    "directness": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "scope_support": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM"
+      ]
+    },
+    "counterevidence_status": {
+      "enum": [
+        "ADDRESSED",
+        "PARTIAL",
+        "UNKNOWN"
+      ]
+    },
+    "rationale": {},
+    "residual_risk": {},
+    "after_repair": {
+      "enum": [
+        "HIGH",
+        "LOW",
+        "MEDIUM",
+        "UNKNOWN"
+      ]
+    },
+    "closure_dependency": {},
+    "outcome_basis": {},
+    "surviving_finding_ids": {},
+    "withdrawn_candidate_count": {},
+    "unresolved_candidate_count": {},
+    "resolution_ledger": {},
+    "resolution_ledger.status": {
+      "enum": [
+        "NOT_ASSESSABLE",
+        "OPEN",
+        "PARTIAL",
+        "REGRESSED",
+        "RESOLVED"
+      ]
+    },
+    "evidence": {},
+    "verification_status": {
+      "enum": [
+        "FAILED",
+        "NOT_RUN",
+        "PARTIAL",
+        "PASSED"
+      ]
+    },
+    "change_basis": {
+      "enum": [
+        "ARTIFACT_CHANGED",
+        "JUDGMENT_CORRECTED",
+        "MIXED",
+        "SCOPE_CHANGED",
+        "UNKNOWN"
+      ]
+    },
+    "verification_gaps": {},
+    "question": {},
+    "evidence_needed": {},
+    "why_it_matters": {},
+    "preserve": {},
+    "core_fix": {}
+  },
+  "outputs": {
+    "root": {},
+    "files_scanned": {},
+    "files_skipped": {},
+    "flags": {},
+    "path": {},
+    "line": {},
+    "kind": {},
+    "excerpt": {},
+    "note": {},
+    "file_count": {},
+    "total_bytes": {},
+    "top_level": {},
+    "source_roots": {},
+    "workspace_hints": {},
+    "extensions": {},
+    "languages": {},
+    "language": {},
+    "files": {},
+    "bytes": {},
+    "key_files": {},
+    "manifest_files": {},
+    "lock_files": {},
+    "package_managers": {},
+    "entrypoint_candidates": {},
+    "test_files": {},
+    "workflow_files": {},
+    "migration_files": {},
+    "env_example_files": {},
+    "config_files": {},
+    "infrastructure_files": {},
+    "observability_files": {},
+    "risk_surface_files": {},
+    "auth_surface_files": {},
+    "job_surface_files": {},
+    "data_surface_files": {},
+    "generated_or_vendor_candidates": {},
+    "secretish_file_names": {},
+    "symlinks": {},
+    "largest_files": {},
+    "excluded_dir_names": {},
+    "git": {},
+    "change_surface": {},
+    "changed_files": {},
+    "base_root": {},
+    "head_root": {},
+    "file_count_delta": {},
+    "total_bytes_delta": {},
+    "surface_changes": {},
+    "added": {},
+    "removed": {},
+    "language_delta": {},
+    "files_delta": {},
+    "bytes_delta": {},
+    "git_base": {},
+    "git_head": {}
+  },
+  "internal": [
+    "activation",
+    "packages",
+    "profiles",
+    "signals",
+    "skill",
+    "workspaces"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "tests/report-valid.json",
+      "expect": "pass",
+      "pass": [
+        "pass"
+      ]
+    }
+  ]
+}

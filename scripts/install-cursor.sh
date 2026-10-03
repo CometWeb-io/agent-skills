@@ -58,9 +58,14 @@ host_apply() {
   elif [[ -e "$RULE_DEST" ]]; then
     if grep -q "$RULE_MARKER" "$RULE_DEST" 2>/dev/null; then
       if [[ "$INSTALL_DRY_RUN" != "1" ]]; then
-        tmp="${RULE_DEST}.tmp.$$"
-        cp -- "$RULE_SRC" "$tmp"
-        mv -- "$tmp" "$RULE_DEST"
+        # mktemp creates a new file with an unpredictable name (O_EXCL), so a
+        # file or link planted beside the rule cannot redirect the copy.
+        tmp="$(mktemp "$RULES_DIR/.cometweb-agent-skills.mdc.XXXXXXXX")"
+        if ! { cp -- "$RULE_SRC" "$tmp" && chmod 0644 "$tmp" && mv -f -- "$tmp" "$RULE_DEST"; }; then
+          rm -f -- "$tmp"
+          echo "FAIL: could not update routing rule $RULE_DEST" >&2
+          return 1
+        fi
       fi
       echo "$(plan_verb update updated) generated routing rule -> $RULE_DEST"
     else

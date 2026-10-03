@@ -42,7 +42,7 @@
     "kind": "delegation",
     "item": {
       "id": "insight-state",
-      "domain": "product",
+      "domain": "PRODUCT",
       "depth_required": "product"
     },
     "expected": "product-operator"
@@ -364,7 +364,7 @@
     "name": "ordinary portfolio work is not delegated",
     "item": {
       "id": "plain",
-      "domain": "ops"
+      "domain": "OPS"
     },
     "expected": null
   },
@@ -373,7 +373,7 @@
     "name": "a product domain alone is not specialist depth",
     "item": {
       "id": "prod",
-      "domain": "product"
+      "domain": "PRODUCT"
     },
     "expected": null
   },
@@ -1546,6 +1546,89 @@
     },
     "expected_contains": [
       "Stan: BLOCKED — capacity unknown and three hard streams"
+    ]
+  },
+  {
+    "name": "documented upper-case PRODUCT domain still routes to product-operator",
+    "kind": "delegation",
+    "item": {
+      "id": "product-state",
+      "domain": "PRODUCT",
+      "needs_product_reconciliation": true
+    },
+    "expected": "product-operator"
+  },
+  {
+    "name": "misspelled commitment_type is rejected, not ranked as optional",
+    "kind": "ranking",
+    "items": [
+      {
+        "id": "client",
+        "commitment_type": "hard-external",
+        "effort_class": "M"
+      }
+    ],
+    "expected_error": "client: commitment_type 'hard-external' is not one of hard_external, hard_internal, strategic, optional"
+  },
+  {
+    "name": "lower-case effort_class cannot hide a capacity conflict",
+    "kind": "conflict",
+    "items": [
+      {
+        "id": "a",
+        "commitment_type": "hard_external",
+        "deadline": "2026-09-18",
+        "effort_class": "xl"
+      },
+      {
+        "id": "b",
+        "commitment_type": "hard_external",
+        "deadline": "2026-09-18",
+        "effort_class": "XL"
+      }
+    ],
+    "expected_error": "a: effort_class 'xl' is not one of XS, S, M, L, XL, UNKNOWN"
+  },
+  {
+    "name": "misspelled depth_required is rejected, not left undelegated",
+    "kind": "lane",
+    "item": {
+      "id": "ship",
+      "depth_required": "relase"
+    },
+    "expected_error": "ship: depth_required 'relase' is not one of product, release, support, customer-ops, evidence, strategic-decision, portfolio-decision, orchestration"
+  },
+  {
+    "name": "report with off-contract enum values pins exact errors",
+    "kind": "validation",
+    "report": {
+      "protocol_version": "1.0",
+      "capacity": {
+        "source": "unknown"
+      },
+      "now": [],
+      "delegate": [],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": [],
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Finish the client migration",
+          "commitment_type": "hard-external",
+          "scope_level": "Portfolio",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "crm:deal-1"
+          ]
+        }
+      ]
+    },
+    "expected_valid": false,
+    "expected_errors": [
+      "must_do[0]: commitment_type 'hard-external' is not one of hard_external, hard_internal, strategic, optional",
+      "must_do[0]: scope_level 'Portfolio' is not one of portfolio, specialist"
     ]
   }
 ]

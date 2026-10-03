@@ -7,6 +7,7 @@ EFFORT={'XS':1,'S':2,'M':3,'L':5,'XL':8}
 BLAST={'LOCAL','SECTION','CROSS_ARTIFACT','SYSTEM'}
 REVERSIBILITY={'EASY','MODERATE','HARD','IRREVERSIBLE'}
 PATCH_RISK={'LOW','MEDIUM','HIGH','CRITICAL'}
+MODES={'STANDARD','DEEP'}
 
 
 def _text(value): return isinstance(value,str) and bool(value.strip())
@@ -81,6 +82,7 @@ def validate(payload):
     if not isinstance(items,list): return {'status':'INVALID','closed':0,'open':0,'errors':['items:not-list']}
     candidate_id=payload.get('candidate_id'); strict=payload.get('strict_closure') is True or payload.get('mode')=='DEEP'
     errors=[]; closed=0; open_count=0; seen=set(); finding_to_repair={}; effort_units=0; portfolio_mode=payload.get('portfolio_mode') is True
+    if payload.get('mode') is not None and not (isinstance(payload.get('mode'),str) and payload.get('mode') in MODES): errors.append('mode:invalid')
     if candidate_id is not None and not _text(candidate_id): errors.append('candidate_id:invalid')
     errors.extend(_dependency_cycles(items))
     for i,item in enumerate(items):

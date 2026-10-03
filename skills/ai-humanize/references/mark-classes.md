@@ -10,6 +10,20 @@ Examples: zero-width characters, bidi controls, exotic spaces, tag characters, p
 
 This class is deterministic and inspectable. The cleaner is intentionally conservative around Markdown code, emoji sequences, and script joiners.
 
+With `--json` the cleaner prints its report to stderr (the cleaned text still goes to stdout or `-o`):
+
+```text
+profile: prose|markdown (auto picks markdown for .md/.markdown/.mdx files)
+normalization: none|nfc|nfkc
+normalized: true when normalization changed the text
+removed: {character name: count}
+replaced: {"U+XXXX -> U+0020" or "confusable X -> Y": count}
+chars_removed, chars_replaced: totals of the two maps
+protected_spans: fenced and inline code spans left byte-for-byte (markdown profile)
+would_change: true when the cleaned text differs from the input; --check exits 1 on it
+version: cleaner version
+```
+
 ## 2. Statistical / generative text watermarking
 
 A generation-time algorithm changes token-selection probabilities using a key or pseudo-random function. The signal lives in token choices, not hidden Unicode metadata.

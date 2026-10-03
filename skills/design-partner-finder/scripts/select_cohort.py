@@ -16,6 +16,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+SELECTION_STAGES = ("outreach_slate", "active_cohort")
 RESEARCH_ELIGIBLE = {"PRIORITY_DISCOVERY", "DISCOVERY"}
 ACTIVE_ELIGIBLE = {"PARTNER_READY"}
 STATUS_BONUS = {
@@ -97,7 +98,7 @@ def _coverage(candidate: dict[str, Any], question_ids: set[str]) -> dict[str, fl
 
 def select(payload: dict[str, Any], selection_stage: str) -> dict[str, Any]:
     stage = selection_stage.lower()
-    if stage not in {"outreach_slate", "active_cohort"}:
+    if stage not in SELECTION_STAGES:
         raise ValueError("selection_stage must be outreach_slate or active_cohort")
 
     size = int(_number(payload.get("size", 5), "size", 1))
@@ -243,7 +244,7 @@ def select(payload: dict[str, Any], selection_stage: str) -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", help="Input JSON file; omit to read stdin")
-    parser.add_argument("--selection-stage", choices=("outreach_slate", "active_cohort"), help="Override payload selection_stage")
+    parser.add_argument("--selection-stage", choices=SELECTION_STAGES, help="Override payload selection_stage")
     parser.add_argument("--pretty", action="store_true")
     args = parser.parse_args()
     try:

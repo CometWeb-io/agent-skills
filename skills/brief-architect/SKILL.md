@@ -1,7 +1,12 @@
 ---
 name: brief-architect
 description: >-
-  Turn an ambiguous request for a content, research, sales, documentation, or knowledge artifact into an explicit execution contract with audience, objective, evidence policy, constraints, acceptance criteria, risks, and handoff fields. Use when the task is underspecified, expensive to redo, spans multiple specialists, or needs a durable brief before writing/research. Do not use to write the final artifact, run broad product discovery, make a consequential decision, or replace product-operator, evidence-researcher, content-writer, or ai-council.
+  Turn an ambiguous request for a content, research, sales, documentation, or knowledge artifact into
+  an explicit execution contract with audience, objective, evidence policy, constraints, acceptance
+  criteria, risks, and handoff fields. Do not use to write the final artifact, run broad product
+  discovery, make a consequential decision, or replace product-operator, evidence-researcher,
+  content-writer, or ai-council. Use when the task is underspecified, expensive to redo, spans
+  multiple specialists, or needs a durable brief before writing/research.
 ---
 
 # Brief Architect

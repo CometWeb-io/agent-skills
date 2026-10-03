@@ -1,0 +1,225 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/context-envelope.md"
+  ],
+  "scripts": {
+    "scripts/validate_context_envelope.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "MODES": "mode",
+        "PROFILES": "profile",
+        "BASELINE_STATUS": "baseline.status",
+        "SOURCE_TYPES": "source_type",
+        "AUTHORITIES": "authority",
+        "ACCESS": "access",
+        "FRESHNESS": "freshness",
+        "SENSITIVITY": "sensitivity",
+        "CONFIDENCE": "confidence",
+        "CONFLICT_STATUS": "conflicts.status",
+        "FP_STATUS": "first_principles.status"
+      }
+    },
+    "scripts/context_plan.py": {
+      "input": "args",
+      "role": "helper"
+    },
+    "scripts/repo_snapshot.py": {
+      "input": "args",
+      "role": "helper"
+    }
+  },
+  "fields": {
+    "schema": {},
+    "snapshot_id": {},
+    "generated_at": {},
+    "goal": {},
+    "mode": {
+      "enum": [
+        "targeted",
+        "standard",
+        "delta",
+        "full"
+      ]
+    },
+    "profile": {
+      "enum": [
+        "product",
+        "portfolio",
+        "gtm",
+        "outreach",
+        "brand",
+        "meeting",
+        "weekly",
+        "claim-verification",
+        "custom"
+      ]
+    },
+    "baseline": {},
+    "baseline.status": {
+      "enum": [
+        "available",
+        "unavailable",
+        "not_requested"
+      ]
+    },
+    "ref": {},
+    "sources": {},
+    "source_id": {},
+    "source_type": {
+      "enum": [
+        "github",
+        "local-repo",
+        "vault",
+        "notion",
+        "crm",
+        "gmail",
+        "calendar",
+        "contacts",
+        "insight",
+        "website",
+        "social",
+        "file",
+        "other"
+      ]
+    },
+    "authority": {
+      "enum": [
+        "system_of_record",
+        "canonical",
+        "primary",
+        "secondary",
+        "fallback"
+      ]
+    },
+    "access": {
+      "enum": [
+        "live",
+        "local",
+        "connector",
+        "cached",
+        "fallback"
+      ]
+    },
+    "retrieved_at": {},
+    "effective_at": {},
+    "freshness": {
+      "enum": [
+        "fresh",
+        "aging",
+        "stale",
+        "unknown"
+      ]
+    },
+    "sensitivity": {
+      "enum": [
+        "public",
+        "internal",
+        "confidential",
+        "restricted"
+      ]
+    },
+    "summary": {},
+    "evidence_ref": {},
+    "facts": {},
+    "fact_id": {},
+    "statement": {},
+    "source_ids": {},
+    "confidence": {
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "deltas": {
+      "opaque": true
+    },
+    "conflicts": {},
+    "conflicts.status": {
+      "enum": [
+        "unresolved_conflict",
+        "resolved"
+      ]
+    },
+    "basis": {},
+    "gaps": {},
+    "kind": {},
+    "missing_authority": {},
+    "blocked_public_claims": {},
+    "reason": {},
+    "governance": {},
+    "first_principles": {},
+    "required": {},
+    "first_principles.status": {
+      "enum": [
+        "loaded",
+        "not_required",
+        "unavailable"
+      ]
+    },
+    "source_ref": {
+      "unread": true
+    },
+    "handoff": {},
+    "recommended_next_skill": {},
+    "dependencies": {},
+    "constraints": {}
+  },
+  "outputs": {
+    "source_groups": {},
+    "first_principles_required": {},
+    "decision_log_required": {},
+    "candidates": {},
+    "ambiguous": {},
+    "registry": {},
+    "rule": {},
+    "observed_at": {},
+    "snapshot_ref": {},
+    "root_source": {
+      "enum": [
+        "argument",
+        "COMETWEB_ROOT",
+        "COMETWEB_CENTRUM",
+        "fallback"
+      ]
+    },
+    "root_available": {},
+    "root": {},
+    "fallback": {},
+    "repos": {},
+    "repo": {},
+    "repos.status": {
+      "enum": [
+        "ok",
+        "invalid_path",
+        "missing",
+        "not_git",
+        "not_repo_root",
+        "error"
+      ]
+    },
+    "path": {},
+    "branch": {},
+    "head_sha": {},
+    "last_commit_at": {},
+    "subject": {},
+    "dirty_count": {},
+    "commits_7d": {},
+    "commits_30d": {},
+    "error": {}
+  },
+  "internal": [
+    "primary",
+    "profiles",
+    "preferred_source_groups",
+    "id",
+    "COMETWEB_ROOT",
+    "COMETWEB_CENTRUM"
+  ],
+  "doc_terms": [
+    "authority_gap"
+  ],
+  "evals": []
+}

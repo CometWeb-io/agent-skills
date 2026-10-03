@@ -1,12 +1,19 @@
 ---
 name: longform-publisher
 description: >-
-  Run the publication control plane for a long-form work such as an ebook, report, playbook, white paper, guide, handbook, or research-backed article: one canonical manuscript, claim-use traceability, derived DOCX/PDF/HTML lineage, and release-stage discipline. Use when an existing publication must be refreshed into a new edition, when a manuscript and its derived formats must be reconciled, or when a publication needs a RELEASE_READY gate across formats. Do not use to create a new CometWeb ebook or workbook from research through cover and design (use ebook-publisher), for primary evidence research (evidence-researcher), prose-only humanization (ai-humanize), a standalone article draft (content-writer), or low-level PDF/DOCX file manipulation.
+  Run the publication control plane for a long-form work such as an ebook, report, playbook, white
+  paper, guide, handbook, or research-backed article: one canonical manuscript, claim-use
+  traceability, derived DOCX/PDF/HTML lineage, and release-stage discipline. Do not use to create a
+  new CometWeb ebook or workbook from research through cover and design (use ebook-publisher), for
+  primary evidence research (evidence-researcher), prose-only humanization (ai-humanize), a standalone
+  article draft (content-writer), or low-level PDF/DOCX file manipulation. Use when an existing
+  publication must be refreshed into a new edition, when a manuscript and its derived formats must be
+  reconciled, or when a publication needs a RELEASE_READY gate across formats.
 ---
 
 # Longform Publisher
 
-Protocol version: **longform-publisher/1**. Skill release: **1.1.2**.
+Protocol version: **longform-publisher/1**. Skill release: **1.1.3**.
 
 Operate as a publication control plane. Own the canonical manuscript, source policy, claim-use traceability, editorial gates, version lineage, derived-artifact readiness, and publication state. Do not become a duplicate research, rewriting, DOCX, PDF, or marketing-copy specialist.
 

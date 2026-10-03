@@ -159,7 +159,7 @@ def assert_keep_unresolved(cid: str, case: dict, planner, routing, validate_mod)
         conflicts=[
             {
                 "conflict_id": "c1",
-                "status": "unresolved",
+                "status": "unresolved_conflict",
                 "statements": [
                     {"source": "notion", "text": "shipped"},
                     {"source": "repo", "text": "WIP"},
@@ -249,7 +249,7 @@ def assert_authority_over_recency(cid: str, case: dict, planner, routing, valida
         conflicts=[
             {
                 "conflict_id": "c-auth",
-                "status": "unresolved",
+                "status": "unresolved_conflict",
                 "statements": [
                     {"source": "canon-doc", "text": "old decision"},
                     {"source": "draft-note", "text": "new draft"},

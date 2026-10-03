@@ -16,6 +16,8 @@ Never infer a later state from an earlier one. A new candidate version invalidat
 Operational statuses:
 
 - `READY_FOR_NEXT`
+- `READY_FOR_ROLLOUT`
+- `CHANGES_REQUIRED`
 - `NEEDS_RECONCILIATION`
 - `BLOCKED`
 - `COMPLETE`

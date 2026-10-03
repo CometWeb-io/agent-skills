@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import re
+import stat
 from pathlib import Path
 
 IGNORE={'.git','node_modules','vendor','dist','build','.venv','venv','__pycache__','.pytest_cache'}
@@ -22,26 +23,53 @@ SECRET=[
  ('aws_access_key',re.compile(r'\bAKIA[0-9A-Z]{16}\b')),
 ]
 
-def files(root:Path,max_files:int):
-    if root.is_file(): yield root; return
+_OPEN_FLAGS=os.O_RDONLY|getattr(os,'O_NONBLOCK',0)|getattr(os,'O_CLOEXEC',0)
+_NOFOLLOW=getattr(os,'O_NOFOLLOW',0)
+
+def _read_open(name,max_bytes:int,dir_fd=None,follow:bool=False):
+    """Open, then check what was opened: fstat on the descriptor, not a stat of the path.
+
+    Returns bytes, or None when the file is not a regular file, is over max_bytes, or
+    cannot be read. O_NOFOLLOW refuses a symlink swapped in after the walk listed the
+    name; O_NONBLOCK keeps a FIFO swapped in from blocking the scan.
+    """
+    try: fd=os.open(name,_OPEN_FLAGS|(0 if follow else _NOFOLLOW),dir_fd=dir_fd)
+    except OSError: return None
+    try:
+        st=os.fstat(fd)
+        if not stat.S_ISREG(st.st_mode) or st.st_size>max_bytes: return None
+        chunks=[]; total=0
+        while total<=max_bytes:
+            chunk=os.read(fd,min(1<<20,max_bytes+1-total))
+            if not chunk: break
+            chunks.append(chunk); total+=len(chunk)
+        return None if total>max_bytes else b''.join(chunks)
+    except OSError: return None
+    finally: os.close(fd)
+
+def files(root:Path,max_files:int,max_bytes:int):
+    """Yield (path, bytes-or-None) for regular files; symlinks and special files are not listed.
+
+    The walk holds a descriptor for each directory (os.fwalk) and opens names relative
+    to it, so a directory replaced by a symlink mid-scan cannot redirect the read.
+    """
+    if root.is_file(): yield root,_read_open(root,max_bytes,follow=True); return
     n=0
-    for base,dirs,names in os.walk(root):
+    top=os.path.realpath(root)
+    for base,dirs,names,dir_fd in os.fwalk(top):
         dirs[:]=[d for d in sorted(dirs) if d not in IGNORE]
         for name in sorted(names):
-            p=Path(base)/name
-            if p.is_symlink() or not p.is_file(): continue
-            yield p; n+=1
+            try: st=os.stat(name,dir_fd=dir_fd,follow_symlinks=False)
+            except OSError: continue
+            if not stat.S_ISREG(st.st_mode): continue
+            yield root/os.path.relpath(os.path.join(base,name),top),_read_open(name,max_bytes,dir_fd=dir_fd); n+=1
             if n>=max_files: return
 
 def scan(path:Path,max_files:int=5000,max_bytes:int=2_000_000)->dict:
     flags=[]; scanned=0; skipped=0
-    for p in files(path,max_files):
-        try:
-            if p.stat().st_size>max_bytes: skipped+=1; continue
-            raw=p.read_bytes()
-            if b'\x00' in raw[:4096]: skipped+=1; continue
-            text=raw.decode('utf-8','replace'); scanned+=1
-        except OSError: skipped+=1; continue
+    for p,raw in files(path,max_files,max_bytes):
+        if raw is None or b'\x00' in raw[:4096]: skipped+=1; continue
+        text=raw.decode('utf-8','replace'); scanned+=1
         rel=str(p if path.is_file() else p.relative_to(path))
         for line_no,line in enumerate(text.splitlines(),1):
             if ZERO_WIDTH.search(line): flags.append({'path':rel,'line':line_no,'kind':'zero_width_unicode','excerpt':line[:180]})

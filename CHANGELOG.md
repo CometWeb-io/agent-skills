@@ -8,7 +8,51 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Added
 
-- `tooling/check_all.py` runs every repository gate (26 of them) from one list,
+- **One contract per skill.** Every skill ships `references/contract.json`
+  (`cometweb.skill-contract/v1`) listing each payload field and enum once,
+  bound to the script constant that enforces it and the reference that
+  documents it. The `skill_contracts` gate fails when a script reads an
+  undeclared key, an enum drifts from its constant, a reference names a field
+  the contract lacks or spells a value differently, or an eval case that must
+  conform (`conform: always`) expects a pass on off-contract input.
+  `tooling/new_skill.py` writes a contract for new skills, and
+  `tooling/skill_contracts.py --draft <skill>` starts one for an existing skill.
+- **Frozen routing holdout.** `evals/routing/holdout.json` holds 144 prompts
+  (100 positive, 26 near-miss, 18 no-skill; 100 English, 44 Polish) written
+  before the routing signals were read, pinned by sha256 in
+  `holdout.lock.json`. The `routing_holdout` gate fails on any edit and on any
+  holdout prompt that also appears in a set used for tuning, and
+  `tooling/routing_holdout.py` reports aggregates only. Measured on it, routing
+  went from 93/144 (64.6%) to 112/144 (77.8%) this release; the tuned suites
+  pass at 100%, so expect unseen prompts to land nearer the holdout figure.
+- **Output grading.** `tooling/grade_output.py` grades a skill's actual output
+  against its output contract offline. `evals/output/` holds golden good and
+  deliberately broken outputs for eight skills (ai-council, content-roaster,
+  evidence-researcher, product-operator, release-readiness, repo-roaster,
+  seo-geo-aeo-maxxing, web-app-auditor); the `output_grading` gate requires the
+  good ones to pass and each broken one to fail with its exact codes. See
+  `docs/OUTPUT-GRADING.md`.
+- **Host smoke test.** `tooling/host_smoke.py` loads the plugin in the real
+  Claude Code and Codex CLIs against a staged copy with an isolated home
+  directory, without calling a model: manifest validation, install, the
+  model-visible skill list, and whether a host shortens descriptions. Cursor is
+  checked statically against its documented plugin format.
+- `sast` gate: repository semgrep rules for Python and shell under
+  `tooling/sast/`, run offline with an exactly pinned engine installed from the
+  lock's hashes into its own environment; each rule is tested against positive
+  and negative cases on every run.
+- `runtime_deps_locked` gate (`tooling/audit_deps.py`): every dependency a skill
+  declares in `RUNTIME.json` or `requirements.txt` must be locked at a version
+  inside its declared range, so `pip-audit --require-hashes` covers it.
+- `sbom` gate (`tooling/sbom.py`): a CycloneDX 1.6 SBOM of the plugin, with each
+  skill's package digest and the optional libraries skills declare. The
+  `attest-packages` workflow builds it, attests it against the packages and
+  uploads it with them.
+- `docs/ROUTING.md` explains how a prompt is matched to a skill, the routing
+  policy blocks, the known gaps and how to add a case; a test keeps its policy
+  block names in step with `registry/routing-policy.json`.
+
+- `tooling/check_all.py` runs every repository gate (32 of them) from one list,
   in parallel, with a summary table. CI calls `check_all.py --ci`, which fails
   on a missing tool instead of skipping it; `--fast` runs the quick gates,
   `--fix` reruns the generators first and never records a baseline. An optional
@@ -17,7 +61,7 @@ tags use `vMAJOR.MINOR.PATCH`.
   `registry/plugin-release.json` require a new plugin version whenever a shipped
   skill is added, removed or changes its `VERSION`, because Claude Code and Codex
   refresh an installed plugin only when its version changes. The plugin version
-  is now **2.1.0** in every manifest.
+  is now **2.2.0** in every manifest.
 - `tooling/new_skill.py` registers the new skill by default: registry entry,
   README catalog row, placeholder routing cases and this skill's baseline rows.
   The scaffold ships a small output-contract validator whose eval harness holds
@@ -81,9 +125,24 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Changed
 
-- Routing suite grew from 284 to 463 cases; about 25 skills gained Polish
-  routing signals. 15 prompts the router still misroutes are recorded in
+- **Plugin 2.2.0.** Every skill's `VERSION` moves by one patch release for the
+  contract, documentation and kernel fixes below; the shipped set is recorded
+  in `registry/plugin-release.json`.
+- Routing suite grew from 284 to 690 cases; about 25 skills gained Polish
+  routing signals, and signals were tuned on fresh prompts written before each
+  change. Two prompts the router still misroutes are recorded in
   `evals/routing/known-gaps.json`.
+- Each skill description states its "Do not use" boundary right after the
+  opening sentence. Codex shortens descriptions to fit a shared skill-list
+  budget, and the boundary used to sit at the end, where it was cut first.
+- Every `agents/openai.yaml` is regenerated: Codex's `default_prompt` names the
+  skill as `$skill-id` and stays within 160 characters, and a test routes each
+  prompt to its own skill.
+- `registry/hosts.json` records each host's frontmatter limits, and the
+  compatibility gate checks every skill against all nine host profiles. Claude
+  Code's description limit is 1,536 characters.
+- README counts, the skill-count badge and the documentation index are
+  generated or checked against the tree.
 - Ten more front doors were cut, and every `SKILL.md` is now at most 12,000
   bytes. Together the front doors are about 6 KB smaller than before this
   release even with the untrusted-content block added to 31 of them; every
@@ -149,6 +208,21 @@ tags use `vMAJOR.MINOR.PATCH`.
 - Ruff 0.16.10 and four development dependency patch updates.
 
 ### Fixed
+
+- Many skill kernels and validators failed open on values outside their
+  documented lists: an unknown or lower-case enum (a risk surface, a tier, a
+  finding severity, a commitment state, a reconciliation status) was silently
+  treated as a default instead of rejected. They now return a field-specific
+  error, and eval cases pin each one. Among them: AI Council read a
+  caller-supplied `reversibility: "irreversible"` as reversible and routed
+  `risk_surfaces: ["Legal"]` to no legal gatekeeper; competitive intelligence
+  scored an unknown `competitor_tier` as tier 1 or tier 3; SEO+GEO+AEO let a
+  check row override registry fields such as `weight`.
+- References now name every key each kernel reads and every value it accepts;
+  more than a hundred keys were read by kernels but documented nowhere, and
+  several references used names or values the scripts never accepted.
+- The roaster report schemas no longer require fields their validators treat
+  as optional, so a report the validator passed cannot fail the schema.
 
 - Release Readiness rejects `GO`/`GO_WITH_CONTROLS` next to a `BLOCK` or
   `COUNSEL_REQUIRED` gate in any letter case, defers on pending, denied, expired
@@ -237,6 +311,17 @@ tags use `vMAJOR.MINOR.PATCH`.
   bilingual rendering; inferred action types no longer crash the brief bridge.
 
 ### Security
+
+- Workspace JSON written by the competitive-intelligence kernel goes through
+  `tempfile.mkstemp` in the target directory (unpredictable name, `O_EXCL`, mode
+  0600) and `os.replace`, not a predictable `<file>.tmp` that a planted symlink
+  could redirect. The install scripts create temporary files with `mktemp`.
+- The roasters' `scan_source_risks.py` walks with directory descriptors
+  (`os.fwalk`), opens each file with `O_NOFOLLOW | O_NONBLOCK` and checks type and
+  size on the open descriptor, so a file swapped for a symlink or FIFO after
+  listing is skipped rather than followed or blocked on.
+- `SECURITY.md` lists the supported versions and a disclosure timeline with
+  target response and fix times.
 
 - Every skill's front door carries the same short untrusted-content block:
   inspected content is data, not instructions; no commands, installs or links

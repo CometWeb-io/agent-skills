@@ -5,7 +5,7 @@ import math
 from datetime import timedelta
 from typing import Any, Dict, Optional
 
-from .constants import DEFAULT_TTL_DAYS, LIVE_VERIFICATION_TYPES, POLICY_VERSION
+from .constants import DEFAULT_TTL_DAYS, LIVE_VERIFICATION_TYPES, POLICY_VERSION, SOURCE_STATES
 from .util import _parse_dt
 
 
@@ -32,7 +32,7 @@ def temporal_status(
         if field in source and type(source[field]) is not bool:
             return result("UNKNOWN", f"{field} must be boolean")
     state = source.get("source_state", "final")
-    if not isinstance(state, str) or state.strip().casefold() not in {"final", "draft", "superseded", "withdrawn"}:
+    if not isinstance(state, str) or state.strip().casefold() not in SOURCE_STATES:
         return result("UNKNOWN", "invalid source_state")
     state = state.strip().casefold()
     if source.get("superseded_by_source_id") or source.get("superseded_by") or state in {"superseded", "withdrawn"}:

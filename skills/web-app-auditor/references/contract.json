@@ -1,0 +1,35 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": ["references/evidence-and-report.md", "assets/report-template.md"],
+  "json_schemas": [
+    "assets/audit-report.schema.json",
+    {"path": "assets/finding.schema.json", "under": "findings"}
+  ],
+  "scripts": {
+    "scripts/validate_report.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "MODES": "mode",
+        "DEPTHS": "depth",
+        "CONFIDENCE": "confidence",
+        "VERDICTS": "verdict",
+        "PROFILES": "capabilities.profile",
+        "ENVIRONMENTS": "environment.kind",
+        "MUTATION_POLICIES": "environment.mutationPolicy",
+        "KINDS": "findings.kind",
+        "SEVERITIES": "findings.severity",
+        "EXPECTED_BASES": "findings.expectedBasis",
+        "EVIDENCE_TYPES": "evidence.type"
+      }
+    }
+  },
+  "fields": {},
+  "outputs": {"ok": {}, "errors": {}, "warnings": {}},
+  "internal": ["properties"],
+  "doc_terms": [],
+  "evals": [
+    {"path": "tests/report-valid.json", "expect": "pass", "pass": ["pass"]},
+    {"path": "tests/report-invalid.json", "expect": "fail", "pass": ["pass"]}
+  ]
+}

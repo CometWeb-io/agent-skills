@@ -1,0 +1,209 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/kernel-inputs.md"
+  ],
+  "scripts": {
+    "scripts/customer_ops_kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "CASE_GATE_STAGES": "stage",
+        "TRANSITION_MAPS": "entity",
+        "COMMITMENT_TRANSITIONS": "state",
+        "CUSTOMER_FOLLOWUP_STATUSES": "customer_followup_status"
+      }
+    }
+  },
+  "fields": {
+    "impact": {},
+    "urgency": {},
+    "breadth": {},
+    "recurrence": {},
+    "workaround": {},
+    "customer_risk": {},
+    "strategic_value": {},
+    "contractual_deadline": {},
+    "executive_escalation": {},
+    "security_signal": {},
+    "privacy_signal": {},
+    "security_privacy_signal": {},
+    "data_loss_signal": {},
+    "legal_signal": {},
+    "fraud_signal": {},
+    "material_financial_harm_signal": {},
+    "cancel_intent": {},
+    "support_pain": {},
+    "usage_decline": {},
+    "billing_risk": {},
+    "relationship_risk": {},
+    "renewal_pressure": {},
+    "competitive_pressure": {},
+    "direct_evidence_count": {},
+    "independent_source_count": {},
+    "evidence_current": {},
+    "evidence_conflicted": {},
+    "critical_function": {},
+    "confirmed_data_loss": {},
+    "confirmed_security_incident": {},
+    "confirmed_privacy_incident": {},
+    "material_financial_harm": {},
+    "native_status": {},
+    "paused": {},
+    "now": {},
+    "due_at": {},
+    "warning_minutes": {},
+    "clock_mode": {},
+    "start_at": {},
+    "target_minutes": {},
+    "pause_minutes": {},
+    "symptom": {},
+    "component": {},
+    "environment": {},
+    "trigger": {},
+    "error_signature": {},
+    "left": {},
+    "right": {},
+    "state": {
+      "enum": [
+        "OPEN",
+        "DUE_SOON",
+        "OVERDUE",
+        "FULFILLED",
+        "RENEGOTIATED",
+        "CANCELLED"
+      ]
+    },
+    "checkpoint_at": {},
+    "entity": {
+      "enum": [
+        "case",
+        "incident",
+        "handoff",
+        "commitment",
+        "exposure",
+        "cluster"
+      ]
+    },
+    "from_state": {},
+    "to_state": {},
+    "stage": {
+      "enum": [
+        "TRIAGED",
+        "GITHUB_READY",
+        "RESOLVED",
+        "VERIFIED",
+        "CLOSED",
+        "CUSTOMER_SEND"
+      ]
+    },
+    "source_id": {},
+    "case_type": {},
+    "customer_symptom": {},
+    "owner_class": {},
+    "next_action": {},
+    "expected_behavior": {},
+    "actual_behavior": {},
+    "reproduction_state": {},
+    "verification_criteria": {},
+    "dedupe_search_status": {},
+    "privacy_preflight_status": {},
+    "repo_conventions_status": {},
+    "known_secret_or_restricted_data": {},
+    "resolution_summary": {},
+    "remedy_ref": {},
+    "customer_answered": {},
+    "verification_method": {},
+    "verification_evidence": {},
+    "verified_at": {},
+    "verification_passed": {},
+    "verified": {},
+    "allow_unverified_close": {},
+    "unverified_close_reason": {},
+    "customer_followup_status": {
+      "enum": [
+        "sent",
+        "confirmed",
+        "waived",
+        "not_required"
+      ]
+    },
+    "open_commitments_count": {},
+    "open_commitments_exception_reason": {},
+    "open_critical_handoffs_count": {},
+    "message": {},
+    "recipient_resolved": {},
+    "facts_current": {},
+    "write_authorized": {},
+    "canonical_incident_comms_conflict": {},
+    "text": {}
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "PASS",
+        "WARN",
+        "BLOCK",
+        "OK",
+        "AT_RISK",
+        "BREACHED",
+        "MET",
+        "PAUSED",
+        "FIXED",
+        "UNKNOWN",
+        "OPEN",
+        "DUE_SOON",
+        "OVERDUE",
+        "FULFILLED",
+        "RENEGOTIATED",
+        "CANCELLED",
+        "FINDINGS",
+        "NO_OBVIOUS_FINDINGS",
+        "error"
+      ]
+    },
+    "operational_priority": {},
+    "base_priority": {},
+    "rank_score": {},
+    "priority_reasons": {},
+    "account_escalation": {},
+    "incident_candidate": {},
+    "specialist_gate_required": {},
+    "specialist_gates": {},
+    "risk_level": {},
+    "expressed_exit_intent": {},
+    "time_pressure": {},
+    "evidence_grade": {},
+    "strongest_drivers": {},
+    "driver": {},
+    "level": {},
+    "customer_impact_severity": {},
+    "declaration_recommended": {},
+    "dedupe_key": {},
+    "similarity": {},
+    "allowed": {},
+    "allowed_next_states": {},
+    "missing_fields": {},
+    "blockers": {},
+    "warnings": {},
+    "redacted_text": {}
+  },
+  "internal": [],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "tests/golden-cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "PASS",
+        "WARN"
+      ],
+      "conform": "always",
+      "exempt": {
+        "unknown commitment state is not silently open": "an off-enum commitment state is the input under test; the kernel must reject it rather than treat it as open"
+      }
+    }
+  ]
+}

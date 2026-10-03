@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.1.3] - 2026-10-03
+
+### Fixed
+
+- `validate` rejected a CRITICAL or MATERIAL FACT claim marked `UNRESOLVED` or `SCOPED_OUT`, while `references/claim-use.md` said such a state was an acceptable way to avoid overclaiming. The kernel is right (case 12 pins it) and the reference now says so: such a claim returns `MATERIAL_CLAIM_UNSUPPORTED` until it is removed, narrowed, reclassified or supported, and the open question goes in `unresolved_gaps[]`.
+- A claim's `materiality`, `claim_kind`, `support_status` or `citation_state`, or a gap's `materiality`, outside the documented capitals now returns `FIELD_VALUE_INVALID:<list>.<field>`. A lowercase `material` claim without evidence, a lowercase `critical` open gap and a lowercase `required` citation with no marker in the manuscript all passed every check before.
+
+### Documentation
+
+- `references/report-contract.md` lists every field the kernel reads, including the eight `lifecycle` flags and how the stage is inferred from them, `source_policy.authorized_source_ids`, `protected_facts`, `fidelity`, `edit_history` types that trigger the fidelity gate, `unresolved_gaps`, `scientific_readiness` and the action-item keys. None of these were documented.
+- New `references/contract.json` declares the report contract once; `tooling/skill_contracts.py` checks it against the kernel, these references and `examples/example-report.json`.
+
+### Tests
+
+- Evaluation cases 53-58: each lowercase or unknown enum above, and an `UNRESOLVED` material claim with its gap recorded.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.1.2] - 2026-10-03
 
 ### Fixed

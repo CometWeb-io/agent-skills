@@ -1,0 +1,268 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md",
+    "references/prioritization.md",
+    "references/state-model.md",
+    "references/source-routing.md",
+    "references/control-loop.md",
+    "references/local-workflow.md"
+  ],
+  "scripts": {
+    "scripts/operator_kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "ALLOWED_MODES": "mode",
+        "SUPPORTED_PROTOCOL_VERSIONS": "protocol_version",
+        "READINESS_VALUES": "readiness.status",
+        "FRESHNESS_VALUES": "freshness_status",
+        "STAGES": "stage",
+        "ACTION_TYPES": "action_type",
+        "MUTATION_VALUES": "mutations",
+        "PRIORITY_TIERS": "priority_tier"
+      }
+    },
+    "scripts/prepare_brief.py": {
+      "input": "files",
+      "role": "kernel"
+    },
+    "scripts/self_check.py": {
+      "input": "none",
+      "role": "helper"
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "target": {},
+    "goal": {},
+    "horizon": {},
+    "as_of": {},
+    "decision": {},
+    "coverage": {},
+    "github": {},
+    "notion": {},
+    "product_context": {},
+    "outcome_data": {},
+    "state_items": {},
+    "candidates": {},
+    "blockers": {},
+    "unknowns": {},
+    "critical_gap_open": {},
+    "unresolved_gate": {},
+    "material_current_evidence_block": {},
+    "material_unknowns_open": {},
+    "outcome_required": {},
+    "blocker_resolutions": {},
+    "blocker_id": {},
+    "resolved_id": {},
+    "environment": {},
+    "revision": {},
+    "config_fingerprint": {},
+    "coverage_exclusions": {},
+    "goal_known": {},
+    "items": {},
+    "id": {},
+    "action": {},
+    "rationale": {},
+    "why_now": {},
+    "done_when": {},
+    "impact": {},
+    "goal_alignment": {},
+    "urgency": {},
+    "dependency_leverage": {},
+    "risk_reduction": {},
+    "learning_value": {},
+    "effort": {},
+    "confidence": {},
+    "evidence_strength": {},
+    "blocker": {},
+    "blocks_current_goal": {},
+    "blocked_item": {},
+    "future_gate": {},
+    "trust_critical": {},
+    "verify_first": {},
+    "stop": {},
+    "decision_required": {},
+    "decision_domain": {},
+    "question": {},
+    "options": {},
+    "delegated_to": {},
+    "depends_on": {},
+    "evidence": {},
+    "critical_blocker": {},
+    "selected_option": {},
+    "recommendation": {},
+    "verdict": {},
+    "name": {},
+    "states": {},
+    "intent": {},
+    "planned": {},
+    "implemented": {},
+    "verified": {},
+    "shipped": {},
+    "outcome": {},
+    "stale_plan": {},
+    "orphaned_wip": {},
+    "context_drift": {},
+    "context_to_plan_drift": {},
+    "source": {},
+    "locator": {},
+    "claim": {},
+    "claim_type": {},
+    "authority": {},
+    "observed_at": {},
+    "verified_at": {},
+    "max_age_days": {},
+    "temporal_status": {},
+    "not_required": {},
+    "required_current": {},
+    "readiness": {},
+    "reasons": {},
+    "verify_now": {},
+    "decision_now": {},
+    "now": {},
+    "next": {},
+    "later": {},
+    "watch": {},
+    "drift": {},
+    "delegations": {},
+    "condition": {},
+    "why_blocking": {},
+    "title": {},
+    "report": {},
+    "snapshot_hash": {},
+    "state_fingerprint": {},
+    "mode": {
+      "enum": [
+        "PULSE",
+        "STANDARD",
+        "DEEP",
+        "DELTA",
+        "RELEASE"
+      ]
+    },
+    "protocol_version": {
+      "enum": [
+        "2.0",
+        "2.1",
+        "2.2"
+      ]
+    },
+    "readiness.status": {
+      "enum": [
+        "READY",
+        "PROVISIONAL",
+        "BLOCKED"
+      ]
+    },
+    "freshness_status": {
+      "enum": [
+        "CURRENT",
+        "NEAR_EXPIRY",
+        "STALE",
+        "SUPERSEDED",
+        "UNKNOWN",
+        "NOT_REQUIRED"
+      ]
+    },
+    "stage": {
+      "enum": [
+        "intent",
+        "planned",
+        "implemented",
+        "verified",
+        "shipped",
+        "outcome"
+      ]
+    },
+    "action_type": {
+      "enum": [
+        "verify",
+        "implement",
+        "decision",
+        "stop"
+      ]
+    },
+    "mutations": {
+      "enum": [
+        "read-only",
+        "none"
+      ]
+    }
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "PASS",
+        "WARN",
+        "FAIL"
+      ]
+    },
+    "errors": {},
+    "warnings": {},
+    "priority_tier": {
+      "enum": [
+        "BLOCKER",
+        "VERIFY_NOW",
+        "DECISION_NOW",
+        "NOW",
+        "NEXT",
+        "LATER",
+        "STOP"
+      ]
+    },
+    "priority_score": {},
+    "code": {},
+    "severity": {},
+    "item_id": {},
+    "snapshot_version": {}
+  },
+  "internal": [
+    "blocked_by",
+    "comparison_status",
+    "decision_origin",
+    "delegate",
+    "delta",
+    "done",
+    "execution_order",
+    "files",
+    "foot",
+    "held_by_readiness_action_ids",
+    "held_implementation_action_ids",
+    "immediate_actions",
+    "input_hash",
+    "issues",
+    "missing_dependencies",
+    "next_actions",
+    "none",
+    "plan",
+    "ranked",
+    "ready",
+    "reconciliation",
+    "schema",
+    "scope",
+    "sequence",
+    "snapshot",
+    "snapshot_hash_match",
+    "source_input_hash",
+    "sources",
+    "state_fingerprint_match",
+    "summary",
+    "unverified_removed_blockers",
+    "validation",
+    "warning",
+    "why"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/golden-cases.json",
+      "cases": "",
+      "input": "input"
+    }
+  ]
+}

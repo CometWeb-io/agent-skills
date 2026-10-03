@@ -1,0 +1,170 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md",
+    "references/claim-discipline.md",
+    "references/revision-and-invariants.md",
+    "references/evidence-calibration.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "VALID_MODES": "mode",
+        "VALID_POLICIES": "evidence_policy",
+        "VALID_STATUS": "claims.status",
+        "FRESH": "freshness_status",
+        "GRADE": "evidence_grade",
+        "CRITICAL_FLOOR": "evidence_floor.critical",
+        "MATERIAL_FLOOR": "evidence_floor.material",
+        "SUPPORTING_FLOOR": "evidence_floor.supporting"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "schema": {
+      "unread": true
+    },
+    "brief_id": {},
+    "candidate_id": {},
+    "parent_candidate_id": {},
+    "mode": {
+      "enum": [
+        "DRAFT",
+        "REVISION",
+        "FINAL"
+      ]
+    },
+    "evidence_policy": {
+      "enum": [
+        "SOURCE_BOUND",
+        "EVIDENCE_REQUIRED",
+        "CONTEXTUAL_DRAFT",
+        "CREATIVE"
+      ]
+    },
+    "approved_sources": {},
+    "evidence_floor": {},
+    "evidence_floor.critical": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "evidence_floor.material": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "evidence_floor.supporting": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "claims": {},
+    "claim_id": {},
+    "text_or_locator": {
+      "unread": true
+    },
+    "material": {},
+    "high_risk": {},
+    "claims.status": {
+      "enum": [
+        "SUPPORTED",
+        "INFERRED",
+        "OPINION",
+        "EXAMPLE",
+        "UNRESOLVED",
+        "UNSUPPORTED"
+      ]
+    },
+    "presented_as_fact": {},
+    "freshness_required": {},
+    "evidence": {},
+    "source_id": {
+      "unread": true
+    },
+    "source": {},
+    "locator": {},
+    "authority": {},
+    "observed_at": {},
+    "freshness_status": {
+      "enum": [
+        "CURRENT",
+        "NEAR_EXPIRY"
+      ]
+    },
+    "evidence_grade": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "basis_claim_ids": {},
+    "protected_invariants": {},
+    "invariant_checks": {},
+    "id": {},
+    "invariant_checks.state": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN"
+      ],
+      "enforced": false
+    },
+    "unresolved": {
+      "unread": true
+    },
+    "recommended_next_skill": {
+      "unread": true
+    }
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "errors": {},
+    "release_eligible": {},
+    "unresolved_material": {},
+    "mode": {
+      "enum": [
+        "DRAFT",
+        "REVISION",
+        "FINAL"
+      ]
+    }
+  },
+  "internal": [
+    "input"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "PASS"
+      ]
+    }
+  ]
+}

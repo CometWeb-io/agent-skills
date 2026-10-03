@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2] - 2026-10-03
+
+- `references/output-contract.md` now lists the experiment-report payload `scripts/kernel.py` validates, and new `references/contract.json` declares it. Of the 46 fields the kernel reads, only `rubric_hash` and `benchmark_hash` were named: `execution_mode` and its tokens `SPEC_ONLY|LOCAL_DETERMINISTIC|REAL_HOST`, `judge_agreement.status` (`CALIBRATED|NEEDS_REVIEW|INSUFFICIENT_DATA|NOT_USED`), `pareto_status` (`FRONTIER|DOMINATED|UNKNOWN|NOT_COMPUTED`), the case-ID lists and control counts, `runtime_executed`, `uses_llm_judge`, `config`/`baseline_config`, the `candidate`/`baseline` metric blocks, `invariant_regressions` and the five `promotion_policy` thresholds with their defaults were documented nowhere.
+- The paired and stability result lists in the output section omitted `NOT_USED`, which the kernel accepts and uses as the default. The reference also names the outputs `tradeoff` (`FLAKY_BEHAVIOR|PARETO_DOMINATED|TRIGGER_QUALITY|RESOURCE_BUDGET`), `pass_rate_delta`, `trigger_precision`, `trigger_recall`, `token_ratio`, `duration_ratio` and `empirical_claim_allowed`, says that the front door's `NOT_RUN` is an execution status reported beside `DESIGN_READY` rather than a kernel result, and says that judge calibration is enforced only in DEEP.
+- A non-string `mode`, `execution_mode`, `pareto_status` or nested `status` in `judge_agreement`, `paired_analysis` or `stability` is the matching `:invalid` error instead of a `TypeError`. Three eval cases pin these with exact error lists.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.7.1] - 2026-10-03
 
 - `references/paired-statistics-and-stability.md` no longer names `tooling/paired_significance.py`, `tooling/flakiness_analyzer.py` or `tooling/sequential_stop.py`, none of which ships in this repository; it says what to record instead.

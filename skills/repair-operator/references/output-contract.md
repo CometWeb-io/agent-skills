@@ -3,6 +3,9 @@
 Return a repair ledger tied to the original finding IDs. This file is the one
 schema for the ledger: `scripts/kernel.py` validates exactly these fields, and
 `tooling/tests/test_contract_docs_match_kernels.py` fails if the two drift.
+Five fields (`schema`, `base_candidate_id`, `protected_invariants`,
+`regressions`, `remaining_open`) belong in the ledger for the reader; the kernel
+does not check them.
 
 ```text
 schema: cometweb.repair-ledger/v1
@@ -54,5 +57,11 @@ Lead with blocking OPEN/UNVERIFIED work, then proven closures. Never use "fixed"
 for an item whose fresh candidate-bound verification did not run.
 
 To check a ledger, save it as JSON and run `python3 scripts/kernel.py ledger.json`
-(or pipe it on stdin). It prints `{status: VALID|INVALID, errors[], ...}` and
-exits non-zero when the ledger is invalid.
+(or pipe it on stdin). It prints `{status: VALID|INVALID, errors[], closed,
+open, strict_closure, portfolio_mode, effort_units}` and exits non-zero when the
+ledger is invalid. A `mode` other than `STANDARD` or `DEEP` is an error
+(`mode:invalid`), not a silent fallback to standard closure.
+
+The field list above is also declared in `references/contract.json`, which
+`tooling/skill_contracts.py` checks against the kernel, this file and the eval
+cases.

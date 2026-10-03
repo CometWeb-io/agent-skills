@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.7.2] - 2026-10-03
+
+- An open finding whose `severity` was not one of BLOCKER, MAJOR, MINOR or NOTE
+  (for example `CRITICAL`, or no severity at all) was silently treated as
+  non-blocking and the verdict could be READY. The kernel now rejects it as
+  DEFER with `finding[i]:severity`; two eval cases pin the exact error.
+- `references/output-contract.md` now lists every field the kernel reads. It
+  documented `criteria[]` and `traceability[]: {criterion_id, gate_ids[]}`
+  while the kernel reads `criteria_ids` and one `gate_id` per row, and a
+  top-level `waivers[]` list the kernel never reads (a waiver is a control with
+  `waiver: true`). It never mentioned `policy_lock`, `expected_policy_hash`,
+  `minimum_gate_evidence_grade`, `evidence_grade`, `na_allowed`, the
+  top-level `candidate_id`/`contract_id` fallback, evidence `contract_id`, the
+  finding `open`/`blocks_acceptance` flags, or the waiver fields `approver`,
+  `approved_at` and `expires_at`. Report-only fields are marked as unchecked.
+- New `references/contract.json` declares the payload, binds each enum to the
+  kernel constant that enforces it (`GATE_GRADES` added for the per-gate
+  grade), and checks every eval input against it.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.7.1] - 2026-10-03
 
 - `scripts/run_evals.py --help` exits 0 with a usage line instead of exit 2; any other argument is still rejected with exit 2 and the unrecognized argument named.

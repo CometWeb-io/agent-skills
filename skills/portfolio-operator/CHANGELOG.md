@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.2.2] - 2026-10-03
+
+### Fixed
+
+- `portfolio-model.md` documents domains in upper case (`PRODUCT`), but the
+  kernel routed product reconciliation only for a lower-case `product`. A
+  doc-conforming item was never delegated to Product Operator. Routing now
+  compares case-insensitively; a golden case pins it, and the golden domains
+  use the documented spelling.
+- Unknown `commitment_type`, `effort_class`, `depth_required` and `scope_level`
+  values fell through silently. `hard-external` ranked as optional, a
+  lower-case `xl` never counted toward a capacity conflict, a misspelled depth
+  was left undelegated, and `validate` passed a report carrying them.
+  `rank`, `conflicts`, `classify_lane` and `route_delegation` now raise, and the
+  CLI exits 2 with the message. `validate` reports one error per bad value.
+  Four golden cases pin the exact messages. `run_evals.py` gains
+  `expected_error` and `expected_errors`.
+- The kernel read keys no reference named: `days_to_deadline` (the only
+  deadline input to ranking; `deadline` feeds conflicts and provenance only),
+  `current_horizon`, `pause`/`drop`/`stop`, `delegated_to`, `return_contract`,
+  and the routing flags (`needs_product_reconciliation`,
+  `release_verdict_required`, `customer_incident`,
+  `claim_verification_required`, `decision_required`,
+  `multi_skill_execution`). They are now listed in a new "Kernel fields"
+  section of `portfolio-model.md`. That section also says that `strategic_value`,
+  `depends_on`, `blocked_by` and most sidecar header keys are not read.
+- `references/contract.json` declares the contract and binds the four enums to
+  `COMMITMENT_WEIGHT`, `EFFORT_PENALTY`, `DEPTHS` and `SCOPE_LEVELS`.
+  `evals/golden-cases.json` is checked against it. Every ranking, lane,
+  delegation and conflict input must conform, except the three exempt cases
+  that pin a refusal. A validation case expecting a valid report must conform.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.2.1] - 2026-10-03
 
 - `scripts/run_evals.py` answers `--help` and rejects unknown arguments instead of ignoring them and running.

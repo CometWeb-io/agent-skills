@@ -177,6 +177,53 @@ manually and write `validator: not run — capability unavailable`.
 
 If the validator cannot run, say so. Never fabricate a pass.
 
+### JSON field map
+
+The human report uses readable labels; `audit-report.json` uses tokens. The
+validator rejects the labels, so write the tokens:
+
+| Human label | JSON |
+| --- | --- |
+| do not ship / ship with fixes / ship / incomplete | `verdict`: `do_not_ship`, `ship_with_fixes`, `ship`, `incomplete` |
+| needs-repro count | `counts.needsRepro` |
+| policy-blocked / environment-blocked coverage | `coverage.policyBlocked`, `coverage.environmentBlocked` |
+| out-of-scope | not counted in `coverage`; up to 3 notes in top-level `outOfScope[]` |
+
+Every field, as `assets/audit-report.schema.json` and
+`assets/finding.schema.json` declare it (`?` marks optional):
+
+```text
+schemaVersion: "1.1"
+target
+mode: page|area|crawl|flow|data|visual|regression|a11y
+depth: recon|standard|forensic
+confidence: high|medium|low
+verdict: do_not_ship|ship_with_fixes|ship|incomplete
+validator?
+capabilities: {profile: hybrid|browser|screenshot|source|fetch-only, browser,
+  source, screenshots, console, network, filesystem, codeExecution}
+environment: {kind: production|staging|test|local|unknown,
+  mutationPolicy: read-only|safe-test-only}
+scope: {in[], out[], viewports[], persona, covered[], skipped[], stopReason?}
+counts: {blocker, major, minor, nit, needsRepro, recommendations}
+findings[]: {id: F-NNN, kind: defect|usability-risk|recommendation|needs-repro,
+  severity: blocker|major|minor|nit|n/a, confidence, title,
+  where: {route, viewport?, persona?}, repro[], expected,
+  expectedBasis[], actual, evidence[]: E-NNN, impact, rootCause, suggestedFix?}
+evidence[]: {id: E-NNN, type: screenshot|dom|text|arithmetic|console|network|source,
+  location, supports[]: F-NNN, redacted: yes|no|n/a}
+coverage: {totalInScope, tested, sampled, policyBlocked, environmentBlocked,
+  unreachable, samplingRule?}
+contradictionMatrix[]?
+recommendedNextAudit?
+outOfScope[]?
+```
+
+`expectedBasis[]` takes the values listed in §2. With `--json` the validator
+prints `{ok, errors[], warnings[]}`. These names are also declared in
+`references/contract.json`, which `tooling/skill_contracts.py` checks against
+the validator, the schemas and this section.
+
 ## 11. Tone
 
 Neutral, specific, concise. No praise padding, humiliation, or invented user

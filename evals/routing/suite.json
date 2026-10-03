@@ -5137,6 +5137,2213 @@
         "release-readiness"
       ],
       "reason": "A roadmap up to production with no existing roadmap is a whole-project baseline"
+    },
+    {
+      "id": "holdout-pl-brief-architect-2",
+      "prompt": "Zanim zaczniemy research, ustalmy kryteria akceptacji, odbiorcę i politykę źródeł dla tego ebooka.",
+      "lang": "pl",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher",
+        "artifact-acceptance"
+      ],
+      "reason": "Execution contract before research; not producing the ebook. Held-out case from the first Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to no skill (ambiguous)."
+    },
+    {
+      "id": "holdout-pl-competitive-intelligence-4",
+      "prompt": "Konkurent obniżył ceny o 30% – sprawdź, czy to prawda i co jeszcze zmienił w ofercie.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Verify and track an observed competitor change. Held-out case from the first Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to evidence-researcher."
+    },
+    {
+      "id": "holdout-pl-repair-operator-1",
+      "prompt": "Napraw uwagi z ostatniego audytu, ale tylko te zaakceptowane, i sprawdź, że nic się nie zepsuło.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor",
+        "release-readiness"
+      ],
+      "reason": "Bounded repair of accepted findings. Held-out case from the first Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to no skill (no_skill)."
+    },
+    {
+      "id": "holdout-pl-repair-operator-2",
+      "prompt": "Zamień wyniki recenzji na najmniejszy zestaw poprawek i zweryfikuj każdą.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Findings to minimal repair set. Held-out case from the first Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to no skill (no_skill)."
+    },
+    {
+      "id": "holdout-pl-science-roaster-2",
+      "prompt": "Przejrzyj krytycznie nasz preprint – czy wnioski przyczynowe wynikają z danych?",
+      "lang": "pl",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Causal-claim validity critique. Held-out case from the first Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to no skill (no_skill)."
+    },
+    {
+      "id": "holdout-multi-seo-audit-then-roadmap",
+      "prompt": "Run an SEO/GEO/AEO audit and then turn the accepted findings into a roadmap.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing",
+        "repo-to-roadmap"
+      ],
+      "reason": "Audit then roadmap needs two skills. Held-out case from the first Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to seo-geo-aeo-maxxing."
+    },
+    {
+      "id": "holdout-multi-teardown-then-roadmap",
+      "prompt": "Tear down Linear's onboarding, then fold the patterns into our product roadmap.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Teardown then roadmap. Held-out case from the first Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to no skill (no_skill)."
+    },
+    {
+      "id": "holdout-multi-pl-ci-then-council",
+      "prompt": "Przeskanuj zmiany u konkurencji, a potem przepuść wnioski przez Radę.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Monitor then decide. Held-out case from the first Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to ai-council."
+    },
+    {
+      "id": "holdout-pl-benchmark-curator-5",
+      "prompt": "Przygotuj zbiór przypadków testowych z podziałem na łatwe, średnie i trudne, z osobnym holdoutem.",
+      "lang": "pl",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Stratified eval corpus with holdout. Held-out case from the second Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to no skill (no_skill)."
+    },
+    {
+      "id": "holdout-pl-content-reviewer-5",
+      "prompt": "Przejrzyj rozdział drugi poradnika i wypisz, co jest niespójne z briefem.",
+      "lang": "pl",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Editorial review against brief. Held-out case from the second Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to no skill (no_skill)."
+    },
+    {
+      "id": "holdout-pl-customer-ops-5",
+      "prompt": "Zrób przegląd kolejki supportu i oznacz zgłoszenia, które wyglądają na incydent.",
+      "lang": "pl",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "Support queue triage. Held-out case from the second Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to no skill (no_skill)."
+    },
+    {
+      "id": "holdout-pl-portfolio-operator-5",
+      "prompt": "Co powinienem odpuścić w tym miesiącu, żeby zdążyć z projektami klientów?",
+      "lang": "pl",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Cross-commitment trade-off. Held-out case from the second Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to no skill (no_skill)."
+    },
+    {
+      "id": "holdout-pl-repo-to-roadmap-5",
+      "prompt": "Przeanalizuj cały projekt CometPen i powiedz, czego brakuje do wersji dla płacących klientów.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Whole-project gap baseline. Held-out case from the second Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to no skill (no_skill)."
+    },
+    {
+      "id": "holdout-multi-pl-support-then-sprint",
+      "prompt": "Przejrzyj zgłoszenia klientów, a następnie zaplanuj z tego priorytety na sprint.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "Support triage then sprint planning. Held-out case from the second Polish/multi-skill routing pass (2026-10), fixed by general signals in the round-4 pass (2026-10); routes to customer-ops."
+    },
+    {
+      "id": "this-week-before-production-roadmap-goes-to-repo-to-roadmap",
+      "prompt": "Roadmap for the next release before production: what should we fix this week?",
+      "lang": "en",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [
+        "repo-to-roadmap"
+      ],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "A this-week time box is weekly control, but repo-to-roadmap's 'roadmap ... before production' signal (12) outscores product-operator's 'what should we fix this week' (10). A generic 'this week' boost for product-operator broke the deliberate near-tie in test_near_tie_multi_intent_does_not_collapse_to_one_specialist, so it was not added."
+    },
+    {
+      "id": "r4-none-council-mention-1",
+      "prompt": "Take the build-versus-buy question for our billing engine to the Council.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "\"Take it to the council\" names the Council without invoking it; ai-council is explicit_only (tooling/tests/test_routing_policy.py pins this), so the prompt routes to no skill"
+    },
+    {
+      "id": "r4-ai-council-2",
+      "prompt": "Zapytaj Radę, czy zamykamy wersję desktopową.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-ai-council-3",
+      "prompt": "Chcę, żeby Rada rozstrzygnęła, czy przyjmujemy inwestora strategicznego.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-ai-humanize-1",
+      "prompt": "Rewrite this newsletter intro so it stops sounding machine-generated; keep the facts as they are.",
+      "lang": "en",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-ai-humanize-2",
+      "prompt": "Usuń z tego tekstu ślady AI i daj mu ludzki rytm.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-ai-humanize-3",
+      "prompt": "Humanize these release notes, they sound robotic.",
+      "lang": "en",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-artifact-acceptance-1",
+      "prompt": "Final check before we hand the market report over: does it satisfy the brief and the evidence requirements?",
+      "lang": "en",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-artifact-acceptance-2",
+      "prompt": "Zrób ostateczny odbiór tego white papera względem briefu: gotowe czy nie?",
+      "lang": "pl",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-artifact-acceptance-3",
+      "prompt": "Is this training guide really done, measured against the acceptance contract we wrote?",
+      "lang": "en",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-benchmark-curator-1",
+      "prompt": "Assemble a regression set of tricky routing prompts with provenance for each case.",
+      "lang": "en",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-benchmark-curator-2",
+      "prompt": "Przygotuj złoty zestaw przypadków do oceny skilla od tłumaczeń, z kontrolami negatywnymi.",
+      "lang": "pl",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-benchmark-curator-3",
+      "prompt": "Dedupe and stratify our evaluation dataset by difficulty, then freeze it.",
+      "lang": "en",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-brief-architect-1",
+      "prompt": "This research request is too fuzzy to start. Pin down audience, scope and done-criteria first.",
+      "lang": "en",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-brief-architect-2",
+      "prompt": "Zanim ktokolwiek zacznie pisać case study, ustalmy odbiorcę, cel i kryteria sukcesu.",
+      "lang": "pl",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-brief-architect-3",
+      "prompt": "Draft a brief for the partner guide so the writer and the researcher work from the same contract.",
+      "lang": "en",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-cometweb-context-1",
+      "prompt": "Refresh the CometWeb context: open PRs, Notion tasks and what's live on cometweb.io.",
+      "lang": "en",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-cometweb-context-2",
+      "prompt": "Zbierz aktualny kontekst CometWeb przed spotkaniem: Insight, CometPen, repozytoria.",
+      "lang": "pl",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-cometweb-context-3",
+      "prompt": "What changed across the CometWeb projects since Monday?",
+      "lang": "en",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-competitive-intelligence-1",
+      "prompt": "Keep an eye on our competitors' release notes and send me a digest every Friday.",
+      "lang": "en",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-competitive-intelligence-2",
+      "prompt": "Śledź zmiany cen u trzech konkurentów i daj znać, gdy coś się ruszy.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-competitive-intelligence-3",
+      "prompt": "Compare what our competitors changed on their pricing pages since the last snapshot.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-competitive-intelligence-4",
+      "prompt": "Konkurencja twierdzi, że ma integrację z SAP. Zweryfikuj to i dopisz do profilu konkurenta.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-content-reviewer-1",
+      "prompt": "Give me constructive notes on this whitepaper draft: clarity, gaps against the brief, usefulness.",
+      "lang": "en",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-content-reviewer-2",
+      "prompt": "Oceń ten szkic poradnika: struktura, jasność i czy odpowiada na potrzeby czytelnika.",
+      "lang": "pl",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-content-reviewer-3",
+      "prompt": "Do an editorial pass on chapter four and list what must change before publication.",
+      "lang": "en",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-content-roaster-1",
+      "prompt": "Brutally critique our onboarding email sequence and show where each claim falls apart.",
+      "lang": "en",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-content-roaster-2",
+      "prompt": "Rozjedź nasz landing page, każdy zarzut poprzyj cytatem.",
+      "lang": "pl",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-content-roaster-3",
+      "prompt": "Poke holes in the claims on our product page before the launch.",
+      "lang": "en",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-content-writer-1",
+      "prompt": "Write a research-backed guide on choosing a backup strategy for small offices.",
+      "lang": "en",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-content-writer-2",
+      "prompt": "Napisz rzetelny artykuł o tym, jak działa podpis elektroniczny, ze źródłami.",
+      "lang": "pl",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-content-writer-3",
+      "prompt": "Turn these interview notes into a clear knowledge-base article.",
+      "lang": "en",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-customer-ops-1",
+      "prompt": "Go through the open support tickets and tell me which ones are the same bug.",
+      "lang": "en",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-customer-ops-2",
+      "prompt": "Przejrzyj skrzynkę supportu i wyłap sprawy, które wymagają eskalacji.",
+      "lang": "pl",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-customer-ops-3",
+      "prompt": "Did the fix we shipped on Tuesday actually resolve the customer's login problem?",
+      "lang": "en",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-customer-ops-4",
+      "prompt": "Build an account 360 for the logistics client before the renewal call.",
+      "lang": "en",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-design-partner-finder-1",
+      "prompt": "Shortlist SaaS companies that would make good beta partners for an analytics plugin.",
+      "lang": "en",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-design-partner-finder-2",
+      "prompt": "Znajdź firmy, które mogłyby zostać naszymi partnerami do wspólnego rozwijania produktu.",
+      "lang": "pl",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-design-partner-finder-3",
+      "prompt": "Which of these pilot candidates have a real champion and urgency? Qualify them.",
+      "lang": "en",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-ebook-publisher-1",
+      "prompt": "Przygotuj poradnik PDF o RODO dla małych sklepów, z researchem i okładką.",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-ebook-publisher-2",
+      "prompt": "Produce a new ebook in our series about website accessibility basics.",
+      "lang": "en",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "longform-publisher"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-ebook-publisher-3",
+      "prompt": "Zweryfikuj nasz ebook o SEO lokalnym przed publikacją.",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-evidence-researcher-1",
+      "prompt": "Verify every number in this press release against the original sources.",
+      "lang": "en",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-evidence-researcher-2",
+      "prompt": "Zweryfikuj, czy te dane o rynku są aktualne i skąd naprawdę pochodzą.",
+      "lang": "pl",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-evidence-researcher-3",
+      "prompt": "Build an evidence pack on whether the new EU rule applies to SaaS vendors.",
+      "lang": "en",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-feedback-integrator-1",
+      "prompt": "Our skills keep making the same citation mistakes. Turn the pattern into instruction fixes and regression tests.",
+      "lang": "en",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-feedback-integrator-2",
+      "prompt": "Zbierz poprawki od użytkowników z ostatnich tygodni i znajdź powtarzające się błędy skilli.",
+      "lang": "pl",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-feedback-integrator-3",
+      "prompt": "Run a retrospective over the last month of eval failures.",
+      "lang": "en",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-longform-publisher-1",
+      "prompt": "Prepare the 2027 edition of the field guide from the canonical manuscript and rebuild the PDF.",
+      "lang": "en",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-longform-publisher-2",
+      "prompt": "Odśwież raport roczny do nowego wydania i wygeneruj DOCX oraz PDF.",
+      "lang": "pl",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-longform-publisher-3",
+      "prompt": "The HTML and PDF versions of the handbook disagree. Reconcile them with the manuscript.",
+      "lang": "en",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-portfolio-operator-1",
+      "prompt": "Across my consulting, the SaaS and the PhD, what should I cut this month?",
+      "lang": "en",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-portfolio-operator-2",
+      "prompt": "Mam za dużo projektów naraz. Co wstrzymać, a co oddelegować?",
+      "lang": "pl",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-portfolio-operator-3",
+      "prompt": "Plan my next 30 days across all commitments.",
+      "lang": "en",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-product-operator-1",
+      "prompt": "Is the roadmap in Notion in sync with what's merged on GitHub for the mobile app?",
+      "lang": "en",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-product-operator-2",
+      "prompt": "Co jest naprawdę zrobione w naszej aplikacji, a co tylko w Notion?",
+      "lang": "pl",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-product-operator-3",
+      "prompt": "Plan the next product cycle for the reporting module: what to build, verify, or stop.",
+      "lang": "en",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-product-teardown-1",
+      "prompt": "Reverse-engineer how Vercel's dashboard handles deploy previews and what we can reuse.",
+      "lang": "en",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-product-teardown-2",
+      "prompt": "Wyciągnij wzorce z onboardingu Duolingo, które warto wdrożyć w naszej aplikacji.",
+      "lang": "pl",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-product-teardown-3",
+      "prompt": "Study the Supabase repo and tell me which DX patterns we should copy.",
+      "lang": "en",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-quality-loop-operator-1",
+      "prompt": "Process this batch of help articles through the whole quality workflow, findings included.",
+      "lang": "en",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-quality-loop-operator-2",
+      "prompt": "Puść ten raport przez pełny cykl jakości: brief, recenzja, poprawki i odbiór.",
+      "lang": "pl",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-quality-loop-operator-3",
+      "prompt": "Govern the new skill candidate through canary and staged rollout with rollback ready.",
+      "lang": "en",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-release-readiness-1",
+      "prompt": "Release candidate 5.0.0-rc2: GO or NO-GO for production?",
+      "lang": "en",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-release-readiness-2",
+      "prompt": "Czy wersja 3.4 jest gotowa do wdrożenia na produkcję?",
+      "lang": "pl",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-release-readiness-3",
+      "prompt": "Pre-deploy gate for tag v1.9.3 of the payments service.",
+      "lang": "en",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-repair-operator-1",
+      "prompt": "Apply the fixes from the acceptance review and verify each one is closed.",
+      "lang": "en",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-repair-operator-2",
+      "prompt": "Popraw to, co wyszło w roaście, i sprawdź, że nic nie popsuliśmy.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-repair-operator-3",
+      "prompt": "Turn the reviewer's findings into a minimal patch set and re-verify.",
+      "lang": "en",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-repo-roaster-1",
+      "prompt": "Tear apart this monorepo's CI pipeline and migrations.",
+      "lang": "en",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-repo-roaster-2",
+      "prompt": "Zrób brutalny przegląd kodu w tym PR.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-repo-roaster-3",
+      "prompt": "Red-team our data pipeline code for race conditions.",
+      "lang": "en",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-repo-to-roadmap-1",
+      "prompt": "What's left to build in this repo before it's production-ready for paying users?",
+      "lang": "en",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-repo-to-roadmap-2",
+      "prompt": "Zrób bazową roadmapę dla całego repozytorium na podstawie kodu i Notion.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-repo-to-roadmap-3",
+      "prompt": "Do a full project baseline and dependency-aware roadmap for the analytics platform.",
+      "lang": "en",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-rubric-designer-1",
+      "prompt": "Create grading criteria for the content red team with evidence floors and blocker rules.",
+      "lang": "en",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-rubric-designer-2",
+      "prompt": "Zaprojektuj kryteria oceny odpowiedzi chatbota z jasnym zaliczeniem i niezaliczeniem.",
+      "lang": "pl",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-rubric-designer-3",
+      "prompt": "Build a reviewer scorecard for the onboarding docs before review starts.",
+      "lang": "en",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-science-roaster-1",
+      "prompt": "Peer-review my preprint harshly; I want every weak inference called out.",
+      "lang": "en",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-science-roaster-2",
+      "prompt": "Przejrzyj krytycznie metodologię w moim manuskrypcie.",
+      "lang": "pl",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-science-roaster-3",
+      "prompt": "Critique the statistics and causal claims in this paper like a hostile reviewer.",
+      "lang": "en",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-seo-geo-aeo-maxxing-1",
+      "prompt": "Run a complete search and AI visibility audit for our docs site.",
+      "lang": "en",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-seo-geo-aeo-maxxing-2",
+      "prompt": "Audyt SEO, GEO i AEO dla naszej strony, z porównaniem do konkurencji.",
+      "lang": "pl",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-seo-geo-aeo-maxxing-3",
+      "prompt": "Are we cited by AI assistants and how healthy is our technical SEO? End-to-end audit please.",
+      "lang": "en",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-auditor-1",
+      "prompt": "Review our agent skills repo for scope overlap and eval blind spots.",
+      "lang": "en",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-auditor-2",
+      "prompt": "Zrób audyt naszych skilli: kolizje wyzwalaczy i martwe referencje.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-auditor-3",
+      "prompt": "Check this skill package for supply-chain risks and package hygiene.",
+      "lang": "en",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-evaluator-1",
+      "prompt": "Benchmark the translation skill with and without the skill loaded across two hosts.",
+      "lang": "en",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "benchmark-curator"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-evaluator-2",
+      "prompt": "Sprawdź, czy nowa wersja skilla daje lepsze wyniki niż poprzednia.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-evaluator-3",
+      "prompt": "Compare our skill's success rate and cost against the no-skill baseline.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-orchestrator-1",
+      "prompt": "Audit the checkout flow, then gate release 4.1 on what you find.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-orchestrator-2",
+      "prompt": "Zbierz dowody, a potem przekaż je Radzie do decyzji.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-orchestrator-3",
+      "prompt": "Run everything needed for this goal end to end: research, write, then review.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-orchestrator-multiagent-1",
+      "prompt": "Use separate subagents for each step of this workflow.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-skill-orchestrator-multiagent-2",
+      "prompt": "Odpal każdy krok w osobnym subagencie, żeby się nie mieszały.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-web-app-auditor-1",
+      "prompt": "Test the account settings page for broken states and accessibility issues.",
+      "lang": "en",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-web-app-auditor-2",
+      "prompt": "Przeklikaj proces rejestracji na stagingu i zgłoś błędy.",
+      "lang": "pl",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-web-app-auditor-3",
+      "prompt": "QA the pricing calculator on our site: does it compute correctly on mobile?",
+      "lang": "en",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-none-1",
+      "prompt": "Format this SQL query nicely.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-none-2",
+      "prompt": "Jaka jest różnica między TCP a UDP?",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-none-3",
+      "prompt": "Generate a .gitignore for a Node project.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-none-4",
+      "prompt": "Napisz krótkie życzenia urodzinowe dla współpracownika.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4-none-5",
+      "prompt": "Don't audit anything, just explain what a 301 redirect is.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor",
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
+    },
+    {
+      "id": "r4b-none-council-mention-1",
+      "prompt": "Escalate the decision about splitting the company into two products to the council.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Moving a question \"to the council\" names the Council without invoking it; ai-council is explicit_only (tooling/tests/test_routing_policy.py pins this), so the prompt routes to no skill"
+    },
+    {
+      "id": "r4b-ai-council-2",
+      "prompt": "Zapytaj Radę, czy otwieramy biuro w Berlinie.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-ai-humanize-1",
+      "prompt": "Can you make this cover letter sound less like a bot wrote it?",
+      "lang": "en",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-ai-humanize-2",
+      "prompt": "Przepisz ten opis produktu, żeby nie brzmiał jak z ChatGPT.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-artifact-acceptance-1",
+      "prompt": "Before we deliver the due-diligence memo, confirm it passes the acceptance checklist from the brief.",
+      "lang": "en",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-artifact-acceptance-2",
+      "prompt": "Czy ta prezentacja dla zarządu spełnia wymagania z briefu? Oceń gotowość do oddania.",
+      "lang": "pl",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-benchmark-curator-1",
+      "prompt": "We need a challenge set for the code-review skill: hard cases, adversarial inputs, and a frozen hash.",
+      "lang": "en",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-benchmark-curator-2",
+      "prompt": "Ułóż korpus testowy dla skilla do klasyfikacji zgłoszeń, z warstwami trudności.",
+      "lang": "pl",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-brief-architect-1",
+      "prompt": "Nobody agrees what this report is for. Write the brief first: reader, purpose, evidence rules, done criteria.",
+      "lang": "en",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-brief-architect-2",
+      "prompt": "Doprecyzuj to zlecenie na white paper, zanim ktoś zacznie pisać.",
+      "lang": "pl",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-cometweb-context-1",
+      "prompt": "I need an up-to-date picture of all CometWeb products before the planning session.",
+      "lang": "en",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-cometweb-context-2",
+      "prompt": "Jaki jest aktualny stan CometBase i CometLens? Zbierz kontekst.",
+      "lang": "pl",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-competitive-intelligence-1",
+      "prompt": "Did any of our competitors change their free tier this quarter? Track it going forward.",
+      "lang": "en",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-competitive-intelligence-2",
+      "prompt": "Przygotuj cotygodniowy raport zmian u konkurentów.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-content-reviewer-1",
+      "prompt": "Read through my case study draft and tell me where the argument is weak or unclear.",
+      "lang": "en",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-content-reviewer-2",
+      "prompt": "Daj mi konstruktywny feedback do tego wpisu przed publikacją.",
+      "lang": "pl",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-content-roaster-1",
+      "prompt": "Savage review of our newsletter please, line by line.",
+      "lang": "en",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-content-roaster-2",
+      "prompt": "Bezlitośnie oceń naszą ofertę dla agencji.",
+      "lang": "pl",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-content-writer-1",
+      "prompt": "Draft a well-sourced explainer on how carbon offsets are verified.",
+      "lang": "en",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-content-writer-2",
+      "prompt": "Napisz poradnik o konfiguracji DNS dla początkujących na podstawie naszych notatek.",
+      "lang": "pl",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-customer-ops-1",
+      "prompt": "Three enterprise customers reported the same outage this morning. Coordinate the incident and the replies.",
+      "lang": "en",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-customer-ops-2",
+      "prompt": "Które obietnice dla klientów są przeterminowane?",
+      "lang": "pl",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-design-partner-finder-1",
+      "prompt": "Who would be a good lighthouse customer for our new compliance module? Give me a qualified shortlist.",
+      "lang": "en",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-design-partner-finder-2",
+      "prompt": "Wybierz z tej listy firmy do kohorty pilotażowej i uzasadnij wybór.",
+      "lang": "pl",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-ebook-publisher-1",
+      "prompt": "Make a white paper on zero-trust networking for our ebook series, research included.",
+      "lang": "en",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-ebook-publisher-2",
+      "prompt": "Napisz e-book o e-mail marketingu dla małych firm.",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-evidence-researcher-1",
+      "prompt": "Is it true that the regulation was postponed? Check the official sources and the effective date.",
+      "lang": "en",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-evidence-researcher-2",
+      "prompt": "Zweryfikuj twierdzenia z tego artykułu konkurencji na źródłach.",
+      "lang": "pl",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-feedback-integrator-1",
+      "prompt": "Look across the last twenty acceptance failures and tell me what keeps going wrong in our skills.",
+      "lang": "en",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "artifact-acceptance"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-feedback-integrator-2",
+      "prompt": "Te same błędy wracają w każdym przebiegu skilla. Zrób z tego wnioski i testy.",
+      "lang": "pl",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-longform-publisher-1",
+      "prompt": "Our playbook needs a 2027 refresh; keep the DOCX, PDF and HTML in lockstep with the manuscript.",
+      "lang": "en",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-longform-publisher-2",
+      "prompt": "Przygotuj kolejne wydanie przewodnika i zadbaj o zgodność PDF z manuskryptem.",
+      "lang": "pl",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-portfolio-operator-1",
+      "prompt": "Between my agency clients, the open-source project and teaching, what do I prioritize this month?",
+      "lang": "en",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-portfolio-operator-2",
+      "prompt": "Pomóż mi rozdzielić czas między pracę dla klientów, własny produkt i doktorat.",
+      "lang": "pl",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-product-operator-1",
+      "prompt": "Which roadmap items are marked done in Notion but never merged?",
+      "lang": "en",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-product-operator-2",
+      "prompt": "Co jest blokerem w tym sprincie dla aplikacji do faktur?",
+      "lang": "pl",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-product-teardown-1",
+      "prompt": "Break down how Figma's plugin ecosystem works and what we could replicate.",
+      "lang": "en",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-product-teardown-2",
+      "prompt": "Co możemy podpatrzeć w cenniku i onboardingu Canvy?",
+      "lang": "pl",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-quality-loop-operator-1",
+      "prompt": "Kick off the quality loop for this ebook draft and track every finding to closure.",
+      "lang": "en",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-quality-loop-operator-2",
+      "prompt": "Uruchom pełną pętlę jakości dla tych pięciu artykułów.",
+      "lang": "pl",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-release-readiness-1",
+      "prompt": "Can we push 2.3.1 to production tonight? Need a release verdict.",
+      "lang": "en",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-release-readiness-2",
+      "prompt": "Oceń gotowość hotfixa 4.0.2 do wdrożenia.",
+      "lang": "pl",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-repair-operator-1",
+      "prompt": "Fix everything the reviewer flagged in the docs and show me evidence each fix holds.",
+      "lang": "en",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-repair-operator-2",
+      "prompt": "Wprowadź poprawki z code review i potwierdź, że testy przechodzą.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-repo-roaster-1",
+      "prompt": "Brutally review this backend repository; I want file and line evidence.",
+      "lang": "en",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-repo-roaster-2",
+      "prompt": "Rozwal ten kod na części, szukam problemów z bezpieczeństwem i architekturą.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-repo-to-roadmap-1",
+      "prompt": "Map the entire platform and tell me which gates block a production launch.",
+      "lang": "en",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-repo-to-roadmap-2",
+      "prompt": "Co zostało do zbudowania w całej platformie przed startem produkcyjnym?",
+      "lang": "pl",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-rubric-designer-1",
+      "prompt": "Define pass/fail criteria and blocker rules for reviewing grant applications.",
+      "lang": "en",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-rubric-designer-2",
+      "prompt": "Zrób rubrykę do oceny odpowiedzi supportu.",
+      "lang": "pl",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-science-roaster-1",
+      "prompt": "Act as a harsh journal referee for my meta-analysis.",
+      "lang": "en",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-science-roaster-2",
+      "prompt": "Zrecenzuj krytycznie moją pracę doktorską pod kątem metod.",
+      "lang": "pl",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-seo-geo-aeo-maxxing-1",
+      "prompt": "Audit our blog's visibility in Google and in AI answer engines.",
+      "lang": "en",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-seo-geo-aeo-maxxing-2",
+      "prompt": "Dlaczego nie widać nas w AI Overviews? Zrób pełny audyt SEO.",
+      "lang": "pl",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-skill-auditor-1",
+      "prompt": "Audit the summarizer skill for broken references and registry drift.",
+      "lang": "en",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-skill-auditor-2",
+      "prompt": "Przejrzyj nasze skille pod kątem nachodzących na siebie opisów.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-skill-evaluator-1",
+      "prompt": "Run a with-versus-without experiment for the citation skill on two models.",
+      "lang": "en",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-skill-evaluator-2",
+      "prompt": "Czy nowy skill do streszczeń działa lepiej niż brak skilla? Zmierz to.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-skill-orchestrator-2",
+      "prompt": "Zrób research konkurencji, a potem na tej podstawie zaktualizuj roadmapę.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-skill-orchestrator-multiagent-1",
+      "prompt": "Run this as a multi-agent workflow with isolated agents per specialist.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-web-app-auditor-1",
+      "prompt": "Walk through the onboarding wizard in a browser and log every defect with a screenshot.",
+      "lang": "en",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-web-app-auditor-2",
+      "prompt": "Sprawdź formularz kontaktowy na telefonie: czy wysyła się poprawnie i czy jest dostępny.",
+      "lang": "pl",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-none-1",
+      "prompt": "Write unit tests for this date parser.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-none-2",
+      "prompt": "Co to jest Kubernetes?",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-none-3",
+      "prompt": "Check my spelling in this paragraph.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-none-4",
+      "prompt": "Explain what a design partner is.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4b-none-5",
+      "prompt": "Rewrite this function to use async/await.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-none-council-mention-1",
+      "prompt": "Bring the question of whether to open-source the core engine before the council.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Moving a question \"to the council\" names the Council without invoking it; ai-council is explicit_only (tooling/tests/test_routing_policy.py pins this), so the prompt routes to no skill"
+    },
+    {
+      "id": "r4c-ai-humanize-1",
+      "prompt": "This press release sounds AI-generated; make it read naturally without changing the claims.",
+      "lang": "en",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-ai-humanize-2",
+      "prompt": "Wygładź ten post, bo brzmi sztucznie i korporacyjnie.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-artifact-acceptance-1",
+      "prompt": "Has the onboarding handbook met every acceptance criterion we set? I need a ready / not ready call.",
+      "lang": "en",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-benchmark-curator-1",
+      "prompt": "Curate 150 evaluation prompts for the router, balanced across skills, with a sealed holdout split.",
+      "lang": "en",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-brief-architect-1",
+      "prompt": "The client asked for 'something on AI search' — turn that into a scoped brief with acceptance criteria.",
+      "lang": "en",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-brief-architect-2",
+      "prompt": "Rozpisz brief do raportu: odbiorca, cel, źródła, kryteria odbioru.",
+      "lang": "pl",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-cometweb-context-1",
+      "prompt": "Before the roadmap meeting, give me where every CometWeb repo and Notion board stands today.",
+      "lang": "en",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-competitive-intelligence-1",
+      "prompt": "Alert me whenever a competitor changes its positioning or launches a feature.",
+      "lang": "en",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-competitive-intelligence-2",
+      "prompt": "Co nowego u konkurencji w tym miesiącu? Zrób zestawienie zmian.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-content-reviewer-1",
+      "prompt": "Please review this FAQ page for clarity and missing answers before we publish.",
+      "lang": "en",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-content-roaster-1",
+      "prompt": "Stress-test our pricing page claims like a skeptical CFO would.",
+      "lang": "en",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-content-writer-1",
+      "prompt": "Write a sourced overview of passkeys for our documentation.",
+      "lang": "en",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-customer-ops-1",
+      "prompt": "A key client says invoices are wrong for the third month. Investigate and find what we promised them.",
+      "lang": "en",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-customer-ops-2",
+      "prompt": "Sprawdź, które zgłoszenia klientów dotyczą tego samego błędu i założ issue na GitHubie.",
+      "lang": "pl",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-design-partner-finder-1",
+      "prompt": "Recruit five early adopters for a paid pilot of the reporting add-on.",
+      "lang": "en",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-ebook-publisher-1",
+      "prompt": "Zrób praktyczny poradnik PDF o bezpieczeństwie WordPressa z okładką w stylu serii.",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-evidence-researcher-1",
+      "prompt": "Check whether these three market-size numbers come from independent sources or all cite the same report.",
+      "lang": "en",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-feedback-integrator-1",
+      "prompt": "Collect what users corrected in skill outputs this quarter and propose instruction changes.",
+      "lang": "en",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-longform-publisher-1",
+      "prompt": "Rebuild the PDF and DOCX of the annual report from the manuscript and check they match.",
+      "lang": "en",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-portfolio-operator-1",
+      "prompt": "I'm juggling a client launch, a conference talk and a side project. What should I drop this week?",
+      "lang": "en",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-product-operator-1",
+      "prompt": "What should the invoicing product team fix next, given what's in GitHub and Notion?",
+      "lang": "en",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "portfolio-operator"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-product-teardown-1",
+      "prompt": "What patterns from Shopify's checkout could we adapt for our booking flow?",
+      "lang": "en",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-quality-loop-operator-1",
+      "prompt": "Run brief, review, repair and acceptance on these docs as one quality pass and keep the finding lineage.",
+      "lang": "en",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-release-readiness-1",
+      "prompt": "Version 6.2.0 of the desktop app: is it ready for the stable channel?",
+      "lang": "en",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-repair-operator-1",
+      "prompt": "Address the accepted findings from the security review and confirm each fix.",
+      "lang": "en",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-repo-roaster-1",
+      "prompt": "Rip apart the error handling in this service's codebase.",
+      "lang": "en",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-repo-to-roadmap-1",
+      "prompt": "From the code and docs, what's still missing before this platform can go GA?",
+      "lang": "en",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-rubric-designer-1",
+      "prompt": "Write the scoring criteria for the hackathon judges before submissions open.",
+      "lang": "en",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-science-roaster-1",
+      "prompt": "Peer-review the methods section of my submission; be as tough as reviewer two.",
+      "lang": "en",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-seo-geo-aeo-maxxing-1",
+      "prompt": "Do a cross-pillar SEO, GEO and AEO diagnosis of our marketing site.",
+      "lang": "en",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-skill-auditor-1",
+      "prompt": "Quality-check the skill catalog for overlapping descriptions and missing evals.",
+      "lang": "en",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-skill-evaluator-1",
+      "prompt": "Measure trigger precision and recall for the research skill after the rename.",
+      "lang": "en",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-skill-orchestrator-multiagent-1",
+      "prompt": "Run research and council steps in isolated subagents.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-web-app-auditor-1",
+      "prompt": "Audit the admin dashboard UX and accessibility in the browser.",
+      "lang": "en",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-none-1",
+      "prompt": "Tear down the docker compose stack and rebuild it.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-none-2",
+      "prompt": "Add a teardown fixture to this pytest file.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-none-3",
+      "prompt": "What's the release schedule for Python 3.14?",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-none-4",
+      "prompt": "Put our competitors' names into a spreadsheet.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-none-5",
+      "prompt": "Translate this support reply into German.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-none-6",
+      "prompt": "Napisz funkcję w Pythonie, która liczy średnią.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-none-7",
+      "prompt": "What is a quality loop in manufacturing?",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "quality-loop-operator"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r4c-none-8",
+      "prompt": "Summarize this research paper in three sentences.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster"
+      ],
+      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
     }
   ]
 }

@@ -1,0 +1,235 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md",
+    "references/evidence-model.md",
+    "references/pattern-transfer.md"
+  ],
+  "scripts": {
+    "scripts/validate_pattern_ledger.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "SHAPES": "shape",
+        "MODES": "mode",
+        "SUBJECTS": "subject",
+        "CLAIM_LANES": "claim_lane",
+        "CLAIM_STATES": "claim_state",
+        "CATEGORIES": "category",
+        "GATES": "legal_ip",
+        "TRANSFER_MODES": "transfer_mode",
+        "VERDICTS": "verdict"
+      }
+    },
+    "scripts/score_patterns.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "VALID_GATES": "security_privacy"
+      }
+    }
+  },
+  "fields": {
+    "schema_version": {},
+    "destination": {},
+    "name": {},
+    "kind": {},
+    "source_targets": {},
+    "id": {},
+    "evidence": {},
+    "evidence_id": {},
+    "target_id": {},
+    "source": {},
+    "locator": {},
+    "source_type": {},
+    "note": {},
+    "confidence": {},
+    "patterns": {},
+    "problem": {},
+    "mechanism": {},
+    "source_observation": {},
+    "decision_reason": {},
+    "evidence_ids": {},
+    "target_evidence_ids": {},
+    "transfer": {},
+    "problem_fit": {},
+    "mechanism_fit": {},
+    "source_evidence_strength": {},
+    "destination_evidence_strength": {},
+    "implementation_feasibility": {},
+    "expected_upside": {},
+    "reversibility": {},
+    "maintenance_fit": {},
+    "strategic_fit": {},
+    "differentiation": {},
+    "dependency_risk": {},
+    "complexity_tax": {},
+    "opportunity_cost": {},
+    "legal_ip_risk": {},
+    "security_privacy_risk": {},
+    "measurement_risk": {},
+    "gates": {},
+    "implementation": {},
+    "provenance_note": {},
+    "target_surfaces": {},
+    "prerequisites": {},
+    "steps": {},
+    "effort_band": {},
+    "uncertainty": {},
+    "success_metric": {},
+    "rollback": {},
+    "kill_criteria": {},
+    "interactions": {},
+    "requires": {},
+    "enables": {},
+    "conflicts_with": {},
+    "substitutes_for": {},
+    "bundles_with": {},
+    "execution": {},
+    "overall": {},
+    "experiment": {},
+    "hypothesis": {},
+    "test_type": {},
+    "primary_metric": {},
+    "guardrail": {},
+    "baseline": {},
+    "success_rule": {},
+    "timebox_or_sample": {},
+    "changes_verdict": {},
+    "as_of": {
+      "unread": true
+    },
+    "version": {
+      "unread": true
+    },
+    "observed_at": {
+      "unread": true
+    },
+    "independence_group": {
+      "unread": true
+    },
+    "family_id": {
+      "unread": true
+    },
+    "shape": {
+      "enum": [
+        "SOURCE_ONLY",
+        "SOURCE_TO_TARGET",
+        "MULTI_SOURCE_TO_TARGET"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "SNAPSHOT",
+        "STANDARD",
+        "DEEP"
+      ]
+    },
+    "subject": {
+      "enum": [
+        "source",
+        "destination"
+      ]
+    },
+    "claim_lane": {
+      "enum": [
+        "source_behavior",
+        "source_implementation",
+        "source_rationale",
+        "source_outcome",
+        "destination_problem",
+        "destination_existing_capability",
+        "destination_constraint",
+        "destination_baseline"
+      ]
+    },
+    "claim_state": {
+      "enum": [
+        "OBSERVED",
+        "INFERRED",
+        "HYPOTHESIS",
+        "UNKNOWN"
+      ]
+    },
+    "category": {
+      "enum": [
+        "jtbd_workflow",
+        "information_architecture",
+        "interaction",
+        "activation_onboarding",
+        "collaboration_permissions",
+        "monetization",
+        "data_domain_model",
+        "architecture",
+        "developer_experience",
+        "reliability_operations",
+        "trust_safety",
+        "growth_distribution"
+      ]
+    },
+    "legal_ip": {
+      "enum": [
+        "clear",
+        "not_required",
+        "review",
+        "block",
+        "unknown"
+      ]
+    },
+    "security_privacy": {
+      "enum": [
+        "clear",
+        "not_required",
+        "review",
+        "block",
+        "unknown"
+      ]
+    },
+    "transfer_mode": {
+      "enum": [
+        "INSPIRE",
+        "REIMPLEMENT",
+        "INTEGRATE",
+        "REUSE_CODE",
+        "REUSE_ASSET"
+      ]
+    },
+    "verdict": {
+      "enum": [
+        "CANDIDATE",
+        "ADOPT",
+        "EXPERIMENT",
+        "BACKLOG",
+        "REJECT",
+        "REVIEW_REQUIRED"
+      ]
+    }
+  },
+  "outputs": {
+    "heuristic_score": {},
+    "gate_state": {
+      "enum": [
+        "clear",
+        "review",
+        "block"
+      ]
+    },
+    "suggested_action": {
+      "enum": [
+        "CANDIDATE",
+        "ADOPT",
+        "EXPERIMENT",
+        "BACKLOG",
+        "REJECT",
+        "REVIEW_REQUIRED"
+      ]
+    },
+    "score_components": {},
+    "positive": {},
+    "penalty": {},
+    "target_evidence_ceiling_applied": {}
+  },
+  "internal": [],
+  "doc_terms": [],
+  "evals": []
+}

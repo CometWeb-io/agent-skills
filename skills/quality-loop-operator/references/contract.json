@@ -1,0 +1,290 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "PROFILES": "profile",
+        "MODES": "mode",
+        "RECOMMENDED_MODES": "recommended_mode",
+        "REPLAY_STATUS": "replay_status",
+        "CACHE_DECISIONS": "decision",
+        "DEBT_SEV": "severity",
+        "DEBT_STATUS": "quality_debt.status",
+        "DEBT_KINDS": "kind",
+        "STAGE_SKILLS": "stages.skill",
+        "STATES": "stages.state",
+        "EVALUATOR_RESULTS": "result",
+        "RECONCILIATION_CLASSES": "reconciliation.status",
+        "ROLLOUT_STATES": "runtime_lifecycle.state",
+        "COMPAT_STATES": "contract_compatibility",
+        "HOST_SUPPORT": "host_support",
+        "STABILITY_STATUS": "stability_status",
+        "PAIRED_STATUS": "paired_status"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "schema": {
+      "unread": true
+    },
+    "run_id": {
+      "unread": true
+    },
+    "profile": {
+      "enum": [
+        "EDITORIAL",
+        "REPO_DEEP",
+        "RESEARCH",
+        "SALES",
+        "SKILL_QUALITY",
+        "TECHNICAL_DOCS"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "DEEP",
+        "DELTA",
+        "LIGHT",
+        "STANDARD"
+      ]
+    },
+    "as_of": {},
+    "candidate_id": {},
+    "base_candidate_id": {},
+    "contract_id": {},
+    "policy_lock": {},
+    "pack_id": {},
+    "revision": {},
+    "sha256": {},
+    "locked_before_evaluation": {},
+    "adaptive_depth": {},
+    "recommended_mode": {
+      "enum": [
+        "DEEP",
+        "DELTA",
+        "LIGHT",
+        "STANDARD"
+      ]
+    },
+    "override_approved": {},
+    "override_rationale": {},
+    "replay_status": {
+      "enum": [
+        "DRIFT",
+        "INCOMPLETE",
+        "REPRODUCIBLE"
+      ]
+    },
+    "cache_reuse": {},
+    "decision": {
+      "enum": [
+        "RECOMPUTE",
+        "REUSE"
+      ]
+    },
+    "fingerprint_match": {},
+    "source_status": {},
+    "quality_debt": {},
+    "severity": {
+      "enum": [
+        "BLOCKER",
+        "MAJOR",
+        "MINOR",
+        "NOTE"
+      ]
+    },
+    "quality_debt.status": {
+      "enum": [
+        "CLOSED",
+        "OPEN",
+        "SUPERSEDED"
+      ]
+    },
+    "kind": {
+      "enum": [
+        "CONTROL",
+        "EVIDENCE_GAP",
+        "FINDING",
+        "TEST_GAP",
+        "WAIVER"
+      ]
+    },
+    "due_at": {},
+    "closure_evidence": {},
+    "stages": {},
+    "stages.skill": {
+      "enum": [
+        "artifact-acceptance",
+        "benchmark-curator",
+        "brief-architect",
+        "content-reviewer",
+        "content-roaster",
+        "content-writer",
+        "repair-operator",
+        "repo-roaster",
+        "rubric-designer",
+        "science-roaster",
+        "skill-auditor",
+        "skill-evaluator"
+      ]
+    },
+    "stages.state": {
+      "enum": [
+        "BLOCKED",
+        "CHANGES_REQUIRED",
+        "DEFER",
+        "PASS",
+        "PENDING",
+        "RUNNING",
+        "SKIPPED"
+      ]
+    },
+    "skip_allowed": {},
+    "skip_rationale": {},
+    "rubric_hash": {},
+    "benchmark_hash": {},
+    "result": {
+      "enum": [
+        "DESIGN_READY",
+        "IMPROVED",
+        "INSUFFICIENT_EVIDENCE",
+        "NO_MATERIAL_CHANGE",
+        "REGRESSION",
+        "TRADEOFF"
+      ]
+    },
+    "reconciliation": {},
+    "reconciliation.status": {
+      "enum": [
+        "CONFLICT",
+        "CONSENSUS",
+        "NEAR_CONSENSUS",
+        "UNIQUE"
+      ]
+    },
+    "resolved": {},
+    "resolution_basis": {},
+    "runtime_lifecycle": {},
+    "runtime_lifecycle.state": {
+      "enum": [
+        "BLOCKED",
+        "CANARY_RUNNING",
+        "DEPRECATED",
+        "FULL",
+        "NOT_REQUESTED",
+        "READY_FOR_CANARY",
+        "READY_FOR_FULL",
+        "READY_FOR_STAGED",
+        "ROLLBACK_REQUIRED",
+        "STAGED_RUNNING"
+      ]
+    },
+    "contract_compatibility": {
+      "enum": [
+        "BACKWARD_COMPATIBLE",
+        "BREAKING",
+        "UNKNOWN"
+      ]
+    },
+    "host_support": {
+      "enum": [
+        "DEGRADED",
+        "REAL_HOST_VERIFIED",
+        "STATIC_SHAPE_ONLY",
+        "UNKNOWN",
+        "UNSUPPORTED"
+      ]
+    },
+    "stability_status": {
+      "enum": [
+        "FLAKY",
+        "INSUFFICIENT_DATA",
+        "NOT_USED",
+        "STABLE"
+      ]
+    },
+    "paired_status": {
+      "enum": [
+        "INCONCLUSIVE",
+        "INSUFFICIENT_DATA",
+        "NONINFERIOR",
+        "NOT_USED",
+        "SIGNIFICANT_IMPROVEMENT",
+        "SIGNIFICANT_REGRESSION"
+      ]
+    },
+    "material_change": {},
+    "canary_passed": {},
+    "observation_runs": {},
+    "min_observation_runs": {},
+    "rollback_version": {},
+    "rollback_executable": {},
+    "major_version_bump": {},
+    "migration_guide_present": {},
+    "removing_public_contract": {},
+    "deprecation_record": {},
+    "deprecation_notice": {},
+    "coverage": {
+      "unread": true
+    },
+    "revalidate": {
+      "unread": true
+    },
+    "completion_evidence": {
+      "unread": true
+    }
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "BLOCKED",
+        "CHANGES_REQUIRED",
+        "COMPLETE",
+        "INVALID",
+        "NEEDS_RECONCILIATION",
+        "READY_FOR_NEXT",
+        "READY_FOR_ROLLOUT"
+      ]
+    },
+    "next_stage": {},
+    "errors": {},
+    "unresolved_conflicts": {},
+    "blocking_quality_debt": {},
+    "software_release_verdict": {},
+    "skill_evaluation_result": {},
+    "rollout_status": {}
+  },
+  "internal": [
+    "input",
+    "artifact-acceptance",
+    "benchmark-curator",
+    "rubric-designer",
+    "skill-evaluator"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "BLOCKED",
+        "NEEDS_RECONCILIATION",
+        "READY_FOR_NEXT",
+        "CHANGES_REQUIRED",
+        "READY_FOR_ROLLOUT",
+        "COMPLETE"
+      ]
+    }
+  ]
+}

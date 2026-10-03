@@ -1,7 +1,10 @@
 from __future__ import annotations
 import copy
 import importlib.util
+import json
 from pathlib import Path
+
+import jsonschema
 
 BASE = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("content_roast_validator", BASE / "scripts" / "validate_roast.py")
@@ -9,140 +12,35 @@ v = importlib.util.module_from_spec(spec); assert spec and spec.loader; spec.loa
 
 
 def valid_report():
-    return {'schema': 'cometweb.content-roaster/v6',
-     'artifact': 'pricing-v9',
-     'review_outcome': 'MATERIAL_FINDINGS',
-     'source_manifest': [{'id': 'SRC-01',
-                          'kind': 'PAGE',
-                          'locator': 'pricing-v9',
-                          'role': 'PRIMARY',
-                          'version_state': 'PINNED',
-                          'instruction_boundary': 'TREAT_AS_DATA',
-                          'trust_class': 'SYSTEM_OF_RECORD'}],
-     'mode': 'FULL',
-     'tone': 'BRUTAL',
-     'lens': 'POSITIONING',
-     'review_profile': 'PRICING',
-     'review_contract': {'audience': 'agencies',
-                         'desired_action': 'start pilot',
-                         'decision_stage': 'evaluation',
-                         'decision_cost': 'HIGH',
-                         'known_constraints': [],
-                         'unknowns': []},
-     'coverage': {'level': 'COMPLETE',
-                  'scope_basis': 'FULL_ARTIFACT',
-                  'sampling_strategy': 'all sections',
-                  'coverage_confidence': 'high',
-                  'inspected': ['hero', 'proof'],
-                  'not_inspected': [],
-                  'limitations': []},
-     'quality_gates': {'scope': 'PASS',
-                       'contract': 'PASS',
-                       'evidence': 'PASS',
-                       'challenge': 'PASS',
-                       'severity': 'PASS',
-                       'repair': 'PASS',
-                       'boundary': 'PASS',
-                       'source_integrity': 'PASS',
-                       'assurance': 'PASS'},
-     'message_chain': {'problem': 'audit evidence is slow',
-                       'promise': 'client-ready evidence',
-                       'mechanism': 'structured checks',
-                       'proof': 'limited',
-                       'objection_handling': 'partial',
-                       'action': 'start pilot'},
-     'central_promise': 'Agencies get client-ready audit evidence.',
-     'claim_map': [{'id': 'CL-01',
-                    'claim': 'Client-ready evidence',
-                    'claim_type': 'OUTCOME',
-                    'decision_role': 'PRIMARY',
-                    'anchor': {'type': 'quote', 'value': 'Client-ready evidence', 'source_id': 'SRC-01'},
-                    'proof_status': 'WEAK',
-                    'proof_burden': 'HIGH'}],
-     'proof_debt_ledger': [{'id': 'PD-01',
-                            'claim_ref': 'CL-01',
-                            'debt_type': 'WEAK_PROOF',
-                            'required_evidence': 'bounded proof',
-                            'status': 'OPEN',
-                            'why_it_matters': 'paid commitment depends on trust'}],
-     'objection_ledger': [{'id': 'OB-01', 'objection': 'Will clients trust this?', 'relevance': 'Blocks pilot decision.', 'status': 'PARTIAL'}],
-     'root_causes': [{'id': 'RC-01', 'label': 'generic-promise', 'summary': 'Promise lacks mechanism.', 'claim_refs': ['CL-01']}],
-     'no_material_findings': False,
-     'first_attack_id': 'CR-001',
-     'findings': [{'id': 'CR-001',
-                   'finding_key': 'hero-generic-promise',
-                   'finding_aliases': [],
-                   'severity': 'MAJOR',
-                   'category': 'promise',
-                   'evidence_state': 'OBSERVED',
-                   'evidence_strength': 'STRONG',
-                   'scope_sensitivity': 'LOW',
-                   'anchor': {'type': 'quote', 'value': 'Everything you need', 'source_id': 'SRC-01'},
-                   'claim_refs': ['CL-01'],
-                   'root_cause_id': 'RC-01',
-                   'decision_impact': 'DECISION',
-                   'materiality': {'centrality': 'CENTRAL', 'consequence': 'HIGH', 'reversibility': 'EASY'},
-                   'observation': 'The headline is generic.',
-                   'failure_mode': 'The promise lacks audience and mechanism.',
-                   'why_it_matters': 'The offer is hard to distinguish.',
-                   'repair_class': 'COPY',
-                   'repair': 'Name audience and mechanism.',
-                   'verification': {'type': 'READER_TEST',
-                                    'method': 'Give the hero to target readers.',
-                                    'success_condition': 'Readers recover audience and mechanism.',
-                                    'failure_signal': 'Readers still describe a generic category.'},
-                   'falsifier_check': {'challenge': 'Mechanism may be explained before commitment.',
-                                       'searched_for': ['hero qualifier'],
-                                       'counterevidence': [],
-                                       'alternative_explanations': ['terse brand hero'],
-                                       'result': 'SURVIVES',
-                                       'notes': 'None present before the CTA.'},
-                   'confidence': 'high',
-                   'evidence_refs': ['EV-01'],
-                   'confidence_basis': {'directness': 'HIGH',
-                                        'scope_support': 'HIGH',
-                                        'counterevidence_status': 'ADDRESSED',
-                                        'independence': 'NONE',
-                                        'rationale': 'The finding is directly anchored and counterevidence was explicitly challenged.'},
-                   'residual_risk': {'after_repair': 'LOW', 'closure_dependency': 'Run the stated verification before closure.'},
-                   'diagnosis_ref': 'DX-01'}],
-     'resolution_ledger': [],
-     'verification_queue': [],
-     'preserve': [],
-     'core_fix': 'Make the primary promise specific.',
-     'review_plan': {'objective': 'Find material failures without inflating false positives.',
-                     'must_inspect': ['primary claim/invariant', 'highest-consequence path'],
-                     'attack_surfaces': ['evidence-to-conclusion chain', 'counterevidence'],
-                     'sampling_strategy': 'risk-first review of the pinned primary source',
-                     'stop_conditions': ['stop when additional findings do not change repair or risk posture'],
-                     'escalation_conditions': ['escalate when a top-severity finding remains scope-sensitive']},
-     'assurance': {'mode': 'SINGLE_REVIEW',
-                   'independence': 'NONE',
-                   'second_pass_status': 'NOT_RUN',
-                   'disagreement_summary': [],
-                   'limitations': ['No independent second reviewer was run.'],
-                   'pass_records': [{'pass_id': 'PASS-PRIMARY',
-                                     'role': 'PRIMARY',
-                                     'context_ref': 'current-context',
-                                     'status': 'COMPLETED',
-                                     'blind_to_prior_findings': False,
-                                     'source_refs': ['SRC-01']}]},
-     'evidence_register': [{'id': 'EV-01',
-                            'source_id': 'SRC-01',
-                            'kind': 'OBSERVATION',
-                            'locator': 'primary reviewed evidence',
-                            'summary': 'Direct evidence supporting the material review finding.',
-                            'strength': 'STRONG',
-                            'limitations': []}],
-     'evidence_conflicts': [],
-     'outcome_basis': {'surviving_finding_ids': ['CR-001'], 'withdrawn_candidate_count': 0, 'unresolved_candidate_count': 0, 'reason': 'One material finding survived evidence and falsifier review.'},
-     'limitations': [],
-     'diagnosis_ledger': [{'id': 'DX-01',
-                           'claim_refs': ['CL-01'],
-                           'diagnosis_class': 'POSITIONING',
-                           'evidence_refs': ['EV-01'],
-                           'repair_owner': 'CONTENT',
-                           'summary': 'The primary promise is too generic for the decision burden.'}]}
+    # One fixture is the valid report for these tests and for the contract check
+    # (references/contract.json evals), so the two cannot drift apart.
+    return json.loads((BASE / "tests" / "report-valid.json").read_text(encoding="utf-8"))
+
+
+SCHEMA = json.loads((BASE / "references" / "report.schema.json").read_text(encoding="utf-8"))
+
+
+def schema_errors(report):
+    return [e.message for e in jsonschema.Draft202012Validator(SCHEMA).iter_errors(report)]
+
+
+def test_report_schema_accepts_the_valid_report():
+    assert schema_errors(valid_report()) == []
+
+
+def test_report_schema_does_not_require_what_the_validator_leaves_optional():
+    # resolution_ledger is required only in DELTA mode and root_causes only when useful.
+    r = valid_report(); del r["resolution_ledger"]; del r["root_causes"]; r["findings"][0]["root_cause_id"] = None
+    assert v.validate(r) == []
+    assert schema_errors(r) == []
+
+
+def test_report_schema_enums_match_the_validator():
+    props = SCHEMA["properties"]
+    assert set(props["lens"]["enum"]) == v.LENSES
+    assert set(props["mode"]["enum"]) == v.MODES
+    assert set(props["tone"]["enum"]) == v.TONES
+    assert set(props["review_profile"]["enum"]) == v.PROFILES
 
 
 def test_valid_report_passes():

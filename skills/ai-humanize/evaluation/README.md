@@ -42,6 +42,36 @@ Exit codes and per-case states:
 
 The per-case states are `automated_pass`, `review`, `missing_output` and `invalid_output`. The former `pass` state is deliberately not emitted. Semantic-risk warnings from the guard lead to `review`, even when `guard_passed` is true. The guard itself continues to report hard-token checks separately from semantic heuristics for backwards compatibility.
 
+Each manifest case (`redteam-cases.json` is a JSON list of 1 to 1000 cases) has exactly these keys:
+
+```text
+id: unique, lowercase letters, digits, _ and -, at most 128 characters
+language: en|pl
+request: the instruction given to the model
+mode_expectation: the rewrite depth a reviewer should expect, free text
+source: the text to rewrite
+manual_checks[]: at least one case-specific review criterion
+protected[]: optional exact terms the output must keep
+style_reference: optional voice sample; content from it must not enter the output
+```
+
+`release_check.py` loads the manifest through the scorer's own loader, so a case the scorer would reject fails the release gate too.
+
+With `--json` the scorer prints one result per case:
+
+```text
+id, manual_checks: copied from the case
+status: automated_pass|review|missing_output|invalid_output
+manual_review: not_performed
+semantic_equivalence: not_verified
+claim_assessment: heuristic_only
+source_sha256, case_sha256: fingerprints of the case
+output_sha256: fingerprint of the saved output (scored cases only)
+guard_passed: the strict rewrite_guard verdict
+missing_invariants, added_invariants, semantic_risk_markers: the guard's findings
+provenance_string_flags[]: unsupported-claim strings found in the output
+```
+
 Keep one UTF-8 `<case-id>.txt` output per declared case. Unknown `.txt` filenames, duplicate or unsafe case IDs, empty manifests and nonfinite JSON values are rejected. Empty, unreadable, oversized or symlinked output files do not count as a completed case. Include no credentials or customer data in test inputs.
 
 The result records case/source/output SHA-256 fingerprints. These bind the report to supplied bytes; they do not authenticate their author, prove a model ran, or establish factual correctness. Reusing the input verbatim can pass automatic checks without being a good rewrite.

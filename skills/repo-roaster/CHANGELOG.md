@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [6.1.1] - 2026-10-03
+
+- Declared the report contract in `references/contract.json` (`cometweb.skill-contract/v1`). Until now only the top level was written down: `references/output-contract.md` named the control-plane blocks, while `scripts/validate_repo_roast.py` checked about 180 keys at every nesting level and their value lists that no reference listed, so an agent building a report from the docs had to guess them. `references/output-contract.md` now carries a field reference with every key the validator reads and every value it accepts, plus the `scan_source_risks.py` output; `tooling/skill_contracts.py` checks it against the validator, `report.schema.json` and the new fixture `tests/report-valid.json`, which the unit tests now load instead of an inline copy.
+- The validator binds each enum to one named constant: a value list shared by two fields gets an alias (`COVERAGE_CONFIDENCE`, `REGISTER_STRENGTH`) and the pass-record and source-boundary values that were inline literals become `PASS_ROLES`, `PASS_STATUSES` and `INSTRUCTION_BOUNDARY`. Behaviour is unchanged.
+- `report.schema.json` no longer requires `root_causes` or `resolution_ledger`: the validator accepts a report without them (RECHECK needs `resolution_ledger`), so a report it passed could fail the schema. `tests/` now validate the fixture against the schema and pin the schema enums to the validator. The schema also gains the `lenses` item enum it was missing.
+- `references/output-contract.md` said `NOT_VERIFIED` cannot be promoted into an observed defect; no such evidence state exists. It now names the real states (`INFERRED`, `OBSERVED_*`). The new field reference also documents the `inventory_repo.py` snapshot and the `compare_inventories.py` delta that reads it, and `FAILURE_DOMAIN_STATUS` aliases the ledger status shared with `state_transition_ledger`.
+- `scripts/scan_source_risks.py` (shared across the three roasters) reads what it checked: the walk holds a descriptor per directory (`os.fwalk`), each file is opened relative to it with `O_NOFOLLOW | O_NONBLOCK`, and the regular-file and size checks run on the open descriptor (`fstat`) instead of on the path before reading. A file swapped for a symlink or FIFO between listing and reading is counted as skipped, not followed or blocked on; reads are bounded by `--max-bytes` even when a file grows. Tests: `tooling/tests/test_scan_source_risks.py`.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [6.1.0] - 2026-10-02
 
 - Front door cut from 21,992 to 12,861 bytes by progressive disclosure: the full step procedure and lens definitions move to `references/workflow.md`, and the review setup (steps 1A-1D), closure audit, and production guidance move to the new shared `references/review-operations.md`. The core contract, severity and reachability gates, outcome rules, hard boundaries, and every load trigger stay in `SKILL.md`.

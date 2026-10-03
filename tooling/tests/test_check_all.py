@@ -84,7 +84,7 @@ def test_validate_local_runs_a_subset_of_the_gates() -> None:
 
 def test_fast_leaves_out_only_the_slow_or_networked_gates() -> None:
     slow = {g.id for g in check_all.GATES if not g.fast}
-    assert slow == {"pip_audit", "eval_strength", "plugin_release", "public_safety_history", "pytest",
+    assert slow == {"pip_audit", "sast", "eval_strength", "plugin_release", "public_safety_history", "pytest",
                     "installation_acceptance"}
 
 

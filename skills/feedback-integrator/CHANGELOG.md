@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.7.2] - 2026-10-03
+
+- `references/output-contract.md` described an output the kernel never
+  produces (`patterns[]: {pattern_id, observations[], independent_contexts,
+  outcome_mix, state}`, `proposals[]: {change, ...}`) and no input at all; the
+  kernel reads `records[]` and returns counts plus `proposals`, `watch`,
+  `retired` and `invalid` items keyed by `pattern`. It also omitted the
+  RETIRED status. The reference now documents the input record (`pattern`,
+  `severity`, `root_layer`, `outcome`, `observed_at`, `context_id`, `run_id`,
+  `systemic`, `evidence`, `regression_test`, `test_gap`, `proposed_change`),
+  the run options (`min_count`, `as_of`, `window_days`, `strict`), the output
+  shape and every `reason`.
+- `references/learning-contract.md` used `status` for the proposal lifecycle
+  (ACCEPTED, VERIFIED, ...), which clashed with the kernel's `status`; it is
+  now `lifecycle_status`, and the reader-only fields are named.
+- The champion/challenger promotion payload (`baseline_version`,
+  `challenger_version`, `frozen_case_count`, `repeated_runs`, `improvements`,
+  `regressions`, `safety_regression`, `evaluation_scope`) is now documented in
+  `references/champion-challenger.md`.
+- `min_count` was not validated: a string crashed the comparison and `0` let a
+  single context become a proposal. A `min_count` that is not a positive
+  integer is now INVALID with `min_count:invalid`; three eval cases pin it.
+- New `references/contract.json` binds the three enums to the kernel
+  constants that enforce them and checks every eval input against the
+  contract.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.7.1] - 2026-10-03
 
 - `references/failure-minimization.md` no longer names `tooling/failure_minimizer.py` or `tooling/regression_bisect.py`, which do not ship in this repository.

@@ -1,0 +1,95 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "MODES": "mode",
+        "FLOORS": "evidence_floor",
+        "MATERIAL": "materiality"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "rubric_id": {},
+    "revision": {},
+    "purpose": {},
+    "target_type": {},
+    "mode": {
+      "enum": [
+        "DEEP",
+        "LIGHT",
+        "STANDARD"
+      ]
+    },
+    "candidate_blind": {},
+    "frozen_before_review": {},
+    "required_dimensions": {},
+    "criteria": {},
+    "id": {},
+    "dimension": {},
+    "description": {},
+    "observable": {},
+    "pass_condition": {},
+    "fail_condition": {},
+    "evidence_floor": {
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ]
+    },
+    "materiality": {
+      "enum": [
+        "critical",
+        "material",
+        "supporting"
+      ]
+    },
+    "blocker": {},
+    "weight": {},
+    "anti_gaming": {},
+    "no_hidden_criteria": {},
+    "no_post_hoc_changes": {}
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "INVALID",
+        "NEEDS_REVISION",
+        "READY_TO_FREEZE"
+      ]
+    },
+    "errors": {},
+    "missing_dimensions": {},
+    "rubric_hash": {},
+    "criteria_count": {},
+    "blocker_count": {},
+    "frozen": {}
+  },
+  "internal": [
+    "input"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "NEEDS_REVISION",
+        "READY_TO_FREEZE"
+      ]
+    }
+  ]
+}

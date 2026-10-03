@@ -45,9 +45,55 @@ higher floor. `checks` must be a nonempty array. `governance_gates` is an array,
 empty only when no routed surface requires one. Optional `domain_weights` and
 `thresholds` may not disable the hard gates.
 
+## Field reference
+
+Every key the engine reads. Values are compared lower-cased and trimmed.
+
+```text
+manifest_version      integer 2
+profile               saas_web | api_service | mobile_app | desktop_app | internal_tool | oss_library | generic
+mode                  fast | standard | deep
+release               id, environment, as_of, commit_sha, image_digest, artifact_id,
+                      build_number, config_digest, tag, deployment_id
+scope                 audience, commercial, commercial_model, risk_flags,
+                      governance_surfaces, risk_assessment_complete, notes
+risk_flags            {flag: yes | no | unknown}
+checks[]              id, domain, gate, title, owner, notes, status, severity, binding,
+                      applicable, evidence_level, required_evidence, freshness, weight,
+                      na_reason, evidence, control_owner, mitigation, control_due,
+                      risk_acceptance
+evidence              summary, candidate_ref, environment, last_verified_at, observed_at,
+                      expires_at, config_digest, source_type, location
+candidate_ref         commit_sha | image_digest | artifact_id | build_number | id | tag |
+                      deployment_id | environment | config_digest (object), or ID string/list
+risk_acceptance       approved_by, owner, rationale, mitigation, expires_at, status,
+                      approval_status, approved
+governance_gates[]    surface, status, evidence, rationale, control_owner, control, control_due
+domain_weights        {domain: number >= 0}
+thresholds            go_score, conditional_score, min_coverage (0-100; floors per risk tier)
+```
+
+`domain` is `product | qa | security | ops | docs | billing | support`. `gate` is one
+of the canonical gate families: `release_scope_acceptance`, `candidate_verification`,
+`security_release`, `release_delivery`, `recovery_strategy`, `observability`,
+`operator_docs`, `consumer_docs`, `support_path`, `billing_entitlements`,
+`billing_state_transitions`, `auth_access_control`, `migration_integrity`,
+`sensitive_data_handling`, `api_compatibility`, `infra_resilience`, `store_delivery`,
+`incident_regression`, `ai_safety_behavior`. Defaults: `status` `unknown`, `severity`
+`major`, `binding` false, `applicable` true, `evidence_level` `missing`,
+`required_evidence` `verified` when binding and `supported` otherwise, `freshness`
+`unknown`, `weight` by severity. A governance gate's `status` defaults to
+`counsel_required`; its mitigation key is `control` (a check uses `mitigation`).
+`approval_status` is an alias of `risk_acceptance.status` with the same values.
+`source_type` and `location` are recorded for reviewers; the engine does not read them.
+A string `evidence` is read as its `summary`.
+
+The bootstrapper's `--context` file takes `profile`, `mode`, `release` and `scope`
+with the same rules, and rejects unknown scope keys.
+
 ## Candidate identity
 
-`release` needs a nonempty `id`, a known `environment`, an explicit-offset ISO
+`release` needs a nonempty `id`, a nonempty `environment` (any exact string; evidence must repeat it verbatim), an explicit-offset ISO
 `as_of`, and at least one immutable identity below. Null, booleans, objects and
 placeholder strings are not identities. Optional malformed identity fields create
 an identity gap even when another valid identity exists.
@@ -100,10 +146,10 @@ Checks have a stable string `id`, canonical `domain`, optional canonical `gate`,
 `title`, `severity`, `status`, and evidence. `binding`/`applicable` must be real
 booleans; `"false"`, `0`, and `1` are not accepted booleans.
 
-Statuses: `pass | pass_with_controls | accepted_risk | fail | unknown | na`.
-Severities: `blocker | critical | major | minor`.
-Evidence levels: `missing | claimed | supported | verified`.
-Freshness: `current | stale | mismatched | unknown`.
+Check `status`: `pass | pass_with_controls | accepted_risk | fail | unknown | na`.
+`severity`: `blocker | critical | major | minor`.
+`evidence_level` and `required_evidence`: `missing | claimed | supported | verified`.
+`freshness`: `current | stale | mismatched | unknown`.
 
 The minimum required evidence is engine-owned. Binding `operator_docs`,
 `consumer_docs` and `support_path` can use `supported`; other canonical binding
@@ -143,8 +189,12 @@ instant. If both are supplied and disagree, neither is cherry-picked. Observatio
 must not be after `as_of`. Optional `expires_at`, when present, must parse and be
 strictly after the assessment and observation. An invalid expiry is not ignored.
 
-`evidence_issues` lists reasons such as `environment_missing_or_mismatched`,
-`candidate_binding_missing_or_mismatched`, and `expiry_invalid`.
+`evidence_issues` lists the reasons a positive or binding check was not admitted:
+`evidence_summary_missing`, `observation_time_missing_or_invalid`,
+`observation_times_conflict`, `observation_after_assessment`, `expiry_invalid`,
+`evidence_expired`, `expiry_before_observation`,
+`candidate_binding_missing_or_mismatched`, `environment_missing_or_mismatched`,
+`configuration_missing_or_mismatched`, `environment_mismatched`.
 
 ## Controls, risk acceptance, and governance
 
@@ -227,3 +277,29 @@ Reversed assessment chronology is rejected.
 Output states `assessment_basis: declared_manifest`,
 `evidence_authentication: not_performed`, and
 `deployment_authorization: not_provided`. These boundaries also apply to `GO`.
+
+## Result keys
+
+```text
+verdict               GO | GO_WITH_CONTROLS | NO_GO | DEFER
+reason                the decisive conditions, joined by "; "
+check_states          {check id: effective_status after evidence admission}
+gating_metrics        unrounded readiness_score and evidence_coverage used by the gate
+readiness_score       display score, one decimal
+evidence_coverage     display coverage, one decimal
+required_gates        gate families derived from profile and scope
+missing_required_gates
+scope_gaps            unresolved scope answers (audience, commercial, risk flags, ...)
+scope_warnings        unread scope keys: code, key, message, suggestion
+binding_unknowns      binding checks without admissible evidence
+blocking_failures     failed binding or blocker/critical/major checks
+unresolved_conditions controls or risk acceptances not in force
+contract_hash         normalized requirements fingerprint
+contract_mismatch     true when --expected-contract-hash differs
+snapshot_hash         manifest fingerprint
+```
+
+`effective_status` uses the check `status` values; an unproven positive claim becomes
+`unknown`. With `--previous`, the delta adds `resolved_blockers`, `removed_blockers`,
+`blockers_no_longer_proven_resolved`, `changed_check_requirements` and
+`no_longer_required_gates`.

@@ -1,0 +1,76 @@
+{
+  "skill": "product-operator",
+  "contract": "skills/product-operator/references/output-contract.md",
+  "ordered_sections": true,
+  "forbid_embedded_json": true,
+  "sections": [
+    {"id": "blocker", "title": "BLOCKER", "aliases": ["blockers?"], "label": true, "required": false},
+    {"id": "verify-now", "title": "VERIFY NOW", "aliases": ["verify now"], "label": true},
+    {"id": "decision-now", "title": "DECISION NOW", "aliases": ["decision now"], "label": true},
+    {"id": "now", "title": "NOW", "aliases": ["now"], "label": true},
+    {"id": "next", "title": "NEXT", "aliases": ["next"], "label": true},
+    {"id": "later", "title": "LATER", "aliases": ["later"], "label": true},
+    {"id": "watch", "title": "WATCH", "aliases": ["watch"], "label": true},
+    {"id": "stop", "title": "STOP", "aliases": ["stop"], "label": true}
+  ],
+  "required_any": [
+    {"id": "action-sections", "sections": ["blocker", "verify-now", "decision-now", "now"],
+     "message": "the brief has none of BLOCKER, VERIFY NOW, DECISION NOW or NOW; say what happens next"}
+  ],
+  "verdict": {
+    "tokens": ["READY", "PROVISIONAL", "BLOCKED"],
+    "authorizing": ["READY"],
+    "required": false,
+    "token_optional": true,
+    "primary": {"line": "^\\s*\\**(?:Stan|State|Status)\\**\\s*:"},
+    "json": [
+      {"rule": "sidecar-readiness", "path": "readiness.status", "when": {"readiness": "*"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "listed-blocker", "type": "section_items", "section": "blocker", "none_pattern": "^none\\b"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "state-line", "pattern": "^\\s*\\**(?:Stan|State|Status)\\**\\s*:\\s*\\S",
+     "message": "the brief does not open with a one-sentence 'Stan:' line"},
+    {"type": "max_items", "rule": "blocker-cap", "section": "blocker", "max": 3},
+    {"type": "max_items", "rule": "verify-now-cap", "section": "verify-now", "max": 3},
+    {"type": "max_items", "rule": "decision-now-cap", "section": "decision-now", "max": 3},
+    {"type": "max_items", "rule": "now-cap", "section": "now", "max": 3},
+    {"type": "max_items", "rule": "next-cap", "section": "next", "max": 3},
+    {"type": "max_items", "rule": "stop-cap", "section": "stop", "max": 3},
+    {"type": "items_require", "rule": "now-done-when", "section": "now", "pattern": "Done:\\s*\\S",
+     "code": "CONTRACT_VIOLATION", "message": "a NOW action has no observable 'Done:' condition"},
+    {"type": "items_require", "rule": "verify-done-when", "section": "verify-now", "pattern": "Done:\\s*\\S",
+     "code": "CONTRACT_VIOLATION", "message": "a VERIFY NOW item has no observable 'Done:' condition"},
+    {"type": "items_require", "rule": "decision-options", "section": "decision-now", "pattern": "options?:[^\\n]*\\S\\s*/\\s*\\S",
+     "code": "CONTRACT_VIOLATION", "message": "a DECISION NOW item does not list at least two unresolved options"},
+    {"type": "items_require", "rule": "decision-handoff", "section": "decision-now", "pattern": "Handoff:\\s*\\S",
+     "code": "CONTRACT_VIOLATION", "message": "a DECISION NOW item names no specialist handoff"},
+    {"type": "items_forbid", "rule": "decision-answered", "section": "decision-now",
+     "pattern": "\\b(?:recommend(?:ed|ation|s)?|I(?:'d| would) (?:choose|pick|go with)|we should (?:choose|pick|go with)|best option|go with option|zalecam|rekomend\\w*)\\b",
+     "code": "CONTRACT_VIOLATION", "message": "Product Operator must not answer the decision it delegates"},
+    {"type": "items_forbid", "rule": "blocker-not-blocking", "section": "blocker",
+     "pattern": "\\b(?:does not block|doesn't block|non-blocking|nie blokuje)\\b",
+     "code": "CONTRACT_VIOLATION", "message": "an item that does not block the current goal is not a BLOCKER; move it to LATER/WATCH or VERIFY NOW"},
+    {"type": "word_budget", "rule": "word-budget", "mode_pattern": "\\b(PULSE|STANDARD|DELTA|DEEP|RELEASE)\\b",
+     "default_mode": "STANDARD", "budgets": {"PULSE": 180, "STANDARD": 350, "DELTA": 350, "DEEP": 500, "RELEASE": 500}}
+  ],
+  "ids": [
+    {"rule": "dependency-ids",
+     "defined_in": [
+       {"json": "blockers[*].id", "when": {"readiness": "*"}},
+       {"json": "verify_now[*].id", "when": {"readiness": "*"}},
+       {"json": "decision_now[*].id", "when": {"readiness": "*"}},
+       {"json": "now[*].id", "when": {"readiness": "*"}},
+       {"json": "next[*].id", "when": {"readiness": "*"}},
+       {"json": "later[*].id", "when": {"readiness": "*"}}
+     ],
+     "refs_json": ["verify_now[*].depends_on[*]", "now[*].depends_on[*]", "next[*].depends_on[*]", "later[*].depends_on[*]"],
+     "defined_by": "no sidecar item has that ID, so the dependency cannot be sequenced"}
+  ],
+  "sidecars": [
+    {"rule": "operator-report", "detect": {"has_keys": ["protocol_version", "readiness", "goal"]},
+     "validator": "skills/product-operator/scripts/operator_kernel.py", "function": "validate_report"}
+  ]
+}

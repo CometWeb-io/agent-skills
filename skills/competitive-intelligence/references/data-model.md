@@ -207,10 +207,12 @@ Events are append-only JSONL records:
   "evidence_ids": ["ev-20260825-001"],
   "implication": "May change relative price positioning for the Pro segment.",
   "implication_confidence": 0.76,
-  "disposition": "DEEP_DIVE",
+  "disposition": "RESPOND",
   "status": "OPEN"
 }
 ```
+
+The keys the kernel actually reads, and which of these it does not check, are listed in `references/kernel-inputs.md`.
 
 `event_key` identifies the same observed transition and is used for deduplication. `event_id` identifies the stored event record.
 

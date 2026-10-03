@@ -1,13 +1,13 @@
 interface:
-  display_name: Evidence Researcher
-  short_description: claim decomposition; evidence edges; falsifiers; Evidence Pack
-  default_prompt: 'Build an Evidence Pack for my question: decompose claims, verify sources, run falsifier passes, and report readiness without making the final decision.'
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  display_name: "Evidence Researcher"
+  short_description: "claim decomposition; evidence edges; falsifiers; Evidence Pack"
+  default_prompt: "Use $evidence-researcher to build an Evidence Pack for my question, with verified sources, falsifier passes and a readiness verdict."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true

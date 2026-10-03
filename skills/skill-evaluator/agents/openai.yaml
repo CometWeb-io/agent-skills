@@ -1,13 +1,13 @@
 interface:
-  display_name: Skill Evaluator
-  short_description: skill experiment design; behavioral lift and resource
-  default_prompt: 'Use the Skill Evaluator skill for: Design and evaluate Agent Skill experiments that measure whether a skill improves model behavior, discovery, task success, reliability, cost, or latency relative to a no-skill/prior-version baseline, '
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  display_name: "Skill Evaluator"
+  short_description: "skill experiment design; behavioral lift and resource"
+  default_prompt: "Use $skill-evaluator for fair skill experiments, behavioral lift, resource cost, and host comparisons."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true

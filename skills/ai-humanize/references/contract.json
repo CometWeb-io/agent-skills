@@ -1,0 +1,123 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "evaluation/README.md",
+    "references/semantic-fidelity.md",
+    "references/mark-classes.md"
+  ],
+  "scripts": {
+    "scripts/rewrite_guard.py": {
+      "input": "text",
+      "role": "validator"
+    },
+    "scripts/layer_a_clean.py": {
+      "input": "text",
+      "role": "kernel"
+    },
+    "scripts/redteam_score.py": {
+      "input": "files",
+      "role": "validator",
+      "enums": {
+        "LANGUAGES": "language"
+      }
+    },
+    "scripts/release_check.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "id": {},
+    "language": {
+      "enum": [
+        "en",
+        "pl"
+      ]
+    },
+    "request": {},
+    "mode_expectation": {},
+    "source": {},
+    "manual_checks": {},
+    "protected": {},
+    "style_reference": {}
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "automated_pass",
+        "review",
+        "missing_output",
+        "invalid_output"
+      ]
+    },
+    "manual_review": {
+      "enum": [
+        "not_performed"
+      ]
+    },
+    "semantic_equivalence": {
+      "enum": [
+        "not_verified"
+      ]
+    },
+    "claim_assessment": {
+      "enum": [
+        "heuristic_only"
+      ]
+    },
+    "source_sha256": {},
+    "case_sha256": {},
+    "output_sha256": {},
+    "guard_passed": {},
+    "provenance_string_flags": {},
+    "passed": {},
+    "strict": {},
+    "fail_on_semantic_risk": {},
+    "missing_invariants": {},
+    "added_invariants": {},
+    "semantic_risk_markers": {},
+    "negation": {},
+    "modality": {},
+    "scope": {},
+    "removed": {},
+    "added": {},
+    "value": {},
+    "count": {},
+    "warnings": {},
+    "limitations": {},
+    "version": {},
+    "profile": {
+      "enum": [
+        "prose",
+        "markdown"
+      ]
+    },
+    "normalization": {
+      "enum": [
+        "none",
+        "nfc",
+        "nfkc"
+      ]
+    },
+    "normalized": {},
+    "replaced": {},
+    "chars_removed": {},
+    "chars_replaced": {},
+    "protected_spans": {},
+    "would_change": {}
+  },
+  "internal": [],
+  "doc_terms": [
+    "number_unit_pairs",
+    "quoted_spans",
+    "protected_terms"
+  ],
+  "evals": [
+    {
+      "path": "evaluation/redteam-cases.json",
+      "cases": "",
+      "input": "",
+      "conform": "always"
+    }
+  ]
+}

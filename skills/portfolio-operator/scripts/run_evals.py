@@ -21,7 +21,20 @@ def main() -> int:
         kind = case['kind']
         name = case['name']
         try:
-            if kind == 'ranking':
+            if 'expected_error' in case:
+                # The call must refuse the input with exactly this message.
+                func, arg = {'ranking': (rank_items, 'items'),
+                             'lane': (classify_lane, 'item'),
+                             'delegation': (route_delegation, 'item'),
+                             'conflict': (detect_capacity_conflicts, 'items')}[kind]
+                try:
+                    func(case[arg])
+                except ValueError as exc:
+                    actual = str(exc)
+                else:
+                    actual = None
+                expected = case['expected_error']
+            elif kind == 'ranking':
                 actual = rank_items(case['items'])[0]['id']
                 expected = case['expected_first']
             elif kind == 'lane':
@@ -34,8 +47,12 @@ def main() -> int:
                 actual = len(detect_capacity_conflicts(case['items'], capacity_source=case.get('capacity_source', 'unknown')))
                 expected = case['expected_count']
             elif kind == 'validation':
-                actual = not validate_report(case['report'])
+                errors = validate_report(case['report'])
+                actual = not errors
                 expected = case['expected_valid']
+                if 'expected_errors' in case and errors != case['expected_errors']:
+                    failures.append(f"{name}: expected errors {case['expected_errors']!r}, got {errors!r}")
+                    continue
             elif kind == 'render':
                 # The brief is what the user reads. Assert on what must appear and
                 # on what must not: portfolio_outcome replacing internal action text

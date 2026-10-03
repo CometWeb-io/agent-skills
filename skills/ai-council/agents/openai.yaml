@@ -1,13 +1,13 @@
 interface:
   display_name: "AI Council"
   short_description: "decision contract; deliberation; verdict GO/TEST/DEFER"
-  default_prompt: "Run AI Council on my decision question. Use the smallest profile (LIGHT|STANDARD|DEEP) that protects the decision."
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  default_prompt: "Use $ai-council on my decision question with the smallest profile (LIGHT, STANDARD or DEEP) that protects the decision."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: false

@@ -10,6 +10,7 @@ STABILITY={'STABLE','FLAKY','INSUFFICIENT_DATA','NOT_USED'}
 HEX64=re.compile(r'^[0-9a-f]{64}$')
 
 def _text(v): return isinstance(v,str) and bool(v.strip())
+def _member(v,allowed): return isinstance(v,str) and v in allowed
 def _ids(v): return isinstance(v,list) and all(_text(x) for x in v) and len(v)==len(set(v))
 def _metric_block(v): return isinstance(v,dict) and all(isinstance(v.get(k),int) and not isinstance(v.get(k),bool) and v.get(k)>=0 for k in ('passed','total','trigger_tp','trigger_fp','trigger_fn'))
 def _rate(a,b): return a/b if b else None
@@ -17,8 +18,8 @@ def _rate(a,b): return a/b if b else None
 def validate(x):
     if not isinstance(x,dict): return {'status':'INVALID','errors':['payload:not-object'],'promotion_eligible':False}
     errors=[]; mode=x.get('mode','STANDARD'); execution=x.get('execution_mode','SPEC_ONLY')
-    if mode not in MODES: errors.append('mode:invalid')
-    if execution not in EXECUTION: errors.append('execution_mode:invalid')
+    if not _member(mode,MODES): errors.append('mode:invalid')
+    if not _member(execution,EXECUTION): errors.append('execution_mode:invalid')
     if not _text(x.get('skill_id')): errors.append('skill_id:required')
     if not _text(x.get('candidate_version')): errors.append('candidate_version:required')
     if not _text(x.get('baseline_version')): errors.append('baseline_version:required')
@@ -39,16 +40,16 @@ def validate(x):
     if not isinstance(runs,int) or isinstance(runs,bool) or runs<1: errors.append('runs_per_case')
     runtime=x.get('runtime_executed') is True
     judge=x.get('judge_agreement',{'status':'NOT_USED'})
-    if not isinstance(judge,dict) or judge.get('status') not in AGREEMENT: errors.append('judge_agreement:invalid')
+    if not isinstance(judge,dict) or not _member(judge.get('status'),AGREEMENT): errors.append('judge_agreement:invalid')
     elif x.get('uses_llm_judge') is True and mode=='DEEP' and judge.get('status')!='CALIBRATED': errors.append('judge_agreement:deep-not-calibrated')
     pareto=x.get('pareto_status','NOT_COMPUTED')
-    if pareto not in PARETO: errors.append('pareto_status:invalid')
+    if not _member(pareto,PARETO): errors.append('pareto_status:invalid')
     paired=x.get('paired_analysis',{'status':'NOT_USED'})
     stability=x.get('stability',{'status':'NOT_USED'})
     paired_status=paired.get('status') if isinstance(paired,dict) else None
     stability_status=stability.get('status') if isinstance(stability,dict) else None
-    if paired_status not in PAIRED: errors.append('paired_analysis:invalid')
-    if stability_status not in STABILITY: errors.append('stability:invalid')
+    if not _member(paired_status,PAIRED): errors.append('paired_analysis:invalid')
+    if not _member(stability_status,STABILITY): errors.append('stability:invalid')
     if execution=='REAL_HOST':
         cfg=x.get('config'); base=x.get('baseline_config')
         if not isinstance(cfg,dict) or not all(_text(cfg.get(k)) for k in ('host','model','harness_version')): errors.append('config:real-host')
@@ -57,7 +58,7 @@ def validate(x):
         minimum=5 if mode=='DEEP' else 3
         if isinstance(runs,int) and not isinstance(runs,bool) and runs<minimum: errors.append('runs_per_case:insufficient')
         if mode=='DEEP':
-            if paired_status in {'NOT_USED','INSUFFICIENT_DATA'}: errors.append('paired_analysis:deep-required')
+            if _member(paired_status,{'NOT_USED','INSUFFICIENT_DATA'}): errors.append('paired_analysis:deep-required')
             if stability_status!='STABLE': errors.append('stability:deep-not-stable')
     if execution=='SPEC_ONLY':
         if runtime: errors.append('spec-only:runtime-flag')

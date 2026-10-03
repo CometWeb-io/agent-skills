@@ -14,7 +14,7 @@ Depth changes required evidence, not verbosity. Never inflate a LIGHT brief into
 
 Treat a materially changed brief as a new contract version. Preserve:
 
-`brief_id`, `brief_version`, `supersedes_brief_id`, `changed_fields`, `downstream_revalidation_required`.
+`brief_id`, `brief_version`, `supersedes_brief_id`, `material_changes`, `requires_downstream_revalidation`.
 
 A change is material when it can alter claims, audience, evidence policy, scope, acceptance, protected invariants, or a consequential decision. Cosmetic wording changes do not force downstream revalidation.
 

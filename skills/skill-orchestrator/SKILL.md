@@ -1,6 +1,6 @@
 ---
 name: skill-orchestrator
-description: Plan and execute multi-skill CometWeb workflows with CW-AIP handoffs when the user wants one entry point instead of tagging each specialist. Use when the user asks to orchestrate, sequence, or run end-to-end flows (e.g. evidence then Council, audit then release, research then weekly ops), run everything needed for a goal, or chain Evidence Researcher with ai-council or other skills in order. Supports execution_mode auto|single_thread|isolated_subagents. Loads each step's SKILL.md, runs it fully, and passes envelopes between steps. Do not use for a single-domain task when one specialist skill is enough, for routing-only questions without execution, or to bypass AI Council decision policy or Release Readiness gate rules.
+description: Plan and execute multi-skill CometWeb workflows with CW-AIP handoffs when the user wants one entry point instead of tagging each specialist. Do not use for a single-domain task when one specialist skill is enough, for routing-only questions without execution, or to bypass AI Council decision policy or Release Readiness gate rules. Use when the user asks to orchestrate, sequence, or run end-to-end flows (e.g. evidence then Council, audit then release, research then weekly ops), run everything needed for a goal, or chain Evidence Researcher with ai-council or other skills in order. Supports execution_mode auto|single_thread|isolated_subagents. Loads each step's SKILL.md, runs it fully, and passes envelopes between steps.
 ---
 
 # Skill Orchestrator

@@ -11,6 +11,7 @@ This is NOT verified_runtime_acceptance for Cursor/ChatGPT/Codex sessions.
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import shutil
 import subprocess
@@ -127,11 +128,14 @@ def accept_one(root: Path, skill: str, work: Path, *, run_helpers: bool = False)
 
     report = json.loads(proc.stdout)
     archive = package_root / report["path"]
-    manifest = inspect_archive(archive.read_bytes())
+    # Extract the bytes that were validated, not the file again: it could change in between.
+    blob = archive.read_bytes()
+    manifest = inspect_archive(blob)
     install = work / "install" / skill
     install.mkdir(parents=True)
-    with zipfile.ZipFile(archive) as zf:
-        zf.extractall(install)
+    with zipfile.ZipFile(io.BytesIO(blob)) as zf:
+        # inspect_archive refused absolute, "..", link and duplicate members above.
+        zf.extractall(install)  # nosemgrep: cw-archive-extractall
     required = ["SKILL.md", "VERSION", "LICENSE", "PACKAGE-MANIFEST.json"]
     missing = [name for name in required if not (install / name).is_file()]
     runtime_src = root / "skills" / skill / "RUNTIME.json"

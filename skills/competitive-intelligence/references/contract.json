@@ -1,0 +1,162 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/kernel-inputs.md"
+  ],
+  "scripts": {
+    "scripts/ci_kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "TIER_FACTORS": "competitor_tier"
+      }
+    }
+  },
+  "fields": {
+    "schema_version": {},
+    "competitor_id": {},
+    "competitor_name": {},
+    "captured_at": {},
+    "evidence": {},
+    "evidence_id": {},
+    "source": {},
+    "last_verified_at": {},
+    "field_path": {},
+    "relevance": {},
+    "magnitude": {},
+    "confidence": {},
+    "novelty": {},
+    "persistence": {},
+    "before": {
+      "opaque": true
+    },
+    "after": {
+      "opaque": true
+    },
+    "event_key": {},
+    "event_id": {},
+    "first_observed_at": {},
+    "implication": {},
+    "implication_confidence": {},
+    "status": {},
+    "state": {
+      "opaque": true
+    },
+    "materiality": {
+      "opaque": true
+    },
+    "source_class": {
+      "unread": true
+    },
+    "observed_at": {
+      "unread": true
+    },
+    "direct": {
+      "unread": true
+    },
+    "supports": {
+      "unread": true
+    },
+    "notes": {
+      "unread": true
+    },
+    "change_type": {
+      "unread": true
+    },
+    "factual_change": {
+      "unread": true
+    },
+    "evidence_ids": {
+      "unread": true
+    },
+    "competitor_tier": {
+      "enum": [
+        1,
+        2,
+        3
+      ]
+    },
+    "category": {
+      "enum": [
+        "PRODUCT_CAPABILITY",
+        "PRICING_PACKAGING",
+        "POSITIONING_MESSAGING",
+        "CUSTOMER_PROOF",
+        "DISCOVERY_GTM",
+        "COMPANY_ORG",
+        "TECH_TRUST",
+        "SALES_MOTION",
+        "MARKET_SIGNAL",
+        "OTHER"
+      ],
+      "enforced": false
+    },
+    "verification_state": {
+      "enum": [
+        "CONFIRMED",
+        "LIKELY",
+        "UNVERIFIED",
+        "DISPUTED",
+        "RETRACTED"
+      ],
+      "enforced": false
+    },
+    "disposition": {
+      "enum": [
+        "IGNORE",
+        "WATCH",
+        "VERIFY",
+        "TEST",
+        "RESPOND",
+        "ESCALATE"
+      ],
+      "enforced": false
+    }
+  },
+  "outputs": {
+    "status": {},
+    "valid": {},
+    "errors": {},
+    "warnings": {},
+    "change_count": {},
+    "changes": {},
+    "snapshot_hash": {},
+    "state_hash": {},
+    "score": {},
+    "severity": {
+      "enum": [
+        "CRITICAL",
+        "HIGH",
+        "MEDIUM",
+        "LOW",
+        "NOISE"
+      ]
+    },
+    "tier_factor": {},
+    "age_days": {},
+    "ttl_days": {},
+    "appended": {},
+    "duplicate": {},
+    "error": {},
+    "change_type": {
+      "enum": [
+        "ADDED",
+        "REMOVED",
+        "MODIFIED"
+      ]
+    }
+  },
+  "internal": [],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "tests/fixtures/*.json",
+      "input": "",
+      "expect": true,
+      "pass": [
+        true
+      ],
+      "conform": "always"
+    }
+  ]
+}

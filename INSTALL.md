@@ -67,12 +67,8 @@ Claude Code keeps each installed plugin in a cache keyed by the `version` in
 `claude plugin update cometweb-agent-skills@cometweb-agent-skills` replaces the
 cached copy only when that version has changed; with the same version it
 reports "already at the latest version" and keeps the old skill set. Codex
-caches installed plugins by version in the same way. Every change that adds,
-removes or renames a skill, or changes any skill's `VERSION`, therefore bumps
-the plugin `VERSION`, and all plugin manifests carry the same value
-(`tooling/tests/test_bundle_version.py`). `tooling/plugin_release.py --check`
-enforces this; the release rule is in
-[CONTRIBUTING.md](CONTRIBUTING.md#plugin-version).
+caches installed plugins by version in the same way, which is why every skill
+change bumps the plugin version ([CONTRIBUTING.md](CONTRIBUTING.md#plugin-version)).
 
 To validate the manifests without touching your own Claude Code settings, give
 the CLI a scratch config directory:
@@ -85,9 +81,11 @@ HOME="$scratch" CLAUDE_CONFIG_DIR="$scratch/claude" \
   claude plugin validate --strict .claude-plugin/marketplace.json
 ```
 
-ChatGPT and Codex use `.agents/plugins/marketplace.json`, described in
-[docs/OPENAI-MARKETPLACE.md](docs/OPENAI-MARKETPLACE.md) and checked by
-`tooling/validate_openai_plugin.py`.
+ChatGPT and Codex use `.agents/plugins/marketplace.json`: a workspace admin
+imports `https://github.com/CometWeb-io/agent-skills` as a marketplace with an
+empty Path. [docs/OPENAI-MARKETPLACE.md](docs/OPENAI-MARKETPLACE.md) covers
+branches, sync and local use; `tooling/validate_openai_plugin.py` checks the
+manifest.
 
 ## Preview, update and remove
 

@@ -1,0 +1,195 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/validation.md"
+  ],
+  "scripts": {
+    "scripts/ebook_check.py": {
+      "input": "files",
+      "role": "validator",
+      "enums": {
+        "QUESTION_STATUSES": "questions.status",
+        "SOURCE_TYPES": "source_type",
+        "CLAIM_KINDS": "kind",
+        "CONCLUSIONS": "conclusion",
+        "MATERIALITY": "materiality",
+        "RELATIONS": "relation",
+        "REVIEW_METHODS": "method",
+        "CHECK_IDS": "checks.id"
+      }
+    }
+  },
+  "fields": {
+    "schema": {},
+    "publication": {},
+    "title": {},
+    "language": {},
+    "edition": {},
+    "revision": {},
+    "as_of": {},
+    "scope": {},
+    "audience": {},
+    "outcome": {},
+    "questions": {},
+    "question": {},
+    "chapter_ids": {},
+    "rationale": {},
+    "chapters": {},
+    "question_ids": {},
+    "sources": {},
+    "origin": {},
+    "inspected": {},
+    "accessed_on": {},
+    "published_on": {},
+    "url": {},
+    "artifact": {},
+    "path": {},
+    "sha256": {},
+    "claims": {},
+    "text": {},
+    "chapter_id": {},
+    "qualification": {},
+    "display_label": {},
+    "time_sensitive": {},
+    "review_by": {},
+    "freshness_rationale": {},
+    "evidence": {},
+    "source_id": {},
+    "locator": {},
+    "explanation": {},
+    "countercheck": {},
+    "performed": {},
+    "queries": {},
+    "checked_on": {},
+    "source_ids": {},
+    "resolution": {},
+    "files": {},
+    "manuscript": {},
+    "pdf": {},
+    "deliverables": {},
+    "checks": {},
+    "status": {},
+    "reviewer": {},
+    "notes": {},
+    "evidence_file": {},
+    "evidence_sha256": {},
+    "fingerprints": {},
+    "research": {},
+    "visual": {},
+    "renderer": {},
+    "pdf_sha256": {},
+    "page_count": {},
+    "pages": {},
+    "page": {},
+    "inspected_on": {},
+    "render_path": {},
+    "render_sha256": {},
+    "id": {},
+    "version": {
+      "unread": true
+    },
+    "effective_from": {
+      "unread": true
+    },
+    "questions.status": {
+      "enum": [
+        "covered",
+        "open",
+        "excluded"
+      ]
+    },
+    "source_type": {
+      "enum": [
+        "primary",
+        "secondary",
+        "discovery",
+        "provided",
+        "experiment"
+      ]
+    },
+    "kind": {
+      "enum": [
+        "fact",
+        "recommendation",
+        "inference",
+        "synthetic"
+      ]
+    },
+    "conclusion": {
+      "enum": [
+        "supported",
+        "qualified",
+        "recommended",
+        "inferred",
+        "illustrative"
+      ]
+    },
+    "materiality": {
+      "enum": [
+        "critical",
+        "material",
+        "background"
+      ]
+    },
+    "relation": {
+      "enum": [
+        "supports",
+        "contradicts",
+        "context"
+      ]
+    },
+    "method": {
+      "enum": [
+        "manual",
+        "self_review",
+        "automated"
+      ]
+    },
+    "checks.id": {
+      "enum": [
+        "scope_coverage",
+        "source_entailment",
+        "counterevidence",
+        "claim_coverage",
+        "cross_chapter_consistency",
+        "semantic_fidelity",
+        "editorial_review",
+        "examples_and_numbers",
+        "visual_design",
+        "pdf_structure",
+        "links_and_navigation",
+        "accessibility_review",
+        "asset_rights",
+        "package_hygiene"
+      ]
+    }
+  },
+  "outputs": {
+    "result": {
+      "enum": [
+        "RECORDS_COMPLETE",
+        "BLOCKED",
+        "INPUT_ERROR",
+        "INITIALIZED_DRAFT"
+      ]
+    },
+    "stage": {},
+    "blockers": {},
+    "warnings": {},
+    "code": {},
+    "detail": {},
+    "error": {}
+  },
+  "internal": [],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "templates/publication.json",
+      "expect": "BLOCKED",
+      "pass": [
+        "RECORDS_COMPLETE"
+      ],
+      "conform": "always"
+    }
+  ]
+}

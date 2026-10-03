@@ -1,13 +1,13 @@
 interface:
-  display_name: Longform Publisher
-  short_description: canonical long-form manuscript
-  default_prompt: 'Use the Longform Publisher skill for: Run the publication control plane for a long-form work such as an ebook, report, playbook, white paper, guide, handbook, or research-backed article: one canonical manuscript, claim-use traceability, d'
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  display_name: "Longform Publisher"
+  short_description: "canonical long-form manuscript"
+  default_prompt: "Use $longform-publisher for canonical long-form manuscripts and release-ready derived documents."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true

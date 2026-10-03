@@ -3997,5 +3997,185 @@
         "reconciliation:not-list"
       ]
     }
+  },
+  {
+    "id": "evaluator-result-off-contract-v172",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        },
+        {
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "rubric-designer",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "benchmark-curator",
+          "state": "PASS"
+        },
+        {
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "result": "IMPROVEMENT",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skill": "skill-evaluator",
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "skill-quality:evaluator-result"
+      ]
+    }
+  },
+  {
+    "id": "reconciliation-status-off-contract-v172",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [],
+      "reconciliation": [
+        {
+          "candidate_id": "c1",
+          "status": "conflict",
+          "resolved": false
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "reconciliation[0]:status"
+      ]
+    }
+  },
+  {
+    "id": "reconciliation-status-missing-v172",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [],
+      "reconciliation": [
+        {
+          "candidate_id": "c1",
+          "resolved": false
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "reconciliation[0]:status"
+      ]
+    }
+  },
+  {
+    "id": "debt-kind-off-contract-v172",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [],
+      "as_of": "2026-09-25T12:00:00+02:00",
+      "quality_debt": [
+        {
+          "candidate_id": "c1",
+          "severity": "MINOR",
+          "status": "OPEN",
+          "kind": "waiver",
+          "due_at": "2026-09-20T22:00:00+02:00"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "debt[0]:kind"
+      ]
+    }
+  },
+  {
+    "id": "debt-expired-waiver-blocks-v172",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [],
+      "as_of": "2026-09-25T12:00:00+02:00",
+      "quality_debt": [
+        {
+          "candidate_id": "c1",
+          "severity": "MINOR",
+          "status": "OPEN",
+          "kind": "WAIVER",
+          "due_at": "2026-09-20T22:00:00+02:00"
+        }
+      ]
+    },
+    "expect": {
+      "status": "BLOCKED",
+      "next_stage": "quality-debt-resolution"
+    }
+  },
+  {
+    "id": "cache-decision-off-contract-v172",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [],
+      "cache_reuse": [
+        {
+          "decision": "reuse",
+          "fingerprint_match": false,
+          "source_status": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "cache[0]:decision"
+      ]
+    }
+  },
+  {
+    "id": "stage-state-unhashable-v172",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "EDITORIAL",
+      "stages": [
+        {
+          "skill": "brief-architect",
+          "state": [
+            "PASS"
+          ]
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "stage[0]:state"
+      ]
+    }
   }
 ]

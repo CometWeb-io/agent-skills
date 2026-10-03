@@ -5266,5 +5266,636 @@
       "revision": "1",
       "target_skill": "x"
     }
+  },
+  {
+    "id": "standard-contaminated-scan-not-ignored-v172",
+    "input": {
+      "benchmark_id": "b1",
+      "cases": [
+        {
+          "assertions": [
+            "Assertion 1"
+          ],
+          "class": "discovery",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 1",
+          "id": "c1",
+          "prompt": "Prompt unique 1",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 2"
+          ],
+          "class": "forced",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 2",
+          "id": "c2",
+          "prompt": "Prompt unique 2",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 3"
+          ],
+          "class": "negative-control",
+          "contamination_status": "CLEAN",
+          "difficulty": "hard",
+          "expected_behavior": "Expected 3",
+          "id": "c3",
+          "prompt": "Prompt unique 3",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 4"
+          ],
+          "class": "adversarial",
+          "contamination_status": "CLEAN",
+          "difficulty": "edge",
+          "expected_behavior": "Expected 4",
+          "id": "c4",
+          "prompt": "Prompt unique 4",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 5"
+          ],
+          "class": "regression",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 5",
+          "id": "c5",
+          "prompt": "Prompt unique 5",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 6"
+          ],
+          "class": "discovery",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 6",
+          "id": "c6",
+          "prompt": "Prompt unique 6",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 7"
+          ],
+          "class": "forced",
+          "contamination_status": "CLEAN",
+          "difficulty": "hard",
+          "expected_behavior": "Expected 7",
+          "id": "c7",
+          "prompt": "Prompt unique 7",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 8"
+          ],
+          "class": "negative-control",
+          "contamination_status": "CLEAN",
+          "difficulty": "edge",
+          "expected_behavior": "Expected 8",
+          "id": "c8",
+          "prompt": "Prompt unique 8",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 9"
+          ],
+          "class": "adversarial",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 9",
+          "id": "c9",
+          "prompt": "Prompt unique 9",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 10"
+          ],
+          "class": "regression",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 10",
+          "id": "c10",
+          "prompt": "Prompt unique 10",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        }
+      ],
+      "mode": "STANDARD",
+      "objective": "Evaluate routing and behavior",
+      "required_classes": [
+        "discovery",
+        "forced",
+        "negative-control",
+        "adversarial",
+        "regression"
+      ],
+      "revision": "1",
+      "target_skill": "x",
+      "leakage_scan": {
+        "status": "CONTAMINATED",
+        "corpus_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    "expect": {
+      "status": "CONTAMINATED",
+      "errors": [
+        "holdout:leakage-contaminated"
+      ]
+    }
+  },
+  {
+    "id": "standard-suspect-scan-not-ignored-v172",
+    "input": {
+      "benchmark_id": "b1",
+      "cases": [
+        {
+          "assertions": [
+            "Assertion 1"
+          ],
+          "class": "discovery",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 1",
+          "id": "c1",
+          "prompt": "Prompt unique 1",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 2"
+          ],
+          "class": "forced",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 2",
+          "id": "c2",
+          "prompt": "Prompt unique 2",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 3"
+          ],
+          "class": "negative-control",
+          "contamination_status": "CLEAN",
+          "difficulty": "hard",
+          "expected_behavior": "Expected 3",
+          "id": "c3",
+          "prompt": "Prompt unique 3",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 4"
+          ],
+          "class": "adversarial",
+          "contamination_status": "CLEAN",
+          "difficulty": "edge",
+          "expected_behavior": "Expected 4",
+          "id": "c4",
+          "prompt": "Prompt unique 4",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 5"
+          ],
+          "class": "regression",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 5",
+          "id": "c5",
+          "prompt": "Prompt unique 5",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 6"
+          ],
+          "class": "discovery",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 6",
+          "id": "c6",
+          "prompt": "Prompt unique 6",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 7"
+          ],
+          "class": "forced",
+          "contamination_status": "CLEAN",
+          "difficulty": "hard",
+          "expected_behavior": "Expected 7",
+          "id": "c7",
+          "prompt": "Prompt unique 7",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 8"
+          ],
+          "class": "negative-control",
+          "contamination_status": "CLEAN",
+          "difficulty": "edge",
+          "expected_behavior": "Expected 8",
+          "id": "c8",
+          "prompt": "Prompt unique 8",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 9"
+          ],
+          "class": "adversarial",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 9",
+          "id": "c9",
+          "prompt": "Prompt unique 9",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 10"
+          ],
+          "class": "regression",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 10",
+          "id": "c10",
+          "prompt": "Prompt unique 10",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        }
+      ],
+      "mode": "STANDARD",
+      "objective": "Evaluate routing and behavior",
+      "required_classes": [
+        "discovery",
+        "forced",
+        "negative-control",
+        "adversarial",
+        "regression"
+      ],
+      "revision": "1",
+      "target_skill": "x",
+      "leakage_scan": {
+        "status": "SUSPECT"
+      }
+    },
+    "expect": {
+      "status": "NEEDS_REVISION",
+      "errors": [
+        "holdout:leakage-suspect"
+      ]
+    }
+  },
+  {
+    "id": "standard-malformed-scan-not-ignored-v172",
+    "input": {
+      "benchmark_id": "b1",
+      "cases": [
+        {
+          "assertions": [
+            "Assertion 1"
+          ],
+          "class": "discovery",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 1",
+          "id": "c1",
+          "prompt": "Prompt unique 1",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 2"
+          ],
+          "class": "forced",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 2",
+          "id": "c2",
+          "prompt": "Prompt unique 2",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 3"
+          ],
+          "class": "negative-control",
+          "contamination_status": "CLEAN",
+          "difficulty": "hard",
+          "expected_behavior": "Expected 3",
+          "id": "c3",
+          "prompt": "Prompt unique 3",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 4"
+          ],
+          "class": "adversarial",
+          "contamination_status": "CLEAN",
+          "difficulty": "edge",
+          "expected_behavior": "Expected 4",
+          "id": "c4",
+          "prompt": "Prompt unique 4",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 5"
+          ],
+          "class": "regression",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 5",
+          "id": "c5",
+          "prompt": "Prompt unique 5",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 6"
+          ],
+          "class": "discovery",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 6",
+          "id": "c6",
+          "prompt": "Prompt unique 6",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 7"
+          ],
+          "class": "forced",
+          "contamination_status": "CLEAN",
+          "difficulty": "hard",
+          "expected_behavior": "Expected 7",
+          "id": "c7",
+          "prompt": "Prompt unique 7",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 8"
+          ],
+          "class": "negative-control",
+          "contamination_status": "CLEAN",
+          "difficulty": "edge",
+          "expected_behavior": "Expected 8",
+          "id": "c8",
+          "prompt": "Prompt unique 8",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 9"
+          ],
+          "class": "adversarial",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 9",
+          "id": "c9",
+          "prompt": "Prompt unique 9",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 10"
+          ],
+          "class": "regression",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 10",
+          "id": "c10",
+          "prompt": "Prompt unique 10",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        }
+      ],
+      "mode": "STANDARD",
+      "objective": "Evaluate routing and behavior",
+      "required_classes": [
+        "discovery",
+        "forced",
+        "negative-control",
+        "adversarial",
+        "regression"
+      ],
+      "revision": "1",
+      "target_skill": "x",
+      "leakage_scan": {
+        "status": "DIRTY"
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "leakage:status"
+      ]
+    }
+  },
+  {
+    "id": "standard-scan-not-object-v172",
+    "input": {
+      "benchmark_id": "b1",
+      "cases": [
+        {
+          "assertions": [
+            "Assertion 1"
+          ],
+          "class": "discovery",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 1",
+          "id": "c1",
+          "prompt": "Prompt unique 1",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 2"
+          ],
+          "class": "forced",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 2",
+          "id": "c2",
+          "prompt": "Prompt unique 2",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 3"
+          ],
+          "class": "negative-control",
+          "contamination_status": "CLEAN",
+          "difficulty": "hard",
+          "expected_behavior": "Expected 3",
+          "id": "c3",
+          "prompt": "Prompt unique 3",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 4"
+          ],
+          "class": "adversarial",
+          "contamination_status": "CLEAN",
+          "difficulty": "edge",
+          "expected_behavior": "Expected 4",
+          "id": "c4",
+          "prompt": "Prompt unique 4",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 5"
+          ],
+          "class": "regression",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 5",
+          "id": "c5",
+          "prompt": "Prompt unique 5",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 6"
+          ],
+          "class": "discovery",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 6",
+          "id": "c6",
+          "prompt": "Prompt unique 6",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 7"
+          ],
+          "class": "forced",
+          "contamination_status": "CLEAN",
+          "difficulty": "hard",
+          "expected_behavior": "Expected 7",
+          "id": "c7",
+          "prompt": "Prompt unique 7",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 8"
+          ],
+          "class": "negative-control",
+          "contamination_status": "CLEAN",
+          "difficulty": "edge",
+          "expected_behavior": "Expected 8",
+          "id": "c8",
+          "prompt": "Prompt unique 8",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 9"
+          ],
+          "class": "adversarial",
+          "contamination_status": "CLEAN",
+          "difficulty": "easy",
+          "expected_behavior": "Expected 9",
+          "id": "c9",
+          "prompt": "Prompt unique 9",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        },
+        {
+          "assertions": [
+            "Assertion 10"
+          ],
+          "class": "regression",
+          "contamination_status": "CLEAN",
+          "difficulty": "medium",
+          "expected_behavior": "Expected 10",
+          "id": "c10",
+          "prompt": "Prompt unique 10",
+          "source_lane": "SYNTHETIC",
+          "split": "dev"
+        }
+      ],
+      "mode": "STANDARD",
+      "objective": "Evaluate routing and behavior",
+      "required_classes": [
+        "discovery",
+        "forced",
+        "negative-control",
+        "adversarial",
+        "regression"
+      ],
+      "revision": "1",
+      "target_skill": "x",
+      "leakage_scan": "CLEAN"
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "leakage:not-object"
+      ]
+    }
   }
 ]

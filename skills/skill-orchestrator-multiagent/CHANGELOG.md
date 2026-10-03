@@ -1,5 +1,17 @@
 # Changelog — skill-orchestrator-multiagent
 
+## [1.1.4] - 2026-10-03
+
+### Fixed
+
+- `orchestrate_multiagent_kernel.py` reported `execution_mode: "multiagent"`, a token no orchestrator reference defines; the documented mode for this package is `isolated_subagents`, which it now emits. The test pins the value and the exact payload and task keys.
+- The payload builder's output (`subagent_tasks[]`, `step_total`, `description`, `prompt`, `parent_role`, `parent_must_not`) and the envelope gate's input fields were undocumented. New `references/kernel-contract.md` lists both, including the kind payload keys the gate reads (`verdict`, `blockers`, `gates[].status`/`gate_id`, `human_approval`), and SKILL.md points to it.
+- New `references/contract.json` binds both scripts, the reference and the four bundled CW-AIP schemas (`json_schemas`) under `tooling/skill_contracts.py`. Synced the shared planner kernel and `references/workflow-archetypes.md` from `skill-orchestrator` 1.1.4.
+
+### Changed
+
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.1.3] - 2026-10-03
 
 ### Security

@@ -7,12 +7,12 @@
   "skills": [
     {
       "id": "ai-council",
-      "version": "5.2.1",
+      "version": "5.2.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Run an always-current, evidence-governed AI decision council for material, high-stakes, multi-domain decisions where options, risk gates, forecasts, and living memory matter. Use when the user explicitly asks to \"przepuść przez Radę\", \"zapytaj Radę\", compare consequential options, challenge a major plan, decide GO/NO-GO/TEST/DEFER on strategic choices, verify whether a prior decision is still current, inspect Council health, or improve the Council itself. Do not use for routine weekly product prioritization, whole-repo roadmapping, release-candidate gates, customer support triage, or single-domain specialist work when a dedicated skill exists. Orchestrate blind advisers, conditional specialists, binding risk gates, live/fresh evidence, temporal truth, contradiction testing, forecasts, living Decision Memory, watch dependencies, human escalation, and champion/challenger evaluation.",
+      "description": "Run an always-current, evidence-governed AI decision council for material, high-stakes, multi-domain decisions where options, risk gates, forecasts, and living memory matter. Do not use for routine weekly product prioritization, whole-repo roadmapping, release-candidate gates, customer support triage, or single-domain specialist work when a dedicated skill exists. Use when the user explicitly asks to \"przepuść przez Radę\", \"zapytaj Radę\", compare consequential options, challenge a major plan, decide GO/NO-GO/TEST/DEFER on strategic choices, verify whether a prior decision is still current, inspect Council health, or improve the Council itself. Orchestrate blind advisers, conditional specialists, binding risk gates, live/fresh evidence, temporal truth, contradiction testing, forecasts, living Decision Memory, watch dependencies, human escalation, and champion/challenger evaluation.",
       "explicit_only": true,
       "owns": [
         "decision contract",
@@ -59,7 +59,11 @@
       "routing_signals": [
         [
           10,
-          "przepu[śs][ćc]? przez rad"
+          "\\b(?:przekaz|daj|oddaj|przedstaw|zanies|skieruj)\\w*\\b.{0,30}\\bradzie\\b"
+        ],
+        [
+          10,
+          "przepu[śs][ćc]?\\w*\\b.{0,30}\\bprzez rad"
         ],
         [
           10,
@@ -113,12 +117,12 @@
     },
     {
       "id": "ai-humanize",
-      "version": "2.6.0",
+      "version": "2.6.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Naturalize, edit, or substantially rewrite English and Polish prose while preserving meaning, factual constraints, and the author's intentional voice. Use specifically when the user asks to humanize text, sound less like generic AI writing, remove AI tells, perform a strong/deep/robust rewrite, clean suspicious invisible Unicode in prose or Markdown, or re-express text with provenance-aware caution. Supports blogs, articles, LinkedIn posts, emails, proposals, documentation, release notes, and READMEs. Do not use merely for generic proofreading, unrelated copywriting, or AI-authorship detection. Never claim human authorship, detector defeat, or watermark removal without an appropriate supported test.",
+      "description": "Naturalize, edit, or substantially rewrite English and Polish prose while preserving meaning, factual constraints, and the author's intentional voice. Do not use merely for generic proofreading, unrelated copywriting, or AI-authorship detection. Use specifically when the user asks to humanize text, sound less like generic AI writing, remove AI tells, perform a strong/deep/robust rewrite, clean suspicious invisible Unicode in prose or Markdown, or re-express text with provenance-aware caution. Supports blogs, articles, LinkedIn posts, emails, proposals, documentation, release notes, and READMEs. Never claim human authorship, detector defeat, or watermark removal without an appropriate supported test.",
       "explicit_only": false,
       "owns": [
         "EN/PL humanize",
@@ -157,6 +161,10 @@
       "eval_suite": null,
       "routing_signals": [
         [
+          9,
+          "\\bsound\\w*\\b.{0,20}\\b(?:machine.generated|ai.generated|robotic|like (?:chatgpt|gpt|an? ai|a bot|a robot))\\b|\\breads? like (?:chatgpt|gpt|an? ai\\b|a bot|a robot|(?:it was )?(?:ai|machine).generated)"
+        ],
+        [
           10,
           "(?<![\\w-])humani[sz](?:e|acj|uj)|sound less like ai"
         ],
@@ -180,12 +188,12 @@
     },
     {
       "id": "artifact-acceptance",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run a final evidence-backed acceptance gate on a content, research, documentation, sales, or other knowledge artifact against an explicit brief, required evidence, unresolved findings, and format/QA criteria. Use when the user asks whether an artifact is actually ready, complete, publishable as a deliverable, or has passed its defined acceptance contract. Do not use as the final production-release gate for software, to choose among consequential strategic options, to perform the initial review, or to invent acceptance criteria after seeing the result; use release-readiness, ai-council, or the relevant reviewer instead.",
+      "description": "Run a final evidence-backed acceptance gate on a content, research, documentation, sales, or other knowledge artifact against an explicit brief, required evidence, unresolved findings, and format/QA criteria. Do not use as the final production-release gate for software, to choose among consequential strategic options, to perform the initial review, or to invent acceptance criteria after seeing the result; use release-readiness, ai-council, or the relevant reviewer instead. Use when the user asks whether an artifact is actually ready, complete, publishable as a deliverable, or has passed its defined acceptance contract.",
       "explicit_only": false,
       "owns": [
         "knowledge-artifact acceptance gates",
@@ -245,6 +253,22 @@
       "release_status": "ACTIVE",
       "routing_signals": [
         [
+          10,
+          "\\b(?:met|meeting)\\b.{0,30}\\bacceptance (?:checklist|criteri\\w*|contract)|\\bacceptance criterion\\b"
+        ],
+        [
+          10,
+          "\\b(?:pass\\w*|meets?|satisf\\w*|fulfil\\w*|against)\\b.{0,30}\\b(?:the |its |our |this )?acceptance (?:checklist|criteria|contract|requirements)"
+        ],
+        [
+          10,
+          "\\b(?:meets?|satisf\\w*|pass\\w*|fulfil\\w*)\\b.{0,30}\\b(?:the |its |our |this )?(?:brief|acceptance (?:criteria|contract)|evidence requirements)\\b|\\bmeasured against (?:the |its |our )?(?:brief|acceptance (?:criteria|contract))"
+        ],
+        [
+          10,
+          "\\bkontrakt\\w* akceptacyjn|\\bspelnia\\w*\\b.{0,40}\\b(?:brief|kontrakt|kryteri\\w* (?:akceptacji|odbioru))"
+        ],
+        [
           12,
           "artifact acceptance|acceptance gate.*(artifact|report|content)|report ready against its brief"
         ],
@@ -280,12 +304,12 @@
     },
     {
       "id": "benchmark-curator",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Design, curate, version, and quality-control benchmark or evaluation corpora for Agent Skills and quality workflows, including task taxonomies, discovery/forced/negative controls, adversarial and regression cases, difficulty strata, holdout isolation, provenance, duplication, contamination risk, coverage balance, and immutable benchmark hashes. Use when the user asks to build or maintain an eval dataset, golden set, benchmark suite, regression corpus, holdout, challenge set, or representative test cases. Do not use to execute the model experiment or claim lift (use skill-evaluator), to design the grading rubric (use rubric-designer), to edit the candidate skill (use skill-creator), or to treat leaked/known cases as a clean holdout.",
+      "description": "Design, curate, version, and quality-control benchmark or evaluation corpora for Agent Skills and quality workflows, including task taxonomies, discovery/forced/negative controls, adversarial and regression cases, difficulty strata, holdout isolation, provenance, duplication, contamination risk, coverage balance, and immutable benchmark hashes. Do not use to execute the model experiment or claim lift (use skill-evaluator), to design the grading rubric (use rubric-designer), to edit the candidate skill (use skill-creator), or to treat leaked/known cases as a clean holdout. Use when the user asks to build or maintain an eval dataset, golden set, benchmark suite, regression corpus, holdout, challenge set, or representative test cases.",
       "explicit_only": false,
       "owns": [
         "benchmark and eval corpus design",
@@ -344,6 +368,22 @@
       "release_status": "ACTIVE",
       "routing_signals": [
         [
+          10,
+          "\\b(?:curat|assembl|build|collect|write)\\w*\\b.{0,30}\\b(?:evaluation|eval|benchmark|routing) prompts\\b|\\bholdout split\\b|\\bsealed holdout\\b"
+        ],
+        [
+          10,
+          "\\b(?:build|assembl|creat|curat|design|construct|dedupe|deduplicat|stratif|freez|version|rebuild|grow|expand|maintain)\\w*\\b.{0,50}\\b(?:regression|evaluation|eval|golden|challenge|benchmark) (?:set|dataset|corpus|cases)\\b|\\b(?:evaluation|eval) dataset\\b.{0,60}\\b(?:dedupe|deduplicat|stratif|freez|difficulty|provenance|holdout)"
+        ],
+        [
+          10,
+          "\\b(?:test|eval\\w*) cases\\b.{0,60}\\b(?:holdout|negative controls?|difficulty|strat)"
+        ],
+        [
+          10,
+          "\\bzlot\\w* zestaw|\\b(?:zbior|zestaw)\\w* przypadk\\w*\\b.{0,80}\\b(?:holdout|kontrol\\w* negatywn|trudn|latw|regresyjn|adwersaryjn|adversarial|ocen\\w* skill)|\\bkontrol\\w* negatywn"
+        ],
+        [
           20,
           "curate.*(clean )?holdout benchmark"
         ],
@@ -375,12 +415,12 @@
     },
     {
       "id": "brief-architect",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Turn an ambiguous request for a content, research, sales, documentation, or knowledge artifact into an explicit execution contract with audience, objective, evidence policy, constraints, acceptance criteria, risks, and handoff fields. Use when the task is underspecified, expensive to redo, spans multiple specialists, or needs a durable brief before writing/research. Do not use to write the final artifact, run broad product discovery, make a consequential decision, or replace product-operator, evidence-researcher, content-writer, or ai-council.",
+      "description": "Turn an ambiguous request for a content, research, sales, documentation, or knowledge artifact into an explicit execution contract with audience, objective, evidence policy, constraints, acceptance criteria, risks, and handoff fields. Do not use to write the final artifact, run broad product discovery, make a consequential decision, or replace product-operator, evidence-researcher, content-writer, or ai-council. Use when the task is underspecified, expensive to redo, spans multiple specialists, or needs a durable brief before writing/research.",
       "explicit_only": false,
       "owns": [
         "artifact brief and execution contract",
@@ -441,6 +481,30 @@
       "routing_signals": [
         [
           10,
+          "\\b(?:turn|convert|shape)\\w*\\b.{0,30}\\binto (?:a |an )?(?:\\w+ )?brief\\b"
+        ],
+        [
+          10,
+          "\\b(?:write|draft|create|prepare)\\b.{0,10}\\b(?:the |a )?brief (?:first|before)\\b"
+        ],
+        [
+          9,
+          "\\b(?:audience|readers?|purpose|goal|scope)\\b.{0,30}\\b(?:audience|readers?|purpose|goal|scope)\\b.{0,40}\\b(?:evidence (?:rules|policy)|source policy|done.criteria|acceptance criteria|success criteria|definition of done)"
+        ],
+        [
+          10,
+          "\\b(?:pin down|define|nail down|agree on|settle|clarify|spell out|lock down)\\b.{0,40}\\b(?:audience|readers?|scope|goal|objective|done.criteria|definition of done|acceptance criteria|success criteria|source policy|evidence policy)\\b.{0,60}\\b(?:audience|readers?|scope|goal|objective|criteria|policy)\\b"
+        ],
+        [
+          8,
+          "\\b(?:too )?(?:fuzzy|vague|unclear|underspecified)\\b.{0,40}\\b(?:request|ask|assignment|task|commission)\\b"
+        ],
+        [
+          10,
+          "\\b(?:ustal|ustalmy|okresl|zdefiniuj|doprecyzuj|spisz)\\w*\\b.{0,40}\\b(?:odbiorc|grup\\w* docelow|cel\\b|kryteri|polityk\\w* zrodel|zakres)\\w*.{0,60}\\b(?:odbiorc|cel\\b|kryteri|polityk|zakres)"
+        ],
+        [
+          10,
           "(write|draft|create) (a|the) (content |research |writing )?brief for|brief before (anyone|we) (starts? )?(writ|research)"
         ],
         [
@@ -483,12 +547,12 @@
     },
     {
       "id": "cometweb-context",
-      "version": "1.5.0",
+      "version": "1.5.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Builds a fresh, provenance-aware context snapshot for CometWeb and its active projects before product, portfolio, strategy, GTM, pricing, outreach, meeting, content, or advisory work. Use when the request depends on current state across GitHub/repositories, Notion, CometWeb Insight, CRM/communications, files, live CometWeb surfaces, or multiple CometWeb projects such as Insight, CometBase, CometPen, CometLens/Extensions, cometweb.io, agent-skills, RankProof, and research. Also use for \"what changed\", full/portfolio refreshes, meeting prep, and as a preflight for Product Operator, AI Council, Repo to Roadmap, or Skill Orchestrator. Include First Principles governance for material product/GTM/pricing/portfolio decisions. Do not use for simple conceptual questions or when one direct authoritative source is sufficient.",
+      "description": "Builds a fresh, provenance-aware context snapshot for CometWeb and its active projects before product, portfolio, strategy, GTM, pricing, outreach, meeting, content, or advisory work. Do not use for simple conceptual questions or when one direct authoritative source is sufficient. Use when the request depends on current state across GitHub/repositories, Notion, CometWeb Insight, CRM/communications, files, live CometWeb surfaces, or multiple CometWeb projects such as Insight, CometBase, CometPen, CometLens/Extensions, cometweb.io, agent-skills, RankProof, and research. Also use for \"what changed\", full/portfolio refreshes, meeting prep, and as a preflight for Product Operator, AI Council, Repo to Roadmap, or Skill Orchestrator. Include First Principles governance for material product/GTM/pricing/portfolio decisions.",
       "explicit_only": false,
       "owns": [
         "context snapshot",
@@ -535,6 +599,22 @@
       "eval_suite": "evals/behavior/cometweb-context",
       "routing_signals": [
         [
+          10,
+          "\\bwhere\\b.{0,40}\\bcometweb\\b.{0,60}\\bstands?\\b|\\bcometweb\\b.{0,40}\\b(?:stands?|status)\\b"
+        ],
+        [
+          10,
+          "\\b(?:up.to.date|current|fresh|latest)\\b.{0,30}\\b(?:picture|overview|state|status|snapshot|view)\\b.{0,40}\\bcometweb\\b|\\bcometweb\\b.{0,20}\\b(?:products|projects|portfolio)\\b.{0,40}\\b(?:state|status|picture|overview|snapshot|context)"
+        ],
+        [
+          11,
+          "\\bwhat(?:'s| has| have)? changed\\b.{0,40}\\b(?:cometweb|insight|cometbase|cometpen|cometlens|rankproof)\\b|\\bco (?:sie )?zmienil\\w*(?: sie)?\\b.{0,60}\\b(?:cometweb|insight|cometbase|cometpen|cometlens)\\b"
+        ],
+        [
+          12,
+          "\\b(?:refresh|update|rebuild|pull|gather|build)\\w*\\b.{0,30}\\b(?:the )?cometweb (?:context|state|snapshot)|\\bcometweb\\b.{0,40}\\b(?:context snapshot|current state|where (?:it|we) stand)"
+        ],
+        [
           12,
           "od[sś]wie[zż].*kontekst|refresh context|context envelope|przygotuj kontekst"
         ],
@@ -570,12 +650,12 @@
     },
     {
       "id": "competitive-intelligence",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Continuous competitive intelligence and competitor change detection. Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior scan, track pricing/product/positioning/SEO/ads/reviews/company changes, maintain a competitor watchlist, produce recurring competitor digests, verify competitor claims, analyze cross-competitor trends, or turn observed deltas into product/GTM/sales implications. Use it when temporal state, snapshots, deltas, alerts, freshness, evidence provenance, or recurring intelligence operations matter. Do not use for a one-time initial deep profile with no monitoring intent (prefer a dedicated competitor-profiling skill when one is installed), for extracting a competitor's mechanisms to adapt into your own product (use product-teardown), for writing comparison pages or sales battlecards, for setting your own prices, or for a full search-visibility audit (use seo-geo-aeo-maxxing).",
+      "description": "Continuous competitive intelligence and competitor change detection. Do not use for a one-time initial deep profile with no monitoring intent (prefer a dedicated competitor-profiling skill when one is installed), for extracting a competitor's mechanisms to adapt into your own product (use product-teardown), for writing comparison pages or sales battlecards, for setting your own prices, or for a full search-visibility audit (use seo-geo-aeo-maxxing). Use when the user asks to monitor competitors over time, refresh existing competitor profiles, detect what changed since a prior scan, track pricing/product/positioning/SEO/ads/reviews/company changes, maintain a competitor watchlist, produce recurring competitor digests, verify competitor claims, analyze cross-competitor trends, or turn observed deltas into product/GTM/sales implications. Use it when temporal state, snapshots, deltas, alerts, freshness, evidence provenance, or recurring intelligence operations matter.",
       "explicit_only": false,
       "owns": [
         "competitor watchlist",
@@ -612,6 +692,26 @@
       "eval_suite": null,
       "routing_signals": [
         [
+          9,
+          "\\bcompetitors?\\b.{0,40}\\b(?:change[ds]?|updated?|moved|raised|cut|dropped|launched|added|removed)\\b"
+        ],
+        [
+          9,
+          "\\b(?:research|analiz\\w*|przeglad)\\w* konkurencji\\b"
+        ],
+        [
+          9,
+          "\\bkeep an eye on\\b.{0,30}\\b(?:competitors?|rivals?)|\\b(?:competitors?|rivals?)\\w*\\b.{0,80}\\b(?:digest|every (?:week|month|friday|monday)|weekly|monthly|watchlist|changelogs?|release notes)\\b"
+        ],
+        [
+          10,
+          "\\b(?:competitor|rival)s?\\b.{0,60}\\b(?:claims?|says?|announced|cut|raised|dropped|launched|added|removed)\\b.{0,80}\\b(?:verify|check|confirm|track\\w*|log|profile)|\\bcompetitor (?:profiles?|tracking|log)\\b"
+        ],
+        [
+          11,
+          "\\bkonkuren\\w*\\b.{0,80}\\b(?:twierdzi|obnizyl|podniosl|zmienil|wprowadzil|dodal|usunal|oglosil|wypuscil)|\\bprofil\\w* konkuren|\\b(?:przeskanuj|zeskanuj|skanuj|sprawdz|zbierz|podsumuj)\\w*\\b.{0,30}\\bzmian\\w*\\b.{0,20}\\b(?:u|w ofercie|na stronach) konkuren"
+        ],
+        [
           10,
           "competitor watchlist|competitor digest|competitive intelligence|monitoruj konkurent"
         ],
@@ -643,12 +743,12 @@
     },
     {
       "id": "content-reviewer",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Review an existing piece of content constructively against its brief, intended reader, factual/evidence requirements, structure, clarity, specificity, usefulness, and internal consistency. Use when the user wants editorial QA, actionable findings, a pre-publication review, or a reasoned assessment of what must change. Do not use for adversarial roasting, full rewrites, evidence collection, humanization-only editing, or final release acceptance; route those to content-roaster, content-writer/ai-humanize, evidence-researcher, or artifact-acceptance.",
+      "description": "Review an existing piece of content constructively against its brief, intended reader, factual/evidence requirements, structure, clarity, specificity, usefulness, and internal consistency. Do not use for adversarial roasting, full rewrites, evidence collection, humanization-only editing, or final release acceptance; route those to content-roaster, content-writer/ai-humanize, evidence-researcher, or artifact-acceptance. Use when the user wants editorial QA, actionable findings, a pre-publication review, or a reasoned assessment of what must change.",
       "explicit_only": false,
       "owns": [
         "constructive content review",
@@ -710,6 +810,26 @@
       "routing_signals": [
         [
           9,
+          "\\breview\\b.{0,40}\\b(?:page|faq|docs?|documentation|copy|post|article|guide|chapter|draft|section)\\b.{0,40}\\bfor (?:clarity|accuracy|consistency|readability|completeness|structure|gaps|missing)"
+        ],
+        [
+          9,
+          "\\bwhere (?:the|my|its|our) (?:argument|logic|structure|flow|reasoning)\\b.{0,20}\\b(?:is |gets |feels )?(?:weak|unclear|confusing|breaks|thin)"
+        ],
+        [
+          10,
+          "\\b(?:editorial|constructive) (?:notes|feedback|pass|comments|review)\\b"
+        ],
+        [
+          9,
+          "\\b(?:review|feedback on|notes on)\\b.{0,40}\\b(?:draft|chapter|article|guide|whitepaper|white paper|post|section)\\b.{0,80}\\b(?:clarity|structure|flow|gaps?|brief|reader|usefulness|consisten\\w*)\\b"
+        ],
+        [
+          10,
+          "\\b(?:ocen|przejrzyj|zrecenzuj|sprawdz)\\w*\\b.{0,40}\\b(?:szkic|artykul|rozdzial|poradnik|wpis|tekst|dokumentacj)\\w*\\b.{0,80}\\b(?:struktur|jasnos|czytelnik|briefem|briefu|niespojn|brakuj|niejasn|uwag)"
+        ],
+        [
+          9,
           "review (this|the|my) (article|blog post|guide|report|white paper|documentation|draft)"
         ],
         [
@@ -744,12 +864,12 @@
     },
     {
       "id": "content-roaster",
-      "version": "6.1.0",
+      "version": "6.1.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run evidence-anchored adversarial reviews of marketing, sales, product, editorial, and long-form content such as landing pages, pricing pages, offers, emails, posts, articles, case studies, reports, ebooks, lead magnets, documentation, product pages, demo/trial flows, enterprise procurement or trust content, release announcements, and sales decks. Use when the user asks to roast, tear apart, red-team, stress-test, compare revisions of, or brutally critique content and wants each material criticism tied to exact source evidence, decision impact, proof burden, counterevidence search, a concrete repair, and an observable acceptance check. Do not use for scientific peer review, repository/code critique, rewrite-only work, one-off fact checking, or full SEO/GEO/AEO audits; route those to science-roaster, repo-roaster, ai-humanize, evidence-researcher, or seo-geo-aeo-maxxing.",
+      "description": "Run evidence-anchored adversarial reviews of marketing, sales, product, editorial, and long-form content such as landing pages, pricing pages, offers, emails, posts, articles, case studies, reports, ebooks, lead magnets, documentation, product pages, demo/trial flows, enterprise procurement or trust content, release announcements, and sales decks. Do not use for scientific peer review, repository/code critique, rewrite-only work, one-off fact checking, or full SEO/GEO/AEO audits; route those to science-roaster, repo-roaster, ai-humanize, evidence-researcher, or seo-geo-aeo-maxxing. Use when the user asks to roast, tear apart, red-team, stress-test, compare revisions of, or brutally critique content and wants each material criticism tied to exact source evidence, decision impact, proof burden, counterevidence search, a concrete repair, and an observable acceptance check.",
       "explicit_only": false,
       "owns": [
         "adversarial content review",
@@ -857,12 +977,12 @@
     },
     {
       "id": "content-writer",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Create evidence-aware informational or editorial prose such as articles, guides, reports, documentation, research-backed explainers, and other bounded knowledge content from an explicit brief or sufficiently clear request. Use when the user wants the actual written artifact and factual integrity, reader utility, structure, and claim discipline matter. Do not use primarily for persuasion-first landing-page copy, ads, lifecycle or cold email, generic copy-editing, humanization-only rewrites, long-form publication/release orchestration, hostile critique, or primary research collection; route those to the relevant copy, email, ai-humanize, longform-publisher, evidence-researcher, content-reviewer, or content-roaster specialist when available.",
+      "description": "Create evidence-aware informational or editorial prose such as articles, guides, reports, documentation, research-backed explainers, and other bounded knowledge content from an explicit brief or sufficiently clear request. Do not use primarily for persuasion-first landing-page copy, ads, lifecycle or cold email, generic copy-editing, humanization-only rewrites, long-form publication/release orchestration, hostile critique, or primary research collection; route those to the relevant copy, email, ai-humanize, longform-publisher, evidence-researcher, content-reviewer, or content-roaster specialist when available. Use when the user wants the actual written artifact and factual integrity, reader utility, structure, and claim discipline matter.",
       "explicit_only": false,
       "owns": [
         "evidence-aware content production",
@@ -923,6 +1043,14 @@
       "release_status": "ACTIVE",
       "routing_signals": [
         [
+          10,
+          "\\b(?:write|draft|create|produce|compose)\\w*\\b.{0,30}\\b(?:well.sourced|sourced|cited|fact.checked|referenced)\\b.{0,20}\\b(?:explainer|article|guide|post|report|overview)"
+        ],
+        [
+          10,
+          "\\b(?:write|draft|create|produce|compose)\\w*\\b.{0,30}\\b(?:research|evidence).backed (?:guide|article|explainer|report|post)|\\b(?:notes|interview notes|transcripts?)\\b.{0,20}\\binto\\b.{0,30}\\b(?:article|guide|explainer|documentation|doc page|knowledge.base)"
+        ],
+        [
           12,
           "content writer|write.*(evidence.backed|informational|evidence.aware) (guide|report|article|explainer article)"
         ],
@@ -950,12 +1078,12 @@
     },
     {
       "id": "customer-ops",
-      "version": "2.2.0",
+      "version": "2.2.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run the operational customer-to-resolution loop across support conversations, customer cases, incidents, account risk, commitments, internal handoffs, feedback clusters, and GitHub engineering work. Use when asked to triage an inbox or ticket queue, investigate a customer problem, detect or coordinate an incident, build an operational account 360, watch churn/non-renewal signals, find overdue promises or stalled escalations, dedupe customer-reported bugs into GitHub, produce customer-ops briefs, or verify that a fix actually resolved the customer-visible symptom. Composes with Gmail/support tools, HubSpot/CRM, billing, product analytics, GitHub, Notion/incident records, and connected files. Do not use for broad VOC/persona research, retention-program design, general CRM architecture, analytics implementation, product roadmap prioritization (Product Operator), release-candidate GO/NO_GO (Release Readiness), or security exploitation; hand those workflows to the specialist skill.",
+      "description": "Run the operational customer-to-resolution loop across support conversations, customer cases, incidents, account risk, commitments, internal handoffs, feedback clusters, and GitHub engineering work. Do not use for broad VOC/persona research, retention-program design, general CRM architecture, analytics implementation, product roadmap prioritization (Product Operator), release-candidate GO/NO_GO (Release Readiness), or security exploitation; hand those workflows to the specialist skill. Use when asked to triage an inbox or ticket queue, investigate a customer problem, detect or coordinate an incident, build an operational account 360, watch churn/non-renewal signals, find overdue promises or stalled escalations, dedupe customer-reported bugs into GitHub, produce customer-ops briefs, or verify that a fix actually resolved the customer-visible symptom. Composes with Gmail/support tools, HubSpot/CRM, billing, product analytics, GitHub, Notion/incident records, and connected files.",
       "explicit_only": false,
       "owns": [
         "support triage",
@@ -992,6 +1120,30 @@
       "eval_suite": null,
       "routing_signals": [
         [
+          9,
+          "\\bwhat we promised\\b|\\bpromised (?:them|the (?:client|customer))\\b|\\b(?:key |our )?(?:client|customer)\\b.{0,10}\\b(?:says|said|claims|reports|tells us)\\b"
+        ],
+        [
+          9,
+          "\\b(?:customers?|clients?)\\b.{0,30}\\b(?:reported|reporting|complain\\w*|escalat\\w*)\\b"
+        ],
+        [
+          9,
+          "\\bcoordinate\\b.{0,20}\\b(?:the )?incident\\b|\\bincident (?:response|coordination|comms|communication)"
+        ],
+        [
+          10,
+          "\\bsupport tickets?\\b|\\b(?:tickets?|support (?:inbox|queue|requests?))\\b.{0,60}\\b(?:same bug|duplicates?|dedupe|incident|escalat\\w*|triage)"
+        ],
+        [
+          10,
+          "\\b(?:skrzynk\\w*|kolejk\\w*) (?:supportu|wsparcia|zgloszen)|\\bzgloszeni\\w*\\b.{0,60}\\b(?:incydent|eskalac|duplikat)"
+        ],
+        [
+          10,
+          "\\b(?:fix|patch)\\b.{0,60}\\b(?:actually )?(?:resolve|fix)\\w*\\b.{0,40}\\b(?:customer|client|user)'?s?\\b"
+        ],
+        [
           10,
           "support queue|\\bcustomer cases?\\b(?! stud)|account 360"
         ],
@@ -1027,12 +1179,12 @@
     },
     {
       "id": "design-partner-finder",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Find, verify, qualify, compare, and manage companies as design partners, co-development partners, beta partners, paid pilots, lighthouse customers, or early adopters. Use for design-partner discovery, early-adopter shortlists, qualification of an existing candidate list, cohort selection, partner-readiness validation, active-partner review, or revalidation of prior candidates. Optimize for learning value, urgency, representativeness, implementation feasibility, real user/champion access, mutual commitment, evidence quality, transferability, cohort coverage, and cost-to-learn; separate desk-research fit from live readiness, preserve evidence lineage/freshness, and keep prestige or contract size from replacing product-learning quality. Do not use for broad outbound lead generation, interview/VOC synthesis, or writing outreach copy; hand those to a prospecting, customer-research, or cold-email skill when one is installed.",
+      "description": "Find, verify, qualify, compare, and manage companies as design partners, co-development partners, beta partners, paid pilots, lighthouse customers, or early adopters. Do not use for broad outbound lead generation, interview/VOC synthesis, or writing outreach copy; hand those to a prospecting, customer-research, or cold-email skill when one is installed. Use for design-partner discovery, early-adopter shortlists, qualification of an existing candidate list, cohort selection, partner-readiness validation, active-partner review, or revalidation of prior candidates. Optimize for learning value, urgency, representativeness, implementation feasibility, real user/champion access, mutual commitment, evidence quality, transferability, cohort coverage, and cost-to-learn; separate desk-research fit from live readiness, preserve evidence lineage/freshness, and keep prestige or contract size from replacing product-learning quality.",
       "explicit_only": false,
       "owns": [
         "partner cohort",
@@ -1070,6 +1222,18 @@
       "routing_signals": [
         [
           10,
+          "\\bkohort\\w*\\b.{0,20}\\b(?:pilotaz|beta|partner)|\\b(?:pilotaz|beta)\\w*\\b.{0,20}\\bkohort"
+        ],
+        [
+          10,
+          "\\bpartner\\w*\\b.{0,40}\\b(?:wspoln\\w* (?:rozwij|rozwoj|budow|tworz))|\\bco-?development partners?"
+        ],
+        [
+          9,
+          "\\b(?:pilot|beta|early.adopter) candidates?\\b|\\bcandidates?\\b.{0,60}\\b(?:champion|urgency|learning value)"
+        ],
+        [
+          10,
           "\\b(?:find|source|shortlist|qualify|score|rank|recruit|select|vet|identify|compare|evaluate|prioriti[sz]e|screen|manage)\\w*\\b.{0,40}\\bdesign[ -]partner|\\bdesign[ -]partners? (?:discovery|shortlist|candidates?|cohort|readiness|program(?:me)?|pipeline|search|criteria|fit)\\b|learning contract|partner charter"
         ],
         [
@@ -1092,12 +1256,12 @@
     },
     {
       "id": "ebook-publisher",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Create, research, validate, edit, redesign, and prepare evidence-backed ebooks, white papers, and practical PDF workbooks, especially the CometWeb ebook series. Use for requests such as zrob ebook, napisz poradnik PDF, deep research do ebooka, zweryfikuj ebook, popraw okladke, or prepare a publication from research through reviewed PDF. Own publication scope, research coverage, claim-to-source mapping, editorial structure, meaning-preserving Polish/English editing, series design, revision-aware QA, and publication handoff. Reuse evidence-researcher and ai-humanize when available. Do not trigger for a standalone blog post, a generic website audit, simple PDF extraction, or merely a request to install a skill; to refresh, reconcile, or release an existing long-form publication through a canonical manuscript with derived DOCX/PDF lineage, use longform-publisher. Research-only and redesign-only requests must stay within their requested scope.",
+      "description": "Create, research, validate, edit, redesign, and prepare evidence-backed ebooks, white papers, and practical PDF workbooks, especially the CometWeb ebook series. Do not trigger for a standalone blog post, a generic website audit, simple PDF extraction, or merely a request to install a skill; to refresh, reconcile, or release an existing long-form publication through a canonical manuscript with derived DOCX/PDF lineage, use longform-publisher. Use for requests such as zrob ebook, napisz poradnik PDF, deep research do ebooka, zweryfikuj ebook, popraw okladke, or prepare a publication from research through reviewed PDF. Own publication scope, research coverage, claim-to-source mapping, editorial structure, meaning-preserving Polish/English editing, series design, revision-aware QA, and publication handoff. Reuse evidence-researcher and ai-humanize when available. Research-only and redesign-only requests must stay within their requested scope.",
       "explicit_only": false,
       "owns": [
         "publication scope and coverage",
@@ -1171,12 +1335,12 @@
     },
     {
       "id": "evidence-researcher",
-      "version": "1.0.4",
+      "version": "1.0.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Build auditable Evidence Packs for consequential research, fact-checking, due diligence, verification, and cross-skill evidence handoff. Use when a question must be decomposed into material claims and checked against primary or system-of-record sources: verify currentness/effective dates/versions, distinguish source artifacts from claim-specific evidence, search for falsifiers and negative evidence, resolve contradictions, detect derivative or non-independent sources, identify evidence gaps, compare evidence deltas, or prepare reusable evidence for AI Council, product, technical, audit, SEO/GEO/AEO, sales, or customer workflows. Do not use for casual single-fact lookup or as the final decision-maker when a dedicated decision skill exists.",
+      "description": "Build auditable Evidence Packs for consequential research, fact-checking, due diligence, verification, and cross-skill evidence handoff. Do not use for casual single-fact lookup or as the final decision-maker when a dedicated decision skill exists. Use when a question must be decomposed into material claims and checked against primary or system-of-record sources: verify currentness/effective dates/versions, distinguish source artifacts from claim-specific evidence, search for falsifiers and negative evidence, resolve contradictions, detect derivative or non-independent sources, identify evidence gaps, compare evidence deltas, or prepare reusable evidence for AI Council, product, technical, audit, SEO/GEO/AEO, sales, or customer workflows.",
       "explicit_only": false,
       "owns": [
         "claim decomposition",
@@ -1220,6 +1384,18 @@
       "eval_suite": null,
       "routing_signals": [
         [
+          9,
+          "\\bindependent sources?\\b|\\bcite the same\\b|\\bcircular (?:sourcing|citations?)"
+        ],
+        [
+          8,
+          "\\b(?:official|primary|original) sources?\\b|\\beffective dates?\\b"
+        ],
+        [
+          10,
+          "\\b(?:verify|check|validate|confirm|trace)\\w*\\b.{0,60}\\b(?:numbers?|figures?|statistics?|stats|data|claims?|quotes?)\\b.{0,60}\\b(?:against|with|to) (?:the )?(?:original|primary|authoritative|official|underlying) (?:sources?|data|filings?|documents?)"
+        ],
+        [
           10,
           "evidence pack"
         ],
@@ -1255,12 +1431,12 @@
     },
     {
       "id": "feedback-integrator",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Aggregate repeated findings, acceptance failures, eval results, user corrections, and workflow incidents across skill runs to identify recurring failure patterns and propose evidence-backed improvements to skill instructions, routing, references, kernels, evals, or host integration. Use when the user wants the skill system to learn from repeated mistakes, run a retrospective, improve reliability over time, or convert observed failures into regression tests. Do not use to silently self-modify skills, learn from a single weak signal, replace product/research analytics, or apply repository changes without explicit authorization.",
+      "description": "Aggregate repeated findings, acceptance failures, eval results, user corrections, and workflow incidents across skill runs to identify recurring failure patterns and propose evidence-backed improvements to skill instructions, routing, references, kernels, evals, or host integration. Do not use to silently self-modify skills, learn from a single weak signal, replace product/research analytics, or apply repository changes without explicit authorization. Use when the user wants the skill system to learn from repeated mistakes, run a retrospective, improve reliability over time, or convert observed failures into regression tests.",
       "explicit_only": false,
       "owns": [
         "recurrent failure pattern synthesis",
@@ -1321,6 +1497,26 @@
       "routing_signals": [
         [
           10,
+          "\\b(?:users?|reviewers?) corrected\\b.{0,40}\\bskills?\\b|\\bskill outputs?\\b.{0,60}\\binstruction changes?"
+        ],
+        [
+          10,
+          "\\bkeeps? (?:going wrong|failing|breaking)\\b.{0,40}\\bskills?\\b|\\bskills?\\b.{0,60}\\bkeeps? (?:going wrong|failing|breaking)"
+        ],
+        [
+          9,
+          "\\bacross (?:the )?(?:last|past) \\w+ (?:skill runs|runs|acceptance failures|failures|evals|incidents)\\b"
+        ],
+        [
+          10,
+          "\\b(?:same|recurring|repeated)\\b.{0,30}\\b(?:mistakes?|errors?|failures?|findings?|problems?)\\b.{0,100}\\b(?:skills?|instructions?|regression tests?|evals?|runs?|routing)\\b"
+        ],
+        [
+          10,
+          "\\bretro(?:spective)?\\b.{0,60}\\b(?:eval|skill|run|routing|acceptance|quality)\\w*\\b.{0,20}\\b(?:failures?|incidents?|mistakes?|corrections?)"
+        ],
+        [
+          10,
           "recurring (failure patterns?|mistakes|findings)|same mistakes across"
         ],
         [
@@ -1359,12 +1555,12 @@
     },
     {
       "id": "longform-publisher",
-      "version": "1.1.2",
+      "version": "1.1.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run the publication control plane for a long-form work such as an ebook, report, playbook, white paper, guide, handbook, or research-backed article: one canonical manuscript, claim-use traceability, derived DOCX/PDF/HTML lineage, and release-stage discipline. Use when an existing publication must be refreshed into a new edition, when a manuscript and its derived formats must be reconciled, or when a publication needs a RELEASE_READY gate across formats. Do not use to create a new CometWeb ebook or workbook from research through cover and design (use ebook-publisher), for primary evidence research (evidence-researcher), prose-only humanization (ai-humanize), a standalone article draft (content-writer), or low-level PDF/DOCX file manipulation.",
+      "description": "Run the publication control plane for a long-form work such as an ebook, report, playbook, white paper, guide, handbook, or research-backed article: one canonical manuscript, claim-use traceability, derived DOCX/PDF/HTML lineage, and release-stage discipline. Do not use to create a new CometWeb ebook or workbook from research through cover and design (use ebook-publisher), for primary evidence research (evidence-researcher), prose-only humanization (ai-humanize), a standalone article draft (content-writer), or low-level PDF/DOCX file manipulation. Use when an existing publication must be refreshed into a new edition, when a manuscript and its derived formats must be reconciled, or when a publication needs a RELEASE_READY gate across formats.",
       "explicit_only": false,
       "owns": [
         "canonical long-form manuscript",
@@ -1426,6 +1622,10 @@
       "routing_signals": [
         [
           11,
+          "\\breconcil\\w*\\b.{0,60}\\bmanuscript|\\b(?:html|pdf|docx|epub)\\b.{0,20}\\b(?:and|/|,) ?(?:the )?(?:html|pdf|docx|epub)\\b.{0,60}\\b(?:disagree|differ|drift|out of sync|mismatch|don.t match)"
+        ],
+        [
+          11,
           "\\bregenerat\\w*\\b.{0,30}\\b(?:docx|pdf|html)\\b.{0,10}(?:\\band\\b|/|,) ?(?:the )?(?:docx|pdf|html)\\b|\\bregenerat\\w*\\b.{0,30}\\bderived\\b|(existing|current|old|previous) (ebook|white paper|report|handbook|playbook|guide)\\b.{0,80}\\b(?:manuscript|edition)\\b"
         ],
         [
@@ -1460,12 +1660,12 @@
     },
     {
       "id": "portfolio-operator",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Evidence-grounded cross-domain portfolio control plane for deciding what a user or small team should focus on across products, client work, research/academic commitments, growth, operations, and side projects. Use when the user asks what to do this week/next 7-30 days across multiple projects, how to allocate limited capacity, which commitments conflict, what to pause/drop/delegate, how to reconcile client deadlines with product/research work, or for a portfolio-wide review. Do not use for deep prioritization inside one product/repo, release GO/NO-GO, or executing a multi-skill workflow when a specialist/control-plane skill owns that task.",
+      "description": "Evidence-grounded cross-domain portfolio control plane for deciding what a user or small team should focus on across products, client work, research/academic commitments, growth, operations, and side projects. Do not use for deep prioritization inside one product/repo, release GO/NO-GO, or executing a multi-skill workflow when a specialist/control-plane skill owns that task. Use when the user asks what to do this week/next 7-30 days across multiple projects, how to allocate limited capacity, which commitments conflict, what to pause/drop/delegate, how to reconcile client deadlines with product/research work, or for a portfolio-wide review.",
       "explicit_only": false,
       "owns": [
         "cross-domain allocation",
@@ -1525,6 +1725,22 @@
       "release_status": "ACTIVE",
       "routing_signals": [
         [
+          10,
+          "\\bbetween (?:my|our)\\b.{0,80}\\b(?:what (?:do|should) (?:i|we) (?:prioriti[sz]e|focus on|drop|cut)|how (?:do|should) (?:i|we) (?:split|allocate|divide))"
+        ],
+        [
+          10,
+          "\\b(?:rozdziel|podziel|rozplanuj)\\w*\\b.{0,20}\\bczas\\w*\\b.{0,20}\\bmiedzy\\b"
+        ],
+        [
+          9,
+          "\\bwhat should (?:i|we) (?:cut|drop|pause|delegate|say no to)\\b"
+        ],
+        [
+          10,
+          "\\bco (?:powinienem|powinnam|powinnismy|mam|mamy|moge|warto) (?:odpuscic|wstrzymac|oddelegowac|rzucic|przesunac|skreslic)"
+        ],
+        [
           12,
           "portfolio operator|portfolio-wide"
         ],
@@ -1552,12 +1768,12 @@
     },
     {
       "id": "product-operator",
-      "version": "2.4.0",
+      "version": "2.4.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Evidence-governed product operating system that reconciles GitHub implementation and release state, Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what one product team should do next. Use for questions such as what remains, what to build/fix/verify next, how to finish or unstick a product, what is actually done, whether roadmap and repo agree, how to plan the next product cycle, what changed since the last review, or what should wait/stop. Produces bounded BLOCKER/VERIFY NOW/DECISION NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness, immutable snapshots/deltas, and specialist handoffs. Read-only by default; delegates deep audits and consequential decisions. Do not use for a first-time whole-project roadmap baseline (repo-to-roadmap), a release-candidate GO/NO_GO (release-readiness), allocating capacity across several products and commitments (portfolio-operator), or customer support triage (customer-ops).",
+      "description": "Evidence-governed product operating system that reconciles GitHub implementation and release state, Notion roadmap/tasks/decision docs, product context, and available outcome signals to answer what one product team should do next. Do not use for a first-time whole-project roadmap baseline (repo-to-roadmap), a release-candidate GO/NO_GO (release-readiness), allocating capacity across several products and commitments (portfolio-operator), or customer support triage (customer-ops). Use for questions such as what remains, what to build/fix/verify next, how to finish or unstick a product, what is actually done, whether roadmap and repo agree, how to plan the next product cycle, what changed since the last review, or what should wait/stop. Produces bounded BLOCKER/VERIFY NOW/DECISION NOW/NOW/NEXT/LATER/STOP actions, dependency-aware sequencing, state drift, readiness, immutable snapshots/deltas, and specialist handoffs. Read-only by default; delegates deep audits and consequential decisions.",
       "explicit_only": false,
       "owns": [
         "weekly control loop",
@@ -1598,6 +1814,38 @@
       ],
       "eval_suite": null,
       "routing_signals": [
+        [
+          10,
+          "\\bwhat should (?:the |our |my )?(?:[\\w-]{1,30} ){0,2}team (?:build|fix|ship|do|verify) next\\b"
+        ],
+        [
+          9,
+          "\\b(?:marked|listed|shown) (?:as )?(?:done|complete\\w*|shipped)\\b.{0,40}\\b(?:but|yet)\\b"
+        ],
+        [
+          10,
+          "\\b(?:marked|listed|shown) (?:as )?(?:done|complete\\w*|shipped)\\b.{0,40}\\b(?:but|yet)\\b.{0,30}\\b(?:never|not)\\b.{0,20}\\b(?:merged|shipped|implemented|released)"
+        ],
+        [
+          5,
+          "\\b(?:next|upcoming) (?:release|milestone)\\b.{0,80}\\b(?:this week|this sprint)\\b|\\b(?:nastepn\\w*|kolejn\\w*) (?:wydani|release)\\w*\\b.{0,80}\\bw tym (?:tygodniu|sprincie)\\b"
+        ],
+        [
+          10,
+          "\\broadmap\\b.{0,60}\\b(?:in sync|match\\w*|agree\\w*|drift\\w*|out of date)\\b.{0,60}\\b(?:github|repo|merged|code|shipped)"
+        ],
+        [
+          10,
+          "\\b(?:co|czy) (?:jest )?(?:naprawde|faktycznie|rzeczywiscie) (?:zrobion|gotow|wdrozon|dowiezion|skonczon)|\\bwhat(?:'s| is) actually (?:done|shipped|finished|implemented)\\b"
+        ],
+        [
+          9,
+          "\\b(?:next|upcoming) product cycle\\b|\\bwhat to (?:build|fix|verify|ship),? (?:build|fix|verify|ship|or stop|stop)"
+        ],
+        [
+          9,
+          "\\bpriorytet\\w*\\b.{0,30}\\b(?:na |w |do )?sprint"
+        ],
         [
           10,
           "what (should we|to|do we) (do|build|fix|verify) (next|this week)"
@@ -1684,12 +1932,12 @@
     },
     {
       "id": "product-teardown",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Analyze external products, websites, apps, APIs, documentation, and source repositories to extract evidence-backed, transferable, implementable product and engineering patterns rather than generic competitor summaries. Use when the user asks to teardown, reverse-engineer at a product/architecture level, benchmark, study, or learn from another product/repo; asks what workflows, UX mechanics, architecture, onboarding, monetization, developer experience, operations, reliability, or implementation ideas are worth adapting; asks \"what can we borrow/learn/implement from X\" or Polish equivalents such as \"przeanalizuj produkt/repo\", \"wyciagnij wzorce\", or \"co warto wdrozyc\". Also use for multi-product pattern synthesis and source-to-target adaptation. Do not use for ongoing competitor monitoring/delta analysis (competitive-intelligence), broad competitor dossiers, external-facing comparison pages, or a roadmap of the user's own repo with no external reference target (repo-to-roadmap).",
+      "description": "Analyze external products, websites, apps, APIs, documentation, and source repositories to extract evidence-backed, transferable, implementable product and engineering patterns rather than generic competitor summaries. Do not use for ongoing competitor monitoring/delta analysis (competitive-intelligence), broad competitor dossiers, external-facing comparison pages, or a roadmap of the user's own repo with no external reference target (repo-to-roadmap). Use when the user asks to teardown, reverse-engineer at a product/architecture level, benchmark, study, or learn from another product/repo; asks what workflows, UX mechanics, architecture, onboarding, monetization, developer experience, operations, reliability, or implementation ideas are worth adapting; asks \"what can we borrow/learn/implement from X\" or Polish equivalents such as \"przeanalizuj produkt/repo\", \"wyciagnij wzorce\", or \"co warto wdrozyc\". Also use for multi-product pattern synthesis and source-to-target adaptation.",
       "explicit_only": false,
       "owns": [
         "external product patterns",
@@ -1725,6 +1973,22 @@
       "routing_signals": [
         [
           10,
+          "\\b(?:patterns?|ideas?|mechanics)\\b.{0,10}\\bfrom\\b.{0,40}\\b(?:could|can|should) (?:we|i) (?:adapt|adopt|borrow|copy|reuse|steal|replicate)"
+        ],
+        [
+          9,
+          "\\bwhat (?:we|i) (?:can|could|should|might) (?:replicate|emulate|mirror)\\b|\\bbreak down how\\b.{0,60}\\b(?:works?|handles?|does)\\b"
+        ],
+        [
+          9,
+          "\\bwhat (?:we|i) (?:can|could|should) (?:reuse|borrow|copy|adopt|steal|adapt)\\b|\\bwhich\\b.{0,40}\\bpatterns?\\b.{0,40}\\b(?:should|could|can) (?:we|i) (?:copy|borrow|adopt|reuse|steal)|\\bpatterns?\\b.{0,20}\\b(?:we|i) (?:should|could|can) (?:copy|borrow|adopt|reuse|steal)"
+        ],
+        [
+          10,
+          "\\btear(?:ing)? down\\b(?!.{0,20}\\b(?:server|container|cluster|env|environment|stack|infra|database|db|tests?|fixtures?)\\b)"
+        ],
+        [
+          10,
           "(?<!fixture )(?<!test )\\bteardown\\b(?! (?:method|function|fixture|hook|step|phase|code|logic|runs?)\\b)|reverse.engineer\\w*\\b.{0,50}\\b(?:products?|onboarding|pricing|architecture|ux|flows?|docs|documentation|growth|positioning|features?|funnel|website|saas)\\b"
         ],
         [
@@ -1747,12 +2011,12 @@
     },
     {
       "id": "quality-loop-operator",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Orchestrate the CometWeb artifact/repository/skill quality loop across briefing, creation, review, adversarial testing, repair, acceptance, measurement, selective revalidation, and skill runtime lifecycle while preserving candidate/contract identity, frozen policy/rubric locks, finding lineage, rollout state, rollback readiness, disagreement state, and quality debt. Use when the user wants one entry point to run or resume the full quality workflow, coordinate quality specialists, process a batch/campaign, reconcile findings, or govern a measured skill candidate through canary/staged rollout. Do not use for general multi-skill orchestration outside quality workflows, to replace specialist analysis, to make consequential strategy decisions, or to declare software production readiness; use skill-orchestrator, ai-council, or release-readiness for those cases.",
+      "description": "Orchestrate the CometWeb artifact/repository/skill quality loop across briefing, creation, review, adversarial testing, repair, acceptance, measurement, selective revalidation, and skill runtime lifecycle while preserving candidate/contract identity, frozen policy/rubric locks, finding lineage, rollout state, rollback readiness, disagreement state, and quality debt. Do not use for general multi-skill orchestration outside quality workflows, to replace specialist analysis, to make consequential strategy decisions, or to declare software production readiness; use skill-orchestrator, ai-council, or release-readiness for those cases. Use when the user wants one entry point to run or resume the full quality workflow, coordinate quality specialists, process a batch/campaign, reconcile findings, or govern a measured skill candidate through canary/staged rollout.",
       "explicit_only": false,
       "owns": [
         "quality workflow state and sequencing",
@@ -1814,6 +2078,18 @@
       "release_status": "ACTIVE",
       "routing_signals": [
         [
+          10,
+          "\\bbrief\\b.{0,30}\\breview\\b.{0,40}\\brepair\\b.{0,30}\\baccept"
+        ],
+        [
+          12,
+          "\\b(?:kick off|start|launch|resume|restart|drive)\\b.{0,20}\\b(?:the |a )?(?:full |complete )?quality (?:loop|workflow)\\b"
+        ],
+        [
+          11,
+          "\\b(?:canary|staged rollout)\\b.{0,80}\\b(?:skill|candidate)\\b|\\b(?:skill|candidate)\\b.{0,80}\\b(?:canary|staged rollout)"
+        ],
+        [
           20,
           "full content quality loop"
         ],
@@ -1849,12 +2125,12 @@
     },
     {
       "id": "release-readiness",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Assess whether a specific release candidate (version, build ID, branch/tag, commit, artifact digest) of an application, service, mobile/desktop build, library, or API is ready for production in a named environment and issue an evidence-backed GO / GO_WITH_CONTROLS / NO_GO / DEFER verdict across product acceptance, QA, security, operations/reliability, documentation, billing/entitlements, and support/incident readiness. Use when the user names or implies a concrete candidate for launch/release gates, pre-deploy audits, \"is this build ready to ship?\", hotfix readiness, post-incident releases, and delta/revalidation reviews. Do not use for first-time whole-project baselines or \"analyze the entire repo\" (Repo to Roadmap), weekly prioritization on an existing roadmap (Product Operator), site/app QA with no named candidate (Web App Auditor), or gating a report, ebook, or other knowledge deliverable (Artifact Acceptance). Never replaces security scans, live QA, legal review, or deploy approval.",
+      "description": "Assess whether a specific release candidate (version, build ID, branch/tag, commit, artifact digest) of an application, service, mobile/desktop build, library, or API is ready for production in a named environment and issue an evidence-backed GO / GO_WITH_CONTROLS / NO_GO / DEFER verdict across product acceptance, QA, security, operations/reliability, documentation, billing/entitlements, and support/incident readiness. Do not use for first-time whole-project baselines or \"analyze the entire repo\" (Repo to Roadmap), weekly prioritization on an existing roadmap (Product Operator), site/app QA with no named candidate (Web App Auditor), or gating a report, ebook, or other knowledge deliverable (Artifact Acceptance). Use when the user names or implies a concrete candidate for launch/release gates, pre-deploy audits, \"is this build ready to ship?\", hotfix readiness, post-incident releases, and delta/revalidation reviews. Never replaces security scans, live QA, legal review, or deploy approval.",
       "explicit_only": false,
       "owns": [
         "pinned RC gate",
@@ -1892,6 +2168,14 @@
       "routing_signals": [
         [
           10,
+          "\\b(?:push|ship|deploy|roll out|release|promote)\\w*\\b.{0,20}\\bv?\\d+\\.\\d+(?:\\.\\d+)?\\b.{0,40}\\b(?:production|prod|live)\\b|\\b(?:release|ship|deploy|go.live) verdict\\b"
+        ],
+        [
+          10,
+          "\\bpre.?deploy\\w*\\b|\\b(?:tag|version|release|build|rc) v?\\d+\\.\\d+(?:\\.\\d+)?\\b.{0,80}\\b(?:gate|go|no.go|ready|production|prod|deploy|ship)\\b"
+        ],
+        [
+          10,
           "release candidate|release gate|go_with_controls|\\bno_go\\b|kandydat wydania"
         ],
         [
@@ -1926,12 +2210,12 @@
     },
     {
       "id": "repair-operator",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Convert findings from reviewers, roasters, audits, tests, or acceptance gates into a minimal dependency-aware repair set, optionally apply authorized edits, and verify that fixes close root causes without introducing regressions. Use when the user wants issues actually fixed rather than merely analyzed, especially after content-reviewer, content-roaster, science-roaster, repo-roaster, or artifact-acceptance. Do not use to invent new requirements, perform the initial broad audit, make consequential strategy decisions, or claim a finding is fixed without fresh verification evidence.",
+      "description": "Convert findings from reviewers, roasters, audits, tests, or acceptance gates into a minimal dependency-aware repair set, optionally apply authorized edits, and verify that fixes close root causes without introducing regressions. Do not use to invent new requirements, perform the initial broad audit, make consequential strategy decisions, or claim a finding is fixed without fresh verification evidence. Use when the user wants issues actually fixed rather than merely analyzed, especially after content-reviewer, content-roaster, science-roaster, repo-roaster, or artifact-acceptance.",
       "explicit_only": false,
       "owns": [
         "finding-to-repair planning",
@@ -1991,6 +2275,22 @@
       "release_status": "ACTIVE",
       "routing_signals": [
         [
+          11,
+          "\\b(?:address|fix|repair|close|resolve)\\w*\\b.{0,20}\\b(?:the |all |these )?(?:accepted |open |approved )?findings\\b.{0,30}\\bfrom\\b.{0,20}\\b(?:[\\w-]+ )?(?:review|audit|roast|acceptance|qa)\\b"
+        ],
+        [
+          11,
+          "\\b(?:fix|repair|address|resolve|close)\\w*\\b.{0,30}\\b(?:everything|all|each|the issues?|what)\\b.{0,20}\\b(?:the )?(?:reviewers?|auditors?|roasters?|audit|review|qa)\\b.{0,10}\\b(?:flagged|found|raised|reported|caught)"
+        ],
+        [
+          12,
+          "\\b(?:napraw|popraw|zamknij|wdroz)\\w*\\b.{0,60}\\b(?:z|po|wynik\\w*)\\b.{0,30}\\b(?:audyt|recenzj|review|roast|przeglad|odbior|akceptacj)\\w*|\\b(?:napraw|popraw)\\w*\\b.{0,40}\\b(?:co )?(?:wyszl\\w*|znalazl\\w*|wykazal\\w*)\\b.{0,20}\\b(?:w |z |po )?(?:roasc|roast|audyt|recenzj|review|przeglad)\\w*"
+        ],
+        [
+          10,
+          "\\b(?:najmniejsz|minimaln)\\w* zestaw\\w* (?:poprawek|zmian|napraw)|\\bminimal (?:patch|fix|repair) set|\\bfindings\\b.{0,60}\\b(?:into|to) (?:a )?(?:minimal |smallest )?(?:patch|fix|repair) set"
+        ],
+        [
           20,
           "authorized fixes.*verify.*root cause"
         ],
@@ -2034,12 +2334,12 @@
     },
     {
       "id": "repo-roaster",
-      "version": "6.1.0",
+      "version": "6.1.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run evidence-anchored adversarial reviews of software repositories, codebases, monorepos, pull requests, branches, modules, architecture, tests, configuration, CI/CD, migrations, data pipelines, infrastructure, and engineering hygiene. Use when the user asks to roast, tear apart, red-team, stress-test, re-check a repaired repo, or brutally critique a repo/codebase and wants concrete file/symbol evidence, critical-invariant reasoning, trust-boundary and state-transition analysis, execution-path reachability, blast radius, false-positive checks, repairs, and executable verification steps. Do not use as the primary skill for whole-project roadmapping, external-product pattern extraction, runtime web QA, or final release GO/NO_GO; route those to repo-to-roadmap, product-teardown, web-app-auditor, or release-readiness.",
+      "description": "Run evidence-anchored adversarial reviews of software repositories, codebases, monorepos, pull requests, branches, modules, architecture, tests, configuration, CI/CD, migrations, data pipelines, infrastructure, and engineering hygiene. Do not use as the primary skill for whole-project roadmapping, external-product pattern extraction, runtime web QA, or final release GO/NO_GO; route those to repo-to-roadmap, product-teardown, web-app-auditor, or release-readiness. Use when the user asks to roast, tear apart, red-team, stress-test, re-check a repaired repo, or brutally critique a repo/codebase and wants concrete file/symbol evidence, critical-invariant reasoning, trust-boundary and state-transition analysis, execution-path reachability, blast radius, false-positive checks, repairs, and executable verification steps.",
       "explicit_only": false,
       "owns": [
         "adversarial repository review",
@@ -2154,12 +2454,12 @@
     },
     {
       "id": "repo-to-roadmap",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Analyze an entire software/product project and turn verified project truth into an evidence-based, dependency-aware, reusable roadmap. Use for first-time or delta whole-project baselines such as \"analyze the whole repo/project\", \"what is left to build before target state\", \"create/update a roadmap from GitHub/Notion\", \"przeanalizuj całe repo\", or \"update the roadmap after recent changes\". Inventory topology before searching, separate intent/presence/behavior/release/outcome truth, prove material absence instead of inferring it from search misses, expose coverage and contradictions, model capabilities/critical journeys, prioritize target blockers and gates, validate hard dependencies, and create immutable baseline/delta roadmap snapshots. Do not use for weekly sprint control, release-candidate GO/NO_GO gates, or \"is build v1.2.3 ready to ship?\" — use Product Operator or Release Readiness instead. Do not use as an implementation agent, narrow code review, or specialist security/SEO/CRO audit.",
+      "description": "Analyze an entire software/product project and turn verified project truth into an evidence-based, dependency-aware, reusable roadmap. Do not use for weekly sprint control, release-candidate GO/NO_GO gates, or \"is build v1.2.3 ready to ship?\" — use Product Operator or Release Readiness instead. Do not use as an implementation agent, narrow code review, or specialist security/SEO/CRO audit. Use for first-time or delta whole-project baselines such as \"analyze the whole repo/project\", \"what is left to build before target state\", \"create/update a roadmap from GitHub/Notion\", \"przeanalizuj całe repo\", or \"update the roadmap after recent changes\". Inventory topology before searching, separate intent/presence/behavior/release/outcome truth, prove material absence instead of inferring it from search misses, expose coverage and contradictions, model capabilities/critical journeys, prioritize target blockers and gates, validate hard dependencies, and create immutable baseline/delta roadmap snapshots.",
       "explicit_only": false,
       "owns": [
         "whole-project baseline",
@@ -2194,6 +2494,38 @@
       ],
       "eval_suite": null,
       "routing_signals": [
+        [
+          9,
+          "\\bwhat(?:'s| is) (?:still )?(?:left|missing)\\b.{0,80}\\b(?:go ga|general availability|ga|go live)\\b"
+        ],
+        [
+          8,
+          "\\b(?:zaktualizuj|odswiez|aktualizuj|uaktualnij)\\w* roadmap"
+        ],
+        [
+          10,
+          "\\b(?:map|inventory|analy[sz]e|survey|scan)\\w*\\b.{0,15}\\b(?:the )?(?:whole|entire|full) (?:platform|project|repo|codebase|monorepo|system|product)\\b"
+        ],
+        [
+          10,
+          "\\bcal\\w* (?:projekt|platform|repo|repozytor|monorepo|system)\\w*\\b.{0,80}\\bprodukcyj|\\bco (?:jeszcze )?(?:zostalo|brakuje)\\b.{0,40}\\b(?:do zbudowania|do zrobienia|do wdrozenia)\\b.{0,60}\\bprodukcyj"
+        ],
+        [
+          10,
+          "\\bwhat(?:'s| is) (?:left|missing|still missing)\\b.{0,60}\\b(?:repo|project|codebase|monorepo|platform)\\b.{0,80}\\b(?:production|prod|paying|launch|enterprise|client.ready|customers?)\\b"
+        ],
+        [
+          10,
+          "\\b(?:bazow\\w*|pierwsz\\w*|peln\\w*) roadmap\\w*|\\broadmap\\w*\\b.{0,60}\\bcal\\w* (?:projekt|platform|repo|repozytor|monorepo)|\\bprzeanalizuj\\w*\\b.{0,10}\\bcal\\w* (?:projekt|repo|repozytor|monorepo|platform|kod)\\w*"
+        ],
+        [
+          10,
+          "\\b(?:full|whole|entire|complete)\\b.{0,15}\\b(?:project|repo|codebase|monorepo|platform) baseline\\b|\\bdependency.aware roadmap\\b|\\broadmap\\b.{0,40}\\b(?:from|for) (?:the |this |our )?(?:whole|entire|full) (?:repo|project|codebase|monorepo|platform)"
+        ],
+        [
+          9,
+          "\\b(?:turn|fold|convert|feed)\\w*\\b.{0,60}\\binto (?:a |our |the )?(?:product )?roadmap\\b"
+        ],
         [
           10,
           "analyze the (whole|entire) (repo|project|codebase)"
@@ -2250,12 +2582,12 @@
     },
     {
       "id": "rubric-designer",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Design, normalize, lint, and freeze evaluation rubrics before substantive review or benchmarking, with observable criteria, explicit pass/fail semantics, evidence floors, materiality, blocker rules, scope boundaries, and immutable rubric hashes. Use when the user asks to create grading criteria, an evaluation rubric, acceptance scoring framework, reviewer scorecard, red-team rubric, or repeatable assessment contract. Do not use to judge the candidate itself, to write the artifact, to run empirical skill benchmarks, or to move criteria after seeing the result; use the relevant reviewer, artifact-acceptance, skill-evaluator, or quality-loop-operator for those tasks.",
+      "description": "Design, normalize, lint, and freeze evaluation rubrics before substantive review or benchmarking, with observable criteria, explicit pass/fail semantics, evidence floors, materiality, blocker rules, scope boundaries, and immutable rubric hashes. Do not use to judge the candidate itself, to write the artifact, to run empirical skill benchmarks, or to move criteria after seeing the result; use the relevant reviewer, artifact-acceptance, skill-evaluator, or quality-loop-operator for those tasks. Use when the user asks to create grading criteria, an evaluation rubric, acceptance scoring framework, reviewer scorecard, red-team rubric, or repeatable assessment contract.",
       "explicit_only": false,
       "owns": [
         "evaluation rubric design",
@@ -2314,6 +2646,14 @@
       "release_status": "ACTIVE",
       "routing_signals": [
         [
+          10,
+          "\\b(?:zaprojektuj|przygotuj|stworz|ustal|zdefiniuj|napisz|zbuduj)\\w*\\b.{0,30}\\bkryteri\\w* (?:oceny|oceniania|punktacji)|\\bzaliczeni\\w*\\b.{0,20}\\bniezaliczeni"
+        ],
+        [
+          10,
+          "\\b(?:reviewer|review|grading|evaluation|assessment) scorecards?\\b"
+        ],
+        [
           20,
           "define blocker rules.*evidence floors"
         ],
@@ -2349,12 +2689,12 @@
     },
     {
       "id": "science-roaster",
-      "version": "6.1.0",
+      "version": "6.1.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run an adversarial Reviewer #2-style critique of scientific manuscripts, papers, protocols, theses, methods, analyses, reviewer responses, validation studies, and research drafts. Use when the user asks to roast, peer-review, red-team, stress-test, re-review a revision of, or challenge scientific work and wants every material criticism anchored to exact source evidence, inferential type, validity domain, counterevidence search, minimum repair burden, and an observable verification condition. Do not use for generic content critique, repository/code review, one-off claim verification, or research-program planning; route the first three to content-roaster, repo-roaster, or evidence-researcher, and leave program planning to the user.",
+      "description": "Run an adversarial Reviewer #2-style critique of scientific manuscripts, papers, protocols, theses, methods, analyses, reviewer responses, validation studies, and research drafts. Do not use for generic content critique, repository/code review, one-off claim verification, or research-program planning; route the first three to content-roaster, repo-roaster, or evidence-researcher, and leave program planning to the user. Use when the user asks to roast, peer-review, red-team, stress-test, re-review a revision of, or challenge scientific work and wants every material criticism anchored to exact source evidence, inferential type, validity domain, counterevidence search, minimum repair burden, and an observable verification condition.",
       "explicit_only": false,
       "owns": [
         "adversarial scientific peer review",
@@ -2415,6 +2755,18 @@
       "release_status": "ACTIVE",
       "routing_signals": [
         [
+          12,
+          "\\b(?:journal|peer|academic) referee\\b|\\breferee\\b.{0,40}\\b(?:paper|manuscript|meta.analysis|study|preprint|thesis)"
+        ],
+        [
+          12,
+          "\\bkrytyczn\\w*\\b.{0,40}\\b(?:manuskrypt|preprint|metodolog|artykul\\w* naukow|prac\\w* (?:naukow|doktorsk|magistersk)|wnioski przyczynow)|\\b(?:manuskrypt|preprint|metodolog)\\w*\\b.{0,40}\\bkrytyczn|\\bwnios\\w* przyczynow"
+        ],
+        [
+          11,
+          "\\b(?:critique|criticize|challenge|scrutini[sz]e)\\b.{0,40}\\b(?:statistic\\w*|causal claims?|methodology|methods|inference|study design)\\b.{0,60}\\b(?:paper|manuscript|preprint|study|thesis)\\b"
+        ],
+        [
           14,
           "science roaster|scientific peer review|reviewer.{0,3}2|\\breviewer (?:#|no\\.? |number )?(?:2|two)\\b"
         ],
@@ -2462,12 +2814,12 @@
     },
     {
       "id": "seo-geo-aeo-maxxing",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run evidence-governed, multi-pillar website visibility audits across technical SEO, relevance, authority/trust, GEO/AI citation readiness, and AEO/answer extraction. Use when the user explicitly asks for SEO+GEO+AEO or \"maxxing\", a broad end-to-end search/AI visibility audit, cross-pillar diagnosis, same-rubric competitor comparison, or repeat/delta audit. Use PILLAR only when this skill is explicitly requested for one pillar. Do not use for isolated schema/meta tasks, ongoing competitor monitoring, whole-product roadmapping, or release-candidate GO/NO-GO; hand accepted findings to the corresponding specialist. Diagnosis only; never mutate live sites.",
+      "description": "Run evidence-governed, multi-pillar website visibility audits across technical SEO, relevance, authority/trust, GEO/AI citation readiness, and AEO/answer extraction. Do not use for isolated schema/meta tasks, ongoing competitor monitoring, whole-product roadmapping, or release-candidate GO/NO-GO; hand accepted findings to the corresponding specialist. Use when the user explicitly asks for SEO+GEO+AEO or \"maxxing\", a broad end-to-end search/AI visibility audit, cross-pillar diagnosis, same-rubric competitor comparison, or repeat/delta audit. Use PILLAR only when this skill is explicitly requested for one pillar. Diagnosis only; never mutate live sites.",
       "explicit_only": false,
       "owns": [
         "SEO/GEO/AEO visibility audit",
@@ -2502,6 +2854,18 @@
       "eval_suite": null,
       "routing_signals": [
         [
+          10,
+          "\\bvisibility\\b.{0,40}\\b(?:google|search engines?|ai answers?|answer engines?|ai overviews?|chatgpt|perplexity|llms?)\\b"
+        ],
+        [
+          10,
+          "\\b(?:cited|mentioned|show up|appear\\w*|visible)\\b.{0,30}\\b(?:by|in) (?:ai (?:assistants?|answers?|overviews?|search)|chatgpt|perplexity|gemini|llms?)\\b"
+        ],
+        [
+          10,
+          "\\b(?:audit|review|check|assess|diagnos\\w*)\\b.{0,40}\\b(?:technical seo|search visibility|ai visibility|organic visibility)|\\b(?:technical seo|search visibility|ai visibility)\\b.{0,60}\\baudit\\b"
+        ],
+        [
           12,
           "seo/geo/aeo|seo geo aeo|seo/ geo/ aeo|\\bseo\\b.{0,12}\\bgeo\\b.{0,12}\\baeo\\b"
         ],
@@ -2525,12 +2889,12 @@
     },
     {
       "id": "skill-auditor",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Audit an Agent Skill or a repository of skills for trigger quality, scope overlap, instruction conflicts, progressive-disclosure cost, broken references/dependencies, eval blind spots, false-green paths, semantic-version and public-contract compatibility, host-support overclaims, package hygiene, supply-chain risks, migration/deprecation gaps, and drift between registry, docs, tests, and shipped archives. Use when the user asks to audit, review, roast, harden, compare, or quality-check a skill or skill library itself. Do not use to create/edit the skill (use skill-creator), to empirically benchmark model behavior with-vs-without it (use skill-evaluator), to audit ordinary software (use repo-roaster), or to issue a production release verdict.",
+      "description": "Audit an Agent Skill or a repository of skills for trigger quality, scope overlap, instruction conflicts, progressive-disclosure cost, broken references/dependencies, eval blind spots, false-green paths, semantic-version and public-contract compatibility, host-support overclaims, package hygiene, supply-chain risks, migration/deprecation gaps, and drift between registry, docs, tests, and shipped archives. Do not use to create/edit the skill (use skill-creator), to empirically benchmark model behavior with-vs-without it (use skill-evaluator), to audit ordinary software (use repo-roaster), or to issue a production release verdict. Use when the user asks to audit, review, roast, harden, compare, or quality-check a skill or skill library itself.",
       "explicit_only": false,
       "owns": [
         "skill package audits",
@@ -2590,6 +2954,14 @@
       "release_status": "ACTIVE",
       "routing_signals": [
         [
+          11,
+          "\\bskills?\\b.{0,80}\\b(?:scope overlap|trigger overlap|overlapping triggers|eval blind spots?|package hygiene|supply.chain)|\\b(?:scope overlap|trigger overlap|overlapping triggers|eval blind spots?|package hygiene|supply.chain)\\w*\\b.{0,80}\\bskills?\\b"
+        ],
+        [
+          11,
+          "\\b(?:audit|review|check|harden)\\w*\\b.{0,40}\\b(?:agent )?skills? (?:repo|repository|library|catalog)\\b"
+        ],
+        [
           20,
           "quality.check.*skill library"
         ],
@@ -2621,12 +2993,12 @@
     },
     {
       "id": "skill-evaluator",
-      "version": "1.7.1",
+      "version": "1.7.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Design and evaluate Agent Skill experiments that measure whether a skill improves model behavior, discovery, task success, reliability, cost, or latency relative to a no-skill/prior-version baseline, including host/model comparisons, judge agreement, quality-cost Pareto trade-offs, and runtime drift under frozen measurement identity. Use when the user asks to benchmark, A/B test, evaluate, compare, prove, regress-test, or measure a skill across supported harnesses, or to prepare executable real-host suites when execution is unavailable. Do not use for static package/routing audits (use skill-auditor), to create/edit a skill (use skill-creator), to fabricate real-host results, or to claim universal superiority from one configuration.",
+      "description": "Design and evaluate Agent Skill experiments that measure whether a skill improves model behavior, discovery, task success, reliability, cost, or latency relative to a no-skill/prior-version baseline, including host/model comparisons, judge agreement, quality-cost Pareto trade-offs, and runtime drift under frozen measurement identity. Do not use for static package/routing audits (use skill-auditor), to create/edit a skill (use skill-creator), to fabricate real-host results, or to claim universal superiority from one configuration. Use when the user asks to benchmark, A/B test, evaluate, compare, prove, regress-test, or measure a skill across supported harnesses, or to prepare executable real-host suites when execution is unavailable.",
       "explicit_only": false,
       "owns": [
         "skill experiment design",
@@ -2686,6 +3058,10 @@
       "release_status": "ACTIVE",
       "routing_signals": [
         [
+          10,
+          "\\bwith.(?:versus|vs\\.?|and).without\\b|\\b(?:with|without) (?:the )?skill (?:loaded|enabled|vs|versus)"
+        ],
+        [
           20,
           "measure whether this skill improves behavior over the baseline"
         ],
@@ -2721,12 +3097,12 @@
     },
     {
       "id": "skill-orchestrator",
-      "version": "1.1.3",
+      "version": "1.1.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Plan and execute multi-skill CometWeb workflows with CW-AIP handoffs when the user wants one entry point instead of tagging each specialist. Use when the user asks to orchestrate, sequence, or run end-to-end flows (e.g. evidence then Council, audit then release, research then weekly ops), run everything needed for a goal, or chain Evidence Researcher with ai-council or other skills in order. Supports execution_mode auto|single_thread|isolated_subagents. Loads each step's SKILL.md, runs it fully, and passes envelopes between steps. Do not use for a single-domain task when one specialist skill is enough, for routing-only questions without execution, or to bypass AI Council decision policy or Release Readiness gate rules.",
+      "description": "Plan and execute multi-skill CometWeb workflows with CW-AIP handoffs when the user wants one entry point instead of tagging each specialist. Do not use for a single-domain task when one specialist skill is enough, for routing-only questions without execution, or to bypass AI Council decision policy or Release Readiness gate rules. Use when the user asks to orchestrate, sequence, or run end-to-end flows (e.g. evidence then Council, audit then release, research then weekly ops), run everything needed for a goal, or chain Evidence Researcher with ai-council or other skills in order. Supports execution_mode auto|single_thread|isolated_subagents. Loads each step's SKILL.md, runs it fully, and passes envelopes between steps.",
       "explicit_only": false,
       "owns": [
         "multi-skill plan",
@@ -2771,6 +3147,10 @@
       ],
       "eval_suite": null,
       "routing_signals": [
+        [
+          10,
+          "\\b(?:zbadaj|zbierz|przeanalizuj|sprawdz|zweryfikuj|research)\\w*\\b.{0,100}\\b(?:potem|nastepnie|na tej podstawie|a po tym|po czym)\\b.{0,60}\\b(?:radzie|rady|rade|council)\\b"
+        ],
         [
           16,
           "zorkiestruj|zorkiestr"
@@ -2839,12 +3219,12 @@
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.1.3",
+      "version": "1.1.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": "skill-orchestrator",
-      "description": "Alias for skill-orchestrator with execution_mode=isolated_subagents. Use when the user asks for multiagent orchestration, separate agents per skill, Task/subagent per step, or strict isolation between Evidence Researcher, AI Council, auditors, and other skills. Do not use when a single specialist suffices, when the host has no subagent/Task API (use skill-orchestrator single_thread), for routing-only questions, or to bypass AI Council or Release Readiness policy.",
+      "description": "Alias for skill-orchestrator with execution_mode=isolated_subagents. Do not use when a single specialist suffices, when the host has no subagent/Task API (use skill-orchestrator single_thread), for routing-only questions, or to bypass AI Council or Release Readiness policy. Use when the user asks for multiagent orchestration, separate agents per skill, Task/subagent per step, or strict isolation between Evidence Researcher, AI Council, auditors, and other skills.",
       "explicit_only": false,
       "owns": [
         "alias for isolated_subagents execution"
@@ -2878,6 +3258,10 @@
       ],
       "eval_suite": null,
       "routing_signals": [
+        [
+          12,
+          "\\bisolated (?:sub)?agents?\\b|\\b(?:sub)?agents?\\b.{0,20}\\bisolat"
+        ],
         [
           20,
           "one subagent per skill|subagent per step"
@@ -2918,12 +3302,12 @@
     },
     {
       "id": "web-app-auditor",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Evidence-driven QA and product audit for user-facing websites and web applications. Use when asked to audit, review, inspect, QA, verify, click through, test, or \"roast\" a site/app/page/dashboard/ checkout/form, including UI/UX, accessibility, regression, data integrity, and critical flows. Supports browser, browser+source, screenshot-only, source-only, and fetch-only environments. Do not use for backend-only review, greenfield implementation, whole-repo roadmapping, critique of page copy or offers (content-roaster), search/AI-visibility audits (seo-geo-aeo-maxxing), or as the final production-release gate; provide candidate-bound QA evidence to Release Readiness when relevant. Do not perform penetration testing/exploitation with no product-audit goal.",
+      "description": "Evidence-driven QA and product audit for user-facing websites and web applications. Do not use for backend-only review, greenfield implementation, whole-repo roadmapping, critique of page copy or offers (content-roaster), search/AI-visibility audits (seo-geo-aeo-maxxing), or as the final production-release gate; provide candidate-bound QA evidence to Release Readiness when relevant. Do not perform penetration testing/exploitation with no product-audit goal. Use when asked to audit, review, inspect, QA, verify, click through, test, or \"roast\" a site/app/page/dashboard/ checkout/form, including UI/UX, accessibility, regression, data integrity, and critical flows. Supports browser, browser+source, screenshot-only, source-only, and fetch-only environments.",
       "explicit_only": false,
       "owns": [
         "live click-through QA",
@@ -2958,6 +3342,22 @@
       ],
       "eval_suite": null,
       "routing_signals": [
+        [
+          9,
+          "(?<!seo )(?<!geo )(?<!aeo )\\b(?:audit|qa|inspect)\\w*\\b.{0,20}\\b(?:the |our |this )?(?:signup|sign-up|checkout|onboarding|login|registration|payment|account settings) (?:flow|form|page|funnel|wizard)\\b"
+        ],
+        [
+          9,
+          "\\bwalk through\\b.{0,60}\\b(?:in a browser|flow|wizard|signup|checkout|onboarding)|\\b(?:defects?|bugs?)\\b.{0,30}\\bscreenshots?\\b"
+        ],
+        [
+          9,
+          "\\b(?:sprawdz|przetestuj|przeklikaj)\\w*\\b.{0,30}\\b(?:formularz|strone|panel|koszyk|checkout|rejestracj|logowani)\\w*\\b.{0,60}\\b(?:na telefonie|mobil|dostepn|wysyla|dziala)"
+        ],
+        [
+          9,
+          "\\b(?:test|qa|check|audit|inspect)\\w*\\b.{0,40}\\b(?:page|form|flow|screen|settings|modal|calculator|widget|dashboard|checkout|signup)\\b.{0,60}\\b(?:broken states?|accessibility|a11y|keyboard|screen reader|regressions?|bugs?|edge cases|on mobile|responsive)"
+        ],
         [
           10,
           "\\bclick[ -]?through\\b(?! rates?\\b| ctr\\b)|web app audit|live app audit"

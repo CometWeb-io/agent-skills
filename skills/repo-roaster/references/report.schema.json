@@ -20,11 +20,9 @@
     "critical_surface_ledger",
     "state_transition_ledger",
     "failure_domain_ledger",
-    "root_causes",
     "no_material_findings",
     "first_attack_id",
     "findings",
-    "resolution_ledger",
     "verification_gaps",
     "preserve",
     "core_fix",
@@ -86,7 +84,24 @@
     },
     "lenses": {
       "type": "array",
-      "minItems": 1
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "GENERAL",
+          "ARCHITECTURE",
+          "CORRECTNESS",
+          "DATA_INTEGRITY",
+          "TESTABILITY",
+          "SECURITY_REVIEW",
+          "PERFORMANCE",
+          "RELIABILITY",
+          "OPERABILITY",
+          "SUPPLY_CHAIN",
+          "BUILD_RELEASE",
+          "MAINTAINABILITY",
+          "DX"
+        ]
+      }
     },
     "invariant_ledger": {
       "type": "array",

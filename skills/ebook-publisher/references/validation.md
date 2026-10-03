@@ -30,15 +30,18 @@ python scripts/ebook_check.py validate ../publication/publication.json --stage r
 `init` requires a new nonexistent directory and never overwrites. The template is incomplete
 and must fail validation. `fingerprints` reads current files and prints hashes; it neither
 updates the manifest nor marks any review pass. `validate` emits JSON: stage, as_of,
-result, blockers, warnings, and fingerprints. Exit 0: records complete; 1: incomplete/failed
-records; 2: invalid input/dependency/IO problem. Missing PDF or parser is not success.
+result (RECORDS_COMPLETE or BLOCKED), blockers and warnings (each with code and detail), and
+fingerprints. Exit 0: records complete; 1: incomplete/failed records; 2: invalid
+input/dependency/IO problem, printed as result INPUT_ERROR with an error message. `init`
+prints result INITIALIZED_DRAFT. Missing PDF or parser is not success.
 `--as-of` explicitly evaluates historical freshness; default is today's date in Europe/Warsaw
 when timezone data is available (otherwise system date). The effective date is always reported.
 Do not use a historical date to present an old check as a current validation.
 
 ## Publication manifest
 
-Use `templates/publication.json` as the exact structural starting point. Arrays contain
+Use `templates/publication.json` as the exact structural starting point; its schema
+value `cometweb.ebook/v1` is required. Arrays contain
 objects with stable unique IDs. IDs use letters, digits, underscore, or hyphen. Dates use
 YYYY-MM-DD. `publication.edition` is a string and is independent of package VERSION;
 `publication.revision` is a nonempty string. The brief is human context, not an automatic gate.
@@ -48,7 +51,8 @@ YYYY-MM-DD. `publication.edition` is a string and is independent of package VERS
 - `chapters`: id, title, outcome, question_ids. Coverage is bidirectional.
 - `sources`: id, title, source_type (`primary`, `secondary`, `discovery`, `provided`,
   `experiment`), origin, inspected boolean, accessed_on, url; optional published_on,
-  version, effective_from, notes. A missing URL requires `artifact` with path/sha256.
+  version, effective_from, notes. The program does not read version, effective_from or a
+  source's notes. A missing URL requires `artifact` with path/sha256.
   Effective dates/versions are checked semantically in actual source review, not by guessing
   applicability from the newest date. Discovery results cannot support material claims.
 - `claims`: id, text, chapter_id, kind (`fact`, `recommendation`, `inference`, `synthetic`),

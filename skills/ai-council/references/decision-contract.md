@@ -17,7 +17,8 @@ Znormalizuj każdą deliberację przed routingiem.
 - `financial_impact 0–1`.
 - `strategic_impact 0–1`.
 - `uncertainty 0–1`.
-- `reversibility`.
+- `reversibility`: `reversible | hard_to_reverse`.
+- `risk_level`: `low | medium | high`.
 - `cost_of_delay 0–1`.
 - `cost_of_false_positive 0–1`.
 - `cost_of_false_negative 0–1`.
@@ -25,7 +26,9 @@ Znormalizuj każdą deliberację przed routingiem.
 - `stakeholders[]`.
 - `execution_dependencies[]`.
 - `jurisdictions[]`.
-- `risk_surfaces[]`.
+- `risk_surfaces[]`: `legal | privacy | security | financial | responsible_ai | reputation | technical | people`.
+
+Kernel odrzuca nieznane wartości tych pól jako błąd wejścia (exit 2) zamiast ich cichego pominięcia. Pełna lista pól czytanych przez kernel: [kernel-admission.md](kernel-admission.md).
 
 Nie wymyślaj nieznanych wartości. Heurystyki kernela są routingiem, nie faktami. Jawny kontekst użytkownika ma pierwszeństwo.
 

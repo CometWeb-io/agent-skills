@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2] - 2026-10-03
+
+- New `references/contract.json` declares the run-state payload, and `references/output-contract.md` now lists every field `scripts/kernel.py` reads. Twenty-six kernel inputs were documented nowhere, among them `adaptive_depth`, `replay_status`, `cache_reuse[]`, `quality_debt[]` with `kind`/`due_at`/`closure_evidence`, the stage `skip_allowed`, `skip_rationale`, `rubric_hash`, `benchmark_hash` and `result`, the reconciliation `resolution_basis`, and the runtime-lifecycle flags (`material_change`, `canary_passed`, `rollback_executable`, `major_version_bump`, `migration_guide_present`, `removing_public_contract`, `deprecation_record`, `deprecation_notice`). The sidecar fields the kernel does not check (`schema`, `run_id`, `coverage`, `revalidate`, `completion_evidence`) are marked as such.
+- Off-list tokens no longer change the outcome silently. A reconciliation `status` outside `CONSENSUS|NEAR_CONSENSUS|CONFLICT|UNIQUE` (a lower-case `conflict` never counted as a conflict) is `reconciliation[i]:status`; a debt `kind` outside `FINDING|WAIVER|CONTROL|TEST_GAP|EVIDENCE_GAP` (an expired lower-case `waiver` never blocked) is `debt[i]:kind`; a cache `decision` outside `REUSE|RECOMPUTE` (a lower-case `reuse` skipped the fingerprint check) is `cache[i]:decision`; a skill-evaluator `result` outside the evaluator's six verdicts (`IMPROVEMENT` completed the run) is `skill-quality:evaluator-result`. A non-string stage `state` is `stage[i]:state` instead of a `TypeError`.
+- The operational statuses in `references/state-machine.md` and `references/output-contract.md` now include `CHANGES_REQUIRED` and `READY_FOR_ROLLOUT`, which the kernel returns. Seven eval cases pin the new errors and an expired `WAIVER` that blocks.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.7.1] - 2026-10-03
 
 - `SKILL.md` no longer names `tooling/rubric_lock.py` or `tooling/policy_pack_resolve.py`, which do not ship in this repository.

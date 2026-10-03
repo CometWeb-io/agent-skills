@@ -1,0 +1,110 @@
+{
+  "schema": "cometweb.routing-holdout-lock/v1",
+  "current": "1.0.0",
+  "max_near_duplicates": 1,
+  "versions": [
+    {
+      "holdout_version": "1.0.0",
+      "sha256": "e14eacb0865e00819b04a0659903c4109b1908ab5e8b2f87ce5805950d22ab59",
+      "cases": 144
+    }
+  ],
+  "measurements": [
+    {
+      "label": "baseline before round-4 tuning (router at hardening-2026-10-r3 b5be473)",
+      "holdout_version": "1.0.0",
+      "overall": [
+        93,
+        144
+      ],
+      "by_kind": {
+        "near_miss": [
+          15,
+          26
+        ],
+        "no_skill": [
+          18,
+          18
+        ],
+        "positive": [
+          60,
+          100
+        ]
+      },
+      "by_lang": {
+        "en": [
+          58,
+          100
+        ],
+        "pl": [
+          35,
+          44
+        ]
+      }
+    },
+    {
+      "label": "after round-4 tuning on suite + 214 fresh tune prompts (holdout read once)",
+      "holdout_version": "1.0.0",
+      "overall": [
+        113,
+        144
+      ],
+      "by_kind": {
+        "near_miss": [
+          18,
+          26
+        ],
+        "no_skill": [
+          18,
+          18
+        ],
+        "positive": [
+          77,
+          100
+        ]
+      },
+      "by_lang": {
+        "en": [
+          74,
+          100
+        ],
+        "pl": [
+          39,
+          44
+        ]
+      }
+    },
+    {
+      "label": "re-read after reverting the 'take it to the council' explicit pattern and narrowing a product-operator signal; both forced by pinned policy/canonical tests, not by holdout results",
+      "holdout_version": "1.0.0",
+      "overall": [
+        112,
+        144
+      ],
+      "by_kind": {
+        "near_miss": [
+          18,
+          26
+        ],
+        "no_skill": [
+          18,
+          18
+        ],
+        "positive": [
+          76,
+          100
+        ]
+      },
+      "by_lang": {
+        "en": [
+          73,
+          100
+        ],
+        "pl": [
+          39,
+          44
+        ]
+      }
+    }
+  ]
+}

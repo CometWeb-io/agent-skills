@@ -71,6 +71,18 @@ class CompetitiveIntelligenceKernelTests(unittest.TestCase):
         })
         self.assertIn(low["severity"], {"NOISE", "LOW"})
 
+    def test_unknown_competitor_tier_is_rejected(self):
+        # A tier outside 1-3 used to be scored silently: "tier1" as tier 1
+        # (factor 1.00) and 4 as tier 3 (factor 0.70).
+        event = {"relevance": 1, "magnitude": 1, "confidence": 1, "novelty": 1, "persistence": 1}
+        for bad in ("tier1", 4, 0, 1.5, True, None):
+            with self.subTest(tier=bad):
+                with self.assertRaisesRegex(ValueError, "competitor_tier must be 1, 2 or 3"):
+                    K.materiality_score({**event, "competitor_tier": bad})
+        self.assertEqual(K.materiality_score({**event, "competitor_tier": "2"})["tier_factor"], 0.85)
+        self.assertEqual(K.materiality_score({**event, "competitor_tier": 3.0})["tier_factor"], 0.70)
+        self.assertEqual(K.materiality_score(event)["tier_factor"], 1.00)
+
     def test_freshness(self):
         current = K.freshness("2026-08-24T00:00:00Z", 7, "2026-08-25T00:00:00Z")
         stale = K.freshness("2026-08-01T00:00:00Z", 7, "2026-08-25T00:00:00Z")
@@ -159,3 +171,46 @@ class NoPhantomChangeTests(unittest.TestCase):
 
     def test_a_real_change_is_still_detected(self):
         self.assertTrue(K.diff_snapshots(self.old, self.new)["changes"])
+
+
+class AtomicWriteTests(unittest.TestCase):
+    """The temporary file must not have a name an attacker can plant in advance."""
+
+    def test_planted_symlink_at_the_old_predictable_name_is_not_followed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp)
+            outside = root / "outside.txt"
+            outside.write_text("keep", encoding="utf-8")
+            work = root / "ws"
+            work.mkdir()
+            target = work / "config.json"
+            (work / "config.json.tmp").symlink_to(outside)
+            K._atomic_write_json(target, {"a": 1})
+            self.assertEqual(outside.read_text(encoding="utf-8"), "keep")
+            self.assertEqual(json.loads(target.read_text(encoding="utf-8")), {"a": 1})
+            self.assertFalse(target.is_symlink())
+
+    def test_written_file_is_private_and_no_temporary_is_left(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = pathlib.Path(tmp) / "snap.json"
+            K._atomic_write_json(target, {"b": [1, 2]})
+            self.assertEqual(target.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(sorted(p.name for p in pathlib.Path(tmp).iterdir()), ["snap.json"])
+
+    def test_failed_rename_removes_the_temporary_and_keeps_the_original(self):
+        from unittest import mock
+
+        with tempfile.TemporaryDirectory() as tmp:
+            target = pathlib.Path(tmp) / "current.json"
+            target.write_text('{"old": true}\n', encoding="utf-8")
+            with mock.patch.object(K.os, "replace", side_effect=OSError("disk full")):
+                with self.assertRaises(OSError):
+                    K._atomic_write_json(target, {"new": True})
+            self.assertEqual(json.loads(target.read_text(encoding="utf-8")), {"old": True})
+            self.assertEqual(sorted(p.name for p in pathlib.Path(tmp).iterdir()), ["current.json"])
+
+    def test_unserializable_value_creates_no_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(TypeError):
+                K._atomic_write_json(pathlib.Path(tmp) / "x.json", {"bad": object()})
+            self.assertEqual(list(pathlib.Path(tmp).iterdir()), [])

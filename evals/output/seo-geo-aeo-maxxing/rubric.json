@@ -1,0 +1,49 @@
+{
+  "skill": "seo-geo-aeo-maxxing",
+  "contract": "skills/seo-geo-aeo-maxxing/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "verdict", "title": "Verdict", "aliases": ["verdict"], "required": true},
+    {"id": "scope", "title": "Scope and evidence", "aliases": ["scope and evidence", "scope"], "required": true},
+    {"id": "readiness-score", "title": "Readiness score", "aliases": ["readiness score", "readiness"], "required": true},
+    {"id": "observed", "title": "Observed search / AI visibility", "aliases": ["observed"]},
+    {"id": "platform-matrix", "title": "Platform-control matrix", "aliases": ["platform-control matrix", "platform control"]},
+    {"id": "findings", "title": "Findings that matter", "aliases": ["findings"], "required": true},
+    {"id": "top-actions", "title": "Top actions - this week", "aliases": ["top actions"], "required": true},
+    {"id": "this-month", "title": "This month", "aliases": ["this month"]},
+    {"id": "preserve", "title": "Preserve", "aliases": ["preserve"]},
+    {"id": "not-assessed", "title": "Not assessed / scope limits", "aliases": ["not assessed", "scope limits"], "required": true},
+    {"id": "experiments", "title": "Experiments/backlog", "aliases": ["experiments", "backlog"]},
+    {"id": "delta", "title": "DELTA / VERSUS block", "aliases": ["delta", "versus"]},
+    {"id": "next-step", "title": "One next step", "aliases": ["one next step", "next step"], "required": true}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "registry-version", "section": "scope", "pattern": "registry(?: version)?\\W+\\d+\\.\\d+",
+     "message": "Scope does not state the check-registry version"},
+    {"type": "doc_require", "rule": "mode", "section": "scope", "pattern": "(?-i:\\b(?:RECON|PILLAR|FULL|VERSUS|DELTA)\\b)",
+     "message": "Scope does not state the audit mode"},
+    {"type": "doc_forbid", "rule": "score-first-verdict", "section": "verdict", "pattern": "\\A\\s*(?:MAXX\\s+)?\\d{1,3}\\s*/\\s*100",
+     "code": "CONTRACT_VIOLATION", "message": "the verdict leads with a score; name the dominant constraint first"},
+    {"type": "items_require", "rule": "finding-evidence", "section": "findings",
+     "pattern": "\\bE[1-7]_[A-Z_]+\\b", "code": "EVIDENCE_MISSING",
+     "message": "a WEAK/FAIL finding names no evidence class (E1-E7)"},
+    {"type": "items_require", "rule": "finding-verdict", "section": "findings",
+     "pattern": "\\A[^\\n]*\\b(?:WEAK|FAIL)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a material finding heading carries no check verdict (WEAK | FAIL)"},
+    {"type": "max_items", "rule": "top-actions-cap", "section": "top-actions", "max": 3},
+    {"type": "items_require", "rule": "action-type", "section": "top-actions",
+     "pattern": "\\b(?:REMEDIATION|MEASUREMENT|EXPERIMENT)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a top action has no type (REMEDIATION | MEASUREMENT | EXPERIMENT)"},
+    {"type": "items_require", "rule": "action-ice", "section": "top-actions", "pattern": "\\bICE\\b",
+     "code": "CONTRACT_VIOLATION", "message": "a top action has no Impact / Confidence / Ease / ICE"},
+    {"type": "items_forbid", "rule": "causal-overclaim", "section": "findings",
+     "pattern": "\\b(?:will|guarantee[sd]?)\\s+(?:rank|increase traffic|boost rankings|get cited)\\b",
+     "code": "FORBIDDEN_PHRASE", "message": "state why a finding matters without a causal ranking promise"}
+  ],
+  "ids": [
+    {"rule": "check-ids", "pattern": "\\b(?:FND|REL|AUT|GEO|AEO)-\\d{2}\\b",
+     "defined_in": [{"registry": "skills/seo-geo-aeo-maxxing/references/check-registry.json", "path": "checks[*].id"}],
+     "defined_by": "it is not a check ID in references/check-registry.json"}
+  ],
+  "hooks": ["seo_composite"]
+}

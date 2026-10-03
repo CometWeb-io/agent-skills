@@ -1,0 +1,441 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/kernel-admission.md",
+    "references/decision-contract.md",
+    "references/freshness.md",
+    "references/living-decisions.md"
+  ],
+  "scripts": {
+    "scripts/council/constants.py": {
+      "input": "none",
+      "role": "helper",
+      "enums": {
+        "DECISION_TYPES": "decision_type",
+        "REVERSIBILITY_LEVELS": "reversibility",
+        "RISK_LEVELS": "risk_level",
+        "RISK_SURFACES": "risk_surfaces",
+        "DOMAIN_ORDER": "primary_domain",
+        "DECISION_KINDS": "decision_kind",
+        "FRESHNESS_POLICIES": "claim_type",
+        "WATCH_OPERATORS": "operator",
+        "GATE_STATUSES": "gate_statuses"
+      }
+    },
+    "scripts/council_kernel.py": {
+      "input": "args",
+      "role": "kernel",
+      "enums": {
+        "DOMAIN_ORDER": "secondary_domains"
+      }
+    },
+    "scripts/council": {
+      "input": "json",
+      "role": "kernel"
+    }
+  },
+  "fields": {
+    "question": {},
+    "objective": {},
+    "options": {},
+    "status_quo": {},
+    "constraints": {},
+    "time_horizon": {},
+    "success_metric": {},
+    "financial_impact": {},
+    "strategic_impact": {},
+    "uncertainty": {},
+    "cost_of_delay": {},
+    "cost_of_false_positive": {},
+    "cost_of_false_negative": {},
+    "known_facts": {},
+    "known_unknowns": {},
+    "stakeholders": {},
+    "execution_dependencies": {},
+    "jurisdictions": {},
+    "jurisdiction": {},
+    "force_legal_gate": {},
+    "material_legal_uncertainty": {},
+    "counsel_required": {},
+    "decision_type": {
+      "enum": [
+        "binary",
+        "build_vs_buy",
+        "hiring",
+        "launch",
+        "m_and_a",
+        "market_entry",
+        "option_selection",
+        "partnership",
+        "pricing",
+        "product_investment",
+        "resource_allocation",
+        "sequencing",
+        "shutdown"
+      ]
+    },
+    "reversibility": {
+      "enum": [
+        "hard_to_reverse",
+        "reversible"
+      ]
+    },
+    "risk_level": {
+      "enum": [
+        "high",
+        "low",
+        "medium"
+      ]
+    },
+    "risk_surfaces": {
+      "enum": [
+        "financial",
+        "legal",
+        "people",
+        "privacy",
+        "reputation",
+        "responsible_ai",
+        "security",
+        "technical"
+      ]
+    },
+    "primary_domain": {
+      "enum": [
+        "growth",
+        "marketing",
+        "offer_pricing",
+        "operator",
+        "product_customer",
+        "sales",
+        "strategy"
+      ]
+    },
+    "secondary_domains": {
+      "enum": [
+        "growth",
+        "marketing",
+        "offer_pricing",
+        "operator",
+        "product_customer",
+        "sales",
+        "strategy"
+      ]
+    },
+    "decision_kind": {
+      "enum": [
+        "growth",
+        "marketing",
+        "operations",
+        "pricing",
+        "product_customer",
+        "sales",
+        "strategy"
+      ]
+    },
+    "company_stage": {},
+    "market_volatility": {},
+    "geography": {},
+    "business_model": {},
+    "motion": {},
+    "claim_id": {},
+    "evidence_id": {},
+    "id": {},
+    "freshness_policy": {},
+    "material": {},
+    "draft": {},
+    "verified_for_decision": {},
+    "system_of_record_verified": {},
+    "published_at": {},
+    "effective_from": {},
+    "effective_to": {},
+    "expires_at": {},
+    "last_verified_at": {},
+    "verified_at": {},
+    "observed_at": {},
+    "superseded_by": {},
+    "source_version": {},
+    "claim_type": {
+      "enum": [
+        "academic_evidence",
+        "breaking_market",
+        "competitor_pricing",
+        "doctrine",
+        "general_web",
+        "internal_metric",
+        "law_regulation",
+        "official_technical_docs",
+        "regulatory_guidance",
+        "security_advisory",
+        "vendor_policy"
+      ]
+    },
+    "accepted": {},
+    "critical_area": {},
+    "independence_group": {},
+    "independence_confidence": {},
+    "source_quality": {},
+    "directness": {},
+    "contradiction_tested": {},
+    "unresolved_contradiction": {},
+    "contradiction_resolved": {},
+    "opposing_evidence_count": {},
+    "importance": {},
+    "expert_id": {},
+    "role_id": {},
+    "role": {},
+    "assumptions": {},
+    "key": {},
+    "assumption_key": {},
+    "value": {},
+    "position": {},
+    "frameworks": {},
+    "framework_ids": {},
+    "independence_groups": {},
+    "claim_ids": {},
+    "unique_claim_ids": {},
+    "role_class": {},
+    "decision_impact": {},
+    "human_external": {},
+    "actor_type": {},
+    "provider": {},
+    "model_family": {},
+    "model": {},
+    "vote": {
+      "enum": [
+        "DEFER",
+        "GO",
+        "NO-GO",
+        "TEST"
+      ],
+      "enforced": false
+    },
+    "dependency_id": {},
+    "type": {},
+    "previous": {},
+    "current": {},
+    "threshold": {},
+    "materiality": {},
+    "assumption_keys": {},
+    "triggered": {},
+    "material_stale_evidence_count": {},
+    "next_revalidation_at": {},
+    "operator": {
+      "enum": [
+        "changed",
+        "gt",
+        "gte",
+        "lt",
+        "lte",
+        "pct_change_gt"
+      ]
+    },
+    "probability": {},
+    "outcome": {},
+    "hypothesis": {},
+    "metric": {},
+    "primary_metric": {},
+    "baseline": {},
+    "pass_threshold": {},
+    "target": {},
+    "fail_threshold": {},
+    "duration": {},
+    "budget": {},
+    "sample": {},
+    "guardrails": {},
+    "minimum_detectable_effect": {},
+    "kill_criteria": {},
+    "evidence_gap_addressed": {},
+    "owner": {},
+    "review_date": {},
+    "gate_statuses": {
+      "map": true,
+      "enum": [
+        "BLOCK",
+        "CLEAR",
+        "CLEAR_WITH_CONTROLS",
+        "COUNSEL_REQUIRED",
+        "NOT_REQUIRED"
+      ]
+    },
+    "decision_id": {},
+    "decision_key": {},
+    "resource_claims": {},
+    "depends_on": {},
+    "expected_value": {},
+    "decision": {},
+    "exact_question": {},
+    "material_uncertainty": {},
+    "primary_sources": {},
+    "alternative_interpretations": {},
+    "business_consequence": {},
+    "deadline": {},
+    "decision_change_condition": {},
+    "write": {},
+    "external_side_effect": {},
+    "financial": {},
+    "public": {},
+    "destructive": {},
+    "credential_sensitive": {},
+    "sensitive_data": {},
+    "irreversible": {},
+    "source_class": {},
+    "evidence_weight": {},
+    "critical_assumptions_found": {},
+    "material_risks_found": {},
+    "evidence_gaps_found": {},
+    "minority_preservation": {},
+    "legal_constraints_found": {},
+    "test_quality": {},
+    "calibration_score": {},
+    "latency": {},
+    "token_cost": {},
+    "tool_calls": {},
+    "memory_status": {},
+    "decision_quality": {},
+    "domain": {},
+    "risk": {},
+    "resolved_vote": {},
+    "blind_vote": {},
+    "blind_confidence": {},
+    "expert": {},
+    "framework": {},
+    "expert_ids": {},
+    "regime_tags": {},
+    "updated_at": {},
+    "outcome_lesson": {},
+    "outcome_attribution": {
+      "enum": [
+        "execution_failure",
+        "external_shock",
+        "thesis_correct",
+        "thesis_wrong",
+        "wrong_timing"
+      ],
+      "enforced": false
+    },
+    "review_dates": {},
+    "consensus_failure": {},
+    "event_type": {
+      "enum": [
+        "minority_vindicated",
+        "router_miss"
+      ],
+      "enforced": false
+    },
+    "utility_score": {},
+    "information_gain": {},
+    "as_of": {},
+    "verdict": {
+      "enum": [
+        "DEFER",
+        "GO",
+        "NO-GO",
+        "TEST"
+      ],
+      "enforced": false
+    },
+    "confidence": {},
+    "execution_quality": {},
+    "same_decision_again": {},
+    "snapshot_hash": {},
+    "snapshot_version": {},
+    "evidence_coverage": {},
+    "required_confidence": {},
+    "council_mode": {},
+    "decision_value_score": {},
+    "double_crux": {},
+    "evidence_critical_gap": {},
+    "missing_perspectives": {},
+    "counterfactual_tested": {},
+    "council_version": {},
+    "kernel_version": {},
+    "route_version": {},
+    "adjusted_consensus": {},
+    "effective_independent_perspectives": {},
+    "text": {}
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "CLEAR",
+        "CURRENT",
+        "DRAFT",
+        "NEAR_EXPIRY",
+        "NOT_YET_EFFECTIVE",
+        "REFRESH_REQUIRED",
+        "REOPEN",
+        "STALE",
+        "SUPERSEDED",
+        "UNKNOWN",
+        "VALID",
+        "WATCH"
+      ]
+    },
+    "admissible": {},
+    "age_hours": {},
+    "observation_status": {
+      "enum": [
+        "OBSERVED",
+        "UNKNOWN"
+      ]
+    },
+    "majority_vote": {},
+    "missing_binding_dimensions": {}
+  },
+  "internal": [
+    "STANDARD",
+    "_order",
+    "adviser_count",
+    "advisers",
+    "assigned_expert_ids",
+    "claim_family",
+    "class",
+    "counterfactual",
+    "decision_archetype",
+    "domains",
+    "experts",
+    "framework_id",
+    "grade",
+    "hits",
+    "kinds",
+    "max_age_hours",
+    "max_frameworks",
+    "max_gatekeepers",
+    "max_specialists",
+    "minority_sentinel",
+    "name",
+    "near_expiry_ratio",
+    "premortem",
+    "protection_score",
+    "requires_live_verification",
+    "requires_system_of_record",
+    "score",
+    "triggers",
+    "value_density",
+    "versioned_static"
+  ],
+  "doc_terms": [
+    "option_ranking",
+    "recommended_option",
+    "watch_dependencies"
+  ],
+  "evals": [
+    {
+      "path": "tests/temporal-evals.json",
+      "cases": "",
+      "input": "row",
+      "status": "expected_status",
+      "pass": [
+        "CURRENT",
+        "NEAR_EXPIRY"
+      ],
+      "conform": "always"
+    },
+    {
+      "path": "tests/golden-decisions.json",
+      "cases": "",
+      "input": "context",
+      "conform": "always"
+    }
+  ]
+}

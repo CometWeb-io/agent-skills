@@ -1,0 +1,11 @@
+{
+  "scenario": "gap_materiality_lowercase",
+  "expect": {
+    "validation": [
+      "FIELD_VALUE_INVALID:unresolved_gaps.materiality"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

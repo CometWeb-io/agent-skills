@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
-from .constants import COVERAGE_FACTORS
+from .constants import COVERAGE_FACTORS, FILE_REVIEW_POLICIES
 from .util import clamp, normalized, normalized_upper
 
 
@@ -120,7 +120,7 @@ def file_coverage_report(payload: Dict[str, Any]) -> Dict[str, Any]:
         repos = assessment.get("repos")
         require(isinstance(repos, list) and 0 < len(repos) <= 64, "file coverage requires pinned repository scopes")
         policy = assessment.get("file_review_policy", "all_inspected")
-        require(isinstance(policy, str) and policy in {"all_inspected", "allow_documented_exclusions"},
+        require(isinstance(policy, str) and policy in FILE_REVIEW_POLICIES,
                 "unknown file review policy")
         as_of = inventory.timestamp(assessment.get("as_of"))
         require(as_of <= datetime.now(timezone.utc), "assessment as_of is in the future")

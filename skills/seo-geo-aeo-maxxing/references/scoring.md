@@ -127,3 +127,36 @@ python scripts/compare_scores.py site-a.json site-b.json --kind versus
 If code execution is unavailable, reproduce the registry math exactly, show the arithmetic, enforce
 N/A/evidence/freshness/gate rules manually, and label the result `manual registry calculation`.
 Never score by feel.
+
+## Audit input and score output
+
+`references/contract.json` binds these names to the scripts. `?` marks optional keys.
+
+```text
+registry_version: must equal check-registry.json version
+mode?: RECON | FULL | PILLAR | VERSUS | DELTA (default FULL; FULL needs all five pillars)
+active_pillars?: foundation, relevance, authority, geo, aeo (default all five, no duplicates)
+profile?: balanced | classic-search | ai-first (ignored when custom_weights is present)
+custom_weights?: {pillar: weight}, active pillars only
+subject?: string; scope?: object, echoed into the score
+site_archetypes?, target_surfaces?: registry ids, no duplicates
+freshness_overrides?: {source group id: {verified_at, sources[] (https; source accepted for one)}}
+checks[]: every check of every active pillar, once
+  id, verdict: PASS | WEAK | FAIL | N/A | NOT_ASSESSED
+  evidence[]: PASS, WEAK and FAIL
+  reason: N/A
+  applicability_evidence[]: conditional N/A
+  needed: NOT_ASSESSED
+  distribution?: {pass, weak, fail} non-negative integer counts
+  a registry field of the check (weight, pillar, na_policy, ...) is an error
+gates[]: {id, evidence[]}
+evidence item: class (an evidence-policy.md class), artifact, source?
+```
+
+`score_maxx.py` prints `maxx` (full matrix only) or `focused_score`, `score_name`, `tier`,
+`indicative_tier`, `provisional`, `overall_coverage`, `pillars` (each with `score`,
+`coverage`, `evidence_grade`), `check_results` (`id`, `verdict`, `points`, ...),
+`gates_applied`, `freshness_used` (`group`, `state`, `verified_at`), `weights`, `as_of`,
+`audit_fingerprint`, `scoring_engine_version` and `registry_version`. `compare_scores.py`
+reads two such outputs; edit neither by hand.
+Without `--as-of`, `score_maxx.py` uses the MAXX_AS_OF_DATE environment variable, then today (UTC).

@@ -214,6 +214,61 @@ Recommended JSON shape:
 
 Validate persisted ledgers with `scripts/validate_pattern_ledger.py`.
 
+### Field rules the validator enforces
+
+```text
+schema_version: "2.0"
+shape: SOURCE_ONLY | SOURCE_TO_TARGET | MULTI_SOURCE_TO_TARGET (the last two need destination {name, kind})
+mode: SNAPSHOT | STANDARD | DEEP
+source_targets[]: id (unique), name, kind
+evidence[]:
+  evidence_id (unique), source, locator, source_type, note: non-empty
+  subject: source | destination
+  target_id: a source_targets id, or DEST for destination evidence
+  claim_lane: source_behavior | source_implementation | source_rationale | source_outcome
+              (source) or destination_problem | destination_existing_capability |
+              destination_constraint | destination_baseline (destination)
+  claim_state: OBSERVED | INFERRED | HYPOTHESIS | UNKNOWN
+  confidence: 0-1
+patterns[]:
+  id (unique), name, problem, mechanism, source_observation, decision_reason: non-empty
+  category: one of the twelve in pattern-transfer.md
+  evidence_ids: non-empty, source evidence only
+  target_evidence_ids: destination evidence only, may be empty
+  transfer: all sixteen dimensions, each 0-1
+  gates: {legal_ip, security_privacy}: clear | not_required | review | block | unknown
+  implementation:
+    transfer_mode: INSPIRE | REIMPLEMENT | INTEGRATE | REUSE_CODE | REUSE_ASSET
+    provenance_note: required for REUSE_CODE and REUSE_ASSET
+    target_surfaces, prerequisites, steps: string arrays when present
+    effort_band, uncertainty: strings when present
+    success_metric, rollback, kill_criteria: required for ADOPT
+  interactions: {requires, enables, conflicts_with, substitutes_for, bundles_with}: pattern ids
+  confidence: {source, mechanism, destination, execution, overall}: each 0-1
+  verdict: CANDIDATE | ADOPT | EXPERIMENT | BACKLOG | REJECT | REVIEW_REQUIRED
+  experiment: required object for EXPERIMENT, every key non-empty:
+    hypothesis, test_type, primary_metric, guardrail, baseline,
+    success_rule, timebox_or_sample, kill_criteria, changes_verdict
+```
+
+`ADOPT` and `EXPERIMENT` need OBSERVED `destination_problem` evidence, OBSERVED source
+behavior or implementation evidence, and clear or `not_required` gates. `ADOPT` also needs
+`source_evidence_strength` and `destination_evidence_strength` >= 0.65,
+`implementation_feasibility` >= 0.60 and non-empty `steps`. `REVIEW_REQUIRED` needs a
+non-clear gate. The validator prints VALID or INVALID with one line per error.
+
+`as_of`, `version`, `observed_at`, `independence_group` and `family_id` are recorded for
+readers and synthesis; the validator does not check them.
+
+### Scoring output
+
+`scripts/score_patterns.py` takes one pattern, an array, or a ledger and adds to each
+pattern `heuristic_score` (0-100), `gate_state` (clear, review or block; a missing gate
+counts as unknown and so review), `suggested_action` (a verdict value) and
+`score_components` (`positive`, `penalty`, `target_evidence_ceiling_applied`). Without
+`target_evidence_ids` and `destination_evidence_strength` >= 0.35 the suggestion stays
+CANDIDATE.
+
 ## 4. Confidence decomposition
 
 Do not report one confidence number without knowing what it means.

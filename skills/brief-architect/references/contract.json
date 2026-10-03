@@ -1,0 +1,173 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md",
+    "references/modes-and-versioning.md",
+    "references/rubric-lock.md"
+  ],
+  "scripts": {
+    "scripts/kernel.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "VALID_MODES": "mode",
+        "VALID_RISK": "risk_level",
+        "VALID_POLICIES": "evidence_policy",
+        "VALID_PRIORITY": "priority"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "schema": {
+      "unread": true
+    },
+    "brief_id": {},
+    "brief_version": {},
+    "supersedes_brief_id": {},
+    "mode": {
+      "enum": [
+        "LIGHT",
+        "STANDARD",
+        "DEEP"
+      ]
+    },
+    "objective": {},
+    "audience": {},
+    "use_moment": {},
+    "scope": {},
+    "risk_level": {
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "exclusions": {
+      "unread": true
+    },
+    "evidence_policy": {
+      "enum": [
+        "SOURCE_BOUND",
+        "EVIDENCE_REQUIRED",
+        "CONTEXTUAL_DRAFT",
+        "CREATIVE"
+      ]
+    },
+    "freshness_boundary": {
+      "unread": true
+    },
+    "deliverables": {},
+    "id": {},
+    "type": {},
+    "acceptance_criteria": {},
+    "priority": {
+      "enum": [
+        "MUST",
+        "SHOULD",
+        "MAY"
+      ]
+    },
+    "check": {},
+    "observable": {},
+    "evidence_required": {},
+    "verification_method": {},
+    "protected_invariants": {},
+    "rule": {},
+    "description": {},
+    "rubric_lock": {},
+    "pack_id": {},
+    "revision": {},
+    "sha256": {},
+    "locked_before_execution": {},
+    "known": {
+      "unread": true
+    },
+    "assumptions": {},
+    "value": {},
+    "assumption": {},
+    "material": {},
+    "consequential": {},
+    "decision_needed": {},
+    "question": {},
+    "decision": {},
+    "resolved": {},
+    "recommended_next_skill": {
+      "unread": true
+    }
+  },
+  "outputs": {
+    "status": {
+      "enum": [
+        "READY",
+        "PROVISIONAL",
+        "BLOCKED",
+        "INVALID",
+        "CHANGED",
+        "UNCHANGED"
+      ]
+    },
+    "missing": {},
+    "errors": {},
+    "open_material_decisions": {},
+    "material_assumptions": {},
+    "mode": {
+      "enum": [
+        "LIGHT",
+        "STANDARD",
+        "DEEP"
+      ]
+    },
+    "material_changes": {},
+    "requires_downstream_revalidation": {}
+  },
+  "internal": [
+    "input",
+    "operation",
+    "old",
+    "new"
+  ],
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "status": "expect.status",
+      "pass": [
+        "READY",
+        "PROVISIONAL",
+        "CHANGED",
+        "UNCHANGED"
+      ]
+    },
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "old",
+      "status": "expect.status",
+      "pass": [
+        "READY",
+        "PROVISIONAL",
+        "CHANGED",
+        "UNCHANGED"
+      ]
+    },
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "new",
+      "status": "expect.status",
+      "pass": [
+        "READY",
+        "PROVISIONAL",
+        "CHANGED",
+        "UNCHANGED"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.7.2] - 2026-10-03
+
+- `references/output-contract.md` documented `coverage` as a map
+  `{axis: COVERED|N/A|UNKNOWN}` and a finding's lifecycle as `state`, while the
+  kernel reads `coverage` as a list of `{axis, state, rationale}` rows (a map
+  is INVALID `coverage:not-list`) and the lifecycle as `finding_status` (a
+  `state: CARRIED` finding was read as NEW, so the revalidation rule never
+  ran). It also named `review_status` for the kernel's `status`. All three now
+  use the kernel's shapes and names.
+- Documented the keys the kernel reads but no reference mentioned:
+  `required_axes`, coverage `rationale`, `fingerprint`, `revalidated`,
+  `evidence_grade` and evidence `candidate_id`; `confidence`, `observation`,
+  `interpretation`, `falsifier`, `repair_direction`, `verify` and
+  `recommended_next_skill` are marked as reader-only fields the kernel does
+  not check. The output-contract now states what `kernel.review` returns.
+- New `references/contract.json` binds every enum to the kernel constant that
+  enforces it (`REQUIRED_AXES` names the axis set used for `required_axes`)
+  and checks every eval input against the contract.
+- The description states its "Do not use" boundary right after the opening sentence, so a host that shortens descriptions to fit its skill-list budget (Codex does) keeps it. Only the sentence order changed.
+
 ## [1.7.1] - 2026-10-03
 
 - `scripts/run_evals.py --help` exits 0 with a usage line instead of exit 2; any other argument is still rejected with exit 2 and the unrecognized argument named.

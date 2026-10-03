@@ -21,6 +21,8 @@ SENSITIVITY = {"public", "internal", "confidential", "restricted"}
 SOURCE_TYPES = {"github", "local-repo", "vault", "notion", "crm", "gmail", "calendar", "contacts", "insight", "website", "social", "file", "other"}
 BASELINE_STATUS = {"available", "unavailable", "not_requested"}
 FP_STATUS = {"loaded", "not_required", "unavailable"}
+CONFIDENCE = {"high", "medium", "low"}
+CONFLICT_STATUS = {"unresolved_conflict", "resolved"}
 
 
 def fail(message: str) -> None:
@@ -140,7 +142,7 @@ def validate(data: dict) -> None:
         unknown = [sid for sid in refs if sid not in source_ids]
         if unknown:
             fail(f"facts[{index}] references unknown source_ids: {', '.join(unknown)}")
-        if not isinstance(fact["confidence"], str) or fact["confidence"] not in {"high", "medium", "low"}:
+        if not isinstance(fact["confidence"], str) or fact["confidence"] not in CONFIDENCE:
             fail(f"facts[{index}] invalid confidence")
         if not isinstance(fact["sensitivity"], str) or fact["sensitivity"] not in SENSITIVITY:
             fail(f"facts[{index}] invalid sensitivity")
@@ -156,6 +158,8 @@ def validate(data: dict) -> None:
     for index, conflict in enumerate(data["conflicts"]):
         if not isinstance(conflict, dict):
             fail(f"conflicts[{index}] must be an object")
+        if not isinstance(conflict.get("status"), str) or conflict["status"] not in CONFLICT_STATUS:
+            fail(f"conflicts[{index}] invalid status")
         if conflict.get("status") == "resolved" and not conflict.get("basis"):
             fail(f"conflicts[{index}] resolved conflict requires basis")
 

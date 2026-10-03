@@ -119,3 +119,23 @@ not speculative hardening. Only that section was added, plus a new
 the workflow, kernel and report contract are untouched and the release stays
 `FROZEN`. Guarded by `tooling/tests/test_untrusted_content_rules.py` and
 `tooling/tests/test_front_door_rules.py`.
+
+## Freeze exception — 1.1.3, 2026-10-03
+
+`references/claim-use.md` said a CRITICAL or MATERIAL FACT claim needs
+"admitted evidence or an explicit unresolved/scoped-out state", but `validate`
+returns `MATERIAL_CLAIM_UNSUPPORTED` for every such claim that is not
+`SUPPORTED` with a resolvable evidence ref, and evaluation case 12 pins that.
+The report contract also named `lifecycle{}` without its eight flags, which
+decide the inferred stage. Both are contract mismatches, not speculative
+hardening. The kernel's fail-closed behaviour is kept and the references now
+match it.
+
+Declaring the contract exposed one fail-open path: the kernel compared claim
+and gap enums by exact string, so `materiality: material`, `claim_kind: fact`,
+`citation_state: required` or a gap with `materiality: critical` skipped the
+support, citation-marker and open-gap checks instead of failing them. Such a
+value now returns `FIELD_VALUE_INVALID:<list>.<field>`. Reports that use the
+documented capitals are unaffected; the frozen control-plane workflow is
+untouched and the release stays `FROZEN`. Guarded by evaluation cases 53-58 and
+`references/contract.json`, checked by `tooling/tests/test_contract_docs_match_kernels.py`.

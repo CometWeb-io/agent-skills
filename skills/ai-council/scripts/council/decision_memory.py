@@ -5,7 +5,7 @@ import json
 import math
 from typing import Any
 
-from .constants import COUNCIL_VERSION, _MEMORY_ALLOWLIST_V4
+from .constants import COUNCIL_VERSION, WATCH_OPERATORS, _MEMORY_ALLOWLIST_V4
 from .util import (
     _aware_time,
     _boolean,
@@ -286,7 +286,7 @@ def evaluate_watch_dependency(dependency: dict[str, Any]) -> dict[str, Any]:
             before = json.dumps(previous, sort_keys=True, allow_nan=False)
             after = json.dumps(current, sort_keys=True, allow_nan=False)
             triggered = before != after
-        elif op in {"gt", "gte", "lt", "lte", "pct_change_gt"}:
+        elif op in WATCH_OPERATORS:
             c = _finite_number(current, "current")
             t = _finite_number(threshold, "threshold")
             if op == "pct_change_gt":

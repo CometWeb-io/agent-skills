@@ -344,3 +344,16 @@ if __name__ == "__main__":
     for name in tests:
         globals()[name]()
         print("PASS", name)
+
+
+def test_check_row_cannot_override_registry_definition():
+    # A row was merged over its registry definition, so "weight": 0 on a FAIL
+    # erased the failure from the score instead of being rejected.
+    fnd = next(c for c in REGISTRY["checks"] if c["pillar"] == "foundation")
+    row = {"id": fnd["id"], "verdict": "FAIL", "evidence": ev("noindex observed"), "weight": 0}
+    p = run(payload(["foundation"], overrides={fnd["id"]: row}))
+    assert p.returncode != 0
+    assert p.stderr.strip() == f"ERROR: {fnd['id']} cannot override registry field(s): weight"
+    row = {"id": fnd["id"], "verdict": "FAIL", "evidence": ev("noindex observed"), "pillar": "aeo"}
+    p = run(payload(["foundation"], overrides={fnd["id"]: row}))
+    assert p.stderr.strip() == f"ERROR: {fnd['id']} cannot override registry field(s): pillar"

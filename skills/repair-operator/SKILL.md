@@ -1,7 +1,13 @@
 ---
 name: repair-operator
 description: >-
-  Convert findings from reviewers, roasters, audits, tests, or acceptance gates into a minimal dependency-aware repair set, optionally apply authorized edits, and verify that fixes close root causes without introducing regressions. Use when the user wants issues actually fixed rather than merely analyzed, especially after content-reviewer, content-roaster, science-roaster, repo-roaster, or artifact-acceptance. Do not use to invent new requirements, perform the initial broad audit, make consequential strategy decisions, or claim a finding is fixed without fresh verification evidence.
+  Convert findings from reviewers, roasters, audits, tests, or acceptance gates into a minimal
+  dependency-aware repair set, optionally apply authorized edits, and verify that fixes close root
+  causes without introducing regressions. Do not use to invent new requirements, perform the initial
+  broad audit, make consequential strategy decisions, or claim a finding is fixed without fresh
+  verification evidence. Use when the user wants issues actually fixed rather than merely analyzed,
+  especially after content-reviewer, content-roaster, science-roaster, repo-roaster, or
+  artifact-acceptance.
 ---
 
 # Repair Operator

@@ -13,19 +13,19 @@ gate — and those are listed rather than hidden.
 
 | Skill | Guards | Held | Strength |
 | --- | ---: | ---: | ---: |
-| `quality-loop-operator` | 91 | 91 | 1.00 |
-| `artifact-acceptance` | 63 | 62 | 0.98 |
-| `benchmark-curator` | 33 | 32 | 0.97 |
+| `quality-loop-operator` | 95 | 95 | 1.00 |
+| `artifact-acceptance` | 64 | 63 | 0.98 |
+| `benchmark-curator` | 34 | 33 | 0.97 |
 | `rubric-designer` | 29 | 28 | 0.97 |
-| `content-writer` | 52 | 50 | 0.96 |
-| `repair-operator` | 52 | 50 | 0.96 |
-| `longform-publisher` | 68 | 65 | 0.96 |
-| `feedback-integrator` | 33 | 31 | 0.94 |
-| `product-operator` | 189 | 176 | 0.93 |
-| `skill-auditor` | 53 | 48 | 0.91 |
-| `portfolio-operator` | 62 | 56 | 0.90 |
+| `content-writer` | 54 | 52 | 0.96 |
+| `repair-operator` | 53 | 51 | 0.96 |
+| `longform-publisher` | 70 | 67 | 0.96 |
+| `feedback-integrator` | 34 | 32 | 0.94 |
+| `product-operator` | 193 | 180 | 0.93 |
+| `skill-evaluator` | 54 | 50 | 0.93 |
+| `portfolio-operator` | 65 | 59 | 0.91 |
+| `skill-auditor` | 54 | 49 | 0.91 |
 | `brief-architect` | 67 | 60 | 0.90 |
-| `skill-evaluator` | 54 | 48 | 0.89 |
 | `content-reviewer` | 43 | 38 | 0.88 |
 
-**14 harnesses.** 835 of 889 reachable guards are held (94% if every skill counted equally, which they do not).
+**14 harnesses.** 857 of 909 reachable guards are held (94% if every skill counted equally, which they do not).

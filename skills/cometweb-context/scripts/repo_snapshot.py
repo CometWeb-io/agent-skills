@@ -96,15 +96,15 @@ def snapshot(root: pathlib.Path, rel: str, include_paths: bool = False) -> dict[
         if top != repo:
             result["status"] = "not_repo_root"
             return result
-        result.update(
-            branch=run_git(repo, "rev-parse", "--abbrev-ref", "HEAD"),
-            head_sha=run_git(repo, "rev-parse", "HEAD"),
-            last_commit_at=run_git(repo, "log", "-1", "--format=%cI"),
-            subject=run_git(repo, "log", "-1", "--format=%s")[:120],
-            dirty_count=count_lines(run_git(repo, "status", "--porcelain")),
-            commits_7d=count_lines(run_git(repo, "log", "--since=7 days ago", "--format=%H")),
-            commits_30d=count_lines(run_git(repo, "log", "--since=30 days ago", "--format=%H")),
-        )
+        result.update({
+            "branch": run_git(repo, "rev-parse", "--abbrev-ref", "HEAD"),
+            "head_sha": run_git(repo, "rev-parse", "HEAD"),
+            "last_commit_at": run_git(repo, "log", "-1", "--format=%cI"),
+            "subject": run_git(repo, "log", "-1", "--format=%s")[:120],
+            "dirty_count": count_lines(run_git(repo, "status", "--porcelain")),
+            "commits_7d": count_lines(run_git(repo, "log", "--since=7 days ago", "--format=%H")),
+            "commits_30d": count_lines(run_git(repo, "log", "--since=30 days ago", "--format=%H")),
+        })
     except Exception as exc:  # keep the full snapshot resilient
         result["status"] = "error"
         result["error"] = str(exc)[:300] if include_paths else "git snapshot unavailable"

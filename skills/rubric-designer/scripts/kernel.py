@@ -2,13 +2,14 @@ from __future__ import annotations
 import hashlib,json,re
 MODES={'LIGHT','STANDARD','DEEP'}; FLOORS={'A','B','C','D'}; MATERIAL={'critical','material','supporting'}
 HEX64=re.compile(r'^[0-9a-f]{64}$')
+def _member(v,allowed): return isinstance(v,str) and v in allowed
 def _text(v): return isinstance(v,str) and bool(v.strip())
 def _canon(x): return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False)
 def _hash(x): return hashlib.sha256(_canon(x).encode()).hexdigest()
 def validate(x):
     if not isinstance(x,dict): return {'status':'INVALID','errors':['payload:not-object']}
     e=[]; mode=x.get('mode','STANDARD')
-    if mode not in MODES:e.append('mode:invalid')
+    if not _member(mode,MODES):e.append('mode:invalid')
     for k in ('rubric_id','revision','purpose','target_type'):
         if not _text(x.get(k)):e.append(f'{k}:required')
     cb=x.get('candidate_blind'); frozen=x.get('frozen_before_review')
@@ -32,14 +33,14 @@ def validate(x):
         for k in ('description','pass_condition','fail_condition'):
             if not _text(c.get(k)):e.append(p+':'+k)
         floor=c.get('evidence_floor'); mat=c.get('materiality')
-        if floor not in FLOORS:e.append(p+':evidence_floor')
-        if mat not in MATERIAL:e.append(p+':materiality')
+        if not _member(floor,FLOORS):e.append(p+':evidence_floor')
+        if not _member(mat,MATERIAL):e.append(p+':materiality')
         blocker=c.get('blocker',False)
         if not isinstance(blocker,bool):e.append(p+':blocker-boolean')
         if blocker:
             blockers+=1
-            if mat not in {'critical','material'}:e.append(p+':blocker-materiality')
-            if floor not in {'A','B'}:e.append(p+':blocker-evidence-floor')
+            if not _member(mat,{'critical','material'}):e.append(p+':blocker-materiality')
+            if not _member(floor,{'A','B'}):e.append(p+':blocker-evidence-floor')
         if _text(c.get('pass_condition')) and _text(c.get('fail_condition')) and c.get('pass_condition').strip().casefold()==c.get('fail_condition').strip().casefold():e.append(p+':pass-fail-identical')
         if c.get('weight') is not None:
             w=c.get('weight')

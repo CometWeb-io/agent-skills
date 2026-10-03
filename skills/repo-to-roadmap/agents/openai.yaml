@@ -1,13 +1,13 @@
 interface:
-  display_name: Repo to Roadmap
-  short_description: whole-project baseline; gap inventory
-  default_prompt: 'Use the Repo to Roadmap skill for: Analyze an entire software/product project and turn verified project truth into an evidence-based, dependency-aware, reusable roadmap. Use for first-time or delta whole-project baselines such as "anal'
-  icon_small: ./assets/icon.svg
-  icon_large: ./assets/icon.svg
+  display_name: "Repo to Roadmap"
+  short_description: "whole-project baseline; gap inventory"
+  default_prompt: "Use $repo-to-roadmap for whole-project baselines, gap inventories, dependencies, and target-state roadmaps."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
 policy:
   products:
-  - chatgpt
-  - codex
-  - api
-  - atlas
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
   allow_implicit_invocation: true
