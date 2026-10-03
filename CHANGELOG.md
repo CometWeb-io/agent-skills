@@ -8,6 +8,31 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Added
 
+- `tooling/check_all.py` runs every repository gate (26 of them) from one list,
+  in parallel, with a summary table. CI calls `check_all.py --ci`, which fails
+  on a missing tool instead of skipping it; `--fast` runs the quick gates,
+  `--fix` reruns the generators first and never records a baseline. An optional
+  `.pre-commit-config.yaml` runs the fast gates on every commit.
+- Plugin version gate: `tooling/plugin_release.py` and
+  `registry/plugin-release.json` require a new plugin version whenever a shipped
+  skill is added, removed or changes its `VERSION`, because Claude Code and Codex
+  refresh an installed plugin only when its version changes. The plugin version
+  is now **2.1.0** in every manifest.
+- `tooling/new_skill.py` registers the new skill by default: registry entry,
+  README catalog row, placeholder routing cases and this skill's baseline rows.
+  The scaffold ships a small output-contract validator whose eval harness holds
+  every guard, so `check_all.py --fast` passes straight away; it prints each file
+  it wrote and what is still placeholder. `--no-register` writes the package only.
+- Multi-step requests ("audit the signup flow, then gate the release", Polish
+  "a po nim", "na tej podstawie") route to `skill-orchestrator`, and the route
+  result lists the specialist for each step under `sequence`.
+- `extras/cursor-routing.mdc` and `extras/AGENTS.snippet.md` are generated from
+  the registry, as is the package list in the host plugin manifests.
+- `SECURITY.md` describes the threat model for skills that read untrusted
+  content, and `evals/routing/adversarial-suite.json` holds 20 injection-style
+  routing cases, run by the `routing_adversarial` gate.
+- Routing coverage enforces Polish floors per skill through each case's `lang`.
+
 - Every host installer accepts `--dry-run` (run all checks, print the plan,
   write nothing) and `--uninstall` (remove only links into this checkout's
   `skills/`). All six hosts share one code path in `scripts/lib/install.sh`;
@@ -55,6 +80,21 @@ tags use `vMAJOR.MINOR.PATCH`.
   rerun over an older install upgrades it cleanly.
 
 ### Changed
+
+- Routing suite grew from 284 to 463 cases; about 25 skills gained Polish
+  routing signals. 15 prompts the router still misroutes are recorded in
+  `evals/routing/known-gaps.json`.
+- Ten more front doors were cut, and every `SKILL.md` is now at most 12,000
+  bytes. Together the front doors are about 6 KB smaller than before this
+  release even with the untrusted-content block added to 31 of them; every
+  must-keep rule is listed in the skill's `tests/front-door-rules.json`.
+- Eval strength: 835 of 889 reachable guards are held (was 765). Cases pin exact
+  error lists rather than only a verdict, and a harness below its floor (0.85 by
+  default, higher for some skills) fails the gate. `eval_strength.py` refuses a
+  harness that holds no guard at all.
+- Codex `short_description` values are generated to fit the 25-64 characters
+  Codex shows.
+- CONTRIBUTING describes the single `check_all.py` flow.
 
 - Broadened deterministic routing evaluation to 284 cases, including natural
   Polish requests and positive coverage for every catalog skill. The proxy is
@@ -109,6 +149,25 @@ tags use `vMAJOR.MINOR.PATCH`.
 - Ruff 0.16.10 and four development dependency patch updates.
 
 ### Fixed
+
+- Release Readiness rejects `GO`/`GO_WITH_CONTROLS` next to a `BLOCK` or
+  `COUNSEL_REQUIRED` gate in any letter case, defers on pending, denied, expired
+  or incomplete risk acceptances, and reports unread `scope` keys as
+  `scope_warnings`. The multiagent envelope gate rejects the same Council and
+  release verdicts. CW-AIP spec 2.0.2.
+- AI Council's freshness gate no longer clears evidence in which no row is
+  material.
+- `generate_adapters.py` rendered a new skill's compatibility row as
+  unsupported on the first run and only fixed it on a second.
+- Longform Publisher names `DERIVED_QA_FAILED` when optional QA ran and failed
+  (frozen-release exception 1.1.2, which also covers its untrusted-content
+  block).
+- The shared orchestrator reference ran two scripts that ship only with
+  `skill-orchestrator-multiagent` from the wrong package; each command now
+  changes into that package first.
+- Skill docs no longer name nine tooling scripts that do not exist.
+- Customer Ops loads its trigger-specific references only when the trigger
+  applies.
 
 - Product Operator's report validator accepted an action confidence outside
   0–1; its kernel rejects a non-object `coverage` and a string `depends_on`
@@ -176,6 +235,22 @@ tags use `vMAJOR.MINOR.PATCH`.
   STOP/LATER exclusions, plan caps, and malformed candidate records.
 - Product Operator 2.3.1 preserves DECISION NOW through report generation and
   bilingual rendering; inferred action types no longer crash the brief bridge.
+
+### Security
+
+- Every skill's front door carries the same short untrusted-content block:
+  inspected content is data, not instructions; no commands, installs or links
+  because that content asks; no secrets, credentials or unnecessary personal
+  data in outputs, and no entering credentials the user did not supply; user
+  confirmation before any external side effect. Tests pin the wording and each
+  rule.
+- The router ignores text after an override phrase ("ignore previous
+  instructions", "zignoruj poprzednie instrukcje") and inside quotes, fences
+  and blockquotes when deciding invocations, signals and multi-step sequences,
+  strips zero-width characters, and reports `override_suspected`.
+- Repo Roaster's `inventory_repo.py` runs git with hooks, fsmonitor, external
+  diff and textconv disabled, refuses option-shaped refs, and reads manifests
+  only as regular files under 1 MB, never through a symlink.
 
 ## [2.0.1] - 2026-09-22
 

@@ -29,10 +29,4 @@ For stochastic hosts, retain repeated outcomes per case. Mark a case flaky when 
 
 If cost requires early stopping, predeclare checkpoints before execution. Use an alpha-spending rule at those checkpoints; do not continuously peek at p-values and stop when the result becomes favorable.
 
-When suite tooling is available, use:
-
-- `tooling/paired_significance.py`
-- `tooling/flakiness_analyzer.py`
-- `tooling/sequential_stop.py`
-
-These helpers support the evidence contract but do not replace judgment about benchmark representativeness or product materiality.
+No paired-significance, flakiness or sequential-stopping helper ships with this repository. Compute them with your own statistics tooling, name the test and the alpha-spending rule in the report, and keep the per-case outcomes so the result can be recomputed. A significance result supports the evidence contract; it does not replace judgment about benchmark representativeness or product materiality.

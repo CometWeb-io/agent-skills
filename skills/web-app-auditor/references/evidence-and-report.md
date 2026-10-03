@@ -16,6 +16,16 @@ shown. Source proves implementation facts, not an executed browser outcome.
 
 Use stable evidence IDs (`E-001`...) and map them to finding IDs.
 
+Each evidence manifest item records:
+
+```text
+ID:        E-001
+Type:      screenshot | dom | text | arithmetic | console | network | source
+Location:  file/path/URL/route/line or inline reference
+Supports:  F-001, F-003
+Redacted:  yes | no | n/a
+```
+
 ## 2. Expected basis — mandatory
 
 Every finding states why `Expected` is defensible. Use one or more:
@@ -159,6 +169,11 @@ references, and heuristic-only severity escalation.
 
 `ERROR` must be fixed before a completed `standard`/`forensic` report.
 `WARNING` is a judgment prompt; explain any warning you intentionally keep.
+
+Produce the human report from `assets/report-template.md` and
+`audit-report.json` against `assets/audit-report.schema.json` as the
+structural contract. If code execution is unavailable, perform the same checks
+manually and write `validator: not run — capability unavailable`.
 
 If the validator cannot run, say so. Never fabricate a pass.
 

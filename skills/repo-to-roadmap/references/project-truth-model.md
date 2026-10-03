@@ -92,3 +92,15 @@ Use commit/PR history to find where to inspect, not to prove defects. Useful sig
 - ownership or review bottlenecks.
 
 Label these as `triage signals`. Convert them into roadmap work only after a material problem or risk path is verified.
+
+## Critical journeys
+
+Identify the user/operational journeys that define the target state and trace them end-to-end across packages/repos/services/data/external boundaries. A journey is not verified because all components exist independently.
+
+Examples:
+
+- sign up -> first value,
+- login -> protected action -> logout,
+- checkout -> entitlement -> invoice,
+- create -> persist -> retrieve -> mutate,
+- deploy -> migrate -> health check -> rollback.

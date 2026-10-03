@@ -1,4 +1,4 @@
-# Ebook Publisher 1.0.1
+# Ebook Publisher 1.0.2
 
 Skill do przygotowywania ebooków CometWeb: od researchu po zweryfikowany plik PDF.
 Punkt wejścia: `SKILL.md`. Instrukcje główne są krótkim kontraktem; szczegóły wczytuje się

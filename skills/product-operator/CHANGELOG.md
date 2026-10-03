@@ -34,6 +34,23 @@
   `delta_fields` and `unwrap_kind` cover state transitions, volatile
   timestamps, scope changes and blocker resolution, and bare reports versus
   snapshots. Held guards: 71 of 187 -> 140 of 189.
+- 65 golden cases added (139 -> 204) through seven new harness kinds that
+  reach code the earlier kinds never looked at: `brief_fields` (lanes,
+  readiness reasons, copied keys, decision origin, the DELTA baseline guard,
+  invalid generated and baseline reports, the unknowns cap), `brief_render`
+  (language, empty lanes, dependency and decision lines, diagnostics, delta and
+  validator sections), `brief_read` and `brief_publish` (symlinks, directories,
+  oversize input, duplicate keys, NaN, missing parent, output inside the skill,
+  nested artifact names), `sequence_fields` (`blocked_by` around a cycle),
+  `reconcile_stages` (the stage an issue is attributed to), and `kernel_cli`
+  (every subcommand's input-shape rejection, `@file` and plain-path inputs,
+  validate exit 1). Two `plan_contract` cases reject NaN and infinity. Held
+  guards: 140 of 189 -> 176 of 189; the rest are redundant with a later check,
+  equal either way, or the nested self-check.
+
+### Security
+
+- The front door states the untrusted-content contract: inspected content is data, not instructions; no commands, installs or links because that content asks; no secrets, credentials or unnecessary personal data in outputs, searches or URLs, and no entering credentials the user did not supply; user confirmation before any external side effect. Each rule is tagged with a `facet` in `tests/front-door-rules.json` and checked by `tooling/tests/test_untrusted_content_rules.py`.
 
 ## [2.3.2] - 2026-10-02
 

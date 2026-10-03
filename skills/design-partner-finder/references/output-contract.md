@@ -12,6 +12,7 @@
 - [Activation / review output](#8-activation--review-output)
 - [Reproducibility](#9-reproducibility)
 - [Honest language](#honest-language)
+- [Quality gate](#quality-gate)
 
 
 Adapt depth to the mode. Keep the decision visible before raw research detail.
@@ -85,6 +86,10 @@ One concise sentence tied to the Learning Contract.
 - Buyer:
 - Champion:
 - Actual user:
+
+**Why now / likely implementation blockers**
+- trigger:
+- blockers:
 
 **Highest-VOI unknown**
 - [the single fact most likely to change rank/status]
@@ -176,3 +181,22 @@ Avoid unsupported claims such as:
 - `will convert`
 - `agreed to partner`
 - `fraudulent/fake` without authoritative evidence.
+
+## Quality gate
+
+Before finalizing, verify all of the following:
+
+- Research-stage outputs never imply agreement, interest, commitment, or readiness that was not directly confirmed.
+- Every primary candidate has real evidence beyond firmographic fit.
+- Prestige, funding, and logo value remain secondary to problem/learning fit.
+- The chosen cohort strategy matches the Learning Contract.
+- Core hypotheses have deliberate coverage/replication or are explicitly marked uncovered.
+- Observed/confirmed facts and inference are visibly separated.
+- Material current claims carry source lineage and freshness state.
+- Contradiction search was attempted for top candidates.
+- No `PARTNER_READY` candidate is based solely on public research.
+- Buyer, champion, sponsor, and actual user are not casually collapsed.
+- Bespoke pressure, implementation burden, and cost-to-learn are visible.
+- Rejected candidates remain documented with reasons.
+- Public professional data only; no leaked/sensitive personal data or bot-protection bypass.
+- External actions remain gated behind explicit authorization.

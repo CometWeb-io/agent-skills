@@ -1,0 +1,22 @@
+# Optional. Install with `uv tool install pre-commit && pre-commit install`.
+# The hook runs the same fast gates as `uv run python tooling/check_all.py --fast`
+# (about ten seconds); CI still runs every gate. Skip once with `git commit --no-verify`.
+# The full list, including pytest, runs on demand:
+#   pre-commit run --hook-stage manual check-all
+repos:
+  - repo: local
+    hooks:
+      - id: check-all-fast
+        name: repository gates (fast)
+        entry: uv run python tooling/check_all.py --fast
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+      - id: check-all
+        name: repository gates (all)
+        entry: uv run python tooling/check_all.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [manual]

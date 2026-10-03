@@ -272,6 +272,34 @@
       "must_not_trigger": [
         "web-app-auditor"
       ]
+    },
+    {
+      "id": "sequence-two-specialists-workflow",
+      "prompt": "Click-through the signup flow, then run the release gate.",
+      "expected_status": "workflow",
+      "expected_primary_skill": "skill-orchestrator",
+      "must_not_trigger": [
+        "web-app-auditor",
+        "release-readiness"
+      ]
+    },
+    {
+      "id": "sequence-negated-second-step",
+      "prompt": "Click-through the signup flow, then do not run the release gate.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "web-app-auditor",
+      "must_not_trigger": [
+        "skill-orchestrator"
+      ]
+    },
+    {
+      "id": "sequence-host-invocation-wins",
+      "prompt": "Click-through the signup flow, then run the release gate.",
+      "invoked": [
+        "release-readiness"
+      ],
+      "expected_status": "single_skill",
+      "expected_primary_skill": "release-readiness"
     }
   ]
 }

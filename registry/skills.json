@@ -7,7 +7,7 @@
   "skills": [
     {
       "id": "ai-council",
-      "version": "5.2.0",
+      "version": "5.2.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -104,12 +104,16 @@
         [
           6,
           "decision council"
+        ],
+        [
+          7,
+          "\\bcouncil\\b.{0,15}\\b(?:decide|decides|pick|picks|choose|chooses|rule|rules|vote|votes|weigh)\\b|\\b(?:decide|pick|choose|vote)\\b.{0,20}\\b(?:with|by|via) the council\\b|\\brad[aey]\\b.{0,15}\\b(?:zdecyd|oceni|wybier|wybierz|rozstrzyg|przeglosuj)|\\b(?:to|before|with|by|via) the council\\b"
         ]
       ]
     },
     {
       "id": "ai-humanize",
-      "version": "2.5.0",
+      "version": "2.6.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -154,7 +158,7 @@
       "routing_signals": [
         [
           10,
-          "humanize|humanise|sound less like ai"
+          "(?<![\\w-])humani[sz](?:e|acj|uj)|sound less like ai"
         ],
         [
           9,
@@ -167,6 +171,10 @@
         [
           9,
           "\\bsound (?:more )?(?:natural|human)\\b|\\bless robotic\\b"
+        ],
+        [
+          9,
+          "\\bbrzmi\\w*\\b.{0,30}\\b(?:jak (?:z |(?:napisan|wygenerowan|stworzon)\\w* przez )?(?:chatgpt|gpt|ai|sztuczn|bot|robot|maszyn)|sztucznie|robotycznie|drewnian)|\\bmniej (?:robotyczn|sztuczn|drewnian|korporacyjn)|\\bjak (?:normaln\\w* |zyw\\w* |prawdziw\\w* )?czlowiek|\\bwtret\\w* (?:ai|gpt)|\\bslad\\w* (?:ai|gpt|chatgpt)|\\bniewidoczn\\w* znak|\\bwygladz\\w*\\b.{0,60}\\b(?:tekst|post|mail|wpis|akapit|readme|sztuczn)|\\bsztuczn\\w* (?:zwrot|fraz|sformulowan)"
         ]
       ]
     },
@@ -259,6 +267,14 @@
         [
           10,
           "\\bfinal acceptance\\b.{0,40}\\b(?:report|artifact|candidate|contract|brief|deliverable)\\b"
+        ],
+        [
+          10,
+          "\\b(?:koncow\\w*|ostateczn\\w*|finaln\\w*) (?:odbior|akceptacj|bramk|werdykt)\\w*\\b.{0,60}\\b(?:raport|white ?paper|e-?book|prezentacj|dokument|brief|material|poradnik|artefakt|opracowan)|\\bodbior\\w*\\b.{0,40}\\b(?:raportu|white ?papera|e-?booka|prezentacji|dokumentu|materialu|poradnika|artefaktu|opracowania)\\b|\\b(?:spelnia|spelni|przechodzi)\\w*\\b.{0,40}\\bkryteri\\w* akceptacji|\\b(?:raport|white ?paper|e-?book|prezentacj|dokument|material|poradnik|opracowan)\\w*\\b.{0,60}\\bgotow\\w*\\b.{0,40}\\b(?:wedlug|zgodnie z|wobec|wzgledem) (?:briefu|kryteriow)|\\bostatni\\w* bramk\\w*\\b.{0,60}\\b(?:raport|white ?paper|e-?book|prezentacj|dokument|material|poradnik)"
+        ],
+        [
+          10,
+          "\\b(?:raport|white ?paper|e-?book|prezentacj|dokument|material|poradnik|opracowan|artykul)\\w*\\b.{0,60}\\b(?:mozemy|mozna) (?:juz )?(?:go |je |to )?(?:oddac|wyslac|przekazac|opublikowac)\\b"
         ]
       ]
     },
@@ -350,6 +366,10 @@
         [
           7,
           "freeze.*benchmark.*hash"
+        ],
+        [
+          10,
+          "\\b(?:zestaw|korpus)\\w* (?:testow|ewaluacyjn|regresyjn|referencyjn|przypadkow testow)\\w*|\\bgolden set\\w*|\\bholdout\\w*\\b.{0,80}\\b(?:wyciek|kontaminac|czyst|duplikat|odizol)|\\bkontaminac\\w*|\\b(?:zbuduj|przygotuj|uloz|zaprojektuj|uporzadkuj|wyczysc)\\w*\\b.{0,40}\\b(?:benchmark\\w*|korpus\\w*)\\b"
         ]
       ]
     },
@@ -450,12 +470,20 @@
         [
           10,
           "\\b(?:executable|execution|artifact) contract\\b"
+        ],
+        [
+          10,
+          "\\b(?:rozpisz|napisz|przygotuj|zrob|stworz|uloz|opracuj)\\w*\\b.{0,40}\\bbrief\\w*\\b.{0,40}\\b(?:zanim|przed)\\b|\\b(?:rozpisz|ulozyc|uloz|zrob|przygotuj|stworz)\\w*\\b.{0,30}\\b(?:porzadny|konkretny|jasny|dobry|pelny)\\w* brief|\\bkontrakt\\w* (?:wykonawcz|realizacyjn)\\w*|\\bdoprecyzuj\\w*\\b.{0,40}\\b(?:zlecenie|zadanie|prosbe|brief|zamowienie|zapytanie)|\\b(?:ustal|ustalmy|zdefiniuj|spisz|okresl)\\w*\\b.{0,40}\\bkryteri\\w* akceptacji\\b"
+        ],
+        [
+          10,
+          "\\bbrief\\w*\\b.{0,40}\\b(?:odbiorc|grup\\w* docelow|kryteri\\w* (?:odbioru|akceptacji|sukcesu))"
         ]
       ]
     },
     {
       "id": "cometweb-context",
-      "version": "1.4.2",
+      "version": "1.5.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -533,6 +561,10 @@
         [
           11,
           "what changed (in|across|on) (cometweb|insight|cometbase|cometpen)\\b"
+        ],
+        [
+          10,
+          "\\b(?:snapshot|migawk|stan)\\w* kontekstu\\b|\\bkontekst\\w*\\b.{0,30}\\b(?:cometpen|cometbase|cometlens|rankproof|agent-skills)\\b"
         ]
       ]
     },
@@ -602,6 +634,10 @@
         [
           8,
           "\\b(?:monitor|track|watch)\\w*\\b.{0,40}\\bcompetitors?\\b|competitor delta"
+        ],
+        [
+          10,
+          "\\b(?:monitoruj|monitorow|sledz|obserwuj|pilnuj)\\w*\\b.{0,60}\\bkonkuren|\\bkonkuren\\w*\\b.{0,80}\\b(?:sprzed (?:tygodnia|miesiaca|kwartalu|roku)|od (?:naszego |ostatniego ){1,2}(?:przegladu|skanu|raportu|snapshotu)|podsumowani\\w* zmian|digest|raport\\w* zmian|co (?:tydzien|miesiac)|cotygodniow|comiesieczn)|\\b(?:zmian\\w*|co nowego|ruch\\w*)\\b.{0,40}\\bkonkuren|\\bod (?:naszego |ostatniego ){1,2}(?:przegladu|skanu) konkuren|\\bwywiad\\w* konkurencyjn|\\bobserwowan\\w* konkuren|\\b(?:cotygodniow|comiesieczn)\\w* (?:digest|raport|podsumowan)\\w*\\b.{0,40}\\bkonkuren"
         ]
       ]
     },
@@ -699,6 +735,10 @@
         [
           10,
           "\\breview (?:this|the|my) (?:draft|article|report|paragraph|section|text|copy|post|chapter)\\b.{0,40}\\bagainst (?:the|its|our|this) brief\\b"
+        ],
+        [
+          9,
+          "\\b(?:przejrzyj|zrecenzuj|ocen|sprawdz)\\w*\\b.{0,40}\\b(?:artykul|tekst|szkic|wpis|poradnik|dokumentacj|raport|draft|rozdzial)\\w*\\b.{0,40}\\b(?:pod katem|wzgledem|wobec|zgodnie z)\\b.{0,15}\\bbrief|\\b(?:redakcyjn|merytoryczn)\\w* (?:korekt|recenzj|przeglad|uwag|qa|ocen)\\w*|\\brecenzj\\w*\\b.{0,30}\\b(?:tekstu|artykulu|wpisu|szkicu|poradnika|dokumentacji|raportu|rozdzialu)\\b|\\bkonstruktywn\\w*\\b.{0,30}\\b(?:ocen|recenzj|przejrz|uwag|feedback)|\\b(?:ocen|przejrz|recenzj)\\w*\\b.{0,30}\\bkonstruktywn|\\b(?:zyczliw|lagodn)\\w*\\b.{0,40}\\b(?:recenzj|ocen|przeglad|uwag)|\\b(?:recenzj|ocen|przeglad)\\w*\\b.{0,40}\\b(?:zyczliw|lagodn)"
         ]
       ]
     },
@@ -811,7 +851,7 @@
         ],
         [
           12,
-          "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|bezlitosn\\w* (?:ocen|przejrz|skrytykuj)|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad)).{0,60}(?:ofert|stron|landing|cennik|maila?\\b|e-?mail|wpis|post|artykul(?! naukow)|deck|prezentacj|copy|case study|ebook|newsletter)"
+          "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|zjedz|przejedz sie|red.?team\\w*|bez litosci|bezlitosn\\w* (?:ocen|przejrz|skrytykuj|sprawdz|recenz)|(?:ocen|przejrz|sprawdz|skrytykuj|przeanalizuj|recenzuj)\\w* (?:\\w+ )?bezlitosn\\w*|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad|recenzj)|(?:wrog|brutaln|bezlitosn|forensyczn|adwersaryjn|tward)\\w* (?:przeglad|recenzj|audyt|ocen)\\w*).{0,60}(?:ofert|stron|landing|cennik|maila?\\b|e-?mail|wpis|post|artykul(?! naukow)|deck|prezentacj|copy|case study|ebook|newsletter)"
         ]
       ]
     },
@@ -901,6 +941,10 @@
         [
           7,
           "evidence.aware.*(prose|content)"
+        ],
+        [
+          10,
+          "\\b(?:napisz|przygotuj|stworz|zredaguj|opracuj)\\w*\\b.{0,40}\\b(?:artykul|wpis|tekst|poradnik|dokumentacj|przewodnik|explainer|opis)\\w*\\b.{0,80}\\b(?:na podstawie|z (?:tego|tych|moich|naszych) (?:briefu|notatek|materialow)|ze zrodl|zrodlami|rzetelni|bez wymysl|rejestr\\w* twierdzen)"
         ]
       ]
     },
@@ -974,12 +1018,16 @@
         [
           8,
           "(customer|client) (promises?|commitments?).*(overdue|due|owner)|overdue (customer )?(promises|commitments)|stalled escalations?"
+        ],
+        [
+          10,
+          "\\bzgloszen\\w*\\b.{0,40}\\b(?:klient|uzytkownik|support)|\\b(?:klient|uzytkownik)\\w*\\b.{0,60}\\bzglasza|\\bspraw\\w* klient|\\beskal\\w*\\b.{0,40}\\b(?:developer|programist|deweloper|zespol\\w* tech|engineering|devow)|\\bsygnal\\w* churn|\\bnie odnowil\\w*|\\brozwiazan\\w*\\W{0,3}\\s{0,2}a\\s{0,2}\\W{0,3}zweryfikowan|\\bobietnic\\w* (?:wobec |dla |dane )?klient"
         ]
       ]
     },
     {
       "id": "design-partner-finder",
-      "version": "1.1.1",
+      "version": "1.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1035,12 +1083,16 @@
         [
           9,
           "early adopters?.*(pilot|beta)|(beta|pilot) (partners?|cohort)|lighthouse customers?"
+        ],
+        [
+          10,
+          "\\bdesign[ -]?partner(?:ami|ow|om|zy|a|em|ze)\\b|\\bpartner\\w* (?:pilotaz|do pilotaz|do bety|do testow)\\w*|\\b(?:kandydat|shortlist|szukamy|znajdz)\\w*\\b.{0,60}\\b(?:pilotaz|bety|beta|early adopt|pierwszych klient)|\\bpierwsz\\w* klient\\w*\\b.{0,30}\\b(?:do bety|do pilotaz|beta)"
         ]
       ]
     },
     {
       "id": "ebook-publisher",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1119,7 +1171,7 @@
     },
     {
       "id": "evidence-researcher",
-      "version": "1.0.3",
+      "version": "1.0.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1177,7 +1229,7 @@
         ],
         [
           8,
-          "verify claims|source lineage|negative evidence"
+          "verif\\w*\\b.{0,30}\\bclaims?\\b|source lineage|negative evidence"
         ],
         [
           8,
@@ -1194,6 +1246,10 @@
         [
           9,
           "verify .{0,40}claims? against (primary |authoritative )?sources?"
+        ],
+        [
+          9,
+          "\\b(?:zrodl\\w* pierwotn|pierwotn\\w* zrodl|oryginaln\\w* zrodl)|\\b(?:sprawdz|zweryfikuj|potwierdz)\\w*\\b.{0,40}\\b(?:czy to prawda|twierdzen|claim|dane|liczb|statystyk)|\\bsprzeczn\\w* (?:dane|zrodl|informacj|raport|wynik)"
         ]
       ]
     },
@@ -1294,6 +1350,10 @@
         [
           7,
           "improve reliability.*repeated incidents"
+        ],
+        [
+          10,
+          "\\b(?:te same|powtarzaj\\w*|wracaj\\w*|ciagle|stale|nawracaj\\w*)\\b.{0,40}\\b(?:bled|uwag|porazk|poprawk|problem|znalezisk|poprawiaj|wpadk)\\w*\\b.{0,100}\\b(?:skill|agent|ewaluac|eval|przebieg|instrukcj|routing|recenzent|regresyjn|wzorzec|wzorc)|\\bretrospektyw\\w*\\b.{0,60}\\b(?:skill|agent|ewaluac|eval|przebieg|instrukcj|jakosc|porazk)|\\b(?:zbierz|zagreguj)\\w*\\b.{0,30}\\bpowtarzaj\\w*"
         ]
       ]
     },
@@ -1391,6 +1451,10 @@
         [
           9,
           "\\brefresh\\w*\\b.{0,30}\\b(?:e-?book|white paper|handbook|playbook|guide)\\b|\\brefresh\\w*\\b.{0,30}\\breport\\b.{0,40}\\b(?:edition|manuscript|docx|pdf)\\b|derived artifacts?.*(docx|pdf)"
+        ],
+        [
+          10,
+          "\\bmanuskrypt\\w*\\b.{0,80}\\b(?:docx|pdf|wydani|edycj|przebuduj|generowan|wygeneruj)|\\b(?:kanoniczn|jedn)\\w* manuskrypt|\\b(?:docx|pdf)\\b.{0,40}\\b(?:z manuskryptu|zgadzaj\\w* sie z manuskrypt)|\\b(?:nowe|nowa|kolejne|kolejna) (?:wydanie|edycj\\w*)\\b.{0,60}\\b(?:raport|white ?paper|handbook|poradnik|przewodnik|e-?book|playbook)|\\b(?:odswiez|zaktualizuj|uaktualnij)\\w*\\b.{0,40}\\b(?:raport|white ?paper|handbook|poradnik|przewodnik|playbook)\\w*\\b.{0,40}\\b(?:wydani|edycj|manuskrypt)"
         ]
       ]
     },
@@ -1479,6 +1543,10 @@
         [
           9,
           "focus on across (all )?(my|our) (projects|commitments)|across (all )?(my|our) (projects|commitments).{0,40}(focus|pause|drop|delegate)|\\bacross (?:all )?(?:my|our)\\b.{0,80}\\b(?:what should (?:i|we) (?:focus|pause|drop|delegate)|focus on for the next)"
+        ],
+        [
+          10,
+          "\\b(?:na )?czym (?:mam|mamy|powinienem|powinnam|powinnismy) sie skupic\\b.{0,120}\\b(?:projekt|klient|produkt)|\\bnajblizsze (?:\\d+|dwa|trzy|cztery) (?:tygodni|tygodnie|dni)\\b.{0,100}\\bprojekt|\\bmiedzy (?:projektami|produktem|produktami)\\b|\\bco (?:wstrzymac|odpuscic|oddelegowac)\\b|\\bza duzo (?:rzeczy|projektow|zobowiazan)|\\bzobowiazan\\w*\\b.{0,60}\\b(?:gryz|koliduj|konflikt|nie dowioz)|\\bpriorytet\\w*\\b.{0,40}\\bmiedzy\\b"
         ]
       ]
     },
@@ -1589,6 +1657,10 @@
         [
           9,
           "does (?:our )?roadmap match|actually implemented in the repo"
+        ],
+        [
+          8,
+          "\\b(?:w tym|na ten) (?:tygodniu|sprincie|tydzien)\\b|\\bprzeglad\\w* tygodniow|\\bod ostatniego (?:przegladu|review)\\b|\\broadmap\\w*\\b.{0,40}\\b(?:zgadza|pokrywa)\\w*\\b.{0,40}\\brepo|\\b(?:co|czego) (?:powinnismy|mamy) przestac|\\bblokuj\\w* sprint|\\bco (?:ruszyc|robic|zrobic) (?:najpierw|teraz|dalej)|\\broadmap\\w* (?:jest|juz jest|mamy)\\b|\\bmamy (?:juz )?roadmap"
         ]
       ],
       "release_status": "ACTIVE",
@@ -1666,6 +1738,10 @@
         [
           7,
           "synthesize onboarding patterns|architecture patterns"
+        ],
+        [
+          9,
+          "\\b(?:co|jakie \\w+|czego) (?:mozemy|warto|mozna|moglibysmy) (?:podpatrzec|przeniesc|zapozyczyc|skopiowac|sie nauczyc)|\\bwyciagnij\\w* (?:z (?:tego|nich) )?wzorce|\\brozbierz\\w*\\b.{0,30}\\b(?:onboarding|cennik|produkt|flow|lejek|dokumentacj)\\w*\\b.{0,30}\\bna (?:czesci|czynniki)"
         ]
       ]
     },
@@ -1764,6 +1840,10 @@
         [
           12,
           "run (?:the )?(?:full |complete |whole |entire )?quality loop|\\bquality loop\\b.{0,60}(brief|review|roast|repair|accept)"
+        ],
+        [
+          12,
+          "\\bpetl\\w* jakosci|\\bcykl\\w* jakosci|\\bspecjalist\\w* (?:od |ds\\.? )?jakosci"
         ]
       ]
     },
@@ -1837,6 +1917,10 @@
         [
           6,
           "can we ship"
+        ],
+        [
+          10,
+          "\\b(?:wersj|build|wydani|hotfix|kandydat|release)\\w*\\b.{0,40}\\b(?:na produkcj|do wydania|do produkcji)|\\bgotowos\\w*\\b.{0,30}\\b(?:hotfix|wydania|wersji|buildu|release)|\\bwerdykt\\w* go\\b|\\b(?:mozemy|mozna|czy) (?:je |go |to )?wypuscic\\b|\\bbramk\\w* (?:wydania|release|produkcyjn)|\\bpo (?:wczorajszym |ostatnim )?incydenc\\w*\\b.{0,60}\\bwydani"
         ]
       ]
     },
@@ -1941,6 +2025,10 @@
         [
           10,
           "apply (the )?fixes (from|for) (the |this |that )?(last |latest )?(review|roast|audit|acceptance)"
+        ],
+        [
+          12,
+          "\\b(?:napraw|popraw|wdroz|wprowadz|zamknij|zamien)\\w*\\b.{0,60}\\b(?:uwag|znalezisk|bled|poprawk|problem)\\w*\\b.{0,40}\\b(?:z|po)\\b.{0,5}\\b(?:code review|recenzj|review|audyt|roast|przeglad|odbior|akceptacj)|\\b(?:zaakceptowan|zatwierdzon)\\w* (?:uwag|znalezisk|poprawk|bled)\\w*|\\b(?:uwag|znalezisk|bled)\\w*\\b.{0,40}\\b(?:ktore|co) (?:zatwierdzil|zaakceptowal)|\\bplan\\w* naprawcz|\\b(?:znalezisk|uwag)\\w*\\b.{0,60}\\bnapraw\\w*"
         ]
       ]
     },
@@ -2060,13 +2148,13 @@
         ],
         [
           12,
-          "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|bezlitosn\\w* (?:ocen|przejrz|skrytykuj)|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad)).{0,40}(?:\\brepo|repozytori|\\bkod|codebase|\\bpr\\b|pull request|\\bdiff|galez)"
+          "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|zjedz|przejedz sie|red.?team\\w*|bez litosci|bezlitosn\\w* (?:ocen|przejrz|skrytykuj|sprawdz|recenz)|(?:ocen|przejrz|sprawdz|skrytykuj|przeanalizuj|recenzuj)\\w* (?:\\w+ )?bezlitosn\\w*|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad|recenzj)|(?:wrog|brutaln|bezlitosn|forensyczn|adwersaryjn|tward)\\w* (?:przeglad|recenzj|audyt|ocen)\\w*).{0,40}(?:\\brepo|repozytori|\\bkod|codebase|\\bpr\\b|pull request|\\bdiff|galez)"
         ]
       ]
     },
     {
       "id": "repo-to-roadmap",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2149,6 +2237,14 @@
         [
           6,
           "create.*roadmap.*repo|gaps before any future production"
+        ],
+        [
+          9,
+          "\\bco (?:jeszcze )?(?:zostalo|brakuje)\\b.{0,40}\\b(?:do zbudowania|do zrobienia|do wdrozenia)\\b.{0,60}\\b(?:produkcj|celu)|\\bcal\\w* (?:projekt|platform|repo)\\w*\\b.{0,80}\\b(?:produkcj|gotow|roadmap)|\\bod zera\\b.{0,60}\\b(?:repo|repozytori|notion|github)|\\b(?:zaktualizuj|odswiez|aktualizuj)\\w* roadmap\\w*\\b.{0,60}\\b(?:zmian|delta)|\\bbramk\\w* brakuj|\\bbrakuj\\w* bramk"
+        ],
+        [
+          12,
+          "\\broadmap\\b.{0,80}\\b(?:before|until|up to|all the way to)\\b.{0,30}\\b(?:production|prod|launch|ga)\\b|\\b(?:before|until)\\b.{0,40}\\b(?:production|prod|launch)\\b.{0,80}\\broadmap\\b"
         ]
       ]
     },
@@ -2244,6 +2340,10 @@
         [
           10,
           "(create|design|build|write|draft|define).{0,40}\\b(grading|scoring|evaluation|review) (rubric|criteria|scorecard)"
+        ],
+        [
+          10,
+          "\\brubryk\\w*|\\bkart\\w* ocen\\w*|\\bkryteri\\w* (?:pass/fail|zaliczenia)|\\bpass/fail\\b|\\bwarunk\\w* blokuj"
         ]
       ]
     },
@@ -2352,7 +2452,7 @@
         ],
         [
           12,
-          "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|bezlitosn\\w* (?:ocen|przejrz|skrytykuj)|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad)).{0,60}(?:naukow|manuskrypt|badani|preprint|rozpraw|grantow|protokol)"
+          "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|zjedz|przejedz sie|red.?team\\w*|bez litosci|bezlitosn\\w* (?:ocen|przejrz|skrytykuj|sprawdz|recenz)|(?:ocen|przejrz|sprawdz|skrytykuj|przeanalizuj|recenzuj)\\w* (?:\\w+ )?bezlitosn\\w*|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad|recenzj)|(?:wrog|brutaln|bezlitosn|forensyczn|adwersaryjn|tward)\\w* (?:przeglad|recenzj|audyt|ocen)\\w*).{0,60}(?:naukow|manuskrypt|(?<!wyniki )(?<!wynikow )(?<!wynikach )badani|preprint|rozpraw|grantow|protokol|prac\\w* (?:magistersk|doktorsk|licencjack|naukow))"
         ],
         [
           10,
@@ -2362,7 +2462,7 @@
     },
     {
       "id": "seo-geo-aeo-maxxing",
-      "version": "1.2.2",
+      "version": "1.3.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2416,6 +2516,10 @@
         [
           8,
           "geo audit registry fresh"
+        ],
+        [
+          10,
+          "\\baudyt\\w* (?:widocznosci|seo)\\b|\\bwidocznos\\w*\\b.{0,60}\\b(?:google|wyszukiw|ai\\b|chatgpt|perplexity|llm|odpowiedziach)|\\b(?:nie (?:pojawiamy|wyswietlamy) sie|brak nas)\\b.{0,40}\\b(?:chatgpt|perplexity|google|ai\\b|odpowiedzi)|\\bseo,? geo\\b"
         ]
       ]
     },
@@ -2508,6 +2612,10 @@
         [
           7,
           "skill registry.*drift.*audit"
+        ],
+        [
+          10,
+          "\\b(?:kolizj|konflikt|nachodz)\\w*\\b.{0,40}\\b(?:wyzwalacz|triggerow|opisow skilli|skilli)|\\bhigien\\w* paczek|\\bpaczk\\w* skill|\\brejestr\\w* skilli|\\b(?:opisy|opisow) skilli\\b.{0,40}\\b(?:nachodz|pokrywa|routing)|\\bskill\\w*\\b.{0,60}\\b(?:kolizj|nachodz|przenosnos|wyzwalacz)"
         ]
       ]
     },
@@ -2604,12 +2712,16 @@
         [
           7,
           "host/model.*(comparison|experiment)"
+        ],
+        [
+          10,
+          "\\b(?:zmierz|porownaj|sprawdz|przetestuj)\\w*\\b.{0,60}\\bskill\\w*\\b.{0,60}\\b(?:lepsz|gorsz|daje|pomaga|bazow|baseline|bez skilla|a/b)|\\bczy (?:ten |nowy |nasz )?skill\\b.{0,30}\\b(?:cokolwiek |w ogole |cos )?(?:daje|pomaga|dziala lepiej)|\\b(?:precyzj|czulos)\\w*\\b.{0,40}\\bwyzwalan|\\bskill\\w*\\b.{0,60}\\b(?:bazow\\w* model|bez skilla)"
         ]
       ]
     },
     {
       "id": "skill-orchestrator",
-      "version": "1.1.2",
+      "version": "1.1.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2714,12 +2826,20 @@
         [
           7,
           "help me pick.*skill"
+        ],
+        [
+          12,
+          "\\b(?:poprowadz|przeprowadz)\\w*\\b.{0,20}\\bcal\\w* (?:proces|flow|workflow)|\\b(?:ktor|jaki)\\w* skill\\w*\\b.{0,30}\\b(?:uzyc|wybrac|mam|powinienem|odpalic)"
+        ],
+        [
+          10,
+          "\\b(?:zbadaj|zbierz|przeanalizuj|sprawdz|zweryfikuj|research)\\w*\\b.{0,100}\\b(?:potem|nastepnie|na tej podstawie|a po tym)\\b.{0,40}\\b(?:rad[aeyz]|council)\\b"
         ]
       ]
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.1.2",
+      "version": "1.1.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2785,12 +2905,20 @@
         [
           11,
           "separate (sub)?agents? (for|per) (each )?(skill|step)|(sub)?agents? per each (skill|step)"
+        ],
+        [
+          20,
+          "\\bwieloagentow\\w*"
+        ],
+        [
+          12,
+          "\\bosobn\\w* (?:sub)?agen\\w*|\\b(?:kazd\\w*|per) (?:skill\\w*|krok\\w*)\\b.{0,40}\\b(?:sub)?agen|\\b(?:sub)?agen\\w*\\b.{0,30}\\b(?:dla kazdego|per) (?:skill|krok)"
         ]
       ]
     },
     {
       "id": "web-app-auditor",
-      "version": "1.3.3",
+      "version": "1.4.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2857,6 +2985,10 @@
         [
           9,
           "\\bqa\\b (?:the |our |this )?(?:web ?app|site|dashboard|checkout|signup|sign-up|app)\\b|\\b(?:qa|audit|inspect)\\w*\\b.{0,50}\\b(?:web ?app|webapp|saas app|dashboard|checkout|signup|sign-up|onboarding|login|registration)\\b.{0,80}\\b(?:browser|ui|ux|accessibility|keyboard|broken states?|defects?|regressions?|usability)\\b"
+        ],
+        [
+          10,
+          "\\bprzeklik\\w*|\\b(?:qa|test\\w*|przetestuj|sprawdz)\\w*\\b.{0,40}\\b(?:dashboard|checkout|rejestracj|logowani|onboarding|formularz|flow|aplikacj|panel)\\w*\\b.{0,60}\\b(?:ui|ux|przegladark|klawiatur|czytnik|rozjecha|gubi|bled|dostepnos)|\\bw przegladarce\\b.{0,40}\\b(?:flow|onboarding|rejestracj|checkout|formularz|aplikacj)|\\bdostepnos\\w*\\b.{0,30}\\bformularz\\w*|\\bqa (?:dashboardu|aplikacji|panelu|strony|checkoutu)|\\baudyt\\w* (?:aplikacji|apki|web ?app\\w*|panelu|dashboardu)"
         ]
       ]
     }

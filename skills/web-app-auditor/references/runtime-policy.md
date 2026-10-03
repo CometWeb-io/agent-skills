@@ -1,7 +1,7 @@
 # Runtime evidence and safety contract
 
 This contract constrains this package's workflows; it never overrides host or user
-instructions. Load it once per task, not once per tool call.
+instructions. Load it before the first connector or tool read of a task, not once per tool call.
 
 ## Evidence and currentness
 

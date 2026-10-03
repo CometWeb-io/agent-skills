@@ -68,3 +68,23 @@ Do not fill a connector gap from assumption. Mark the affected domain `UNAVAILAB
 ## Read-only default
 
 Discovery and roadmap creation are read-only by default. Do not create issues, edit docs, change repo files, merge PRs, or trigger deployments unless the user explicitly asks for that separate side effect and the active tool policy permits it.
+
+## Truth lanes
+
+Separate at least:
+
+- **implementation presence** - source/config/schema exists,
+- **behavior** - flow actually behaves as asserted,
+- **release** - change is releasable/released at the claimed scope,
+- **intent** - approved desired state,
+- **outcome** - user/business/operational effect is observed,
+- **operational truth** - deploy/recovery/monitoring/ownership behavior,
+- **external current truth** - vendor/platform/standard/policy constraint.
+
+Do not use:
+
+- PRD/docs to prove shipped implementation,
+- code presence to prove behavior,
+- merged PR/commit to prove release,
+- issue title to prove a defect,
+- implementation quality to prove adoption/revenue/customer pain.

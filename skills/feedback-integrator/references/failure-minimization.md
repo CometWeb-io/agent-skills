@@ -9,4 +9,4 @@ Before turning a production failure into a permanent rule, make the failure repr
 5. Add the minimized case to regression/dev, not an untouched holdout.
 6. If a version range is suspected, bisect only across comparable measurements.
 
-When suite tooling is available, use `tooling/failure_minimizer.py` and `tooling/regression_bisect.py`.
+No minimizer or bisection helper ships with this repository; reduce and bisect by hand, and record each removal and each version tried so the minimized case can be reproduced.

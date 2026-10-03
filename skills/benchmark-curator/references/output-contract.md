@@ -1,8 +1,8 @@
 # Output contract
 
 Return:
-- status;
-- benchmark ID, revision, immutable `benchmark_hash`, and bound `rubric_hash`;
+- status: `READY_TO_FREEZE`, `NEEDS_REBALANCE`, `NEEDS_REVISION`, `CONTAMINATED`, or `INVALID`;
+- benchmark ID, revision, immutable `benchmark_hash`, and the `rubric_hash` of the rubric from `rubric-designer` when one is bound (state `none bound` otherwise; the kernel does not check it);
 - taxonomy, difficulty strata, positive/negative/adversarial/regression counts, and dev/holdout split counts;
 - provenance coverage and candidate-exposure metadata;
 - duplicate and near-duplicate findings;

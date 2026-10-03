@@ -1,7 +1,7 @@
 interface:
-  display_name: "Science Roaster"
-  short_description: "adversarial scientific peer review; claim/evidence and validity analysis; methodological repair verification"
-  default_prompt: "Use the Science Roaster skill for: Run an adversarial Reviewer #2-style critique of scientific manuscripts, papers, protocols, theses, methods, analyses, reviewer responses, validation studies, and research drafts. Use when the user as"
+  display_name: Science Roaster
+  short_description: adversarial scientific peer review
+  default_prompt: 'Use the Science Roaster skill for: Run an adversarial Reviewer #2-style critique of scientific manuscripts, papers, protocols, theses, methods, analyses, reviewer responses, validation studies, and research drafts. Use when the user as'
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg
 policy:

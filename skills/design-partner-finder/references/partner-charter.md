@@ -17,6 +17,7 @@ Use this as an operational checklist, not a substitute for legal counsel or a si
 - Actual user/operator(s):
 - Implementation owner:
 - Product/founder owner:
+- Escalation path:
 
 Do not accept an executive sponsor as a substitute for actual user participation.
 

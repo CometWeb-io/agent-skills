@@ -3,15 +3,204 @@
   "description": "Prompts the deterministic router misroutes today. Not counted as routing coverage. Each must keep reproducing its recorded misroute; when a routing fix makes one pass, tooling/routing_coverage.py --check fails until it is moved into suite.json.",
   "cases": [
     {
-      "id": "build-next-before-production-roadmap-goes-to-product-operator",
-      "prompt": "What should we build next in this repo before it goes to production? Lay it out as a roadmap.",
-      "expected_primary_skill": "repo-to-roadmap",
+      "id": "holdout-pl-brief-architect-2",
+      "prompt": "Zanim zaczniemy research, ustalmy kryteria akceptacji, odbiorcę i politykę źródeł dla tego ebooka.",
+      "lang": "pl",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher",
+        "artifact-acceptance"
+      ],
+      "reason": "Execution contract before research; not producing the ebook. Held-out case from the first Polish/multi-skill routing pass (2026-10), never tuned on; routes to no skill (ambiguous).",
+      "observed_primary_skill": null,
+      "observed_status": "ambiguous"
+    },
+    {
+      "id": "holdout-pl-competitive-intelligence-4",
+      "prompt": "Konkurent obniżył ceny o 30% – sprawdź, czy to prawda i co jeszcze zmienił w ofercie.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Verify and track an observed competitor change. Held-out case from the first Polish/multi-skill routing pass (2026-10), never tuned on; routes to evidence-researcher.",
+      "observed_primary_skill": "evidence-researcher",
+      "observed_status": "single_skill"
+    },
+    {
+      "id": "holdout-pl-repair-operator-1",
+      "prompt": "Napraw uwagi z ostatniego audytu, ale tylko te zaakceptowane, i sprawdź, że nic się nie zepsuło.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor",
+        "release-readiness"
+      ],
+      "reason": "Bounded repair of accepted findings. Held-out case from the first Polish/multi-skill routing pass (2026-10), never tuned on; routes to no skill (no_skill).",
+      "observed_primary_skill": null,
+      "observed_status": "no_skill"
+    },
+    {
+      "id": "holdout-pl-repair-operator-2",
+      "prompt": "Zamień wyniki recenzji na najmniejszy zestaw poprawek i zweryfikuj każdą.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Findings to minimal repair set. Held-out case from the first Polish/multi-skill routing pass (2026-10), never tuned on; routes to no skill (no_skill).",
+      "observed_primary_skill": null,
+      "observed_status": "no_skill"
+    },
+    {
+      "id": "holdout-pl-science-roaster-2",
+      "prompt": "Przejrzyj krytycznie nasz preprint – czy wnioski przyczynowe wynikają z danych?",
+      "lang": "pl",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Causal-claim validity critique. Held-out case from the first Polish/multi-skill routing pass (2026-10), never tuned on; routes to no skill (no_skill).",
+      "observed_primary_skill": null,
+      "observed_status": "no_skill"
+    },
+    {
+      "id": "holdout-multi-seo-audit-then-roadmap",
+      "prompt": "Run an SEO/GEO/AEO audit and then turn the accepted findings into a roadmap.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing",
+        "repo-to-roadmap"
+      ],
+      "reason": "Audit then roadmap needs two skills. Held-out case from the first Polish/multi-skill routing pass (2026-10), never tuned on; routes to seo-geo-aeo-maxxing.",
+      "observed_primary_skill": "seo-geo-aeo-maxxing",
+      "observed_status": "single_skill"
+    },
+    {
+      "id": "holdout-multi-teardown-then-roadmap",
+      "prompt": "Tear down Linear's onboarding, then fold the patterns into our product roadmap.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Teardown then roadmap. Held-out case from the first Polish/multi-skill routing pass (2026-10), never tuned on; routes to no skill (no_skill).",
+      "observed_primary_skill": null,
+      "observed_status": "no_skill"
+    },
+    {
+      "id": "holdout-multi-pl-ci-then-council",
+      "prompt": "Przeskanuj zmiany u konkurencji, a potem przepuść wnioski przez Radę.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Monitor then decide. Held-out case from the first Polish/multi-skill routing pass (2026-10), never tuned on; routes to ai-council.",
+      "observed_primary_skill": "ai-council",
+      "observed_status": "single_skill"
+    },
+    {
+      "id": "holdout-pl-benchmark-curator-5",
+      "prompt": "Przygotuj zbiór przypadków testowych z podziałem na łatwe, średnie i trudne, z osobnym holdoutem.",
+      "lang": "pl",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Stratified eval corpus with holdout. Held-out case from the second Polish/multi-skill routing pass (2026-10), never tuned on; routes to no skill (no_skill).",
+      "observed_primary_skill": null,
+      "observed_status": "no_skill"
+    },
+    {
+      "id": "holdout-pl-content-reviewer-5",
+      "prompt": "Przejrzyj rozdział drugi poradnika i wypisz, co jest niespójne z briefem.",
+      "lang": "pl",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Editorial review against brief. Held-out case from the second Polish/multi-skill routing pass (2026-10), never tuned on; routes to no skill (no_skill).",
+      "observed_primary_skill": null,
+      "observed_status": "no_skill"
+    },
+    {
+      "id": "holdout-pl-customer-ops-5",
+      "prompt": "Zrób przegląd kolejki supportu i oznacz zgłoszenia, które wyglądają na incydent.",
+      "lang": "pl",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "Support queue triage. Held-out case from the second Polish/multi-skill routing pass (2026-10), never tuned on; routes to no skill (no_skill).",
+      "observed_primary_skill": null,
+      "observed_status": "no_skill"
+    },
+    {
+      "id": "holdout-pl-portfolio-operator-5",
+      "prompt": "Co powinienem odpuścić w tym miesiącu, żeby zdążyć z projektami klientów?",
+      "lang": "pl",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
       "must_not_trigger": [
         "product-operator"
       ],
-      "observed_primary_skill": "product-operator",
+      "reason": "Cross-commitment trade-off. Held-out case from the second Polish/multi-skill routing pass (2026-10), never tuned on; routes to no skill (no_skill).",
+      "observed_primary_skill": null,
+      "observed_status": "no_skill"
+    },
+    {
+      "id": "holdout-pl-repo-to-roadmap-5",
+      "prompt": "Przeanalizuj cały projekt CometPen i powiedz, czego brakuje do wersji dla płacących klientów.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Whole-project gap baseline. Held-out case from the second Polish/multi-skill routing pass (2026-10), never tuned on; routes to no skill (no_skill).",
+      "observed_primary_skill": null,
+      "observed_status": "no_skill"
+    },
+    {
+      "id": "holdout-multi-pl-support-then-sprint",
+      "prompt": "Przejrzyj zgłoszenia klientów, a następnie zaplanuj z tego priorytety na sprint.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "Support triage then sprint planning. Held-out case from the second Polish/multi-skill routing pass (2026-10), never tuned on; routes to customer-ops.",
+      "observed_primary_skill": "customer-ops",
+      "observed_status": "single_skill"
+    },
+    {
+      "id": "this-week-before-production-roadmap-goes-to-repo-to-roadmap",
+      "prompt": "Roadmap for the next release before production: what should we fix this week?",
+      "lang": "en",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [
+        "repo-to-roadmap"
+      ],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "observed_primary_skill": "repo-to-roadmap",
       "observed_status": "single_skill",
-      "reason": "No existing roadmap is mentioned and the user asks for one up to production, which is a whole-project baseline; product-operator's 'what should we build next' signal fires on its own and repo-to-roadmap has no signal for 'roadmap ... before production'"
+      "reason": "A this-week time box is weekly control, but repo-to-roadmap's 'roadmap ... before production' signal (12) outscores product-operator's 'what should we fix this week' (10). A generic 'this week' boost for product-operator broke the deliberate near-tie in test_near_tie_multi_intent_does_not_collapse_to_one_specialist, so it was not added."
     }
   ]
 }

@@ -9,6 +9,8 @@ Each case in `suite.json`:
 - `allowed_secondary_skills` — acceptable co-triggers
 - `must_not_trigger` — skills that must not be primary
 - `reason` — routing rationale for reviewers
+- `lang` — optional, `en` (default) or `pl`; counts the case toward that
+  language's coverage floor
 
 CI validates schema and coverage (including the Product Operator / Repo to
 Roadmap / Release Readiness collision set). LLM routing accuracy is measured
@@ -27,6 +29,14 @@ forbid it in `must_not_trigger`. One positive case only shows the router can
 reach a skill; the negatives show its neighbours are told "not this one".
 The table splits negatives into *boundary* cases (another skill should win) and
 *out-of-scope* cases (no skill should).
+
+Floors also apply per language (`LANGUAGE_FLOORS` in
+`tooling/routing_coverage.py`): every active skill needs at least three Polish
+cases that expect it and one Polish boundary case where a neighbouring skill
+wins and it is forbidden. Write them as a Polish-speaking user would phrase the
+request (mixed Polish/English terms included), not as translations of registry
+examples. A prompt containing Polish letters must be tagged `"lang": "pl"`, so a
+Polish case cannot silently miss the count.
 
 `--check` also rejects cases that make a green run say less than it seems:
 duplicate IDs, prompts that are identical after case/accent/punctuation
@@ -90,6 +100,31 @@ there are at most 32 cues. `suite.json` (`negation-*`) and
 `policy-suite.json` hold the positive and negated near-miss cases in English
 and Polish.
 
+## Multi-skill requests
+
+`registry/routing-policy.json` → `sequence` routes a request that hands
+different steps to different specialists — "audit the signup flow, then gate
+release 2.5.0", "zweryfikuj claimy, a potem niech Rada oceni" — to the workflow
+skill (`skill-orchestrator`), as the routing rules prescribe for multi-step
+work. The rule:
+
+1. Cuts the negation-masked prompt at `connector` matches: `then`,
+   `afterwards`, `after that`, `once that is done`, `potem`, `następnie`,
+   `a po nim/niej/tym`, `po czym`, `na tej/ich podstawie`, `w oparciu o`, `->`.
+2. In each step, the single highest-scoring specialist with at least
+   `min_step_score` (7) is that step's skill. An explicit-only skill such as
+   the Council counts when its own signals name it ("then take it to the
+   council", "niech Rada zdecyduje"); skills excluded by name or by a
+   narrow-intent guard never count.
+3. Two or more distinct step skills → `status: workflow`, primary
+   `skill-orchestrator`, and the steps in `sequence`.
+
+It does not fire when the router already chose the workflow skill or its
+multi-agent alias, when the workflow skill is excluded ("without
+skill-orchestrator"), or when the host passed an explicit invocation. A step in
+a negated clause ("…, then do not run the release gate") is blanked before
+scoring, and the same specialist in every step stays a single-skill route.
+
 ## Known gaps
 
 `known-gaps.json` pins prompts the deterministic router misroutes today, with
@@ -98,6 +133,13 @@ it is wrong. They do not count toward the floors. A gap that starts routing as
 expected fails `--check` until it is moved into `suite.json`; a gap whose
 misroute changes must be re-recorded. Fix routing signals, do not delete gaps
 to make the check pass.
+
+The `holdout-*` gaps are Polish and multi-skill prompts from the hash-split
+holdout halves of the October 2026 routing pass. Signals were tuned only on the
+tune halves, and these are the held-out prompts that still misroute; they are
+recorded rather than tuned away so the measurement stays honest. Once someone
+tunes on them they stop being a holdout: write fresh prompts to measure the
+next change.
 
 `--trigger-evals` replays the roaster skills' own `evals/trigger-evals.json`
 through the same router. Those files were written for model-based triggering,
@@ -123,3 +165,16 @@ normalized prompt). When tuning routing signals, read only the tune half's
 failures and report the holdout half's numbers before and after, so a signal
 that memorizes one phrasing shows up as a holdout that did not move. Known gaps
 are not replayed here; `--check` already pins them.
+
+## Adversarial cases
+
+`adversarial-suite.json` runs through `tooling/run_policy_evals.py --suite` and
+checks the instruction boundary in `registry/routing-policy.json` →
+`untrusted_text`. Pasted content inside a prompt must not grant an explicit
+invocation, unlock an explicit-only skill, or lift a denial. That covers
+override phrases ("ignore previous instructions", "you are now", "zignoruj
+poprzednie instrukcje"), quoted, fenced or blockquoted invocations, and
+zero-width characters inside a denied skill name. The `adv-control-*` cases show
+that legitimate invocations still route, including a request *about* injection
+attacks. `tooling/tests/test_routing_adversarial.py` also removes each mechanism
+in turn and checks that the attack cases then fail.

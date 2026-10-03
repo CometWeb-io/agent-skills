@@ -32,72 +32,8 @@ jobs:
       - name: Sync locked dependencies
         run: uv sync --frozen --group dev
 
-      - name: Lint
-        run: uv run ruff check .
-
-      - name: Dependency vulnerability audit
-        run: uv run pip-audit
-
-      - name: Python security static analysis
-        run: uv run bandit -c .bandit -q -ll -r tooling skills -x '*/tests/*'
-
-      - name: Registry and repo integrity
-        run: |
-          uv run python tooling/validate_repo.py
-          uv run python tooling/sync_orchestrator.py --check
-          uv run python tooling/sync_roaster_shared.py --check
-
-      - name: Host compatibility
-        run: uv run python tooling/compatibility.py
-
-      - name: Generated adapters check
-        run: uv run python tooling/generate_adapters.py --check
-
-      - name: Context budget
-        run: uv run python tooling/context_budget.py --check
-
-      - name: Routing evals
-        run: uv run python tooling/run_routing_evals.py
-
-      - name: Eval strength
-        run: uv run python tooling/eval_strength.py --check
-
-      - name: Behavior fixtures
-        run: |
-          uv run python tooling/run_behavior_evals.py
-          uv run python tooling/run_blind_eval_harness.py --write-report
-
-      - name: CW-AIP envelope validator
-        run: |
-          uv run python tooling/validate_envelope.py fixtures/cwaip-v2/evidence-final.json --final
-          uv run python -c '
-          import json, sys
-          from pathlib import Path
-          sys.path.insert(0, "tooling")
-          from validate_envelope import validate_envelope
-          data = json.loads(Path("fixtures/cwaip-v2/evidence-final.json").read_text())
-          data["payload_hash"] = "pending"
-          try:
-              validate_envelope(data, final=True)
-          except ValueError:
-              print("OK: --final rejects pending")
-          else:
-              raise SystemExit("FAIL: pending accepted under --final")
-          '
-
-      - name: Public safety scan — live tree
-        run: uv run python tooling/public_safety.py --root .
-
-      - name: Public safety scan — complete history
-        run: uv run python tooling/public_safety.py --root . --history
-
-      - name: All-package installation and offline helper acceptance
-        run: uv run python tooling/installation_acceptance.py --all --run-helpers --trusted-checkout
-
-      - name: Compile Python modules
-        run: |
-          find skills tooling -name '*.py' -print0 | xargs -0 uv run python -m py_compile
-
-      - name: Unit tests
-        # Tests share no files outside their tmp_path, so they run one per core.
-        run: uv run pytest -q -n auto --durations=15 tooling/tests skills/*/tests
+      # Every gate lives in tooling/check_all.py, the same list contributors run
+      # locally; tooling/tests/test_check_all.py fails if a gate step is added
+      # here instead. Each gate's output is folded into its own log group.
+      - name: Repository gates
+        run: uv run python tooling/check_all.py --ci

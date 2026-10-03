@@ -27,9 +27,15 @@ them:
 
 Cursor also links `docs/generated-cursor-routing.mdc` as the routing rule
 (`~/.cursor/rules/cometweb-agent-skills.mdc`, override with `CURSOR_RULES_DIR`).
-`extras/cursor-routing.mdc` is only a fallback for checkouts without the
-generated rule; a link an older install made to it is re-pointed to the
-generated rule on the next run. Some packages also ship a per-skill project rule
+`extras/cursor-routing.mdc` is a compact fallback for checkouts without the
+full rule; a link an older install made to it is re-pointed to the full rule on
+the next run. Both are generated from `registry/skills.json` by
+`tooling/generate_adapters.py`, so neither lists a different skill set.
+
+Codex and other hosts that read `AGENTS.md` get the same routing table from
+`extras/AGENTS.snippet.md`. No installer edits your `AGENTS.md`; paste the block
+between its `BEGIN`/`END` markers into a project's `AGENTS.md` (or `CLAUDE.md`)
+and replace that block when you update. Some packages also ship a per-skill project rule
 at `skills/<skill>/extras/cursor-rule.mdc` that you can copy into a project's
 `.cursor/rules/`; the installer does not link those.
 `install-all.sh` runs all six. To try an installer without touching your real
@@ -60,9 +66,13 @@ Claude Code keeps each installed plugin in a cache keyed by the `version` in
 `.claude-plugin/plugin.json`. `claude plugin marketplace update` followed by
 `claude plugin update cometweb-agent-skills@cometweb-agent-skills` replaces the
 cached copy only when that version has changed; with the same version it
-reports "already at the latest version" and keeps the old skill set. Every
-release that adds, removes or changes skills therefore bumps `VERSION`, and all
-plugin manifests carry the same value (`tooling/tests/test_bundle_version.py`).
+reports "already at the latest version" and keeps the old skill set. Codex
+caches installed plugins by version in the same way. Every change that adds,
+removes or renames a skill, or changes any skill's `VERSION`, therefore bumps
+the plugin `VERSION`, and all plugin manifests carry the same value
+(`tooling/tests/test_bundle_version.py`). `tooling/plugin_release.py --check`
+enforces this; the release rule is in
+[CONTRIBUTING.md](CONTRIBUTING.md#plugin-version).
 
 To validate the manifests without touching your own Claude Code settings, give
 the CLI a scratch config directory:

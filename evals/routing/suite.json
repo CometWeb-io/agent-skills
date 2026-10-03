@@ -5,6 +5,7 @@
     {
       "id": "roadmap-whole-repo-baseline",
       "prompt": "Przeanalizuj całe repo Nevometry i stwórz plan dojścia do PAID_PRODUCTION.",
+      "lang": "pl",
       "expected_primary_skill": "repo-to-roadmap",
       "allowed_secondary_skills": [
         "evidence-researcher"
@@ -44,6 +45,7 @@
     {
       "id": "roadmap-not-production-gate",
       "prompt": "Przeanalizuj całe repo i powiedz co zostało, żeby było production ready.",
+      "lang": "pl",
       "expected_primary_skill": "repo-to-roadmap",
       "allowed_secondary_skills": [
         "release-readiness",
@@ -57,6 +59,7 @@
     {
       "id": "operator-weekly-next",
       "prompt": "Mamy roadmapę. Co w tym tygodniu rzeczywiście powinniśmy zrobić i co się zmieniło od poprzedniego review?",
+      "lang": "pl",
       "expected_primary_skill": "product-operator",
       "allowed_secondary_skills": [
         "repo-to-roadmap",
@@ -181,6 +184,7 @@
     {
       "id": "council-strategic-decision",
       "prompt": "Przepuść przez Radę: czy wchodzimy na rynek DE w Q1 przy obecnym stacku?",
+      "lang": "pl",
       "expected_primary_skill": "ai-council",
       "allowed_secondary_skills": [
         "evidence-researcher"
@@ -453,6 +457,7 @@
     {
       "id": "roadmap-polish-client-ready",
       "prompt": "czy projekt jest client-ready — przeanalizuj całość i daj roadmapę",
+      "lang": "pl",
       "expected_primary_skill": "repo-to-roadmap",
       "allowed_secondary_skills": [
         "release-readiness"
@@ -465,6 +470,7 @@
     {
       "id": "operator-polish-co-dalej",
       "prompt": "co robimy dalej w produkcie po ostatnim deployu?",
+      "lang": "pl",
       "expected_primary_skill": "product-operator",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -476,6 +482,7 @@
     {
       "id": "readiness-polish-wypuscic",
       "prompt": "czy ten build możemy wypuścić na produkcję dziś wieczorem?",
+      "lang": "pl",
       "expected_primary_skill": "release-readiness",
       "allowed_secondary_skills": [
         "web-app-auditor"
@@ -875,6 +882,7 @@
     {
       "id": "context-delta-insight",
       "prompt": "Odśwież kontekst: co zmieniło się w Insight od ostatniego review?",
+      "lang": "pl",
       "expected_primary_skill": "cometweb-context",
       "allowed_secondary_skills": [
         "product-operator"
@@ -888,6 +896,7 @@
     {
       "id": "context-not-single-github",
       "prompt": "Fact-check: ile gwiazdek ma MaciejZet/agent-skills? Jedno pytanie, bez pełnego context gateway.",
+      "lang": "pl",
       "expected_primary_skill": "evidence-researcher",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -900,6 +909,7 @@
     {
       "id": "context-meeting-prep",
       "prompt": "Przygotuj kontekst na jutrzejsze spotkanie (calendar + CRM), bez pełnego design-partner workflow",
+      "lang": "pl",
       "expected_primary_skill": "cometweb-context",
       "allowed_secondary_skills": [
         "design-partner-finder"
@@ -913,6 +923,7 @@
     {
       "id": "context-vs-evidence-claim",
       "prompt": "Czy claim o wzroście MRR jest prawdziwy? Zrób Evidence Pack.",
+      "lang": "pl",
       "expected_primary_skill": "evidence-researcher",
       "allowed_secondary_skills": [
         "cometweb-context"
@@ -925,6 +936,7 @@
     {
       "id": "boundary-context-vs-evidence-pack",
       "prompt": "Zrób Evidence Pack: czy nasze claimy pricing na landing page są aktualne?",
+      "lang": "pl",
       "expected_primary_skill": "evidence-researcher",
       "allowed_secondary_skills": [
         "cometweb-context"
@@ -938,6 +950,7 @@
     {
       "id": "boundary-context-refresh-only",
       "prompt": "Odśwież kontekst CometWeb przed weekly — tylko ContextEnvelope, bez decyzji",
+      "lang": "pl",
       "expected_primary_skill": "cometweb-context",
       "allowed_secondary_skills": [
         "product-operator"
@@ -951,6 +964,7 @@
     {
       "id": "boundary-context-not-council",
       "prompt": "Jaki jest aktualny stan Insight i Notion decisions? Potrzebuję kontekstu / ContextEnvelope.",
+      "lang": "pl",
       "expected_primary_skill": "cometweb-context",
       "allowed_secondary_skills": [
         "product-operator"
@@ -963,6 +977,7 @@
     {
       "id": "boundary-operator-not-roadmap",
       "prompt": "Mamy roadmapę. Co robimy w tym tygodniu i co jest blockerem?",
+      "lang": "pl",
       "expected_primary_skill": "product-operator",
       "allowed_secondary_skills": [
         "evidence-researcher"
@@ -976,6 +991,7 @@
     {
       "id": "boundary-roadmap-not-operator",
       "prompt": "Przeanalizuj całe repo i stwórz baseline roadmap do PAID_PRODUCTION",
+      "lang": "pl",
       "expected_primary_skill": "repo-to-roadmap",
       "allowed_secondary_skills": [
         "evidence-researcher"
@@ -1026,6 +1042,7 @@
     {
       "id": "boundary-council-explicit",
       "prompt": "Przepuść przez AI Council: czy podnieść cenę Growth?",
+      "lang": "pl",
       "expected_primary_skill": "ai-council",
       "allowed_secondary_skills": [
         "evidence-researcher"
@@ -1038,6 +1055,7 @@
     {
       "id": "boundary-council-not-weekly",
       "prompt": "Co priorytetyzować w sprincie Insight w tym tygodniu? Mamy roadmapę.",
+      "lang": "pl",
       "expected_primary_skill": "product-operator",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -1049,6 +1067,7 @@
     {
       "id": "boundary-orch-evidence-then-council",
       "prompt": "Zorkiestruj workflow: najpierw Evidence Pack claimów, potem Council GO/NO-GO na copy landing",
+      "lang": "pl",
       "expected_primary_skill": "skill-orchestrator",
       "allowed_secondary_skills": [
         "evidence-researcher",
@@ -1060,6 +1079,7 @@
     {
       "id": "boundary-orch-multiagent",
       "prompt": "Multiagent: osobny agent per skill — audit register potem release readiness RC 1.2",
+      "lang": "pl",
       "expected_primary_skill": "skill-orchestrator-multiagent",
       "allowed_secondary_skills": [
         "skill-orchestrator"
@@ -1070,6 +1090,7 @@
     {
       "id": "boundary-single-evidence-only",
       "prompt": "Tylko zrób Evidence Pack dla trzech claimów SEO, bez orchestracji",
+      "lang": "pl",
       "expected_primary_skill": "evidence-researcher",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -1157,6 +1178,7 @@
     {
       "id": "boundary-context-meeting",
       "prompt": "Przygotuj kontekst na jutrzejsze spotkanie z klientem — calendar i CRM",
+      "lang": "pl",
       "expected_primary_skill": "cometweb-context",
       "allowed_secondary_skills": [
         "customer-ops"
@@ -1193,6 +1215,7 @@
     {
       "id": "boundary-context-delta-product",
       "prompt": "Odśwież kontekst produktu: delta Insight vs last ContextEnvelope baseline",
+      "lang": "pl",
       "expected_primary_skill": "cometweb-context",
       "allowed_secondary_skills": [
         "product-operator"
@@ -1212,100 +1235,1018 @@
       ],
       "reason": "The phrase 'release readiness' inside a publication request is about the document's release, not a build's; the skill's own trigger example once routed to release-readiness (the verbatim example is pinned by test_registry_self_consistency)"
     },
-    {"id":"pl-skill-auditor","prompt":"Zaudytuj bibliotekę skilli: konflikty wyzwalania, przenośność i jakość paczek.","expected_primary_skill":"skill-auditor","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"pl-repo-roaster","prompt":"Zrób brutalny przegląd repo: sprawdź krytyczne inwarianty i osiągalność błędnych ścieżek.","expected_primary_skill":"repo-roaster","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"pl-release-readiness","prompt":"Czy kandydat wydania v2.0.2 jest gotowy na produkcję? Wydaj werdykt GO/NO-GO.","expected_primary_skill":"release-readiness","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"pl-competitive-intelligence","prompt":"Monitoruj konkurentów i pokaż co zmieniło się w ich cennikach od zeszłego miesiąca.","expected_primary_skill":"competitive-intelligence","allowed_secondary_skills":[],"must_not_trigger":["product-teardown"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-artifact-acceptance","prompt":"Is this research report ready against its brief and acceptance criteria?","expected_primary_skill":"artifact-acceptance","allowed_secondary_skills":[],"must_not_trigger":["release-readiness"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-benchmark-curator","prompt":"Curate the benchmark holdout and check for evaluation contamination.","expected_primary_skill":"benchmark-curator","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-brief-architect","prompt":"Turn this vague ebook request into an artifact brief with evidence policy and acceptance criteria.","expected_primary_skill":"brief-architect","allowed_secondary_skills":[],"must_not_trigger":["ebook-publisher"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-content-reviewer","prompt":"Review this draft article for evidence gaps and actionable editorial findings.","expected_primary_skill":"content-reviewer","allowed_secondary_skills":[],"must_not_trigger":["content-roaster"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-content-roaster","prompt":"Brutally roast this landing page's claims, proof debt and conversion logic.","expected_primary_skill":"content-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-content-writer","prompt":"Write an evidence-aware explainer article from this approved research pack.","expected_primary_skill":"content-writer","allowed_secondary_skills":[],"must_not_trigger":["longform-publisher"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-ebook-publisher","prompt":"Create a research-backed ebook with manuscript and PDF publication QA.","expected_primary_skill":"ebook-publisher","allowed_secondary_skills":[],"must_not_trigger":["longform-publisher"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-feedback-integrator","prompt":"Aggregate recurring reviewer findings into regression tests and improvement proposals.","expected_primary_skill":"feedback-integrator","allowed_secondary_skills":[],"must_not_trigger":["repair-operator"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-portfolio-operator","prompt":"Across our products, identify capacity conflicts and what to pause or delegate.","expected_primary_skill":"portfolio-operator","allowed_secondary_skills":[],"must_not_trigger":["product-operator"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-quality-loop-operator","prompt":"Run the full artifact quality loop: brief, review, repair and acceptance.","expected_primary_skill":"quality-loop-operator","allowed_secondary_skills":[],"must_not_trigger":["artifact-acceptance"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-repair-operator","prompt":"Repair the accepted review findings with minimal changes and fresh verification.","expected_primary_skill":"repair-operator","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-rubric-designer","prompt":"Design an evidence-backed evaluation rubric with blocker rules and observable criteria.","expected_primary_skill":"rubric-designer","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-science-roaster","prompt":"Act as Reviewer #2 and stress-test this manuscript's causal inference and measurement.","expected_primary_skill":"science-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-roaster"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"coverage-skill-evaluator","prompt":"Run an A/B experiment comparing this agent skill against no-skill baseline.","expected_primary_skill":"skill-evaluator","allowed_secondary_skills":[],"must_not_trigger":["skill-auditor"],"reason":"Natural-language routing coverage and nearest-neighbor exclusion"},
-    {"id":"pl-actual-agent-skills-audit","prompt":"Przeanalizuj dokładnie całe repo agent skills i zastanów się jak jeszcze możemy rozbudować i ulepszyć aktualne skille","expected_primary_skill":"skill-auditor","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap"],"reason":"The user's actual Polish request targets the skill library, not a general product roadmap"},
-    {"id":"pl-skill-library-review","prompt":"Przejrzyj dokładnie bibliotekę skilli i wskaż luki w testach.","expected_primary_skill":"skill-auditor","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap"],"reason":"Paraphrased library audit should not depend on an exact prior phrase"},
-    {"id":"pl-skill-repo-audit","prompt":"Zrób audyt skilli w tym repo: routing, paczki i kompatybilność.","expected_primary_skill":"skill-auditor","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap"],"reason":"Audit of skill packages is owned by skill-auditor"},
-    {"id":"pl-skill-overlap-audit","prompt":"Sprawdź, czy skill-evaluator ma komplet testów i nie koliduje z skill-auditor.","expected_primary_skill":"skill-auditor","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator"],"reason":"Test coverage and overlap inspection of a skill is an audit, not an experiment"},
-    {"id":"pl-agent-skills-catalog-quality","prompt":"Zweryfikuj jakość całego katalogu umiejętności agentów.","expected_primary_skill":"skill-auditor","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap"],"reason":"Catalog quality review belongs to skill-auditor"},
-    {"id":"pl-team-skills-not-agent-skills","prompt":"Zrób audyt umiejętności zespołu sprzedaży.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["skill-auditor"],"reason":"Human team competencies are outside Agent Skills audit scope"},
-    {"id":"pl-app-tests-not-skill-tests","prompt":"Sprawdź testy aplikacji i jej logikę cenową.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["skill-auditor"],"reason":"Application QA is not a skill package audit"},
-    {"id":"benchmark-curator-regression-corpus-dedupe","prompt":"Curate a regression corpus for the routing evals: dedupe near-identical prompts and record provenance for each case.","expected_primary_skill":"benchmark-curator","allowed_secondary_skills":["skill-evaluator"],"must_not_trigger":["skill-evaluator","rubric-designer"],"reason":"Corpus construction with dedupe and provenance is curation, not running the experiment or writing the rubric"},
-    {"id":"benchmark-curator-adversarial-challenge-set","prompt":"Build a challenge set of adversarial routing prompts and keep it out of the training examples.","expected_primary_skill":"benchmark-curator","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator","skill-auditor"],"reason":"Challenge-set design with isolation from known examples belongs to the benchmark curator"},
-    {"id":"benchmark-curator-holdout-contamination","prompt":"Check this holdout for contamination before we trust any score from it.","expected_primary_skill":"benchmark-curator","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator","evidence-researcher"],"reason":"Holdout leakage review precedes measurement; it is not the measurement itself"},
-    {"id":"skill-evaluator-no-skill-vs-with-skill","prompt":"Compare no-skill versus with-skill outputs for the release-readiness skill on the same host and model.","expected_primary_skill":"skill-evaluator","allowed_secondary_skills":["benchmark-curator"],"must_not_trigger":["benchmark-curator","skill-auditor"],"reason":"Matched baseline comparison is the evaluator's experiment, not a static audit or corpus work"},
-    {"id":"skill-evaluator-trigger-precision-recall","prompt":"Measure trigger precision and recall for content-roaster against its near misses.","expected_primary_skill":"skill-evaluator","allowed_secondary_skills":[],"must_not_trigger":["benchmark-curator","content-roaster"],"reason":"Measuring trigger behavior of a named skill must not route to that skill itself"},
-    {"id":"rubric-designer-pass-fail-semantics","prompt":"Design an evaluation rubric for the ebook drafts with explicit pass/fail semantics.","expected_primary_skill":"rubric-designer","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator","ebook-publisher"],"reason":"Rubric design wins over the ebook noun; grading ebook drafts is not producing an ebook"},
-    {"id":"rubric-designer-freeze-before-grading","prompt":"Freeze the rubric and record its rubric hash before anyone grades the outputs.","expected_primary_skill":"rubric-designer","allowed_secondary_skills":[],"must_not_trigger":["skill-evaluator","benchmark-curator"],"reason":"Freezing scoring criteria before grading is rubric work, not scoring"},
-    {"id":"brief-architect-underspecified-guide","prompt":"This request for a white-label guide is underspecified; pin audience, scope and acceptance criteria before research starts.","expected_primary_skill":"brief-architect","allowed_secondary_skills":["evidence-researcher"],"must_not_trigger":["content-writer","evidence-researcher"],"reason":"An underspecified artifact needs a contract before research or drafting"},
-    {"id":"brief-architect-evidence-policy-handoff","prompt":"Write an artifact brief with evidence policy and handoff fields for the pricing explainer.","expected_primary_skill":"brief-architect","allowed_secondary_skills":[],"must_not_trigger":["content-writer","quality-loop-operator"],"reason":"'Write' targets the brief, not the final explainer"},
-    {"id":"content-writer-article-from-approved-brief","prompt":"Write an evidence-backed article about Core Web Vitals from the approved brief, no invented numbers.","expected_primary_skill":"content-writer","allowed_secondary_skills":[],"must_not_trigger":["brief-architect","ai-humanize"],"reason":"The brief already exists; drafting the artifact is the writer's job"},
-    {"id":"content-writer-reader-facing-guide","prompt":"Create a reader-facing guide for onboarding admins from these source notes.","expected_primary_skill":"content-writer","allowed_secondary_skills":[],"must_not_trigger":["ai-humanize","brief-architect"],"reason":"Drafting a new reader-facing artifact, not rewriting existing prose"},
-    {"id":"content-reviewer-editorial-qa-guide","prompt":"Editorial QA on this onboarding guide: flag unclear claims and internal inconsistencies, constructively.","expected_primary_skill":"content-reviewer","allowed_secondary_skills":[],"must_not_trigger":["content-roaster","artifact-acceptance"],"reason":"Constructive editorial QA, not an adversarial roast or a final acceptance gate"},
-    {"id":"content-reviewer-pre-publication-findings","prompt":"Pre-publication review of this case study: actionable editorial findings only, no rewrite.","expected_primary_skill":"content-reviewer","allowed_secondary_skills":[],"must_not_trigger":["content-roaster","ai-humanize"],"reason":"Findings without a rewrite stay with the reviewer"},
-    {"id":"content-roaster-pricing-copy","prompt":"Roast this pricing page copy and tie every criticism to the exact sentence.","expected_primary_skill":"content-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer","science-roaster"],"reason":"Adversarial marketing-copy critique anchored to source text"},
-    {"id":"content-roaster-skeptical-buyer","prompt":"Red-team the sales offer: which claims would a skeptical buyer reject?","expected_primary_skill":"content-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer","evidence-researcher"],"reason":"Red-teaming an offer is adversarial content review, not claim research"},
-    {"id":"science-roaster-preprint-design","prompt":"Roast this preprint's study design and statistical claims like a hostile reviewer.","expected_primary_skill":"science-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-roaster","evidence-researcher"],"reason":"Scientific methods critique, not marketing-copy critique"},
-    {"id":"science-roaster-trial-protocol","prompt":"Scientific peer review of the randomized trial protocol before submission.","expected_primary_skill":"science-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-roaster","content-reviewer"],"reason":"Peer review of a protocol belongs to the science roaster"},
-    {"id":"repo-roaster-retry-double-charge","prompt":"Roast this codebase: where can a retry double-charge a customer?","expected_primary_skill":"repo-roaster","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap","release-readiness"],"reason":"Adversarial code review for a failure path, not a roadmap or a ship gate"},
-    {"id":"repo-roaster-sync-engine-blast-radius","prompt":"Adversarial codebase review of the sync engine with blast radius per finding.","expected_primary_skill":"repo-roaster","allowed_secondary_skills":[],"must_not_trigger":["repo-to-roadmap","web-app-auditor"],"reason":"Code-level adversarial review, not UI QA"},
-    {"id":"artifact-acceptance-research-report-contract","prompt":"Final artifact gate: does this research report meet its acceptance contract and evidence requirements?","expected_primary_skill":"artifact-acceptance","allowed_secondary_skills":[],"must_not_trigger":["release-readiness","content-reviewer"],"reason":"Knowledge-artifact acceptance, not a software release gate"},
-    {"id":"artifact-acceptance-sales-deck-verdict","prompt":"Artifact acceptance for the sales deck: READY_WITH_CONTROLS or NOT_READY?","expected_primary_skill":"artifact-acceptance","allowed_secondary_skills":[],"must_not_trigger":["release-readiness","ai-council"],"reason":"Artifact verdict vocabulary; must not drift to a release GO/NO_GO or a Council decision"},
-    {"id":"repair-operator-accepted-findings","prompt":"Repair the accepted review findings in this report and re-verify each one.","expected_primary_skill":"repair-operator","allowed_secondary_skills":[],"must_not_trigger":["repo-roaster","content-reviewer"],"reason":"Findings are already accepted; the task is repair plus verification, not another review"},
-    {"id":"repair-operator-root-cause-no-regression","prompt":"Fix these findings at the root cause and verify nothing regressed.","expected_primary_skill":"repair-operator","allowed_secondary_skills":[],"must_not_trigger":["repo-roaster","feedback-integrator"],"reason":"Single repair set, not a cross-incident retrospective"},
-    {"id":"feedback-integrator-recurring-reviewer-findings","prompt":"Aggregate recurring reviewer findings from the last six reviews into regression tests.","expected_primary_skill":"feedback-integrator","allowed_secondary_skills":[],"must_not_trigger":["repair-operator","skill-auditor"],"reason":"Cross-review pattern aggregation, not a one-off repair"},
-    {"id":"feedback-integrator-repeated-user-corrections","prompt":"Users keep correcting the same mistake; turn these repeated user corrections into a durable fix plan.","expected_primary_skill":"feedback-integrator","allowed_secondary_skills":[],"must_not_trigger":["repair-operator","ai-humanize"],"reason":"Repeated corrections across sessions are the integrator's input"},
-    {"id":"quality-loop-full-loop-ebook","prompt":"Run the full quality loop on this ebook draft: brief, review, roast, repair and acceptance.","expected_primary_skill":"quality-loop-operator","allowed_secondary_skills":["ebook-publisher"],"must_not_trigger":["skill-orchestrator","release-readiness"],"reason":"Named quality-loop stages outweigh the ebook noun and the generic orchestrator"},
-    {"id":"quality-loop-resume-after-repair","prompt":"Resume the quality workflow after the repair stage was approved.","expected_primary_skill":"quality-loop-operator","allowed_secondary_skills":[],"must_not_trigger":["skill-orchestrator","repair-operator"],"reason":"Resuming a staged quality workflow, not a fresh repair"},
-    {"id":"portfolio-capacity-conflicts","prompt":"I have capacity conflicts across multiple projects next month; what should I pause?","expected_primary_skill":"portfolio-operator","allowed_secondary_skills":[],"must_not_trigger":["product-operator","repo-to-roadmap"],"reason":"Cross-project allocation, not one product's weekly plan"},
-    {"id":"portfolio-next-30-days","prompt":"Plan my next 30 days across client work, the product and research commitments.","expected_primary_skill":"portfolio-operator","allowed_secondary_skills":[],"must_not_trigger":["product-operator","customer-ops"],"reason":"Portfolio horizon across domains"},
-    {"id":"longform-publication-report-sync","prompt":"Take this playbook through the publication workflow and keep publication-report.json in sync.","expected_primary_skill":"longform-publisher","allowed_secondary_skills":["ebook-publisher"],"must_not_trigger":["release-readiness","artifact-acceptance"],"reason":"Publication workflow with derived-format reconciliation"},
-    {"id":"longform-handbook-refresh","prompt":"Refresh this handbook into a publication-ready edition with the derived DOCX and PDF rebuilt.","expected_primary_skill":"longform-publisher","allowed_secondary_skills":[],"must_not_trigger":["ebook-publisher","release-readiness"],"reason":"Refreshing an existing long-form publication across formats"},
-    {"id":"ebook-poradnik-pdf","prompt":"Napisz poradnik PDF o dostępności cyfrowej, od researchu do gotowego pliku.","expected_primary_skill":"ebook-publisher","allowed_secondary_skills":["evidence-researcher"],"must_not_trigger":["longform-publisher","content-writer"],"reason":"Polish practical PDF guide from research to file is the ebook publisher's pipeline"},
-    {"id":"ebook-white-paper-claim-mapping","prompt":"Prepare a white paper on accessibility audits with claim-to-source mapping.","expected_primary_skill":"ebook-publisher","allowed_secondary_skills":["evidence-researcher"],"must_not_trigger":["content-writer","longform-publisher"],"reason":"White paper creation with claim-to-source mapping"},
-    {"id":"negative-business-benchmark-not-curator","prompt":"What's a good benchmark for a startup's churn rate?","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["benchmark-curator","skill-evaluator"],"reason":"Everyday use of 'benchmark' is not eval-corpus curation"},
-    {"id":"negative-teacher-rubric-not-designer","prompt":"Grade this essay with the rubric my teacher gave me.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["rubric-designer","content-reviewer"],"reason":"Applying someone else's rubric is neither rubric design nor editorial review"},
-    {"id":"negative-haiku-not-content-writer","prompt":"Write a haiku about autumn.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["content-writer","ai-humanize"],"reason":"Creative writing with no evidence or brief does not need the evidence-aware writer"},
-    {"id":"negative-birthday-roast-not-repo-roaster","prompt":"Roast me in a birthday toast for my brother.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["repo-roaster","content-roaster"],"reason":"Social 'roast' must not trigger adversarial review skills"},
-    {"id":"negative-p-value-explainer-not-science-roaster","prompt":"Explain what a p-value is.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["science-roaster","evidence-researcher"],"reason":"Conceptual statistics question, no artifact under review"},
-    {"id":"negative-stock-portfolio-not-portfolio-operator","prompt":"Rebalance my stock portfolio for retirement.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["portfolio-operator"],"reason":"Financial portfolio is not a project portfolio"},
-    {"id":"negative-denied-repo-roaster-by-name","prompt":"Don't use repo-roaster; just summarize what this diff changes.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["repo-roaster"],"reason":"An explicit exclusion by skill ID must win even when other wording is neutral"},
-    {"id":"negative-denied-quality-loop-by-name","prompt":"Without quality-loop-operator, list the stages a draft usually goes through.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["quality-loop-operator","skill-orchestrator"],"reason":"Exclusion by name; a descriptive question about stages is not a request to run the loop"},
-    {"id":"negative-meta-description-not-seo-audit","prompt":"Write a meta description for this single product page.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["seo-geo-aeo-maxxing","content-writer"],"reason":"Isolated meta task; seo-geo-aeo-maxxing excludes single schema/meta work"},
-    {"id":"negative-retro-sprint-not-feedback-integrator","prompt":"Run a sprint retrospective for the team: what went well and what didn't?","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["feedback-integrator","product-operator"],"reason":"A team retro is not a skill/quality-incident retrospective"},
-    {"id":"product-operator-week-not-portfolio","prompt":"What should we do this week on the Insight roadmap, given the open blockers?","expected_primary_skill":"product-operator","allowed_secondary_skills":[],"must_not_trigger":["portfolio-operator","repo-to-roadmap"],"reason":"One product's weekly control loop, not cross-project allocation or a fresh roadmap baseline"},
-    {"id":"portfolio-focus-across-projects","prompt":"What should I focus on across all my projects in the next 14 days?","expected_primary_skill":"portfolio-operator","allowed_secondary_skills":[],"must_not_trigger":["product-operator"],"reason":"Cross-project allocation phrased with 'across' before the horizon"},
-    {"id":"rubric-create-grading","prompt":"Design a grading rubric for support replies before we score them.","expected_primary_skill":"rubric-designer","allowed_secondary_skills":[],"must_not_trigger":["artifact-acceptance","skill-evaluator"],"reason":"Rubric must be designed and frozen before scoring; judging belongs elsewhere"},
-    {"id":"rubric-score-is-not-design","prompt":"Apply our existing rubric to grade this candidate answer.","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["rubric-designer"],"reason":"Applying a rubric is a reviewer task, not rubric design"},
-    {"id":"repair-apply-roast-fixes","prompt":"Apply the fixes from the last roast and verify them.","expected_primary_skill":"repair-operator","allowed_secondary_skills":[],"must_not_trigger":["repo-roaster","content-roaster"],"reason":"Findings already exist; the user wants them closed, not a new roast"},
-    {"id":"repair-fix-review-findings","prompt":"Fix the review findings and verify each fix.","expected_primary_skill":"repair-operator","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer"],"reason":"Fixing accepted findings, not producing a new review"},
-    {"id":"quality-loop-run-article","prompt":"Run the quality loop on this article: brief, review, roast, repair, accept.","expected_primary_skill":"quality-loop-operator","allowed_secondary_skills":[],"must_not_trigger":["skill-orchestrator","content-roaster"],"reason":"Quality workflow entry point, not generic orchestration"},
-    {"id":"science-rereview-revision","prompt":"Re-review the revised manuscript against my earlier comments.","expected_primary_skill":"science-roaster","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer"],"reason":"Incremental scientific re-review of a revision"},
-    {"id":"repo-roaster-redteam-pr","prompt":"Red-team this pull request before merge.","expected_primary_skill":"repo-roaster","allowed_secondary_skills":[],"must_not_trigger":["release-readiness"],"reason":"Adversarial code review of a PR, not a release gate"},
-    {"id":"multiagent-separate-subagents","prompt":"Use separate subagents for each skill step: research then council.","expected_primary_skill":"skill-orchestrator-multiagent","allowed_secondary_skills":[],"must_not_trigger":[],"reason":"Isolation request selects the multiagent alias"},
-    {"id":"web-audit-signup-accessibility","prompt":"Check the accessibility of our signup form.","expected_primary_skill":"web-app-auditor","allowed_secondary_skills":[],"must_not_trigger":["seo-geo-aeo-maxxing"],"reason":"Runtime accessibility QA of a user-facing flow"},
-    {"id":"web-audit-dashboard-ux","prompt":"UX audit of our dashboard.","expected_primary_skill":"web-app-auditor","allowed_secondary_skills":[],"must_not_trigger":["product-teardown"],"reason":"Own-product UX audit, not an external teardown"},
-    {"id":"web-audit-not-seo-checkout","prompt":"Run SEO audit of our checkout page.","expected_primary_skill":"seo-geo-aeo-maxxing","allowed_secondary_skills":[],"must_not_trigger":["web-app-auditor"],"reason":"SEO wording keeps visibility audits out of web QA"},
-    {"id":"ci-monitor-pricing-delta","prompt":"Monitor our competitors' pricing pages and tell me what changed since last month","expected_primary_skill":"competitive-intelligence","allowed_secondary_skills":[],"must_not_trigger":["seo-geo-aeo-maxxing"],"reason":"Recurring delta against a prior snapshot is the temporal intelligence loop"},
-    {"id":"ci-one-time-profile-not-monitoring","prompt":"Do a one-time deep profile of competitor Acme's pricing","expected_primary_skill":null,"allowed_secondary_skills":[],"must_not_trigger":["competitive-intelligence"],"reason":"One-time profile with no monitoring intent is outside competitive-intelligence's declared scope"},
-    {"id":"customer-ops-triage-inbox","prompt":"Triage the support inbox and rank what needs action today","expected_primary_skill":"customer-ops","allowed_secondary_skills":[],"must_not_trigger":["product-operator"],"reason":"Queue triage is the customer-ops triage-queue mode"},
-    {"id":"customer-ops-overdue-promises","prompt":"Which customer promises are overdue and who owns them?","expected_primary_skill":"customer-ops","allowed_secondary_skills":[],"must_not_trigger":[],"reason":"Commitment watch over customer-facing promises"},
-    {"id":"content-reviewer-draft-before-publish","prompt":"Review this article draft before we publish it","expected_primary_skill":"content-reviewer","allowed_secondary_skills":["artifact-acceptance"],"must_not_trigger":["content-roaster","content-writer"],"reason":"Constructive editorial review, not a roast or a rewrite"},
-    {"id":"brief-architect-brief-before-writing","prompt":"Write a brief for the new research report before anyone starts writing","expected_primary_skill":"brief-architect","allowed_secondary_skills":[],"must_not_trigger":["content-writer","evidence-researcher"],"reason":"The deliverable is the execution contract, not the report"},
-    {"id":"feedback-integrator-recurring-mistakes","prompt":"Our reviewers keep flagging the same mistakes across skill runs; find the recurring failure patterns","expected_primary_skill":"feedback-integrator","allowed_secondary_skills":[],"must_not_trigger":["content-reviewer"],"reason":"Cross-run failure aggregation"},
-    {"id":"longform-regenerate-derived-formats","prompt":"Rebuild the existing white paper manuscript and regenerate the DOCX and PDF","expected_primary_skill":"longform-publisher","allowed_secondary_skills":["ebook-publisher"],"must_not_trigger":[],"reason":"Existing publication, canonical manuscript and derived-format lineage belong to the control plane"},
-    {"id":"ebook-new-from-research","prompt":"Zrób ebook o dostępności cyfrowej od researchu do PDF","expected_primary_skill":"ebook-publisher","allowed_secondary_skills":["evidence-researcher"],"must_not_trigger":["longform-publisher"],"reason":"New ebook from research through PDF"},
-    {"id":"dpf-early-adopters-paid-pilot","prompt":"Shortlist early adopters for a paid pilot of our beta","expected_primary_skill":"design-partner-finder","allowed_secondary_skills":[],"must_not_trigger":[],"reason":"Early-adopter pilot cohort is design-partner selection"},
-    {"id":"evidence-verify-vendor-claims","prompt":"Verify these vendor claims against primary sources before the board meeting","expected_primary_skill":"evidence-researcher","allowed_secondary_skills":[],"must_not_trigger":["ai-council"],"reason":"Claim verification against primary sources, not the decision itself"},
-    {"id":"context-what-changed-insight","prompt":"What changed in CometWeb Insight this week?","expected_primary_skill":"cometweb-context","allowed_secondary_skills":[],"must_not_trigger":["product-operator"],"reason":"Current-state delta across CometWeb sources"},
-    {"id":"longform-canonical-manuscript-regenerate","prompt":"Refresh the 2024 handbook and regenerate the derived DOCX and PDF from the canonical manuscript.","expected_primary_skill":"longform-publisher","allowed_secondary_skills":[],"must_not_trigger":["seo-geo-aeo-maxxing"],"reason":"'canonical manuscript' is a longform-publisher concept, not an SEO canonical tag"},
+    {
+      "id": "pl-skill-auditor",
+      "prompt": "Zaudytuj bibliotekę skilli: konflikty wyzwalania, przenośność i jakość paczek.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "pl-repo-roaster",
+      "prompt": "Zrób brutalny przegląd repo: sprawdź krytyczne inwarianty i osiągalność błędnych ścieżek.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "pl-release-readiness",
+      "prompt": "Czy kandydat wydania v2.0.2 jest gotowy na produkcję? Wydaj werdykt GO/NO-GO.",
+      "lang": "pl",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "pl-competitive-intelligence",
+      "prompt": "Monitoruj konkurentów i pokaż co zmieniło się w ich cennikach od zeszłego miesiąca.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-artifact-acceptance",
+      "prompt": "Is this research report ready against its brief and acceptance criteria?",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-benchmark-curator",
+      "prompt": "Curate the benchmark holdout and check for evaluation contamination.",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-brief-architect",
+      "prompt": "Turn this vague ebook request into an artifact brief with evidence policy and acceptance criteria.",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-content-reviewer",
+      "prompt": "Review this draft article for evidence gaps and actionable editorial findings.",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-content-roaster",
+      "prompt": "Brutally roast this landing page's claims, proof debt and conversion logic.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-content-writer",
+      "prompt": "Write an evidence-aware explainer article from this approved research pack.",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "longform-publisher"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-ebook-publisher",
+      "prompt": "Create a research-backed ebook with manuscript and PDF publication QA.",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "longform-publisher"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-feedback-integrator",
+      "prompt": "Aggregate recurring reviewer findings into regression tests and improvement proposals.",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-portfolio-operator",
+      "prompt": "Across our products, identify capacity conflicts and what to pause or delegate.",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-quality-loop-operator",
+      "prompt": "Run the full artifact quality loop: brief, review, repair and acceptance.",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "artifact-acceptance"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-repair-operator",
+      "prompt": "Repair the accepted review findings with minimal changes and fresh verification.",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-rubric-designer",
+      "prompt": "Design an evidence-backed evaluation rubric with blocker rules and observable criteria.",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-science-roaster",
+      "prompt": "Act as Reviewer #2 and stress-test this manuscript's causal inference and measurement.",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "coverage-skill-evaluator",
+      "prompt": "Run an A/B experiment comparing this agent skill against no-skill baseline.",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor"
+      ],
+      "reason": "Natural-language routing coverage and nearest-neighbor exclusion"
+    },
+    {
+      "id": "pl-actual-agent-skills-audit",
+      "prompt": "Przeanalizuj dokładnie całe repo agent skills i zastanów się jak jeszcze możemy rozbudować i ulepszyć aktualne skille",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "The user's actual Polish request targets the skill library, not a general product roadmap"
+    },
+    {
+      "id": "pl-skill-library-review",
+      "prompt": "Przejrzyj dokładnie bibliotekę skilli i wskaż luki w testach.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Paraphrased library audit should not depend on an exact prior phrase"
+    },
+    {
+      "id": "pl-skill-repo-audit",
+      "prompt": "Zrób audyt skilli w tym repo: routing, paczki i kompatybilność.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Audit of skill packages is owned by skill-auditor"
+    },
+    {
+      "id": "pl-skill-overlap-audit",
+      "prompt": "Sprawdź, czy skill-evaluator ma komplet testów i nie koliduje z skill-auditor.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Test coverage and overlap inspection of a skill is an audit, not an experiment"
+    },
+    {
+      "id": "pl-agent-skills-catalog-quality",
+      "prompt": "Zweryfikuj jakość całego katalogu umiejętności agentów.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Catalog quality review belongs to skill-auditor"
+    },
+    {
+      "id": "pl-team-skills-not-agent-skills",
+      "prompt": "Zrób audyt umiejętności zespołu sprzedaży.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor"
+      ],
+      "reason": "Human team competencies are outside Agent Skills audit scope"
+    },
+    {
+      "id": "pl-app-tests-not-skill-tests",
+      "prompt": "Sprawdź testy aplikacji i jej logikę cenową.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor"
+      ],
+      "reason": "Application QA is not a skill package audit"
+    },
+    {
+      "id": "benchmark-curator-regression-corpus-dedupe",
+      "prompt": "Curate a regression corpus for the routing evals: dedupe near-identical prompts and record provenance for each case.",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [
+        "skill-evaluator"
+      ],
+      "must_not_trigger": [
+        "skill-evaluator",
+        "rubric-designer"
+      ],
+      "reason": "Corpus construction with dedupe and provenance is curation, not running the experiment or writing the rubric"
+    },
+    {
+      "id": "benchmark-curator-adversarial-challenge-set",
+      "prompt": "Build a challenge set of adversarial routing prompts and keep it out of the training examples.",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator",
+        "skill-auditor"
+      ],
+      "reason": "Challenge-set design with isolation from known examples belongs to the benchmark curator"
+    },
+    {
+      "id": "benchmark-curator-holdout-contamination",
+      "prompt": "Check this holdout for contamination before we trust any score from it.",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator",
+        "evidence-researcher"
+      ],
+      "reason": "Holdout leakage review precedes measurement; it is not the measurement itself"
+    },
+    {
+      "id": "skill-evaluator-no-skill-vs-with-skill",
+      "prompt": "Compare no-skill versus with-skill outputs for the release-readiness skill on the same host and model.",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [
+        "benchmark-curator"
+      ],
+      "must_not_trigger": [
+        "benchmark-curator",
+        "skill-auditor"
+      ],
+      "reason": "Matched baseline comparison is the evaluator's experiment, not a static audit or corpus work"
+    },
+    {
+      "id": "skill-evaluator-trigger-precision-recall",
+      "prompt": "Measure trigger precision and recall for content-roaster against its near misses.",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "benchmark-curator",
+        "content-roaster"
+      ],
+      "reason": "Measuring trigger behavior of a named skill must not route to that skill itself"
+    },
+    {
+      "id": "rubric-designer-pass-fail-semantics",
+      "prompt": "Design an evaluation rubric for the ebook drafts with explicit pass/fail semantics.",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator",
+        "ebook-publisher"
+      ],
+      "reason": "Rubric design wins over the ebook noun; grading ebook drafts is not producing an ebook"
+    },
+    {
+      "id": "rubric-designer-freeze-before-grading",
+      "prompt": "Freeze the rubric and record its rubric hash before anyone grades the outputs.",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator",
+        "benchmark-curator"
+      ],
+      "reason": "Freezing scoring criteria before grading is rubric work, not scoring"
+    },
+    {
+      "id": "brief-architect-underspecified-guide",
+      "prompt": "This request for a white-label guide is underspecified; pin audience, scope and acceptance criteria before research starts.",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "content-writer",
+        "evidence-researcher"
+      ],
+      "reason": "An underspecified artifact needs a contract before research or drafting"
+    },
+    {
+      "id": "brief-architect-evidence-policy-handoff",
+      "prompt": "Write an artifact brief with evidence policy and handoff fields for the pricing explainer.",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer",
+        "quality-loop-operator"
+      ],
+      "reason": "'Write' targets the brief, not the final explainer"
+    },
+    {
+      "id": "content-writer-article-from-approved-brief",
+      "prompt": "Write an evidence-backed article about Core Web Vitals from the approved brief, no invented numbers.",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "brief-architect",
+        "ai-humanize"
+      ],
+      "reason": "The brief already exists; drafting the artifact is the writer's job"
+    },
+    {
+      "id": "content-writer-reader-facing-guide",
+      "prompt": "Create a reader-facing guide for onboarding admins from these source notes.",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize",
+        "brief-architect"
+      ],
+      "reason": "Drafting a new reader-facing artifact, not rewriting existing prose"
+    },
+    {
+      "id": "content-reviewer-editorial-qa-guide",
+      "prompt": "Editorial QA on this onboarding guide: flag unclear claims and internal inconsistencies, constructively.",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster",
+        "artifact-acceptance"
+      ],
+      "reason": "Constructive editorial QA, not an adversarial roast or a final acceptance gate"
+    },
+    {
+      "id": "content-reviewer-pre-publication-findings",
+      "prompt": "Pre-publication review of this case study: actionable editorial findings only, no rewrite.",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster",
+        "ai-humanize"
+      ],
+      "reason": "Findings without a rewrite stay with the reviewer"
+    },
+    {
+      "id": "content-roaster-pricing-copy",
+      "prompt": "Roast this pricing page copy and tie every criticism to the exact sentence.",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer",
+        "science-roaster"
+      ],
+      "reason": "Adversarial marketing-copy critique anchored to source text"
+    },
+    {
+      "id": "content-roaster-skeptical-buyer",
+      "prompt": "Red-team the sales offer: which claims would a skeptical buyer reject?",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer",
+        "evidence-researcher"
+      ],
+      "reason": "Red-teaming an offer is adversarial content review, not claim research"
+    },
+    {
+      "id": "science-roaster-preprint-design",
+      "prompt": "Roast this preprint's study design and statistical claims like a hostile reviewer.",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster",
+        "evidence-researcher"
+      ],
+      "reason": "Scientific methods critique, not marketing-copy critique"
+    },
+    {
+      "id": "science-roaster-trial-protocol",
+      "prompt": "Scientific peer review of the randomized trial protocol before submission.",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster",
+        "content-reviewer"
+      ],
+      "reason": "Peer review of a protocol belongs to the science roaster"
+    },
+    {
+      "id": "repo-roaster-retry-double-charge",
+      "prompt": "Roast this codebase: where can a retry double-charge a customer?",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "release-readiness"
+      ],
+      "reason": "Adversarial code review for a failure path, not a roadmap or a ship gate"
+    },
+    {
+      "id": "repo-roaster-sync-engine-blast-radius",
+      "prompt": "Adversarial codebase review of the sync engine with blast radius per finding.",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "web-app-auditor"
+      ],
+      "reason": "Code-level adversarial review, not UI QA"
+    },
+    {
+      "id": "artifact-acceptance-research-report-contract",
+      "prompt": "Final artifact gate: does this research report meet its acceptance contract and evidence requirements?",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness",
+        "content-reviewer"
+      ],
+      "reason": "Knowledge-artifact acceptance, not a software release gate"
+    },
+    {
+      "id": "artifact-acceptance-sales-deck-verdict",
+      "prompt": "Artifact acceptance for the sales deck: READY_WITH_CONTROLS or NOT_READY?",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness",
+        "ai-council"
+      ],
+      "reason": "Artifact verdict vocabulary; must not drift to a release GO/NO_GO or a Council decision"
+    },
+    {
+      "id": "repair-operator-accepted-findings",
+      "prompt": "Repair the accepted review findings in this report and re-verify each one.",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster",
+        "content-reviewer"
+      ],
+      "reason": "Findings are already accepted; the task is repair plus verification, not another review"
+    },
+    {
+      "id": "repair-operator-root-cause-no-regression",
+      "prompt": "Fix these findings at the root cause and verify nothing regressed.",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster",
+        "feedback-integrator"
+      ],
+      "reason": "Single repair set, not a cross-incident retrospective"
+    },
+    {
+      "id": "feedback-integrator-recurring-reviewer-findings",
+      "prompt": "Aggregate recurring reviewer findings from the last six reviews into regression tests.",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator",
+        "skill-auditor"
+      ],
+      "reason": "Cross-review pattern aggregation, not a one-off repair"
+    },
+    {
+      "id": "feedback-integrator-repeated-user-corrections",
+      "prompt": "Users keep correcting the same mistake; turn these repeated user corrections into a durable fix plan.",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator",
+        "ai-humanize"
+      ],
+      "reason": "Repeated corrections across sessions are the integrator's input"
+    },
+    {
+      "id": "quality-loop-full-loop-ebook",
+      "prompt": "Run the full quality loop on this ebook draft: brief, review, roast, repair and acceptance.",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [
+        "ebook-publisher"
+      ],
+      "must_not_trigger": [
+        "skill-orchestrator",
+        "release-readiness"
+      ],
+      "reason": "Named quality-loop stages outweigh the ebook noun and the generic orchestrator"
+    },
+    {
+      "id": "quality-loop-resume-after-repair",
+      "prompt": "Resume the quality workflow after the repair stage was approved.",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator",
+        "repair-operator"
+      ],
+      "reason": "Resuming a staged quality workflow, not a fresh repair"
+    },
+    {
+      "id": "portfolio-capacity-conflicts",
+      "prompt": "I have capacity conflicts across multiple projects next month; what should I pause?",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator",
+        "repo-to-roadmap"
+      ],
+      "reason": "Cross-project allocation, not one product's weekly plan"
+    },
+    {
+      "id": "portfolio-next-30-days",
+      "prompt": "Plan my next 30 days across client work, the product and research commitments.",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator",
+        "customer-ops"
+      ],
+      "reason": "Portfolio horizon across domains"
+    },
+    {
+      "id": "longform-publication-report-sync",
+      "prompt": "Take this playbook through the publication workflow and keep publication-report.json in sync.",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [
+        "ebook-publisher"
+      ],
+      "must_not_trigger": [
+        "release-readiness",
+        "artifact-acceptance"
+      ],
+      "reason": "Publication workflow with derived-format reconciliation"
+    },
+    {
+      "id": "longform-handbook-refresh",
+      "prompt": "Refresh this handbook into a publication-ready edition with the derived DOCX and PDF rebuilt.",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher",
+        "release-readiness"
+      ],
+      "reason": "Refreshing an existing long-form publication across formats"
+    },
+    {
+      "id": "ebook-poradnik-pdf",
+      "prompt": "Napisz poradnik PDF o dostępności cyfrowej, od researchu do gotowego pliku.",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "longform-publisher",
+        "content-writer"
+      ],
+      "reason": "Polish practical PDF guide from research to file is the ebook publisher's pipeline"
+    },
+    {
+      "id": "ebook-white-paper-claim-mapping",
+      "prompt": "Prepare a white paper on accessibility audits with claim-to-source mapping.",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "content-writer",
+        "longform-publisher"
+      ],
+      "reason": "White paper creation with claim-to-source mapping"
+    },
+    {
+      "id": "negative-business-benchmark-not-curator",
+      "prompt": "What's a good benchmark for a startup's churn rate?",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "benchmark-curator",
+        "skill-evaluator"
+      ],
+      "reason": "Everyday use of 'benchmark' is not eval-corpus curation"
+    },
+    {
+      "id": "negative-teacher-rubric-not-designer",
+      "prompt": "Grade this essay with the rubric my teacher gave me.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "rubric-designer",
+        "content-reviewer"
+      ],
+      "reason": "Applying someone else's rubric is neither rubric design nor editorial review"
+    },
+    {
+      "id": "negative-haiku-not-content-writer",
+      "prompt": "Write a haiku about autumn.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer",
+        "ai-humanize"
+      ],
+      "reason": "Creative writing with no evidence or brief does not need the evidence-aware writer"
+    },
+    {
+      "id": "negative-birthday-roast-not-repo-roaster",
+      "prompt": "Roast me in a birthday toast for my brother.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster",
+        "content-roaster"
+      ],
+      "reason": "Social 'roast' must not trigger adversarial review skills"
+    },
+    {
+      "id": "negative-p-value-explainer-not-science-roaster",
+      "prompt": "Explain what a p-value is.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster",
+        "evidence-researcher"
+      ],
+      "reason": "Conceptual statistics question, no artifact under review"
+    },
+    {
+      "id": "negative-stock-portfolio-not-portfolio-operator",
+      "prompt": "Rebalance my stock portfolio for retirement.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "portfolio-operator"
+      ],
+      "reason": "Financial portfolio is not a project portfolio"
+    },
+    {
+      "id": "negative-denied-repo-roaster-by-name",
+      "prompt": "Don't use repo-roaster; just summarize what this diff changes.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "An explicit exclusion by skill ID must win even when other wording is neutral"
+    },
+    {
+      "id": "negative-denied-quality-loop-by-name",
+      "prompt": "Without quality-loop-operator, list the stages a draft usually goes through.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "quality-loop-operator",
+        "skill-orchestrator"
+      ],
+      "reason": "Exclusion by name; a descriptive question about stages is not a request to run the loop"
+    },
+    {
+      "id": "negative-meta-description-not-seo-audit",
+      "prompt": "Write a meta description for this single product page.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing",
+        "content-writer"
+      ],
+      "reason": "Isolated meta task; seo-geo-aeo-maxxing excludes single schema/meta work"
+    },
+    {
+      "id": "negative-retro-sprint-not-feedback-integrator",
+      "prompt": "Run a sprint retrospective for the team: what went well and what didn't?",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "feedback-integrator",
+        "product-operator"
+      ],
+      "reason": "A team retro is not a skill/quality-incident retrospective"
+    },
+    {
+      "id": "product-operator-week-not-portfolio",
+      "prompt": "What should we do this week on the Insight roadmap, given the open blockers?",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "portfolio-operator",
+        "repo-to-roadmap"
+      ],
+      "reason": "One product's weekly control loop, not cross-project allocation or a fresh roadmap baseline"
+    },
+    {
+      "id": "portfolio-focus-across-projects",
+      "prompt": "What should I focus on across all my projects in the next 14 days?",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Cross-project allocation phrased with 'across' before the horizon"
+    },
+    {
+      "id": "rubric-create-grading",
+      "prompt": "Design a grading rubric for support replies before we score them.",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "artifact-acceptance",
+        "skill-evaluator"
+      ],
+      "reason": "Rubric must be designed and frozen before scoring; judging belongs elsewhere"
+    },
+    {
+      "id": "rubric-score-is-not-design",
+      "prompt": "Apply our existing rubric to grade this candidate answer.",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "rubric-designer"
+      ],
+      "reason": "Applying a rubric is a reviewer task, not rubric design"
+    },
+    {
+      "id": "repair-apply-roast-fixes",
+      "prompt": "Apply the fixes from the last roast and verify them.",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster",
+        "content-roaster"
+      ],
+      "reason": "Findings already exist; the user wants them closed, not a new roast"
+    },
+    {
+      "id": "repair-fix-review-findings",
+      "prompt": "Fix the review findings and verify each fix.",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Fixing accepted findings, not producing a new review"
+    },
+    {
+      "id": "quality-loop-run-article",
+      "prompt": "Run the quality loop on this article: brief, review, roast, repair, accept.",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator",
+        "content-roaster"
+      ],
+      "reason": "Quality workflow entry point, not generic orchestration"
+    },
+    {
+      "id": "science-rereview-revision",
+      "prompt": "Re-review the revised manuscript against my earlier comments.",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Incremental scientific re-review of a revision"
+    },
+    {
+      "id": "repo-roaster-redteam-pr",
+      "prompt": "Red-team this pull request before merge.",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Adversarial code review of a PR, not a release gate"
+    },
+    {
+      "id": "multiagent-separate-subagents",
+      "prompt": "Use separate subagents for each skill step: research then council.",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Isolation request selects the multiagent alias"
+    },
+    {
+      "id": "web-audit-signup-accessibility",
+      "prompt": "Check the accessibility of our signup form.",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Runtime accessibility QA of a user-facing flow"
+    },
+    {
+      "id": "web-audit-dashboard-ux",
+      "prompt": "UX audit of our dashboard.",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Own-product UX audit, not an external teardown"
+    },
+    {
+      "id": "web-audit-not-seo-checkout",
+      "prompt": "Run SEO audit of our checkout page.",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "SEO wording keeps visibility audits out of web QA"
+    },
+    {
+      "id": "ci-monitor-pricing-delta",
+      "prompt": "Monitor our competitors' pricing pages and tell me what changed since last month",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Recurring delta against a prior snapshot is the temporal intelligence loop"
+    },
+    {
+      "id": "ci-one-time-profile-not-monitoring",
+      "prompt": "Do a one-time deep profile of competitor Acme's pricing",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "One-time profile with no monitoring intent is outside competitive-intelligence's declared scope"
+    },
+    {
+      "id": "customer-ops-triage-inbox",
+      "prompt": "Triage the support inbox and rank what needs action today",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Queue triage is the customer-ops triage-queue mode"
+    },
+    {
+      "id": "customer-ops-overdue-promises",
+      "prompt": "Which customer promises are overdue and who owns them?",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Commitment watch over customer-facing promises"
+    },
+    {
+      "id": "content-reviewer-draft-before-publish",
+      "prompt": "Review this article draft before we publish it",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [
+        "artifact-acceptance"
+      ],
+      "must_not_trigger": [
+        "content-roaster",
+        "content-writer"
+      ],
+      "reason": "Constructive editorial review, not a roast or a rewrite"
+    },
+    {
+      "id": "brief-architect-brief-before-writing",
+      "prompt": "Write a brief for the new research report before anyone starts writing",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer",
+        "evidence-researcher"
+      ],
+      "reason": "The deliverable is the execution contract, not the report"
+    },
+    {
+      "id": "feedback-integrator-recurring-mistakes",
+      "prompt": "Our reviewers keep flagging the same mistakes across skill runs; find the recurring failure patterns",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Cross-run failure aggregation"
+    },
+    {
+      "id": "longform-regenerate-derived-formats",
+      "prompt": "Rebuild the existing white paper manuscript and regenerate the DOCX and PDF",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [
+        "ebook-publisher"
+      ],
+      "must_not_trigger": [],
+      "reason": "Existing publication, canonical manuscript and derived-format lineage belong to the control plane"
+    },
+    {
+      "id": "ebook-new-from-research",
+      "prompt": "Zrób ebook o dostępności cyfrowej od researchu do PDF",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [
+        "evidence-researcher"
+      ],
+      "must_not_trigger": [
+        "longform-publisher"
+      ],
+      "reason": "New ebook from research through PDF"
+    },
+    {
+      "id": "dpf-early-adopters-paid-pilot",
+      "prompt": "Shortlist early adopters for a paid pilot of our beta",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Early-adopter pilot cohort is design-partner selection"
+    },
+    {
+      "id": "evidence-verify-vendor-claims",
+      "prompt": "Verify these vendor claims against primary sources before the board meeting",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Claim verification against primary sources, not the decision itself"
+    },
+    {
+      "id": "context-what-changed-insight",
+      "prompt": "What changed in CometWeb Insight this week?",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Current-state delta across CometWeb sources"
+    },
+    {
+      "id": "longform-canonical-manuscript-regenerate",
+      "prompt": "Refresh the 2024 handbook and regenerate the derived DOCX and PDF from the canonical manuscript.",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "'canonical manuscript' is a longform-publisher concept, not an SEO canonical tag"
+    },
     {
       "id": "content-roaster-white-paper-roast",
       "prompt": "Roast this white paper with evidence.",
@@ -1342,6 +2283,7 @@
     {
       "id": "content-roaster-pl-pricing-offer",
       "prompt": "Zroastuj nasz cennik i stronę oferty, każda uwaga z cytatem.",
+      "lang": "pl",
       "expected_primary_skill": "content-roaster",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -1374,6 +2316,7 @@
     {
       "id": "repo-roaster-pl-pull-request",
       "prompt": "Bezlitośnie oceń ten pull request pod kątem wyścigów i idempotencji.",
+      "lang": "pl",
       "expected_primary_skill": "repo-roaster",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -1406,6 +2349,7 @@
     {
       "id": "science-roaster-pl-preprint",
       "prompt": "Rozjedź ten preprint: założenia modelu i dobór kohorty.",
+      "lang": "pl",
       "expected_primary_skill": "science-roaster",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -1578,6 +2522,7 @@
     {
       "id": "signal-orchestrator-pl-first-then-shell",
       "prompt": "Najpierw zainstaluj zależności, potem uruchom testy.",
+      "lang": "pl",
       "expected_primary_skill": null,
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -1678,6 +2623,7 @@
     {
       "id": "signal-context-pl-weather",
       "prompt": "Jaki jest aktualny stan pogody w Warszawie?",
+      "lang": "pl",
       "expected_primary_skill": null,
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -1990,6 +2936,7 @@
     {
       "id": "negation-pl-nie-rob-przegladu-repo",
       "prompt": "Nie rób brutalnego przeglądu repo, tylko popraw literówki w README.",
+      "lang": "pl",
       "expected_primary_skill": null,
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -2000,6 +2947,7 @@
     {
       "id": "negation-pl-nie-zroastuj-manuskryptu",
       "prompt": "Nie zroastuj tego manuskryptu, tylko skróć abstrakt.",
+      "lang": "pl",
       "expected_primary_skill": null,
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -2010,6 +2958,7 @@
     {
       "id": "negation-pl-zamiast-oceny-kodu",
       "prompt": "Zamiast brutalnej oceny kodu w repo napisz notatki do wydania.",
+      "lang": "pl",
       "expected_primary_skill": null,
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -2030,6 +2979,7 @@
     {
       "id": "negation-pl-redirect-to-content-roaster",
       "prompt": "Nie rób brutalnego przeglądu repo, tylko zroastuj ofertę na landingu.",
+      "lang": "pl",
       "expected_primary_skill": "content-roaster",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -2100,6 +3050,7 @@
     {
       "id": "negation-positive-pl-nie-oszczedzaj",
       "prompt": "Nie oszczędzaj mnie, upiecz to repo.",
+      "lang": "pl",
       "expected_primary_skill": "repo-roaster",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -2110,6 +3061,7 @@
     {
       "id": "negation-positive-pl-ale-nie-zmieniaj",
       "prompt": "Zrób brutalny przegląd repo, ale nie zmieniaj kodu.",
+      "lang": "pl",
       "expected_primary_skill": "repo-roaster",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -2140,6 +3092,7 @@
     {
       "id": "seo-guard-pl-dodaj-canonical",
       "prompt": "Dodaj tag canonical do szablonów bloga.",
+      "lang": "pl",
       "expected_primary_skill": null,
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -2160,6 +3113,7 @@
     {
       "id": "ebook-guard-pl-konwersja",
       "prompt": "Konwertuj ten poradnik PDF do EPUB.",
+      "lang": "pl",
       "expected_primary_skill": null,
       "allowed_secondary_skills": [],
       "must_not_trigger": [
@@ -2176,6 +3130,2013 @@
         "content-reviewer"
       ],
       "reason": "A spelled-out 'reviewer two' on a manuscript is the science-roaster persona; science-roaster's reviewer-number signal now accepts the spelled-out form (was a known gap)"
+    },
+    {
+      "id": "roadmap-build-next-before-production",
+      "prompt": "What should we build next in this repo before it goes to production? Lay it out as a roadmap.",
+      "lang": "en",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "No existing roadmap is mentioned and a roadmap up to production is requested: a whole-project baseline. Formerly a known gap (went to product-operator)."
+    },
+    {
+      "id": "pl-ai-council-1",
+      "prompt": "Zapytaj Radę, czy w tym kwartale zamykamy darmowy plan, czy go zostawiamy.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator",
+        "portfolio-operator"
+      ],
+      "reason": "Explicit Council request on a consequential pricing/packaging choice"
+    },
+    {
+      "id": "pl-ai-council-2",
+      "prompt": "Przepuść przez radę pomysł przejścia na rozliczenie roczne – GO czy NO-GO?",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Explicit Council request, GO/NO-GO on billing model"
+    },
+    {
+      "id": "pl-ai-council-3",
+      "prompt": "Uruchom AI Council: zatrudniamy pierwszego handlowca teraz czy dopiero po 20 klientach?",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "portfolio-operator"
+      ],
+      "reason": "Explicit Council invocation on a hiring decision"
+    },
+    {
+      "id": "pl-ai-council-4",
+      "prompt": "Sprawdź z Radą, czy decyzja o cenie z lipca jest dalej aktualna.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Council currentness check of a prior decision"
+    },
+    {
+      "id": "pl-ai-humanize-1",
+      "prompt": "Ten tekst brzmi jak z ChatGPT, przerób go tak, żeby czytało się go jak normalnego człowieka.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer",
+        "content-reviewer"
+      ],
+      "reason": "Make prose sound human, not review or new writing"
+    },
+    {
+      "id": "pl-ai-humanize-2",
+      "prompt": "Wygładź ten post na LinkedIn, za dużo w nim sztucznych zwrotów typu „w dzisiejszym dynamicznym świecie”.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Remove AI tells from a post; not an adversarial roast"
+    },
+    {
+      "id": "pl-ai-humanize-3",
+      "prompt": "Zrób z tego maila coś mniej robotycznego, ale nie zmieniaj faktów ani kwot.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Meaning-preserving naturalization of an email"
+    },
+    {
+      "id": "pl-ai-humanize-4",
+      "prompt": "Wyczyść ten README z niewidocznych znaków Unicode i usuń typowe wtręty AI.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor"
+      ],
+      "reason": "Invisible Unicode cleanup and AI-tell removal in prose"
+    },
+    {
+      "id": "pl-artifact-acceptance-1",
+      "prompt": "Czy ten raport jest gotowy do oddania klientowi według briefu? Potrzebuję werdyktu, nie recenzji.",
+      "lang": "pl",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness",
+        "content-reviewer"
+      ],
+      "reason": "Final acceptance verdict on a knowledge artifact against its brief"
+    },
+    {
+      "id": "pl-artifact-acceptance-2",
+      "prompt": "Zrób końcowy odbiór tego white papera: brief, dowody i otwarte uwagi – przechodzi czy nie?",
+      "lang": "pl",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Acceptance gate, not editorial review"
+    },
+    {
+      "id": "pl-artifact-acceptance-3",
+      "prompt": "Sprawdź, czy prezentacja dla zarządu spełnia kryteria akceptacji, które spisaliśmy w briefie.",
+      "lang": "pl",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "brief-architect"
+      ],
+      "reason": "Checks an artifact against existing acceptance criteria; does not write them"
+    },
+    {
+      "id": "pl-artifact-acceptance-4",
+      "prompt": "Ostatnia bramka przed wysłaniem raportu: czy wszystkie uwagi z recenzji są zamknięte?",
+      "lang": "pl",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator",
+        "release-readiness"
+      ],
+      "reason": "Final gate on a report's unresolved findings, not a software release"
+    },
+    {
+      "id": "pl-benchmark-curator-1",
+      "prompt": "Zbuduj zestaw testowy do ewaluacji skilla: przypadki pozytywne, negatywne i osobny holdout.",
+      "lang": "pl",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator",
+        "rubric-designer"
+      ],
+      "reason": "Eval corpus design with holdout, not running the experiment"
+    },
+    {
+      "id": "pl-benchmark-curator-2",
+      "prompt": "Mamy podejrzenie, że przypadki z holdoutu wyciekły do promptów – uporządkuj korpus i sprawdź kontaminację.",
+      "lang": "pl",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Holdout contamination control"
+    },
+    {
+      "id": "pl-benchmark-curator-3",
+      "prompt": "Przygotuj zestaw regresyjny z trudnymi przypadkami brzegowymi dla routingu skilli.",
+      "lang": "pl",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor"
+      ],
+      "reason": "Regression corpus curation"
+    },
+    {
+      "id": "pl-benchmark-curator-4",
+      "prompt": "Usuń duplikaty z naszego golden setu i oznacz pochodzenie każdego przypadku.",
+      "lang": "pl",
+      "expected_primary_skill": "benchmark-curator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "feedback-integrator"
+      ],
+      "reason": "Golden-set deduplication and provenance"
+    },
+    {
+      "id": "pl-brief-architect-1",
+      "prompt": "Klient chce „jakiś raport o rynku”, rozpisz mi z tego porządny brief zanim ktoś zacznie pisać.",
+      "lang": "pl",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer",
+        "evidence-researcher"
+      ],
+      "reason": "Turn a vague request into a brief before writing"
+    },
+    {
+      "id": "pl-brief-architect-3",
+      "prompt": "Doprecyzuj to zlecenie: kto czyta, co ma z tego wynieść i po czym poznamy, że jest gotowe.",
+      "lang": "pl",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Audience, objective and acceptance criteria for an underspecified request"
+    },
+    {
+      "id": "pl-brief-architect-4",
+      "prompt": "Zrób kontrakt wykonawczy dla poradnika, bo poprzednią wersję pisaliśmy trzy razy od nowa.",
+      "lang": "pl",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Execution contract for an expensive-to-redo artifact"
+    },
+    {
+      "id": "pl-cometweb-context-1",
+      "prompt": "Odśwież mi kontekst CometBase przed jutrzejszą rozmową z partnerem.",
+      "lang": "pl",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "design-partner-finder"
+      ],
+      "reason": "Context snapshot before a meeting"
+    },
+    {
+      "id": "pl-cometweb-context-2",
+      "prompt": "Co się zmieniło w Insight od zeszłego tygodnia? Tylko stan, bez rekomendacji.",
+      "lang": "pl",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "State delta only, no prioritization"
+    },
+    {
+      "id": "pl-cometweb-context-3",
+      "prompt": "Zbierz aktualny stan wszystkich projektów CometWeb z GitHuba i Notion, zanim zaczniemy planowanie.",
+      "lang": "pl",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "portfolio-operator",
+        "repo-to-roadmap"
+      ],
+      "reason": "Preflight context across projects, before planning"
+    },
+    {
+      "id": "pl-cometweb-context-4",
+      "prompt": "Daj mi świeży snapshot kontekstu CometPen, potrzebny do decyzji o cenniku.",
+      "lang": "pl",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Context preflight for a later decision, not the decision"
+    },
+    {
+      "id": "pl-competitive-intelligence-1",
+      "prompt": "Śledź zmiany u konkurencji co tydzień i daj znać, jak ktoś ruszy cennik.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Recurring competitor monitoring"
+    },
+    {
+      "id": "pl-competitive-intelligence-2",
+      "prompt": "Co nowego u naszych konkurentów od ostatniego skanu? Ceny, funkcje, komunikacja.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "cometweb-context"
+      ],
+      "reason": "Delta since prior competitor scan"
+    },
+    {
+      "id": "pl-competitive-intelligence-3",
+      "prompt": "Załóż listę obserwowanych konkurentów i rób z tego comiesięczny raport zmian.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Competitor watchlist and digest"
+    },
+    {
+      "id": "pl-content-reviewer-1",
+      "prompt": "Przejrzyj ten artykuł pod kątem briefu i powiedz, co konkretnie trzeba poprawić przed publikacją.",
+      "lang": "pl",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster",
+        "artifact-acceptance"
+      ],
+      "reason": "Constructive pre-publication review against the brief"
+    },
+    {
+      "id": "pl-content-reviewer-2",
+      "prompt": "Zrób redakcyjną korektę merytoryczną tego poradnika: spójność, konkrety, czy odpowiada na pytania czytelnika.",
+      "lang": "pl",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize"
+      ],
+      "reason": "Editorial QA, not humanization"
+    },
+    {
+      "id": "pl-content-reviewer-3",
+      "prompt": "Oceń konstruktywnie ten szkic dokumentacji – co jest niejasne i czego brakuje.",
+      "lang": "pl",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Constructive documentation review"
+    },
+    {
+      "id": "pl-content-reviewer-4",
+      "prompt": "Daj mi recenzję tego tekstu na bloga, ale życzliwą, z listą poprawek.",
+      "lang": "pl",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Friendly review with actionable fixes, not a roast"
+    },
+    {
+      "id": "pl-content-roaster-1",
+      "prompt": "Zjedź bez litości naszą stronę z cennikiem, jak sceptyczny klient z działu zakupów.",
+      "lang": "pl",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer",
+        "web-app-auditor"
+      ],
+      "reason": "Adversarial critique of pricing-page copy"
+    },
+    {
+      "id": "pl-content-roaster-2",
+      "prompt": "Rozwal ten cold mail – wypisz każdy claim, któremu nikt nie uwierzy.",
+      "lang": "pl",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize"
+      ],
+      "reason": "Claim pressure on outbound copy"
+    },
+    {
+      "id": "pl-content-roaster-3",
+      "prompt": "Upiecz nasz landing page, chcę wiedzieć, gdzie brakuje dowodów.",
+      "lang": "pl",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Proof-debt roast of a landing page"
+    },
+    {
+      "id": "pl-content-roaster-4",
+      "prompt": "Zrób red team naszej oferty dla agencji: obiekcje, słabe obietnice, brakujące dowody.",
+      "lang": "pl",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Red-team an offer"
+    },
+    {
+      "id": "pl-content-writer-1",
+      "prompt": "Napisz artykuł o EAA na podstawie tego briefu, bez wymyślania liczb, których nie ma w źródłach.",
+      "lang": "pl",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher",
+        "evidence-researcher"
+      ],
+      "reason": "Evidence-aware article from a brief"
+    },
+    {
+      "id": "pl-content-writer-2",
+      "prompt": "Przygotuj tekst poradnika dla klientów z tych notatek, z rejestrem twierdzeń i źródeł.",
+      "lang": "pl",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "brief-architect"
+      ],
+      "reason": "Reader-facing content with claim ledger"
+    },
+    {
+      "id": "pl-content-writer-3",
+      "prompt": "Stwórz wpis informacyjny o Core Web Vitals dla właścicieli sklepów, rzetelnie i ze źródłami.",
+      "lang": "pl",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Informational article, not an SEO audit"
+    },
+    {
+      "id": "pl-content-writer-4",
+      "prompt": "Napisz dokumentację dla użytkownika na podstawie tego briefu.",
+      "lang": "pl",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize"
+      ],
+      "reason": "Write documentation from a brief"
+    },
+    {
+      "id": "pl-customer-ops-1",
+      "prompt": "Przejrzyj zgłoszenia od klientów z tego tygodnia i powiedz, co eskalować do developerów.",
+      "lang": "pl",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "Support triage and engineering escalation"
+    },
+    {
+      "id": "pl-customer-ops-2",
+      "prompt": "Klient z planem Studio zgłasza trzeci raz ten sam błąd – ogarnij to od strony supportu i obietnic.",
+      "lang": "pl",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator"
+      ],
+      "reason": "Customer case and commitments, not a code repair"
+    },
+    {
+      "id": "pl-customer-ops-3",
+      "prompt": "Które sprawy klientów utknęły między „rozwiązane” a „zweryfikowane”?",
+      "lang": "pl",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Customer cases stuck between resolved and verified"
+    },
+    {
+      "id": "pl-customer-ops-4",
+      "prompt": "Dwóch klientów nie odnowiło subskrypcji – zbierz sygnały churnu z ich zgłoszeń.",
+      "lang": "pl",
+      "expected_primary_skill": "customer-ops",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Churn signals from customer cases"
+    },
+    {
+      "id": "pl-design-partner-finder-1",
+      "prompt": "Znajdź nam 10 firm, które mogłyby zostać design partnerami dla CometBase.",
+      "lang": "pl",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Design partner sourcing"
+    },
+    {
+      "id": "pl-design-partner-finder-2",
+      "prompt": "Oceń tych kandydatów na partnerów pilotażowych – kto naprawdę jest gotowy na wspólne testy?",
+      "lang": "pl",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "Pilot partner readiness scoring"
+    },
+    {
+      "id": "pl-design-partner-finder-3",
+      "prompt": "Szukamy pierwszych klientów do bety, którzy dadzą szczery feedback – zrób shortlistę.",
+      "lang": "pl",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Beta cohort shortlist"
+    },
+    {
+      "id": "pl-design-partner-finder-4",
+      "prompt": "Ułóż kryteria wyboru design partnerów i umowę o tym, czego mamy się od nich nauczyć.",
+      "lang": "pl",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "brief-architect"
+      ],
+      "reason": "Design partner criteria and learning contract"
+    },
+    {
+      "id": "pl-ebook-publisher-1",
+      "prompt": "Przygotuj poradnik PDF dla właścicieli sklepów o tym, jak przygotować się na EAA.",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer",
+        "longform-publisher"
+      ],
+      "reason": "New practical PDF guide end to end"
+    },
+    {
+      "id": "pl-ebook-publisher-2",
+      "prompt": "Popraw okładkę i skład naszego ebooka o SEO, wygląda amatorsko.",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "longform-publisher"
+      ],
+      "reason": "Ebook cover and layout redesign"
+    },
+    {
+      "id": "pl-ebook-publisher-3",
+      "prompt": "Zweryfikuj ebook o śladzie węglowym stron – czy każde twierdzenie ma źródło.",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher",
+        "artifact-acceptance"
+      ],
+      "reason": "Ebook claim-to-source validation"
+    },
+    {
+      "id": "pl-ebook-publisher-4",
+      "prompt": "Napisz white paper o kosztach niedostępnych stron dla e-commerce.",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "New white paper"
+    },
+    {
+      "id": "pl-evidence-researcher-1",
+      "prompt": "Sprawdź, czy to prawda, że 96% stron ma błędy WCAG – dotrzyj do źródła pierwotnego.",
+      "lang": "pl",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer",
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Claim verification against the primary source"
+    },
+    {
+      "id": "pl-evidence-researcher-2",
+      "prompt": "Zweryfikuj twierdzenia z tego raportu konkurencji z oryginalnymi źródłami.",
+      "lang": "pl",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Verify claims against sources; not monitoring"
+    },
+    {
+      "id": "pl-evidence-researcher-3",
+      "prompt": "Zrób due diligence tego dostawcy: finansowanie, klienci, czy referencje się zgadzają.",
+      "lang": "pl",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "design-partner-finder"
+      ],
+      "reason": "Vendor due diligence"
+    },
+    {
+      "id": "pl-evidence-researcher-4",
+      "prompt": "Dwa raporty podają sprzeczne dane o rynku – ustal, któremu ufać i dlaczego.",
+      "lang": "pl",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Resolve contradictory sources"
+    },
+    {
+      "id": "pl-feedback-integrator-1",
+      "prompt": "Te same błędy wracają w kolejnych przebiegach skilli – zbierz je i zaproponuj testy regresyjne.",
+      "lang": "pl",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor",
+        "repair-operator"
+      ],
+      "reason": "Recurring skill failures into regression tests"
+    },
+    {
+      "id": "pl-feedback-integrator-2",
+      "prompt": "Zrób retrospektywę z ostatnich porażek ewaluacji i wskaż, co poprawić w instrukcjach.",
+      "lang": "pl",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Retrospective over eval failures"
+    },
+    {
+      "id": "pl-feedback-integrator-3",
+      "prompt": "Użytkownicy ciągle poprawiają to samo po agencie – wyciągnij z tego wzorzec i propozycje zmian.",
+      "lang": "pl",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "Repeated user corrections into improvement proposals"
+    },
+    {
+      "id": "pl-feedback-integrator-4",
+      "prompt": "Zbierz powtarzające się uwagi recenzentów z ostatnich 10 przebiegów i zamień je na poprawki routingu.",
+      "lang": "pl",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Aggregate recurring reviewer findings"
+    },
+    {
+      "id": "pl-longform-publisher-1",
+      "prompt": "Odśwież zeszłoroczny raport do wydania 2026, z jednym manuskryptem i DOCX/PDF generowanymi z niego.",
+      "lang": "pl",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher",
+        "content-writer"
+      ],
+      "reason": "Refresh a publication through a canonical manuscript"
+    },
+    {
+      "id": "pl-longform-publisher-2",
+      "prompt": "Mamy poradnik w trzech rozjechanych wersjach – ustal jeden kanoniczny manuskrypt i przebuduj z niego PDF.",
+      "lang": "pl",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "Reconcile divergent versions into one manuscript"
+    },
+    {
+      "id": "pl-longform-publisher-3",
+      "prompt": "Przygotuj nowe wydanie naszego handbooka i sprawdź, czy DOCX i PDF zgadzają się z manuskryptem.",
+      "lang": "pl",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "New edition with derived-format lineage"
+    },
+    {
+      "id": "pl-longform-publisher-4",
+      "prompt": "Zaktualizuj stary white paper do nowej edycji, zachowując powiązanie twierdzeń ze źródłami.",
+      "lang": "pl",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "New edition of an existing publication"
+    },
+    {
+      "id": "pl-portfolio-operator-1",
+      "prompt": "Na czym mam się skupić przez najbliższe dwa tygodnie, mając Insight, CometPen i dwa projekty klienckie?",
+      "lang": "pl",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Cross-project focus allocation"
+    },
+    {
+      "id": "pl-portfolio-operator-2",
+      "prompt": "Mam za dużo rzeczy naraz – co wstrzymać, co oddelegować, a co dokończyć?",
+      "lang": "pl",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Pause/delegate/finish across commitments"
+    },
+    {
+      "id": "pl-portfolio-operator-3",
+      "prompt": "Rozpisz mi priorytety na 30 dni między produktem, klientami i badaniami.",
+      "lang": "pl",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Cross-domain allocation, not a repo roadmap"
+    },
+    {
+      "id": "pl-portfolio-operator-4",
+      "prompt": "Które zobowiązania między projektami się gryzą i czego nie dowiozę w tym miesiącu?",
+      "lang": "pl",
+      "expected_primary_skill": "portfolio-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Capacity conflicts across projects"
+    },
+    {
+      "id": "pl-product-operator-1",
+      "prompt": "Roadmapa jest, ale nie wiem, co ruszyć najpierw w tym tygodniu w CometPen.",
+      "lang": "pl",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "portfolio-operator"
+      ],
+      "reason": "Weekly control on an existing roadmap"
+    },
+    {
+      "id": "pl-product-operator-2",
+      "prompt": "Co się zmieniło od ostatniego przeglądu produktu i co z tego blokuje sprint?",
+      "lang": "pl",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "cometweb-context"
+      ],
+      "reason": "Weekly review delta and sprint blockers"
+    },
+    {
+      "id": "pl-product-operator-3",
+      "prompt": "Czy roadmapa zgadza się z tym, co faktycznie jest w repo? Zrób przegląd tygodniowy.",
+      "lang": "pl",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Roadmap vs implementation reconciliation in weekly ops"
+    },
+    {
+      "id": "pl-product-operator-4",
+      "prompt": "Co powinniśmy przestać robić w tym sprincie, bo nic nie wnosi?",
+      "lang": "pl",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "portfolio-operator"
+      ],
+      "reason": "Stop decisions within one product's sprint"
+    },
+    {
+      "id": "pl-product-teardown-1",
+      "prompt": "Rozbierz onboarding Linear na części i powiedz, co możemy od nich przenieść do siebie.",
+      "lang": "pl",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence",
+        "web-app-auditor"
+      ],
+      "reason": "Teardown for transferable patterns"
+    },
+    {
+      "id": "pl-product-teardown-2",
+      "prompt": "Zrób teardown cennika Ahrefs – jakie wzorce warto wdrożyć u nas?",
+      "lang": "pl",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "One-off pricing teardown, not monitoring"
+    },
+    {
+      "id": "pl-product-teardown-3",
+      "prompt": "Przeanalizuj, jak Notion prowadzi nowych użytkowników, i wyciągnij wzorce do naszego produktu.",
+      "lang": "pl",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Extract onboarding patterns"
+    },
+    {
+      "id": "pl-product-teardown-4",
+      "prompt": "Co możemy podpatrzeć z dokumentacji Stripe przy budowie naszej?",
+      "lang": "pl",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Borrowable documentation patterns"
+    },
+    {
+      "id": "pl-quality-loop-operator-1",
+      "prompt": "Przeprowadź ten raport przez całą pętlę jakości: brief, recenzja, roast, poprawki i odbiór.",
+      "lang": "pl",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator",
+        "artifact-acceptance"
+      ],
+      "reason": "Full content quality loop"
+    },
+    {
+      "id": "pl-quality-loop-operator-2",
+      "prompt": "Wznów pętlę jakości dla ebooka od etapu poprawek.",
+      "lang": "pl",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator"
+      ],
+      "reason": "Resume quality workflow"
+    },
+    {
+      "id": "pl-quality-loop-operator-3",
+      "prompt": "Koordynuj specjalistów od jakości dla tego artykułu, aż przejdzie akceptację.",
+      "lang": "pl",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Coordinate quality specialists"
+    },
+    {
+      "id": "pl-quality-loop-operator-4",
+      "prompt": "Uruchom pełny cykl jakości na tym poradniku i pilnuj ponownej walidacji po każdej poprawce.",
+      "lang": "pl",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Quality loop with revalidation"
+    },
+    {
+      "id": "pl-release-readiness-1",
+      "prompt": "Czy wersja 3.2.0 może dziś wejść na produkcję? Chcę werdykt GO albo NO-GO.",
+      "lang": "pl",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap",
+        "product-operator"
+      ],
+      "reason": "Concrete candidate gate"
+    },
+    {
+      "id": "pl-release-readiness-2",
+      "prompt": "Sprawdź gotowość hotfixa 1.4.1 przed wdrożeniem na produkcję.",
+      "lang": "pl",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator"
+      ],
+      "reason": "Hotfix readiness"
+    },
+    {
+      "id": "pl-release-readiness-3",
+      "prompt": "Mamy build 812 na stagingu – czy jest gotowy do wydania, łącznie z billingiem i supportem?",
+      "lang": "pl",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "Build gate across billing and support"
+    },
+    {
+      "id": "pl-release-readiness-4",
+      "prompt": "Po wczorajszym incydencie: czy poprawione wydanie możemy wypuścić?",
+      "lang": "pl",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "Post-incident release gate"
+    },
+    {
+      "id": "pl-repair-operator-3",
+      "prompt": "Wprowadź zatwierdzone poprawki z roastu i potwierdź, że usuwają przyczynę, a nie objaw.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Apply authorized fixes, verify root cause"
+    },
+    {
+      "id": "pl-repair-operator-4",
+      "prompt": "Zamknij znaleziska z odbioru raportu bez wprowadzania nowych wymagań.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "artifact-acceptance"
+      ],
+      "reason": "Close acceptance findings"
+    },
+    {
+      "id": "pl-repo-roaster-1",
+      "prompt": "Przejedź się brutalnie po naszym kodzie do płatności – idempotencja, wyścigi, granice zaufania.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor",
+        "release-readiness"
+      ],
+      "reason": "Adversarial code review of payment code"
+    },
+    {
+      "id": "pl-repo-roaster-2",
+      "prompt": "Zrób wrogi przegląd tej gałęzi przed merge'em, z dowodami z plików i testów.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-to-roadmap"
+      ],
+      "reason": "Hostile branch review"
+    },
+    {
+      "id": "pl-repo-roaster-3",
+      "prompt": "Rozbierz to repo na czynniki pierwsze i pokaż, gdzie są niezmienniki, które mogą pęknąć.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor"
+      ],
+      "reason": "Critical invariant analysis"
+    },
+    {
+      "id": "pl-repo-roaster-4",
+      "prompt": "Bezlitośnie przejrzyj ten diff, szczególnie obsługę błędów i częściowe awarie.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Ruthless diff review"
+    },
+    {
+      "id": "pl-rubric-designer-1",
+      "prompt": "Zaprojektuj rubrykę oceny dla recenzji artykułów, z jasnymi warunkami blokującymi.",
+      "lang": "pl",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer",
+        "benchmark-curator"
+      ],
+      "reason": "Rubric with blocker rules"
+    },
+    {
+      "id": "pl-rubric-designer-2",
+      "prompt": "Ustal kryteria pass/fail i minimalne dowody dla oceny odpowiedzi agenta, zanim zaczniemy oceniać.",
+      "lang": "pl",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Pass/fail semantics and evidence floors"
+    },
+    {
+      "id": "pl-rubric-designer-3",
+      "prompt": "Potrzebuję karty oceny do porównania szkiców – co liczymy i jak, zanim zobaczymy wyniki.",
+      "lang": "pl",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "artifact-acceptance"
+      ],
+      "reason": "Scorecard design before judging"
+    },
+    {
+      "id": "pl-rubric-designer-4",
+      "prompt": "Zamroź rubrykę do ewaluacji skilla i policz jej hash.",
+      "lang": "pl",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "benchmark-curator"
+      ],
+      "reason": "Freeze rubric and hash"
+    },
+    {
+      "id": "pl-science-roaster-1",
+      "prompt": "Wciel się w recenzenta nr 2 i rozjedź ten manuskrypt: metody, moc statystyczna, wnioski.",
+      "lang": "pl",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster",
+        "evidence-researcher"
+      ],
+      "reason": "Reviewer-2 scientific review"
+    },
+    {
+      "id": "pl-science-roaster-3",
+      "prompt": "Zrób twardą recenzję naukową tej pracy magisterskiej, zwłaszcza doboru próby.",
+      "lang": "pl",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Hard scientific review of a thesis"
+    },
+    {
+      "id": "pl-science-roaster-4",
+      "prompt": "Sprawdź bezlitośnie protokół badania przed rejestracją: estymanda, zakłócenia, analiza.",
+      "lang": "pl",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "brief-architect"
+      ],
+      "reason": "Adversarial protocol review"
+    },
+    {
+      "id": "pl-seo-geo-aeo-maxxing-1",
+      "prompt": "Zrób pełny audyt widoczności cometweb.io w Google i w odpowiedziach AI.",
+      "lang": "pl",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor",
+        "competitive-intelligence"
+      ],
+      "reason": "Broad search and AI visibility audit"
+    },
+    {
+      "id": "pl-seo-geo-aeo-maxxing-2",
+      "prompt": "Dlaczego nie pojawiamy się w odpowiedziach ChatGPT i Perplexity? Zdiagnozuj SEO, GEO i AEO.",
+      "lang": "pl",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Cross-pillar visibility diagnosis"
+    },
+    {
+      "id": "pl-seo-geo-aeo-maxxing-3",
+      "prompt": "Audyt SEO naszego bloga: indeksacja, kanoniczne, treść i cytowalność przez AI.",
+      "lang": "pl",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "SEO audit covering technical and AI citation"
+    },
+    {
+      "id": "pl-seo-geo-aeo-maxxing-4",
+      "prompt": "Powtórz audyt widoczności z zeszłego miesiąca i pokaż, co się poprawiło.",
+      "lang": "pl",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Repeat/delta visibility audit"
+    },
+    {
+      "id": "pl-skill-auditor-1",
+      "prompt": "Przejrzyj paczkę skilla content-writer: wyzwalacze, referencje i przenośność między hostami.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator",
+        "content-reviewer"
+      ],
+      "reason": "Skill package audit"
+    },
+    {
+      "id": "pl-skill-auditor-2",
+      "prompt": "Czy nasze skille nadają się do publikacji? Sprawdź kolizje wyzwalaczy i higienę paczek.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Skill library publication audit"
+    },
+    {
+      "id": "pl-skill-auditor-3",
+      "prompt": "Zrób audyt rejestru skilli pod kątem rozjazdów z SKILL.md.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Registry drift audit"
+    },
+    {
+      "id": "pl-skill-auditor-4",
+      "prompt": "Sprawdź, czy opisy skilli nie nachodzą na siebie i czy routing ma sens.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator"
+      ],
+      "reason": "Routing overlap audit"
+    },
+    {
+      "id": "pl-skill-evaluator-1",
+      "prompt": "Zmierz, czy nowa wersja skilla ai-humanize daje lepsze wyniki niż bez skilla.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor",
+        "benchmark-curator",
+        "ai-humanize"
+      ],
+      "reason": "Behavioral lift vs no-skill baseline"
+    },
+    {
+      "id": "pl-skill-evaluator-2",
+      "prompt": "Zaprojektuj uczciwy test A/B dla dwóch wersji skilla na tych samych modelach.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "rubric-designer"
+      ],
+      "reason": "A/B skill experiment design"
+    },
+    {
+      "id": "pl-skill-evaluator-3",
+      "prompt": "Czy ten skill w ogóle coś daje? Porównaj z bazowym modelem na kilku hostach.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-auditor"
+      ],
+      "reason": "Lift vs baseline across hosts"
+    },
+    {
+      "id": "pl-skill-evaluator-4",
+      "prompt": "Sprawdź precyzję i czułość wyzwalania skilla na prawdziwych promptach.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "benchmark-curator"
+      ],
+      "reason": "Trigger precision/recall measurement"
+    },
+    {
+      "id": "pl-skill-orchestrator-1",
+      "prompt": "Najpierw zbierz dowody na nasze twierdzenia cenowe, potem niech Rada zdecyduje.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Evidence then Council chain"
+    },
+    {
+      "id": "pl-skill-orchestrator-2",
+      "prompt": "Poprowadź cały proces: audyt aplikacji, a potem bramka wydania dla 2.4.0.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor",
+        "release-readiness"
+      ],
+      "reason": "Audit then release gate chain"
+    },
+    {
+      "id": "pl-skill-orchestrator-3",
+      "prompt": "Który skill mam użyć do przeglądu tygodniowego produktu?",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Skill selection question"
+    },
+    {
+      "id": "pl-skill-orchestrator-4",
+      "prompt": "Zrób wszystko, co trzeba, żeby od researchu dojść do decyzji o wejściu na rynek DE.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "End-to-end research to decision"
+    },
+    {
+      "id": "pl-skill-orchestrator-multiagent-1",
+      "prompt": "Uruchom to w trybie multiagent: research EU AI Act, potem Rada.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Multiagent execution mode"
+    },
+    {
+      "id": "pl-skill-orchestrator-multiagent-2",
+      "prompt": "Każdy skill niech działa w osobnym subagencie: audyt strony, a potem gotowość wydania.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "Separate subagent per skill"
+    },
+    {
+      "id": "pl-skill-orchestrator-multiagent-3",
+      "prompt": "Odpal osobnego agenta dla każdego kroku – evidence, potem decyzja.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "Separate agent per step"
+    },
+    {
+      "id": "pl-skill-orchestrator-multiagent-4",
+      "prompt": "Zorkiestruj to wieloagentowo, z izolacją między researcherem a Radą.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Multi-agent orchestration with isolation"
+    },
+    {
+      "id": "pl-web-app-auditor-1",
+      "prompt": "Przeklikaj rejestrację i checkout w app.example.com i spisz każdy błąd z dowodem.",
+      "lang": "pl",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness",
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Click-through QA of critical flows"
+    },
+    {
+      "id": "pl-web-app-auditor-2",
+      "prompt": "Sprawdź dostępność formularza logowania z klawiatury i czytnikiem ekranu.",
+      "lang": "pl",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Accessibility QA of a form"
+    },
+    {
+      "id": "pl-web-app-auditor-3",
+      "prompt": "Zrób QA dashboardu po ostatniej zmianie – czy coś się rozjechało w UI?",
+      "lang": "pl",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "UI regression QA"
+    },
+    {
+      "id": "pl-web-app-auditor-4",
+      "prompt": "Przetestuj w przeglądarce cały flow onboardingu i pokaż, gdzie użytkownik się gubi.",
+      "lang": "pl",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Browser walkthrough of own onboarding"
+    },
+    {
+      "id": "pl-repo-to-roadmap-1",
+      "prompt": "Przejrzyj cały projekt i rozpisz, co zostało do zbudowania, zanim wejdziemy z nim na produkcję.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator",
+        "release-readiness"
+      ],
+      "reason": "Whole-project baseline to production"
+    },
+    {
+      "id": "pl-repo-to-roadmap-2",
+      "prompt": "Nie mamy żadnej roadmapy – zrób ją od zera na podstawie repo i Notion.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "First-time roadmap from scratch"
+    },
+    {
+      "id": "pl-repo-to-roadmap-3",
+      "prompt": "Zaktualizuj roadmapę po zmianach z ostatniego miesiąca – co jest zrobione, a co dalej brakuje do celu?",
+      "lang": "pl",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Delta roadmap update"
+    },
+    {
+      "id": "pl-repo-to-roadmap-4",
+      "prompt": "Jakie bramki brakują, żeby cała platforma była gotowa dla płacących klientów?",
+      "lang": "pl",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "release-readiness"
+      ],
+      "reason": "Missing gates for the whole platform"
+    },
+    {
+      "id": "pl-none-1",
+      "prompt": "Przetłumacz ten akapit na angielski.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize",
+        "content-writer"
+      ],
+      "reason": "Plain translation is not a skill task"
+    },
+    {
+      "id": "pl-none-2",
+      "prompt": "Napisz funkcję w Pythonie, która liczy średnią z listy.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer",
+        "repo-roaster"
+      ],
+      "reason": "Plain coding task"
+    },
+    {
+      "id": "pl-none-3",
+      "prompt": "Ile kosztuje domena .pl na rok?",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Casual single-fact lookup"
+    },
+    {
+      "id": "multi-research-then-council-decide",
+      "prompt": "Research the market size claims first, then decide with the council whether we enter Germany.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Research then decide needs two skills"
+    },
+    {
+      "id": "multi-audit-then-release-gate",
+      "prompt": "Audit the signup flow and then gate release 2.5.0 for production.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor",
+        "release-readiness"
+      ],
+      "reason": "Audit then release gate needs two skills"
+    },
+    {
+      "id": "multi-ci-then-council",
+      "prompt": "Track what competitors changed this quarter, then have the council decide if we respond.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Monitor then decide"
+    },
+    {
+      "id": "multi-factcheck-then-council",
+      "prompt": "Fact-check these vendor claims and afterwards let the council pick a vendor.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Verify then decide"
+    },
+    {
+      "id": "multi-pl-verify-then-council",
+      "prompt": "Zweryfikuj claimy z landing page'a, a potem niech Rada oceni, czy publikujemy.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Verify then Council decision"
+    },
+    {
+      "id": "multi-pl-audit-then-release",
+      "prompt": "Zrób audyt aplikacji, a po nim oceń gotowość wydania 3.0 na produkcję.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor",
+        "release-readiness"
+      ],
+      "reason": "Audit then release gate"
+    },
+    {
+      "id": "multi-pl-research-then-decide",
+      "prompt": "Zbadaj, ile naprawdę kosztuje nas churn, i na tej podstawie niech Rada zdecyduje o cenach.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher",
+        "customer-ops"
+      ],
+      "reason": "Research then decide"
+    },
+    {
+      "id": "pl-competitive-intelligence-5",
+      "prompt": "Monitoruj ceny trzech głównych konkurentów i raz w miesiącu podsyłaj podsumowanie zmian.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Recurring competitor price monitoring"
+    },
+    {
+      "id": "pl-competitive-intelligence-6",
+      "prompt": "Jakie zmiany wprowadził Semrush w ofercie od naszego ostatniego przeglądu konkurencji?",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Delta since last competitor review"
+    },
+    {
+      "id": "pl-competitive-intelligence-7",
+      "prompt": "Obserwuj, co konkurenci publikują o funkcjach AI, i zgłaszaj tylko istotne różnice.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Competitor watch with alerts"
+    },
+    {
+      "id": "pl-competitive-intelligence-8",
+      "prompt": "Porównaj dzisiejszy stan stron cenowych konkurentów z zapisem sprzed kwartału.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-teardown"
+      ],
+      "reason": "Snapshot comparison over time"
+    },
+    {
+      "id": "pl-competitive-intelligence-9",
+      "prompt": "Prowadź dla nas wywiad konkurencyjny: kto podniósł ceny, kto zmienił pozycjonowanie.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Ongoing competitive intelligence"
+    },
+    {
+      "id": "pl-competitive-intelligence-10",
+      "prompt": "Daj mi cotygodniowy digest ruchów konkurencji w segmencie narzędzi SEO.",
+      "lang": "pl",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Weekly competitor digest"
+    },
+    {
+      "id": "pl-repair-operator-5",
+      "prompt": "Popraw tylko te błędy z code review, które zatwierdziłem, i uruchom testy po każdej zmianie.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Bounded repair of approved review findings"
+    },
+    {
+      "id": "pl-repair-operator-6",
+      "prompt": "Mamy listę znalezisk z audytu dostępności – napraw je po kolei i pokaż dowód, że są zamknięte.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "Repair audit findings with verification"
+    },
+    {
+      "id": "pl-repair-operator-7",
+      "prompt": "Przygotuj plan naprawczy dla uwag z roastu: najmniejsze zmiany, które usuwają przyczynę.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Minimal repair plan from roast findings"
+    },
+    {
+      "id": "pl-repair-operator-8",
+      "prompt": "Wdróż poprawki z recenzji raportu i zweryfikuj, że żadna nie wprowadziła regresji.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Apply review fixes, verify no regressions"
+    },
+    {
+      "id": "pl-repair-operator-9",
+      "prompt": "Zaakceptowane uwagi z przeglądu repo zamień na konkretne łatki i sprawdź je na świeżo.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Accepted findings to patches with fresh verification"
+    },
+    {
+      "id": "pl-repair-operator-10",
+      "prompt": "Napraw zgłoszone problemy z odbioru ebooka bez dopisywania nowych wymagań.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "artifact-acceptance",
+        "ebook-publisher"
+      ],
+      "reason": "Repair acceptance findings"
+    },
+    {
+      "id": "pl-ai-council-5",
+      "prompt": "Zapytaj radę, czy otwieramy biuro w Berlinie w przyszłym roku.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "portfolio-operator"
+      ],
+      "reason": "Explicit Council request"
+    },
+    {
+      "id": "pl-ai-humanize-5",
+      "prompt": "Przepisz ten akapit tak, żeby nie brzmiał jak wygenerowany przez AI.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Remove AI-sounding prose"
+    },
+    {
+      "id": "pl-artifact-acceptance-5",
+      "prompt": "Czy ten raport z badania rynku możemy już oddać? Sprawdź go z briefem i listą wymaganych dowodów.",
+      "lang": "pl",
+      "expected_primary_skill": "artifact-acceptance",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Acceptance against brief and evidence"
+    },
+    {
+      "id": "pl-brief-architect-5",
+      "prompt": "Zanim zlecimy tekst copywriterowi, przygotuj brief z odbiorcą, celem i kryteriami odbioru.",
+      "lang": "pl",
+      "expected_primary_skill": "brief-architect",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-writer"
+      ],
+      "reason": "Brief before commissioning"
+    },
+    {
+      "id": "pl-cometweb-context-5",
+      "prompt": "Przygotuj kontekst o CometLens na spotkanie z inwestorem.",
+      "lang": "pl",
+      "expected_primary_skill": "cometweb-context",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "design-partner-finder"
+      ],
+      "reason": "Meeting context preflight"
+    },
+    {
+      "id": "pl-content-roaster-5",
+      "prompt": "Rozjedź nasz nowy newsletter – co brzmi jak pusta obietnica?",
+      "lang": "pl",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize"
+      ],
+      "reason": "Adversarial copy critique"
+    },
+    {
+      "id": "pl-content-writer-5",
+      "prompt": "Napisz tekst o dostępności cyfrowej dla urzędów na podstawie tych źródeł.",
+      "lang": "pl",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "Evidence-aware writing"
+    },
+    {
+      "id": "pl-design-partner-finder-5",
+      "prompt": "Wybierz z tej listy pięć firm na design partnerów i uzasadnij wybór.",
+      "lang": "pl",
+      "expected_primary_skill": "design-partner-finder",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Design partner selection"
+    },
+    {
+      "id": "pl-ebook-publisher-5",
+      "prompt": "Zaprojektuj okładkę do naszego e-booka o WCAG.",
+      "lang": "pl",
+      "expected_primary_skill": "ebook-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "longform-publisher"
+      ],
+      "reason": "Ebook cover design"
+    },
+    {
+      "id": "pl-evidence-researcher-5",
+      "prompt": "Zweryfikuj dane o udziale rynkowym z tego artykułu w źródłach pierwotnych.",
+      "lang": "pl",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Primary-source verification"
+    },
+    {
+      "id": "pl-feedback-integrator-5",
+      "prompt": "Zbierz powtarzające się problemy z ostatnich ewaluacji agentów i zaproponuj zmiany w instrukcjach.",
+      "lang": "pl",
+      "expected_primary_skill": "feedback-integrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Recurring eval problems to instruction changes"
+    },
+    {
+      "id": "pl-longform-publisher-5",
+      "prompt": "Zbuduj nową edycję naszego raportu rocznego z jednego manuskryptu do DOCX i PDF.",
+      "lang": "pl",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ebook-publisher"
+      ],
+      "reason": "New edition through one manuscript"
+    },
+    {
+      "id": "pl-product-operator-5",
+      "prompt": "Co blokuje nam sprint w tym tygodniu i co trzeba zweryfikować od razu?",
+      "lang": "pl",
+      "expected_primary_skill": "product-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "portfolio-operator"
+      ],
+      "reason": "Sprint blockers and verify-now"
+    },
+    {
+      "id": "pl-product-teardown-5",
+      "prompt": "Rozłóż na czynniki pierwsze lejek rejestracji Canvy i powiedz, co warto przenieść do nas.",
+      "lang": "pl",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Funnel teardown"
+    },
+    {
+      "id": "pl-quality-loop-operator-5",
+      "prompt": "Przeprowadź ebook przez pętlę jakości od briefu do odbioru.",
+      "lang": "pl",
+      "expected_primary_skill": "quality-loop-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "artifact-acceptance"
+      ],
+      "reason": "Quality loop end to end"
+    },
+    {
+      "id": "pl-release-readiness-5",
+      "prompt": "Czy release 5.1 jest gotowy na produkcję w piątek?",
+      "lang": "pl",
+      "expected_primary_skill": "release-readiness",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator"
+      ],
+      "reason": "Named candidate production gate"
+    },
+    {
+      "id": "pl-repo-roaster-5",
+      "prompt": "Zroastuj nasz moduł płatności w repo, szukam wyścigów i podwójnych obciążeń.",
+      "lang": "pl",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "Adversarial code review"
+    },
+    {
+      "id": "pl-rubric-designer-5",
+      "prompt": "Stwórz rubrykę do oceniania raportów z warunkami blokującymi i progami dowodów.",
+      "lang": "pl",
+      "expected_primary_skill": "rubric-designer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "artifact-acceptance"
+      ],
+      "reason": "Rubric design"
+    },
+    {
+      "id": "pl-science-roaster-5",
+      "prompt": "Zrecenzuj krytycznie ten artykuł naukowy jak recenzent nr 2.",
+      "lang": "pl",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "Reviewer-2 critique"
+    },
+    {
+      "id": "pl-seo-geo-aeo-maxxing-5",
+      "prompt": "Sprawdź, czemu nasza strona nie jest cytowana w AI Overviews – pełny audyt SEO.",
+      "lang": "pl",
+      "expected_primary_skill": "seo-geo-aeo-maxxing",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-reviewer"
+      ],
+      "reason": "AI citation and SEO audit"
+    },
+    {
+      "id": "pl-skill-auditor-5",
+      "prompt": "Przejrzyj nasz katalog skilli pod kątem kolizji i przenośności.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-evaluator"
+      ],
+      "reason": "Skill catalog audit"
+    },
+    {
+      "id": "pl-skill-evaluator-5",
+      "prompt": "Porównaj skill content-writer z wersją bez skilla na 20 zadaniach.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-evaluator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "benchmark-curator",
+        "content-writer"
+      ],
+      "reason": "Skill vs no-skill comparison"
+    },
+    {
+      "id": "pl-skill-orchestrator-15",
+      "prompt": "Najpierw audyt SEO, potem na jego podstawie roadmapa – poprowadź to od początku do końca.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "seo-geo-aeo-maxxing"
+      ],
+      "reason": "Audit then roadmap chain"
+    },
+    {
+      "id": "pl-skill-orchestrator-multiagent-5",
+      "prompt": "Zrób to na osobnych subagentach: evidence o rynku, potem decyzja Rady.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator-multiagent",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Separate subagents"
+    },
+    {
+      "id": "pl-web-app-auditor-5",
+      "prompt": "Przeklikaj panel admina i sprawdź, czy wszystkie formularze działają z klawiatury.",
+      "lang": "pl",
+      "expected_primary_skill": "web-app-auditor",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Keyboard QA click-through"
+    },
+    {
+      "id": "multi-checkout-audit-then-release",
+      "prompt": "Audit the checkout flow, then decide if release 4.0 can go to production.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "web-app-auditor"
+      ],
+      "reason": "Audit then release decision"
+    },
+    {
+      "id": "multi-verify-then-council",
+      "prompt": "Verify the competitor claims, then pass the conclusions to the council.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Verify then Council"
+    },
+    {
+      "id": "pl-none-4",
+      "prompt": "Zrób mi listę zakupów na weekend.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "customer-ops"
+      ],
+      "reason": "Not a skill task"
+    },
+    {
+      "id": "pl-none-5",
+      "prompt": "Popraw literówki w tym mailu.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-humanize"
+      ],
+      "reason": "Typo fixes only; humanize guard"
+    },
+    {
+      "id": "pl-content-roaster-blog-on-study-results",
+      "prompt": "Rozjedź ten wpis na bloga, który streszcza wyniki badania – czy nie obiecujemy za dużo?",
+      "lang": "pl",
+      "expected_primary_skill": "content-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster"
+      ],
+      "reason": "The object is marketing copy that cites study results, not the study itself"
+    },
+    {
+      "id": "pl-content-reviewer-popular-science-article",
+      "prompt": "Zrób redakcyjną recenzję tego artykułu popularnonaukowego pod kątem briefu.",
+      "lang": "pl",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster",
+        "content-roaster"
+      ],
+      "reason": "Editorial review against a brief; a popular-science article is not a manuscript for peer review"
+    },
+    {
+      "id": "pl-content-reviewer-not-full-quality-loop",
+      "prompt": "Nie potrzebuję całej pętli jakości, tylko recenzji tego szkicu pod kątem briefu.",
+      "lang": "pl",
+      "expected_primary_skill": "content-reviewer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "quality-loop-operator"
+      ],
+      "reason": "The full quality loop is declined; only the review stage is requested"
+    },
+    {
+      "id": "roadmap-missing-before-launch",
+      "prompt": "Give me a roadmap of what is missing before we launch to production.",
+      "lang": "en",
+      "expected_primary_skill": "repo-to-roadmap",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "product-operator",
+        "release-readiness"
+      ],
+      "reason": "A roadmap up to production with no existing roadmap is a whole-project baseline"
     }
   ]
 }

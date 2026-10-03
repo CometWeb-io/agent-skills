@@ -207,13 +207,35 @@ def table(rows: list[dict]) -> str:
     return "\n".join(out) + "\n"
 
 
+def hollow(rows: list[dict]) -> list[str]:
+    """Harnesses that hold no guard at all, with the reason a contributor can act on.
+
+    Recording one as a baseline would freeze a harness that proves nothing, so
+    --update refuses it rather than leaving the suite to fail later.
+    """
+    problems = []
+    for row in rows:
+        if row["held"] > 0:
+            continue
+        if not row.get("modules"):
+            problems.append(
+                f"{row['id']}: {HARNESS} names no module under scripts/, so nothing is measured. "
+                f"Rules written inside run_evals.py are never mutated; move them into a "
+                f"scripts/*.py module the harness imports by name.")
+        else:
+            problems.append(
+                f"{row['id']}: none of {row['guards']} guard(s) in {', '.join(row['modules'])} is held. "
+                f"Pin each case's exact output, not only a status.")
+    return problems
+
+
 def compare(rows: list[dict], baseline: dict, policy: dict | None = None) -> list[str]:
     before = {row["id"]: row for row in baseline.get("skills", [])}
     policy = policy or {}
     default_floor = float(policy.get("default_min_strength", 0.0))
     critical = policy.get("critical_skills") or {}
     allow_unexercised = policy.get("allow_unexercised_scripts") or {}
-    problems = []
+    problems = hollow(rows)
     for row in rows:
         old = before.get(row["id"])
         if old is None:
@@ -260,6 +282,12 @@ def main(argv: list[str] | None = None) -> int:
         target.write_text(table(rows), encoding="utf-8")
         print(f"OK: wrote {target.relative_to(ROOT)}")
     if args.update:
+        refused = hollow(rows)
+        for problem in refused:
+            print(f"FAIL: {problem}", file=sys.stderr)
+        if refused:
+            print(f"FAIL: baseline not written to {BASELINE.name}", file=sys.stderr)
+            return 1
         BASELINE.write_text(json.dumps(
             {"note": "Recorded by tooling/eval_strength.py --update. Held counts may rise freely; "
                      "a fall means a rule stopped being pinned.",

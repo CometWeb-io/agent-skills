@@ -107,3 +107,18 @@ Allowed applicability:
 - `UNKNOWN`
 
 A mandatory requirement with `UNKNOWN` applicability is a verification gap, not an automatic blocker.
+
+## Assessment Contract record
+
+Resolve from existing context when possible; do not ask unnecessary questions. Record:
+
+- project/repository scope,
+- target-state profile: `PROTOTYPE | INTERNAL_BETA | PUBLIC_BETA | CLIENT_READY | PAID_PRODUCTION | SCALE_READY | CUSTOM`,
+- explicit end-state requirements,
+- hard constraints/deadlines only when actually supplied,
+- repository refs/commits when available,
+- known product intent and approved decisions,
+- available evidence systems/connectors,
+- output destination or downstream consumer if relevant.
+
+If the target state is genuinely ambiguous and materially changes the roadmap, represent alternatives instead of inventing one.

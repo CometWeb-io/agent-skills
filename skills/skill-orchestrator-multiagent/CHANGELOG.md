@@ -1,5 +1,22 @@
 # Changelog — skill-orchestrator-multiagent
 
+## [1.1.3] - 2026-10-03
+
+### Security
+
+- The untrusted-content contract is carried by `skill-orchestrator`, whose front door this alias loads first; `tooling/tests/test_untrusted_content_rules.py` checks that hand-off instead of duplicating the rules here.
+- New `tests/front-door-rules.json` inventories every normative sentence in SKILL.md, so a rule cannot be dropped from the front door unnoticed.
+
+### Fixed
+
+- Reject an authorizing v2 verdict next to an unresolved gate: a `GO` or release
+  `GO_WITH_CONTROLS` whose `gates` include `BLOCK` or `COUNSEL_REQUIRED` (any
+  letter case), and a decision `GO` whose `human_approval` is `required`,
+  `pending` or `denied`. Before this, an empty `blockers` list was enough for the
+  gate to hand such an envelope to the next step, although
+  `tooling/validate_envelope.py` rejected it.
+- The shared `references/multiagent-execution.md` ran `scripts/orchestrate_multiagent_kernel.py` and `scripts/validate_envelope.py` as if they shipped with every orchestrator package; both exist only in `skill-orchestrator-multiagent`. Each command now changes into that package first, and the payload step says to fall back to `execution_mode=single_thread` when it is not installed. `tooling/tests/test_orchestrator_reference_commands.py` checks every command in both packages' references.
+
 ## [1.1.2] - Unreleased
 
 ### Fixed

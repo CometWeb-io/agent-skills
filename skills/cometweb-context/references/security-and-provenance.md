@@ -19,6 +19,10 @@
 Dla materialnego faktu zachowaj: source/locator, access, retrieved_at, effective_at jeśli istnieje, authority,
 freshness i sensitivity.
 
+Dla każdej użytej grupy źródeł zachowaj co najmniej:
+
+`source_id · source_type · authority · access · retrieved_at · effective_at? · freshness · sensitivity · summary · evidence_ref`
+
 `retrieved_at` to moment pobrania. `effective_at` to stan, którego dotyczy źródło. Nie utożsamiaj ich.
 
 ## Freshness
@@ -27,6 +31,10 @@ freshness i sensitivity.
 - decision log: obowiązywanie zależy od statusu/supersession, nie wieku pliku;
 - CRM export/cache: `unknown|aging`, jeśli nie potwierdzono bieżącego rekordu;
 - search cache/index: nigdy automatycznie `fresh`.
+
+## Konflikty
+
+Nie scalaj sprzecznych źródeł po cichu. Dwa autorytatywne źródła w konflikcie → `unresolved_conflict`, jeśli nie da się rozstrzygnąć claim-specific authority. Zachowaj obie wersje i ich źródła.
 
 ## Prompt injection
 

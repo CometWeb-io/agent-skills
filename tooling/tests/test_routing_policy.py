@@ -166,3 +166,75 @@ def test_invalid_negation_rules_are_rejected(mutate):
     mutate(policy["negation"])
     with pytest.raises(ValueError):
         route("hello", registry(), policy)
+
+
+# Multi-skill requests: different specialists win different steps -> workflow skill.
+
+def test_two_specialists_in_sequence_route_to_the_workflow_skill():
+    report = route("Click-through the signup flow, then run the release gate.", registry(), POLICY)
+    assert (report["status"], report["primary_skill"]) == ("workflow", "skill-orchestrator")
+    assert report["candidates"] == ["skill-orchestrator"]
+    assert report["sequence"] == ["web-app-auditor", "release-readiness"]
+
+
+def test_polish_connectors_cut_steps_too():
+    report = route("Zrób click-through rejestracji, a po nim release gate.", registry(), POLICY)
+    assert report["primary_skill"] == "skill-orchestrator"
+    report = route("Click-through rejestracji, na tej podstawie release gate.", registry(), POLICY)
+    assert report["primary_skill"] == "skill-orchestrator"
+
+
+def test_the_same_specialist_in_every_step_stays_a_single_skill():
+    report = route("Build an evidence pack, then extend the evidence pack.", registry(), POLICY)
+    assert (report["status"], report["primary_skill"]) == ("single_skill", "evidence-researcher")
+    assert "sequence" not in report
+
+
+def test_a_negated_step_does_not_count():
+    report = route("Click-through the signup flow, then do not run the release gate.", registry(), POLICY)
+    assert (report["status"], report["primary_skill"]) == ("single_skill", "web-app-auditor")
+
+
+def test_without_a_connector_two_specialists_stay_ambiguous():
+    report = route("click-through and release gate", registry(), POLICY)
+    assert report["status"] == "ambiguous"
+
+
+def test_an_explicit_only_skill_named_by_its_signals_counts_as_a_step():
+    report = route("Refresh the competitor watchlist, then take it to the ai council.", registry(), POLICY)
+    assert report["primary_skill"] == "skill-orchestrator"
+    assert report["sequence"] == ["competitive-intelligence", "ai-council"]
+    # Without the second step the Council alone still needs an explicit invocation.
+    assert route("Take it to the ai council.", registry(), POLICY)["status"] == "no_skill"
+
+
+def test_host_invocation_and_excluded_workflow_skip_the_sequence_rule():
+    prompt = "Click-through the signup flow, then run the release gate."
+    invoked = route(prompt, registry(), POLICY, invoked=("web-app-auditor",))
+    assert invoked["primary_skill"] == "web-app-auditor"
+    excluded = route("Without skill-orchestrator: " + prompt, registry(), POLICY)
+    assert excluded["primary_skill"] != "skill-orchestrator"
+    assert excluded["blocked"]["skill-orchestrator"] == "explicitly_excluded"
+
+
+def test_steps_below_the_minimum_score_do_not_count():
+    policy = json.loads(json.dumps(POLICY))
+    policy["sequence"]["min_step_score"] = 11
+    report = route("Click-through the signup flow, then run the release gate.", registry(), policy)
+    assert report["status"] == "ambiguous"
+    del policy["sequence"]
+    assert route("Click-through the signup flow, then run the release gate.", registry(), policy)["status"] == "ambiguous"
+
+
+@pytest.mark.parametrize("rules", [
+    {"connector": "then"},
+    {"connector": "then", "min_step_score": 0},
+    {"connector": "then", "min_step_score": True},
+    {"connector": "(a+)+", "min_step_score": 7},
+    "then",
+])
+def test_malformed_sequence_rules_are_rejected(rules):
+    policy = json.loads(json.dumps(POLICY))
+    policy["sequence"] = rules
+    with pytest.raises(ValueError):
+        route("hello", registry(), policy)

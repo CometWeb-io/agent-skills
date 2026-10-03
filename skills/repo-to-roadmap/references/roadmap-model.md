@@ -1,5 +1,13 @@
 # Roadmap Model v2
 
+## Gap classes
+
+Compare capability state against the Target State Contract. Classify material gaps as one or more of:
+
+`BLOCKER | CORRECTNESS | RELIABILITY | SECURITY_PRIVACY | DATA_INTEGRITY | UX_PRODUCT | OBSERVABILITY | PERFORMANCE | OPERATIONS | GTM_ENABLEMENT | TECH_DEBT | VALIDATION`
+
+A gap needs a credible impact path to a target requirement, user/business outcome, release/reliability/security risk, or enabling dependency. Do not convert every code smell into roadmap work.
+
 ## Item kinds
 
 Use one primary kind:
@@ -18,6 +26,9 @@ Use one primary kind:
 Use `VERIFY` to establish technical truth and `VALIDATE` to establish product/business/outcome truth.
 
 ## Candidate schema
+
+Every item must include: stable ID (`R-...`), title and observable outcome, kind, problem claim refs, target requirement refs, why now, acceptance criteria with `criterion`, `verify_with`, and `proof`, hard dependency IDs, effort band `XS | S | M | L | XL`, evidence confidence, uncertainty, priority dimensions, optional mandatory gate + gate status, non-goal, and success signal when meaningful.
+
 
 ```json
 {
@@ -84,6 +95,8 @@ Allowed gate statuses:
 - `BLOCK`
 
 A numeric priority score cannot create or clear a gate.
+
+Resolved `CLEAR | CLEAR_WITH_CONTROLS | BLOCK` gates must record `gate_basis`. Suspected security/privacy/legal risk from a general pass remains unverified until appropriate authority/specialist evidence exists.
 
 - `BLOCK` -> `BLOCKER` lane.
 - `UNVERIFIED` -> `VERIFY_NOW` lane when the gate is material to the target state.
@@ -171,6 +184,8 @@ Typical shape:
 - Later/Park - optional, speculative, duplicate, or dependency-blocked work.
 
 Use outcome milestones, not invented dates, when capacity is unknown.
+
+For each wave state the objective, item IDs, exit criteria, hard prerequisites, parallelizable groups when useful, material risks/unknowns, and the evidence/trigger that would reprioritize it.
 
 ## Capacity
 

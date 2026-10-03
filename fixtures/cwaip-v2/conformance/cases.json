@@ -245,6 +245,39 @@
       "final": false,
       "error": "GO_WITH_CONTROLS cannot have blockers",
       "note": "GO_WITH_CONTROLS requires no open blocker; controls do not neutralize one"
+    },
+    {
+      "file": "invalid/release-go-with-block-gate.json",
+      "expect": "reject",
+      "final": false,
+      "error": "GO blocked by gate security status=BLOCK",
+      "note": "an empty blockers list does not clear a gate that still says BLOCK"
+    },
+    {
+      "file": "invalid/release-go-with-controls-with-block-gate.json",
+      "expect": "reject",
+      "final": false,
+      "error": "GO_WITH_CONTROLS blocked by gate security status=BLOCK",
+      "note": "controls bound residual risk; they do not clear a BLOCK gate"
+    },
+    {
+      "file": "invalid/release-go-with-lowercase-block-gate.json",
+      "expect": "reject",
+      "final": false,
+      "error": "GO blocked by gate privacy status=block",
+      "note": "release gate statuses are compared case-insensitively; the readiness engine writes governance states in lowercase"
+    },
+    {
+      "file": "invalid/release-go-with-counsel-required-gate.json",
+      "expect": "reject",
+      "final": false,
+      "error": "GO_WITH_CONTROLS blocked by gate legal status=COUNSEL_REQUIRED"
+    },
+    {
+      "file": "valid/release-defer-with-block-gate.json",
+      "expect": "accept",
+      "final": true,
+      "note": "unresolved gates are expected next to DEFER or NO_GO"
     }
   ]
 }

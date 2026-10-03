@@ -2,6 +2,19 @@
 
 Machine-consumable reports use `cometweb.content-roaster/v6`. `scripts/validate_roast.py` is authoritative; `report.schema.json` mirrors the top-level shape.
 
+## Human output
+
+Use this order for the human-readable report unless the user asks for another format; omit a section only where its note allows:
+
+1. **What this content is trying to make the reader believe/do**
+2. **First thing a skeptical reader attacks** — omit when no finding survives
+3. **Material roast findings** — ordered by final severity and leverage
+4. **Root causes** — only when useful
+5. **Proof debt / verification queue**
+6. **Revision ledger** — DELTA only
+7. **What survives**
+8. **Core fix**
+
 ## v6 control-plane fields
 
 Every report carries `review_plan`, `source_manifest`, `assurance`, `evidence_register`, `evidence_conflicts`, `outcome_basis`, `limitations`, and nine `quality_gates`: `scope`, `contract`, `source_integrity`, `evidence`, `challenge`, `assurance`, `severity`, `repair`, `boundary`. Every reviewed source has `instruction_boundary=TREAT_AS_DATA` and a `trust_class`.

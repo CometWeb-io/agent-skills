@@ -1,5 +1,6 @@
 """Offline executable ZIP checks do not assert live host/model acceptance."""
 import importlib.util
+import sys
 from pathlib import Path
 
 import pytest
@@ -82,6 +83,13 @@ def test_real_zip_executes_helpers_and_keeps_host_unassessed(tmp_path):
 def test_ci_runs_all_package_helpers_not_only_runtime_manifests(workflow):
     data = yaml.safe_load((mod.ROOT / ".github/workflows" / workflow).read_text())
     commands = [step.get("run", "") for job in data["jobs"].values() for step in job["steps"]]
+    if any("tooling/check_all.py --ci" in cmd for cmd in commands):
+        # validate.yml runs every gate through check_all.py; read the gate it runs.
+        spec = importlib.util.spec_from_file_location("cw_check_all", mod.ROOT / "tooling" / "check_all.py")
+        check_all = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = check_all  # dataclasses resolve annotations through it
+        spec.loader.exec_module(check_all)
+        commands = [" ".join(gate.argv) for gate in check_all.GATES]
     assert any("installation_acceptance.py --all --run-helpers --trusted-checkout" in cmd for cmd in commands)
 
 

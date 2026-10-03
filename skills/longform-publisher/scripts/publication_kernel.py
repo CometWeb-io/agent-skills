@@ -292,6 +292,11 @@ def check_derived(report: dict[str, Any]) -> list[str]:
                 errors.append("VISUAL_QA_MISSING")
         elif item.get("qa_required") is True and item.get("qa_status") != "PASS":
             errors.append("DERIVED_QA_MISSING")
+        elif item.get("qa_required") is False and not in_set(item.get("qa_status"), {"PASS", "NOT_REQUIRED"}):
+            # QA was optional but ran and did not pass. _derived_ready already holds
+            # the stage at MASTER_LOCKED for this; without a code the run stopped
+            # there with no stated reason.
+            errors.append("DERIVED_QA_FAILED")
         if item.get("parity_status") != "PASS":
             errors.append("DERIVED_PARITY_FAILED")
     return list(dict.fromkeys(errors))

@@ -1,6 +1,6 @@
 interface:
   display_name: Longform Publisher
-  short_description: canonical long-form manuscript; publication lifecycle and claim-use reconciliation; derived-artifact release readiness
+  short_description: canonical long-form manuscript
   default_prompt: 'Use the Longform Publisher skill for: Run the publication control plane for a long-form work such as an ebook, report, playbook, white paper, guide, handbook, or research-backed article: one canonical manuscript, claim-use traceability, d'
   icon_small: ./assets/icon.svg
   icon_large: ./assets/icon.svg

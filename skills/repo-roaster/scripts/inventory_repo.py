@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import stat
 import subprocess
 from collections import Counter
 from pathlib import Path
@@ -53,11 +54,22 @@ def _path_tokens(rel: str) -> set[str]:
     return {p for p in parts if p}
 
 
+MAX_HINT_BYTES = 1_000_000
+
+
+def _read_target_text(path: Path) -> str:
+    """Read a regular file inside the target; never follow its symlinks out of it."""
+    st = path.lstat()
+    if not stat.S_ISREG(st.st_mode) or st.st_size > MAX_HINT_BYTES:
+        raise OSError('not a bounded regular file')
+    return path.read_text(encoding='utf-8')
+
+
 def _safe_json(path: Path) -> dict[str, Any] | None:
     try:
-        data = json.loads(path.read_text(encoding='utf-8'))
+        data = json.loads(_read_target_text(path))
         return data if isinstance(data, dict) else None
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, RecursionError):
         return None
 
 
@@ -73,7 +85,7 @@ def _workspace_hints(root: Path) -> list[str]:
     pnpm = root / 'pnpm-workspace.yaml'
     if pnpm.is_file():
         try:
-            for line in pnpm.read_text(encoding='utf-8').splitlines():
+            for line in _read_target_text(pnpm).splitlines():
                 stripped = line.strip().lstrip('-').strip().strip('"\'')
                 if stripped and not stripped.startswith(('packages:', '#')) and ('*' in stripped or '/' in stripped):
                     out.append(stripped)
@@ -82,9 +94,16 @@ def _workspace_hints(root: Path) -> list[str]:
     return sorted(set(out))
 
 
+# The roasted repository is untrusted: its own .git/config may name commands
+# (fsmonitor, hooks, external diff/textconv drivers) that read-only calls must not run.
+GIT_SAFE_CONFIG = ('-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=' + os.devnull)
+
+
 def _git_run(root: Path, *args: str, timeout: int = 8) -> str | None:
+    env = {**os.environ, 'GIT_OPTIONAL_LOCKS': '0', 'GIT_TERMINAL_PROMPT': '0'}
     try:
-        proc = subprocess.run(['git', '-C', str(root), *args], capture_output=True, text=True, timeout=timeout)
+        proc = subprocess.run(['git', '-C', str(root), *GIT_SAFE_CONFIG, *args], capture_output=True, text=True,
+                              timeout=timeout, env=env, stdin=subprocess.DEVNULL)
         return proc.stdout.strip() if proc.returncode == 0 else None
     except (OSError, subprocess.TimeoutExpired):
         return None
@@ -105,8 +124,11 @@ def _git_snapshot(root: Path) -> dict[str, Any]:
 
 
 def _git_change_surface(root: Path, base: str, head: str) -> dict[str, Any]:
-    name_status = _git_run(root, 'diff', '--name-status', f'{base}...{head}')
-    numstat = _git_run(root, 'diff', '--numstat', f'{base}...{head}')
+    for ref in (base, head):
+        if not ref or ref.startswith('-') or any(ord(c) < 32 for c in ref):
+            raise ValueError('base/head must be git revisions, not options')
+    name_status = _git_run(root, 'diff', '--no-ext-diff', '--no-textconv', '--name-status', f'{base}...{head}')
+    numstat = _git_run(root, 'diff', '--no-ext-diff', '--no-textconv', '--numstat', f'{base}...{head}')
     changed: list[dict[str, str]] = []
     if name_status:
         for line in name_status.splitlines():

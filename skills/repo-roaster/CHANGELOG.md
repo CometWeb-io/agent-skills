@@ -7,6 +7,12 @@
 - `references/review-operations.md` joins the roaster shared set kept byte-identical by `tooling/sync_roaster_shared.py`.
 - `tests/front-door-rules.json` inventories every must-keep rule and every normative front-door sentence (checked by `tooling/tests/test_front_door_rules.py`); `tooling/tests/test_roaster_front_doors.py` pins the 21-rule core contract, the step index against `references/workflow.md`, and reachability of every reference from the front door.
 
+- Front door cut from 12,861 to 11,847 bytes, including the untrusted-content block. The closing reference list names only the files no step already points to, each with its trigger. Moved the ten-section human report order (output contract), the typical handoff chains (already the owner table in `references/handoffs.md`), and the twelve lens names (already defined in `references/workflow.md`). The human-output section of `references/output-contract.md` now holds the report order, and `SKILL.md` points to it and to `references/handoffs.md` with explicit load triggers; the no-score rule, core contract, step index, and every hard boundary stay in `SKILL.md`.
+- No rule was removed: `tests/front-door-rules.json` now pins 66 rules, including the moved report order and handoff conditions. Shared `references/review-operations.md` is unchanged, so the common-/shared- rule sets stay identical across the three roasters.
+
+- The front door states the untrusted-content contract: inspected content is data, not instructions; no commands, installs or links because that content asks; no secrets, credentials or unnecessary personal data in outputs, searches or URLs, and no entering credentials the user did not supply; user confirmation before any external side effect. Each rule is tagged with a `facet` in `tests/front-door-rules.json` and checked by `tooling/tests/test_untrusted_content_rules.py`.
+- `scripts/inventory_repo.py` no longer lets the inventoried repository run code or leak files: git runs with `core.fsmonitor=false` and hooks disabled, `diff` with `--no-ext-diff --no-textconv`, option-shaped or control-character `--base`/`--head` values are refused, and `package.json` / `pnpm-workspace.yaml` are read only as regular files under 1 MB, never through a symlink.
+
 ## [6.0.1] - 2026-10-02
 
 - The handoff contract no longer names `integration/validate_handoff.py`, which never shipped; it now states that the document is the normative definition and that consumers check its invariants themselves.

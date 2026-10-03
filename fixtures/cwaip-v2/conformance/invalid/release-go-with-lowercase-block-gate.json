@@ -1,0 +1,30 @@
+{
+  "id": "example:ReleaseEnvelope:go-with-lowercase-block-gate",
+  "type": "ReleaseEnvelope",
+  "producer": "example-producer",
+  "producer_version": "1.0.0",
+  "protocol_version": "2.0",
+  "subject": "example.com pricing page",
+  "generated_at": "2026-09-08T12:00:00Z",
+  "as_of": "2026-09-08T12:00:00Z",
+  "sensitivity": "public",
+  "dependencies": [],
+  "payload": {
+    "schema": "cometweb.release/v2",
+    "release_candidate": "v1.4.0-rc.2",
+    "environment": "production",
+    "verdict": "GO",
+    "gates": [
+      {
+        "gate_id": "privacy",
+        "status": "block"
+      }
+    ],
+    "blockers": [],
+    "controls": [],
+    "as_of": "2026-09-08T12:00:00Z",
+    "manifest_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+    "score": 0.82
+  },
+  "payload_hash": "sha256:67fee69bfde61e94a5ebe08a65200e9f2ea275ffaab49c31ef3b2a2ee628f0d4"
+}

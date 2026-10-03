@@ -25,7 +25,8 @@ EXPECTED = {
     # that acceptance record. 1.1.1 made the description host-neutral and
     # bounded it against ebook-publisher; see the 1.1.1 exception there. 1.1.2
     # turned tracebacks on wrongly typed nested fields into error codes; see the
-    # 1.1.2 exception.
+    # 1.1.2 exception, which also covers the untrusted-content rules added to
+    # its front door in the same unreleased version.
     "longform-publisher": ("1.1.2", "FROZEN"),
     "product-operator": ("2.4.0", "ACTIVE"),
 }

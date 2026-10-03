@@ -12,7 +12,12 @@ and how many forbid it, and rejects suite defects that make a green run hollow:
 - a case that expects a skill and forbids it in the same breath;
 - a prompt copied verbatim from a registry trigger/negative example. Those are
   already pinned by tooling/tests/test_registry_self_consistency.py, so a copy
-  adds a count without adding evidence.
+  adds a count without adding evidence;
+- a `lang` the suite does not know, or a prompt with Polish letters that is not
+  tagged `"lang": "pl"` (an untagged case would not count toward the Polish floor).
+
+Floors also apply per language (`LANGUAGE_FLOORS`): a skill reachable only from
+English prompts is not covered for a Polish-speaking user.
 
 `evals/routing/known-gaps.json` pins prompts the deterministic router is known
 to misroute today. They are not counted as coverage; each must keep reproducing
@@ -47,6 +52,13 @@ POLICY = ROOT / "registry" / "routing-policy.json"
 # one phrasing; two negatives mean at least two neighbours are told "not this one".
 MIN_POSITIVE = 3
 MIN_NEGATIVE = 2
+# Cases carry an optional "lang" (default "en"). Per-language floors: positives
+# expecting the skill, and boundary negatives (another skill should win and this
+# one is forbidden) written in that language.
+LANGUAGES = ("en", "pl")
+DEFAULT_LANGUAGE = "en"
+LANGUAGE_FLOORS: dict[str, dict[str, int]] = {"pl": {"positive": 3, "boundary": 1}}
+POLISH_LETTERS = re.compile("[ąćęłńśźżĄĆĘŁŃŚŹŻ]")
 NEAR_DUPLICATE = 0.8
 GAPS_SCHEMA = "cometweb.routing-known-gaps/v1"
 # Deterministic-proxy floors on skill-local trigger evals, set just under the
@@ -54,7 +66,7 @@ GAPS_SCHEMA = "cometweb.routing-known-gaps/v1"
 # (should-not-trigger cases kept away from it) and near_miss (near-miss cases
 # routed to the skill they name). Raise them when routing improves.
 TRIGGER_EVAL_FLOORS: dict[str, dict[str, int]] = {
-    "content-roaster": {"recall": 16, "rejected": 18, "near_miss": 8},
+    "content-roaster": {"recall": 16, "rejected": 18, "near_miss": 9},
     "repo-roaster": {"recall": 17, "rejected": 18, "near_miss": 7},
     "science-roaster": {"recall": 17, "rejected": 18, "near_miss": 5},
 }
@@ -118,6 +130,11 @@ def structural_problems(cases: list, registry: dict, *, label: str = "suite") ->
             sid, field = examples[key]
             problems.append(f"{where}: prompt copies registry {sid}.{field}; "
                             "registry examples are already tested, paraphrase it")
+        lang = case.get("lang", DEFAULT_LANGUAGE)
+        if lang not in LANGUAGES:
+            problems.append(f"{where}: lang must be one of {', '.join(LANGUAGES)}")
+        elif lang != "pl" and POLISH_LETTERS.search(prompt):
+            problems.append(f"{where}: prompt has Polish letters; tag it \"lang\": \"pl\"")
         expected = case.get("expected_primary_skill")
         if expected is not None and expected not in known:
             problems.append(f"{where}: unknown expected skill {expected!r}")
@@ -163,6 +180,14 @@ def coverage(cases: list[dict], registry: dict) -> list[dict]:
             "out_of_scope": sum(c.get("expected_primary_skill") is None for c in forbidden),
             "registry_examples": len(entry.get("trigger_examples", [])),
             "registry_negatives": len(entry.get("negative_trigger_examples", [])),
+            "languages": {
+                lang: {
+                    "positive": sum(c.get("lang", DEFAULT_LANGUAGE) == lang
+                                    for c in cases if c.get("expected_primary_skill") == sid),
+                    "boundary": sum(c.get("lang", DEFAULT_LANGUAGE) == lang
+                                    and c.get("expected_primary_skill") is not None for c in forbidden),
+                } for lang in LANGUAGES
+            },
         })
     return rows
 
@@ -175,6 +200,19 @@ def floor_problems(rows: list[dict], *, min_positive: int = MIN_POSITIVE,
             problems.append(f"{row['id']}: {row['positive']} positive routing case(s) < {min_positive}")
         if row["negative"] < min_negative:
             problems.append(f"{row['id']}: forbidden in {row['negative']} case(s) < {min_negative}")
+    return problems
+
+
+def language_floor_problems(rows: list[dict],
+                            floors: dict[str, dict[str, int]] = LANGUAGE_FLOORS) -> list[str]:
+    problems = []
+    for row in rows:
+        for lang, floor in sorted(floors.items()):
+            got = row.get("languages", {}).get(lang, {})
+            for kind, minimum in sorted(floor.items()):
+                if got.get(kind, 0) < minimum:
+                    label = "positive routing case(s)" if kind == "positive" else "boundary negative(s)"
+                    problems.append(f"{row['id']}: {got.get(kind, 0)} {lang} {label} < {minimum}")
     return problems
 
 
@@ -274,11 +312,13 @@ def report(*, with_trigger_evals: bool = False) -> dict:
         "runtime_acceptance": "not_assessed",
         "cases": len(cases),
         "known_gaps": len(gaps.get("cases", [])),
-        "floors": {"min_positive": MIN_POSITIVE, "min_negative": MIN_NEGATIVE},
+        "floors": {"min_positive": MIN_POSITIVE, "min_negative": MIN_NEGATIVE,
+                   "languages": LANGUAGE_FLOORS},
         "skills": rows,
         "near_duplicates": [list(row) for row in near_duplicates(
             [c for c in cases if isinstance(c, dict) and isinstance(c.get("prompt"), str)])],
         "problems": (structural_problems(cases, registry) + floor_problems(rows)
+                     + language_floor_problems(rows)
                      + gap_problems(gaps, cases, registry, policy)
                      + trigger_eval_floor_problems(proxy)),
     }
@@ -288,15 +328,18 @@ def report(*, with_trigger_evals: bool = False) -> dict:
 
 
 def table(data: dict) -> str:
-    out = ["| Skill | Positive | Negative | Boundary | Out of scope |",
-           "| --- | ---: | ---: | ---: | ---: |"]
+    out = ["| Skill | Positive | Negative | Boundary | Out of scope | PL positive | PL boundary |",
+           "| --- | ---: | ---: | ---: | ---: | ---: | ---: |"]
     for row in sorted(data["skills"], key=lambda r: (r["positive"] + r["negative"], r["id"])):
+        pl = row.get("languages", {}).get("pl", {})
         out.append(f"| `{row['id']}` | {row['positive']} | {row['negative']} | "
-                   f"{row['boundary']} | {row['out_of_scope']} |")
+                   f"{row['boundary']} | {row['out_of_scope']} | {pl.get('positive', 0)} | {pl.get('boundary', 0)} |")
     out.append("")
     out.append(f"{data['cases']} suite cases, {data['known_gaps']} known gap(s); "
                f"floors {data['floors']['min_positive']} positive / "
-               f"{data['floors']['min_negative']} negative per active skill.")
+               f"{data['floors']['min_negative']} negative per active skill; "
+               + "; ".join(f"{lang}: " + ", ".join(f"{n} {kind}" for kind, n in sorted(floor.items()))
+                           for lang, floor in sorted(data["floors"]["languages"].items())) + ".")
     for left, right, score in data["near_duplicates"]:
         out.append(f"near-duplicate {score:.2f}: {left} ~ {right}")
     for row in data.get("trigger_eval_proxy", []):

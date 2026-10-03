@@ -68,3 +68,27 @@ def validate(x):
 def evaluate_case(case):
     if not isinstance(case,dict):return validate(None)
     return validate(case.get('input'))
+
+
+PASSING={'READY_TO_FREEZE'}
+
+def main(argv=None):
+    """Validate one JSON payload from a file or stdin; exit 1 when it does not pass."""
+    import argparse
+    import json
+    import sys
+    parser = argparse.ArgumentParser(description=main.__doc__)
+    parser.add_argument("payload", nargs="?", type=argparse.FileType("r", encoding="utf-8"),
+                        default=sys.stdin, help="JSON file (default: stdin)")
+    args = parser.parse_args(argv)
+    try:
+        payload = json.load(args.payload)
+    except json.JSONDecodeError as exc:
+        parser.error(f"payload is not JSON: {exc}")
+    result = validate(payload)
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0 if result["status"] in PASSING else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

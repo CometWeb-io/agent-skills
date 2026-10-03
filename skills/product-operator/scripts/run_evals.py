@@ -2,9 +2,15 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import importlib.util
+import io
 import json
+import os
 import pathlib
+import shutil
+import sys
+import tempfile
 from typing import Any
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -49,6 +55,146 @@ def _override(base: dict[str, Any], payload: dict[str, Any]) -> dict[str, Any]:
         out.pop(key, None)
     out.update({key: value for key, value in payload.items() if key != "__drop__"})
     return out
+
+
+EXAMPLE_BRIEF = ROOT / "examples" / "brief.synthetic.pl.json"
+BRIEF_OPTIONAL_KEYS = ("environment", "revision", "config_fingerprint", "coverage_exclusions",
+                       "outcome_required", "unresolved_gate", "critical_gap_open",
+                       "material_unknowns_open", "material_current_evidence_block",
+                       "blocker_resolutions")
+
+
+# prepare_brief loads its own copy of the kernel, so its InputError is a different class.
+INPUT_ERRORS = (kernel.InputError, prepare_brief.kernel.InputError)
+
+
+def _brief_input(spec: dict[str, Any]) -> dict[str, Any]:
+    """The bundled synthetic brief with one case's fields replaced or dropped."""
+    return _override(prepare_brief.read(EXAMPLE_BRIEF), spec.get("overrides") or {})
+
+
+def _brief_previous(spec: Any) -> Any:
+    if spec is None:
+        return None
+    if "report_overrides" in spec:
+        # A snapshot whose hashes are intact but whose report does not validate.
+        return kernel.snapshot_report(_override(VALID_REPORT, spec["report_overrides"]))
+    return prepare_brief.assemble(_brief_input(spec))["snapshot"]
+
+
+def _brief_result(payload: dict[str, Any]) -> dict[str, Any]:
+    return prepare_brief.assemble(_brief_input(payload), previous=_brief_previous(payload.get("previous")))
+
+
+def _brief_summary(result: dict[str, Any]) -> dict[str, Any]:
+    report = result["report"]
+    lanes = ("verify_now", "decision_now", "now", "next", "later", "stop")
+    return {
+        "mode": report["mode"],
+        "readiness": report["readiness"]["status"],
+        "reasons": report["readiness"]["reasons"],
+        "lanes": {lane: [row["id"] for row in report[lane]] for lane in lanes},
+        "copied": sorted(key for key in BRIEF_OPTIONAL_KEYS if key in report),
+        "decision_origin": report["decision_origin"],
+        "baseline_guard_ids": report.get("baseline_guard_ids"),
+        "delta_status": result["delta"]["comparison_status"] if result["delta"] is not None else None,
+        "files": sorted(prepare_brief.artifacts(result)),
+    }
+
+
+def _brief_fields(payload: dict[str, Any], expected: dict[str, Any]) -> dict[str, Any]:
+    try:
+        summary = _brief_summary(_brief_result(payload))
+    except INPUT_ERRORS as exc:
+        return {"error": str(exc)}
+    return {key: summary.get(key) for key in expected}
+
+
+def _brief_render(payload: dict[str, Any], expected: dict[str, Any]) -> tuple[bool, Any]:
+    try:
+        text = prepare_brief.render(_brief_result(payload), payload.get("language", "pl"))
+    except INPUT_ERRORS as exc:
+        actual = {"error": str(exc)}
+        return actual == expected, actual
+    missing = [part for part in expected.get("contains", []) if part not in text]
+    present = [part for part in expected.get("absent", []) if part in text]
+    ok = "error" not in expected and bool(expected.get("contains") or expected.get("absent"))
+    return ok and not missing and not present, {"missing": missing, "unexpected": present}
+
+
+def _outcome(call: Any) -> dict[str, Any]:
+    """InputError message, other exception type, or the call's value."""
+    try:
+        return {"value": call()}
+    except INPUT_ERRORS as exc:
+        return {"error": str(exc)}
+    except Exception as exc:  # noqa: BLE001 - the type is the observation
+        return {"exception": type(exc).__name__}
+
+
+def _brief_read(payload: dict[str, Any]) -> dict[str, Any]:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = pathlib.Path(tmp)
+        source = base / "input.json"
+        scenario = payload.get("scenario", "file")
+        if scenario == "oversize":
+            source.write_bytes(b" " * prepare_brief.MAX_INPUT + b"{}")
+        else:
+            source.write_text(payload.get("text", "{}"), encoding="utf-8")
+        target = source
+        if scenario == "symlink":
+            target = base / "link.json"
+            target.symlink_to(source)
+        elif scenario == "directory":
+            target = base / "folder"
+            target.mkdir()
+        return _outcome(lambda: prepare_brief.read(target))
+
+
+def _brief_publish(payload: dict[str, Any]) -> dict[str, Any]:
+    files = {name: b"x" for name in payload.get("files", ["brief.md"])}
+    with tempfile.TemporaryDirectory() as tmp:
+        base = pathlib.Path(tmp)
+        scenario = payload["scenario"]
+        output = base / "out"
+        if scenario == "symlink":
+            (base / "real").mkdir()
+            output.symlink_to(base / "real")
+        elif scenario == "missing_parent":
+            output = base / "absent" / "out"
+        elif scenario == "inside_skill":
+            output = ROOT / ".eval-publish-probe"
+        try:
+            result = _outcome(lambda: prepare_brief.publish(files, output))
+            if "value" in result:
+                result = {"written": sorted(p.name for p in output.iterdir())}
+        finally:
+            if scenario == "inside_skill" and output.is_dir():
+                shutil.rmtree(output)
+        return result
+
+
+def _kernel_cli(payload: dict[str, Any]) -> dict[str, Any]:
+    """Run the kernel CLI in-process; `{tmp}` in argv names a scratch directory."""
+    with tempfile.TemporaryDirectory() as tmp:
+        for name, value in (payload.get("files") or {}).items():
+            pathlib.Path(tmp, name).write_text(json.dumps(value), encoding="utf-8")
+        argv = [arg.replace("{tmp}", tmp) for arg in payload["argv"]]
+        out, err = io.StringIO(), io.StringIO()
+        old_argv, old_cwd = sys.argv, os.getcwd()
+        try:
+            sys.argv = ["operator_kernel.py", *argv]
+            os.chdir(tmp)
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                code = kernel.main()
+        finally:
+            sys.argv = old_argv
+            os.chdir(old_cwd)
+        error = None
+        if err.getvalue().strip():
+            error = json.loads(err.getvalue()).get("error")
+        stdout = json.loads(out.getvalue()) if out.getvalue().strip() else None
+        return {"exit": code, "error": error, "stdout_status": stdout.get("status") if isinstance(stdout, dict) else None}
 
 
 def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
@@ -159,6 +305,31 @@ def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
         assembled = prepare_brief.assemble(sample)
         ok = ok and assembled["validation"]["status"] != "FAIL"
         return ok == expected, ok
+    if kind == "sequence_fields":
+        result = kernel.sequence_candidates(payload)
+        result["execution_order"] = [row["id"] for row in result["execution_order"]]
+        actual = {key: result.get(key) for key in expected}
+        return bool(expected) and actual == expected, actual
+    if kind == "reconcile_stages":
+        # The stage an issue is attributed to, not only that the code fired.
+        result = kernel.reconcile_items(payload)
+        actual = sorted([row["code"], row.get("stage")] for row in result["issues"])
+        return actual == expected, actual
+    if kind == "brief_fields":
+        actual = _brief_fields(payload, expected)
+        return bool(expected) and actual == expected, actual
+    if kind == "brief_render":
+        return _brief_render(payload, expected)
+    if kind == "brief_read":
+        actual = _brief_read(payload)
+        return actual == expected, actual
+    if kind == "brief_publish":
+        actual = _brief_publish(payload)
+        return actual == expected, actual
+    if kind == "kernel_cli":
+        actual = _kernel_cli(payload)
+        actual = {key: actual.get(key) for key in expected}
+        return bool(expected) and actual == expected, actual
     raise ValueError(f"unknown case kind: {kind}")
 
 

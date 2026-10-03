@@ -1,6 +1,19 @@
 # Source registry
 
-Spis: 1. Reguły · 2. Governance/vault · 3. Product/repo · 4. Insight · 5. Planning/Notion · 6. CRM · 7. Communications · 8. Public web · 9. Files · 10. Fallbacks
+Spis: 0. Routing · 1. Reguły · 2. Governance/vault · 3. Product/repo · 4. Insight · 5. Planning/Notion · 6. CRM · 7. Communications · 8. Public web · 9. Files · 10. Fallbacks · 11. Context set per profil
+
+## 0. Routing claim → źródło
+
+- **GitHub / repo** — implementation, branch, PR/commit, current repo docs, CI/release evidence.
+- **CometWeb Insight connector** — live projects, findings, score history, tasks, crawl runs, reports; nie kod repo.
+- **Notion** — plan, task, project/meeting notes, gdy Notion jest właściwą warstwą planowania; nie dowód implementacji.
+- **CRM** — aktualny system rekordowy pipeline'u. Nie podmieniaj CRM na inny tylko dlatego, że connector jest dostępny.
+- **Gmail / Calendar / Contacts** — tylko gdy komunikacja lub spotkanie jest materialne.
+- **Files** — załączone/saved dokumenty wybrane przez użytkownika.
+- **live website / web** — publiczny stan strony, aktualne dane zewnętrzne i źródła publiczne.
+- **vault `gtm-cometweb`** — kanon strategii/decisions/status/claims/governance, jeśli dostępny.
+
+Jeśli authoritative connector jest niedostępny, użyj najlepszego jawnego fallbacku i wpisz `authority_gap`. Nie udawaj równoważności.
 
 ## 1. Reguły ogólne
 
@@ -107,3 +120,28 @@ provenance i nie mieszaj ich z live state bez oznaczenia różnicy wersji/czasu.
 | First Principles source | decision log / pointer only | `governance_gap`; nie odtwarzaj doktryny z pamięci |
 
 Każdą degradację zapisz w `gaps`.
+
+## 11. Minimalny context set per profil
+
+Zbieraj najmniejszy zestaw dla wybranego profilu:
+
+#### product
+GitHub/repo + Insight jeśli dotyczy + `STATUS.md`/`DECISIONS.md`; Notion tylko gdy plan ma znaczenie.
+
+#### portfolio
+Aktualny stan głównych repo + Notion/project planning + `STATUS.md` + `DECISIONS.md` + First Principles + Insight dla aktywnego produktu. Nie czytaj Gmaila/sociali bez konkretnej potrzeby.
+
+#### GTM / pricing / positioning
+`DECISIONS.md` + kanoniczny dokument tematu + First Principles + live website; CRM tylko gdy decyzja zależy od pipeline/customer state.
+
+#### outreach / design partner
+CRM + ostatnia istotna komunikacja + ICP/SOP + publiczna strona/profil prospekta.
+
+#### meeting
+Calendar + Contacts + istotny CRM/mail + dokumenty dotyczące konkretnego spotkania.
+
+#### weekly / boardroom
+Tylko systemy rekordowe potrzebne do bieżącego review; pełny zakres nie oznacza dumpu całych workspace'ów.
+
+#### public claim verification
+Evidence register + primary source + publication surface. Brak public-use approval → `blocked_public_claims`.

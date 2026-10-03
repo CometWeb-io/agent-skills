@@ -148,3 +148,30 @@ def test_table_matches_the_baseline() -> None:
             f"{row['id']} in {TABLE.name} disagrees with the baseline; "
             f"regenerate with --update --table"
         )
+
+
+def test_a_harness_that_holds_nothing_is_named_with_the_reason() -> None:
+    module = load()
+    rows = [
+        {"id": "no-module", "guards": 0, "held": 0, "modules": []},
+        {"id": "loose", "guards": 4, "held": 0, "modules": ["demo_kernel.py"]},
+        {"id": "fine", "guards": 4, "held": 1, "modules": ["demo_kernel.py"]},
+    ]
+    problems = module.hollow(rows)
+    assert [p.split(":")[0] for p in problems] == ["no-module", "loose"]
+    assert "Rules written inside run_evals.py are never mutated" in problems[0]
+    assert "none of 4 guard(s) in demo_kernel.py is held" in problems[1]
+    baseline = {"skills": [{"id": r["id"], "guards": r["guards"], "held": r["held"]} for r in rows]}
+    assert module.compare(rows, baseline)[:2] == problems
+
+
+def test_update_refuses_to_record_a_hollow_harness(tmp_path, monkeypatch, capsys) -> None:
+    """--update used to write the baseline and print OK; the suite then failed."""
+    module = load()
+    target = tmp_path / "eval-strength.json"
+    monkeypatch.setattr(module, "BASELINE", target)
+    monkeypatch.setattr(module, "current", lambda: [
+        {"id": "new-skill", "guards": 0, "held": 0, "modules": [], "unexercised": [], "unheld": []}])
+    assert module.main(["--update"]) == 1
+    assert not target.exists()
+    assert "new-skill" in capsys.readouterr().err

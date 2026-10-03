@@ -95,12 +95,12 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
-| [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. *(runs only when named)* | 5.2.0 |
-| [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. | 1.4.2 |
-| [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. | 1.0.3 |
+| [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. *(runs only when named)* | 5.2.1 |
+| [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. | 1.5.0 |
+| [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. | 1.0.4 |
 | [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. | 1.2.1 |
-| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.1.2 |
-| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.1.2 |
+| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.1.3 |
+| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.1.3 |
 | [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. | 1.7.1 |
 | [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. | 1.7.1 |
 | [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. | 1.7.1 |
@@ -112,12 +112,12 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
-| [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. | 2.5.0 |
+| [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. | 2.6.0 |
 | [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. | 1.1.0 |
-| [`design-partner-finder`](skills/design-partner-finder/) | Finding, qualifying, and managing design partners and early adopters. | 1.1.1 |
+| [`design-partner-finder`](skills/design-partner-finder/) | Finding, qualifying, and managing design partners and early adopters. | 1.2.0 |
 | [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. | 2.4.0 |
 | [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. | 1.2.0 |
-| [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. | 1.0.1 |
+| [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. | 1.1.0 |
 | [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. | 1.7.1 |
 | [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. | 1.7.1 |
 | [`content-reviewer`](skills/content-reviewer/) | Constructive editorial QA with evidence-backed, actionable findings. | 1.7.1 |
@@ -132,11 +132,11 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | Skill | Use it for | Version |
 | --- | --- | ---: |
 | [`customer-ops`](skills/customer-ops/) | Support triage, incidents, account risk, commitments, and engineering handoffs. | 2.2.0 |
-| [`ebook-publisher`](skills/ebook-publisher/) | Research-backed ebooks, white papers, workbooks, and publication QA. | 1.0.1 |
+| [`ebook-publisher`](skills/ebook-publisher/) | Research-backed ebooks, white papers, workbooks, and publication QA. | 1.0.2 |
 | [`longform-publisher`](skills/longform-publisher/) | Canonical long-form manuscripts and release-ready derived documents. *(frozen)* | 1.1.2 |
 | [`release-readiness`](skills/release-readiness/) | Candidate-bound production gates and GO / GO_WITH_CONTROLS / NO_GO / DEFER verdicts. | 1.3.0 |
-| [`seo-geo-aeo-maxxing`](skills/seo-geo-aeo-maxxing/) | Multi-pillar SEO / GEO / AEO visibility audits. | 1.2.2 |
-| [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. | 1.3.3 |
+| [`seo-geo-aeo-maxxing`](skills/seo-geo-aeo-maxxing/) | Multi-pillar SEO / GEO / AEO visibility audits. | 1.3.0 |
+| [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. | 1.4.0 |
 
 <!-- END GENERATED: skill catalog -->
 
@@ -194,48 +194,40 @@ You need [uv](https://docs.astral.sh/uv/) and Python 3.12+.
 ```bash
 uv sync --group dev
 uv run python tooling/new_skill.py my-skill \
-  --description "80-1024 characters: what the skill does, when to use it, and when not to"
+  --description "80-1024 characters: what the skill does, when to use it, and when not to" \
+  --summary "One line for the README catalog."
+uv run python tooling/check_all.py --fast
 ```
 
-The scaffold already passes the package checks, and its eval harness fails on
-purpose until it asserts something. From there:
+The scaffold is registered and passes every fast gate straight away: a registry
+entry, a README catalog row, placeholder routing cases, an eval harness that
+pins a small output-contract validator, and this skill's baseline rows. All of
+it is placeholder content. From there:
 
 1. **Write the skill.** Replace the template text in `skills/my-skill/SKILL.md`
-   and keep it short; depth goes in `references/`.
-2. **Register it.** Add an entry to `registry/skills.json` (copy a neighbour:
-   `owns`, `does_not_own`, `trigger_examples`, `negative_trigger_examples`,
-   `routing_signals`) and a one-line summary to
-   [`registry/readme-catalog.json`](registry/readme-catalog.json). Each
-   `trigger_examples` prompt must route to the skill through its
-   `routing_signals`; the suite checks that. Raise the skill count in the badge
-   and the opening paragraph of this README, and add the skill to the harness
-   list in `tooling/tests/test_skill_eval_harnesses.py`.
-3. **Validate the package.**
+   and `references/output-contract.md`; keep `SKILL.md` short, depth goes in
+   `references/`. A changed description goes into `registry/skills.json` as
+   well; `validate_repo.py` compares the two.
+2. **Make the evals real.** Replace `scripts/output_contract.py` and
+   `evals/cases.json` with the skill's real rules, one case per rule, pinning
+   the exact error list. `eval_strength.py` replaces each `if` guard in the
+   modules the harness imports with `if False:`, one at a time, and fails a
+   harness that still passes; rules written inside `run_evals.py` itself are
+   never measured, and a harness that holds no guard fails the suite.
+3. **Make routing real.** Replace the `my-skill-scaffold-*` cases in
+   `evals/routing/suite.json` and the `routing_signals`, `owns` and trigger
+   examples in `registry/skills.json`. Each skill needs three prompts it must
+   claim and two it must not.
+4. **Bump the plugin version.** A new skill changes what the plugin ships:
+   raise `VERSION` (with `pyproject.toml` and the three `plugin.json` files),
+   then run `uv run python tooling/plugin_release.py --record`.
+5. **Regenerate and run every gate.**
    ```bash
-   uv run python tooling/validate_skill.py skills/my-skill
-   uv run python tooling/validate_repo.py
+   uv run python tooling/check_all.py --fix --fast
+   uv run python tooling/check_all.py
    ```
-4. **Make the evals real.** Add cases to `skills/my-skill/evals/cases.json`,
-   implement `run_case()` in `scripts/run_evals.py`, and add a routing case,
-   including a prompt the skill must *not* claim, to `evals/routing/suite.json`.
-   In step 5, `eval_strength.py` replaces each `if` guard in the package with
-   `if False:`, one at a time, and reruns the harness. The suite rejects a
-   harness that still passes with every guard removed, so assert real rules.
-   ```bash
-   uv run python skills/my-skill/scripts/run_evals.py
-   uv run python tooling/run_routing_evals.py
-   ```
-5. **Regenerate and record the context cost.**
-   ```bash
-   uv run python tooling/generate_adapters.py
-   uv run python tooling/context_budget.py --update --table docs/generated-context-budget.md
-   uv run python tooling/eval_strength.py --update --table docs/generated-eval-strength.md
-   ```
-6. **Run the full gate.**
-   ```bash
-   uv run pytest
-   uv run python tooling/validate_local.py --trusted-checkout --output ../agent-skills-validation --timeout 900
-   ```
+   A grown front door or a changed eval-strength count is accepted
+   deliberately; the summary prints the command that records it.
 
 Deterministic evals prove the package keeps its contract. Whether a skill makes
 a model behave better is a separate experiment; see

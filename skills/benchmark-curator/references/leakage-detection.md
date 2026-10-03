@@ -11,7 +11,7 @@ Before freezing a DEEP benchmark:
 5. Keep mined production failures in regression/dev unless a fresh independent holdout is created.
 6. Freeze a corpus fingerprint alongside the benchmark hash.
 
-Statuses:
+Scan statuses (`leakage_scan.status`; a single case uses `contamination_status`, see `references/benchmark-model.md`):
 
 - `CLEAN` — no detected exact/near leakage and no known exposure under the declared scan.
 - `SUSPECT` — near-duplicate or unresolved provenance requires review before freeze.
@@ -19,4 +19,4 @@ Statuses:
 
 A `CLEAN` scan is bounded evidence, not proof that no hidden contamination exists.
 
-When suite tooling is available, use `tooling/benchmark_leakage.py` and preserve its corpus fingerprint with the benchmark revision.
+No leakage scanner ships with this skill. `scripts/kernel.py` catches exact duplicate prompts only, after folding case and whitespace; near-duplicate detection is a manual or external step. Record the similarity rule you applied and the corpus fingerprint with the benchmark revision, in `leakage_scan`.

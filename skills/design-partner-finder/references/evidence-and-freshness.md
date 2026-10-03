@@ -67,3 +67,13 @@ A top candidate without a reasonable counter-search is not fully diligenced.
 For every scored dimension, preferably record confidence 0–5 and state whether it is public/inferred/live-confirmed. Use the candidate score as a fit estimate, not as false precision.
 
 Public research can support `problem_evidence`, `urgency`, `representativeness`, `learning_value`, `implementation_plausibility`, `stakeholder_path`, and credibility. It normally cannot confirm actual feedback commitment, user access, internal approval, or pilot readiness.
+
+## REFRESH mode
+
+For an older shortlist or cohort:
+
+1. Preserve prior evidence and prior score; do not rewrite history.
+2. Refresh only material current claims first: trigger, capability, role/contact, initiative, company activity, and blockers.
+3. Re-score changed dimensions.
+4. Show `old -> new` score/status and the evidence that caused the movement.
+5. Re-open any recommendation whose binding evidence is stale, contradicted, or materially changed.

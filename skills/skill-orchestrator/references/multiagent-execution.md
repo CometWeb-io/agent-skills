@@ -8,10 +8,15 @@ that loads a single skill's `SKILL.md` and returns one CW-AIP envelope.
 When the host exposes a subagent launcher (Cursor **Task** tool, cloud agent, or
 equivalent):
 
-1. Build payloads:
+1. Build payloads with the multiagent kernel. It ships only in the
+   `skill-orchestrator-multiagent` package, so run it from that package's
+   directory (a sibling of `skill-orchestrator` in every installer layout):
    ```bash
+   cd ../skill-orchestrator-multiagent   # skip when already inside it
    python3 scripts/orchestrate_multiagent_kernel.py "<goal>" --json --workspace-root "<abs path>"
    ```
+   If that package is not installed, there is no payload builder: run the
+   workflow with `execution_mode=single_thread` instead.
 2. For each entry in `subagent_tasks` **sequentially**:
    - Launch subagent with `subagent_type`, `description`, `prompt` from payload.
    - Set `run_in_background: false` unless the user explicitly asked for parallel work.
@@ -81,6 +86,7 @@ Before launching step *N+1*, validate step *N* output. The gate ships with
 `skill-orchestrator-multiagent`; run it from that skill's directory:
 
 ```bash
+cd ../skill-orchestrator-multiagent   # skip when already inside it
 python3 scripts/validate_envelope.py /tmp/step1-evidence.json --expect-type EvidenceEnvelope
 ```
 
@@ -93,6 +99,9 @@ python3 scripts/validate_envelope.py /tmp/step1-evidence.json --expect-type Evid
   `--final`. Pass `--final` for the last step and for anything leaving the workflow.
 - Both versions: a `GO` verdict (and a release `GO_WITH_CONTROLS`) that lists
   blockers fails. Controls do not clear a blocker.
+- v2 also: the same verdicts fail next to a `BLOCK` or `COUNSEL_REQUIRED` gate (any
+  letter case), and a decision `GO` fails when `human_approval` is `required`,
+  `pending` or `denied`.
 - `--expect-type` takes the kind from the plan. A step planned as `DecisionHandoff`
   also accepts a v2 `DecisionEnvelope` (Council) or `ReleaseEnvelope` (Release
   Readiness); no other cross-version mapping exists.
