@@ -39,7 +39,8 @@ def _squash(text: str) -> str:
 def facet_problems(skill_dir: Path) -> list[str]:
     inventory = skill_dir / "tests" / "front-door-rules.json"
     if not inventory.is_file():
-        return ["no tests/front-door-rules.json"]
+        return ["no tests/front-door-rules.json; tooling/new_skill.py writes one tagging the five facets "
+                "of the shared untrusted-content block (copy its rules)"]
     rules = json.loads(inventory.read_text(encoding="utf-8"))["rules"]
     skill_md = _squash((skill_dir / "SKILL.md").read_text(encoding="utf-8"))
     problems = []
@@ -99,7 +100,9 @@ SHARED_RULES = (
 @pytest.mark.parametrize("skill_dir", [s for s in SKILLS if s.name not in ALIASES], ids=lambda p: p.name)
 def test_every_skill_uses_the_shared_wording(skill_dir: Path) -> None:
     text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
-    assert SHARED_RULES in text, f"{skill_dir.name}: the shared untrusted-content block was reworded"
+    assert SHARED_RULES in text, (
+        f"{skill_dir.name}: the shared untrusted-content block is missing or reworded; put SHARED_DATA_RULE "
+        "and SHARED_RULES from this file, verbatim, under '## Untrusted content' in SKILL.md")
     if "## Untrusted content" in text:
         section = text.split("## Untrusted content", 1)[1].split("\n## ", 1)[0].strip()
         assert section == f"{SHARED_DATA_RULE} {SHARED_RULES}", f"{skill_dir.name}: section differs from the shared block"

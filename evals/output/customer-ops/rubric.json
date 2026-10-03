@@ -1,0 +1,72 @@
+{
+  "skill": "customer-ops",
+  "contract": "skills/customer-ops/references/outputs.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "problem", "title": "Customer-visible problem", "aliases": ["customer-visible problem", "customer visible problem"], "required": true},
+    {"id": "evidence", "title": "Evidence", "aliases": ["evidence"], "required": true},
+    {"id": "confirmed", "title": "Confirmed / observed", "aliases": ["confirmed / observed", "confirmed", "observed"], "required": true},
+    {"id": "reported", "title": "Reported", "aliases": ["reported"]},
+    {"id": "unknowns", "title": "Unknowns / contradictions", "aliases": ["unknowns"], "required": true},
+    {"id": "hypotheses", "title": "Hypotheses", "aliases": ["hypotheses"], "required": true},
+    {"id": "linked-work", "title": "Linked work", "aliases": ["linked work"], "required": true},
+    {"id": "commitments", "title": "Commitments", "aliases": ["commitments"], "required": true},
+    {"id": "next-action", "title": "Next action", "aliases": ["next action"], "required": true},
+    {"id": "customer-comms", "title": "Customer communication", "aliases": ["customer communication"], "required": true},
+    {"id": "verification", "title": "Verification / closure", "aliases": ["verification / closure", "verification and closure", "verification"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["OPEN", "RESOLVED", "VERIFIED", "CLOSED"],
+    "aliases": {"still open": "OPEN"},
+    "authorizing": ["VERIFIED", "CLOSED"],
+    "primary": {"line": "^\\s*[-*]?\\s*\\**Current\\**\\s*:"}
+  },
+  "blockers": [
+    {"rule": "open-commitment", "type": "section_items", "section": "commitments", "forbids": ["CLOSED"],
+     "none_pattern": "^none\\b|\\b(?:FULFILLED|RENEGOTIATED|CANCELLED)\\b"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "as-of", "pattern": "\\bas[_ ]of\\b\\W{0,6}\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(?::\\d{2})?(?:Z|[+-]\\d{2}:?\\d{2})",
+     "message": "the brief has no as_of with a timezone"},
+    {"type": "doc_require", "rule": "coverage-status", "pattern": "\\bCoverage\\b\\W{0,6}(?:COMPLETE|PARTIAL|SAMPLED|UNKNOWN)\\b",
+     "message": "the brief states no coverage_status (COMPLETE | PARTIAL | SAMPLED | UNKNOWN)"},
+    {"type": "doc_require", "rule": "operational-priority", "pattern": "Operational priority\\W{0,6}(?:P[0-3]|UNKNOWN)\\b",
+     "message": "operational priority is not stated as its own axis (P0-P3)"},
+    {"type": "doc_require", "rule": "owner", "pattern": "^\\s*\\**Owner\\**\\s*:\\**\\s*\\S",
+     "message": "the brief names no owner class (or 'unassigned')"},
+    {"type": "items_require", "rule": "confirmed-provenance", "section": "confirmed",
+     "pattern": "\\[[^\\]|]+\\|[^\\]|]+\\|\\s*\\d{4}-\\d{2}-\\d{2}[^\\]]*\\]", "code": "EVIDENCE_MISSING",
+     "message": "a confirmed fact cites no [source system | object id | timestamp]"},
+    {"type": "items_require", "rule": "hypothesis-test", "section": "hypotheses", "none_pattern": "^none\\b",
+     "pattern": "next (?:discriminating )?test", "code": "CONTRACT_VIOLATION",
+     "message": "a hypothesis has no next discriminating test"},
+    {"type": "doc_require", "rule": "verification-criterion", "section": "verification", "when_verdict": ["VERIFIED", "CLOSED"],
+     "pattern": "Verification criterion\\W{0,6}(?!TBD|none|n/a|-)\\w", "code": "EVIDENCE_MISSING",
+     "message": "VERIFIED/CLOSED requires an explicit criterion tied to the original customer-visible symptom"},
+    {"type": "doc_require", "rule": "verification-evidence", "section": "verification", "when_verdict": ["VERIFIED", "CLOSED"],
+     "pattern": "\\[[^\\]|]+\\|[^\\]|]+\\|\\s*\\d{4}-\\d{2}-\\d{2}[^\\]]*\\]", "code": "EVIDENCE_MISSING",
+     "message": "VERIFIED/CLOSED cites no sourced evidence that the original symptom was re-tested"},
+    {"type": "doc_forbid", "rule": "closed-because-ticket-closed", "when_verdict": ["VERIFIED", "CLOSED"],
+     "pattern": "\\b(?:closed|verified|resolved)\\b[^.\\n]{0,40}\\b(?:because|since)\\b[^.\\n]{0,40}\\b(?:PR|pull request|issue|ticket)\\b[^.\\n]{0,30}\\b(?:merged|closed)\\b",
+     "message": "a merged PR or closed issue/ticket is not customer resolution"},
+    {"type": "doc_forbid", "rule": "churn-probability",
+     "pattern": "(?<!not a )(?<!not )\\bchurn probability\\b",
+     "message": "a heuristic retention score is not a churn probability"}
+  ],
+  "ids": [
+    {"rule": "commitment-ids", "pattern": "\\bCM-\\d+\\b",
+     "defined_in": [{"section": "commitments", "as": "list_lead"}],
+     "defined_by": "the Commitments section lists no commitment with that ID"},
+    {"rule": "hypothesis-ids", "pattern": "\\bH\\d+\\b",
+     "defined_in": [{"section": "hypotheses", "as": "list_lead"}],
+     "defined_by": "the Hypotheses section lists no hypothesis with that ID"}
+  ],
+  "sidecars": [
+    {"rule": "closed-gate", "detect": {"equals": {"stage": "CLOSED"}},
+     "validator": "skills/customer-ops/scripts/customer_ops_kernel.py", "function": "case_gate",
+     "recompute": {"result": "status", "map": {"PASS": "CLOSED", "WARN": "CLOSED", "BLOCK": "RESOLVED"}}},
+    {"rule": "verified-gate", "detect": {"equals": {"stage": "VERIFIED"}},
+     "validator": "skills/customer-ops/scripts/customer_ops_kernel.py", "function": "case_gate",
+     "recompute": {"result": "status", "map": {"PASS": "VERIFIED", "WARN": "VERIFIED", "BLOCK": "RESOLVED"}}}
+  ]
+}

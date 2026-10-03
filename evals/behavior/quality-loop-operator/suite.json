@@ -1,0 +1,768 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "quality-loop-operator",
+  "description": "Offline behavior of the run-state kernel the references document as validate(payload) in scripts/kernel.py, and of the bundled eval runner.",
+  "cases": [
+    {
+      "id": "all-editorial-stages-passed-is-complete",
+      "kind": "accept",
+      "behavior": "An editorial run whose every stage passed, ending in acceptance, is COMPLETE.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-reviewer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-roaster",
+              "state": "PASS"
+            },
+            {
+              "skill": "repair-operator",
+              "state": "PASS"
+            },
+            {
+              "skill": "artifact-acceptance",
+              "state": "PASS"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "COMPLETE",
+          "next_stage": null,
+          "errors": [],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "next-stage-follows-profile-order",
+      "kind": "accept",
+      "behavior": "After the brief and draft pass, the loop names the reviewer as the next stage.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "READY_FOR_NEXT",
+          "next_stage": "content-reviewer",
+          "errors": [],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "repo-audit-hands-off-release-verdict",
+      "kind": "accept",
+      "behavior": "A finished repository audit hands off to release readiness and does not issue a software release verdict itself.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "REPO_DEEP",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "repo-roaster",
+              "state": "PASS"
+            },
+            {
+              "skill": "repair-operator",
+              "state": "PASS"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "COMPLETE",
+          "next_stage": "release-readiness",
+          "errors": [],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0,
+          "software_release_verdict": "NOT_OWNED"
+        }
+      }
+    },
+    {
+      "id": "measured-improvement-goes-to-canary",
+      "kind": "accept",
+      "behavior": "A skill candidate with a measured improvement on a hash-bound rubric and benchmark moves to canary rollout.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "SKILL_QUALITY",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "skill-auditor",
+              "state": "PASS"
+            },
+            {
+              "skill": "rubric-designer",
+              "state": "PASS",
+              "rubric_hash": "1111111111111111111111111111111111111111111111111111111111111111"
+            },
+            {
+              "skill": "benchmark-curator",
+              "state": "PASS",
+              "rubric_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+              "benchmark_hash": "2222222222222222222222222222222222222222222222222222222222222222"
+            },
+            {
+              "skill": "skill-evaluator",
+              "state": "PASS",
+              "rubric_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+              "benchmark_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+              "result": "IMPROVED"
+            }
+          ],
+          "runtime_lifecycle": {
+            "state": "READY_FOR_CANARY",
+            "material_change": true,
+            "rollback_version": "1.4.0"
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "READY_FOR_ROLLOUT",
+          "next_stage": "canary",
+          "errors": [],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0,
+          "skill_evaluation_result": "IMPROVED",
+          "rollout_status": "READY_FOR_CANARY"
+        }
+      }
+    },
+    {
+      "id": "evaluator-on-a-different-rubric-is-invalid",
+      "kind": "refuse",
+      "behavior": "An evaluation scored against a rubric other than the one the benchmark was built on is refused.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "SKILL_QUALITY",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "skill-auditor",
+              "state": "PASS"
+            },
+            {
+              "skill": "rubric-designer",
+              "state": "PASS",
+              "rubric_hash": "1111111111111111111111111111111111111111111111111111111111111111"
+            },
+            {
+              "skill": "benchmark-curator",
+              "state": "PASS",
+              "rubric_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+              "benchmark_hash": "2222222222222222222222222222222222222222222222222222222222222222"
+            },
+            {
+              "skill": "skill-evaluator",
+              "state": "PASS",
+              "rubric_hash": "3333333333333333333333333333333333333333333333333333333333333333",
+              "benchmark_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+              "result": "IMPROVED"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "next_stage": null,
+          "errors": [
+            "skill-quality:evaluator-rubric-mismatch"
+          ],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "deep-run-needs-policy-lock",
+      "kind": "refuse",
+      "behavior": "A DEEP run cannot judge a candidate before its quality policy is locked.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-reviewer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-roaster",
+              "state": "PASS"
+            },
+            {
+              "skill": "repair-operator",
+              "state": "PASS"
+            },
+            {
+              "skill": "artifact-acceptance",
+              "state": "PASS"
+            }
+          ],
+          "mode": "DEEP"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "next_stage": null,
+          "errors": [
+            "policy-lock:required"
+          ],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "delta-needs-a-distinct-baseline",
+      "kind": "refuse",
+      "behavior": "A DELTA run whose baseline is the candidate itself has nothing to compare against.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-reviewer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-roaster",
+              "state": "PASS"
+            },
+            {
+              "skill": "repair-operator",
+              "state": "PASS"
+            },
+            {
+              "skill": "artifact-acceptance",
+              "state": "PASS"
+            }
+          ],
+          "mode": "DELTA",
+          "base_candidate_id": "guide-v2",
+          "policy_lock": {
+            "pack_id": "editorial",
+            "revision": "1",
+            "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "locked_before_evaluation": true
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "next_stage": null,
+          "errors": [
+            "base_candidate_id:required-distinct"
+          ],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "unsafe-cache-reuse-is-refused",
+      "kind": "refuse",
+      "behavior": "Reusing a prior stage result without an exact fingerprint match is refused.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-reviewer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-roaster",
+              "state": "PASS"
+            },
+            {
+              "skill": "repair-operator",
+              "state": "PASS"
+            },
+            {
+              "skill": "artifact-acceptance",
+              "state": "PASS"
+            }
+          ],
+          "cache_reuse": [
+            {
+              "decision": "REUSE",
+              "fingerprint_match": false,
+              "source_status": "PASS"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "next_stage": null,
+          "errors": [
+            "cache[0]:unsafe-reuse"
+          ],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "out-of-order-stage-is-refused",
+      "kind": "refuse",
+      "behavior": "A stage reported before one that must precede it in the profile is refused.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-reviewer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "next_stage": null,
+          "errors": [
+            "stage[2]:out-of-order"
+          ],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "lowercase-conflict-is-not-silently-ignored",
+      "kind": "refuse",
+      "behavior": "An off-list reconciliation status such as a lower-case conflict is an error, not a silent pass.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-reviewer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-roaster",
+              "state": "PASS"
+            },
+            {
+              "skill": "repair-operator",
+              "state": "PASS"
+            },
+            {
+              "skill": "artifact-acceptance",
+              "state": "PASS"
+            }
+          ],
+          "reconciliation": [
+            {
+              "status": "conflict",
+              "resolved": false
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "next_stage": null,
+          "errors": [
+            "reconciliation[0]:status"
+          ],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "unresolved-conflict-needs-reconciliation",
+      "kind": "boundary",
+      "behavior": "An unresolved disagreement between reviewers stops the loop for reconciliation, not a majority vote.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-reviewer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-roaster",
+              "state": "PASS"
+            },
+            {
+              "skill": "repair-operator",
+              "state": "PASS"
+            },
+            {
+              "skill": "artifact-acceptance",
+              "state": "PASS"
+            }
+          ],
+          "reconciliation": [
+            {
+              "status": "CONFLICT",
+              "resolved": false
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "NEEDS_RECONCILIATION",
+          "next_stage": "finding-reconciliation",
+          "errors": [],
+          "unresolved_conflicts": 1,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "waiver-due-exactly-now-is-expired",
+      "kind": "boundary",
+      "behavior": "An open waiver due exactly at the evaluation time counts as expired and blocks completion.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-reviewer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-roaster",
+              "state": "PASS"
+            },
+            {
+              "skill": "repair-operator",
+              "state": "PASS"
+            },
+            {
+              "skill": "artifact-acceptance",
+              "state": "PASS"
+            }
+          ],
+          "as_of": "2026-09-01T00:00:00Z",
+          "quality_debt": [
+            {
+              "severity": "MINOR",
+              "status": "OPEN",
+              "kind": "WAIVER",
+              "due_at": "2026-09-01T00:00:00Z"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "BLOCKED",
+          "next_stage": "quality-debt-resolution",
+          "errors": [],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 1
+        }
+      }
+    },
+    {
+      "id": "replay-drift-forces-revalidation",
+      "kind": "boundary",
+      "behavior": "A replay whose fingerprint drifted blocks completion until the stages are revalidated.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-reviewer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-roaster",
+              "state": "PASS"
+            },
+            {
+              "skill": "repair-operator",
+              "state": "PASS"
+            },
+            {
+              "skill": "artifact-acceptance",
+              "state": "PASS"
+            }
+          ],
+          "replay_status": "DRIFT"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "BLOCKED",
+          "next_stage": "revalidation",
+          "errors": [],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "debt-without-as-of-is-invalid",
+      "kind": "boundary",
+      "behavior": "Quality debt cannot be judged for expiry without an evaluation time.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "profile": "EDITORIAL",
+          "candidate_id": "guide-v2",
+          "contract_id": "brief-1",
+          "stages": [
+            {
+              "skill": "brief-architect",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-writer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-reviewer",
+              "state": "PASS"
+            },
+            {
+              "skill": "content-roaster",
+              "state": "PASS"
+            },
+            {
+              "skill": "repair-operator",
+              "state": "PASS"
+            },
+            {
+              "skill": "artifact-acceptance",
+              "state": "PASS"
+            }
+          ],
+          "quality_debt": [
+            {
+              "severity": "NOTE",
+              "status": "OPEN"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "next_stage": null,
+          "errors": [
+            "quality_debt:as_of-required"
+          ],
+          "unresolved_conflicts": 0,
+          "blocking_quality_debt": 0
+        }
+      }
+    },
+    {
+      "id": "bundled-evals-pass",
+      "kind": "accept",
+      "behavior": "The bundled offline eval cases all pass when run as documented.",
+      "run": [
+        "scripts/run_evals.py"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PASS",
+          "failures": []
+        }
+      }
+    }
+  ]
+}

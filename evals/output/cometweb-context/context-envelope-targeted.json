@@ -1,0 +1,22 @@
+{
+  "schema": "cometweb.context/v2",
+  "snapshot_id": "ctx-20261003-1130",
+  "generated_at": "2026-10-03T11:30:00+02:00",
+  "goal": "Preflight for weekly priorities on Beacon",
+  "mode": "targeted",
+  "profile": "product",
+  "baseline": {"status": "not_requested", "ref": null},
+  "sources": [
+    {"source_id": "src-001", "source_type": "github", "authority": "system_of_record", "access": "live", "retrieved_at": "2026-10-03T11:20:00+02:00", "effective_at": null, "freshness": "fresh", "sensitivity": "internal", "summary": "Beacon main: export fix merged in PR 212, not tagged", "evidence_ref": "example-org/beacon#212"},
+    {"source_id": "src-002", "source_type": "website", "authority": "primary", "access": "live", "retrieved_at": "2026-10-03T11:22:00+02:00", "effective_at": null, "freshness": "fresh", "sensitivity": "public", "summary": "beacon.example.com still serves v0.9.2", "evidence_ref": "https://beacon.example.com/version"}
+  ],
+  "facts": [
+    {"fact_id": "f-001", "statement": "The export fix is merged on main but not deployed; production serves v0.9.2", "source_ids": ["src-001", "src-002"], "confidence": "high", "sensitivity": "internal"}
+  ],
+  "deltas": [],
+  "conflicts": [],
+  "gaps": [],
+  "blocked_public_claims": [],
+  "governance": {"first_principles": {"required": false, "status": "not_required", "source_ref": null, "reason": null}},
+  "handoff": {"recommended_next_skill": "product-operator", "dependencies": [], "constraints": ["merged is not deployed"]}
+}

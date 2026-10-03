@@ -1,0 +1,641 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "feedback-integrator",
+  "description": "Offline behavior of the learning kernel the references document as kernel.integrate(records, ...) and kernel.promotion(payload), and of the bundled eval runner.",
+  "cases": [
+    {
+      "id": "recurring-pattern-with-test-is-proposed",
+      "kind": "accept",
+      "behavior": "A failure confirmed in two independent contexts with a regression test becomes an improvement proposal.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "integrate",
+      "args": [
+        [
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "a",
+            "run_id": "run-a",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            }
+          },
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "b",
+            "run_id": "run-b",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            }
+          }
+        ]
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PROPOSED",
+          "proposal_count": 1,
+          "watch_count": 0,
+          "retired_count": 0,
+          "invalid_count": 0,
+          "proposals": [
+            {
+              "pattern": "missing source locator",
+              "independence_count": 2,
+              "run_count": 2,
+              "severity": "MAJOR",
+              "root_layers": [
+                "INSTRUCTION"
+              ],
+              "false_positive_count": 0,
+              "resolved_count": 0,
+              "root_layer": "INSTRUCTION"
+            }
+          ],
+          "watch": [],
+          "retired": [],
+          "invalid": []
+        }
+      }
+    },
+    {
+      "id": "single-context-stays-on-watch",
+      "kind": "refuse",
+      "behavior": "One observation is not enough to change a skill; the pattern stays on watch.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "integrate",
+      "args": [
+        [
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "a",
+            "run_id": "run-a",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            }
+          }
+        ]
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "WATCH",
+          "proposal_count": 0,
+          "watch_count": 1,
+          "retired_count": 0,
+          "invalid_count": 0,
+          "proposals": [],
+          "watch": [
+            {
+              "pattern": "missing source locator",
+              "independence_count": 1,
+              "run_count": 1,
+              "severity": "MAJOR",
+              "root_layers": [
+                "INSTRUCTION"
+              ],
+              "false_positive_count": 0,
+              "resolved_count": 0,
+              "reason": "insufficient-independent-contexts"
+            }
+          ],
+          "retired": [],
+          "invalid": []
+        }
+      }
+    },
+    {
+      "id": "systemic-blocker-needs-one-context",
+      "kind": "boundary",
+      "behavior": "A systemic BLOCKER with evidence is enough on its own to propose a change.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "integrate",
+      "args": [
+        [
+          {
+            "pattern": "missing source locator",
+            "severity": "BLOCKER",
+            "root_layer": "INSTRUCTION",
+            "context_id": "a",
+            "run_id": "run-a",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            },
+            "systemic": true,
+            "evidence": [
+              "incident-12.log"
+            ]
+          }
+        ]
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PROPOSED",
+          "proposal_count": 1,
+          "watch_count": 0,
+          "retired_count": 0,
+          "invalid_count": 0,
+          "proposals": [
+            {
+              "pattern": "missing source locator",
+              "independence_count": 1,
+              "run_count": 1,
+              "severity": "BLOCKER",
+              "root_layers": [
+                "INSTRUCTION"
+              ],
+              "false_positive_count": 0,
+              "resolved_count": 0,
+              "root_layer": "INSTRUCTION"
+            }
+          ],
+          "watch": [],
+          "retired": [],
+          "invalid": []
+        }
+      }
+    },
+    {
+      "id": "false-positive-dominant-stays-on-watch",
+      "kind": "refuse",
+      "behavior": "When reviewers were wrong at least as often as right, the pattern is not turned into policy.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "integrate",
+      "args": [
+        [
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "a",
+            "run_id": "run-a",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            }
+          },
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "b",
+            "run_id": "run-b",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            },
+            "outcome": "FALSE_POSITIVE"
+          },
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "c",
+            "run_id": "run-c",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            },
+            "outcome": "FALSE_POSITIVE"
+          }
+        ]
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "WATCH",
+          "proposal_count": 0,
+          "watch_count": 1,
+          "retired_count": 0,
+          "invalid_count": 0,
+          "proposals": [],
+          "watch": [
+            {
+              "pattern": "missing source locator",
+              "independence_count": 1,
+              "run_count": 1,
+              "severity": "MAJOR",
+              "root_layers": [
+                "INSTRUCTION"
+              ],
+              "false_positive_count": 2,
+              "resolved_count": 0,
+              "reason": "false-positive-dominant"
+            }
+          ],
+          "retired": [],
+          "invalid": []
+        }
+      }
+    },
+    {
+      "id": "ambiguous-root-cause-stays-on-watch",
+      "kind": "boundary",
+      "behavior": "Confirmed failures blamed on two different layers are held until the root cause is clear.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "integrate",
+      "args": [
+        [
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "a",
+            "run_id": "run-a",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            }
+          },
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "KERNEL",
+            "context_id": "b",
+            "run_id": "run-b",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            }
+          }
+        ]
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "WATCH",
+          "proposal_count": 0,
+          "watch_count": 1,
+          "retired_count": 0,
+          "invalid_count": 0,
+          "proposals": [],
+          "watch": [
+            {
+              "pattern": "missing source locator",
+              "independence_count": 2,
+              "run_count": 2,
+              "severity": "MAJOR",
+              "root_layers": [
+                "INSTRUCTION",
+                "KERNEL"
+              ],
+              "false_positive_count": 0,
+              "resolved_count": 0,
+              "reason": "root-cause-ambiguous"
+            }
+          ],
+          "retired": [],
+          "invalid": []
+        }
+      }
+    },
+    {
+      "id": "strict-mode-needs-change-and-eval-plan",
+      "kind": "boundary",
+      "behavior": "Under strict mode a recurring pattern needs a proposed change with an evaluation plan before it is proposed.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "integrate",
+      "args": [
+        [
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "a",
+            "run_id": "run-a",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            }
+          },
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "b",
+            "run_id": "run-b",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            }
+          }
+        ],
+        2,
+        null,
+        null,
+        true
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "WATCH",
+          "proposal_count": 0,
+          "watch_count": 1,
+          "retired_count": 0,
+          "invalid_count": 0,
+          "proposals": [],
+          "watch": [
+            {
+              "pattern": "missing source locator",
+              "independence_count": 2,
+              "run_count": 2,
+              "severity": "MAJOR",
+              "root_layers": [
+                "INSTRUCTION"
+              ],
+              "false_positive_count": 0,
+              "resolved_count": 0,
+              "reason": "proposed-change-with-evaluation-plan-required"
+            }
+          ],
+          "retired": [],
+          "invalid": []
+        }
+      }
+    },
+    {
+      "id": "observation-outside-window-retires",
+      "kind": "boundary",
+      "behavior": "An observation older than the learning window is retired instead of counted.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "integrate",
+      "args": [
+        [
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "a",
+            "run_id": "run-a",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            },
+            "observed_at": "2026-06-01T00:00:00Z"
+          }
+        ],
+        2,
+        "2026-09-01T00:00:00Z",
+        30
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "RETIRED",
+          "proposal_count": 0,
+          "watch_count": 0,
+          "retired_count": 1,
+          "invalid_count": 0,
+          "proposals": [],
+          "watch": [],
+          "retired": [
+            {
+              "pattern": "missing source locator",
+              "context_id": "a",
+              "reason": "outside-learning-window"
+            }
+          ],
+          "invalid": []
+        }
+      }
+    },
+    {
+      "id": "unknown-root-layer-is-invalid",
+      "kind": "refuse",
+      "behavior": "A record naming a root layer outside the documented set is reported as invalid input.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "integrate",
+      "args": [
+        [
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "MODEL",
+            "context_id": "a",
+            "run_id": "run-a",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            }
+          }
+        ]
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "proposal_count": 0,
+          "watch_count": 0,
+          "retired_count": 0,
+          "invalid_count": 1,
+          "proposals": [],
+          "watch": [],
+          "retired": [],
+          "invalid": [
+            {
+              "index": 0,
+              "reason": "invalid-root-layer"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "zero-min-count-is-invalid",
+      "kind": "boundary",
+      "behavior": "A minimum independence count of zero is refused rather than letting every record through.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "integrate",
+      "args": [
+        [
+          {
+            "pattern": "missing source locator",
+            "severity": "MAJOR",
+            "root_layer": "INSTRUCTION",
+            "context_id": "a",
+            "run_id": "run-a",
+            "regression_test": {
+              "id": "reg-locator-1",
+              "assertion": "every SUPPORTED claim has a locator"
+            }
+          }
+        ],
+        0
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "proposal_count": 0,
+          "watch_count": 0,
+          "retired_count": 0,
+          "invalid_count": 1,
+          "proposals": [],
+          "watch": [],
+          "retired": [],
+          "invalid": [
+            {
+              "reason": "min_count:invalid"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "empty-records-have-no-signal",
+      "kind": "boundary",
+      "behavior": "With no records there is nothing to learn and no proposal is invented.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "integrate",
+      "args": [
+        []
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "NO_SIGNAL",
+          "proposal_count": 0,
+          "watch_count": 0,
+          "retired_count": 0,
+          "invalid_count": 0,
+          "proposals": [],
+          "watch": [],
+          "retired": [],
+          "invalid": []
+        }
+      }
+    },
+    {
+      "id": "repeatable-improvement-is-promoted",
+      "kind": "accept",
+      "behavior": "A challenger with repeatable improvements and no regressions on a frozen corpus is promoted.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "promotion",
+      "args": [
+        {
+          "baseline_version": "1.2.0",
+          "challenger_version": "1.3.0",
+          "frozen_case_count": 40,
+          "repeated_runs": 3,
+          "improvements": 4,
+          "regressions": 0,
+          "evaluation_scope": "offline kernel suite"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PROMOTE",
+          "errors": [],
+          "reason": "repeatable-improvement-no-regression"
+        }
+      }
+    },
+    {
+      "id": "safety-regression-holds-promotion",
+      "kind": "refuse",
+      "behavior": "Any safety regression holds a challenger back regardless of its improvements.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "promotion",
+      "args": [
+        {
+          "baseline_version": "1.2.0",
+          "challenger_version": "1.3.0",
+          "frozen_case_count": 40,
+          "repeated_runs": 3,
+          "improvements": 4,
+          "regressions": 0,
+          "evaluation_scope": "offline kernel suite",
+          "safety_regression": true
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "HOLD",
+          "errors": [],
+          "reason": "regression"
+        }
+      }
+    },
+    {
+      "id": "single-run-same-version-is-invalid",
+      "kind": "refuse",
+      "behavior": "A comparison of a version against itself from a single run is not a valid promotion test.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "promotion",
+      "args": [
+        {
+          "baseline_version": "1.2.0",
+          "challenger_version": "1.2.0",
+          "frozen_case_count": 40,
+          "repeated_runs": 1,
+          "improvements": 4,
+          "regressions": 0,
+          "evaluation_scope": "offline kernel suite"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "version:same",
+            "repeated-runs"
+          ]
+        }
+      }
+    },
+    {
+      "id": "bundled-evals-pass",
+      "kind": "accept",
+      "behavior": "The bundled offline eval cases all pass when run as documented.",
+      "run": [
+        "scripts/run_evals.py"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PASS",
+          "failures": []
+        }
+      }
+    }
+  ]
+}

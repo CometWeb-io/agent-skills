@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.6] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- The Evidence Pack's first block names the four research statuses (`READY`, `PARTIAL`, `REFRESH_REQUIRED`, `BLOCKED_BY_CONTRADICTION`).
+
 ## [1.0.5] - 2026-10-03
 
 - New `references/contract.json` declares the ledger payload the kernel reads, its outputs and every enum, bound to the kernel constants that enforce them; `tooling/skill_contracts.py` now fails when references and kernel drift.

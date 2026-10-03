@@ -19,7 +19,8 @@
         "DECISION_KINDS": "decision_kind",
         "FRESHNESS_POLICIES": "claim_type",
         "WATCH_OPERATORS": "operator",
-        "GATE_STATUSES": "gate_statuses"
+        "GATE_STATUSES": "gate_statuses",
+        "FORECAST_OUTCOMES": "forecasts.outcome"
       }
     },
     "scripts/council_kernel.py": {
@@ -230,7 +231,21 @@
       ]
     },
     "probability": {},
-    "outcome": {},
+    "forecasts.outcome": {
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "memory.outcome": {
+      "enum": [
+        "Failure",
+        "Mixed",
+        "Pending",
+        "Success"
+      ],
+      "enforced": false
+    },
     "hypothesis": {},
     "metric": {},
     "primary_metric": {},
@@ -382,39 +397,44 @@
     "majority_vote": {},
     "missing_binding_dimensions": {}
   },
-  "internal": [
-    "STANDARD",
-    "_order",
-    "adviser_count",
-    "advisers",
-    "assigned_expert_ids",
-    "claim_family",
-    "class",
-    "counterfactual",
-    "decision_archetype",
-    "domains",
-    "experts",
-    "framework_id",
-    "grade",
-    "hits",
-    "kinds",
-    "max_age_hours",
-    "max_frameworks",
-    "max_gatekeepers",
-    "max_specialists",
-    "minority_sentinel",
-    "name",
-    "near_expiry_ratio",
-    "premortem",
-    "protection_score",
-    "requires_live_verification",
-    "requires_system_of_record",
-    "score",
-    "triggers",
-    "value_density",
-    "versioned_static"
-  ],
+  "internal": {
+    "STANDARD": "council mode value compared after normalisation, not a payload key",
+    "_order": "sort tiebreak the router adds to its own framework matches and pops before returning",
+    "adviser_count": "council budget entry from the kernel's built-in mode budgets",
+    "advisers": "router result the contract command reads back from its own route",
+    "assigned_expert_ids": "router result field on a framework match the kernel builds itself",
+    "claim_family": "context-route result row built by the kernel",
+    "class": "role catalogue entry in constants.py, not caller input",
+    "counterfactual": "council budget flag from the kernel's built-in mode budgets",
+    "decision_archetype": "profile field the kernel infers from the question text",
+    "domains": "role catalogue entry in constants.py, not caller input",
+    "experts": "framework catalogue entry and crux result field, both kernel-built",
+    "framework_id": "framework match row built by the router",
+    "grade": "independence-grade result row built by the kernel",
+    "hits": "context-route result row built by the kernel",
+    "kinds": "framework catalogue entry in constants.py, not caller input",
+    "max_age_hours": "freshness policy from the built-in FRESHNESS_POLICIES table",
+    "max_frameworks": "council budget entry from the kernel's built-in mode budgets",
+    "max_gatekeepers": "council budget entry from the kernel's built-in mode budgets",
+    "max_specialists": "council budget entry from the kernel's built-in mode budgets",
+    "minority_sentinel": "council budget flag and role id from the kernel's own tables",
+    "name": "role catalogue entry in constants.py, not caller input",
+    "near_expiry_ratio": "freshness policy from the built-in FRESHNESS_POLICIES table",
+    "premortem": "council budget flag from the kernel's built-in mode budgets",
+    "protection_score": "minority result row built and sorted by the kernel",
+    "requires_live_verification": "freshness policy from the built-in FRESHNESS_POLICIES table",
+    "requires_system_of_record": "freshness policy from the built-in FRESHNESS_POLICIES table",
+    "score": "router and calibration result rows the kernel builds and sorts",
+    "triggers": "framework catalogue entry in constants.py, not caller input",
+    "value_density": "portfolio result row built and sorted by the kernel",
+    "versioned_static": "freshness policy from the built-in FRESHNESS_POLICIES table"
+  },
+  "lists": {
+    "forecasts": "rows passed to `forecast-score --forecasts-json`, one probability and outcome per row",
+    "memory": "Decision Memory rows passed to `calibrate`, `rank --history-json`, `base-rate` and `health`"
+  },
   "doc_terms": [
+    "did_not_occur",
     "option_ranking",
     "recommended_option",
     "watch_dependencies"

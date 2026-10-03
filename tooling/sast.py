@@ -46,6 +46,8 @@ def tracked_targets(root: Path = ROOT) -> list[str]:
         parts = Path(name).parts
         if EXCLUDED_PARTS & set(parts[:-1]) or name.startswith("tooling/sast/"):
             continue
+        if not (root / name).is_file():
+            continue  # deleted in the working tree, not yet committed; semgrep would exit 2
         targets.append(name)
     return targets
 
@@ -93,8 +95,14 @@ def main(argv: list[str] | None = None) -> int:
             print("FAIL: semgrep rule self-test (tooling/sast/tests)", file=sys.stderr)
             return 1
         code = run(semgrep_argv("scan", *common, *configs, "--error", "--timeout", "60", *targets), env)
+    if code == 1:
+        print(f"FAIL: semgrep findings in {len(targets)} scanned files; fix them, or suppress a reviewed one "
+              "with `# nosemgrep: <rule-id>` and a reason", file=sys.stderr)
+        return 1
     if code != 0:
-        print(f"FAIL: semgrep findings in {len(targets)} scanned files (exit {code})", file=sys.stderr)
+        print(f"FAIL: semgrep stopped with an engine error (exit {code}), not a finding; the scan runs "
+              "with --quiet, so rerun its command from tooling/sast.py without it to see the cause",
+              file=sys.stderr)
         return 1
     print(f"OK: {len(targets)} Python and shell files clean under {len(RULE_FILES)} rule files")
     return 0

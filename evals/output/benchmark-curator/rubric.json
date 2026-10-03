@@ -1,0 +1,81 @@
+{
+  "skill": "benchmark-curator",
+  "contract": "skills/benchmark-curator/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "status", "title": "Status", "aliases": ["status"], "required": true},
+    {"id": "identity", "title": "Benchmark identity", "aliases": ["benchmark identity", "identity"], "required": true},
+    {"id": "taxonomy", "title": "Taxonomy and splits", "aliases": ["taxonomy", "splits"], "required": true},
+    {"id": "provenance", "title": "Provenance and exposure", "aliases": ["provenance", "candidate exposure"], "required": true},
+    {"id": "duplicates", "title": "Duplicates", "aliases": ["duplicates", "duplicate and near-duplicate", "near-duplicates"], "required": true},
+    {"id": "leakage", "title": "Leakage", "aliases": ["leakage"], "required": true},
+    {"id": "holdout-decisions", "title": "Holdout decisions", "aliases": ["holdout decisions", "holdout contamination", "removed and quarantined"], "required": true},
+    {"id": "coverage-gaps", "title": "Coverage gaps", "aliases": ["coverage gaps", "known blind spots", "blind spots"], "required": true},
+    {"id": "regression-cases", "title": "Regression cases", "aliases": ["regression cases"], "required": true},
+    {"id": "next-owner", "title": "Next owner", "aliases": ["next owner"], "required": true},
+    {"id": "manifest", "title": "Benchmark manifest", "aliases": ["benchmark manifest", "manifest"], "ordered": false}
+  ],
+  "verdict": {
+    "tokens": ["READY_TO_FREEZE", "NEEDS_REBALANCE", "NEEDS_REVISION", "CONTAMINATED", "INVALID"],
+    "authorizing": ["READY_TO_FREEZE"],
+    "primary": {"section": "status"}
+  },
+  "blockers": [
+    {"rule": "open-duplicate", "type": "items_matching", "section": "duplicates",
+     "pattern": "\\b(?:OPEN|unresolved)\\b"},
+    {"rule": "leakage-not-clean", "type": "items_matching", "section": "leakage",
+     "pattern": "(?-i:\\b(?:SUSPECT|CONTAMINATED)\\b)"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "benchmark-hash", "section": "identity", "when_verdict": ["READY_TO_FREEZE"],
+     "pattern": "benchmark_hash[^\\n]*\\b[0-9a-f]{64}\\b",
+     "message": "a READY_TO_FREEZE report must state the 64-hex benchmark_hash the kernel issued"},
+    {"type": "doc_require", "rule": "rubric-hash", "section": "identity",
+     "pattern": "rubric_hash[^\\n]*(?:\\b[0-9a-f]{64}\\b|none bound)",
+     "message": "state the bound rubric_hash, or 'none bound'"},
+    {"type": "doc_require", "rule": "split-counts", "section": "taxonomy",
+     "pattern": "\\bdev\\b[^\\n]*\\d+[^\\n]*\\bholdout\\b[^\\n]*\\d+",
+     "message": "the taxonomy section gives no dev/holdout split counts"},
+    {"type": "doc_require", "rule": "leakage-status", "section": "leakage",
+     "pattern": "(?-i:\\b(?:CLEAN|SUSPECT|CONTAMINATED|NOT_REQUIRED)\\b)",
+     "message": "state the leakage status: CLEAN, SUSPECT, CONTAMINATED (or NOT_REQUIRED when no scan was supplied)"},
+    {"type": "doc_forbid", "rule": "clean-without-fingerprint", "section": "leakage", "code": "CONTRACT_VIOLATION",
+     "pattern": "(?-i:\\bCLEAN\\b)(?![^\\n]*\\b[0-9a-f]{64}\\b)",
+     "message": "a CLEAN leakage status needs the immutable corpus_fingerprint on the same line"},
+    {"type": "items_require", "rule": "duplicate-case-ids", "section": "duplicates", "none_pattern": "^none",
+     "pattern": "\\b[A-Z]{2,3}-\\d{2,3}\\b[\\s\\S]*\\b[A-Z]{2,3}-\\d{2,3}\\b", "code": "EVIDENCE_MISSING",
+     "message": "a duplicate finding must name both case IDs it compares"},
+    {"type": "items_require", "rule": "regression-provenance", "section": "regression-cases", "none_pattern": "^none",
+     "pattern": "Provenance:\\s*\\S", "code": "EVIDENCE_MISSING",
+     "message": "a regression case from a production failure must cite its provenance"},
+    {"type": "items_forbid", "rule": "exposed-regression-in-holdout", "section": "regression-cases", "none_pattern": "^none",
+     "pattern": "Split:\\s*holdout", "code": "CONTRACT_VIOLATION",
+     "message": "a regression case exposed to the candidate cannot sit in a clean holdout"},
+    {"type": "doc_require", "rule": "next-owner", "section": "next-owner", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\b(?:rubric-designer|skill-evaluator|feedback-integrator|none)\\b",
+     "message": "name the next owner: rubric-designer, skill-evaluator, feedback-integrator, or none"},
+    {"type": "doc_forbid", "rule": "lift-claim", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\b(?:shows?|proves?|demonstrates?|measured|confirms?)\\b[^.\\n]{0,30}\\blift\\b|\\bcandidate\\b[^.\\n]{0,30}\\b(?:outperforms|beats|improves on)\\b",
+     "message": "the curator does not execute the benchmark or claim lift; that is skill-evaluator's job"},
+    {"type": "doc_forbid", "rule": "clean-from-glance",
+     "pattern": "\\b(?:looks|appears|seems)\\s+(?:clean|uncontaminated)\\b|\\bguaranteed\\s+(?:clean|uncontaminated)\\b|\\bno (?:possible|hidden) contamination\\b",
+     "message": "never claim a holdout is clean from a generic similarity glance; cite the scan and its rule"},
+    {"type": "doc_forbid", "rule": "representative-by-size",
+     "pattern": "\\brepresentative\\b[^.\\n]{0,40}\\b(?:because|since|as)\\b[^.\\n]{0,30}\\b(?:large|size|many cases|\\d+ cases)\\b",
+     "message": "a benchmark is not representative merely because it is large"}
+  ],
+  "ids": [
+    {"rule": "case-ids", "pattern": "\\b[A-Z]{2,3}-\\d{2,3}\\b",
+     "defined_in": [
+       {"json": "cases[*].id", "when": {"benchmark_id": "*"}},
+       {"section": "holdout-decisions", "as": "list_lead"}
+     ],
+     "defined_by": "no case in the embedded manifest, and no removed case in Holdout decisions, has that ID"}
+  ],
+  "sidecars": [
+    {"rule": "benchmark-kernel", "detect": {"has_keys": ["benchmark_id", "required_classes", "cases"]},
+     "validator": "skills/benchmark-curator/scripts/kernel.py", "function": "validate",
+     "error_statuses": ["INVALID"],
+     "recompute": {"result": "status"}}
+  ]
+}

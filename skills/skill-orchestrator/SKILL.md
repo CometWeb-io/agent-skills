@@ -43,8 +43,10 @@ state, run `cometweb-context` first and pass the ContextEnvelope as a dependency
 - domain findings (auditors, CI, SEO, etc.),
 - ContextEnvelope construction (`cometweb-context`).
 
-Read `references/workflow-archetypes.md` and `references/sequencing-rules.md`.
-For isolated mode also read `references/multiagent-execution.md` (shared with the alias).
+Read `references/workflow-archetypes.md` before choosing an archetype and
+`references/sequencing-rules.md` before executing the first step. For isolated mode also
+read `references/multiagent-execution.md` (shared with the alias) and build each
+subagent prompt from `references/subagent-prompt-template.md`.
 
 ## Workflow
 

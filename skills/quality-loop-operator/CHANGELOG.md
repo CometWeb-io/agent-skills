@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object.
+- The definition of done loaded thirteen references in one sentence. It now names the operational statuses (`READY_FOR_NEXT`, `CHANGES_REQUIRED`, `NEEDS_RECONCILIATION`, `BLOCKED`, `READY_FOR_ROLLOUT`, `COMPLETE`, `INVALID`) and gives a trigger for each reference the steps do not already load, including `untrusted-input.md`, which was never named.
+- The description is 534 characters, down from 867. Codex shows about the first 546 characters of each description in its skill list, which cut the "Do not use" clause part-way; the whole description now fits, with the routing boundaries and named alternatives kept.
+
 ## [1.7.2] - 2026-10-03
 
 - New `references/contract.json` declares the run-state payload, and `references/output-contract.md` now lists every field `scripts/kernel.py` reads. Twenty-six kernel inputs were documented nowhere, among them `adaptive_depth`, `replay_status`, `cache_reuse[]`, `quality_debt[]` with `kind`/`due_at`/`closure_evidence`, the stage `skip_allowed`, `skip_rationale`, `rubric_hash`, `benchmark_hash` and `result`, the reconciliation `resolution_basis`, and the runtime-lifecycle flags (`material_change`, `canary_passed`, `rollback_executable`, `major_version_bump`, `migration_guide_present`, `removing_public_contract`, `deprecation_record`, `deprecation_notice`). The sidecar fields the kernel does not check (`schema`, `run_id`, `coverage`, `revalidate`, `completion_evidence`) are marked as such.

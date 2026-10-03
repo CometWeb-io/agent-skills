@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object; a new case pins how `evaluate_case` refuses one.
+- Step 7 names the status a re-opened repair takes (`REOPENED` with `reopen_of`), and the definition of done gives the item lifecycle. A worked `CLOSED` item, which `scripts/kernel.py` accepts as `VALID`, shows the closure fields.
+- References are listed in a table with load triggers; the v1.3 section is folded into the definition of done.
+
 ## [1.7.2] - 2026-10-03
 
 - `mode` was documented as `STANDARD|DEEP`, but the kernel only compared it with `DEEP`, so `mode: deep` (or any typo) silently fell back to standard closure without strict evidence checks. Any other value now returns `mode:invalid`.

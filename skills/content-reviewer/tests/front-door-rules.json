@@ -39,7 +39,7 @@
     },
     {
       "id": "rule-02",
-      "text": "If a claim looks suspicious but cannot be verified from available evidence, label it `VERIFY` rather than `FALSE`.",
+      "text": "If a claim looks suspicious but cannot be verified from available evidence, list it under `verify[]` rather than calling it false.",
       "where": "SKILL.md"
     },
     {

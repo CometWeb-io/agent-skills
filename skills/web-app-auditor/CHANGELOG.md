@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2 — 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+
 ## 1.4.1 — 2026-10-03
 
 - The verdict was documented only as human labels ("do not ship", "ship with fixes") in `SKILL.md`, `references/evidence-and-report.md` and the report template, while `scripts/validate_report.py` and the schema accept only `do_not_ship`, `ship_with_fixes`, `ship`, `incomplete`; a report written from the docs failed validation. The same split existed for coverage (`policy-blocked` vs `coverage.policyBlocked`, `environment-blocked` vs `coverage.environmentBlocked`), counts (`needs-repro` vs `counts.needsRepro`) and out-of-scope, which is not a coverage counter but a top-level `outOfScope[]` of at most 3 notes. `references/evidence-and-report.md` §10 now maps each label to its JSON token and lists every field the two schemas declare.

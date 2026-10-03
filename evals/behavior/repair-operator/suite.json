@@ -1,0 +1,183 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "repair-operator",
+  "description": "Offline behavior of the repair-ledger validator (python3 scripts/kernel.py ledger.json, or the ledger on stdin) and the bundled eval runner's command line.",
+  "cases": [
+    {
+      "id": "fresh-candidate-bound-closure-is-valid",
+      "kind": "accept",
+      "behavior": "A repair closed with root cause, done condition and fresh PASS evidence bound to the current candidate is accepted and counted as closed.",
+      "run": ["scripts/kernel.py", "{input}"],
+      "input": {
+        "schema": "cometweb.repair-ledger/v1",
+        "mode": "STANDARD",
+        "candidate_id": "build-42",
+        "items": [
+          {
+            "repair_id": "r1",
+            "finding_ids": ["F-1"],
+            "repair_class": "PATCH",
+            "root_cause": "price table reads a stale cache key",
+            "done_when": "pricing page shows the current price for every plan",
+            "status": "CLOSED",
+            "verification_evidence": [
+              {"fresh": true, "result": "PASS", "method": "rerun pricing check", "evidence": ["check log line 12"], "candidate_id": "build-42", "observed_at": "2026-09-30T10:00:00Z"}
+            ]
+          },
+          {
+            "repair_id": "r2",
+            "finding_ids": ["F-2"],
+            "repair_class": "REWRITE",
+            "status": "PLANNED",
+            "depends_on": ["r1"]
+          }
+        ]
+      },
+      "expect": {"exit_code": 0, "json": {"status": "VALID", "errors": [], "closed": 1, "open": 1, "strict_closure": false, "portfolio_mode": false, "effort_units": 0}}
+    },
+    {
+      "id": "evidence-from-another-build-closes-nothing",
+      "kind": "refuse",
+      "behavior": "Verification run against a different build cannot close a finding on the current candidate.",
+      "run": ["scripts/kernel.py", "{input}"],
+      "input": {
+        "candidate_id": "build-42",
+        "items": [
+          {
+            "repair_id": "r1",
+            "finding_ids": ["F-1"],
+            "repair_class": "PATCH",
+            "root_cause": "price table reads a stale cache key",
+            "done_when": "pricing page shows the current price",
+            "status": "CLOSED",
+            "verification_evidence": [
+              {"fresh": true, "result": "PASS", "method": "rerun pricing check", "evidence": ["check log"], "candidate_id": "build-41", "observed_at": "2026-09-30T10:00:00Z"}
+            ]
+          }
+        ]
+      },
+      "expect": {"exit_code": 1, "json": {"status": "INVALID", "closed": 0, "errors": ["0:closed-without-candidate-bound-verification"]}}
+    },
+    {
+      "id": "verify-first-and-regression-cannot-close",
+      "kind": "refuse",
+      "behavior": "A VERIFY_FIRST repair marked CLOSED and a closure that detected a regression are both refused.",
+      "run": ["scripts/kernel.py"],
+      "stdin": {
+        "candidate_id": "build-42",
+        "items": [
+          {
+            "repair_id": "r1",
+            "finding_ids": ["F-1"],
+            "repair_class": "VERIFY_FIRST",
+            "root_cause": "unknown",
+            "done_when": "symptom gone",
+            "status": "CLOSED",
+            "verification_evidence": [
+              {"fresh": true, "result": "PASS", "method": "rerun", "evidence": ["log"], "candidate_id": "build-42", "observed_at": "2026-09-30T10:00:00+02:00"}
+            ]
+          },
+          {
+            "repair_id": "r2",
+            "finding_ids": ["F-2"],
+            "repair_class": "PATCH",
+            "root_cause": "missing alt text",
+            "done_when": "every image has alt text",
+            "status": "CLOSED",
+            "regression_detected": true,
+            "verification_evidence": [
+              {"fresh": true, "result": "PASS", "method": "rerun", "evidence": ["log"], "candidate_id": "build-42", "observed_at": "2026-09-30T10:00:00Z"}
+            ]
+          }
+        ]
+      },
+      "expect": {"exit_code": 1, "json": {"status": "INVALID", "closed": 1, "errors": ["0:closed-invalid-repair-class", "1:closed-with-regression"]}}
+    },
+    {
+      "id": "unknown-mode-is-an-error",
+      "kind": "refuse",
+      "behavior": "A ledger mode other than STANDARD or DEEP is reported as mode:invalid instead of falling back to standard closure.",
+      "run": ["scripts/kernel.py"],
+      "stdin": {"mode": "FAST", "candidate_id": "build-42", "items": []},
+      "expect": {"exit_code": 1, "json": {"status": "INVALID", "errors": ["mode:invalid"], "closed": 0, "open": 0}}
+    },
+    {
+      "id": "deep-wont-fix-needs-expiry-and-deferral-needs-reason",
+      "kind": "refuse",
+      "behavior": "In DEEP mode a WONT_FIX decision without a revisit time and a DEFERRED repair without a reason are both refused.",
+      "run": ["scripts/kernel.py", "{input}"],
+      "input": {
+        "mode": "DEEP",
+        "candidate_id": "build-42",
+        "items": [
+          {
+            "repair_id": "r1",
+            "finding_ids": ["F-1"],
+            "repair_class": "WONT_FIX",
+            "status": "WONT_FIX",
+            "decision_source": {"owner": "product owner", "rationale": "legacy page is being retired", "decided_at": "2026-09-30T09:00:00Z"}
+          },
+          {
+            "repair_id": "r2",
+            "finding_ids": ["F-2"],
+            "repair_class": "PATCH",
+            "status": "DEFERRED"
+          }
+        ]
+      },
+      "expect": {"exit_code": 1, "json": {"status": "INVALID", "strict_closure": true, "open": 1, "errors": ["0:wont-fix-without-authorized-decision", "1:deferred-without-reason"]}}
+    },
+    {
+      "id": "portfolio-sums-effort-and-gates-irreversible-change",
+      "kind": "boundary",
+      "behavior": "Portfolio mode adds up effort units and refuses an irreversible repair that has no explicit approval gate.",
+      "run": ["scripts/kernel.py", "{input}"],
+      "input": {
+        "portfolio_mode": true,
+        "candidate_id": "build-42",
+        "items": [
+          {"repair_id": "r1", "finding_ids": ["F-1"], "repair_class": "PATCH", "status": "PLANNED", "effort_band": "S", "blast_radius": "LOCAL", "reversibility": "EASY"},
+          {"repair_id": "r2", "finding_ids": ["F-2"], "repair_class": "REDESIGN", "status": "PLANNED", "effort_band": "XL", "blast_radius": "SYSTEM", "reversibility": "IRREVERSIBLE", "patch_risk": "HIGH", "rollback_plan": "restore the previous schema from backup"}
+        ]
+      },
+      "expect": {"exit_code": 1, "json": {"status": "INVALID", "portfolio_mode": true, "effort_units": 10, "open": 2, "errors": ["1:irreversible-without-approval-gate"]}}
+    },
+    {
+      "id": "dependency-cycle-and-shared-finding-are-rejected",
+      "kind": "boundary",
+      "behavior": "A repair graph with a dependency cycle, and two active repairs owning the same finding without supersession, is rejected.",
+      "run": ["scripts/kernel.py", "{input}"],
+      "input": {
+        "candidate_id": "build-42",
+        "items": [
+          {"repair_id": "r1", "finding_ids": ["F-1"], "repair_class": "PATCH", "status": "PLANNED", "depends_on": ["r2"]},
+          {"repair_id": "r2", "finding_ids": ["F-1"], "repair_class": "PATCH", "status": "PLANNED", "depends_on": ["r1"]}
+        ]
+      },
+      "expect": {"exit_code": 1, "json": {"status": "INVALID", "errors": ["repair-dependency-cycle", "1:finding-owned-by-multiple-active-repairs:F-1"]}}
+    },
+    {
+      "id": "malformed-json-ledger-fails-closed",
+      "kind": "boundary",
+      "behavior": "A ledger that is not JSON is rejected with a usage error rather than validated or crashing.",
+      "run": ["scripts/kernel.py"],
+      "stdin": "{\"items\": [",
+      "expect": {"exit_code": 2, "stderr_contains": ["payload is not JSON"]}
+    },
+    {
+      "id": "non-object-ledger-is-invalid",
+      "kind": "boundary",
+      "behavior": "A JSON value that is not a ledger object is reported invalid instead of crashing.",
+      "run": ["scripts/kernel.py"],
+      "stdin": "[]",
+      "expect": {"exit_code": 1, "json": {"status": "INVALID", "errors": ["payload:not-object"], "closed": 0, "open": 0}}
+    },
+    {
+      "id": "eval-runner-rejects-arguments",
+      "kind": "refuse",
+      "behavior": "The bundled eval runner takes no arguments and refuses an unexpected one with a usage error.",
+      "run": ["scripts/run_evals.py", "--fast"],
+      "expect": {"exit_code": 2, "stderr_contains": ["usage: run_evals.py [-h]", "unrecognized arguments: --fast"]}
+    }
+  ]
+}

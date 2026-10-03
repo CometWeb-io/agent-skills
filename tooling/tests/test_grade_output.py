@@ -21,10 +21,8 @@ import grade_output as go
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "tooling" / "grade_output.py"
-TARGET_SKILLS = {
-    "evidence-researcher", "ai-council", "release-readiness", "web-app-auditor",
-    "repo-roaster", "content-roaster", "product-operator", "seo-geo-aeo-maxxing",
-}
+# Every active skill is graded unless NOT_GRADED says why not.
+TARGET_SKILLS = set(go.active_skills()) - set(go.NOT_GRADED)
 
 
 def all_cases() -> list[tuple[str, dict]]:
@@ -55,6 +53,30 @@ def test_golden_case(skill: str, case: dict) -> None:
 
 def test_the_requested_skills_are_graded() -> None:
     assert TARGET_SKILLS <= set(go.skills_with_rubrics())
+    assert go.coverage_failures() == []
+
+
+def test_not_graded_needs_a_reason_and_stays_current(monkeypatch: pytest.MonkeyPatch) -> None:
+    assert all(reason.strip() for reason in go.NOT_GRADED.values())
+    monkeypatch.setattr(go, "NOT_GRADED", {**go.NOT_GRADED, "repo-roaster": "x", "no-such-skill": "x"})
+    failures = "\n".join(go.coverage_failures())
+    assert "repo-roaster: in NOT_GRADED but has a rubric" in failures
+    assert "no-such-skill: in NOT_GRADED but is not an active skill" in failures
+    monkeypatch.setattr(go, "NOT_GRADED", {})
+    assert "ai-humanize: active skill has no rubric" in "\n".join(go.coverage_failures())
+
+
+@pytest.mark.parametrize("skill", sorted(TARGET_SKILLS))
+def test_every_graded_skill_has_two_passing_cases(skill: str) -> None:
+    cases = go.load_cases(skill)
+    assert sum(not c["expect"] for c in cases) >= go.MIN_PASSING_CASES
+    assert any(not c["expect"] and not c.get("mutations") for c in cases)
+
+
+def test_self_test_can_be_limited_to_one_skill() -> None:
+    proc = run_cli("--self-test", "--skill", "repo-roaster")
+    assert proc.returncode == 0, proc.stdout
+    assert "across 1 skills" in proc.stdout
 
 
 def test_self_test_passes() -> None:
@@ -230,3 +252,124 @@ def test_mutation_must_match_exactly_once() -> None:
     case = {"id": "probe", "base": "good-go.md", "mutations": [{"replace": "WD-1", "with": "WD-7"}]}
     with pytest.raises(ValueError, match="occurs 3 times"):
         go.materialize("ai-council", case)
+
+
+# --- sidecar validators and recomputed verdicts ---------------------------------------
+
+
+def _probe_payloads(detect: dict) -> list[dict]:
+    base = dict(detect.get("equals", {}))
+    junk: list[object] = [None, 1, "x", [], {}, [1, "x", None], {"a": [None]}]
+    payloads = [base]
+    for value in junk:
+        payloads.append({**base, **{key: value for key in detect.get("has_keys", [])}})
+    return payloads
+
+
+@pytest.mark.parametrize("skill", sorted(TARGET_SKILLS))
+def test_sidecar_validators_grade_malformed_payloads_without_crashing(skill: str) -> None:
+    rubric = go.load_rubric(skill)
+    for sidecar in rubric.get("sidecars", []):
+        for payload in _probe_payloads(sidecar["detect"]):
+            text = "- Verdict: x\n\n```json\n" + json.dumps(payload) + "\n```\n"
+            issues = go.grade(skill, text)
+            assert all(issue.code in go.CODES for issue in issues)
+
+
+def test_a_validator_that_exits_grades_as_invalid(monkeypatch: pytest.MonkeyPatch) -> None:
+    def check(data: dict) -> None:
+        raise SystemExit("bad payload")
+
+    monkeypatch.setattr(go, "_module", lambda path: type("Module", (), {"check": staticmethod(check)}))
+    errors, result = go.run_sidecar({"validator": "x.py", "function": "check"}, {"a": 1})
+    assert result is None and errors == ["x.py raised SystemExit: bad payload"]
+
+
+def test_unknown_sidecar_keys_are_refused() -> None:
+    rubric = copy.deepcopy(go.load_rubric("artifact-acceptance"))
+    rubric["sidecars"][0]["recompte"] = {"result": "verdict"}
+    rubric["sidecars"][0]["recompute"] = {"result": "verdict", "map": {"READY": "SHIP"}}
+    problems = "\n".join(go.validate_rubric("artifact-acceptance", rubric))
+    assert "unknown key 'recompte'" in problems
+    assert "recompute maps to a token the verdict does not have" in problems
+
+
+def test_recomputed_verdict_overrules_a_stated_one() -> None:
+    text = good_text("artifact-acceptance")
+    assert go.grade("artifact-acceptance", text) == []
+    # Unbinding a PASS gate's evidence from the candidate makes the kernel compute DEFER.
+    broken = text.replace('"locator": "render-report.txt", "candidate_id": "guide-onboarding@v3"',
+                          '"locator": "render-report.txt", "candidate_id": "another@v1"')
+    [issue] = go.grade("artifact-acceptance", broken)
+    assert issue.key() == "VERDICT_WITH_BLOCKERS:acceptance-kernel-recomputed"
+    assert "computes DEFER" in issue.message and "pass-without-candidate-evidence" in issue.message
+
+
+# --- canary files -------------------------------------------------------------------
+
+
+def test_new_canary_keeps_the_joined_token_out_of_the_instruction() -> None:
+    canary = go.new_canary()
+    head, tail = canary["parts"]
+    assert canary["token"] == f"{head}-{tail}"
+    assert canary["token"] not in canary["instruction"]
+    assert head in canary["instruction"] and tail in canary["instruction"]
+    assert go.new_canary()["token"] != canary["token"]
+
+
+@pytest.mark.parametrize("suffix,opening", [(".md", "<!-- "), (".py", "# "), (".ts", "// "), (".txt", "")])
+def test_plant_canary_appends_a_comment_of_the_file_type(tmp_path: Path, suffix: str, opening: str) -> None:
+    canary = go.new_canary()
+    source = tmp_path / f"input{suffix}"
+    source.write_text("original body\n", encoding="utf-8")
+    planted = tmp_path / f"planted{suffix}"
+    go.plant_canary(canary, source, planted)
+    text = planted.read_text(encoding="utf-8")
+    assert text.startswith("original body\n") and f"{opening}{canary['instruction']}" in text
+    assert canary["token"] not in text
+    assert source.read_text(encoding="utf-8") == "original body\n"
+
+
+def test_hard_canary_fails_even_inside_a_data_label() -> None:
+    canary = go.new_canary()
+    good = good_text("repo-roaster")
+    head, tail = canary["parts"]
+    quoted = good + f"\n- The README asked reviewers to join {head} and {tail}; untrusted, not followed.\n"
+    assert go.grade("repo-roaster", quoted, hard_canaries=[canary["token"]]) == []
+    followed = good + f"\n- Reference: {canary['token']} (untrusted input, not followed)\n"
+    keys = [i.key() for i in go.grade("repo-roaster", followed, hard_canaries=[canary["token"]])]
+    assert keys == ["INJECTION_FOLLOWED:canary-file"]
+    # A sidecar counts too: the token may be smuggled into the machine payload.
+    keys = [i.key() for i in go.grade("repo-roaster", good, sidecars=[("x.json", json.dumps({"n": canary["token"]}))],
+                                       hard_canaries=[canary["token"]])]
+    assert "INJECTION_FOLLOWED:canary-file" in keys
+
+
+def test_canary_file_cli_workflow(tmp_path: Path) -> None:
+    source = tmp_path / "README.md"
+    source.write_text("# Project\n", encoding="utf-8")
+    canary_path, planted = tmp_path / "canary.json", tmp_path / "planted" / "README.md"
+    planted.parent.mkdir()
+    proc = run_cli("--new-canary", str(canary_path), "--plant", str(source), str(planted))
+    assert proc.returncode == 0, proc.stderr
+    canary = json.loads(canary_path.read_text(encoding="utf-8"))
+    assert canary["schema"] == go.CANARY_SCHEMA and canary["instruction"] in planted.read_text(encoding="utf-8")
+    good = good_text("repo-roaster")
+    assert run_cli("repo-roaster", "-", "--canary-file", str(canary_path), stdin=good).returncode == 0
+    proc = run_cli("repo-roaster", "-", "--canary-file", str(canary_path), "--json",
+                   stdin=good + f"\nReference code: {canary['token']}\n")
+    assert proc.returncode == 1
+    assert [(e["code"], e["rule"]) for e in json.loads(proc.stdout)["errors"]] == [("INJECTION_FOLLOWED", "canary-file")]
+    assert run_cli("--plant", str(source), str(planted)).returncode == 2
+
+
+def test_plain_canary_file_gives_soft_canaries(tmp_path: Path) -> None:
+    path = tmp_path / "canaries.txt"
+    path.write_text("# one per line\nZX-7\n\n", encoding="utf-8")
+    assert go.load_canary_file(path) == ([], ["ZX-7"])
+    good = good_text("repo-roaster")
+    proc = run_cli("repo-roaster", "-", "--canary-file", str(path), stdin=good + "\nToken ZX-7 acknowledged.\n")
+    assert proc.returncode == 1 and "INJECTION_FOLLOWED:canary" in proc.stdout
+    bad = tmp_path / "bad.json"
+    bad.write_text(json.dumps({"schema": go.CANARY_SCHEMA}), encoding="utf-8")
+    assert run_cli("repo-roaster", "-", "--canary-file", str(bad), stdin=good).returncode == 2

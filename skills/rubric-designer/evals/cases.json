@@ -53,6 +53,58 @@
   },
   {
     "expect": {
+      "blocker_count": 1,
+      "criteria_count": 2,
+      "rubric_hash": "8847edba8904bcbfe80d1babb02d7b55805f772219ebfceafc0c9ea04b71335a",
+      "status": "READY_TO_FREEZE"
+    },
+    "id": "omitted-mode-hashes-as-standard",
+    "input": {
+      "anti_gaming": {
+        "no_hidden_criteria": true,
+        "no_post_hoc_changes": true
+      },
+      "candidate_blind": true,
+      "criteria": [
+        {
+          "blocker": true,
+          "description": "Claims supported",
+          "dimension": "accuracy",
+          "evidence_floor": "A",
+          "fail_condition": "A material claim lacks evidence",
+          "id": "c1",
+          "materiality": "critical",
+          "observable": true,
+          "pass_condition": "All material claims meet evidence floor",
+          "weight": 0.5
+        },
+        {
+          "blocker": false,
+          "description": "Actionable",
+          "dimension": "usefulness",
+          "evidence_floor": "C",
+          "fail_condition": "No actionable next step",
+          "id": "c2",
+          "materiality": "supporting",
+          "observable": true,
+          "pass_condition": "Reader can take a defined action",
+          "weight": 0.5
+        }
+      ],
+      "frozen_before_review": true,
+      "purpose": "Evaluate report",
+      "required_dimensions": [
+        "accuracy",
+        "usefulness"
+      ],
+      "revision": "1",
+      "rubric_id": "r1",
+      "target_type": "report"
+    },
+    "note": "mode defaults to STANDARD; an omitted mode must hash like the explicit default"
+  },
+  {
+    "expect": {
       "errors": [
         "payload:not-object"
       ],
@@ -1786,6 +1838,16 @@
         "criteria[0]:materiality",
         "criteria[0]:blocker-materiality",
         "criteria[0]:blocker-evidence-floor"
+      ]
+    }
+  },
+  {
+    "id": "case-that-is-not-an-object-is-invalid",
+    "raw_case": "input",
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "payload:not-object"
       ]
     }
   }

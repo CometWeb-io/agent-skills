@@ -41,4 +41,5 @@ rubric is valid, `rubric_hash`, `criteria_count`, `blocker_count` and `frozen`.
 SHA-256 of the canonical JSON of `rubric_id`, `revision`, `purpose`,
 `target_type`, `mode`, `required_dimensions`, `criteria` and `anti_gaming`;
 `candidate_blind` and `frozen_before_review` are not hashed, so freezing a
-draft keeps its hash.
+draft keeps its hash. An omitted `mode` is hashed as `STANDARD`, its default,
+so leaving the default implicit does not change the hash.

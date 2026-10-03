@@ -1,0 +1,128 @@
+{
+  "protocol_version": "1.0",
+  "as_of": "2026-10-02T09:00:00+02:00",
+  "horizon": "14d",
+  "primary_goal": "Ship the client migration without letting the beta stall",
+  "portfolio_scope": [
+    "client-migration",
+    "beta-onboarding",
+    "paper-revision",
+    "newsletter",
+    "bookkeeping-automation"
+  ],
+  "constraints": [
+    "read-only run"
+  ],
+  "capacity": {
+    "source": "unknown"
+  },
+  "coverage": {
+    "calendar": "available",
+    "tasks": "available",
+    "code": "partial",
+    "client": "available"
+  },
+  "readiness": {
+    "status": "READY",
+    "reason": "the overlap is resolved by the user's decision to put the paper first"
+  },
+  "portfolio_items": [
+    {
+      "id": "client-migration",
+      "domain": "CLIENT",
+      "commitment_type": "hard_external",
+      "effort_class": "L"
+    },
+    {
+      "id": "paper-revision",
+      "domain": "RESEARCH",
+      "commitment_type": "hard_external",
+      "effort_class": "L"
+    },
+    {
+      "id": "beta-onboarding",
+      "domain": "PRODUCT",
+      "commitment_type": "strategic",
+      "effort_class": "M"
+    }
+  ],
+  "must_do": [
+    {
+      "id": "paper-revision",
+      "domain": "RESEARCH",
+      "commitment_type": "hard_external",
+      "effort_class": "L",
+      "scope_level": "portfolio",
+      "portfolio_outcome": "Finish the paper revision the reviewers asked for",
+      "done_when": "the revised paper is submitted",
+      "user_defined": true,
+      "evidence": [
+        {
+          "source": "email",
+          "locator": "editor decision letter",
+          "claim": "major revision requested"
+        }
+      ]
+    },
+    {
+      "id": "client-migration",
+      "domain": "CLIENT",
+      "commitment_type": "hard_external",
+      "effort_class": "L",
+      "scope_level": "portfolio",
+      "portfolio_outcome": "Prepare the Example Org migration for the moved staging review",
+      "done_when": "the staging site is ready for the client review",
+      "evidence": [
+        {
+          "source": "email",
+          "locator": "client thread on migration scope",
+          "claim": "migration due in this horizon"
+        }
+      ]
+    }
+  ],
+  "capacity_conflicts": [
+    {
+      "id": "conflict-deep-work",
+      "item_ids": [
+        "client-migration",
+        "paper-revision"
+      ],
+      "reason": "resolved: the paper revision takes the primary focus stream (user decision); the client agreed to move the staging review to next week"
+    }
+  ],
+  "now": [],
+  "delegate": [
+    {
+      "id": "beta-blockers",
+      "delegate_to": "product-operator",
+      "question": "what blocks the beta onboarding journey, in order?",
+      "return_contract": "ranked blockers with evidence"
+    }
+  ],
+  "delegate_candidate": [],
+  "waiting": [
+    {
+      "id": "newsletter",
+      "domain": "GROWTH",
+      "reason": "waits for the onboarding outcome"
+    }
+  ],
+  "pause_drop": [
+    {
+      "id": "beta-onboarding",
+      "domain": "PRODUCT",
+      "reason": "paused until the product-operator result changes allocation"
+    },
+    {
+      "id": "bookkeeping-automation",
+      "domain": "OPS",
+      "reason": "no capacity this horizon"
+    }
+  ],
+  "next": [],
+  "decision_now": [],
+  "unknowns": [
+    "exact weekly capacity"
+  ]
+}

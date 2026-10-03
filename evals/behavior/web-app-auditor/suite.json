@@ -1,0 +1,828 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "web-app-auditor",
+  "description": "Offline behavior of scripts/validate_report.py as SKILL.md and references/evidence-and-report.md tell a user to run it on audit-report.json.",
+  "cases": [
+    {
+      "id": "coherent-report-validates",
+      "kind": "accept",
+      "behavior": "A report whose counts, evidence links, coverage arithmetic and verdict agree validates with no errors or warnings.",
+      "run": [
+        "scripts/validate_report.py",
+        "{tmp}/audit-report.json",
+        "--json"
+      ],
+      "files": {
+        "audit-report.json": {
+          "schemaVersion": "1.1",
+          "target": "http://localhost:3000/billing",
+          "mode": "area",
+          "depth": "standard",
+          "confidence": "high",
+          "verdict": "ship_with_fixes",
+          "validator": "pending",
+          "capabilities": {
+            "profile": "hybrid",
+            "browser": true,
+            "source": true,
+            "screenshots": true,
+            "console": true,
+            "network": true,
+            "filesystem": true,
+            "codeExecution": true
+          },
+          "environment": {
+            "kind": "local",
+            "mutationPolicy": "safe-test-only"
+          },
+          "scope": {
+            "in": [
+              "/billing"
+            ],
+            "out": [
+              "/marketing"
+            ],
+            "viewports": [
+              "1280x800",
+              "390x844"
+            ],
+            "persona": "signed-in owner",
+            "covered": [
+              "/billing"
+            ],
+            "skipped": []
+          },
+          "counts": {
+            "blocker": 0,
+            "major": 1,
+            "minor": 0,
+            "nit": 0,
+            "needsRepro": 0,
+            "recommendations": 0
+          },
+          "findings": [
+            {
+              "id": "F-001",
+              "kind": "defect",
+              "severity": "major",
+              "confidence": "high",
+              "title": "Invoice badge says 4 while the table contains 3 invoices",
+              "where": {
+                "route": "/billing",
+                "viewport": "1280x800",
+                "persona": "owner"
+              },
+              "repro": [
+                "Open /billing",
+                "Compare the nav badge with the visible invoice rows"
+              ],
+              "expected": "The invoice count should match the represented invoice set.",
+              "expectedBasis": [
+                "observed-consistency",
+                "arithmetic"
+              ],
+              "actual": "The badge shows 4 while the table and footer show 3.",
+              "evidence": [
+                "E-001"
+              ],
+              "impact": "The owner sees contradictory billing state and cannot trust the navigation count.",
+              "rootCause": "unknown"
+            }
+          ],
+          "evidence": [
+            {
+              "id": "E-001",
+              "type": "screenshot",
+              "location": "F-001-badge-count.png",
+              "supports": [
+                "F-001"
+              ],
+              "redacted": "yes"
+            }
+          ],
+          "coverage": {
+            "totalInScope": 12,
+            "tested": 9,
+            "sampled": 2,
+            "policyBlocked": 1,
+            "environmentBlocked": 0,
+            "unreachable": 0,
+            "samplingRule": "One representative row action per invoice state; all primary actions tested."
+          },
+          "contradictionMatrix": [],
+          "outOfScope": [],
+          "recommendedNextAudit": "Re-run billing after the count source is corrected."
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "ok": true,
+          "errors": [],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "coherent-report-text-mode",
+      "kind": "accept",
+      "behavior": "Run without --json, as the references show, a coherent report prints a single VALID line.",
+      "run": [
+        "scripts/validate_report.py",
+        "{tmp}/audit-report.json"
+      ],
+      "files": {
+        "audit-report.json": {
+          "schemaVersion": "1.1",
+          "target": "http://localhost:3000/billing",
+          "mode": "area",
+          "depth": "standard",
+          "confidence": "high",
+          "verdict": "ship_with_fixes",
+          "validator": "pending",
+          "capabilities": {
+            "profile": "hybrid",
+            "browser": true,
+            "source": true,
+            "screenshots": true,
+            "console": true,
+            "network": true,
+            "filesystem": true,
+            "codeExecution": true
+          },
+          "environment": {
+            "kind": "local",
+            "mutationPolicy": "safe-test-only"
+          },
+          "scope": {
+            "in": [
+              "/billing"
+            ],
+            "out": [
+              "/marketing"
+            ],
+            "viewports": [
+              "1280x800",
+              "390x844"
+            ],
+            "persona": "signed-in owner",
+            "covered": [
+              "/billing"
+            ],
+            "skipped": []
+          },
+          "counts": {
+            "blocker": 0,
+            "major": 1,
+            "minor": 0,
+            "nit": 0,
+            "needsRepro": 0,
+            "recommendations": 0
+          },
+          "findings": [
+            {
+              "id": "F-001",
+              "kind": "defect",
+              "severity": "major",
+              "confidence": "high",
+              "title": "Invoice badge says 4 while the table contains 3 invoices",
+              "where": {
+                "route": "/billing",
+                "viewport": "1280x800",
+                "persona": "owner"
+              },
+              "repro": [
+                "Open /billing",
+                "Compare the nav badge with the visible invoice rows"
+              ],
+              "expected": "The invoice count should match the represented invoice set.",
+              "expectedBasis": [
+                "observed-consistency",
+                "arithmetic"
+              ],
+              "actual": "The badge shows 4 while the table and footer show 3.",
+              "evidence": [
+                "E-001"
+              ],
+              "impact": "The owner sees contradictory billing state and cannot trust the navigation count.",
+              "rootCause": "unknown"
+            }
+          ],
+          "evidence": [
+            {
+              "id": "E-001",
+              "type": "screenshot",
+              "location": "F-001-badge-count.png",
+              "supports": [
+                "F-001"
+              ],
+              "redacted": "yes"
+            }
+          ],
+          "coverage": {
+            "totalInScope": 12,
+            "tested": 9,
+            "sampled": 2,
+            "policyBlocked": 1,
+            "environmentBlocked": 0,
+            "unreachable": 0,
+            "samplingRule": "One representative row action per invoice state; all primary actions tested."
+          },
+          "contradictionMatrix": [],
+          "outOfScope": [],
+          "recommendedNextAudit": "Re-run billing after the count source is corrected."
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "VALID: web-app-auditor report v1.1"
+        ],
+        "stdout_absent": [
+          "ERROR",
+          "WARNING"
+        ]
+      }
+    },
+    {
+      "id": "unsafe-production-ship-is-refused",
+      "kind": "refuse",
+      "behavior": "A production audit allowing test mutations, using sampled coverage at forensic depth and shipping a flow audit without a browser is rejected with each violation listed.",
+      "run": [
+        "scripts/validate_report.py",
+        "{tmp}/audit-report.json",
+        "--json"
+      ],
+      "files": {
+        "audit-report.json": {
+          "schemaVersion": "1.1",
+          "target": "https://example.com",
+          "mode": "flow",
+          "depth": "forensic",
+          "confidence": "high",
+          "verdict": "ship",
+          "capabilities": {
+            "profile": "source",
+            "browser": false,
+            "source": true,
+            "screenshots": false,
+            "console": false,
+            "network": false,
+            "filesystem": true,
+            "codeExecution": true
+          },
+          "environment": {
+            "kind": "production",
+            "mutationPolicy": "safe-test-only"
+          },
+          "scope": {
+            "in": [
+              "checkout"
+            ],
+            "out": [],
+            "viewports": [],
+            "persona": "anon",
+            "covered": [],
+            "skipped": []
+          },
+          "counts": {
+            "blocker": 0,
+            "major": 0,
+            "minor": 0,
+            "nit": 0,
+            "needsRepro": 0,
+            "recommendations": 0
+          },
+          "findings": [],
+          "evidence": [],
+          "coverage": {
+            "totalInScope": 2,
+            "tested": 1,
+            "sampled": 1,
+            "policyBlocked": 0,
+            "environmentBlocked": 0,
+            "unreachable": 0,
+            "samplingRule": "sample"
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "ok": false,
+          "errors": [
+            "production/unknown environment must use mutationPolicy='read-only'",
+            "forensic depth cannot use sampled coverage",
+            "interaction-heavy standard/forensic audit without browser must use verdict 'incomplete'"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "count-mismatch-is-refused",
+      "kind": "refuse",
+      "behavior": "Reported severity counts that disagree with the findings are rejected.",
+      "run": [
+        "scripts/validate_report.py",
+        "{tmp}/audit-report.json",
+        "--json"
+      ],
+      "files": {
+        "audit-report.json": {
+          "schemaVersion": "1.1",
+          "target": "http://localhost:3000/billing",
+          "mode": "area",
+          "depth": "standard",
+          "confidence": "high",
+          "verdict": "ship_with_fixes",
+          "validator": "pending",
+          "capabilities": {
+            "profile": "hybrid",
+            "browser": true,
+            "source": true,
+            "screenshots": true,
+            "console": true,
+            "network": true,
+            "filesystem": true,
+            "codeExecution": true
+          },
+          "environment": {
+            "kind": "local",
+            "mutationPolicy": "safe-test-only"
+          },
+          "scope": {
+            "in": [
+              "/billing"
+            ],
+            "out": [
+              "/marketing"
+            ],
+            "viewports": [
+              "1280x800",
+              "390x844"
+            ],
+            "persona": "signed-in owner",
+            "covered": [
+              "/billing"
+            ],
+            "skipped": []
+          },
+          "counts": {
+            "blocker": 0,
+            "major": 0,
+            "minor": 0,
+            "nit": 0,
+            "needsRepro": 0,
+            "recommendations": 0
+          },
+          "findings": [
+            {
+              "id": "F-001",
+              "kind": "defect",
+              "severity": "major",
+              "confidence": "high",
+              "title": "Invoice badge says 4 while the table contains 3 invoices",
+              "where": {
+                "route": "/billing",
+                "viewport": "1280x800",
+                "persona": "owner"
+              },
+              "repro": [
+                "Open /billing",
+                "Compare the nav badge with the visible invoice rows"
+              ],
+              "expected": "The invoice count should match the represented invoice set.",
+              "expectedBasis": [
+                "observed-consistency",
+                "arithmetic"
+              ],
+              "actual": "The badge shows 4 while the table and footer show 3.",
+              "evidence": [
+                "E-001"
+              ],
+              "impact": "The owner sees contradictory billing state and cannot trust the navigation count.",
+              "rootCause": "unknown"
+            }
+          ],
+          "evidence": [
+            {
+              "id": "E-001",
+              "type": "screenshot",
+              "location": "F-001-badge-count.png",
+              "supports": [
+                "F-001"
+              ],
+              "redacted": "yes"
+            }
+          ],
+          "coverage": {
+            "totalInScope": 12,
+            "tested": 9,
+            "sampled": 2,
+            "policyBlocked": 1,
+            "environmentBlocked": 0,
+            "unreachable": 0,
+            "samplingRule": "One representative row action per invoice state; all primary actions tested."
+          },
+          "contradictionMatrix": [],
+          "outOfScope": [],
+          "recommendedNextAudit": "Re-run billing after the count source is corrected."
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "ok": false,
+          "errors": [
+            "counts.major=0 but findings compute to 1"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "heuristic-only-major-is-refused",
+      "kind": "refuse",
+      "behavior": "A major finding justified only by a heuristic expectation is rejected.",
+      "run": [
+        "scripts/validate_report.py",
+        "{tmp}/audit-report.json",
+        "--json"
+      ],
+      "files": {
+        "audit-report.json": {
+          "schemaVersion": "1.1",
+          "target": "http://localhost:3000/billing",
+          "mode": "area",
+          "depth": "standard",
+          "confidence": "high",
+          "verdict": "ship_with_fixes",
+          "validator": "pending",
+          "capabilities": {
+            "profile": "hybrid",
+            "browser": true,
+            "source": true,
+            "screenshots": true,
+            "console": true,
+            "network": true,
+            "filesystem": true,
+            "codeExecution": true
+          },
+          "environment": {
+            "kind": "local",
+            "mutationPolicy": "safe-test-only"
+          },
+          "scope": {
+            "in": [
+              "/billing"
+            ],
+            "out": [
+              "/marketing"
+            ],
+            "viewports": [
+              "1280x800",
+              "390x844"
+            ],
+            "persona": "signed-in owner",
+            "covered": [
+              "/billing"
+            ],
+            "skipped": []
+          },
+          "counts": {
+            "blocker": 0,
+            "major": 1,
+            "minor": 0,
+            "nit": 0,
+            "needsRepro": 0,
+            "recommendations": 0
+          },
+          "findings": [
+            {
+              "id": "F-001",
+              "kind": "defect",
+              "severity": "major",
+              "confidence": "high",
+              "title": "Invoice badge says 4 while the table contains 3 invoices",
+              "where": {
+                "route": "/billing",
+                "viewport": "1280x800",
+                "persona": "owner"
+              },
+              "repro": [
+                "Open /billing",
+                "Compare the nav badge with the visible invoice rows"
+              ],
+              "expected": "The invoice count should match the represented invoice set.",
+              "expectedBasis": [
+                "heuristic"
+              ],
+              "actual": "The badge shows 4 while the table and footer show 3.",
+              "evidence": [
+                "E-001"
+              ],
+              "impact": "The owner sees contradictory billing state and cannot trust the navigation count.",
+              "rootCause": "unknown"
+            }
+          ],
+          "evidence": [
+            {
+              "id": "E-001",
+              "type": "screenshot",
+              "location": "F-001-badge-count.png",
+              "supports": [
+                "F-001"
+              ],
+              "redacted": "yes"
+            }
+          ],
+          "coverage": {
+            "totalInScope": 12,
+            "tested": 9,
+            "sampled": 2,
+            "policyBlocked": 1,
+            "environmentBlocked": 0,
+            "unreachable": 0,
+            "samplingRule": "One representative row action per invoice state; all primary actions tested."
+          },
+          "contradictionMatrix": [],
+          "outOfScope": [],
+          "recommendedNextAudit": "Re-run billing after the count source is corrected."
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "ok": false,
+          "errors": [
+            "findings[0]: heuristic-only expectation cannot justify major"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "low-confidence-defect-must-be-needs-repro",
+      "kind": "boundary",
+      "behavior": "A defect raised with low confidence must be filed as needs-repro instead of a confirmed defect.",
+      "run": [
+        "scripts/validate_report.py",
+        "{tmp}/audit-report.json",
+        "--json"
+      ],
+      "files": {
+        "audit-report.json": {
+          "schemaVersion": "1.1",
+          "target": "http://localhost:3000/billing",
+          "mode": "area",
+          "depth": "standard",
+          "confidence": "high",
+          "verdict": "ship_with_fixes",
+          "validator": "pending",
+          "capabilities": {
+            "profile": "hybrid",
+            "browser": true,
+            "source": true,
+            "screenshots": true,
+            "console": true,
+            "network": true,
+            "filesystem": true,
+            "codeExecution": true
+          },
+          "environment": {
+            "kind": "local",
+            "mutationPolicy": "safe-test-only"
+          },
+          "scope": {
+            "in": [
+              "/billing"
+            ],
+            "out": [
+              "/marketing"
+            ],
+            "viewports": [
+              "1280x800",
+              "390x844"
+            ],
+            "persona": "signed-in owner",
+            "covered": [
+              "/billing"
+            ],
+            "skipped": []
+          },
+          "counts": {
+            "blocker": 0,
+            "major": 1,
+            "minor": 0,
+            "nit": 0,
+            "needsRepro": 0,
+            "recommendations": 0
+          },
+          "findings": [
+            {
+              "id": "F-001",
+              "kind": "defect",
+              "severity": "major",
+              "confidence": "low",
+              "title": "Invoice badge says 4 while the table contains 3 invoices",
+              "where": {
+                "route": "/billing",
+                "viewport": "1280x800",
+                "persona": "owner"
+              },
+              "repro": [
+                "Open /billing",
+                "Compare the nav badge with the visible invoice rows"
+              ],
+              "expected": "The invoice count should match the represented invoice set.",
+              "expectedBasis": [
+                "observed-consistency",
+                "arithmetic"
+              ],
+              "actual": "The badge shows 4 while the table and footer show 3.",
+              "evidence": [
+                "E-001"
+              ],
+              "impact": "The owner sees contradictory billing state and cannot trust the navigation count.",
+              "rootCause": "unknown"
+            }
+          ],
+          "evidence": [
+            {
+              "id": "E-001",
+              "type": "screenshot",
+              "location": "F-001-badge-count.png",
+              "supports": [
+                "F-001"
+              ],
+              "redacted": "yes"
+            }
+          ],
+          "coverage": {
+            "totalInScope": 12,
+            "tested": 9,
+            "sampled": 2,
+            "policyBlocked": 1,
+            "environmentBlocked": 0,
+            "unreachable": 0,
+            "samplingRule": "One representative row action per invoice state; all primary actions tested."
+          },
+          "contradictionMatrix": [],
+          "outOfScope": [],
+          "recommendedNextAudit": "Re-run billing after the count source is corrected."
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "ok": false,
+          "errors": [
+            "findings[0]: low-confidence item must be needs-repro, not confirmed defect"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "profile-mismatch-only-warns",
+      "kind": "boundary",
+      "behavior": "A report with both browser and source access but a non-hybrid profile still validates, with a warning to explain.",
+      "run": [
+        "scripts/validate_report.py",
+        "{tmp}/audit-report.json",
+        "--json"
+      ],
+      "files": {
+        "audit-report.json": {
+          "schemaVersion": "1.1",
+          "target": "http://localhost:3000/billing",
+          "mode": "area",
+          "depth": "standard",
+          "confidence": "high",
+          "verdict": "ship_with_fixes",
+          "validator": "pending",
+          "capabilities": {
+            "profile": "browser",
+            "browser": true,
+            "source": true,
+            "screenshots": true,
+            "console": true,
+            "network": true,
+            "filesystem": true,
+            "codeExecution": true
+          },
+          "environment": {
+            "kind": "local",
+            "mutationPolicy": "safe-test-only"
+          },
+          "scope": {
+            "in": [
+              "/billing"
+            ],
+            "out": [
+              "/marketing"
+            ],
+            "viewports": [
+              "1280x800",
+              "390x844"
+            ],
+            "persona": "signed-in owner",
+            "covered": [
+              "/billing"
+            ],
+            "skipped": []
+          },
+          "counts": {
+            "blocker": 0,
+            "major": 1,
+            "minor": 0,
+            "nit": 0,
+            "needsRepro": 0,
+            "recommendations": 0
+          },
+          "findings": [
+            {
+              "id": "F-001",
+              "kind": "defect",
+              "severity": "major",
+              "confidence": "high",
+              "title": "Invoice badge says 4 while the table contains 3 invoices",
+              "where": {
+                "route": "/billing",
+                "viewport": "1280x800",
+                "persona": "owner"
+              },
+              "repro": [
+                "Open /billing",
+                "Compare the nav badge with the visible invoice rows"
+              ],
+              "expected": "The invoice count should match the represented invoice set.",
+              "expectedBasis": [
+                "observed-consistency",
+                "arithmetic"
+              ],
+              "actual": "The badge shows 4 while the table and footer show 3.",
+              "evidence": [
+                "E-001"
+              ],
+              "impact": "The owner sees contradictory billing state and cannot trust the navigation count.",
+              "rootCause": "unknown"
+            }
+          ],
+          "evidence": [
+            {
+              "id": "E-001",
+              "type": "screenshot",
+              "location": "F-001-badge-count.png",
+              "supports": [
+                "F-001"
+              ],
+              "redacted": "yes"
+            }
+          ],
+          "coverage": {
+            "totalInScope": 12,
+            "tested": 9,
+            "sampled": 2,
+            "policyBlocked": 1,
+            "environmentBlocked": 0,
+            "unreachable": 0,
+            "samplingRule": "One representative row action per invoice state; all primary actions tested."
+          },
+          "contradictionMatrix": [],
+          "outOfScope": [],
+          "recommendedNextAudit": "Re-run billing after the count source is corrected."
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "ok": true,
+          "errors": [],
+          "warnings": [
+            "browser=true and source=true normally implies profile 'hybrid'"
+          ]
+        }
+      }
+    },
+    {
+      "id": "duplicate-json-key-is-refused",
+      "kind": "refuse",
+      "behavior": "A report file with a duplicated JSON key is refused as invalid JSON before any check runs.",
+      "run": [
+        "scripts/validate_report.py",
+        "{tmp}/audit-report.json"
+      ],
+      "files": {
+        "audit-report.json": "{\"verdict\": \"ship\", \"verdict\": \"do_not_ship\"}"
+      },
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "ERROR: invalid JSON: duplicate JSON key: verdict"
+        ]
+      }
+    }
+  ]
+}

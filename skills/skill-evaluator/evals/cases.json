@@ -3384,5 +3384,272 @@
         "paired_analysis:invalid"
       ]
     }
+  },
+  {
+    "id": "real-host-config-needs-model",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "CALIBRATED"
+      },
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "paired_analysis": {
+        "status": "NOT_USED"
+      },
+      "pareto_status": "FRONTIER",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 3,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "STABLE"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "uses_llm_judge": true
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "config:real-host",
+        "config:mismatch"
+      ],
+      "promotion_eligible": false,
+      "paired_status": "NOT_USED",
+      "stability_status": "STABLE"
+    }
+  },
+  {
+    "id": "real-host-baseline-config-needs-host",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "model": "m"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "CALIBRATED"
+      },
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "paired_analysis": {
+        "status": "NOT_USED"
+      },
+      "pareto_status": "FRONTIER",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 3,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "STABLE"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "uses_llm_judge": true
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "baseline_config:real-host",
+        "config:mismatch"
+      ],
+      "promotion_eligible": false,
+      "paired_status": "NOT_USED",
+      "stability_status": "STABLE"
+    }
+  },
+  {
+    "id": "flaky-run-is-a-tradeoff-not-an-improvement",
+    "input": {
+      "baseline": {
+        "duration_s": 10,
+        "passed": 2,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 1,
+        "trigger_fp": 1,
+        "trigger_tp": 8
+      },
+      "baseline_config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "baseline_suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "baseline_version": "1.5.0",
+      "benchmark_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "candidate": {
+        "duration_s": 10,
+        "passed": 3,
+        "tokens": 100,
+        "total": 3,
+        "trigger_fn": 0,
+        "trigger_fp": 0,
+        "trigger_tp": 10
+      },
+      "candidate_version": "1.6.0",
+      "config": {
+        "harness_version": "1",
+        "host": "codex",
+        "model": "m"
+      },
+      "declared_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "discovery_case_count": 1,
+      "executed_case_ids": [
+        "a",
+        "b",
+        "c"
+      ],
+      "execution_mode": "REAL_HOST",
+      "forced_case_count": 1,
+      "invariant_regressions": 0,
+      "judge_agreement": {
+        "status": "CALIBRATED"
+      },
+      "mode": "STANDARD",
+      "negative_control_count": 1,
+      "paired_analysis": {
+        "status": "NOT_USED"
+      },
+      "pareto_status": "FRONTIER",
+      "promotion_policy": {
+        "max_duration_ratio": 2.0,
+        "max_token_ratio": 1.5,
+        "min_pass_rate_delta": 0.05,
+        "trigger_precision_floor": 0.9,
+        "trigger_recall_floor": 0.9
+      },
+      "rubric_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "runs_per_case": 3,
+      "runtime_executed": true,
+      "skill_id": "s",
+      "stability": {
+        "status": "FLAKY"
+      },
+      "suite_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "uses_llm_judge": true
+    },
+    "expect": {
+      "status": "TRADEOFF",
+      "promotion_eligible": false,
+      "tradeoff": "FLAKY_BEHAVIOR",
+      "errors": [],
+      "paired_status": "NOT_USED",
+      "stability_status": "FLAKY"
+    }
+  },
+  {
+    "id": "case-that-is-not-an-object-is-invalid",
+    "raw_case": [
+      "input"
+    ],
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "payload:not-object"
+      ],
+      "promotion_eligible": false
+    }
   }
 ]

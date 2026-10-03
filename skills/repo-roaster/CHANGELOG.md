@@ -1,6 +1,11 @@
 # Changelog
 
 
+## [6.1.2] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/select_review_packs.py` accepted any `--profile`, including values the package's validator rejects as a report profile; it now refuses a profile outside the validator's `PROFILES` set and lists the valid ones.
+
 ## [6.1.1] - 2026-10-03
 
 - Declared the report contract in `references/contract.json` (`cometweb.skill-contract/v1`). Until now only the top level was written down: `references/output-contract.md` named the control-plane blocks, while `scripts/validate_repo_roast.py` checked about 180 keys at every nesting level and their value lists that no reference listed, so an agent building a report from the docs had to guess them. `references/output-contract.md` now carries a field reference with every key the validator reads and every value it accepts, plus the `scan_source_risks.py` output; `tooling/skill_contracts.py` checks it against the validator, `report.schema.json` and the new fixture `tests/report-valid.json`, which the unit tests now load instead of an inline copy.

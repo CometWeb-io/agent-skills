@@ -1,0 +1,77 @@
+{
+  "skill": "feedback-integrator",
+  "contract": "skills/feedback-integrator/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "status", "title": "Status", "aliases": ["status"], "required": true},
+    {"id": "observations", "title": "Observations", "aliases": ["observations"], "required": true},
+    {"id": "proposals", "title": "Proposals", "aliases": ["proposals"], "required": true},
+    {"id": "watch", "title": "Watch", "aliases": ["watch"], "required": true},
+    {"id": "retired", "title": "Retired", "aliases": ["retired"], "required": true},
+    {"id": "invalid", "title": "Invalid observations", "aliases": ["invalid observations", "invalid"], "required": true},
+    {"id": "mutation-boundary", "title": "Mutation boundary", "aliases": ["mutation boundary"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["NO_SIGNAL", "WATCH", "PROPOSED", "RETIRED", "INVALID", "PROMOTE", "HOLD"],
+    "authorizing": ["PROPOSED", "PROMOTE"],
+    "primary": {"section": "status"}
+  },
+  "blockers": [
+    {"rule": "ambiguous-root-proposed", "type": "items_matching", "section": "proposals",
+     "pattern": "Root layer:[^\\n]*\\b(?:ROUTING|INSTRUCTION|REFERENCE|KERNEL|EVAL|HOST|PROCESS)\\b[^\\n]*\\b(?:ROUTING|INSTRUCTION|REFERENCE|KERNEL|EVAL|HOST|PROCESS)\\b"}
+  ],
+  "checks": [
+    {"type": "items_require", "rule": "proposal-evidence", "section": "proposals", "none_pattern": "^none",
+     "pattern": "Evidence:[^\\n]*\\bOBS-\\d{2,3}\\b", "code": "EVIDENCE_MISSING",
+     "message": "a proposal cites no observation (OBS-NN)"},
+    {"type": "items_require", "rule": "proposal-independence", "section": "proposals", "none_pattern": "^none",
+     "pattern": "Independence:\\s*\\d+", "code": "CONTRACT_VIOLATION",
+     "message": "a proposal does not state its independence count"},
+    {"type": "items_forbid", "rule": "single-signal", "section": "proposals", "none_pattern": "^none",
+     "pattern": "Independence:\\s*1\\b(?![\\s\\S]*\\bsystemic\\b)", "code": "CONTRACT_VIOLATION",
+     "message": "one context is not a pattern unless the failure is a systemic BLOCKER"},
+    {"type": "items_require", "rule": "proposal-root-layer", "section": "proposals", "none_pattern": "^none",
+     "pattern": "Root layer:\\s*(?:ROUTING|INSTRUCTION|REFERENCE|KERNEL|EVAL|HOST|PROCESS)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a proposal names no root layer from ROUTING|INSTRUCTION|REFERENCE|KERNEL|EVAL|HOST|PROCESS"},
+    {"type": "items_require", "rule": "proposal-regression", "section": "proposals", "none_pattern": "^none",
+     "pattern": "Regression test:\\s*\\S|Test gap:\\s*\\S[^\\n]*\\bowner\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a proposal needs a regression test or an owned test gap"},
+    {"type": "items_require", "rule": "proposal-fields", "section": "proposals", "none_pattern": "^none",
+     "pattern": "(?=[\\s\\S]*Causal hypothesis:\\s*\\S)(?=[\\s\\S]*Affected skills?:\\s*\\S)(?=[\\s\\S]*Expected effect:\\s*\\S)(?=[\\s\\S]*Blast radius:\\s*\\S)(?=[\\s\\S]*Compatibility risk:\\s*\\S)",
+     "code": "CONTRACT_VIOLATION",
+     "message": "a proposal must keep causal hypothesis, affected skills, expected effect, blast radius and compatibility risk"},
+    {"type": "items_require", "rule": "watch-reason", "section": "watch", "none_pattern": "^none",
+     "pattern": "Reason:\\s*(?:false-positive-dominant|resolved-no-current-recurrence|root-cause-ambiguous|insufficient-independent-contexts|regression-test-or-test-gap-required|proposed-change-with-evaluation-plan-required|outside-learning-window)\\b",
+     "code": "CONTRACT_VIOLATION", "message": "a watch item gives no reason from the contract's closed list"},
+    {"type": "items_require", "rule": "retired-reason", "section": "retired", "none_pattern": "^none",
+     "pattern": "Reason:\\s*(?:resolved-no-current-recurrence|outside-learning-window)\\b",
+     "code": "CONTRACT_VIOLATION", "message": "a retired item gives no retirement reason (resolved-no-current-recurrence or outside-learning-window)"},
+    {"type": "doc_require", "rule": "proposals-only", "section": "mutation-boundary", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\bproposals? only\\b|\\bnothing was modified\\b|\\bno skill[^.\\n]{0,40}\\bmodified\\b",
+     "message": "state that the run produced proposals only, or what an explicit request authorized"},
+    {"type": "doc_forbid", "rule": "silent-self-modification", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\b(?:I|we)\\s+(?:have\\s+)?(?:updated|edited|modified|patched|rewrote|changed|applied)\\b[^.\\n]{0,40}\\b(?:SKILL\\.md|skills?|registry|kernel|references?)\\b",
+     "message": "never self-modify a skill; produce a proposal unless the user explicitly asked for the edit"}
+  ],
+  "ids": [
+    {"rule": "observation-ids", "pattern": "\\bOBS-\\d{2,3}\\b",
+     "defined_in": [{"section": "observations", "as": "table_first_column"}],
+     "refs_json": ["input.records[*].evidence[*]"],
+     "defined_by": "the Observations table has no row with that ID"},
+    {"rule": "context-ids", "pattern": "\\bCTX-\\d{2,3}\\b",
+     "defined_in": [{"json": "input.records[*].context_id", "when": {"input.records": "*"}}],
+     "defined_by": "no record in the embedded payload has that context_id, so it cannot count toward independence"},
+    {"rule": "regression-test-ids", "pattern": "\\bREG-\\d{2,3}\\b",
+     "defined_in": [{"json": "input.records[*].regression_test.id", "when": {"input.records": "*"}}],
+     "defined_by": "no record in the embedded payload carries a regression_test with that id"},
+    {"rule": "proposal-ids", "pattern": "\\bP-\\d{2}\\b",
+     "defined_in": [{"section": "proposals", "as": "subheading"}],
+     "defined_by": "Proposals has no '### P-NN' entry with that ID"}
+  ],
+  "sidecars": [
+    {"rule": "feedback-kernel", "detect": {"has_keys": ["operation", "input"]},
+     "validator": "skills/feedback-integrator/scripts/kernel.py", "function": "evaluate_case",
+     "error_statuses": ["INVALID"],
+     "recompute": {"result": "status"}}
+  ]
+}

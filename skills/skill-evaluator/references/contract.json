@@ -141,9 +141,9 @@
     "token_ratio": {},
     "duration_ratio": {}
   },
-  "internal": [
-    "input"
-  ],
+  "internal": {
+    "input": "eval case wrapper: the case-runner reads the payload from a case's input, never a payload key"
+  },
   "doc_terms": [
     "baseline_only",
     "candidate_only"

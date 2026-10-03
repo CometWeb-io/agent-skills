@@ -54,6 +54,7 @@ def validate(x):
     if not isinstance(anti,dict) or anti.get('no_hidden_criteria') is not True or anti.get('no_post_hoc_changes') is not True:e.append('anti_gaming:required')
     if e:return {'status':'INVALID','errors':e,'missing_dimensions':missing}
     canonical={k:x.get(k) for k in ('rubric_id','revision','purpose','target_type','mode','required_dimensions','criteria','anti_gaming')}
+    canonical['mode']=mode  # an omitted mode is hashed as its STANDARD default
     status='READY_TO_FREEZE' if frozen else 'NEEDS_REVISION'
     return {'status':status,'errors':[],'rubric_hash':_hash(canonical),'criteria_count':len(criteria),'blocker_count':blockers,'missing_dimensions':missing,'frozen':bool(frozen)}
 def evaluate_case(case):

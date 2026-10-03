@@ -23,11 +23,12 @@ ROOT = Path(__file__).resolve().parents[2]
 SKILLS = ROOT / "skills"
 
 # hosts.json keys whose values are paths relative to the repository root.
-REPO_PATH_KEYS = {"marketplace_manifest", "plugin_root", "source_of_truth", "routing_rule", "routing_rule_fallback"}
+REPO_PATH_KEYS = {"marketplace_manifest", "plugin_root", "source_of_truth", "routing_rule", "routing_rule_fallback",
+                  "plugin_rule"}
 # hosts.json keys whose values are paths relative to one skill package.
 PACKAGE_PATH_KEYS = {"agents_file", "package_optional_extras", "required_files"}
 # hosts.json keys that hold home-directory install targets, not repository paths.
-INSTALL_TARGET_KEYS = {"skill_dirs"}
+INSTALL_TARGET_KEYS = {"skill_dirs", "legacy_skill_dirs"}
 PATH_LIKE_KEY = re.compile(r"(_file|_files|_manifest|_root|_rule|_extras|_dirs|_of_truth|_fallback)$")
 
 PLUGIN_FILES = (

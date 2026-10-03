@@ -155,3 +155,55 @@ def test_ci_runs_the_gate_with_a_required_base() -> None:
     gate = next(g for g in check_all.GATES if g.id == "plugin_release")
     assert "tooling/plugin_release.py" in gate.argv and "--check" in gate.argv
     assert gate.ci_args == ("--require-base",)
+
+
+MANIFESTS = {
+    "pyproject.toml": '[project]\nname = "demo"\nversion = "{v}"\n',
+    "plugin.json": '{{\n  "name": "demo",\n  "version": "{v}"\n}}\n',
+    ".claude-plugin/plugin.json": '{{\n  "name": "demo",\n  "version": "{v}",\n  "skills": "./skills"\n}}\n',
+    ".cursor-plugin/plugin.json": '{{\n  "name": "demo",\n  "version": "{v}"\n}}\n',
+    "uv.lock": 'version = 1\n\n[[package]]\nname = "other"\nversion = "{v}"\n\n'
+               '[[package]]\nname = "demo"\nversion = "{v}"\nsource = {{ virtual = "." }}\n',
+}
+
+
+def write_manifests(root: Path, version: str) -> None:
+    for relative, template in MANIFESTS.items():
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(template.format(v=version), encoding="utf-8")
+
+
+def bump(root: Path, level: str) -> int:
+    return plugin_release.main(["--bump", level, "--root", str(root), "--base", "main"])
+
+
+def test_bump_writes_every_version_and_records_the_set(repo: Path) -> None:
+    """Five files and a lockfile carried the plugin version by hand; one command now does it."""
+    write_manifests(repo, "1.0.0")
+    write_skill(repo, "beta", "0.1.0")
+    assert bump(repo, "minor") == 0
+    assert (repo / "VERSION").read_text(encoding="utf-8").strip() == "1.1.0"
+    for relative, template in MANIFESTS.items():
+        expected = template.format(v="1.1.0")
+        if relative == "uv.lock":  # only this project's own entry moves
+            expected = MANIFESTS["uv.lock"].format(v="1.0.0").replace(
+                'name = "demo"\nversion = "1.0.0"', 'name = "demo"\nversion = "1.1.0"')
+        assert (repo / relative).read_text(encoding="utf-8") == expected, relative
+    assert check(repo, "--require-base") == 0
+
+
+def test_bump_counts_from_the_base_so_a_rerun_does_not_bump_twice(repo: Path) -> None:
+    write_manifests(repo, "1.0.0")
+    write_skill(repo, "alpha", "1.0.1")
+    assert bump(repo, "patch") == 0
+    assert bump(repo, "patch") == 0
+    assert (repo / "VERSION").read_text(encoding="utf-8").strip() == "1.0.1"
+    assert bump(repo, "minor") == 0  # a later, larger change on the same branch
+    assert (repo / "VERSION").read_text(encoding="utf-8").strip() == "1.1.0"
+    assert check(repo, "--require-base") == 0
+
+
+def test_bump_refuses_an_unknown_level(repo: Path) -> None:
+    with pytest.raises(SystemExit):
+        bump(repo, "huge")

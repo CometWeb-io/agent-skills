@@ -1,19 +1,22 @@
 {
   "schema": "cometweb.eval-strength-policy/v1",
-  "default_min_strength": 0.85,
+  "default_min_strength": 0.92,
   "critical_skills": {
     "artifact-acceptance": 0.95,
-    "benchmark-curator": 0.9,
-    "content-writer": 0.9,
-    "feedback-integrator": 0.9,
-    "longform-publisher": 0.9,
-    "portfolio-operator": 0.9,
-    "product-operator": 0.9,
+    "benchmark-curator": 0.95,
+    "brief-architect": 0.95,
+    "content-reviewer": 0.95,
+    "content-writer": 0.95,
+    "feedback-integrator": 0.95,
+    "longform-publisher": 0.95,
+    "portfolio-operator": 0.95,
+    "product-operator": 0.93,
     "quality-loop-operator": 0.95,
-    "repair-operator": 0.9,
-    "rubric-designer": 0.9,
-    "skill-auditor": 0.9
+    "repair-operator": 0.95,
+    "rubric-designer": 0.95,
+    "skill-auditor": 0.95,
+    "skill-evaluator": 0.95
   },
   "allow_unexercised_scripts": {},
-  "note": "Absolute floors ratchet quality. Since 2026-10-02 the measurement counts one-line and elif guards, which the compact kernels use for most rules; floors were raised to match the cases added that day. On 2026-10-03 every harness reached 0.85, so the default floor rose from 0.75 to 0.85 and the four skills that crossed it that day got their own floors. Held-guard counts remain the primary regression gate."
+  "note": "Absolute floors ratchet quality. Since 2026-10-02 the measurement counts one-line and elif guards, which the compact kernels use for most rules; floors were raised to match the cases added that day. On 2026-10-03 every harness reached 0.85, so the default floor rose from 0.75 to 0.85 and the four skills that crossed it that day got their own floors. Held-guard counts remain the primary regression gate. On 2026-10-03 (later) every harness reached 0.93 after pinning exact error lists, boundary cases and non-object cases (raw_case); the default floor rose to 0.92 and every skill measured at 0.95 or above got a 0.95 floor."
 }

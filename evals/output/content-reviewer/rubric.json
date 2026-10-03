@@ -1,0 +1,75 @@
+{
+  "skill": "content-reviewer",
+  "contract": "skills/content-reviewer/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "status", "title": "Review status", "aliases": ["review status", "status"], "required": true},
+    {"id": "findings", "title": "Findings", "aliases": ["findings"], "required": true},
+    {"id": "coverage", "title": "Coverage", "aliases": ["coverage"]},
+    {"id": "verify", "title": "Verify", "aliases": ["verify", "verification items"], "required": true},
+    {"id": "handoff", "title": "Handoff", "aliases": ["handoff", "recommended next skill"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["REVIEWED", "CHANGES_REQUIRED", "INVALID"],
+    "authorizing": ["REVIEWED"],
+    "primary": {"line": "^\\s*[-*]?\\s*\\**Review status\\**\\s*:"},
+    "json": [
+      {"rule": "payload-status", "path": "status", "when": {"schema": "cometweb.content-review/v1"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "material-finding", "type": "items_matching", "section": "findings",
+     "pattern": "\\A[^\\n]*\\b(?:BLOCKER|MAJOR)\\b"},
+    {"rule": "coverage-unknown", "type": "table_rows", "section": "coverage", "column": ["state"],
+     "pattern": "^UNKNOWN"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "mode", "section": "status", "pattern": "Mode\\**\\s*:\\s*`?(?:LIGHT|STANDARD|DEEP|DELTA)\\b",
+     "message": "the review does not state its mode (LIGHT | STANDARD | DEEP | DELTA)"},
+    {"type": "doc_require", "rule": "candidate", "section": "status", "pattern": "Candidate\\**\\s*:\\s*\\S",
+     "message": "the review does not name the candidate it reviewed"},
+    {"type": "items_require", "rule": "severity", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "\\A[^\\n]*\\b(?:BLOCKER|MAJOR|MINOR|NOTE)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a finding heading carries no severity (BLOCKER | MAJOR | MINOR | NOTE)"},
+    {"type": "items_require", "rule": "axis", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "Axis\\**\\s*:\\s*`?(?:brief-compliance|reader-value|structure|claim-integrity|actionability|consistency|language-ux)\\b",
+     "code": "CONTRACT_VIOLATION", "message": "a finding names no axis from the contract's seven"},
+    {"type": "items_require", "rule": "material-evidence", "section": "findings",
+     "when_item": "\\A[^\\n]*\\b(?:BLOCKER|MAJOR)\\b", "pattern": "Evidence\\**\\s*:\\s*(?:OBSERVATION|EXTERNAL|INFERENCE)\\b",
+     "code": "EVIDENCE_MISSING", "message": "a BLOCKER/MAJOR finding cites no evidence object (OBSERVATION | EXTERNAL | INFERENCE)"},
+    {"type": "items_require", "rule": "material-locator", "section": "findings",
+     "when_item": "\\A[^\\n]*\\b(?:BLOCKER|MAJOR)\\b", "pattern": "Locator\\**\\s*:\\s*\\S",
+     "code": "EVIDENCE_MISSING", "message": "a BLOCKER/MAJOR finding has no concrete locator"},
+    {"type": "items_require", "rule": "material-impact", "section": "findings",
+     "when_item": "\\A[^\\n]*\\b(?:BLOCKER|MAJOR)\\b", "pattern": "Impact\\**\\s*:\\s*\\S",
+     "code": "CONTRACT_VIOLATION", "message": "a BLOCKER/MAJOR finding states no impact"},
+    {"type": "items_require", "rule": "blocker-blocks-acceptance", "section": "findings",
+     "when_item": "\\A[^\\n]*\\bBLOCKER\\b", "pattern": "Blocks acceptance\\**\\s*:\\s*yes",
+     "code": "CONTRACT_VIOLATION", "message": "a BLOCKER finding must block acceptance"},
+    {"type": "items_require", "rule": "carried-revalidated", "section": "findings",
+     "when_item": "Finding status\\**\\s*:\\s*CARRIED", "pattern": "Revalidated\\**\\s*:\\s*yes",
+     "code": "CONTRACT_VIOLATION", "message": "a CARRIED finding was not revalidated against the current candidate"},
+    {"type": "items_forbid", "rule": "taste-as-material", "section": "findings",
+     "when_item": "\\A[^\\n]*\\b(?:BLOCKER|MAJOR)\\b(?![\\s\\S]*Brief violation\\**\\s*:\\s*yes)",
+     "pattern": "Style preference\\**\\s*:\\s*yes", "code": "CONTRACT_VIOLATION",
+     "message": "a style preference cannot be BLOCKER/MAJOR unless it violates the brief"},
+    {"type": "table_column_nonempty", "rule": "na-rationale", "section": "coverage", "column": ["rationale"],
+     "when": {"column": ["state"], "pattern": "^N/?A$"}, "code": "CONTRACT_VIOLATION",
+     "message": "an N/A coverage row needs a rationale"},
+    {"type": "doc_forbid", "rule": "no-ready-verdict", "code": "CONTRACT_VIOLATION",
+     "pattern": "(?<!not )(?<!n't )\\b(?:release[- ]ready|ready (?:to|for) (?:publish|publication|ship|release)|approved for (?:publication|release))\\b",
+     "message": "the reviewer gives no READY/acceptance verdict; artifact-acceptance owns that"}
+  ],
+  "ids": [
+    {"rule": "finding-ids", "pattern": "\\bCR-\\d{3}\\b",
+     "defined_in": [{"section": "findings", "as": "subheading"}],
+     "refs_json": ["findings[*].finding_id"],
+     "defined_by": "no '### CR-NNN' finding with that ID is in the Findings section"}
+  ],
+  "sidecars": [
+    {"rule": "content-review", "detect": {"equals": {"schema": "cometweb.content-review/v1"}},
+     "validator": "skills/content-reviewer/scripts/kernel.py", "function": "review",
+     "error_statuses": ["INVALID"],
+     "recompute": {"result": "status", "stated": "status"}}
+  ]
+}

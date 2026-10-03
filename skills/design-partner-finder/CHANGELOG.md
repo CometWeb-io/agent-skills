@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.2] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- Step 3 points at `references/kernel-inputs.md` before the first scoring payload. The front door never named it, and it is the page that warns a misspelled gate key silently falls back to its default.
+
 ## [1.2.1] - 2026-10-03
 
 ### Fixed

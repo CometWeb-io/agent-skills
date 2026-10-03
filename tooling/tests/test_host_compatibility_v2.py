@@ -38,7 +38,7 @@ def test_host_registry_v2_covers_target_hosts():
 
 def test_local_hosts_declare_discovery_paths():
     hosts = json.loads(HOSTS_PATH.read_text(encoding="utf-8"))["hosts"]
-    assert hosts["openai-codex"]["skill_dirs"] == ["~/.codex/skills"]
+    assert hosts["openai-codex"]["skill_dirs"] == ["~/.agents/skills"]
     assert hosts["claude-code"]["skill_dirs"] == ["~/.claude/skills"]
     assert hosts["cursor"]["skill_dirs"] == ["~/.cursor/skills"]
     assert hosts["qwen-code"]["skill_dirs"] == ["~/.qwen/skills"]

@@ -1,0 +1,595 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "skill-evaluator",
+  "description": "Offline behavior of the experiment-report validator the references document as kernel.validate(report), plus the bundled eval runner's command line.",
+  "cases": [
+    {
+      "id": "measured-lift-within-budget-is-improved",
+      "kind": "accept",
+      "behavior": "A same-suite run that beats the baseline by more than the margin, keeps trigger quality and stays inside the cost budget is IMPROVED and promotion-eligible.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "skill_id": "example-skill",
+          "candidate_version": "1.4.0",
+          "baseline_version": "1.3.0",
+          "mode": "STANDARD",
+          "execution_mode": "LOCAL_DETERMINISTIC",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "baseline_suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "declared_case_ids": [
+            "t1",
+            "t2",
+            "t3",
+            "t4"
+          ],
+          "executed_case_ids": [
+            "t4",
+            "t3",
+            "t2",
+            "t1"
+          ],
+          "negative_control_count": 1,
+          "discovery_case_count": 2,
+          "forced_case_count": 2,
+          "runs_per_case": 1,
+          "runtime_executed": true,
+          "candidate": {
+            "passed": 19,
+            "total": 20,
+            "trigger_tp": 9,
+            "trigger_fp": 0,
+            "trigger_fn": 1,
+            "tokens": 1200,
+            "duration_s": 30
+          },
+          "baseline": {
+            "passed": 15,
+            "total": 20,
+            "trigger_tp": 8,
+            "trigger_fp": 1,
+            "trigger_fn": 1,
+            "tokens": 1000,
+            "duration_s": 25
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "IMPROVED",
+          "errors": [],
+          "promotion_eligible": true,
+          "empirical_claim_allowed": true,
+          "pass_rate_delta": 0.2,
+          "trigger_precision": 1.0,
+          "trigger_recall": 0.9,
+          "token_ratio": 1.2,
+          "duration_ratio": 1.2,
+          "paired_status": "NOT_USED",
+          "stability_status": "NOT_USED"
+        }
+      }
+    },
+    {
+      "id": "design-without-execution-claims-no-lift",
+      "kind": "boundary",
+      "behavior": "An experiment designed but not run is DESIGN_READY and allows no empirical claim.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "skill_id": "example-skill",
+          "candidate_version": "1.4.0",
+          "baseline_version": "1.3.0",
+          "mode": "STANDARD",
+          "execution_mode": "SPEC_ONLY",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "baseline_suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "declared_case_ids": [
+            "t1",
+            "t2",
+            "t3",
+            "t4"
+          ],
+          "executed_case_ids": [
+            "t4",
+            "t3",
+            "t2",
+            "t1"
+          ],
+          "negative_control_count": 1,
+          "discovery_case_count": 2,
+          "forced_case_count": 2,
+          "runs_per_case": 1,
+          "runtime_executed": false
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "DESIGN_READY",
+          "errors": [],
+          "promotion_eligible": false,
+          "empirical_claim_allowed": false,
+          "paired_status": "NOT_USED",
+          "stability_status": "NOT_USED"
+        }
+      }
+    },
+    {
+      "id": "cherry-picked-cases-and-different-suite-are-invalid",
+      "kind": "refuse",
+      "behavior": "Running only part of the declared cases against a baseline with a different suite hash is an invalid comparison.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "skill_id": "example-skill",
+          "candidate_version": "1.4.0",
+          "baseline_version": "1.3.0",
+          "mode": "STANDARD",
+          "execution_mode": "LOCAL_DETERMINISTIC",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "baseline_suite_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "declared_case_ids": [
+            "t1",
+            "t2",
+            "t3",
+            "t4"
+          ],
+          "executed_case_ids": [
+            "t1",
+            "t2"
+          ],
+          "negative_control_count": 1,
+          "discovery_case_count": 2,
+          "forced_case_count": 2,
+          "runs_per_case": 1,
+          "runtime_executed": true,
+          "candidate": {
+            "passed": 19,
+            "total": 20,
+            "trigger_tp": 9,
+            "trigger_fp": 0,
+            "trigger_fn": 1,
+            "tokens": 1200,
+            "duration_s": 30
+          },
+          "baseline": {
+            "passed": 15,
+            "total": 20,
+            "trigger_tp": 8,
+            "trigger_fp": 1,
+            "trigger_fn": 1,
+            "tokens": 1000,
+            "duration_s": 25
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "suite_hash:mismatch",
+            "executed_cases:cherry-pick"
+          ],
+          "promotion_eligible": false
+        }
+      }
+    },
+    {
+      "id": "invariant-regression-overrides-score-gain",
+      "kind": "refuse",
+      "behavior": "An invariant regression makes the result a REGRESSION even when the pass rate went up.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "skill_id": "example-skill",
+          "candidate_version": "1.4.0",
+          "baseline_version": "1.3.0",
+          "mode": "STANDARD",
+          "execution_mode": "LOCAL_DETERMINISTIC",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "baseline_suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "declared_case_ids": [
+            "t1",
+            "t2",
+            "t3",
+            "t4"
+          ],
+          "executed_case_ids": [
+            "t4",
+            "t3",
+            "t2",
+            "t1"
+          ],
+          "negative_control_count": 1,
+          "discovery_case_count": 2,
+          "forced_case_count": 2,
+          "runs_per_case": 1,
+          "runtime_executed": true,
+          "candidate": {
+            "passed": 19,
+            "total": 20,
+            "trigger_tp": 9,
+            "trigger_fp": 0,
+            "trigger_fn": 1,
+            "tokens": 1200,
+            "duration_s": 30
+          },
+          "baseline": {
+            "passed": 15,
+            "total": 20,
+            "trigger_tp": 8,
+            "trigger_fp": 1,
+            "trigger_fn": 1,
+            "tokens": 1000,
+            "duration_s": 25
+          },
+          "invariant_regressions": 1
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "REGRESSION",
+          "errors": [],
+          "promotion_eligible": false,
+          "pass_rate_delta": 0.2
+        }
+      }
+    },
+    {
+      "id": "over-budget-gain-is-a-tradeoff",
+      "kind": "boundary",
+      "behavior": "A better but materially more expensive candidate is a RESOURCE_BUDGET tradeoff, not an unconditional win.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "skill_id": "example-skill",
+          "candidate_version": "1.4.0",
+          "baseline_version": "1.3.0",
+          "mode": "STANDARD",
+          "execution_mode": "LOCAL_DETERMINISTIC",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "baseline_suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "declared_case_ids": [
+            "t1",
+            "t2",
+            "t3",
+            "t4"
+          ],
+          "executed_case_ids": [
+            "t4",
+            "t3",
+            "t2",
+            "t1"
+          ],
+          "negative_control_count": 1,
+          "discovery_case_count": 2,
+          "forced_case_count": 2,
+          "runs_per_case": 1,
+          "runtime_executed": true,
+          "candidate": {
+            "passed": 19,
+            "total": 20,
+            "trigger_tp": 9,
+            "trigger_fp": 0,
+            "trigger_fn": 1,
+            "tokens": 2000,
+            "duration_s": 30
+          },
+          "baseline": {
+            "passed": 15,
+            "total": 20,
+            "trigger_tp": 8,
+            "trigger_fp": 1,
+            "trigger_fn": 1,
+            "tokens": 1000,
+            "duration_s": 25
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "TRADEOFF",
+          "tradeoff": "RESOURCE_BUDGET",
+          "promotion_eligible": false,
+          "token_ratio": 2.0
+        }
+      }
+    },
+    {
+      "id": "delta-exactly-at-margin-counts-as-improved",
+      "kind": "boundary",
+      "behavior": "A pass-rate gain exactly equal to the predeclared margin counts as IMPROVED.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "skill_id": "example-skill",
+          "candidate_version": "1.4.0",
+          "baseline_version": "1.3.0",
+          "mode": "STANDARD",
+          "execution_mode": "LOCAL_DETERMINISTIC",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "baseline_suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "declared_case_ids": [
+            "t1",
+            "t2",
+            "t3",
+            "t4"
+          ],
+          "executed_case_ids": [
+            "t4",
+            "t3",
+            "t2",
+            "t1"
+          ],
+          "negative_control_count": 1,
+          "discovery_case_count": 2,
+          "forced_case_count": 2,
+          "runs_per_case": 1,
+          "runtime_executed": true,
+          "candidate": {
+            "passed": 3,
+            "total": 4,
+            "trigger_tp": 9,
+            "trigger_fp": 0,
+            "trigger_fn": 1,
+            "tokens": 1200,
+            "duration_s": 30
+          },
+          "baseline": {
+            "passed": 2,
+            "total": 4,
+            "trigger_tp": 8,
+            "trigger_fp": 1,
+            "trigger_fn": 1,
+            "tokens": 1000,
+            "duration_s": 25
+          },
+          "promotion_policy": {
+            "min_pass_rate_delta": 0.25
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "IMPROVED",
+          "promotion_eligible": true,
+          "pass_rate_delta": 0.25
+        }
+      }
+    },
+    {
+      "id": "deep-real-host-needs-matched-config-runs-and-stability",
+      "kind": "refuse",
+      "behavior": "A DEEP real-host comparison with an uncalibrated judge, a different baseline model, too few runs, no paired analysis and flaky stability is invalid.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "skill_id": "example-skill",
+          "candidate_version": "1.4.0",
+          "baseline_version": "1.3.0",
+          "mode": "DEEP",
+          "execution_mode": "REAL_HOST",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "baseline_suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "declared_case_ids": [
+            "t1",
+            "t2",
+            "t3",
+            "t4"
+          ],
+          "executed_case_ids": [
+            "t4",
+            "t3",
+            "t2",
+            "t1"
+          ],
+          "negative_control_count": 1,
+          "discovery_case_count": 2,
+          "forced_case_count": 2,
+          "runs_per_case": 3,
+          "runtime_executed": true,
+          "candidate": {
+            "passed": 19,
+            "total": 20,
+            "trigger_tp": 9,
+            "trigger_fp": 0,
+            "trigger_fn": 1,
+            "tokens": 1200,
+            "duration_s": 30
+          },
+          "baseline": {
+            "passed": 15,
+            "total": 20,
+            "trigger_tp": 8,
+            "trigger_fp": 1,
+            "trigger_fn": 1,
+            "tokens": 1000,
+            "duration_s": 25
+          },
+          "uses_llm_judge": true,
+          "judge_agreement": {
+            "status": "NEEDS_REVIEW"
+          },
+          "config": {
+            "host": "host-a",
+            "model": "model-x",
+            "harness_version": "2.1"
+          },
+          "baseline_config": {
+            "host": "host-a",
+            "model": "model-y",
+            "harness_version": "2.1"
+          },
+          "stability": {
+            "status": "FLAKY"
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "judge_agreement:deep-not-calibrated",
+            "config:mismatch",
+            "runs_per_case:insufficient",
+            "paired_analysis:deep-required",
+            "stability:deep-not-stable"
+          ],
+          "promotion_eligible": false,
+          "paired_status": "NOT_USED",
+          "stability_status": "FLAKY"
+        }
+      }
+    },
+    {
+      "id": "paired-regression-wins-over-aggregate-gain",
+      "kind": "refuse",
+      "behavior": "A significant paired regression is reported as REGRESSION even when the unpaired pass rate went up.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "skill_id": "example-skill",
+          "candidate_version": "1.4.0",
+          "baseline_version": "1.3.0",
+          "mode": "STANDARD",
+          "execution_mode": "LOCAL_DETERMINISTIC",
+          "rubric_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "benchmark_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "baseline_suite_hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "declared_case_ids": [
+            "t1",
+            "t2",
+            "t3",
+            "t4"
+          ],
+          "executed_case_ids": [
+            "t4",
+            "t3",
+            "t2",
+            "t1"
+          ],
+          "negative_control_count": 1,
+          "discovery_case_count": 2,
+          "forced_case_count": 2,
+          "runs_per_case": 1,
+          "runtime_executed": true,
+          "candidate": {
+            "passed": 19,
+            "total": 20,
+            "trigger_tp": 9,
+            "trigger_fp": 0,
+            "trigger_fn": 1,
+            "tokens": 1200,
+            "duration_s": 30
+          },
+          "baseline": {
+            "passed": 15,
+            "total": 20,
+            "trigger_tp": 8,
+            "trigger_fp": 1,
+            "trigger_fn": 1,
+            "tokens": 1000,
+            "duration_s": 25
+          },
+          "paired_analysis": {
+            "status": "SIGNIFICANT_REGRESSION"
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "REGRESSION",
+          "errors": [],
+          "promotion_eligible": false,
+          "empirical_claim_allowed": true,
+          "paired_status": "SIGNIFICANT_REGRESSION"
+        }
+      }
+    },
+    {
+      "id": "non-object-report-is-invalid",
+      "kind": "boundary",
+      "behavior": "An experiment report that is not a JSON object is reported invalid instead of crashing.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        null
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "payload:not-object"
+          ],
+          "promotion_eligible": false
+        }
+      }
+    },
+    {
+      "id": "eval-runner-rejects-arguments",
+      "kind": "refuse",
+      "behavior": "The bundled eval runner takes no arguments and refuses an unexpected one with a usage error.",
+      "run": [
+        "scripts/run_evals.py",
+        "cases.json"
+      ],
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "usage: run_evals.py [-h]",
+          "unrecognized arguments: cases.json"
+        ]
+      }
+    }
+  ]
+}

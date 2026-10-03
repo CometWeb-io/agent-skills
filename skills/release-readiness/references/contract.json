@@ -314,7 +314,10 @@
     "changed_check_requirements": {},
     "no_longer_required_gates": {}
   },
-  "internal": [],
+  "internal": {
+    "key": "scope_warnings[] entry: bootstrap_manifest.py reads the unrecognized scope key to phrase its rejection",
+    "suggestion": "scope_warnings[] entry: bootstrap_manifest.py reads the likely intended key to name it in its rejection"
+  },
   "doc_terms": [
     "governance_surface"
   ],

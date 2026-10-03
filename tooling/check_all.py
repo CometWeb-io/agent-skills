@@ -60,6 +60,21 @@ def _python(*args: str) -> tuple[str, ...]:
     return (PY, "-B", *args)
 
 
+# Test modules that check one skill package at a time and finish in seconds.
+# pytest runs them again in the full suite; this list is what --fast adds.
+PACKAGE_TESTS = (
+    "test_skill_eval_harnesses.py",
+    "test_untrusted_content_rules.py",
+    "test_front_door_rules.py",
+    "test_front_door_ceiling.py",
+    "test_skill_doc_references.py",
+    "test_package_layout_consistency.py",
+    "test_scripts_are_executable.py",
+    "test_skill_scripts_import.py",
+    "test_skill_script_cli_contract.py",
+    "test_bundle_version.py",
+)
+
 GATES: tuple[Gate, ...] = (
     # Static analysis and supply chain.
     Gate("ruff", _python("-m", "ruff", "check", "."), "lint (defect rules only)"),
@@ -95,11 +110,13 @@ GATES: tuple[Gate, ...] = (
     # VERSION bumps, the same way a deliberate baseline change is.
     Gate("plugin_release", _python("tooling/plugin_release.py", "--check"),
          "plugin version covers shipped skill changes", fast=False, ci_args=("--require-base",),
-         hint="after bumping VERSION everywhere: uv run python tooling/plugin_release.py --record"),
-    Gate("context_budget", _python("tooling/context_budget.py", "--check"),
+         hint="bump and record in one step: uv run python tooling/plugin_release.py --bump patch "
+              "(minor for a new skill or behaviour)"),
+    Gate("context_budget", _python("tooling/context_budget.py", "--check",
+                                   "--verify-table", "docs/generated-context-budget.md"),
          "SKILL.md front-door cost against the baseline",
          fix=_python("tooling/context_budget.py", "--table", "docs/generated-context-budget.md"),
-         hint="accept a deliberate change: uv run python tooling/context_budget.py --update "
+         hint="only if a front door grew on purpose, accept it: uv run python tooling/context_budget.py --update "
               "--table docs/generated-context-budget.md"),
     # Deterministic evals.
     Gate("routing_evals", _python("tooling/run_routing_evals.py"), "routing suite"),
@@ -120,8 +137,14 @@ GATES: tuple[Gate, ...] = (
                              "--final"), "CW-AIP final envelope fixture"),
     Gate("eval_strength", _python("tooling/eval_strength.py", "--check"),
          "harnesses still pin every recorded guard", fast=False, cost=40,
-         hint="record a deliberate change: uv run python tooling/eval_strength.py --update "
+         hint="only if a held count changed on purpose, record it: uv run python tooling/eval_strength.py --update "
               "--table docs/generated-eval-strength.md"),
+    # The package-level slice of the test suite: per skill and quick, so a
+    # harness a new rule broke, a missing untrusted-content block or a manifest
+    # left behind by a version bump fails the inner loop, not only the full run.
+    Gate("skill_package_tests", _python("-m", "pytest", "-q", "--tb=short", "-n", "4", "-p", "no:cacheprovider",
+                                        *(f"tooling/tests/{name}" for name in PACKAGE_TESTS)),
+         "per-skill package tests: eval harnesses, front-door rules, script CLIs, manifests", cost=5),
     # Leak gates.
     Gate("public_safety", _python("tooling/public_safety.py", "--root", "."), "leak scan, working tree",
          cost=1.5),
@@ -280,7 +303,8 @@ def report(results: list[Result], wall: float, show_output: bool) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--fast", action="store_true",
-                        help="only the quick gates (no pytest, eval strength, package builds, network)")
+                        help="only the quick gates: the per-skill package tests, but not the full pytest "
+                             "suite, eval strength, package builds or network")
     parser.add_argument("--only", metavar="IDS", help="comma-separated gate ids to run")
     parser.add_argument("--skip", metavar="IDS", help="comma-separated gate ids to leave out")
     parser.add_argument("--fix", action="store_true",

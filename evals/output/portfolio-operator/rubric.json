@@ -1,0 +1,68 @@
+{
+  "skill": "portfolio-operator",
+  "contract": "skills/portfolio-operator/references/output-contract.md",
+  "ordered_sections": true,
+  "forbid_embedded_json": true,
+  "sections": [
+    {"id": "must-do", "title": "MUST DO", "aliases": ["must do"], "label": true},
+    {"id": "capacity-conflicts", "title": "CAPACITY CONFLICTS", "aliases": ["capacity conflicts"], "label": true},
+    {"id": "now", "title": "NOW", "aliases": ["now"], "label": true},
+    {"id": "delegate", "title": "DELEGATE", "aliases": ["delegate$"], "label": true},
+    {"id": "delegate-candidate", "title": "DELEGATE CANDIDATE", "aliases": ["delegate candidate"], "label": true},
+    {"id": "waiting", "title": "WAITING", "aliases": ["waiting"], "label": true},
+    {"id": "pause-drop", "title": "PAUSE / DROP", "aliases": ["pause / drop", "pause/drop"], "label": true},
+    {"id": "next", "title": "NEXT", "aliases": ["next"], "label": true}
+  ],
+  "required_any": [
+    {"id": "lanes", "sections": ["must-do", "capacity-conflicts", "now", "delegate", "delegate-candidate", "waiting", "pause-drop", "next"],
+     "message": "the brief has none of the contract's lanes (MUST DO, CAPACITY CONFLICTS, NOW, DELEGATE, DELEGATE CANDIDATE, WAITING, PAUSE / DROP, NEXT)"}
+  ],
+  "verdict": {
+    "tokens": ["READY", "PROVISIONAL", "BLOCKED"],
+    "authorizing": ["READY"],
+    "primary": {"line": "^\\s*\\**(?:Stan|State|Status)\\**\\s*:"},
+    "json": [
+      {"rule": "sidecar-readiness", "path": "readiness.status", "when": {"readiness": "*"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "unresolved-capacity-conflict", "type": "items_matching", "section": "capacity-conflicts",
+     "pattern": "\\bunresolved\\b|\\bdecision (?:needed|required|pending)\\b|\\bneeds (?:a |your )?decision\\b|\\bopen trade-?off\\b"}
+  ],
+  "checks": [
+    {"type": "items_require", "rule": "must-do-done-when", "section": "must-do", "pattern": "Done:\\s*\\S",
+     "code": "CONTRACT_VIOLATION", "message": "a MUST DO action has no observable 'Done:' condition"},
+    {"type": "items_require", "rule": "now-done-when", "section": "now", "pattern": "Done:\\s*\\S",
+     "code": "CONTRACT_VIOLATION", "message": "a NOW action has no observable 'Done:' condition"},
+    {"type": "items_forbid", "rule": "must-do-substeps", "section": "must-do", "pattern": "\\n\\s*(?:[-*+]|\\d+[.)])\\s",
+     "code": "CONTRACT_VIOLATION",
+     "message": "a MUST DO action expands into sub-steps; the specialist depth ceiling keeps it outcome-level and delegates the rest"},
+    {"type": "items_forbid", "rule": "now-substeps", "section": "now", "pattern": "\\n\\s*(?:[-*+]|\\d+[.)])\\s",
+     "code": "CONTRACT_VIOLATION",
+     "message": "a NOW action expands into sub-steps; the specialist depth ceiling keeps it outcome-level and delegates the rest"},
+    {"type": "doc_forbid", "rule": "printed-scores",
+     "pattern": "\\b(?:priority[_ ]score|gate[_ ]rank)\\b|\\bscore\\s*[:=]\\s*\\d",
+     "message": "the human brief does not print kernel scores or ranks"},
+    {"type": "word_budget", "rule": "word-budget", "mode_pattern": "\\b(7d|14d|30d)\\b",
+     "default_mode": "14D", "budgets": {"7D": 450, "14D": 450, "30D": 600}}
+  ],
+  "ids": [
+    {"rule": "conflict-item-ids",
+     "defined_in": [
+       {"json": "portfolio_items[*].id", "when": {"readiness": "*"}},
+       {"json": "must_do[*].id", "when": {"readiness": "*"}},
+       {"json": "now[*].id", "when": {"readiness": "*"}},
+       {"json": "delegate[*].id", "when": {"readiness": "*"}},
+       {"json": "delegate_candidate[*].id", "when": {"readiness": "*"}},
+       {"json": "waiting[*].id", "when": {"readiness": "*"}},
+       {"json": "pause_drop[*].id", "when": {"readiness": "*"}},
+       {"json": "next[*].id", "when": {"readiness": "*"}}
+     ],
+     "refs_json": ["capacity_conflicts[*].item_ids[*]"],
+     "defined_by": "no sidecar portfolio item or lane item has that ID, so the conflict names work that does not exist"}
+  ],
+  "sidecars": [
+    {"rule": "portfolio-report", "detect": {"has_keys": ["protocol_version", "readiness", "horizon"]},
+     "validator": "skills/portfolio-operator/scripts/portfolio_kernel.py", "function": "validate_report"}
+  ]
+}

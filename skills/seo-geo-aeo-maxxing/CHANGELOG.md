@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.3 — 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+
 ## 1.3.2 — 2026-10-03
 
 - Live source registry re-verified against first-party sources on 2026-10-03; `check_freshness.py --strict` is clean. Google: generative AI performance reports reached all sites on 2026-08-31 (impressions only, no query dimension), and the per-site "Search generative AI features" control is now listed as an eligibility condition for AI Overviews and AI Mode. Moved sources updated (support.claude.com, the OpenAI search help slug, Bing blog paths).

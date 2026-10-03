@@ -1,6 +1,12 @@
 ---
 name: release-readiness
-description: Assess whether a specific release candidate (version, build ID, branch/tag, commit, artifact digest) of an application, service, mobile/desktop build, library, or API is ready for production in a named environment and issue an evidence-backed GO / GO_WITH_CONTROLS / NO_GO / DEFER verdict across product acceptance, QA, security, operations/reliability, documentation, billing/entitlements, and support/incident readiness. Do not use for first-time whole-project baselines or "analyze the entire repo" (Repo to Roadmap), weekly prioritization on an existing roadmap (Product Operator), site/app QA with no named candidate (Web App Auditor), or gating a report, ebook, or other knowledge deliverable (Artifact Acceptance). Use when the user names or implies a concrete candidate for launch/release gates, pre-deploy audits, "is this build ready to ship?", hotfix readiness, post-incident releases, and delta/revalidation reviews. Never replaces security scans, live QA, legal review, or deploy approval.
+description: >-
+  Decide whether a named release candidate (version, build, commit, or digest) of an app, service, or
+  library is ready for production in a named environment: an evidence-backed GO / GO_WITH_CONTROLS /
+  NO_GO / DEFER verdict across product, QA, security, ops, docs, billing, and support. Do not use for
+  whole-repo baselines (repo-to-roadmap), weekly prioritization (product-operator), QA with no named
+  candidate (web-app-auditor), or gating a report or ebook (artifact-acceptance). Use for "is this
+  build ready to ship?" and pre-deploy gates.
 ---
 
 # Release Readiness
@@ -78,7 +84,7 @@ Assess independently: **Product**, **QA**, **Security**, **Operations**, **Docs*
 
 ## Finding states and severity
 
-States: `PASS`, `PASS_WITH_CONTROLS`, `ACCEPTED_RISK`, `FAIL`, `UNKNOWN`, `N/A`. Severity: `BLOCKER`, `CRITICAL`, `MAJOR`, `MINOR`.
+States: `PASS`, `PASS_WITH_CONTROLS`, `ACCEPTED_RISK`, `FAIL`, `UNKNOWN`, `N/A`. Severity: `BLOCKER`, `CRITICAL`, `MAJOR`, `MINOR`. The manifest spells them in lower case and writes N/A as `na` (or `applicable: false` with `na_reason`); the engine rejects `n/a`.
 
 - `BLOCKER`, `CRITICAL`, or binding failure must not be averaged away.
 - `MAJOR` unresolved failure blocks by default.

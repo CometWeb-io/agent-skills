@@ -1,0 +1,80 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "customer-ops",
+  "description": "Offline behavior of scripts/customer_ops_kernel.py commands as references/kernel-inputs.md documents them.",
+  "cases": [
+    {
+      "id": "severe-harm-with-security-signal-is-p0-with-gate",
+      "kind": "accept",
+      "behavior": "Critical active harm with no workaround is P0 regardless of account value, and a security signal routes the case to a specialist gate.",
+      "run": ["scripts/customer_ops_kernel.py", "priority-assess", "--json", "{\"impact\": 4, \"urgency\": 4, \"breadth\": 3, \"recurrence\": 0, \"workaround\": 4, \"security_signal\": true}"],
+      "expect": {"exit_code": 0, "json": {"operational_priority": "P0", "base_priority": "P0", "account_escalation": "STANDARD", "incident_candidate": true, "specialist_gate_required": true, "specialist_gates": ["security"], "priority_reasons": ["critical_active_harm_with_systemic_scope_or_recurrence_and_no_viable_workaround"]}}
+    },
+    {
+      "id": "out-of-range-dimension-is-refused",
+      "kind": "refuse",
+      "behavior": "An ordinal dimension outside 0..4 is refused with exit 2 instead of being clamped into a priority.",
+      "run": ["scripts/customer_ops_kernel.py", "priority-assess", "--json", "{\"impact\": 5, \"urgency\": 4, \"breadth\": 3, \"recurrence\": 0, \"workaround\": 4}"],
+      "expect": {"exit_code": 2, "stderr_contains": ["{\"status\": \"error\", \"error\": \"impact must be in range 0..4\"}"]}
+    },
+    {
+      "id": "malformed-json-payload-is-refused",
+      "kind": "refuse",
+      "behavior": "A payload that is not valid JSON exits 2 with an error status rather than running on partial input.",
+      "run": ["scripts/customer_ops_kernel.py", "churn-risk", "--json", "{bad"],
+      "expect": {"exit_code": 2, "stderr_contains": ["\"status\": \"error\"", "invalid JSON"]}
+    },
+    {
+      "id": "customer-send-blocked-without-authority-and-current-facts",
+      "kind": "refuse",
+      "behavior": "A customer message is blocked when send authority is missing and the facts are not confirmed current.",
+      "run": ["scripts/customer_ops_kernel.py", "case-gate", "--json", "-"],
+      "stdin": {"stage": "CUSTOMER_SEND", "message": "The export issue is fixed.", "recipient_resolved": true, "facts_current": false, "write_authorized": false},
+      "expect": {"exit_code": 0, "json": {"stage": "CUSTOMER_SEND", "status": "BLOCK", "blockers": ["explicit write/send authority missing", "material facts must be current/verified"], "missing_fields": [], "warnings": []}}
+    },
+    {
+      "id": "complete-triage-passes",
+      "kind": "accept",
+      "behavior": "A triaged case with source, type, symptom, owner and next action passes the TRIAGED gate with nothing missing.",
+      "run": ["scripts/customer_ops_kernel.py", "case-gate", "--json", "@{tmp}/case.json"],
+      "files": {"case.json": {"stage": "TRIAGED", "source_id": "T-1", "case_type": "bug", "customer_symptom": "CSV export downloads an empty file", "owner_class": "engineering", "next_action": "reproduce on a test workspace"}},
+      "expect": {"exit_code": 0, "json": {"stage": "TRIAGED", "status": "PASS", "blockers": [], "missing_fields": [], "warnings": []}}
+    },
+    {
+      "id": "deadline-at-warning-threshold-is-at-risk",
+      "kind": "boundary",
+      "behavior": "A deadline with exactly the warning window left is AT_RISK, not OK.",
+      "run": ["scripts/customer_ops_kernel.py", "deadline-status", "--json", "{\"due_at\": \"2026-08-25T12:00:00+00:00\", \"now\": \"2026-08-25T11:30:00+00:00\", \"warning_minutes\": 30}"],
+      "expect": {"exit_code": 0, "json": {"status": "AT_RISK", "source": "authoritative_due_at", "remaining_minutes": 30.0}}
+    },
+    {
+      "id": "start-plus-target-without-clock-mode-is-unknown",
+      "kind": "boundary",
+      "behavior": "A start time and target minutes without an explicit continuous clock return UNKNOWN instead of guessing the provider SLA.",
+      "run": ["scripts/customer_ops_kernel.py", "sla-status", "--json", "{\"start_at\": \"2026-08-25T10:00:00+02:00\", \"now\": \"2026-08-25T10:46:00+02:00\", \"target_minutes\": 60}"],
+      "expect": {"exit_code": 0, "json": {"status": "UNKNOWN"}}
+    },
+    {
+      "id": "misspelled-commitment-state-is-not-overdue",
+      "kind": "boundary",
+      "behavior": "An unrecognized commitment state is reported UNKNOWN with the accepted list, never as OVERDUE.",
+      "run": ["scripts/customer_ops_kernel.py", "commitment-status", "--json", "{\"state\": \"DONE\", \"due_at\": \"2026-08-25T10:00:00+02:00\", \"now\": \"2026-08-25T11:00:00+02:00\"}"],
+      "expect": {"exit_code": 0, "json": {"status": "UNKNOWN", "reason": "state must be one of: OPEN, DUE_SOON, OVERDUE, FULFILLED, RENEGOTIATED, CANCELLED"}}
+    },
+    {
+      "id": "resolved-case-cannot-skip-verification",
+      "kind": "refuse",
+      "behavior": "Closing a resolved case without verifying it first is not an allowed transition.",
+      "run": ["scripts/customer_ops_kernel.py", "transition", "--json", "{\"entity\": \"case\", \"from_state\": \"RESOLVED\", \"to_state\": \"CLOSED\"}"],
+      "expect": {"exit_code": 0, "json": {"allowed": false, "allowed_next_states": ["IN_PROGRESS", "VERIFIED"]}}
+    },
+    {
+      "id": "privacy-scan-redacts-email",
+      "kind": "accept",
+      "behavior": "An email address in outbound text is flagged and redacted before the text is shared.",
+      "run": ["scripts/customer_ops_kernel.py", "privacy-scan", "--json", "-"],
+      "stdin": {"text": "Please reply to user@example.com with the fix."},
+      "expect": {"exit_code": 0, "json": {"status": "FINDINGS", "findings": [{"count": 1, "type": "email"}], "redacted_text": "Please reply to <REDACTED_EMAIL> with the fix."}}
+    }
+  ]
+}

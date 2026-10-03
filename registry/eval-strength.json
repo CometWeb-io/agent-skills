@@ -3,44 +3,44 @@
   "skills": [
     {
       "guards": 64,
-      "held": 63,
+      "held": 64,
       "id": "artifact-acceptance",
-      "strength": 0.984,
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 34,
+      "held": 34,
+      "id": "benchmark-curator",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 67,
+      "held": 67,
+      "id": "brief-architect",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 43,
+      "held": 43,
+      "id": "content-reviewer",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 54,
+      "held": 53,
+      "id": "content-writer",
+      "strength": 0.981,
       "unexercised": []
     },
     {
       "guards": 34,
       "held": 33,
-      "id": "benchmark-curator",
-      "strength": 0.971,
-      "unexercised": []
-    },
-    {
-      "guards": 67,
-      "held": 60,
-      "id": "brief-architect",
-      "strength": 0.896,
-      "unexercised": []
-    },
-    {
-      "guards": 43,
-      "held": 38,
-      "id": "content-reviewer",
-      "strength": 0.884,
-      "unexercised": []
-    },
-    {
-      "guards": 54,
-      "held": 52,
-      "id": "content-writer",
-      "strength": 0.963,
-      "unexercised": []
-    },
-    {
-      "guards": 34,
-      "held": 32,
       "id": "feedback-integrator",
-      "strength": 0.941,
+      "strength": 0.971,
       "unexercised": []
     },
     {
@@ -52,9 +52,9 @@
     },
     {
       "guards": 65,
-      "held": 59,
+      "held": 62,
       "id": "portfolio-operator",
-      "strength": 0.908,
+      "strength": 0.954,
       "unexercised": []
     },
     {
@@ -73,30 +73,30 @@
     },
     {
       "guards": 53,
-      "held": 51,
+      "held": 52,
       "id": "repair-operator",
-      "strength": 0.962,
+      "strength": 0.981,
       "unexercised": []
     },
     {
       "guards": 29,
-      "held": 28,
+      "held": 29,
       "id": "rubric-designer",
-      "strength": 0.966,
+      "strength": 1.0,
       "unexercised": []
     },
     {
       "guards": 54,
-      "held": 49,
+      "held": 54,
       "id": "skill-auditor",
-      "strength": 0.907,
+      "strength": 1.0,
       "unexercised": []
     },
     {
       "guards": 54,
-      "held": 50,
+      "held": 54,
       "id": "skill-evaluator",
-      "strength": 0.926,
+      "strength": 1.0,
       "unexercised": []
     }
   ]

@@ -65,5 +65,18 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(manifest["scope"]["risk_flags"]["auth_change"], "unknown")
 
 
+    def test_unrecognized_scope_key_message_says_rejected_not_ignored(self):
+        for key, hint in (("comercial", "did you mean scope.commercial?"),
+                          ("auth_change", "did you mean scope.risk_flags.auth_change?")):
+            ctx = context()
+            ctx["scope"][key] = "free" if key == "comercial" else "no"
+            with self.assertRaises(bootstrap.engine.ManifestError) as caught:
+                bootstrap.build(ctx)
+            message = str(caught.exception)
+            self.assertNotIn("ignored", message)
+            self.assertIn(f"scope.{key} is not accepted", message)
+            self.assertIn(hint, message)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -79,8 +79,36 @@ def test_codex_listing_and_truncation_report() -> None:
                      "gamma": "Something else entirely"}
     cut = host_smoke.codex_truncation(shown, full)
     assert sorted(cut) == ["alpha", "gamma"]
-    assert cut["alpha"] == {"shown": 31, "full": 52, "prefix": True, "lost_do_not_clause": True}
+    assert cut["alpha"] == {"shown": 31, "full": 52, "prefix": True, "do_not_clause": "lost"}
     assert cut["gamma"]["prefix"] is False
+
+
+@pytest.mark.parametrize(
+    ("shown", "state"),
+    [
+        ("Does alpha. Do not use for beta or gamma. Do not use for delta.", "kept"),   # both sentences shown
+        ("Does alpha. Do not use for beta or gamma. Do not use", "partial"),          # second sentence cut
+        ("Does alpha. Do not use for beta", "partial"),                               # cut mid-sentence
+        ("Does alpha.", "lost"),
+    ],
+)
+def test_do_not_clause_state_separates_kept_partial_and_lost(shown: str, state: str) -> None:
+    full = {"alpha": "Does alpha. Do not use for beta or gamma. Do not use for delta. Use when alpha is named."}
+    assert host_smoke.codex_truncation({"alpha": shown}, full)["alpha"]["do_not_clause"] == state
+
+
+def test_do_not_clause_span_covers_consecutive_sentences_only() -> None:
+    text = "Does x (e.g. y). Do not use for a, b. Do not trigger for c. Use when d. Do not mix."
+    start, end = host_smoke.do_not_clause_span(text)
+    assert text[start:end] == "Do not use for a, b. Do not trigger for c."
+    assert host_smoke.do_not_clause_span("No guardrail here.") is None
+
+
+def test_codex_clause_summary_counts_every_skill() -> None:
+    full = {"a": "A. Do not use for x.", "b": "B. Do not use for y. Use when z.", "c": "C only."}
+    shown = {"a": "A. Do not use for x.", "b": "B. Do not use", "c": "C only."}
+    summary = host_smoke.codex_clause_summary(shown, full)
+    assert summary == {"kept": ["a"], "partial": ["b"], "lost": [], "none": ["c"]}
 
 
 def test_stage_payload_copies_the_plugin_and_nothing_else(tmp_path: Path) -> None:
@@ -94,7 +122,19 @@ def test_stage_payload_copies_the_plugin_and_nothing_else(tmp_path: Path) -> Non
 def test_cursor_static_check_passes_on_the_repository(tmp_path: Path) -> None:
     result = host_smoke.smoke_cursor(ROOT, EXPECTED)
     assert result.status == "PASS", [c for c in result.checks if not c["ok"]]
-    assert any("rules/" in note for note in result.findings)
+    assert "plugin ships its routing rule where Cursor discovers rules" in [c["check"] for c in result.checks]
+
+
+def test_cursor_key_sets_come_from_hosts_json() -> None:
+    hosts = json.loads((ROOT / "registry" / "hosts.json").read_text(encoding="utf-8"))["hosts"]["cursor"]
+    fmt = host_smoke.cursor_format(ROOT)
+    assert fmt["manifest_keys"] == hosts["plugin_format"]["manifest_keys"]
+    assert fmt["plugin_rule"] == hosts["plugin_rule"]
+
+
+def test_stage_payload_carries_the_plugin_rule(tmp_path: Path) -> None:
+    stage = host_smoke.stage_payload(tmp_path / "stage")
+    assert (stage / "rules" / "cometweb-agent-skills.mdc").is_file()
 
 
 def broken_cursor_copy(tmp_path: Path) -> Path:
@@ -117,6 +157,16 @@ def broken_cursor_copy(tmp_path: Path) -> Path:
         (lambda c: (c / "skills" / "empty-dir").mkdir(), "no skills/ subdirectory lacks a SKILL.md"),
         (lambda c: (c / "extras" / "cursor-routing.mdc").write_text("---\ndescription: x\n---\n", encoding="utf-8"),
          "extras/cursor-routing.mdc has Cursor rule frontmatter"),
+        (lambda c: _edit_json(c / ".cursor-plugin" / "plugin.json", displayName="Shown Name"),
+         "plugin.json uses only keys Cursor documents"),
+        (lambda c: _edit_json(c / ".cursor-plugin" / "plugin.json", author={"name": "A", "url": "https://example.com"}),
+         "plugin.json uses only keys Cursor documents"),
+        (lambda c: _edit_json(c / ".cursor-plugin" / "marketplace.json", interface={}),
+         "marketplace.json uses only keys Cursor documents"),
+        (lambda c: shutil.rmtree(c / "rules"),
+         "plugin ships its routing rule where Cursor discovers rules"),
+        (lambda c: _edit_json(c / ".cursor-plugin" / "plugin.json", rules="extras/"),
+         "plugin ships its routing rule where Cursor discovers rules"),
     ],
 )
 def test_cursor_static_check_catches_each_defect(tmp_path: Path, mutate, failed_check: str) -> None:

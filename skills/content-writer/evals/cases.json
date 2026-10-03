@@ -1197,5 +1197,18 @@
       "status": "PASS",
       "errors": []
     }
+  },
+  {
+    "id": "case-that-is-not-an-object-is-invalid",
+    "raw_case": "input",
+    "expect": {
+      "status": "FAIL",
+      "errors": [
+        "report:not-object"
+      ],
+      "release_eligible": false,
+      "unresolved_material": 0,
+      "mode": "DRAFT"
+    }
   }
 ]

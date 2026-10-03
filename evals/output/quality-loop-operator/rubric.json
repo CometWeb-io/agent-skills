@@ -1,0 +1,73 @@
+{
+  "skill": "quality-loop-operator",
+  "contract": "skills/quality-loop-operator/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "state", "title": "STATE", "aliases": ["state"], "required": true, "label": true},
+    {"id": "policy-lock", "title": "POLICY LOCK", "aliases": ["policy lock"], "required": true, "label": true},
+    {"id": "conflicts", "title": "CONFLICTS", "aliases": ["conflicts"], "required": true, "label": true},
+    {"id": "measurement", "title": "MEASUREMENT", "aliases": ["measurement"], "label": true},
+    {"id": "runtime-lifecycle", "title": "RUNTIME LIFECYCLE", "aliases": ["runtime lifecycle"], "label": true},
+    {"id": "next-stage", "title": "NEXT STAGE", "aliases": ["next stage"], "required": true, "label": true},
+    {"id": "revalidate", "title": "REVALIDATE", "aliases": ["revalidate"], "required": true, "label": true},
+    {"id": "blocker", "title": "BLOCKER", "aliases": ["blockers?"], "required": true, "label": true},
+    {"id": "done-when", "title": "DONE WHEN", "aliases": ["done when"], "required": true, "label": true}
+  ],
+  "verdict": {
+    "tokens": ["INVALID", "BLOCKED", "NEEDS_RECONCILIATION", "READY_FOR_NEXT", "CHANGES_REQUIRED", "READY_FOR_ROLLOUT", "COMPLETE"],
+    "authorizing": ["COMPLETE", "READY_FOR_ROLLOUT"],
+    "primary": {"section": "state"}
+  },
+  "blockers": [
+    {"rule": "listed-blocker", "type": "section_items", "section": "blocker", "none_pattern": "^none\\b"},
+    {"rule": "unresolved-conflict", "type": "items_matching", "section": "conflicts", "pattern": "\\bunresolved\\b"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "candidate", "section": "state", "pattern": "candidate[^\\n:]*:\\s*\\S",
+     "message": "STATE does not name the candidate_id"},
+    {"type": "doc_require", "rule": "contract", "section": "state", "pattern": "contract[^\\n:]*:\\s*\\S",
+     "message": "STATE does not name the contract_id"},
+    {"type": "doc_require", "rule": "profile", "section": "state",
+     "pattern": "\\b(?:EDITORIAL|SALES|TECHNICAL_DOCS|RESEARCH|REPO_DEEP|SKILL_QUALITY)\\b",
+     "message": "STATE does not name the profile"},
+    {"type": "doc_require", "rule": "as-of", "section": "state",
+     "pattern": "as[_ ]of[^\\n:]*:\\s*\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}[^\\s]*(?:Z|[+-]\\d{2}:?\\d{2})",
+     "message": "STATE has no timezone-aware as_of"},
+    {"type": "table_column_nonempty", "rule": "stage-evidence", "section": "state", "column": ["evidence"],
+     "when": {"column": ["state"], "pattern": "^PASS"}, "code": "EVIDENCE_MISSING",
+     "message": "a PASS stage cites no candidate-bound evidence"},
+    {"type": "doc_require", "rule": "lock-hash", "section": "policy-lock",
+     "pattern": "\\b[0-9a-f]{64}\\b|\\bno (?:policy )?lock\\b|\\bnot locked\\b",
+     "message": "POLICY LOCK gives no sha256 (or says explicitly that no lock applies)"},
+    {"type": "doc_forbid", "rule": "moved-goalposts", "section": "policy-lock", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\b(?:re-?locked|recalculated|recomputed|relaxed|loosened)\\b[^.\\n]{0,60}\\bafter\\b",
+     "message": "a lock changed after findings are known is a new policy revision with revalidation, not a silent update"},
+    {"type": "items_require", "rule": "resolution-basis", "section": "conflicts",
+     "when_item": "(?<!un)resolved\\b", "pattern": "Basis:\\s*\\S", "code": "CONTRACT_VIOLATION",
+     "message": "a resolved conflict needs its resolution basis"},
+    {"type": "doc_forbid", "rule": "conflict-auto-resolved", "section": "conflicts",
+     "pattern": "\\b(?:averaged|majority vote|by majority|took the (?:harsher|higher|max(?:imum)?) severity)\\b",
+     "message": "never resolve a conflict by averaging, majority, or the harsher severity"},
+    {"type": "doc_require", "rule": "next-stage", "section": "next-stage", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\b(?:none|brief-architect|content-writer|content-reviewer|content-roaster|science-roaster|repo-roaster|repair-operator|artifact-acceptance|skill-auditor|rubric-designer|benchmark-curator|skill-evaluator|skill-creator|release-readiness|feedback-integrator|quality-debt-resolution|revalidation|finding-reconciliation|canary|staged-rollout|full-rollout|rollback|runtime-compatibility)\\b",
+     "message": "NEXT STAGE names no stage, kernel next_stage, or 'none'"},
+    {"type": "doc_forbid", "rule": "release-verdict-not-owned", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\b(?:ready for production|production[- ]ready|safe to (?:ship|deploy|release)|GO for (?:release|production)|cleared for release)\\b",
+     "message": "a software release verdict belongs to release-readiness; the quality loop hands off"}
+  ],
+  "ids": [
+    {"rule": "conflict-ids", "pattern": "\\bRC-\\d{2,3}\\b",
+     "defined_in": [{"section": "conflicts", "as": "list_lead"}],
+     "defined_by": "CONFLICTS lists no reconciliation record with that ID"},
+    {"rule": "stage-names", "pattern": "\\b(brief-architect|content-writer|content-reviewer|content-roaster|science-roaster|repo-roaster|repair-operator|artifact-acceptance|skill-auditor|rubric-designer|benchmark-curator|skill-evaluator)\\b",
+     "scope": ["state"],
+     "defined_in": [{"json": "stages[*].skill", "when": {"profile": "*", "stages": "*"}}],
+     "defined_by": "the sidecar records no such stage for this run"}
+  ],
+  "sidecars": [
+    {"rule": "quality-run", "detect": {"has_keys": ["profile", "stages", "candidate_id", "contract_id"]},
+     "validator": "skills/quality-loop-operator/scripts/kernel.py", "function": "validate",
+     "error_statuses": ["INVALID"],
+     "recompute": {"result": "status"}}
+  ]
+}

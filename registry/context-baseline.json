@@ -2,18 +2,18 @@
   "schema": "cometweb.context-budget/v1",
   "unit": "bytes; token counts are estimates at 4 bytes/token",
   "skill_count": 32,
-  "total_front_door_tokens_estimated": 67882,
-  "median_front_door_tokens_estimated": 2404,
-  "max_front_door_tokens_estimated": 2998,
+  "total_front_door_tokens_estimated": 70349,
+  "median_front_door_tokens_estimated": 2475,
+  "max_front_door_tokens_estimated": 2999,
   "skills": [
     {
       "id": "ai-council",
-      "front_door_bytes": 9583,
-      "front_door_tokens_estimated": 2395,
+      "front_door_bytes": 9902,
+      "front_door_tokens_estimated": 2475,
       "depth_bytes": 51186,
       "depth_tokens_estimated": 12796,
       "reference_files": 27,
-      "deferred_ratio": 0.8423
+      "deferred_ratio": 0.8379
     },
     {
       "id": "ai-humanize",
@@ -26,30 +26,30 @@
     },
     {
       "id": "artifact-acceptance",
-      "front_door_bytes": 4834,
-      "front_door_tokens_estimated": 1208,
+      "front_door_bytes": 5314,
+      "front_door_tokens_estimated": 1328,
       "depth_bytes": 8384,
       "depth_tokens_estimated": 2096,
       "reference_files": 7,
-      "deferred_ratio": 0.6343
+      "deferred_ratio": 0.6121
     },
     {
       "id": "benchmark-curator",
-      "front_door_bytes": 3558,
-      "front_door_tokens_estimated": 889,
+      "front_door_bytes": 4014,
+      "front_door_tokens_estimated": 1003,
       "depth_bytes": 6454,
       "depth_tokens_estimated": 1613,
       "reference_files": 7,
-      "deferred_ratio": 0.6446
+      "deferred_ratio": 0.6165
     },
     {
       "id": "brief-architect",
-      "front_door_bytes": 5608,
-      "front_door_tokens_estimated": 1402,
+      "front_door_bytes": 6689,
+      "front_door_tokens_estimated": 1672,
       "depth_bytes": 7335,
       "depth_tokens_estimated": 1833,
       "reference_files": 5,
-      "deferred_ratio": 0.5667
+      "deferred_ratio": 0.523
     },
     {
       "id": "cometweb-context",
@@ -62,44 +62,44 @@
     },
     {
       "id": "competitive-intelligence",
-      "front_door_bytes": 9311,
-      "front_door_tokens_estimated": 2327,
+      "front_door_bytes": 9329,
+      "front_door_tokens_estimated": 2332,
       "depth_bytes": 38900,
       "depth_tokens_estimated": 9725,
       "reference_files": 7,
-      "deferred_ratio": 0.8069
+      "deferred_ratio": 0.8066
     },
     {
       "id": "content-reviewer",
-      "front_door_bytes": 4501,
-      "front_door_tokens_estimated": 1125,
+      "front_door_bytes": 5200,
+      "front_door_tokens_estimated": 1300,
       "depth_bytes": 6991,
       "depth_tokens_estimated": 1747,
       "reference_files": 7,
-      "deferred_ratio": 0.6083
+      "deferred_ratio": 0.5735
     },
     {
       "id": "content-roaster",
-      "front_door_bytes": 11826,
-      "front_door_tokens_estimated": 2956,
+      "front_door_bytes": 11844,
+      "front_door_tokens_estimated": 2961,
       "depth_bytes": 69060,
       "depth_tokens_estimated": 17265,
       "reference_files": 20,
-      "deferred_ratio": 0.8538
+      "deferred_ratio": 0.8536
     },
     {
       "id": "content-writer",
-      "front_door_bytes": 5628,
-      "front_door_tokens_estimated": 1407,
+      "front_door_bytes": 6255,
+      "front_door_tokens_estimated": 1563,
       "depth_bytes": 8227,
       "depth_tokens_estimated": 2056,
       "reference_files": 6,
-      "deferred_ratio": 0.5938
+      "deferred_ratio": 0.5681
     },
     {
       "id": "customer-ops",
-      "front_door_bytes": 11845,
-      "front_door_tokens_estimated": 2961,
+      "front_door_bytes": 11843,
+      "front_door_tokens_estimated": 2960,
       "depth_bytes": 131214,
       "depth_tokens_estimated": 32803,
       "reference_files": 18,
@@ -107,12 +107,12 @@
     },
     {
       "id": "design-partner-finder",
-      "front_door_bytes": 11995,
-      "front_door_tokens_estimated": 2998,
+      "front_door_bytes": 11999,
+      "front_door_tokens_estimated": 2999,
       "depth_bytes": 43890,
       "depth_tokens_estimated": 10972,
       "reference_files": 12,
-      "deferred_ratio": 0.7854
+      "deferred_ratio": 0.7853
     },
     {
       "id": "ebook-publisher",
@@ -125,30 +125,30 @@
     },
     {
       "id": "evidence-researcher",
-      "front_door_bytes": 5538,
-      "front_door_tokens_estimated": 1384,
+      "front_door_bytes": 5624,
+      "front_door_tokens_estimated": 1406,
       "depth_bytes": 39702,
       "depth_tokens_estimated": 9925,
       "reference_files": 14,
-      "deferred_ratio": 0.8776
+      "deferred_ratio": 0.8759
     },
     {
       "id": "feedback-integrator",
-      "front_door_bytes": 5074,
-      "front_door_tokens_estimated": 1268,
+      "front_door_bytes": 5869,
+      "front_door_tokens_estimated": 1467,
       "depth_bytes": 9074,
       "depth_tokens_estimated": 2268,
       "reference_files": 7,
-      "deferred_ratio": 0.6414
+      "deferred_ratio": 0.6072
     },
     {
       "id": "longform-publisher",
-      "front_door_bytes": 10496,
-      "front_door_tokens_estimated": 2624,
+      "front_door_bytes": 10510,
+      "front_door_tokens_estimated": 2627,
       "depth_bytes": 14510,
       "depth_tokens_estimated": 3627,
       "reference_files": 9,
-      "deferred_ratio": 0.5803
+      "deferred_ratio": 0.5799
     },
     {
       "id": "portfolio-operator",
@@ -161,12 +161,12 @@
     },
     {
       "id": "product-operator",
-      "front_door_bytes": 9655,
-      "front_door_tokens_estimated": 2413,
+      "front_door_bytes": 9900,
+      "front_door_tokens_estimated": 2475,
       "depth_bytes": 43181,
       "depth_tokens_estimated": 10795,
       "reference_files": 12,
-      "deferred_ratio": 0.8173
+      "deferred_ratio": 0.8135
     },
     {
       "id": "product-teardown",
@@ -179,39 +179,39 @@
     },
     {
       "id": "quality-loop-operator",
-      "front_door_bytes": 8342,
-      "front_door_tokens_estimated": 2085,
+      "front_door_bytes": 9062,
+      "front_door_tokens_estimated": 2265,
       "depth_bytes": 15031,
       "depth_tokens_estimated": 3757,
       "reference_files": 14,
-      "deferred_ratio": 0.6431
+      "deferred_ratio": 0.6239
     },
     {
       "id": "release-readiness",
-      "front_door_bytes": 11616,
-      "front_door_tokens_estimated": 2904,
+      "front_door_bytes": 11747,
+      "front_door_tokens_estimated": 2936,
       "depth_bytes": 70475,
       "depth_tokens_estimated": 17618,
       "reference_files": 11,
-      "deferred_ratio": 0.8585
+      "deferred_ratio": 0.8571
     },
     {
       "id": "repair-operator",
-      "front_door_bytes": 4976,
-      "front_door_tokens_estimated": 1244,
+      "front_door_bytes": 6141,
+      "front_door_tokens_estimated": 1535,
       "depth_bytes": 8195,
       "depth_tokens_estimated": 2048,
       "reference_files": 6,
-      "deferred_ratio": 0.6222
+      "deferred_ratio": 0.5716
     },
     {
       "id": "repo-roaster",
-      "front_door_bytes": 11847,
-      "front_door_tokens_estimated": 2961,
+      "front_door_bytes": 11863,
+      "front_door_tokens_estimated": 2965,
       "depth_bytes": 76873,
       "depth_tokens_estimated": 19218,
       "reference_files": 20,
-      "deferred_ratio": 0.8665
+      "deferred_ratio": 0.8663
     },
     {
       "id": "repo-to-roadmap",
@@ -224,21 +224,21 @@
     },
     {
       "id": "rubric-designer",
-      "front_door_bytes": 3076,
-      "front_door_tokens_estimated": 769,
+      "front_door_bytes": 4144,
+      "front_door_tokens_estimated": 1036,
       "depth_bytes": 2976,
       "depth_tokens_estimated": 744,
       "reference_files": 5,
-      "deferred_ratio": 0.4917
+      "deferred_ratio": 0.418
     },
     {
       "id": "science-roaster",
-      "front_door_bytes": 11953,
-      "front_door_tokens_estimated": 2988,
+      "front_door_bytes": 11967,
+      "front_door_tokens_estimated": 2991,
       "depth_bytes": 74408,
       "depth_tokens_estimated": 18602,
       "reference_files": 21,
-      "deferred_ratio": 0.8616
+      "deferred_ratio": 0.8615
     },
     {
       "id": "seo-geo-aeo-maxxing",
@@ -251,39 +251,39 @@
     },
     {
       "id": "skill-auditor",
-      "front_door_bytes": 5224,
-      "front_door_tokens_estimated": 1306,
+      "front_door_bytes": 5947,
+      "front_door_tokens_estimated": 1486,
       "depth_bytes": 8776,
       "depth_tokens_estimated": 2194,
       "reference_files": 8,
-      "deferred_ratio": 0.6269
+      "deferred_ratio": 0.5961
     },
     {
       "id": "skill-evaluator",
-      "front_door_bytes": 5000,
-      "front_door_tokens_estimated": 1250,
+      "front_door_bytes": 5894,
+      "front_door_tokens_estimated": 1473,
       "depth_bytes": 11019,
       "depth_tokens_estimated": 2754,
       "reference_files": 10,
-      "deferred_ratio": 0.6879
+      "deferred_ratio": 0.6515
     },
     {
       "id": "skill-orchestrator",
-      "front_door_bytes": 6216,
-      "front_door_tokens_estimated": 1554,
+      "front_door_bytes": 6354,
+      "front_door_tokens_estimated": 1588,
       "depth_bytes": 11381,
       "depth_tokens_estimated": 2845,
       "reference_files": 4,
-      "deferred_ratio": 0.6468
+      "deferred_ratio": 0.6417
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "front_door_bytes": 1463,
-      "front_door_tokens_estimated": 365,
+      "front_door_bytes": 1629,
+      "front_door_tokens_estimated": 407,
       "depth_bytes": 12706,
       "depth_tokens_estimated": 3176,
       "reference_files": 4,
-      "deferred_ratio": 0.8967
+      "deferred_ratio": 0.8864
     },
     {
       "id": "web-app-auditor",

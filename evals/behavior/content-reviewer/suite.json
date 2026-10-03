@@ -1,0 +1,43 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "content-reviewer",
+  "description": "Offline behavior of the finding-ledger kernel the references document as kernel.review(payload).",
+  "cases": [
+    {
+      "id": "evidenced-major-requires-changes",
+      "kind": "accept",
+      "behavior": "A MAJOR finding with locator, impact and evidence makes the review CHANGES_REQUIRED, not INVALID.",
+      "run": ["scripts/kernel.py"],
+      "call": "review",
+      "args": [{"findings": [{"finding_id": "f1", "severity": "MAJOR", "locator": "section 2", "impact": "readers act on a wrong price", "evidence": [{"kind": "OBSERVATION", "source": "draft.md", "locator": "line 14"}]}]}],
+      "expect": {"exit_code": 0, "json": {"status": "CHANGES_REQUIRED", "majors": 1, "blockers": 0, "errors": []}}
+    },
+    {
+      "id": "taste-cannot-be-a-major",
+      "kind": "refuse",
+      "behavior": "A style preference raised as MAJOR without a brief violation is refused.",
+      "run": ["scripts/kernel.py"],
+      "call": "review",
+      "args": [{"findings": [{"finding_id": "f1", "severity": "MAJOR", "locator": "intro", "impact": "tone", "style_preference": true, "evidence": [{"kind": "OBSERVATION", "source": "draft.md", "locator": "line 1"}]}]}],
+      "expect": {"exit_code": 0, "json": {"status": "INVALID", "errors": ["0:taste-cannot-be-material"]}}
+    },
+    {
+      "id": "carried-finding-needs-revalidation",
+      "kind": "refuse",
+      "behavior": "A finding carried from an earlier review must be revalidated, not copied forward.",
+      "run": ["scripts/kernel.py"],
+      "call": "review",
+      "args": [{"mode": "STANDARD", "findings": [{"finding_id": "f1", "severity": "MINOR", "finding_status": "CARRIED"}]}],
+      "expect": {"exit_code": 0, "json": {"status": "INVALID", "errors": ["0:carried-without-revalidation"]}}
+    },
+    {
+      "id": "deep-review-with-unknown-axis-is-incomplete",
+      "kind": "boundary",
+      "behavior": "A DEEP review that leaves a required axis UNKNOWN is reported as incomplete coverage.",
+      "run": ["scripts/kernel.py"],
+      "call": "review",
+      "args": [{"mode": "DEEP", "required_axes": ["structure"], "coverage": [{"axis": "structure", "state": "UNKNOWN"}], "findings": []}],
+      "expect": {"exit_code": 0, "json": {"status": "INVALID", "errors": ["coverage:unknown:structure"], "coverage_complete": false}}
+    }
+  ]
+}

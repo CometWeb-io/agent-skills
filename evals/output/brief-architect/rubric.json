@@ -1,0 +1,78 @@
+{
+  "skill": "brief-architect",
+  "contract": "skills/brief-architect/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "status", "title": "Brief status", "aliases": ["brief status", "status"], "required": true},
+    {"id": "objective", "title": "Objective and audience", "aliases": ["objective"], "required": true},
+    {"id": "exclusions", "title": "Exclusions", "aliases": ["exclusions"], "required": true},
+    {"id": "evidence-policy", "title": "Evidence policy", "aliases": ["evidence policy"], "required": true},
+    {"id": "deliverables", "title": "Deliverables", "aliases": ["deliverables"], "required": true},
+    {"id": "acceptance", "title": "Acceptance criteria", "aliases": ["acceptance criteria"], "required": true},
+    {"id": "invariants", "title": "Protected invariants", "aliases": ["protected invariants"]},
+    {"id": "known", "title": "Known", "aliases": ["known"], "required": true},
+    {"id": "assumptions", "title": "Assumptions", "aliases": ["assumptions"], "required": true},
+    {"id": "decisions", "title": "Decisions needed", "aliases": ["decisions needed", "decision needed"], "required": true},
+    {"id": "next-skill", "title": "Recommended next skill", "aliases": ["recommended next skill", "next skill"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["READY", "PROVISIONAL", "BLOCKED", "INVALID"],
+    "authorizing": ["READY"],
+    "primary": {"line": "^\\s*[-*]?\\s*\\**Status\\**\\s*:"},
+    "json": [
+      {"rule": "payload-status", "path": "status", "when": {"schema": "cometweb.artifact-brief/v1"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "open-decision", "type": "section_items", "section": "decisions",
+     "none_pattern": "^none\\b|\\bresolved\\b(?!\\s*:\\s*no)"},
+    {"rule": "material-assumption", "type": "section_items", "section": "assumptions",
+     "none_pattern": "^none\\b|non-material"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "mode", "section": "status", "pattern": "Mode\\**\\s*:\\s*`?(?:LIGHT|STANDARD|DEEP)\\b",
+     "message": "the brief does not state its mode (LIGHT | STANDARD | DEEP)"},
+    {"type": "doc_require", "rule": "status-reason", "section": "status", "when_verdict": ["PROVISIONAL", "BLOCKED"],
+     "pattern": "^\\s*[-*]?\\s*\\**Reasons?\\**\\s*:\\s*\\S",
+     "message": "a PROVISIONAL or BLOCKED brief must give its reasons immediately after the status"},
+    {"type": "doc_require", "rule": "objective-field", "section": "objective", "pattern": "Objective\\**\\s*:\\s*\\S",
+     "message": "the brief has no objective"},
+    {"type": "doc_require", "rule": "audience-field", "section": "objective", "pattern": "Audience\\**\\s*:\\s*\\S",
+     "message": "the brief has no audience"},
+    {"type": "doc_require", "rule": "policy-token", "section": "evidence-policy",
+     "pattern": "\\b(?:SOURCE_BOUND|EVIDENCE_REQUIRED|CONTEXTUAL_DRAFT|CREATIVE)\\b",
+     "message": "the evidence policy is not one of SOURCE_BOUND | EVIDENCE_REQUIRED | CONTEXTUAL_DRAFT | CREATIVE"},
+    {"type": "table_column_nonempty", "rule": "criterion-verification", "section": "acceptance",
+     "column": ["verification"], "when": {"column": ["evidence"], "pattern": "^yes"}, "code": "EVIDENCE_MISSING",
+     "message": "a criterion that requires evidence has no verification method"},
+    {"type": "table_column_nonempty", "rule": "criterion-check", "section": "acceptance",
+     "column": ["check"], "code": "CONTRACT_VIOLATION",
+     "message": "an acceptance criterion has no observable check"},
+    {"type": "doc_forbid", "rule": "vague-criterion", "section": "acceptance", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\b(?:top[- ]tier|world[- ]class|great|professional|convincing|high[- ]quality|engaging|best[- ]in[- ]class)\\b",
+     "message": "acceptance criteria must be observable; replace adjectives with checks"},
+    {"type": "doc_forbid", "rule": "consequential-assumption", "section": "assumptions", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\bconsequential\\b(?![^\\n]*\\bnot consequential\\b)",
+     "message": "a consequential choice is a decision, not an assumption; move it to Decisions needed"}
+  ],
+  "ids": [
+    {"rule": "criterion-ids", "pattern": "\\bAC-\\d{2}\\b",
+     "defined_in": [{"section": "acceptance", "as": "table_first_column"}],
+     "refs_json": ["acceptance_criteria[*].id"],
+     "defined_by": "the Acceptance criteria table has no row with that ID"},
+    {"rule": "invariant-ids", "pattern": "\\bINV-\\d{2}\\b",
+     "defined_in": [{"section": "invariants", "as": "list_lead"}],
+     "refs_json": ["protected_invariants[*].id"],
+     "defined_by": "the Protected invariants section declares no invariant with that ID"},
+    {"rule": "decision-ids", "pattern": "\\bD-\\d{2}\\b",
+     "defined_in": [{"section": "decisions", "as": "list_lead"}],
+     "refs_json": ["decision_needed[*].id"],
+     "defined_by": "the Decisions needed section lists no decision with that ID"}
+  ],
+  "sidecars": [
+    {"rule": "artifact-brief", "detect": {"equals": {"schema": "cometweb.artifact-brief/v1"}},
+     "validator": "skills/brief-architect/scripts/kernel.py", "function": "readiness",
+     "error_statuses": ["INVALID"],
+     "recompute": {"result": "status", "stated": "status"}}
+  ]
+}

@@ -5,7 +5,7 @@ import json
 import math
 from typing import Any
 
-from .constants import COUNCIL_VERSION, WATCH_OPERATORS, _MEMORY_ALLOWLIST_V4
+from .constants import COUNCIL_VERSION, FORECAST_OUTCOMES, WATCH_OPERATORS, _MEMORY_ALLOWLIST_V4
 from .util import (
     _aware_time,
     _boolean,
@@ -372,7 +372,7 @@ def forecast_score_report(forecasts: list[dict[str, Any]]) -> dict[str, Any]:
         if isinstance(outcome, str):
             outcome = {"1": 1, "true": 1, "yes": 1, "success": 1, "occurred": 1,
                        "0": 0, "false": 0, "no": 0, "failure": 0, "did_not_occur": 0}.get(outcome.lower())
-        if type(outcome) not in (int, float, bool) or outcome not in (0, 1):
+        if type(outcome) not in (int, float, bool) or outcome not in FORECAST_OUTCOMES:
             unresolved.append(index)
             continue
         resolved.append((p, int(outcome)))

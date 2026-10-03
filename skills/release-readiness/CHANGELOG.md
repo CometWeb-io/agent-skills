@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.2] - 2026-10-03
+
+- The finding states are written `PASS_WITH_CONTROLS`, `N/A` and so on, but the manifest takes them in lower case and spells N/A as `na`: a check with `"status": "N/A"` lowercases to `n/a` and the engine stops with `invalid status`. The front door now says so, and mentions `applicable: false` with `na_reason`.
+- The description is 538 characters, down from 1002. Codex shows about the first 546 characters of each description in its skill list, which cut the "Do not use" clause part-way; the whole description now fits, with the routing boundaries and named alternatives kept.
+- `scripts/bootstrap_manifest.py` refuses a context with an unrecognized scope key, but its error repeated the assessment warning that the key "was ignored". The error now says the key is not accepted and still names the intended key.
+
 ## [1.3.1] - 2026-10-03
 
 ### Changed

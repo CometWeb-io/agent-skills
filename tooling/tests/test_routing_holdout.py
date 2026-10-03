@@ -96,7 +96,12 @@ def test_a_paraphrase_in_a_tuned_set_fails_as_a_near_duplicate(tree):
 def test_version_1_covers_every_skill_active_at_the_freeze():
     data = json.loads(ho.HOLDOUT.read_text(encoding="utf-8"))
     positives = {c["expected_primary_skill"] for c in data["cases"] if c["kind"] == "positive"}
-    assert len(positives) == 32 and ho.uncovered_skills() == []
+    registry = json.loads((ho.ROOT / "registry/skills.json").read_text(encoding="utf-8"))
+    active = {s["id"] for s in registry["skills"] if s.get("lifecycle", "active") == "active"}
+    # Version 1 froze 32 skills. A skill added later is uncovered, not a failure,
+    # so the live registry may hold more; it may not have lost a frozen one.
+    assert len(positives) == 32 and positives <= active
+    assert set(ho.uncovered_skills()) == active - positives
     assert len(data["cases"]) >= 120
     assert {c["lang"] for c in data["cases"]} == {"en", "pl"}
 
@@ -105,7 +110,7 @@ def test_a_skill_added_after_the_freeze_is_reported_not_failed(tree):
     holdout, lock = _paths(tree)
     registry = tree / "registry/skills.json"
     _edit(registry, lambda d: d["skills"].append(dict(d["skills"][0], id="added-later")))
-    assert ho.uncovered_skills(holdout, tree) == ["added-later"]
+    assert ho.uncovered_skills(holdout, tree) == sorted([*ho.uncovered_skills(), "added-later"])
     assert not any("added-later" in p for p in ho.problems(holdout, lock, tree))
 
 

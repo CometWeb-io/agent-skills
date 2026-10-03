@@ -29,12 +29,21 @@ def harness_skills() -> list[str]:
 
 
 def load_harness(skill: str):
-    path = ROOT / "skills" / skill / "scripts" / "run_evals.py"
+    return load_harness_at(ROOT / "skills" / skill / "scripts" / "run_evals.py", skill)
+
+
+def load_harness_at(path: Path, skill: str):
     directory = str(path.parent)
     name = f"run_evals_{skill.replace('-', '_')}"
     spec = importlib.util.spec_from_file_location(name, path)
     assert spec and spec.loader, f"cannot load {path}"
     module = importlib.util.module_from_spec(spec)
+    # Sibling modules are imported by bare name (`from output_contract import
+    # validate`), and two skills may ship the same file name. Drop any cached
+    # module of that name first, or the second harness runs the first's rules.
+    siblings = {p.stem for p in path.parent.glob("*.py")}
+    for sibling in siblings:
+        sys.modules.pop(sibling, None)
     added = directory not in sys.path
     if added:
         sys.path.insert(0, directory)
@@ -43,6 +52,8 @@ def load_harness(skill: str):
         spec.loader.exec_module(module)
     finally:
         sys.modules.pop(name, None)
+        for sibling in siblings:
+            sys.modules.pop(sibling, None)
         if added:
             sys.path.remove(directory)
     return module
@@ -77,3 +88,16 @@ def test_every_harness_skill_is_discovered() -> None:
     recorded = sorted(row["id"] for row in baseline["skills"])
     assert recorded, "registry/eval-strength.json records no harnesses"
     assert harness_skills() == recorded
+
+
+def test_two_skills_with_the_same_kernel_name_each_run_their_own(tmp_path: Path) -> None:
+    """Every scaffolded skill ships scripts/output_contract.py; the second one
+    loaded in-process must not be graded by the first one's cached module."""
+    harnesses = []
+    for skill, verdict in (("first-skill", "first"), ("second-skill", "second")):
+        scripts = tmp_path / skill / "scripts"
+        scripts.mkdir(parents=True)
+        (scripts / "output_contract.py").write_text(f"def verdict():\n    return {verdict!r}\n", encoding="utf-8")
+        (scripts / "run_evals.py").write_text("from output_contract import verdict\n", encoding="utf-8")
+        harnesses.append(load_harness_at(scripts / "run_evals.py", skill))
+    assert [h.verdict() for h in harnesses] == ["first", "second"]

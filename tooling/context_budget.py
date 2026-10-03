@@ -173,6 +173,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--check", action="store_true", help="fail if a front door grew beyond tolerance")
     parser.add_argument("--update", action="store_true", help="record the current measurement as the baseline")
     parser.add_argument("--table", type=Path, help="write the generated markdown table to this path")
+    parser.add_argument("--verify-table", type=Path, metavar="PATH",
+                        help="with --check: also fail when the table at PATH is not what --table would write")
     parser.add_argument("--tolerance", type=float, default=0.10,
                         help="growth allowed before --check fails (default 0.10 = 10%%)")
     parser.add_argument("--json", action="store_true", help="print the raw measurement")
@@ -203,6 +205,11 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         if host_policy:
             problems.extend(enforce_host_budgets(report, host_policy))
+        if args.verify_table is not None:
+            on_disk = args.verify_table.read_text(encoding="utf-8") if args.verify_table.is_file() else None
+            if on_disk != render_table(report):
+                problems.append(f"{args.verify_table} is stale; regenerate it with "
+                                "`uv run python tooling/check_all.py --fix --fast`")
         if problems:
             for problem in problems:
                 print(f"FAIL: {problem}", file=sys.stderr)

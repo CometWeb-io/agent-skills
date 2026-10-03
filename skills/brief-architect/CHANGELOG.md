@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object; a new case pins how `evaluate_case` refuses one.
+- New eval cases pin a `rubric_lock` that is not an object, one missing `pack_id` and `revision`, a DEEP brief missing `use_moment` and `scope`, and a structured protected invariant with `id` and `rule`. Eval strength 60/67 -> 67/67 guards held.
+- The front door names the statuses the brief leads with (`READY`, `PROVISIONAL`, `BLOCKED`, `INVALID`) and when each applies, using the kernel's own rules: `BLOCKED` for a missing required field, `PROVISIONAL` for an open material decision or material assumption. It also says a `CHANGED` delta means downstream revalidation.
+- Adds one worked acceptance criterion with `evidence_required` and `verification_method`, which the kernel accepts as `READY`.
+- References are listed in a table with load triggers; the v1.3 section is folded into the `rubric-lock.md` row.
+
 ## [1.7.2] - 2026-10-03
 
 - The brief documented `changed_fields[]` and

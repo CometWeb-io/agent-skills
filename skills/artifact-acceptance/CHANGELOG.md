@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object; a new case pins how `evaluate_case` refuses one.
+- The closing "Read A, B and C" sentence and the separate v1.3 section became one table that says when each reference is needed, and names the four references it never mentioned at a load point (`policy-packs-and-waivers.md`, `traceability.md`, `policy-lock-and-evidence-floor.md`, `untrusted-input.md`).
+
 ## [1.7.2] - 2026-10-03
 
 - An open finding whose `severity` was not one of BLOCKER, MAJOR, MINOR or NOTE

@@ -7,7 +7,7 @@
   "skills": [
     {
       "id": "ai-council",
-      "version": "5.2.2",
+      "version": "5.2.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -188,7 +188,7 @@
     },
     {
       "id": "artifact-acceptance",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -304,12 +304,12 @@
     },
     {
       "id": "benchmark-curator",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Design, curate, version, and quality-control benchmark or evaluation corpora for Agent Skills and quality workflows, including task taxonomies, discovery/forced/negative controls, adversarial and regression cases, difficulty strata, holdout isolation, provenance, duplication, contamination risk, coverage balance, and immutable benchmark hashes. Do not use to execute the model experiment or claim lift (use skill-evaluator), to design the grading rubric (use rubric-designer), to edit the candidate skill (use skill-creator), or to treat leaked/known cases as a clean holdout. Use when the user asks to build or maintain an eval dataset, golden set, benchmark suite, regression corpus, holdout, challenge set, or representative test cases.",
+      "description": "Curate and version eval corpora for Agent Skills: case taxonomies, discovery/forced/negative controls, adversarial and regression cases, difficulty strata, holdout isolation, provenance, duplication, contamination, coverage balance, and benchmark hashes. Do not use to run the experiment or claim lift (skill-evaluator), to design the grading rubric (rubric-designer), to edit the skill (skill-creator), or to call leaked cases a clean holdout. Use to build an eval dataset, golden set, benchmark suite, regression corpus, or holdout.",
       "explicit_only": false,
       "owns": [
         "benchmark and eval corpus design",
@@ -415,7 +415,7 @@
     },
     {
       "id": "brief-architect",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -547,7 +547,7 @@
     },
     {
       "id": "cometweb-context",
-      "version": "1.5.1",
+      "version": "1.5.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -743,7 +743,7 @@
     },
     {
       "id": "content-reviewer",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -864,12 +864,12 @@
     },
     {
       "id": "content-roaster",
-      "version": "6.1.1",
+      "version": "6.1.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run evidence-anchored adversarial reviews of marketing, sales, product, editorial, and long-form content such as landing pages, pricing pages, offers, emails, posts, articles, case studies, reports, ebooks, lead magnets, documentation, product pages, demo/trial flows, enterprise procurement or trust content, release announcements, and sales decks. Do not use for scientific peer review, repository/code critique, rewrite-only work, one-off fact checking, or full SEO/GEO/AEO audits; route those to science-roaster, repo-roaster, ai-humanize, evidence-researcher, or seo-geo-aeo-maxxing. Use when the user asks to roast, tear apart, red-team, stress-test, compare revisions of, or brutally critique content and wants each material criticism tied to exact source evidence, decision impact, proof burden, counterevidence search, a concrete repair, and an observable acceptance check.",
+      "description": "Run evidence-anchored adversarial reviews of marketing, sales, product, editorial, and long-form content: landing and pricing pages, offers, emails, articles, case studies, ebooks, docs, and sales decks. Do not use for scientific peer review (science-roaster), code critique (repo-roaster), rewrite-only work (ai-humanize), one-off fact checks (evidence-researcher), or SEO/GEO/AEO audits (seo-geo-aeo-maxxing). Use to roast, tear apart, red-team, or brutally critique content, tying each criticism to source evidence and a repair.",
       "explicit_only": false,
       "owns": [
         "adversarial content review",
@@ -977,12 +977,12 @@
     },
     {
       "id": "content-writer",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Create evidence-aware informational or editorial prose such as articles, guides, reports, documentation, research-backed explainers, and other bounded knowledge content from an explicit brief or sufficiently clear request. Do not use primarily for persuasion-first landing-page copy, ads, lifecycle or cold email, generic copy-editing, humanization-only rewrites, long-form publication/release orchestration, hostile critique, or primary research collection; route those to the relevant copy, email, ai-humanize, longform-publisher, evidence-researcher, content-reviewer, or content-roaster specialist when available. Use when the user wants the actual written artifact and factual integrity, reader utility, structure, and claim discipline matter.",
+      "description": "Write evidence-aware informational or editorial prose (articles, guides, reports, documentation, research-backed explainers) from a brief or clear request. Do not use for persuasion-first landing copy, ads, or cold email, copy-editing or humanization-only rewrites (ai-humanize), long-form publication (longform-publisher), primary research (evidence-researcher), or critique (content-reviewer, content-roaster). Use when the user wants the artifact itself and factual integrity, reader utility, structure, and claim discipline matter.",
       "explicit_only": false,
       "owns": [
         "evidence-aware content production",
@@ -1179,7 +1179,7 @@
     },
     {
       "id": "design-partner-finder",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1335,7 +1335,7 @@
     },
     {
       "id": "evidence-researcher",
-      "version": "1.0.5",
+      "version": "1.0.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1431,7 +1431,7 @@
     },
     {
       "id": "feedback-integrator",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1660,7 +1660,7 @@
     },
     {
       "id": "portfolio-operator",
-      "version": "1.2.2",
+      "version": "1.2.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1768,7 +1768,7 @@
     },
     {
       "id": "product-operator",
-      "version": "2.4.1",
+      "version": "2.4.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2011,12 +2011,12 @@
     },
     {
       "id": "quality-loop-operator",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Orchestrate the CometWeb artifact/repository/skill quality loop across briefing, creation, review, adversarial testing, repair, acceptance, measurement, selective revalidation, and skill runtime lifecycle while preserving candidate/contract identity, frozen policy/rubric locks, finding lineage, rollout state, rollback readiness, disagreement state, and quality debt. Do not use for general multi-skill orchestration outside quality workflows, to replace specialist analysis, to make consequential strategy decisions, or to declare software production readiness; use skill-orchestrator, ai-council, or release-readiness for those cases. Use when the user wants one entry point to run or resume the full quality workflow, coordinate quality specialists, process a batch/campaign, reconcile findings, or govern a measured skill candidate through canary/staged rollout.",
+      "description": "Run the CometWeb quality loop for an artifact, repository, or skill (brief, create, review, roast, repair, accept, measure, revalidate, roll out) while keeping candidate identity, policy locks, finding lineage, disagreements, and quality debt. Do not use for general multi-skill orchestration (skill-orchestrator), specialist analysis, strategy decisions (ai-council), or software production readiness (release-readiness). Use to run or resume the quality workflow, a batch campaign, finding reconciliation, or a staged skill rollout.",
       "explicit_only": false,
       "owns": [
         "quality workflow state and sequencing",
@@ -2125,12 +2125,12 @@
     },
     {
       "id": "release-readiness",
-      "version": "1.3.1",
+      "version": "1.3.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Assess whether a specific release candidate (version, build ID, branch/tag, commit, artifact digest) of an application, service, mobile/desktop build, library, or API is ready for production in a named environment and issue an evidence-backed GO / GO_WITH_CONTROLS / NO_GO / DEFER verdict across product acceptance, QA, security, operations/reliability, documentation, billing/entitlements, and support/incident readiness. Do not use for first-time whole-project baselines or \"analyze the entire repo\" (Repo to Roadmap), weekly prioritization on an existing roadmap (Product Operator), site/app QA with no named candidate (Web App Auditor), or gating a report, ebook, or other knowledge deliverable (Artifact Acceptance). Use when the user names or implies a concrete candidate for launch/release gates, pre-deploy audits, \"is this build ready to ship?\", hotfix readiness, post-incident releases, and delta/revalidation reviews. Never replaces security scans, live QA, legal review, or deploy approval.",
+      "description": "Decide whether a named release candidate (version, build, commit, or digest) of an app, service, or library is ready for production in a named environment: an evidence-backed GO / GO_WITH_CONTROLS / NO_GO / DEFER verdict across product, QA, security, ops, docs, billing, and support. Do not use for whole-repo baselines (repo-to-roadmap), weekly prioritization (product-operator), QA with no named candidate (web-app-auditor), or gating a report or ebook (artifact-acceptance). Use for \"is this build ready to ship?\" and pre-deploy gates.",
       "explicit_only": false,
       "owns": [
         "pinned RC gate",
@@ -2210,7 +2210,7 @@
     },
     {
       "id": "repair-operator",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2334,7 +2334,7 @@
     },
     {
       "id": "repo-roaster",
-      "version": "6.1.1",
+      "version": "6.1.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2582,7 +2582,7 @@
     },
     {
       "id": "rubric-designer",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2689,7 +2689,7 @@
     },
     {
       "id": "science-roaster",
-      "version": "6.1.1",
+      "version": "6.1.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2814,7 +2814,7 @@
     },
     {
       "id": "seo-geo-aeo-maxxing",
-      "version": "1.3.2",
+      "version": "1.3.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2889,12 +2889,12 @@
     },
     {
       "id": "skill-auditor",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
       "alias_of": null,
-      "description": "Audit an Agent Skill or a repository of skills for trigger quality, scope overlap, instruction conflicts, progressive-disclosure cost, broken references/dependencies, eval blind spots, false-green paths, semantic-version and public-contract compatibility, host-support overclaims, package hygiene, supply-chain risks, migration/deprecation gaps, and drift between registry, docs, tests, and shipped archives. Do not use to create/edit the skill (use skill-creator), to empirically benchmark model behavior with-vs-without it (use skill-evaluator), to audit ordinary software (use repo-roaster), or to issue a production release verdict. Use when the user asks to audit, review, roast, harden, compare, or quality-check a skill or skill library itself.",
+      "description": "Audit an Agent Skill or skill library for trigger quality, scope overlap, instruction conflicts, context cost, broken references, eval blind spots, false-green paths, version and contract compatibility, host-support overclaims, package hygiene, and registry/docs/archive drift. Do not use to create or edit the skill (skill-creator), to benchmark behavior with vs without it (skill-evaluator), to audit ordinary software (repo-roaster), or for a release verdict. Use to audit, review, roast, or harden a skill itself.",
       "explicit_only": false,
       "owns": [
         "skill package audits",
@@ -2993,7 +2993,7 @@
     },
     {
       "id": "skill-evaluator",
-      "version": "1.7.2",
+      "version": "1.7.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3097,7 +3097,7 @@
     },
     {
       "id": "skill-orchestrator",
-      "version": "1.1.4",
+      "version": "1.1.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3219,7 +3219,7 @@
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.1.4",
+      "version": "1.1.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3302,7 +3302,7 @@
     },
     {
       "id": "web-app-auditor",
-      "version": "1.4.1",
+      "version": "1.4.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",

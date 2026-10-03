@@ -1,0 +1,67 @@
+{
+  "skill": "longform-publisher",
+  "contract": "skills/longform-publisher/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "summary", "title": "PUBLICATION SUMMARY", "aliases": ["publication summary"], "label": true, "required": true},
+    {"id": "current-stage", "title": "CURRENT STAGE", "aliases": ["current stage"], "label": true, "required": true},
+    {"id": "blocker", "title": "BLOCKER", "aliases": ["blockers?"], "label": true},
+    {"id": "verify-now", "title": "VERIFY NOW", "aliases": ["verify now"], "label": true},
+    {"id": "decision-now", "title": "DECISION NOW", "aliases": ["decision now"], "label": true},
+    {"id": "now", "title": "NOW", "aliases": ["now"], "label": true},
+    {"id": "next-milestone", "title": "NEXT MILESTONE", "aliases": ["next milestone"], "label": true},
+    {"id": "delegate", "title": "DELEGATE", "aliases": ["delegate"], "label": true},
+    {"id": "waiting", "title": "WAITING", "aliases": ["waiting"], "label": true},
+    {"id": "stop", "title": "STOP", "aliases": ["stop"], "label": true}
+  ],
+  "verdict": {
+    "tokens": ["BRIEFED", "SOURCE_READY", "OUTLINE_LOCKED", "DRAFTED", "CLAIMS_RECONCILED", "EDITED",
+               "MASTER_LOCKED", "FORMAT_READY", "RELEASE_READY", "PUBLISHED"],
+    "authorizing": ["RELEASE_READY", "PUBLISHED"],
+    "primary": {"section": "current-stage"},
+    "json": [
+      {"rule": "report-stage", "path": "current_stage", "when": {"protocol_version": "longform-publisher/1"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "listed-blocker", "type": "section_items", "section": "blocker"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "stan", "pattern": "^Stan:\\s*\\S",
+     "message": "the brief does not open with the 'Stan:' status line"},
+    {"type": "doc_require", "rule": "mode", "section": "summary",
+     "pattern": "\\|\\s*Mode\\s*\\|\\s*`?(?:BUILD|SOURCE_BOUND|RESEARCH_EXPAND|REFRESH)\\b",
+     "message": "the publication summary has no Mode row (BUILD | SOURCE_BOUND | RESEARCH_EXPAND | REFRESH)"},
+    {"type": "doc_require", "rule": "locked-master", "section": "summary",
+     "when_verdict": ["MASTER_LOCKED", "FORMAT_READY", "RELEASE_READY", "PUBLISHED"],
+     "pattern": "\\|\\s*Master\\s*\\|\\s*\\S+\\s*@\\s*(?!UNKNOWN\\b)[\\w.-]+",
+     "message": "a stage at or past MASTER_LOCKED needs the canonical master path and version in the summary"},
+    {"type": "table_column_nonempty", "rule": "derived-formats", "section": "summary",
+     "when_verdict": ["FORMAT_READY", "RELEASE_READY", "PUBLISHED"],
+     "when": {"column": ["field"], "pattern": "^Derived"}, "column": ["value"], "code": "EVIDENCE_MISSING",
+     "message": "a stage at or past FORMAT_READY needs the derived formats that passed lineage, QA and parity"},
+    {"type": "items_require", "rule": "blocker-done", "section": "blocker", "pattern": "Done:\\s*\\S",
+     "code": "CONTRACT_VIOLATION", "message": "a BLOCKER action has no observable Done condition"},
+    {"type": "items_require", "rule": "now-done", "section": "now", "pattern": "Done:\\s*\\S",
+     "code": "CONTRACT_VIOLATION", "message": "a NOW action has no observable Done condition"},
+    {"type": "doc_forbid", "rule": "placeholder-at-release", "code": "CONTRACT_VIOLATION",
+     "when_verdict": ["RELEASE_READY", "PUBLISHED"],
+     "pattern": "\\[\\s*TODO\\b|\\bTBD\\b|lorem ipsum|\\bXXX\\b",
+     "message": "RELEASE_READY requires no unresolved placeholder or draft marker"}
+  ],
+  "ids": [
+    {"rule": "gap-ids", "pattern": "\\bG-\\d{2}\\b",
+     "defined_in": [{"json": "unresolved_gaps[*].id", "when": {"protocol_version": "longform-publisher/1"}}],
+     "defined_by": "publication-report.json unresolved_gaps[] has no gap with that id"},
+    {"rule": "claim-ids", "pattern": "\\bCU-\\d{2}\\b",
+     "defined_in": [{"json": "claim_uses[*].id", "when": {"protocol_version": "longform-publisher/1"}}],
+     "defined_by": "publication-report.json claim_uses[] has no claim with that id"},
+    {"rule": "source-ids", "pattern": "\\bSRC-\\d{2}\\b",
+     "defined_in": [{"json": "sources[*].id", "when": {"protocol_version": "longform-publisher/1"}}],
+     "defined_by": "publication-report.json sources[] has no source with that id"}
+  ],
+  "sidecars": [
+    {"rule": "publication-report", "detect": {"equals": {"protocol_version": "longform-publisher/1"}},
+     "validator": "skills/longform-publisher/scripts/publication_kernel.py", "function": "validate_report"}
+  ]
+}

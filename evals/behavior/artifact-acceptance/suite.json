@@ -1,0 +1,571 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "artifact-acceptance",
+  "description": "Offline behavior of the acceptance gate kernel the references document as kernel.decide(payload), and of the bundled eval runner.",
+  "cases": [
+    {
+      "id": "evidenced-pass-is-ready",
+      "kind": "accept",
+      "behavior": "A required gate that passes with evidence bound to the same candidate makes the artifact READY.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "PASS",
+              "evidence": [
+                {
+                  "source": "render-check.log",
+                  "locator": "line 3",
+                  "candidate_id": "doc-1",
+                  "observed_at": "2026-09-01T10:00:00Z"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "READY",
+          "errors": [],
+          "profile": "CUSTOM",
+          "mode": "STANDARD"
+        }
+      }
+    },
+    {
+      "id": "bounded-minor-control-is-ready-with-controls",
+      "kind": "accept",
+      "behavior": "A complete MINOR control with owner and revisit condition yields READY_WITH_CONTROLS rather than hiding the residual.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "PASS",
+              "evidence": [
+                {
+                  "source": "render-check.log",
+                  "locator": "line 3",
+                  "candidate_id": "doc-1",
+                  "observed_at": "2026-09-01T10:00:00Z"
+                }
+              ]
+            }
+          ],
+          "controls": [
+            {
+              "severity": "MINOR",
+              "issue": "one caption wording",
+              "owner": "editor",
+              "revisit_condition": "next revision"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "READY_WITH_CONTROLS",
+          "errors": [],
+          "profile": "CUSTOM",
+          "mode": "STANDARD"
+        }
+      }
+    },
+    {
+      "id": "failed-required-gate-is-not-ready",
+      "kind": "refuse",
+      "behavior": "A failed required gate makes the artifact NOT_READY even when a control is offered.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "FAIL"
+            }
+          ],
+          "controls": [
+            {
+              "severity": "MINOR",
+              "issue": "x",
+              "owner": "editor",
+              "revisit_condition": "later"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "NOT_READY",
+          "errors": []
+        }
+      }
+    },
+    {
+      "id": "evidence-from-another-candidate-defers",
+      "kind": "refuse",
+      "behavior": "A PASS backed by evidence observed on a different candidate is not admissible and the verdict is deferred.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "PASS",
+              "evidence": [
+                {
+                  "source": "render-check.log",
+                  "locator": "line 3",
+                  "candidate_id": "doc-0",
+                  "observed_at": "2026-09-01T10:00:00Z"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "DEFER",
+          "errors": [
+            "gate[0]:pass-without-candidate-evidence"
+          ]
+        }
+      }
+    },
+    {
+      "id": "open-major-finding-blocks",
+      "kind": "refuse",
+      "behavior": "An open MAJOR finding blocks acceptance although every required gate passed.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "PASS",
+              "evidence": [
+                {
+                  "source": "render-check.log",
+                  "locator": "line 3",
+                  "candidate_id": "doc-1",
+                  "observed_at": "2026-09-01T10:00:00Z"
+                }
+              ]
+            }
+          ],
+          "findings": [
+            {
+              "severity": "MAJOR"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "NOT_READY",
+          "errors": []
+        }
+      }
+    },
+    {
+      "id": "expired-waiver-is-not-a-control",
+      "kind": "refuse",
+      "behavior": "A waiver that expired before the evaluation time cannot carry the artifact to READY_WITH_CONTROLS.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "PASS",
+              "evidence": [
+                {
+                  "source": "render-check.log",
+                  "locator": "line 3",
+                  "candidate_id": "doc-1",
+                  "observed_at": "2026-09-01T10:00:00Z"
+                }
+              ]
+            }
+          ],
+          "as_of": "2026-09-10T00:00:00Z",
+          "controls": [
+            {
+              "severity": "NOTE",
+              "issue": "alt text wording",
+              "owner": "editor",
+              "revisit_condition": "next revision",
+              "waiver": true,
+              "approver": "owner@example.com",
+              "approved_at": "2026-08-01T00:00:00Z",
+              "expires_at": "2026-09-01T00:00:00Z"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "NOT_READY",
+          "errors": [
+            "control[0]:expired"
+          ]
+        }
+      }
+    },
+    {
+      "id": "policy-hash-mismatch-defers",
+      "kind": "boundary",
+      "behavior": "A policy lock whose hash differs from the expected frozen policy defers the verdict instead of judging against a moved rubric.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "PASS",
+              "evidence": [
+                {
+                  "source": "render-check.log",
+                  "locator": "line 3",
+                  "candidate_id": "doc-1",
+                  "observed_at": "2026-09-01T10:00:00Z"
+                }
+              ]
+            }
+          ],
+          "policy_lock": {
+            "pack_id": "editorial",
+            "revision": "3",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "locked_before_evaluation": true
+          },
+          "expected_policy_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "DEFER",
+          "errors": [
+            "policy-lock:hash-mismatch"
+          ]
+        }
+      }
+    },
+    {
+      "id": "evidence-grade-below-floor-defers",
+      "kind": "boundary",
+      "behavior": "A required PASS whose evidence grade is below the policy floor is not enough for READY.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "PASS",
+              "evidence": [
+                {
+                  "source": "render-check.log",
+                  "locator": "line 3",
+                  "candidate_id": "doc-1",
+                  "observed_at": "2026-09-01T10:00:00Z"
+                }
+              ],
+              "evidence_grade": "C"
+            }
+          ],
+          "minimum_gate_evidence_grade": "B"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "DEFER",
+          "errors": [
+            "gate[0]:evidence-grade-below-floor"
+          ]
+        }
+      }
+    },
+    {
+      "id": "required-na-needs-allowance-and-rationale",
+      "kind": "boundary",
+      "behavior": "A required gate marked N/A without contract allowance or a rationale is refused as a pass shortcut.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "N/A"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "DEFER",
+          "errors": [
+            "gate[0]:required-na-not-allowed",
+            "gate[0]:na-without-rationale"
+          ]
+        }
+      }
+    },
+    {
+      "id": "profile-predeclares-gates",
+      "kind": "boundary",
+      "behavior": "An EDITORIAL acceptance missing the profile's claim and format gates is deferred rather than judged on a partial contract.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "PASS",
+              "evidence": [
+                {
+                  "source": "render-check.log",
+                  "locator": "line 3",
+                  "candidate_id": "doc-1",
+                  "observed_at": "2026-09-01T10:00:00Z"
+                }
+              ]
+            }
+          ],
+          "profile": "EDITORIAL"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "DEFER",
+          "errors": [
+            "profile-missing-gate:claim_integrity",
+            "profile-missing-gate:format_qa"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deep-mode-needs-traceability",
+      "kind": "boundary",
+      "behavior": "In DEEP mode every acceptance criterion must trace to a gate; an unmapped criterion is reported.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "candidate": {
+            "id": "doc-1"
+          },
+          "contract": {
+            "id": "brief-1"
+          },
+          "gates": [
+            {
+              "gate_id": "brief_compliance",
+              "required": true,
+              "state": "PASS",
+              "evidence": [
+                {
+                  "source": "render-check.log",
+                  "locator": "line 3",
+                  "candidate_id": "doc-1",
+                  "observed_at": "2026-09-01T10:00:00Z"
+                }
+              ]
+            }
+          ],
+          "mode": "DEEP",
+          "criteria_ids": [
+            "c1",
+            "c2"
+          ],
+          "traceability": [
+            {
+              "criterion_id": "c1",
+              "gate_id": "brief_compliance"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "DEFER",
+          "errors": [
+            "traceability:missing:c2"
+          ]
+        }
+      }
+    },
+    {
+      "id": "unbound-candidate-defers",
+      "kind": "boundary",
+      "behavior": "Without a candidate identity the gate cannot issue a verdict at all.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "decide",
+      "args": [
+        {
+          "contract_id": "brief-1",
+          "gates": []
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "DEFER",
+          "errors": [
+            "candidate-or-contract-unbound"
+          ]
+        }
+      }
+    },
+    {
+      "id": "bundled-evals-pass",
+      "kind": "accept",
+      "behavior": "The bundled offline eval cases all pass when run as documented.",
+      "run": [
+        "scripts/run_evals.py"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PASS",
+          "failures": []
+        }
+      }
+    },
+    {
+      "id": "eval-runner-rejects-arguments",
+      "kind": "refuse",
+      "behavior": "The eval runner takes no arguments and refuses an unknown one with a usage error.",
+      "run": [
+        "scripts/run_evals.py",
+        "--fast"
+      ],
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "unrecognized arguments: --fast"
+        ]
+      }
+    }
+  ]
+}

@@ -243,7 +243,7 @@ def main() -> None:
     parser.add_argument("--json", action="store_true", help="Emit JSON")
     args = parser.parse_args()
 
-    if not args.goal:
+    if not args.goal or not args.goal.strip():
         parser.error("goal is required")
 
     plan = plan_workflow(args.goal)

@@ -157,9 +157,9 @@
     "reasons": {},
     "error": {}
   },
-  "internal": [
-    "caps"
-  ],
+  "internal": {
+    "caps": "scoring state the kernel accumulates while it applies limits"
+  },
   "doc_terms": [],
   "evals": []
 }

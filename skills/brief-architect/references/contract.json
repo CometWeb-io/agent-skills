@@ -125,12 +125,12 @@
     "material_changes": {},
     "requires_downstream_revalidation": {}
   },
-  "internal": [
-    "input",
-    "operation",
-    "old",
-    "new"
-  ],
+  "internal": {
+    "input": "eval case wrapper: the case-runner reads the payload from a case's input, never a payload key",
+    "operation": "eval case wrapper selecting readiness or delta, not part of a brief",
+    "old": "eval case wrapper: the earlier brief a delta case compares",
+    "new": "eval case wrapper: the later brief a delta case compares"
+  },
   "doc_terms": [],
   "evals": [
     {

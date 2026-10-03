@@ -1,0 +1,639 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "benchmark-curator",
+  "description": "Offline behavior of the benchmark validator run as python3 scripts/kernel.py benchmark.json (or stdin), and of the bundled eval runner.",
+  "cases": [
+    {
+      "id": "balanced-benchmark-freezes",
+      "kind": "accept",
+      "behavior": "A clean benchmark covering every required class is ready to freeze and gets a stable content hash.",
+      "run": [
+        "scripts/kernel.py",
+        "{input}"
+      ],
+      "input": {
+        "benchmark_id": "bench-demo",
+        "revision": "1",
+        "objective": "routing precision",
+        "target_skill": "example-skill",
+        "required_classes": [
+          "discovery",
+          "negative-control"
+        ],
+        "cases": [
+          {
+            "id": "c1",
+            "class": "discovery",
+            "difficulty": "medium",
+            "split": "dev",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "Review this draft against its brief.",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          },
+          {
+            "id": "c2",
+            "class": "negative-control",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "What is the capital of France?",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "READY_TO_FREEZE",
+          "errors": [],
+          "benchmark_hash": "88543b951bd5551b4a4c7ced1488c4621038776ca1d0912e481556eee71b604d",
+          "case_count": 2,
+          "class_counts": {
+            "discovery": 1,
+            "negative-control": 1
+          },
+          "split_counts": {
+            "dev": 1,
+            "holdout": 1
+          },
+          "provenance_coverage": 0.0,
+          "leakage_status": "NOT_REQUIRED"
+        }
+      }
+    },
+    {
+      "id": "clean-scan-from-stdin-freezes",
+      "kind": "accept",
+      "behavior": "A benchmark piped on stdin with a CLEAN leakage scan and a valid fingerprint freezes and reports the scan as CLEAN.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "stdin": {
+        "benchmark_id": "bench-demo",
+        "revision": "1",
+        "objective": "routing precision",
+        "target_skill": "example-skill",
+        "required_classes": [
+          "discovery",
+          "negative-control"
+        ],
+        "cases": [
+          {
+            "id": "c1",
+            "class": "discovery",
+            "difficulty": "medium",
+            "split": "dev",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "Review this draft against its brief.",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          },
+          {
+            "id": "c2",
+            "class": "negative-control",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "What is the capital of France?",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          }
+        ],
+        "leakage_scan": {
+          "status": "CLEAN",
+          "corpus_fingerprint": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "READY_TO_FREEZE",
+          "errors": [],
+          "leakage_status": "CLEAN"
+        }
+      }
+    },
+    {
+      "id": "known-exposure-in-holdout-is-contaminated",
+      "kind": "refuse",
+      "behavior": "A holdout case the candidate is known to have seen makes the whole benchmark CONTAMINATED.",
+      "run": [
+        "scripts/kernel.py",
+        "{input}"
+      ],
+      "input": {
+        "benchmark_id": "bench-demo",
+        "revision": "1",
+        "objective": "routing precision",
+        "target_skill": "example-skill",
+        "required_classes": [
+          "discovery",
+          "negative-control"
+        ],
+        "cases": [
+          {
+            "id": "c1",
+            "class": "discovery",
+            "difficulty": "medium",
+            "split": "dev",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "Review this draft against its brief.",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          },
+          {
+            "id": "c2",
+            "class": "negative-control",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "KNOWN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "What is the capital of France?",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "status": "CONTAMINATED",
+          "errors": [
+            "holdout:contaminated"
+          ],
+          "contaminated_holdout": 1,
+          "missing_classes": [],
+          "split_counts": {
+            "dev": 1,
+            "holdout": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "duplicate-prompt-after-folding-is-invalid",
+      "kind": "refuse",
+      "behavior": "Two prompts that differ only in case and whitespace are flagged as duplicates.",
+      "run": [
+        "scripts/kernel.py",
+        "{input}"
+      ],
+      "input": {
+        "benchmark_id": "bench-demo",
+        "revision": "1",
+        "objective": "routing precision",
+        "target_skill": "example-skill",
+        "required_classes": [
+          "discovery",
+          "negative-control"
+        ],
+        "cases": [
+          {
+            "id": "c1",
+            "class": "discovery",
+            "difficulty": "medium",
+            "split": "dev",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "Review this draft against its brief.",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          },
+          {
+            "id": "c2",
+            "class": "negative-control",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "  review THIS draft   against its brief. ",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "cases:duplicate-prompt"
+          ]
+        }
+      }
+    },
+    {
+      "id": "real-case-without-provenance-is-invalid",
+      "kind": "refuse",
+      "behavior": "A case drawn from a real task must cite its provenance.",
+      "run": [
+        "scripts/kernel.py",
+        "{input}"
+      ],
+      "input": {
+        "benchmark_id": "bench-demo",
+        "revision": "1",
+        "objective": "routing precision",
+        "target_skill": "example-skill",
+        "required_classes": [
+          "discovery",
+          "negative-control"
+        ],
+        "cases": [
+          {
+            "id": "c1",
+            "class": "discovery",
+            "difficulty": "medium",
+            "split": "dev",
+            "contamination_status": "CLEAN",
+            "source_lane": "REAL_TASK",
+            "prompt": "Review this draft against its brief.",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          },
+          {
+            "id": "c2",
+            "class": "negative-control",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "What is the capital of France?",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "cases[0]:provenance_ref"
+          ]
+        }
+      }
+    },
+    {
+      "id": "missing-required-class-needs-rebalance",
+      "kind": "boundary",
+      "behavior": "A benchmark lacking a required class is sent back for rebalancing, not rejected as malformed.",
+      "run": [
+        "scripts/kernel.py",
+        "{input}"
+      ],
+      "input": {
+        "benchmark_id": "bench-demo",
+        "revision": "1",
+        "objective": "routing precision",
+        "target_skill": "example-skill",
+        "required_classes": [
+          "discovery",
+          "negative-control",
+          "adversarial"
+        ],
+        "cases": [
+          {
+            "id": "c1",
+            "class": "discovery",
+            "difficulty": "medium",
+            "split": "dev",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "Review this draft against its brief.",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          },
+          {
+            "id": "c2",
+            "class": "negative-control",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "What is the capital of France?",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "status": "NEEDS_REBALANCE",
+          "errors": [
+            "classes:missing"
+          ],
+          "missing_classes": [
+            "adversarial"
+          ]
+        }
+      }
+    },
+    {
+      "id": "deep-without-leakage-scan-needs-revision",
+      "kind": "boundary",
+      "behavior": "A DEEP benchmark cannot freeze until a corpus leakage scan is supplied.",
+      "run": [
+        "scripts/kernel.py",
+        "{input}"
+      ],
+      "input": {
+        "benchmark_id": "bench-demo",
+        "revision": "1",
+        "objective": "routing precision",
+        "target_skill": "example-skill",
+        "required_classes": [
+          "discovery",
+          "negative-control"
+        ],
+        "cases": [
+          {
+            "id": "c1",
+            "class": "discovery",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "Review this draft against its brief.",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          },
+          {
+            "id": "c2",
+            "class": "negative-control",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "What is the capital of France?",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          }
+        ],
+        "mode": "DEEP"
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "status": "NEEDS_REVISION",
+          "errors": [
+            "deep:leakage-scan-required"
+          ],
+          "split_counts": {
+            "dev": 0,
+            "holdout": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "deep-holdout-below-minimum",
+      "kind": "boundary",
+      "behavior": "DEEP mode needs at least two holdout cases, so a single holdout case is a rebalance problem.",
+      "run": [
+        "scripts/kernel.py",
+        "{input}"
+      ],
+      "input": {
+        "benchmark_id": "bench-demo",
+        "revision": "1",
+        "objective": "routing precision",
+        "target_skill": "example-skill",
+        "required_classes": [
+          "discovery",
+          "negative-control"
+        ],
+        "cases": [
+          {
+            "id": "c1",
+            "class": "discovery",
+            "difficulty": "medium",
+            "split": "dev",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "Review this draft against its brief.",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          },
+          {
+            "id": "c2",
+            "class": "negative-control",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "What is the capital of France?",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          }
+        ],
+        "mode": "DEEP",
+        "leakage_scan": {
+          "status": "CLEAN",
+          "corpus_fingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "status": "NEEDS_REBALANCE",
+          "errors": [
+            "deep:holdout-too-small"
+          ]
+        }
+      }
+    },
+    {
+      "id": "suspect-scan-in-standard-is-not-ignored",
+      "kind": "boundary",
+      "behavior": "A SUSPECT leakage scan supplied in STANDARD mode still blocks freezing.",
+      "run": [
+        "scripts/kernel.py",
+        "{input}"
+      ],
+      "input": {
+        "benchmark_id": "bench-demo",
+        "revision": "1",
+        "objective": "routing precision",
+        "target_skill": "example-skill",
+        "required_classes": [
+          "discovery",
+          "negative-control"
+        ],
+        "cases": [
+          {
+            "id": "c1",
+            "class": "discovery",
+            "difficulty": "medium",
+            "split": "dev",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "Review this draft against its brief.",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          },
+          {
+            "id": "c2",
+            "class": "negative-control",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "What is the capital of France?",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          }
+        ],
+        "leakage_scan": {
+          "status": "SUSPECT"
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "status": "NEEDS_REVISION",
+          "errors": [
+            "holdout:leakage-suspect"
+          ]
+        }
+      }
+    },
+    {
+      "id": "clean-scan-needs-fingerprint",
+      "kind": "boundary",
+      "behavior": "A CLEAN leakage scan without a 64-hex corpus fingerprint is malformed.",
+      "run": [
+        "scripts/kernel.py",
+        "{input}"
+      ],
+      "input": {
+        "benchmark_id": "bench-demo",
+        "revision": "1",
+        "objective": "routing precision",
+        "target_skill": "example-skill",
+        "required_classes": [
+          "discovery",
+          "negative-control"
+        ],
+        "cases": [
+          {
+            "id": "c1",
+            "class": "discovery",
+            "difficulty": "medium",
+            "split": "dev",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "Review this draft against its brief.",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          },
+          {
+            "id": "c2",
+            "class": "negative-control",
+            "difficulty": "medium",
+            "split": "holdout",
+            "contamination_status": "CLEAN",
+            "source_lane": "SYNTHETIC",
+            "prompt": "What is the capital of France?",
+            "expected_behavior": "routes to the skill",
+            "assertions": [
+              "names the skill"
+            ]
+          }
+        ],
+        "leakage_scan": {
+          "status": "CLEAN",
+          "corpus_fingerprint": "abc"
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "leakage:fingerprint"
+          ]
+        }
+      }
+    },
+    {
+      "id": "malformed-json-is-a-usage-error",
+      "kind": "boundary",
+      "behavior": "A payload that is not JSON is rejected with a usage error before any validation.",
+      "run": [
+        "scripts/kernel.py",
+        "{tmp}/bench.json"
+      ],
+      "files": {
+        "bench.json": "{\"benchmark_id\": "
+      },
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "payload is not JSON"
+        ]
+      }
+    },
+    {
+      "id": "bundled-evals-pass",
+      "kind": "accept",
+      "behavior": "The bundled offline eval cases all pass when run as documented.",
+      "run": [
+        "scripts/run_evals.py"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PASS",
+          "failures": []
+        }
+      }
+    }
+  ]
+}

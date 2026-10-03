@@ -20,7 +20,7 @@ them:
 | --- | --- | --- | --- |
 | Cursor | `install-cursor.sh` | `~/.cursor/skills` | `CURSOR_SKILLS_DIR` |
 | Claude Code | `install-claude.sh` | `~/.claude/skills` | `CLAUDE_SKILLS_DIR` |
-| Codex | `install-codex.sh` | `~/.codex/skills` | `CODEX_SKILLS_DIR` |
+| Codex | `install-codex.sh` | `~/.agents/skills` | `CODEX_SKILLS_DIR` |
 | Qwen Code | `install-qwen.sh` | `~/.qwen/skills` | `QWEN_SKILLS_DIR` |
 | Qoder | `install-qoder.sh` | `~/.qoder/skills` | `QODER_SKILLS_DIR` |
 | Lingma | `install-lingma.sh` | `~/.lingma/skills` | `LINGMA_SKILLS_DIR` |
@@ -31,6 +31,19 @@ Cursor also links `docs/generated-cursor-routing.mdc` as the routing rule
 full rule; a link an older install made to it is re-pointed to the full rule on
 the next run. Both are generated from `registry/skills.json` by
 `tooling/generate_adapters.py`, so neither lists a different skill set.
+
+Codex documents `~/.agents/skills` as the user skills directory
+([Codex skills](https://developers.openai.com/codex/skills)). Earlier versions of
+`install-codex.sh` linked into `~/.codex/skills` (`$CODEX_HOME/skills`), which
+Codex 0.160.0 still loads. With the default target, the installer links
+`~/.agents/skills` and then moves the links this checkout made in the old
+directory into the backup directory (`codex-legacy-<skill>`), so each skill is
+listed once; your own skills and links to other checkouts stay where they are.
+The move is idempotent, `--dry-run` prints it as `would move legacy link …`,
+`--uninstall` removes this checkout's links from both directories, and a
+`~/.codex/skills` that is a symlink to `~/.agents/skills` is left alone. To keep
+installing into the old directory, set `CODEX_SKILLS_DIR="$HOME/.codex/skills"`;
+an explicit target turns the migration off.
 
 Codex and other hosts that read `AGENTS.md` get the same routing table from
 `extras/AGENTS.snippet.md`. No installer edits your `AGENTS.md`; paste the block
@@ -80,6 +93,14 @@ HOME="$scratch" CLAUDE_CONFIG_DIR="$scratch/claude" \
 HOME="$scratch" CLAUDE_CONFIG_DIR="$scratch/claude" \
   claude plugin validate --strict .claude-plugin/marketplace.json
 ```
+
+Cursor installs the same repository as a plugin from `.cursor-plugin/`. The
+plugin ships the skills and a compact routing rule,
+`rules/cometweb-agent-skills.mdc`, which Cursor discovers in the plugin's
+`rules/` directory ([Cursor plugins reference](https://cursor.com/docs/reference/plugins)).
+Both are generated from `registry/skills.json`. Use either the plugin or
+`install-cursor.sh`, not both: each delivers a routing rule, and with both the
+rule is applied twice.
 
 ChatGPT and Codex use `.agents/plugins/marketplace.json`: a workspace admin
 imports `https://github.com/CometWeb-io/agent-skills` as a marketplace with an

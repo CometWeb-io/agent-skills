@@ -11,9 +11,11 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import sys
 import tomllib
 
@@ -234,6 +236,18 @@ def test_every_sast_rule_has_positive_and_negative_cases(rules: str, cases: str)
     assert set(sast.RULE_FILES) == {"python.yml", "shell.yml"}
 
 
+def test_sast_skips_a_tracked_file_deleted_in_the_working_tree(tmp_path: Path) -> None:
+    """semgrep exits 2 on a path that does not exist, which read as "findings"
+    while a contributor had merely deleted a file and not yet committed."""
+    env = {"GIT_CONFIG_GLOBAL": "/dev/null", "GIT_CONFIG_NOSYSTEM": "1", "HOME": str(tmp_path)}
+    for name in ("kept.py", "deleted.py"):
+        (tmp_path / name).write_text("x = 1\n", encoding="utf-8")
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True, env={**os.environ, **env})
+    subprocess.run(["git", "add", "-A"], cwd=tmp_path, check=True, env={**os.environ, **env})
+    (tmp_path / "deleted.py").unlink()
+    assert sast.tracked_targets(tmp_path) == ["kept.py"]
+
+
 # --- Release workflow --------------------------------------------------------
 
 WORKFLOWS = ROOT / ".github" / "workflows"
@@ -280,3 +294,15 @@ def test_security_policy_states_support_and_timeline() -> None:
     # The documented controls name the tools that implement them.
     for tool in ("tooling/audit_deps.py", "tooling/sast.py", "tooling/sbom.py", "gh attestation verify"):
         assert tool in text, tool
+
+
+def test_a_release_tag_must_name_the_plugin_version() -> None:
+    """A `v*` tag on a commit whose VERSION says otherwise would attest packages
+    under a version no manifest carries."""
+    release = steps("attest-packages.yml")
+    names = [step.get("name", "") for step in release]
+    check_at = next(i for i, step in enumerate(release)
+                    if "VERSION" in step.get("run", "") and step.get("env", {}).get("TAG") == "${{ github.ref_name }}")
+    assert release[check_at].get("if") == "startsWith(github.ref, 'refs/tags/v')"
+    assert "${{" not in release[check_at]["run"], "pass the tag through env, never inline into the script"
+    assert check_at < names.index("Build skill packages")

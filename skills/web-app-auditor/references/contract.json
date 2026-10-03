@@ -26,7 +26,7 @@
   },
   "fields": {},
   "outputs": {"ok": {}, "errors": {}, "warnings": {}},
-  "internal": ["properties"],
+  "internal": {"properties": "JSON Schema keyword the validator uses to mount the finding schema"},
   "doc_terms": [],
   "evals": [
     {"path": "tests/report-valid.json", "expect": "pass", "pass": ["pass"]},

@@ -127,10 +127,10 @@
     "missing_classes": {},
     "contaminated_holdout": {}
   },
-  "internal": [
-    "input",
-    "holdout"
-  ],
+  "internal": {
+    "input": "eval case wrapper: the case-runner reads the payload from a case's input, never a payload key",
+    "holdout": "split counter key the kernel initialises itself; the payload value is the split enum"
+  },
   "doc_terms": [],
   "evals": [
     {

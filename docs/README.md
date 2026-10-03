@@ -64,9 +64,8 @@ written by a tool and fail CI when edited by hand.
 | Document | What it covers |
 | --- | --- |
 | [`../CONTRIBUTING.md#plugin-version`](../CONTRIBUTING.md#plugin-version) | When the plugin version must change, and how the shipped set is recorded. |
-| [`../CONTRIBUTING.md#releases`](../CONTRIBUTING.md#releases) | Packaging a skill and the approval-gated publication path. |
+| [`../CONTRIBUTING.md#releases`](../CONTRIBUTING.md#releases) | Cutting a release: the tag, the local packaging rehearsal, the SBOM and verifying attestations. |
 | [`../CHANGELOG.md`](../CHANGELOG.md) | What changed in each plugin release. |
-| [`RELEASE-READINESS-CANDIDATE-1.1.md`](RELEASE-READINESS-CANDIDATE-1.1.md) | Notes for the release-readiness 1.1.0 candidate. |
 | [`acceptance/longform-publisher-1.0.0.md`](acceptance/longform-publisher-1.0.0.md) | A recorded real-world acceptance of one skill release. |
 
 ## Publication standards
@@ -88,7 +87,10 @@ registry and regenerate with `uv run python tooling/check_all.py --fix --fast`.
 - `generated-cursor-routing.mdc`, the Cursor routing rule, and its compact
   fallback [`../extras/cursor-routing.mdc`](../extras/cursor-routing.mdc)
 - each skill's `agents/openai.yaml` interface block
-- the skill list in the `description` of `.cursor-plugin/plugin.json` and
-  `.claude-plugin/plugin.json`
+- the routing rule the Cursor plugin ships,
+  [`../rules/cometweb-agent-skills.mdc`](../rules/cometweb-agent-skills.mdc)
+- the skill list in the `description` of `.claude-plugin/plugin.json`, and
+  `.cursor-plugin/plugin.json` as that manifest restricted to the keys Cursor
+  documents (`cursor.plugin_format` in `registry/hosts.json`)
 - the [skill catalog](../README.md#skill-catalog) and every skill count in
   `README.md`

@@ -1,0 +1,789 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "product-teardown",
+  "description": "Offline behavior of score_patterns.py and validate_pattern_ledger.py as references/output-contract.md and SKILL.md tell a user to run them.",
+  "cases": [
+    {
+      "id": "valid-adopt-ledger-passes",
+      "kind": "accept",
+      "behavior": "A source-to-target ledger whose ADOPT pattern has observed source behavior, observed destination problem evidence, clear gates and rollback/kill criteria validates.",
+      "run": [
+        "scripts/validate_pattern_ledger.py",
+        "{tmp}/ledger.json"
+      ],
+      "files": {
+        "ledger.json": {
+          "schema_version": "2.0",
+          "shape": "SOURCE_TO_TARGET",
+          "mode": "STANDARD",
+          "source_targets": [
+            {
+              "id": "SRC-1",
+              "name": "Source Example",
+              "kind": "product"
+            }
+          ],
+          "destination": {
+            "name": "Target Example",
+            "kind": "repo_product"
+          },
+          "evidence": [
+            {
+              "evidence_id": "E-001",
+              "subject": "source",
+              "target_id": "SRC-1",
+              "source": "https://source.example.com/flow",
+              "locator": "settings > recovery",
+              "source_type": "live_product",
+              "claim_lane": "source_behavior",
+              "claim_state": "OBSERVED",
+              "note": "Destructive action exposes an undo window.",
+              "confidence": 0.95
+            },
+            {
+              "evidence_id": "E-101",
+              "subject": "destination",
+              "target_id": "DEST",
+              "source": "target support queue",
+              "locator": "recovery tickets",
+              "source_type": "destination_internal",
+              "claim_lane": "destination_problem",
+              "claim_state": "OBSERVED",
+              "note": "Users cannot recover accidental deletion.",
+              "confidence": 0.85
+            }
+          ],
+          "patterns": [
+            {
+              "id": "PT-001",
+              "name": "Reversible destructive actions",
+              "category": "interaction",
+              "problem": "Users need safe recovery from accidental destructive actions.",
+              "mechanism": "Delay irreversible commitment and expose a bounded undo path.",
+              "source_observation": "Source exposes undo after deletion.",
+              "evidence_ids": [
+                "E-001"
+              ],
+              "target_evidence_ids": [
+                "E-101"
+              ],
+              "transfer": {
+                "problem_fit": 0.9,
+                "mechanism_fit": 0.9,
+                "source_evidence_strength": 0.9,
+                "destination_evidence_strength": 0.8,
+                "implementation_feasibility": 0.8,
+                "expected_upside": 0.8,
+                "reversibility": 0.9,
+                "maintenance_fit": 0.8,
+                "strategic_fit": 0.8,
+                "differentiation": 0.5,
+                "dependency_risk": 0.2,
+                "complexity_tax": 0.2,
+                "opportunity_cost": 0.2,
+                "legal_ip_risk": 0.1,
+                "security_privacy_risk": 0.1,
+                "measurement_risk": 0.2
+              },
+              "gates": {
+                "legal_ip": "clear",
+                "security_privacy": "clear"
+              },
+              "implementation": {
+                "transfer_mode": "REIMPLEMENT",
+                "target_surfaces": [
+                  "delete flow"
+                ],
+                "prerequisites": [
+                  "delayed deletion"
+                ],
+                "steps": [
+                  "add reversible state",
+                  "surface undo",
+                  "instrument recovery"
+                ],
+                "effort_band": "medium",
+                "uncertainty": "medium",
+                "success_metric": "recovered accidental deletions",
+                "rollback": "disable undo path",
+                "kill_criteria": "integrity or permission regression"
+              },
+              "experiment": null,
+              "interactions": {
+                "requires": [],
+                "enables": [],
+                "conflicts_with": [],
+                "substitutes_for": [],
+                "bundles_with": []
+              },
+              "confidence": {
+                "source": 0.9,
+                "mechanism": 0.8,
+                "destination": 0.8,
+                "execution": 0.75,
+                "overall": 0.81
+              },
+              "verdict": "ADOPT",
+              "decision_reason": "Strong target problem evidence and low-risk reimplementation."
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "VALID\nevidence=2 patterns=1"
+        ],
+        "stdout_absent": [
+          "INVALID"
+        ]
+      }
+    },
+    {
+      "id": "unsupported-adopt-is-refused",
+      "kind": "refuse",
+      "behavior": "An ADOPT verdict resting on inferred destination evidence, an open legal gate and low feasibility is rejected with one error per broken proof burden.",
+      "run": [
+        "scripts/validate_pattern_ledger.py",
+        "{tmp}/ledger.json"
+      ],
+      "files": {
+        "ledger.json": {
+          "schema_version": "2.0",
+          "shape": "SOURCE_TO_TARGET",
+          "mode": "STANDARD",
+          "source_targets": [
+            {
+              "id": "SRC-1",
+              "name": "Source Example",
+              "kind": "product"
+            }
+          ],
+          "destination": {
+            "name": "Target Example",
+            "kind": "repo_product"
+          },
+          "evidence": [
+            {
+              "evidence_id": "E-001",
+              "subject": "source",
+              "target_id": "SRC-1",
+              "source": "https://source.example.com/flow",
+              "locator": "settings > recovery",
+              "source_type": "live_product",
+              "claim_lane": "source_behavior",
+              "claim_state": "OBSERVED",
+              "note": "Destructive action exposes an undo window.",
+              "confidence": 0.95
+            },
+            {
+              "evidence_id": "E-101",
+              "subject": "destination",
+              "target_id": "DEST",
+              "source": "target support queue",
+              "locator": "recovery tickets",
+              "source_type": "destination_internal",
+              "claim_lane": "destination_problem",
+              "claim_state": "INFERRED",
+              "note": "Users cannot recover accidental deletion.",
+              "confidence": 0.85
+            }
+          ],
+          "patterns": [
+            {
+              "id": "PT-001",
+              "name": "Reversible destructive actions",
+              "category": "interaction",
+              "problem": "Users need safe recovery from accidental destructive actions.",
+              "mechanism": "Delay irreversible commitment and expose a bounded undo path.",
+              "source_observation": "Source exposes undo after deletion.",
+              "evidence_ids": [
+                "E-001"
+              ],
+              "target_evidence_ids": [
+                "E-101"
+              ],
+              "transfer": {
+                "problem_fit": 0.9,
+                "mechanism_fit": 0.9,
+                "source_evidence_strength": 0.9,
+                "destination_evidence_strength": 0.8,
+                "implementation_feasibility": 0.5,
+                "expected_upside": 0.8,
+                "reversibility": 0.9,
+                "maintenance_fit": 0.8,
+                "strategic_fit": 0.8,
+                "differentiation": 0.5,
+                "dependency_risk": 0.2,
+                "complexity_tax": 0.2,
+                "opportunity_cost": 0.2,
+                "legal_ip_risk": 0.1,
+                "security_privacy_risk": 0.1,
+                "measurement_risk": 0.2
+              },
+              "gates": {
+                "legal_ip": "review",
+                "security_privacy": "clear"
+              },
+              "implementation": {
+                "transfer_mode": "REIMPLEMENT",
+                "target_surfaces": [
+                  "delete flow"
+                ],
+                "prerequisites": [
+                  "delayed deletion"
+                ],
+                "steps": [
+                  "add reversible state",
+                  "surface undo",
+                  "instrument recovery"
+                ],
+                "effort_band": "medium",
+                "uncertainty": "medium",
+                "success_metric": "recovered accidental deletions",
+                "rollback": "disable undo path",
+                "kill_criteria": "integrity or permission regression"
+              },
+              "experiment": null,
+              "interactions": {
+                "requires": [],
+                "enables": [],
+                "conflicts_with": [],
+                "substitutes_for": [],
+                "bundles_with": []
+              },
+              "confidence": {
+                "source": 0.9,
+                "mechanism": 0.8,
+                "destination": 0.8,
+                "execution": 0.75,
+                "overall": 0.81
+              },
+              "verdict": "ADOPT",
+              "decision_reason": "Strong target problem evidence and low-risk reimplementation."
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "stdout_contains": [
+          "INVALID\n- patterns[0]: ADOPT requires OBSERVED destination_problem evidence\n- patterns[0]: ADOPT requires clear/not_required mandatory gates\n- patterns[0]: ADOPT requires transfer.implementation_feasibility >= 0.60\n"
+        ]
+      }
+    },
+    {
+      "id": "malformed-ledger-json-is-refused",
+      "kind": "refuse",
+      "behavior": "A ledger that is not valid JSON is reported INVALID with exit 2 rather than crashing.",
+      "run": [
+        "scripts/validate_pattern_ledger.py"
+      ],
+      "stdin": "[1",
+      "expect": {
+        "exit_code": 2,
+        "stdout_contains": [
+          "INVALID: Expecting ',' delimiter"
+        ]
+      }
+    },
+    {
+      "id": "score-at-adopt-threshold-suggests-adopt",
+      "kind": "boundary",
+      "behavior": "A pattern with target evidence, clear gates and a heuristic score of exactly 76 is suggested ADOPT inside the scored ledger.",
+      "run": [
+        "scripts/score_patterns.py",
+        "{tmp}/ledger.json"
+      ],
+      "files": {
+        "ledger.json": {
+          "schema_version": "2.0",
+          "shape": "SOURCE_TO_TARGET",
+          "mode": "STANDARD",
+          "source_targets": [
+            {
+              "id": "SRC-1",
+              "name": "Source Example",
+              "kind": "product"
+            }
+          ],
+          "destination": {
+            "name": "Target Example",
+            "kind": "repo_product"
+          },
+          "evidence": [
+            {
+              "evidence_id": "E-001",
+              "subject": "source",
+              "target_id": "SRC-1",
+              "source": "https://source.example.com/flow",
+              "locator": "settings > recovery",
+              "source_type": "live_product",
+              "claim_lane": "source_behavior",
+              "claim_state": "OBSERVED",
+              "note": "Destructive action exposes an undo window.",
+              "confidence": 0.95
+            },
+            {
+              "evidence_id": "E-101",
+              "subject": "destination",
+              "target_id": "DEST",
+              "source": "target support queue",
+              "locator": "recovery tickets",
+              "source_type": "destination_internal",
+              "claim_lane": "destination_problem",
+              "claim_state": "OBSERVED",
+              "note": "Users cannot recover accidental deletion.",
+              "confidence": 0.85
+            }
+          ],
+          "patterns": [
+            {
+              "id": "PT-001",
+              "name": "Reversible destructive actions",
+              "category": "interaction",
+              "problem": "Users need safe recovery from accidental destructive actions.",
+              "mechanism": "Delay irreversible commitment and expose a bounded undo path.",
+              "source_observation": "Source exposes undo after deletion.",
+              "evidence_ids": [
+                "E-001"
+              ],
+              "target_evidence_ids": [
+                "E-101"
+              ],
+              "transfer": {
+                "problem_fit": 0.9,
+                "mechanism_fit": 0.9,
+                "source_evidence_strength": 0.9,
+                "destination_evidence_strength": 0.8,
+                "implementation_feasibility": 0.8,
+                "expected_upside": 0.8,
+                "reversibility": 0.9,
+                "maintenance_fit": 0.8,
+                "strategic_fit": 0.8,
+                "differentiation": 0.5,
+                "dependency_risk": 0.2,
+                "complexity_tax": 0.2,
+                "opportunity_cost": 0.2,
+                "legal_ip_risk": 0.1,
+                "security_privacy_risk": 0.1,
+                "measurement_risk": 0.2
+              },
+              "gates": {
+                "legal_ip": "clear",
+                "security_privacy": "clear"
+              },
+              "implementation": {
+                "transfer_mode": "REIMPLEMENT",
+                "target_surfaces": [
+                  "delete flow"
+                ],
+                "prerequisites": [
+                  "delayed deletion"
+                ],
+                "steps": [
+                  "add reversible state",
+                  "surface undo",
+                  "instrument recovery"
+                ],
+                "effort_band": "medium",
+                "uncertainty": "medium",
+                "success_metric": "recovered accidental deletions",
+                "rollback": "disable undo path",
+                "kill_criteria": "integrity or permission regression"
+              },
+              "experiment": null,
+              "interactions": {
+                "requires": [],
+                "enables": [],
+                "conflicts_with": [],
+                "substitutes_for": [],
+                "bundles_with": []
+              },
+              "confidence": {
+                "source": 0.9,
+                "mechanism": 0.8,
+                "destination": 0.8,
+                "execution": 0.75,
+                "overall": 0.81
+              },
+              "verdict": "ADOPT",
+              "decision_reason": "Strong target problem evidence and low-risk reimplementation."
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "schema_version": "2.0",
+          "patterns.0.heuristic_score": 76,
+          "patterns.0.gate_state": "clear",
+          "patterns.0.suggested_action": "ADOPT",
+          "patterns.0.score_components": {
+            "positive": 0.819,
+            "penalty": 0.056,
+            "target_evidence_ceiling_applied": false
+          }
+        }
+      }
+    },
+    {
+      "id": "source-only-pattern-stays-candidate",
+      "kind": "boundary",
+      "behavior": "Without destination evidence the same high-scoring pattern is held at CANDIDATE: a score cannot promote source-only discovery to a target action.",
+      "run": [
+        "scripts/score_patterns.py"
+      ],
+      "stdin": {
+        "id": "PT-001",
+        "name": "Reversible destructive actions",
+        "category": "interaction",
+        "problem": "Users need safe recovery from accidental destructive actions.",
+        "mechanism": "Delay irreversible commitment and expose a bounded undo path.",
+        "source_observation": "Source exposes undo after deletion.",
+        "evidence_ids": [
+          "E-001"
+        ],
+        "target_evidence_ids": [],
+        "transfer": {
+          "problem_fit": 0.9,
+          "mechanism_fit": 0.9,
+          "source_evidence_strength": 0.9,
+          "destination_evidence_strength": 0.8,
+          "implementation_feasibility": 0.8,
+          "expected_upside": 0.8,
+          "reversibility": 0.9,
+          "maintenance_fit": 0.8,
+          "strategic_fit": 0.8,
+          "differentiation": 0.5,
+          "dependency_risk": 0.2,
+          "complexity_tax": 0.2,
+          "opportunity_cost": 0.2,
+          "legal_ip_risk": 0.1,
+          "security_privacy_risk": 0.1,
+          "measurement_risk": 0.2
+        },
+        "gates": {
+          "legal_ip": "clear",
+          "security_privacy": "clear"
+        },
+        "implementation": {
+          "transfer_mode": "REIMPLEMENT",
+          "target_surfaces": [
+            "delete flow"
+          ],
+          "prerequisites": [
+            "delayed deletion"
+          ],
+          "steps": [
+            "add reversible state",
+            "surface undo",
+            "instrument recovery"
+          ],
+          "effort_band": "medium",
+          "uncertainty": "medium",
+          "success_metric": "recovered accidental deletions",
+          "rollback": "disable undo path",
+          "kill_criteria": "integrity or permission regression"
+        },
+        "experiment": null,
+        "interactions": {
+          "requires": [],
+          "enables": [],
+          "conflicts_with": [],
+          "substitutes_for": [],
+          "bundles_with": []
+        },
+        "confidence": {
+          "source": 0.9,
+          "mechanism": 0.8,
+          "destination": 0.8,
+          "execution": 0.75,
+          "overall": 0.81
+        },
+        "verdict": "ADOPT",
+        "decision_reason": "Strong target problem evidence and low-risk reimplementation."
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "id": "PT-001",
+          "heuristic_score": 76,
+          "suggested_action": "CANDIDATE",
+          "score_components.target_evidence_ceiling_applied": true
+        }
+      }
+    },
+    {
+      "id": "missing-gates-require-review",
+      "kind": "accept",
+      "behavior": "A pattern that does not record its legal and security gates is treated as unknown and suggested REVIEW_REQUIRED.",
+      "run": [
+        "scripts/score_patterns.py"
+      ],
+      "stdin": {
+        "id": "PT-001",
+        "name": "Reversible destructive actions",
+        "category": "interaction",
+        "problem": "Users need safe recovery from accidental destructive actions.",
+        "mechanism": "Delay irreversible commitment and expose a bounded undo path.",
+        "source_observation": "Source exposes undo after deletion.",
+        "evidence_ids": [
+          "E-001"
+        ],
+        "target_evidence_ids": [
+          "E-101"
+        ],
+        "transfer": {
+          "problem_fit": 0.9,
+          "mechanism_fit": 0.9,
+          "source_evidence_strength": 0.9,
+          "destination_evidence_strength": 0.8,
+          "implementation_feasibility": 0.8,
+          "expected_upside": 0.8,
+          "reversibility": 0.9,
+          "maintenance_fit": 0.8,
+          "strategic_fit": 0.8,
+          "differentiation": 0.5,
+          "dependency_risk": 0.2,
+          "complexity_tax": 0.2,
+          "opportunity_cost": 0.2,
+          "legal_ip_risk": 0.1,
+          "security_privacy_risk": 0.1,
+          "measurement_risk": 0.2
+        },
+        "implementation": {
+          "transfer_mode": "REIMPLEMENT",
+          "target_surfaces": [
+            "delete flow"
+          ],
+          "prerequisites": [
+            "delayed deletion"
+          ],
+          "steps": [
+            "add reversible state",
+            "surface undo",
+            "instrument recovery"
+          ],
+          "effort_band": "medium",
+          "uncertainty": "medium",
+          "success_metric": "recovered accidental deletions",
+          "rollback": "disable undo path",
+          "kill_criteria": "integrity or permission regression"
+        },
+        "experiment": null,
+        "interactions": {
+          "requires": [],
+          "enables": [],
+          "conflicts_with": [],
+          "substitutes_for": [],
+          "bundles_with": []
+        },
+        "confidence": {
+          "source": 0.9,
+          "mechanism": 0.8,
+          "destination": 0.8,
+          "execution": 0.75,
+          "overall": 0.81
+        },
+        "verdict": "ADOPT",
+        "decision_reason": "Strong target problem evidence and low-risk reimplementation."
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "gate_state": "review",
+          "suggested_action": "REVIEW_REQUIRED"
+        }
+      }
+    },
+    {
+      "id": "array-is-sorted-and-weak-target-evidence-capped",
+      "kind": "accept",
+      "behavior": "An array of patterns comes back sorted by score, and a pattern whose destination evidence strength is below 0.35 stays CANDIDATE.",
+      "run": [
+        "scripts/score_patterns.py"
+      ],
+      "stdin": [
+        {
+          "id": "PT-002",
+          "name": "Reversible destructive actions",
+          "category": "interaction",
+          "problem": "Users need safe recovery from accidental destructive actions.",
+          "mechanism": "Delay irreversible commitment and expose a bounded undo path.",
+          "source_observation": "Source exposes undo after deletion.",
+          "evidence_ids": [
+            "E-001"
+          ],
+          "target_evidence_ids": [
+            "E-101"
+          ],
+          "transfer": {
+            "problem_fit": 0.9,
+            "mechanism_fit": 0.9,
+            "source_evidence_strength": 0.9,
+            "destination_evidence_strength": 0.3,
+            "implementation_feasibility": 0.8,
+            "expected_upside": 0.8,
+            "reversibility": 0.9,
+            "maintenance_fit": 0.8,
+            "strategic_fit": 0.8,
+            "differentiation": 0.5,
+            "dependency_risk": 0.2,
+            "complexity_tax": 0.2,
+            "opportunity_cost": 0.2,
+            "legal_ip_risk": 0.1,
+            "security_privacy_risk": 0.1,
+            "measurement_risk": 0.2
+          },
+          "gates": {
+            "legal_ip": "clear",
+            "security_privacy": "clear"
+          },
+          "implementation": {
+            "transfer_mode": "REIMPLEMENT",
+            "target_surfaces": [
+              "delete flow"
+            ],
+            "prerequisites": [
+              "delayed deletion"
+            ],
+            "steps": [
+              "add reversible state",
+              "surface undo",
+              "instrument recovery"
+            ],
+            "effort_band": "medium",
+            "uncertainty": "medium",
+            "success_metric": "recovered accidental deletions",
+            "rollback": "disable undo path",
+            "kill_criteria": "integrity or permission regression"
+          },
+          "experiment": null,
+          "interactions": {
+            "requires": [],
+            "enables": [],
+            "conflicts_with": [],
+            "substitutes_for": [],
+            "bundles_with": []
+          },
+          "confidence": {
+            "source": 0.9,
+            "mechanism": 0.8,
+            "destination": 0.8,
+            "execution": 0.75,
+            "overall": 0.81
+          },
+          "verdict": "ADOPT",
+          "decision_reason": "Strong target problem evidence and low-risk reimplementation."
+        },
+        {
+          "id": "PT-001",
+          "name": "Reversible destructive actions",
+          "category": "interaction",
+          "problem": "Users need safe recovery from accidental destructive actions.",
+          "mechanism": "Delay irreversible commitment and expose a bounded undo path.",
+          "source_observation": "Source exposes undo after deletion.",
+          "evidence_ids": [
+            "E-001"
+          ],
+          "target_evidence_ids": [
+            "E-101"
+          ],
+          "transfer": {
+            "problem_fit": 0.9,
+            "mechanism_fit": 0.9,
+            "source_evidence_strength": 0.9,
+            "destination_evidence_strength": 0.8,
+            "implementation_feasibility": 0.8,
+            "expected_upside": 0.8,
+            "reversibility": 0.9,
+            "maintenance_fit": 0.8,
+            "strategic_fit": 0.8,
+            "differentiation": 0.5,
+            "dependency_risk": 0.2,
+            "complexity_tax": 0.2,
+            "opportunity_cost": 0.2,
+            "legal_ip_risk": 0.1,
+            "security_privacy_risk": 0.1,
+            "measurement_risk": 0.2
+          },
+          "gates": {
+            "legal_ip": "clear",
+            "security_privacy": "clear"
+          },
+          "implementation": {
+            "transfer_mode": "REIMPLEMENT",
+            "target_surfaces": [
+              "delete flow"
+            ],
+            "prerequisites": [
+              "delayed deletion"
+            ],
+            "steps": [
+              "add reversible state",
+              "surface undo",
+              "instrument recovery"
+            ],
+            "effort_band": "medium",
+            "uncertainty": "medium",
+            "success_metric": "recovered accidental deletions",
+            "rollback": "disable undo path",
+            "kill_criteria": "integrity or permission regression"
+          },
+          "experiment": null,
+          "interactions": {
+            "requires": [],
+            "enables": [],
+            "conflicts_with": [],
+            "substitutes_for": [],
+            "bundles_with": []
+          },
+          "confidence": {
+            "source": 0.9,
+            "mechanism": 0.8,
+            "destination": 0.8,
+            "execution": 0.75,
+            "overall": 0.81
+          },
+          "verdict": "ADOPT",
+          "decision_reason": "Strong target problem evidence and low-risk reimplementation."
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json_len": {
+          "$": 2
+        },
+        "json": {
+          "0.id": "PT-001",
+          "0.suggested_action": "ADOPT",
+          "1.id": "PT-002",
+          "1.suggested_action": "CANDIDATE",
+          "1.score_components.target_evidence_ceiling_applied": true
+        }
+      }
+    },
+    {
+      "id": "incomplete-transfer-is-refused",
+      "kind": "refuse",
+      "behavior": "A pattern missing transfer dimensions is refused with every missing dimension named, instead of being scored on partial data.",
+      "run": [
+        "scripts/score_patterns.py"
+      ],
+      "stdin": {
+        "id": "PT-009",
+        "transfer": {
+          "problem_fit": 1
+        }
+      },
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "error: pattern PT-009 missing transfer fields: mechanism_fit, source_evidence_strength, destination_evidence_strength, implementation_feasibility, expected_upside, reversibility, maintenance_fit, strategic_fit, differentiation, dependency_risk, complexity_tax, opportunity_cost, legal_ip_risk, security_privacy_risk, measurement_risk"
+        ]
+      }
+    }
+  ]
+}

@@ -45,7 +45,8 @@ def main() -> int:
     failures=[]
     for case in cases:
         try:
-            got=kernel.evaluate_case(case)
+            # raw_case hands the kernel a case that is not an object, to pin how it refuses one.
+            got=kernel.evaluate_case(case['raw_case'] if 'raw_case' in case else case)
             if not case_passes(got,case): failures.append({'id':case.get('id'),'expect':case.get('expect'),'expect_paths':case.get('expect_paths',{}),'got':got})
         except Exception as exc:
             failures.append({'id':case.get('id'),'error':repr(exc)})

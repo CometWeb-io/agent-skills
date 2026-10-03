@@ -1,0 +1,515 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "content-writer",
+  "description": "Offline behavior of the claim-ledger kernel the references document as kernel.validate(report), and of the bundled eval runner.",
+  "cases": [
+    {
+      "id": "sourced-final-draft-is-release-eligible",
+      "kind": "accept",
+      "behavior": "A final draft whose material facts all carry located evidence passes and is eligible for release.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "c1",
+              "status": "SUPPORTED",
+              "material": true,
+              "presented_as_fact": true,
+              "evidence": [
+                {
+                  "source": "https://example.org/study",
+                  "locator": "table 2",
+                  "authority": "PRIMARY"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PASS",
+          "errors": [],
+          "release_eligible": true,
+          "unresolved_material": 0,
+          "mode": "FINAL"
+        }
+      }
+    },
+    {
+      "id": "draft-mode-is-never-release-eligible",
+      "kind": "accept",
+      "behavior": "A ledger in DRAFT mode can pass its checks but is never marked release eligible.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "c1",
+              "status": "SUPPORTED",
+              "material": true,
+              "presented_as_fact": true,
+              "evidence": [
+                {
+                  "source": "https://example.org/study",
+                  "locator": "table 2",
+                  "authority": "PRIMARY"
+                }
+              ]
+            }
+          ],
+          "mode": "DRAFT"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PASS",
+          "errors": [],
+          "release_eligible": false,
+          "unresolved_material": 0,
+          "mode": "DRAFT"
+        }
+      }
+    },
+    {
+      "id": "opinion-presented-as-fact-is-refused",
+      "kind": "refuse",
+      "behavior": "An opinion written as if it were an established fact fails the claim ledger.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "c1",
+              "status": "SUPPORTED",
+              "material": true,
+              "presented_as_fact": true,
+              "evidence": [
+                {
+                  "source": "https://example.org/study",
+                  "locator": "table 2",
+                  "authority": "PRIMARY"
+                }
+              ]
+            },
+            {
+              "claim_id": "c2",
+              "status": "OPINION",
+              "material": false,
+              "presented_as_fact": true
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "FAIL",
+          "errors": [
+            "claim[1]:nonfact-presented-as-fact"
+          ],
+          "release_eligible": false,
+          "unresolved_material": 0,
+          "mode": "FINAL"
+        }
+      }
+    },
+    {
+      "id": "source-bound-rejects-unapproved-source",
+      "kind": "refuse",
+      "behavior": "Under a SOURCE_BOUND policy a fact backed by a source outside the approved list is refused.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "c1",
+              "status": "SUPPORTED",
+              "material": true,
+              "presented_as_fact": true,
+              "evidence": [
+                {
+                  "source": "https://example.org/study",
+                  "locator": "table 2",
+                  "authority": "PRIMARY"
+                }
+              ]
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND",
+          "approved_sources": [
+            "https://example.com/report"
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "FAIL",
+          "errors": [
+            "claim[0]:source-not-approved"
+          ],
+          "release_eligible": false,
+          "unresolved_material": 0,
+          "mode": "FINAL"
+        }
+      }
+    },
+    {
+      "id": "authoritative-source-required-for-high-risk",
+      "kind": "refuse",
+      "behavior": "A high-risk material fact must rest on primary, official or system-of-record evidence.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "c1",
+              "status": "SUPPORTED",
+              "material": true,
+              "presented_as_fact": true,
+              "evidence": [
+                {
+                  "source": "https://example.org/blog",
+                  "locator": "para 4",
+                  "authority": "SECONDARY"
+                }
+              ],
+              "high_risk": true
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "FAIL",
+          "errors": [
+            "claim[0]:high-risk-missing-authority"
+          ],
+          "release_eligible": false,
+          "unresolved_material": 0,
+          "mode": "FINAL"
+        }
+      }
+    },
+    {
+      "id": "unresolved-material-claim-blocks-release",
+      "kind": "boundary",
+      "behavior": "An open material claim marked UNRESOLVED keeps a passing ledger out of release.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "c1",
+              "status": "SUPPORTED",
+              "material": true,
+              "presented_as_fact": true,
+              "evidence": [
+                {
+                  "source": "https://example.org/study",
+                  "locator": "table 2",
+                  "authority": "PRIMARY"
+                }
+              ]
+            },
+            {
+              "claim_id": "c2",
+              "status": "UNRESOLVED",
+              "material": true,
+              "presented_as_fact": false
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PASS",
+          "errors": [],
+          "release_eligible": false,
+          "unresolved_material": 1,
+          "mode": "FINAL"
+        }
+      }
+    },
+    {
+      "id": "inference-on-unresolved-basis-is-refused",
+      "kind": "boundary",
+      "behavior": "A material inference cannot rest on a material claim that is still unresolved.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "c1",
+              "status": "UNRESOLVED",
+              "material": true,
+              "presented_as_fact": false
+            },
+            {
+              "claim_id": "c2",
+              "status": "INFERRED",
+              "material": true,
+              "presented_as_fact": false,
+              "basis_claim_ids": [
+                "c1"
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "FAIL",
+          "errors": [
+            "claim[1]:basis-unresolved:c1"
+          ],
+          "release_eligible": false,
+          "unresolved_material": 1,
+          "mode": "FINAL"
+        }
+      }
+    },
+    {
+      "id": "claim-dependency-cycle-is-refused",
+      "kind": "boundary",
+      "behavior": "Claims that justify each other in a circle are rejected.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "a",
+              "status": "INFERRED",
+              "material": false,
+              "presented_as_fact": false,
+              "basis_claim_ids": [
+                "b"
+              ]
+            },
+            {
+              "claim_id": "b",
+              "status": "INFERRED",
+              "material": false,
+              "presented_as_fact": false,
+              "basis_claim_ids": [
+                "a"
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "FAIL",
+          "errors": [
+            "claim-dependency-cycle"
+          ],
+          "release_eligible": false,
+          "unresolved_material": 0,
+          "mode": "FINAL"
+        }
+      }
+    },
+    {
+      "id": "fresh-claim-needs-observation-time",
+      "kind": "boundary",
+      "behavior": "A claim that must be current is refused when its evidence has no observation time or freshness status.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "c1",
+              "status": "SUPPORTED",
+              "material": true,
+              "presented_as_fact": true,
+              "evidence": [
+                {
+                  "source": "https://example.org/study",
+                  "locator": "table 2",
+                  "authority": "PRIMARY"
+                }
+              ],
+              "freshness_required": true
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "FAIL",
+          "errors": [
+            "claim[0]:bad-evidence"
+          ],
+          "release_eligible": false,
+          "unresolved_material": 0,
+          "mode": "FINAL"
+        }
+      }
+    },
+    {
+      "id": "revision-must-name-a-different-parent",
+      "kind": "boundary",
+      "behavior": "A revision whose parent is the same candidate has no real lineage and is refused.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "c1",
+              "status": "SUPPORTED",
+              "material": true,
+              "presented_as_fact": true,
+              "evidence": [
+                {
+                  "source": "https://example.org/study",
+                  "locator": "table 2",
+                  "authority": "PRIMARY"
+                }
+              ]
+            }
+          ],
+          "mode": "REVISION",
+          "parent_candidate_id": "draft-2"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "FAIL",
+          "errors": [
+            "revision:parent-same-as-candidate"
+          ],
+          "release_eligible": false,
+          "unresolved_material": 0,
+          "mode": "REVISION"
+        }
+      }
+    },
+    {
+      "id": "failed-invariant-check-is-refused",
+      "kind": "refuse",
+      "behavior": "A protected invariant whose check did not pass fails the draft.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "candidate_id": "draft-2",
+          "brief_id": "brief-1",
+          "claims": [
+            {
+              "claim_id": "c1",
+              "status": "SUPPORTED",
+              "material": true,
+              "presented_as_fact": true,
+              "evidence": [
+                {
+                  "source": "https://example.org/study",
+                  "locator": "table 2",
+                  "authority": "PRIMARY"
+                }
+              ]
+            }
+          ],
+          "protected_invariants": [
+            "keep-original-figures"
+          ],
+          "invariant_checks": [
+            {
+              "id": "keep-original-figures",
+              "state": "UNKNOWN"
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "FAIL",
+          "errors": [
+            "invariant:keep-original-figures:not-pass"
+          ],
+          "release_eligible": false,
+          "unresolved_material": 0,
+          "mode": "FINAL"
+        }
+      }
+    },
+    {
+      "id": "bundled-evals-pass",
+      "kind": "accept",
+      "behavior": "The bundled offline eval cases all pass when run as documented.",
+      "run": [
+        "scripts/run_evals.py"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PASS",
+          "failures": []
+        }
+      }
+    }
+  ]
+}

@@ -116,7 +116,7 @@ which choices need a decision, the top 1-3 executable actions, and what to stop.
 
 Default budgets: PULSE <=180 words, STANDARD/DELTA <=350, DEEP/RELEASE <=500 unless the user asks for detail.
 `BLOCKER`, `VERIFY NOW`, `DECISION NOW`, `NOW`, user-facing `NEXT`, `STOP`, and `Unknowns` show at most 3 each;
-omit `BLOCKER` when there are none. Do not print the full operating contract, coverage matrix, evidence ledger,
+omit `BLOCKER` when there are none. Machine spelling: the kernel's `priority_tier` is `BLOCKER`, `VERIFY_NOW`, `DECISION_NOW`, `NOW`, `NEXT`, `LATER`, or `STOP`, and the sidecar lists items under `blockers`, `verify_now`, `decision_now`, `now`, `next`, `later`, `watch`, `stop`. Do not print the full operating contract, coverage matrix, evidence ledger,
 confidence fields, or tool-limit noise by default.
 
 ## 4. Hard boundaries

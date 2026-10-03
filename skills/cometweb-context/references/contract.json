@@ -210,14 +210,14 @@
     "commits_30d": {},
     "error": {}
   },
-  "internal": [
-    "primary",
-    "profiles",
-    "preferred_source_groups",
-    "id",
-    "COMETWEB_ROOT",
-    "COMETWEB_CENTRUM"
-  ],
+  "internal": {
+    "primary": "profile pick result the planner builds from its own candidates",
+    "profiles": "section of the shipped source registry, not of an envelope",
+    "preferred_source_groups": "profile entry in the shipped source registry, not of an envelope",
+    "id": "merge key for the untracked local registry overlay, not an envelope field",
+    "COMETWEB_ROOT": "environment variable naming the local root for repo snapshots",
+    "COMETWEB_CENTRUM": "legacy environment variable for the same local root"
+  },
   "doc_terms": [
     "authority_gap"
   ],

@@ -1449,5 +1449,143 @@
       }
     },
     "operation": "delta"
+  },
+  {
+    "id": "rubric-lock-that-is-not-an-object",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Answers five defined questions",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "SaaS founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach founders",
+      "rubric_lock": "editorial@1.2"
+    },
+    "expect": {
+      "status": "INVALID",
+      "missing": [],
+      "errors": [
+        "rubric_lock:not-object"
+      ],
+      "open_material_decisions": 0,
+      "material_assumptions": 0,
+      "mode": "STANDARD"
+    }
+  },
+  {
+    "id": "rubric-lock-names-pack-and-revision",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Answers five defined questions",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "SaaS founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach founders",
+      "rubric_lock": {
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "locked_before_execution": true
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "missing": [],
+      "errors": [
+        "rubric_lock:pack-id",
+        "rubric_lock:revision"
+      ],
+      "open_material_decisions": 0,
+      "material_assumptions": 0,
+      "mode": "STANDARD"
+    }
+  },
+  {
+    "id": "deep-brief-needs-use-moment-and-scope",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Answers five defined questions",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "SaaS founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach founders",
+      "mode": "DEEP"
+    },
+    "expect": {
+      "status": "BLOCKED",
+      "missing": [
+        "scope",
+        "use_moment"
+      ],
+      "errors": [],
+      "open_material_decisions": 0,
+      "material_assumptions": 0,
+      "mode": "DEEP"
+    }
+  },
+  {
+    "id": "structured-invariant-with-id-and-rule-is-accepted",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Answers five defined questions",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "SaaS founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach founders",
+      "protected_invariants": [
+        {
+          "id": "inv-1",
+          "rule": "Prices stay as published"
+        }
+      ]
+    },
+    "expect": {
+      "status": "READY",
+      "missing": [],
+      "errors": [],
+      "open_material_decisions": 0,
+      "material_assumptions": 0,
+      "mode": "STANDARD"
+    }
+  },
+  {
+    "id": "case-that-is-not-an-object-is-invalid",
+    "raw_case": "objective",
+    "expect": {
+      "status": "INVALID",
+      "missing": [],
+      "errors": [
+        "brief:not-object"
+      ],
+      "open_material_decisions": 0,
+      "material_assumptions": 0,
+      "mode": "STANDARD"
+    }
   }
 ]

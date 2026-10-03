@@ -23,13 +23,20 @@ file, `references/contract.json` (schema `cometweb.skill-contract/v1`):
       },
       "fields": {"repair_id": {}, "items.status": {"enum": ["OPEN", "CLOSED"]}},
       "outputs": {"status": {"enum": ["VALID", "INVALID"]}, "errors": {}},
-      "internal": ["errors"],         # keys a script reads that are not payload fields
+      "internal": {"errors": "the kernel's own accumulator, never read from a payload"},
+                                      # keys a script reads that are not payload fields, each
+                                      # with the reason; a bare list of names is still accepted
+      "lists": {"forecasts": "rows passed to `score --rows-json`"},
+                                      # row sets a command takes whole (by argument or file), so
+                                      # no payload key names them; `forecasts.outcome` qualifies
+                                      # a field by its list the way `items.status` does by its key
       "doc_terms": ["run_evals"],     # backticked snake_case words in docs that are not fields
       # status: dotted path to the expected status; or errors: dotted path to an
       # expected error list ([] means "pass"); or expect: one fixed status.
       "evals": [{"path": "evals/cases.json", "cases": "", "input": "input",
                  "status": "expect.status", "pass": ["VALID"],
                  "exempt": {"case-id": "why this case may break the contract and still pass"},
+                 "parent": "forecasts",  # optional: the declared list the input rows belong to
                  "conform": "pass"}]   # or "always": every input must conform, whatever it expects
     }
 
@@ -37,12 +44,18 @@ Checks, each failing with the skill and the offending names:
 
 1. scripts: every `.py` file under `scripts/` is covered by a declared path.
 2. kernel -> contract: every literal key a non-harness script reads
-   (`x.get("k")`, `x["k"]`) is a contract field or listed as internal.
+   (`x.get("k")`, `x["k"]`) is a contract field or listed as internal. An
+   internal key carries the reason it is not a payload field
+   (`{"name": "reason"}`); the older bare list is accepted, but a blank reason,
+   one that only repeats the name, or the `--draft` placeholder is not.
 3. contract -> kernel: every declared field and internal key occurs as a string
    literal in a script or an imported JSON Schema; nothing is declared that no
    code knows about.
 4. enums: each mapped module constant equals the field's declared enum, and a
-   JSON Schema enum for the same property equals it too.
+   JSON Schema enum for the same property equals it too. A qualified name
+   (`parent.key`) scopes its enum to one parent: a declared field, or a
+   declared list for rows no payload key names, so one key can carry different
+   enums in different row sets.
 5. contract -> docs: every field name and every enum value appears verbatim in
    the declared docs or SKILL.md.
 6. docs -> contract: every key in a fenced JSON block, every leading name in a
@@ -53,6 +66,8 @@ Checks, each failing with the skill and the offending names:
    case whose input breaks the contract never expects a passing status. With
    `"conform": "always"` every input must conform whatever it expects (unless
    exempt), for corpora that pin something other than a pass/fail status.
+   `"parent"` names the declared list an eval's input rows belong to, so its
+   qualified enums apply to them.
 
 Run `python3 tooling/skill_contracts.py --check` (also run under pytest by
 `tooling/tests/test_contract_docs_match_kernels.py`), or `--draft SKILL` to
@@ -87,7 +102,11 @@ SCHEMA_LINE = re.compile(r"^\s*(?:-\s+)?([a-z][a-z0-9]*(?:_[a-z0-9]+)*)(\[\])?(\
 FIELD_KEYS = {"enum", "enforced", "map", "opaque", "unread"}
 INPUT_KINDS = {"json", "text", "files", "args", "none"}
 ROLES = {"kernel", "validator", "helper", "eval-harness"}
-TOP_KEYS = {"schema", "docs", "json_schemas", "scripts", "fields", "outputs", "internal", "doc_terms", "evals"}
+TOP_KEYS = {"schema", "docs", "json_schemas", "scripts", "fields", "outputs", "internal", "lists", "doc_terms",
+            "evals"}
+EVAL_KEYS = {"path", "cases", "input", "status", "errors", "expect", "pass", "exempt", "conform", "parent"}
+# What `--draft` writes for an internal key; a contract may not keep it.
+DRAFT_REASON = "TODO: say why the scripts read this key although it is not a payload field"
 
 
 def skills_with_scripts() -> list[str]:
@@ -201,10 +220,16 @@ def all_specs(skill: str, contract: dict[str, Any]) -> dict[str, dict]:
     return {**fields, **{f"output:{k}": v for k, v in contract.get("outputs", {}).items()}}
 
 
+def internal_names(contract: dict[str, Any]) -> set[str]:
+    """Internal keys, from either the reasoned map or the older bare list."""
+    internal = contract.get("internal", [])
+    return {str(name) for name in internal} if isinstance(internal, (list, dict)) else set()
+
+
 def known_names(skill: str, contract: dict[str, Any]) -> set[str]:
     fields, _ = vocabulary(skill, contract)
     return ({bare(k) for k in fields} | {bare(k) for k in contract.get("outputs", {})}
-            | set(contract.get("internal", [])))
+            | internal_names(contract))
 
 
 def enum_values(skill: str, contract: dict[str, Any]) -> set[str]:
@@ -350,14 +375,53 @@ def check_structure(skill: str, contract: dict[str, Any]) -> list[str]:
             if "enum" in spec and (not isinstance(spec["enum"], list) or not spec["enum"]):
                 errors.append(f"{group}.{name}: enum must be a non-empty list")
     names = {bare(k) for k in contract.get("fields", {})} | {bare(k) for k in contract.get("outputs", {})}
-    overlap = set(contract.get("internal", [])) & names
+    errors += check_internal(contract)
+    overlap = internal_names(contract) & names
     if overlap:
         errors.append(f"both a contract name and internal: {sorted(overlap)}")
+    lists = contract.get("lists", {})
+    if not isinstance(lists, dict):
+        errors.append("lists must map each list name to what it holds")
+        lists = {}
+    for name, what in lists.items():
+        if not isinstance(what, str) or not what.strip():
+            errors.append(f"lists.{name}: say which rows the list holds")
+        if name in names:
+            errors.append(f"lists.{name}: also a payload field; qualify by the field instead")
+    for group in ("fields", "outputs"):
+        for name in contract.get(group, {}):
+            if "." not in name:
+                continue
+            parent = name.split(".", 1)[0]
+            if name.count(".") > 1:
+                errors.append(f"{group}.{name}: qualify by one parent only")
+            elif parent not in names and parent not in lists:
+                errors.append(f"{group}.{name}: parent {parent!r} is neither a field nor a declared list")
     for spec in contract.get("evals", []):
-        if set(spec) - {"path", "cases", "input", "status", "errors", "expect", "pass", "exempt", "conform"}:
+        if set(spec) - EVAL_KEYS:
             errors.append(f"eval {spec.get('path')}: unknown keys")
         if spec.get("conform", "pass") not in {"pass", "always"}:
             errors.append(f"eval {spec.get('path')}: conform must be 'pass' or 'always'")
+        if "parent" in spec and spec["parent"] not in lists:
+            errors.append(f"eval {spec.get('path')}: parent {spec['parent']!r} is not a declared list")
+    return errors
+
+
+def check_internal(contract: dict[str, Any]) -> list[str]:
+    """An internal key says why the scripts read it although no payload carries it."""
+    internal = contract.get("internal", [])
+    if isinstance(internal, list):
+        bad = [name for name in internal if not isinstance(name, str) or not name]
+        return [f"internal entries must be key names: {bad}"] if bad else []
+    if not isinstance(internal, dict):
+        return ["internal must map each key to its reason (or list key names)"]
+    errors = []
+    for name, reason in internal.items():
+        text = reason.strip() if isinstance(reason, str) else ""
+        if not text or text.lower() in {name.lower(), "internal"}:
+            errors.append(f"internal.{name}: give the reason it is not a payload field")
+        elif text == DRAFT_REASON:
+            errors.append(f"internal.{name}: replace the --draft placeholder with a reason")
     return errors
 
 
@@ -385,16 +449,18 @@ def code_text(skill: str, contract: dict[str, Any], harness: bool) -> str:
 
 def check_kernel_reads(skill: str, contract: dict[str, Any]) -> list[str]:
     unknown = sorted(reads(code_text(skill, contract, harness=False)) - known_names(skill, contract))
-    return [f"scripts read keys the contract does not declare: {unknown}"] if unknown else []
+    return [f"scripts read keys the contract does not declare: {unknown}; add each to \"fields\" "
+            f"(payload) or \"internal\" in {CONTRACT}"] if unknown else []
 
 
 def check_declared_are_used(skill: str, contract: dict[str, Any]) -> list[str]:
     _, schema_names = vocabulary(skill, contract)
     code = literals(code_text(skill, contract, harness=False))
     declared = ({bare(k) for k, v in contract.get("fields", {}).items() if not v.get("unread")}
-                | {bare(k) for k in contract.get("outputs", {})} | set(contract.get("internal", [])))
+                | {bare(k) for k in contract.get("outputs", {})} | internal_names(contract))
     stale = sorted(n for n in declared if n not in code and n not in schema_names)
-    return [f"declared names no script or schema knows: {stale}"] if stale else []
+    return [f"declared names no script or schema knows: {stale}; remove them from {CONTRACT}, "
+            "or mark a field the reader needs but no script reads with \"unread\": true"] if stale else []
 
 
 def check_enums(skill: str, contract: dict[str, Any]) -> list[str]:
@@ -445,19 +511,23 @@ def check_docs_cover_contract(skill: str, contract: dict[str, Any]) -> list[str]
         n for n in {bare(k.removeprefix("output:")) for k in specs} if word_in(n, docs)})
     missing_values = sorted({f"{k.removeprefix('output:')}={v}" for k, s in specs.items()
                              for v in s.get("enum", []) if not word_in(str(v), docs)})
+    where = ", ".join(contract.get("docs", [])) or "the docs listed in " + CONTRACT
     errors = []
     if missing_fields:
-        errors.append(f"fields not documented: {missing_fields}")
+        errors.append(f"fields not documented: {missing_fields}; name each one in {where}")
     if missing_values:
-        errors.append(f"enum values not documented verbatim: {missing_values}")
+        errors.append(f"enum values not documented verbatim: {missing_values}; "
+                      f"spell each value exactly as declared in {where}")
     return errors
 
 
 def check_docs_within_contract(skill: str, contract: dict[str, Any]) -> list[str]:
     declared_docs, _ = documentation(skill, contract)
-    known = known_names(skill, contract) | enum_values(skill, contract) | set(contract.get("doc_terms", []))
+    known = (known_names(skill, contract) | enum_values(skill, contract) | set(contract.get("doc_terms", []))
+             | set(contract.get("lists", {})))
     unknown = sorted(documented_terms(declared_docs) - known)
-    return [f"docs name fields the contract does not declare: {unknown}"] if unknown else []
+    return [f"docs name fields the contract does not declare: {unknown}; declare them in {CONTRACT} "
+            "(fields, outputs or internal), or list prose-only words under \"doc_terms\""] if unknown else []
 
 
 def check_evals(skill: str, contract: dict[str, Any]) -> list[str]:
@@ -472,7 +542,7 @@ def check_evals(skill: str, contract: dict[str, Any]) -> list[str]:
         count = 0
         for name, case in eval_cases(skill, spec):
             count += 1
-            problems = nonconforming(get_path(case, spec.get("input", "")), fields)
+            problems = nonconforming(get_path(case, spec.get("input", "")), fields, spec.get("parent"))
             if spec.get("errors"):
                 errors_expected = get_path(case, spec["errors"])
                 expected = "pass" if errors_expected == [] else "fail"
@@ -559,7 +629,7 @@ def draft(skill: str) -> dict[str, Any]:
         "scripts": scripts,
         "fields": {n: {} for n in sorted(names) if word_in(n, doc_text)},
         "outputs": {"status": {}},
-        "internal": sorted(n for n in names if not word_in(n, doc_text)),
+        "internal": {n: DRAFT_REASON for n in sorted(names) if not word_in(n, doc_text)},
         "doc_terms": [],
         "evals": [],
         "_candidate_enums": candidates,

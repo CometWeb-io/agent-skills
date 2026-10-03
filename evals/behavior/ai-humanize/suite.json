@@ -1,0 +1,95 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "ai-humanize",
+  "description": "Offline behavior of the invariant guard, the Unicode cleaner and the red-team output scorer, driven the way SKILL.md, references/semantic-fidelity.md, references/mark-classes.md and evaluation/README.md document them.",
+  "cases": [
+    {
+      "id": "guard-faithful-rewrite-passes",
+      "kind": "accept",
+      "behavior": "A rewrite that keeps every number, unit and marker passes the invariant guard with nothing missing, added or flagged.",
+      "run": ["scripts/rewrite_guard.py", "{tmp}/before.txt", "{tmp}/after.txt"],
+      "files": {"before.txt": "The upload limit is 10 MB.\n", "after.txt": "Uploads are capped at 10 MB.\n"},
+      "expect": {"exit_code": 0, "json": {"passed": true, "strict": false, "fail_on_semantic_risk": false, "missing_invariants": {}, "added_invariants": {}, "semantic_risk_markers": {}, "warnings": []}}
+    },
+    {
+      "id": "guard-unit-drift-fails",
+      "kind": "refuse",
+      "behavior": "Changing 10 MB to 10 KB fails the guard through the number_unit_pairs category, as the calibration cases require.",
+      "run": ["scripts/rewrite_guard.py", "{tmp}/before.txt", "{tmp}/after.txt"],
+      "files": {"before.txt": "The upload limit is 10 MB.\n", "after.txt": "The upload limit is 10 KB.\n"},
+      "expect": {"exit_code": 1, "json": {"passed": false, "missing_invariants.number_unit_pairs": [{"value": "10 MB", "count": 1}], "added_invariants.number_unit_pairs": [{"value": "10 KB", "count": 1}], "semantic_risk_markers": {}, "warnings": ["New invariant-like tokens were introduced; review for factual drift."]}}
+    },
+    {
+      "id": "guard-inversion-passes-by-default",
+      "kind": "boundary",
+      "behavior": "A dropped negation keeps every invariant, so the default guard still exits 0 and only warns, as the docs say an inverted claim can pass.",
+      "run": ["scripts/rewrite_guard.py", "{tmp}/before.txt", "{tmp}/after.txt"],
+      "files": {"before.txt": "We will not ship v2.3.0 on 2026-08-25.\n", "after.txt": "We will ship v2.3.0 on 2026-08-25.\n"},
+      "expect": {"exit_code": 0, "json": {"passed": true, "fail_on_semantic_risk": false, "missing_invariants": {}, "semantic_risk_markers": {"negation": {"removed": [{"value": "not", "count": 1}], "added": []}}, "warnings": ["Negation, modality, or scope markers changed; review semantic fidelity manually."]}}
+    },
+    {
+      "id": "guard-inversion-fails-on-semantic-risk",
+      "kind": "refuse",
+      "behavior": "With --fail-on-semantic-risk the same dropped negation fails the run, because the caller asked to stop on a possible meaning change.",
+      "run": ["scripts/rewrite_guard.py", "{tmp}/before.txt", "{tmp}/after.txt", "--fail-on-semantic-risk"],
+      "files": {"before.txt": "We will not ship v2.3.0 on 2026-08-25.\n", "after.txt": "We will ship v2.3.0 on 2026-08-25.\n"},
+      "expect": {"exit_code": 1, "json": {"passed": false, "fail_on_semantic_risk": true, "missing_invariants": {}, "added_invariants": {}, "semantic_risk_markers": {"negation": {"removed": [{"value": "not", "count": 1}], "added": []}}, "warnings": ["Negation, modality, or scope markers changed; failing because --fail-on-semantic-risk is set."]}}
+    },
+    {
+      "id": "guard-unreadable-input-exits-2",
+      "kind": "boundary",
+      "behavior": "A missing rewrite file is an unreadable input, so the guard exits 2 instead of returning a verdict.",
+      "run": ["scripts/rewrite_guard.py", "{tmp}/before.txt", "{tmp}/missing.txt"],
+      "files": {"before.txt": "The upload limit is 10 MB.\n"},
+      "expect": {"exit_code": 2, "stderr_contains": ["error: unable to read UTF-8 inputs or protected terms"]}
+    },
+    {
+      "id": "clean-stdin-strips-invisible-characters",
+      "kind": "accept",
+      "behavior": "Cleaning prose from stdin removes a zero-width space, turns a no-break space into a plain space and reports both counts on stderr.",
+      "run": ["scripts/layer_a_clean.py", "--profile", "prose", "--json"],
+      "stdin": "a​b c\n",
+      "expect": {"exit_code": 0, "stdout_contains": ["ab c"], "stderr_contains": ["\"ZERO WIDTH SPACE\": 1", "\"U+00A0 -> U+0020\": 1", "\"chars_removed\": 1", "\"chars_replaced\": 1", "\"would_change\": true"]}
+    },
+    {
+      "id": "clean-check-flags-hidden-character",
+      "kind": "refuse",
+      "behavior": "In --check mode a file that cleaning would change exits 1 so CI can stop it.",
+      "run": ["scripts/layer_a_clean.py", "{tmp}/draft.txt", "--check", "--json"],
+      "files": {"draft.txt": "Hello​ world\n"},
+      "expect": {"exit_code": 1, "stderr_contains": ["\"ZERO WIDTH SPACE\": 1", "\"profile\": \"prose\"", "\"would_change\": true"]}
+    },
+    {
+      "id": "clean-check-clean-file-passes",
+      "kind": "accept",
+      "behavior": "In --check mode a file with nothing to clean exits 0 and reports no change.",
+      "run": ["scripts/layer_a_clean.py", "{tmp}/draft.txt", "--check", "--json"],
+      "files": {"draft.txt": "Hello world\n"},
+      "expect": {"exit_code": 0, "stderr_contains": ["\"removed\": {}", "\"replaced\": {}", "\"would_change\": false"]}
+    },
+    {
+      "id": "redteam-faithful-output-is-automated-pass-only",
+      "kind": "accept",
+      "behavior": "A saved output that keeps the source passes the automatic checks while manual review stays not_performed, and missing outputs keep the run at exit 1.",
+      "run": ["scripts/redteam_score.py", "{tmp}/outputs", "--json"],
+      "files": {"outputs/en-natural-noop.txt": "I tried the new import flow on Tuesday. It is quicker now, but the error message still makes me stop and read it twice.\n"},
+      "expect": {"exit_code": 1, "json": {"0.id": "en-natural-noop", "0.status": "automated_pass", "0.manual_review": "not_performed", "0.semantic_equivalence": "not_verified", "0.guard_passed": true, "0.provenance_string_flags": [], "1.status": "missing_output"}}
+    },
+    {
+      "id": "redteam-certification-claim-needs-review",
+      "kind": "refuse",
+      "behavior": "An output claiming the text is undetectable is sent to review with the claim flagged, even though its hard tokens survive.",
+      "run": ["scripts/redteam_score.py", "{tmp}/outputs", "--json"],
+      "files": {"outputs/en-natural-noop.txt": "I tried the import flow on Tuesday; it is undetectable now and quicker, but the error message still makes me stop and read it twice.\n"},
+      "expect": {"exit_code": 1, "json": {"0.status": "review", "0.guard_passed": true, "0.missing_invariants": {}, "0.provenance_string_flags": ["undetectable"]}}
+    },
+    {
+      "id": "redteam-unexpected-file-is-operational-error",
+      "kind": "boundary",
+      "behavior": "A .txt file that matches no manifest case makes the scorer refuse to certify anything and exit 2 without echoing content.",
+      "run": ["scripts/redteam_score.py", "{tmp}/outputs"],
+      "files": {"outputs/stray.txt": "unrelated text\n"},
+      "expect": {"exit_code": 2, "stderr_contains": ["redteam_score: invalid input or incomplete operation; no result certified"]}
+    }
+  ]
+}

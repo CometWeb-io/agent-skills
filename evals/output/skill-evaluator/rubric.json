@@ -1,0 +1,82 @@
+{
+  "skill": "skill-evaluator",
+  "contract": "skills/skill-evaluator/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "identity", "title": "Candidate and baseline", "aliases": ["candidate and baseline", "candidate/baseline", "identity"], "required": true},
+    {"id": "frozen", "title": "Frozen experiment contract", "aliases": ["frozen"], "required": true},
+    {"id": "execution", "title": "Execution status", "aliases": ["execution status", "execution"], "required": true},
+    {"id": "metrics", "title": "Success metrics and paired table", "aliases": ["success metrics", "metrics", "paired table"],
+     "required_when_verdict": ["IMPROVED", "NO_MATERIAL_CHANGE", "TRADEOFF", "REGRESSION"]},
+    {"id": "paired", "title": "Paired statistical result", "aliases": ["paired statistical", "paired analysis", "paired result"], "required": true},
+    {"id": "stability", "title": "Stochastic stability", "aliases": ["stochastic stability", "stability"], "required": true},
+    {"id": "sequential", "title": "Sequential stop", "aliases": ["sequential"]},
+    {"id": "trigger", "title": "Trigger precision and recall", "aliases": ["trigger precision", "trigger"],
+     "required_when_verdict": ["IMPROVED", "NO_MATERIAL_CHANGE", "TRADEOFF", "REGRESSION"]},
+    {"id": "invariants", "title": "Invariant regressions", "aliases": ["invariant regressions", "invariants"], "required": true},
+    {"id": "resources", "title": "Resource deltas and Pareto status", "aliases": ["resource", "token/cost", "pareto"]},
+    {"id": "result", "title": "Result", "aliases": ["result"], "required": true},
+    {"id": "promotion", "title": "Promotion eligibility and claim scope", "aliases": ["promotion"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["IMPROVED", "NO_MATERIAL_CHANGE", "TRADEOFF", "REGRESSION", "INSUFFICIENT_EVIDENCE", "DESIGN_READY"],
+    "authorizing": ["IMPROVED"],
+    "primary": {"section": "result"}
+  },
+  "blockers": [
+    {"rule": "invariant-regression", "type": "section_items", "section": "invariants",
+     "none_pattern": "^(?:none\\b|0\\b|not measured)"},
+    {"rule": "flaky", "type": "items_matching", "section": "stability",
+     "pattern": "Status:\\s*\\**FLAKY\\b"},
+    {"rule": "paired-regression", "type": "items_matching", "section": "paired",
+     "pattern": "Status:\\s*\\**SIGNIFICANT_REGRESSION\\b"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "rubric-hash", "section": "frozen", "pattern": "rubric_hash[^\\n]*\\b[0-9a-f]{12,64}\\b",
+     "message": "the frozen contract has no rubric_hash"},
+    {"type": "doc_require", "rule": "benchmark-hash", "section": "frozen", "pattern": "benchmark_hash[^\\n]*\\b[0-9a-f]{12,64}\\b",
+     "message": "the frozen contract has no benchmark_hash"},
+    {"type": "doc_require", "rule": "baseline-identity", "section": "identity", "pattern": "baseline[^\\n:]*:\\s*(?:NO_SKILL|`?\\d+\\.\\d+\\.\\d+)",
+     "message": "the baseline is neither NO_SKILL nor an exact prior version"},
+    {"type": "doc_require", "rule": "paired-status", "section": "paired",
+     "pattern": "status[^\\n:]*:\\s*\\**(?:SIGNIFICANT_IMPROVEMENT|SIGNIFICANT_REGRESSION|NONINFERIOR|INCONCLUSIVE|INSUFFICIENT_DATA|NOT_USED)\\b",
+     "message": "the paired statistical result has no status from the contract's closed set"},
+    {"type": "doc_require", "rule": "stability-status", "section": "stability",
+     "pattern": "status[^\\n:]*:\\s*\\**(?:STABLE|FLAKY|INSUFFICIENT_DATA|NOT_USED)\\b",
+     "message": "the stability result has no status from the contract's closed set"},
+    {"type": "doc_require", "rule": "not-run-label", "section": "execution", "pattern": "\\bNOT_RUN\\b",
+     "when_verdict": ["DESIGN_READY"], "message": "a DESIGN_READY report must label the execution status NOT_RUN"},
+    {"type": "doc_require", "rule": "claim-scope", "section": "promotion", "pattern": "claim scope[^\\n:]*:\\s*\\S",
+     "message": "the report does not state the exact scope of its claim"},
+    {"type": "doc_require", "rule": "run-evidence", "section": "execution", "pattern": "(?:run log|transcripts?|results? file)[^\\n:]*:\\s*\\S",
+     "code": "EVIDENCE_MISSING", "when_verdict": ["IMPROVED", "NO_MATERIAL_CHANGE", "TRADEOFF", "REGRESSION"],
+     "message": "a measured result cites no run log or transcript location"},
+    {"type": "table_column_nonempty", "rule": "metric-source", "section": "metrics", "column": ["source"],
+     "code": "EVIDENCE_MISSING", "message": "a metric row has no source"},
+    {"type": "doc_forbid", "rule": "promotion-without-improvement", "section": "promotion",
+     "pattern": "promotion eligible[^\\n:]*:\\s*\\**(?:yes|true)\\b",
+     "when_verdict": ["NO_MATERIAL_CHANGE", "TRADEOFF", "REGRESSION", "INSUFFICIENT_EVIDENCE", "DESIGN_READY"],
+     "code": "CONTRACT_VIOLATION", "message": "only an IMPROVED result is promotion-eligible"},
+    {"type": "doc_forbid", "rule": "design-ready-lift",
+     "pattern": "\\b(?:measured|observed|showed|shows|demonstrated) (?:a |an )?(?:lift|improvement|gain|higher pass rate)",
+     "when_verdict": ["DESIGN_READY"], "code": "CONTRACT_VIOLATION",
+     "message": "a DESIGN_READY report executed nothing and must not imply measured lift"},
+    {"type": "doc_forbid", "rule": "universal-claim",
+     "pattern": "\\b(?:the best skill|universally|works everywhere|(?:works|improves) on (?:all|every|any) (?:hosts?|models?|agents?))\\b",
+     "message": "results hold only for the executed host/model/harness and date range"},
+    {"type": "doc_forbid", "rule": "unpaired-significance",
+     "pattern": "(?:significant|significance)[^.\\n]{0,40}\\b(?:from|based on|because of) (?:the )?(?:aggregate|unpaired|overall) pass[- ]rate",
+     "code": "CONTRACT_VIOLATION", "message": "significance cannot be inferred from unpaired aggregate pass-rate deltas"}
+  ],
+  "ids": [
+    {"rule": "case-ids", "pattern": "\\bEC-\\d{2}\\b",
+     "defined_in": [{"json": "declared_case_ids[*]", "when": {"declared_case_ids": "*"}}],
+     "defined_by": "the experiment payload's declared_case_ids has no such case"}
+  ],
+  "sidecars": [
+    {"rule": "experiment-kernel", "detect": {"has_keys": ["skill_id", "candidate_version", "suite_hash"]},
+     "validator": "skills/skill-evaluator/scripts/kernel.py", "function": "validate",
+     "error_statuses": ["INVALID"],
+     "recompute": {"result": "status"}}
+  ]
+}

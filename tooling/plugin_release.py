@@ -22,6 +22,11 @@ Two checks, both comparing the *shipped set*: every `skills/<id>/` that has a
     python tooling/plugin_release.py --check                 # both checks; base skipped if unavailable
     python tooling/plugin_release.py --check --require-base  # CI: a missing base is a failure
     python tooling/plugin_release.py --record                # after bumping VERSION, record the new set
+    python tooling/plugin_release.py --bump minor            # bump every version field, then record
+
+`--bump` counts from the merge base's version, so rerunning it on a branch does
+not bump twice, and a later `--bump minor` after a `--bump patch` moves the
+branch to the larger of the two.
 """
 from __future__ import annotations
 
@@ -137,7 +142,9 @@ def check_record(root: Path) -> list[str]:
         errors.append(
             f"shipped skills changed since plugin {version} was recorded ("
             + "; ".join(diff)
-            + "). Bump VERSION and every plugin manifest, then run tooling/plugin_release.py --record"
+            + "). Bump VERSION and every manifest, and record the set, with one command: "
+            "`uv run python tooling/plugin_release.py --bump patch` (minor when a skill gains "
+            "behaviour or is added; see CONTRIBUTING.md#plugin-version)"
         )
     return errors
 
@@ -157,7 +164,8 @@ def check_base(root: Path, base: str, *, require: bool) -> tuple[list[str], str]
             f"shipped skills differ from {base} ({commit[:12]}): "
             + "; ".join(diff)
             + f" -- but plugin VERSION {version} is not greater than {base_version}. "
-            "`claude plugin update` would keep users on the old skills."
+            "`claude plugin update` would keep users on the old skills. "
+            "Run `uv run python tooling/plugin_release.py --bump patch` (or minor/major)."
         ], ""
     return [], f"base {commit[:12]}: {len(diff)} skill change(s), plugin {base_version} -> {version}"
 
@@ -190,11 +198,68 @@ def record(root: Path, base: str) -> str:
     return f"recorded plugin {version} with {len(skills)} skills in {RECORD}"
 
 
+# Every file that states the plugin version, with the pattern that finds it.
+# test_bundle_version.py holds them equal; --bump writes them together.
+VERSION_FILES = (
+    ("pyproject.toml", re.compile(r'(?m)^(version = ")[^"]*(")')),
+    ("plugin.json", re.compile(r'(?m)^(  "version": ")[^"]*(")')),
+    (".claude-plugin/plugin.json", re.compile(r'(?m)^(  "version": ")[^"]*(")')),
+    (".cursor-plugin/plugin.json", re.compile(r'(?m)^(  "version": ")[^"]*(")')),
+)
+LEVELS = ("patch", "minor", "major")
+
+
+def next_version(version: str, level: str) -> str:
+    major, minor, patch = parse_version(version)
+    return {"major": f"{major + 1}.0.0", "minor": f"{major}.{minor + 1}.0",
+            "patch": f"{major}.{minor}.{patch + 1}"}[level]
+
+
+def write_version(root: Path, version: str) -> list[str]:
+    """Set the plugin version in VERSION, the manifests and this project's uv.lock entry."""
+    (root / "VERSION").write_text(version + "\n", encoding="utf-8")
+    written = ["VERSION"]
+    for relative, pattern in VERSION_FILES:
+        path = root / relative
+        if not path.is_file():
+            continue
+        text, count = pattern.subn(rf"\g<1>{version}\g<2>", path.read_text(encoding="utf-8"), count=1)
+        if count != 1:
+            raise ReleaseError(f"{relative}: no version field found to bump")
+        path.write_text(text, encoding="utf-8")
+        written.append(relative)
+    lock, pyproject = root / "uv.lock", root / "pyproject.toml"
+    if lock.is_file() and pyproject.is_file():
+        name = re.search(r'(?m)^name = "([^"]+)"', pyproject.read_text(encoding="utf-8"))
+        if name is None:
+            raise ReleaseError("pyproject.toml: no project name")
+        pattern = re.compile(rf'(?m)^(name = "{re.escape(name.group(1))}"\nversion = ")[^"]*(")')
+        text, count = pattern.subn(rf"\g<1>{version}\g<2>", lock.read_text(encoding="utf-8"), count=1)
+        if count != 1:
+            raise ReleaseError(f"uv.lock: no entry for {name.group(1)}; run `uv lock`")
+        lock.write_text(text, encoding="utf-8")
+        written.append("uv.lock")
+    return written
+
+
+def bump(root: Path, base: str, level: str) -> str:
+    current = plugin_version(root)
+    commit = merge_base(root, base)
+    start = shipped_skills_at(root, commit)[0] if commit is not None else current
+    target = next_version(start, level)
+    if parse_version(current) > parse_version(target):
+        target = current  # this branch already bumped further than asked
+    written = write_version(root, target)
+    return f"plugin {current} -> {target} in {', '.join(written)}; " + record(root, base)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--record", action="store_true")
+    mode.add_argument("--bump", choices=LEVELS,
+                      help="raise the plugin version from the merge base's, write it everywhere, then record")
     parser.add_argument("--base", default=DEFAULT_BASE, help=f"git ref to compare with (default {DEFAULT_BASE})")
     parser.add_argument("--require-base", action="store_true", help="fail when no merge base can be found")
     parser.add_argument("--root", type=Path, default=ROOT)
@@ -203,6 +268,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.record:
             print("OK: " + record(root, args.base))
+            return 0
+        if args.bump:
+            print("OK: " + bump(root, args.base, args.bump))
             return 0
         errors = check_record(root)
         base_errors, note = check_base(root, args.base, require=args.require_base)

@@ -1,0 +1,78 @@
+{
+  "skill": "repair-operator",
+  "contract": "skills/repair-operator/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "ledger-status", "title": "Ledger status", "aliases": ["ledger status"], "required": true},
+    {"id": "open-work", "title": "Blocking open work", "aliases": ["blocking open work", "open work", "blocking open"], "required": true},
+    {"id": "closures", "title": "Proven closures", "aliases": ["proven closures", "closures"], "required": true},
+    {"id": "deferred", "title": "Deferred and won't fix", "aliases": ["deferred", "won't fix", "wont fix"]},
+    {"id": "regressions", "title": "Regressions", "aliases": ["regressions"], "required": true},
+    {"id": "remaining-open", "title": "Remaining open", "aliases": ["remaining open"], "required": true},
+    {"id": "ledger", "title": "Ledger", "aliases": ["ledger$", "repair ledger json"], "ordered": false}
+  ],
+  "verdict": {
+    "tokens": ["VALID", "INVALID"],
+    "authorizing": ["VALID"],
+    "primary": {"section": "ledger-status"}
+  },
+  "blockers": [
+    {"rule": "regression-not-reopened", "type": "items_matching", "section": "regressions",
+     "pattern": "\\A(?!none\\b)(?![\\s\\S]*\\bREOPENED\\b)"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "candidate", "section": "ledger-status",
+     "pattern": "candidate[^\\n:]*:\\s*\\S",
+     "message": "name the candidate every closure is bound to"},
+    {"type": "items_require", "rule": "closure-verification", "section": "closures", "none_pattern": "^none",
+     "pattern": "Verification:[^\\n]*\\bfresh\\b[^\\n]*\\bPASS\\b", "code": "EVIDENCE_MISSING",
+     "message": "a closure needs fresh PASS verification evidence"},
+    {"type": "items_require", "rule": "closure-candidate-bound", "section": "closures", "none_pattern": "^none",
+     "pattern": "Verification:[^\\n]*\\bon `[^`]+`", "code": "EVIDENCE_MISSING",
+     "message": "a closure's verification must name the candidate it ran on"},
+    {"type": "items_require", "rule": "closure-root-cause", "section": "closures", "none_pattern": "^none",
+     "pattern": "Root cause:\\s*\\S", "code": "CONTRACT_VIOLATION",
+     "message": "CLOSED needs the root cause"},
+    {"type": "items_require", "rule": "closure-done-when", "section": "closures", "none_pattern": "^none",
+     "pattern": "Done when:\\s*\\S", "code": "CONTRACT_VIOLATION",
+     "message": "CLOSED needs the done_when condition"},
+    {"type": "items_forbid", "rule": "closure-not-closed", "section": "closures", "none_pattern": "^none",
+     "pattern": "Status:\\s*(?!CLOSED\\b)\\w+", "code": "CONTRACT_VIOLATION",
+     "message": "Proven closures lists only CLOSED items; lead with open work instead"},
+    {"type": "items_forbid", "rule": "closed-forbidden-class", "section": "closures", "none_pattern": "^none",
+     "pattern": "Class:\\s*(?:VERIFY_FIRST|WONT_FIX)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "VERIFY_FIRST and WONT_FIX items can never be CLOSED"},
+    {"type": "items_forbid", "rule": "fixed-without-verification", "section": "open-work", "none_pattern": "^none",
+     "pattern": "\\b(?:fixed|resolved)\\b", "code": "FORBIDDEN_PHRASE",
+     "message": "never call an item fixed when its fresh candidate-bound verification did not run"},
+    {"type": "items_require", "rule": "open-verification-required", "section": "open-work",
+     "when_item": "Status:\\s*(?:OPEN|PLANNED|IN_PROGRESS|UNVERIFIED|REOPENED)\\b",
+     "pattern": "Verification required:\\s*\\S", "code": "CONTRACT_VIOLATION",
+     "message": "open work must state the verification that would close it"},
+    {"type": "items_require", "rule": "high-risk-rollback", "section": "open-work",
+     "when_item": "Patch risk:\\s*(?:HIGH|CRITICAL)\\b",
+     "pattern": "Rollback:\\s*\\S", "code": "CONTRACT_VIOLATION",
+     "message": "a HIGH or CRITICAL patch needs a rollback plan before mutation"},
+    {"type": "items_require", "rule": "wont-fix-decision", "section": "deferred",
+     "when_item": "Status:\\s*WONT_FIX\\b",
+     "pattern": "Decision:\\s*\\S", "code": "CONTRACT_VIOLATION",
+     "message": "WONT_FIX needs an authorized decision source (owner, rationale, date); never infer it"},
+    {"type": "items_require", "rule": "deferred-reason", "section": "deferred",
+     "when_item": "Status:\\s*DEFERRED\\b",
+     "pattern": "Reason:\\s*\\S", "code": "CONTRACT_VIOLATION",
+     "message": "DEFERRED needs a concrete reason"}
+  ],
+  "ids": [
+    {"rule": "repair-ids", "pattern": "\\bRP-\\d{2,3}\\b",
+     "defined_in": [{"json": "items[*].repair_id", "when": {"schema": "cometweb.repair-ledger/v1"}}],
+     "defined_by": "the embedded repair ledger has no item with that repair_id"},
+    {"rule": "finding-ids", "pattern": "\\b(?!RP-)[A-Z]{2}-\\d{3}\\b",
+     "defined_in": [{"json": "items[*].finding_ids[*]", "when": {"schema": "cometweb.repair-ledger/v1"}}],
+     "defined_by": "no ledger item carries that finding ID; every source finding must stay in the ledger"}
+  ],
+  "sidecars": [
+    {"rule": "repair-ledger", "detect": {"equals": {"schema": "cometweb.repair-ledger/v1"}},
+     "validator": "skills/repair-operator/scripts/kernel.py", "function": "validate",
+     "recompute": {"result": "status"}}
+  ]
+}
