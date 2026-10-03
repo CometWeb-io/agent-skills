@@ -5,21 +5,24 @@
     {
       "id": "google_ai_search",
       "platform": "Google Search generative features",
-      "last_verified": "2026-08-25",
+      "last_verified": "2026-10-03",
       "ttl_days": 30,
       "official_sources": [
         "https://developers.google.com/search/docs/fundamentals/ai-optimization-guide",
         "https://developers.google.com/search/blog/2026/06/gen-ai-performance-reports",
         "https://developers.google.com/search/updates",
         "https://developers.google.com/search/docs/appearance/preferred-sources",
-        "https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers"
+        "https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers",
+        "https://support.google.com/webmasters/answer/16908024",
+        "https://support.google.com/webmasters/answer/16984139"
       ],
       "claims": [
         "AI Overviews and AI Mode use Google Search systems and indexed content; normal Search eligibility remains foundational.",
         "Google Search does not use llms.txt as a special AI visibility mechanism.",
         "Google-Extended does not control inclusion or ranking in Google Search.",
         "No special schema is required for Google generative AI Search.",
-        "Search Console Generative AI reports began rolling out to a subset of properties in June 2026 and expose impressions, pages, countries, devices for Search, and date dimensions; do not invent a query dimension.",
+        "Search Console Generative AI performance reports were rolled out to all websites worldwide on 2026-08-31; they report impressions only (no clicks) with Pages, Countries, Dates and Devices dimensions and no query dimension. Low-volume properties may still show no data — treat that as not measured, not zero.",
+        "Search Console has a per-site 'Search generative AI features' control (included by default, rolled out 2026-08-31). Opting out removes the site from AI Overviews, AI Mode and Discover generative features, and Google's AI optimization guide and Preferred Sources doc list inclusion as an eligibility condition; check it before diagnosing missing AI Overview appearances.",
         "Preferred Sources can highlight a user-selected publisher in eligible Top Stories, AI Mode, and AI Overviews; publisher buttons/deeplinks are optional audience-distribution tools, not a general ranking requirement.",
         "Google confirms query fan-out in generative Search, but its guidance warns against scaled pages created merely to target every fan-out variant."
       ]
@@ -27,11 +30,12 @@
     {
       "id": "openai_search",
       "platform": "OpenAI / ChatGPT Search",
-      "last_verified": "2026-08-25",
+      "last_verified": "2026-10-03",
       "ttl_days": 30,
       "official_sources": [
         "https://help.openai.com/en/articles/12627856-publishers-and-developers-faq",
-        "https://help.openai.com/en/articles/9237897-chatgpt-search"
+        "https://help.openai.com/en/articles/9237897-searching-the-web-with-chatgpt",
+        "https://openai.com/searchbot.json"
       ],
       "claims": [
         "OAI-SearchBot is the publisher control relevant to inclusion in ChatGPT Search summaries and snippets.",
@@ -44,22 +48,22 @@
     {
       "id": "anthropic_crawlers",
       "platform": "Anthropic / Claude",
-      "last_verified": "2026-08-25",
+      "last_verified": "2026-10-03",
       "ttl_days": 30,
       "official_sources": [
-        "https://support.anthropic.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler"
+        "https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler"
       ],
       "claims": [
         "ClaudeBot is used for model-development/training collection.",
         "Claude-SearchBot is used for web-search indexing/quality.",
         "Claude-User supports user-directed retrieval.",
-        "The three controls are independent."
+        "Each bot has its own robots.txt user-agent token and its own documented effect when disabled; the page does not state that blocking one leaves the others unaffected, so treat independence as inferred from separate tokens, and note that Anthropic warns IP blocking may not reliably opt a site out."
       ]
     },
     {
       "id": "perplexity_crawlers",
       "platform": "Perplexity",
-      "last_verified": "2026-08-25",
+      "last_verified": "2026-10-03",
       "ttl_days": 30,
       "official_sources": [
         "https://docs.perplexity.ai/docs/resources/perplexity-crawlers"
@@ -73,12 +77,12 @@
     {
       "id": "microsoft_ai_search",
       "platform": "Microsoft Bing / Copilot",
-      "last_verified": "2026-08-25",
+      "last_verified": "2026-10-03",
       "ttl_days": 30,
       "official_sources": [
-        "https://blogs.bing.com/webmaster/February-2026/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview",
-        "https://blogs.bing.com/search/June-2026/New-AI-Visibility-Insights-in-Bing-Webmaster-Tools-Intents-Topics-Citation-Share-Compare",
-        "https://blogs.bing.com/search/May-2026/Evolving-role-of-the-index-From-ranking-pages-to-supporting-answers"
+        "https://blogs.bing.com/webmaster/2026/2/Introducing-AI-Performance-in-Bing-Webmaster-Tools-Public-Preview/",
+        "https://blogs.bing.com/search/2026/6/New-AI-Visibility-Insights-in-Bing-Webmaster-Tools-Intents-Topics-Citation-Share-Compare/",
+        "https://blogs.bing.com/search/2026/5/Evolving-role-of-the-index-From-ranking-pages-to-supporting-answers/"
       ],
       "claims": [
         "Bing Webmaster Tools AI Performance reports citations across supported Microsoft AI experiences, cited pages, trends, and sampled grounding queries.",
@@ -89,7 +93,7 @@
     {
       "id": "google_structured_data",
       "platform": "Google Search structured data support",
-      "last_verified": "2026-08-25",
+      "last_verified": "2026-10-03",
       "ttl_days": 30,
       "official_sources": [
         "https://developers.google.com/search/docs/appearance/structured-data/search-gallery",
@@ -104,14 +108,14 @@
     {
       "id": "openai_agent",
       "platform": "OpenAI browser/agent interaction",
-      "last_verified": "2026-08-25",
+      "last_verified": "2026-10-03",
       "ttl_days": 30,
       "official_sources": [
         "https://help.openai.com/en/articles/12627856-publishers-and-developers-faq"
       ],
       "claims": [
         "Current OpenAI developer guidance says Atlas agent uses ARIA roles, labels, and states to interpret interactive page structure.",
-        "Agent interaction readiness is a separate diagnostic from search/citation readiness."
+        "OpenAI files Atlas agent/ARIA guidance under its Developer FAQs, apart from the Publisher FAQs on search and crawling. Keeping agent interaction readiness as a separate diagnostic from search/citation readiness is this skill's method, not an OpenAI statement."
       ]
     }
   ]

@@ -11,6 +11,15 @@ SCORE = ROOT / "scripts" / "score_maxx.py"
 FRESH = ROOT / "scripts" / "check_freshness.py"
 COMPARE = ROOT / "scripts" / "compare_scores.py"
 
+# Audit dates derived from the registry, so refreshing last_verified does not
+# break the fresh / stale / future cases: fresh = the verification day,
+# stale = past the 30-day TTL, future = before the verification day.
+from datetime import date as _date, timedelta as _td
+_VERIFIED = min(_date.fromisoformat(g["last_verified"]) for g in json.loads((ROOT / "references" / "live-source-registry.json").read_text())["groups"])
+AS_OF_FRESH = _VERIFIED.isoformat()
+AS_OF_STALE = (_VERIFIED + _td(days=37)).isoformat()
+AS_OF_FUTURE = (_VERIFIED - _td(days=24)).isoformat()
+
 
 def call(args):
     return subprocess.run(args, capture_output=True, text=True, timeout=30)
@@ -23,7 +32,7 @@ def test_template_full_is_complete_and_scoreable():
     assert len(audit["checks"]) == 41
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as f:
         json.dump(audit, f); path = f.name
-    scored = call([sys.executable, str(SCORE), path, "--as-of", "2026-08-25"])
+    scored = call([sys.executable, str(SCORE), path, "--as-of", AS_OF_FRESH])
     Path(path).unlink(missing_ok=True)
     assert scored.returncode == 0, scored.stderr
     out = json.loads(scored.stdout)
@@ -47,13 +56,13 @@ def test_pillar_template_requires_pillars():
 
 
 def test_freshness_strict_current_stale_and_future():
-    fresh = call([sys.executable, str(FRESH), "--as-of", "2026-08-25", "--strict"])
+    fresh = call([sys.executable, str(FRESH), "--as-of", AS_OF_FRESH, "--strict"])
     assert fresh.returncode == 0, fresh.stderr
-    stale = call([sys.executable, str(FRESH), "--as-of", "2026-10-01", "--groups", "openai_search", "--strict"])
+    stale = call([sys.executable, str(FRESH), "--as-of", AS_OF_STALE, "--groups", "openai_search", "--strict"])
     assert stale.returncode == 1
     out = json.loads(stale.stdout)
     assert out["has_stale"] is True and out["has_issue"] is True
-    future = call([sys.executable, str(FRESH), "--as-of", "2026-08-01", "--groups", "openai_search", "--strict"])
+    future = call([sys.executable, str(FRESH), "--as-of", AS_OF_FUTURE, "--groups", "openai_search", "--strict"])
     assert future.returncode == 1
     fout = json.loads(future.stdout)
     assert fout["groups"][0]["state"] == "future" and fout["has_issue"] is True

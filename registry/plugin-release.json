@@ -1,6 +1,6 @@
 {
   "schema": "cometweb.plugin-release/v1",
-  "plugin_version": "2.2.0",
+  "plugin_version": "2.2.1",
   "skills": {
     "ai-council": "5.2.2",
     "ai-humanize": "2.6.1",
@@ -28,7 +28,7 @@
     "repo-to-roadmap": "1.1.1",
     "rubric-designer": "1.7.2",
     "science-roaster": "6.1.1",
-    "seo-geo-aeo-maxxing": "1.3.1",
+    "seo-geo-aeo-maxxing": "1.3.2",
     "skill-auditor": "1.7.2",
     "skill-evaluator": "1.7.2",
     "skill-orchestrator": "1.1.4",
