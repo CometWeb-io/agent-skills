@@ -28,3 +28,7 @@ Each material finding uses stable identity. Keep `observation` separate from `in
 
 `kernel.review(payload)` returns `{status, blockers, majors, errors[],
 coverage_complete, covered_axes, mode}`; any error makes the status INVALID.
+Every result carries all seven keys. A payload that is not an object is refused
+with `payload:not-object`, and an object without a `findings` list with
+`findings:not-list`; `mode` is reported as `STANDARD` when it is missing or not
+one of the four modes.

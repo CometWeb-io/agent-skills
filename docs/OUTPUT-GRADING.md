@@ -13,13 +13,33 @@ uv run python tooling/grade_output.py product-operator brief.md --sidecar operat
 uv run python tooling/grade_output.py repo-roaster roast.md --canary ZX-CANARY-7 --json
 uv run python tooling/grade_output.py --new-canary canary.json --plant README.md planted/README.md
 uv run python tooling/grade_output.py repo-roaster roast.md --canary-file canary.json
+uv run python tooling/grade_output.py customer-ops brief.md --explain
 uv run python tooling/grade_output.py --list
 ```
 
 Exit status is 0 when there are no errors, 1 when there are, and 2 for a usage
 problem such as an unknown skill. `--strict` also fails on warnings. `--json`
-prints `{skill, file, status, errors[], warnings[]}`. Each issue carries
-`code`, `rule`, `where`, `message` and `fix`.
+prints `{skill, file, status, errors[], warnings[]}`, plus `format` for a skill
+with several output formats. Each issue carries `code`, `rule`, `where`,
+`message` and `fix`.
+
+`--explain` adds, for each issue, where its rule is written down and the exact
+text that tripped it:
+
+```text
+ERROR   VERDICT_WITH_BLOCKERS:closed-on-block [document]
+        rule:    evals/output/customer-ops/rubric.json:324  formats[closure-verification].checks[closed-on-block]
+        excerpt (line 12): **Closure gate:** BLOCK
+        why:     '**Closure gate:** BLOCK': the closure gate is BLOCK, so the case cannot be VERIFIED or CLOSED
+        fix:     an authorizing verdict cannot stand next to an open blocker: resolve it or downgrade the verdict
+```
+
+The rule source is the rubric file, line and entry path, or `tooling/grade_output.py`
+and the function for a hook or a built-in rule (the untrusted-content checks, JSON
+parsing, format detection). An excerpt marked `derived` is computed rather than
+quoted, such as the number of items a section lists; a rule that fired on an
+absence (a missing section or field) has no excerpt. With `--json`, `--explain`
+adds `source`, `excerpt` and `excerpt_line` to each issue.
 
 A pass means the report has the contract's shape and is internally consistent.
 It does not mean the claims in it are true. The grader cannot tell whether
@@ -65,8 +85,45 @@ authorizing stated verdict the kernel does not reach is `VERDICT_WITH_BLOCKERS`
 | `status_key`, `error_statuses` | the result's `errors` count as `SIDECAR_INVALID` only when its status is listed; a kernel that returns `NOT_READY` with reasons is not invalid |
 | `recompute` | `result`: the kernel result key holding its verdict; `stated`: the payload path used when the prose states none; `map`: kernel value to verdict token |
 
+| `cross_checks` | hashes and counts the prose states that must equal the kernel's (below) |
+
 A validator that raises, including `SystemExit` from a CLI-style `fail()`, grades
 as one `SIDECAR_INVALID` error rather than crashing the grader.
+
+A report often restates what its kernel computed: a benchmark hash, split counts,
+how many closures the ledger has. A retyped hash or a hand-counted number can
+drift from the payload it describes. Each `cross_checks` entry names a kernel
+`result` path (`split_counts.dev`) and either a `pattern` whose first group is the
+stated value, or `count` (`items` or `table_rows`, with an optional
+`none_pattern`) for a set the report lists in a section. A difference is
+`KERNEL_MISMATCH`. Cross-checks run only on a payload the kernel accepted: an
+invalid payload is already `SIDECAR_INVALID`, and its counts mean nothing.
+
+A `records` entry checks a machine-readable record that has no kernel of its own:
+`detect` picks the JSON block, `required` lists keys that must be present (null
+is allowed, since contracts ask for null over an unsourced value), and `enums`
+and `patterns` constrain non-null values. A failure is `SIDECAR_INVALID`.
+
+## Output formats
+
+Some contracts define several outputs. Competitive Intelligence has a delta
+brief, a change report, a digest, a landscape report, a claim-check memo, an
+executive brief and an alert; Customer Ops has eleven report formats plus a
+machine-readable record. Their rubrics declare `formats`:
+
+| Key | Meaning |
+| --- | --- |
+| `id`, `title`, `contract_section` | the format's name and where the contract defines it |
+| `detect` | a regex matched against the output's first non-blank line outside code fences; the first matching format grades the output |
+| any rubric key | `sections`, `verdict`, `blockers`, `checks`, `ids`, `sidecars`, `hooks`, `records` for this format only |
+
+Top-level keys are shared by every format. A shared entry may carry `formats`
+(apply only to these) or `not_formats` (apply to all but these): the `as_of` rule
+does not apply to an alert, which carries its own check date. List keys are
+concatenated and a format's `verdict` replaces the shared one. An output whose
+first line matches no format fails with `CONTRACT_VIOLATION`, rule `format`, and
+is graded by the shared rules alone. A check without a `code` uses its type's
+default (`DEFAULT_CHECK_CODES` in the grader).
 
 ## Failure codes
 
@@ -89,6 +146,7 @@ Callers key on the code. The rule names which rubric entry fired.
 | `ENVELOPE_INVALID` | An embedded CW-AIP envelope fails validation or names another producer. |
 | `SIDECAR_INVALID` | The machine sidecar fails the skill's own validator, or a JSON block does not parse. |
 | `COUNT_MISMATCH` | Reported counts differ from the items listed. |
+| `KERNEL_MISMATCH` | A hash or count the report states differs from the one the skill's own kernel computes from the embedded payload: a retyped `benchmark_hash`, split counts, closed/open counts, criteria or blocker counts. |
 | `LIMIT_EXCEEDED` | A section has more items than the contract allows. Product Operator's word budget is a warning. |
 | `FORBIDDEN_PHRASE` | Wording the contract rules out: "looks safe", an absence claim from a search miss, an authorship claim, a causal ranking promise, a personal attack. |
 | `CONTRACT_VIOLATION` | Any other named contract rule, for example a DECISION NOW item that answers its own decision, CRITICAL without reachability, or a MAXX tier on a partial audit. |
@@ -173,7 +231,10 @@ single defect it is about. `--show <skill> <case>` prints the mutated text.
   verdict with blockers, invented IDs, followed injection;
 - a rubric rule is pinned by no broken case. Each unconditionally required
   section is also cut out of the first passing golden automatically, which
-  proves its aliases match a real heading.
+  proves its aliases match a real heading;
+- for a skill with formats: a format has no passing golden file of its own, or
+  one of the format's own rules is pinned only by a broken case of another
+  format. Shared rules need one broken case in any format.
 
 `--self-test --skill <id>` (repeatable) runs one skill's cases and skips the
 coverage check, for iterating on a single rubric.
@@ -188,7 +249,9 @@ junk payloads fed to every sidecar validator.
    ideally with different verdicts; remove the skill from `NOT_GRADED` if it is there.
 2. Write `rubric.json`. Prefer declarative checks; add a hook in
    `grade_output.py` only for a rule that crosses structures, such as counts
-   against findings, and list its rule keys in `HOOK_RULES`.
+   against findings or card verdicts against a ledger, and list its rule keys in
+   `HOOK_RULES`. When the contract defines several outputs, declare each one under
+   `formats` with a passing golden of its own.
 3. Add broken cases until `--self-test` reports every rule pinned and all five
    classes covered.
 4. If the contract is ambiguous enough that two honest outputs would grade

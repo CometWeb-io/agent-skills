@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.7.4] - 2026-10-03
+
+- An `evidence_policy`, `mode` or `risk_level` that is a list or an object raised `TypeError`; each is now its `:invalid` error.
+- The cross-skill check `tooling/kernel_error_envelope.py` now holds this kernel to the shared error envelope (see CONTRIBUTING.md).
+
 ## [1.7.3] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

@@ -47,23 +47,23 @@ def _lock_ok(lock, required):
     return not e,e
 
 def validate(payload):
-    if not isinstance(payload,dict): return {'status':'INVALID','next_stage':None,'errors':['payload:not-object']}
+    if not isinstance(payload,dict): return {'status':'INVALID','next_stage':None,'errors':['payload:not-object'],'unresolved_conflicts':0,'blocking_quality_debt':0}
     profile=payload.get('profile'); mode=payload.get('mode','STANDARD'); errors=[]
-    if profile not in PROFILES: errors.append('profile:invalid')
-    if mode not in MODES: errors.append('mode:invalid')
+    if not isinstance(profile,str) or profile not in PROFILES: errors.append('profile:invalid')
+    if not isinstance(mode,str) or mode not in MODES: errors.append('mode:invalid')
     cid=payload.get('candidate_id'); contract=payload.get('contract_id')
     if not _text(cid): errors.append('candidate_id:required')
     if not _text(contract): errors.append('contract_id:required')
     base=payload.get('base_candidate_id')
     if mode=='DELTA' and (not _text(base) or base==cid): errors.append('base_candidate_id:required-distinct')
-    _,lock_errors=_lock_ok(payload.get('policy_lock'), mode in {'DEEP','DELTA'})
+    _,lock_errors=_lock_ok(payload.get('policy_lock'), isinstance(mode,str) and mode in {'DEEP','DELTA'})
     errors.extend(lock_errors)
     adaptive=payload.get('adaptive_depth')
     if adaptive is not None:
         if not isinstance(adaptive,dict) or adaptive.get('recommended_mode') not in RECOMMENDED_MODES: errors.append('adaptive_depth:invalid')
         elif adaptive.get('recommended_mode')!=mode and not (adaptive.get('override_approved') is True and _text(adaptive.get('override_rationale'))): errors.append('adaptive_depth:mode-mismatch')
     replay=payload.get('replay_status')
-    if replay is not None and replay not in REPLAY_STATUS: errors.append('replay_status:invalid')
+    if replay is not None and (not isinstance(replay,str) or replay not in REPLAY_STATUS): errors.append('replay_status:invalid')
     cache=payload.get('cache_reuse',[])
     if not isinstance(cache,list): errors.append('cache_reuse:not-list'); cache=[]
     for i,row in enumerate(cache):
@@ -77,7 +77,7 @@ def validate(payload):
     if debt and as_of is None: errors.append('quality_debt:as_of-required')
     for i,row in enumerate(debt):
         if not isinstance(row,dict): errors.append(f'debt[{i}]:not-object'); continue
-        if row.get('candidate_id') not in {None,cid}: errors.append(f'debt[{i}]:candidate-mismatch')
+        if row.get('candidate_id') is not None and row.get('candidate_id')!=cid: errors.append(f'debt[{i}]:candidate-mismatch')
         sev=row.get('severity');status=row.get('status')
         if sev not in DEBT_SEV: errors.append(f'debt[{i}]:severity'); continue
         if status not in DEBT_STATUS: errors.append(f'debt[{i}]:status'); continue
@@ -86,7 +86,7 @@ def validate(payload):
         expired=bool(status=='OPEN' and due and as_of and due<=as_of)
         if status=='OPEN' and (sev=='BLOCKER' or (expired and (sev=='MAJOR' or row.get('kind') in {'WAIVER','CONTROL'}))): blocking_debt+=1
         if status=='CLOSED' and not row.get('closure_evidence'): errors.append(f'debt[{i}]:closed-without-evidence')
-    required=PROFILES.get(profile,[])
+    required=PROFILES.get(profile,[]) if isinstance(profile,str) else []
     rows=payload.get('stages')
     if not isinstance(rows,list): errors.append('stages:not-list'); rows=[]
     by={}; last_index=-1
@@ -99,8 +99,8 @@ def validate(payload):
         idx=required.index(skill)
         if idx<last_index: errors.append(f'stage[{i}]:out-of-order')
         last_index=max(last_index,idx); by[skill]=row
-        if row.get('candidate_id') not in {None,cid}: errors.append(f'stage[{i}]:candidate-mismatch')
-        if row.get('contract_id') not in {None,contract}: errors.append(f'stage[{i}]:contract-mismatch')
+        if row.get('candidate_id') is not None and row.get('candidate_id')!=cid: errors.append(f'stage[{i}]:candidate-mismatch')
+        if row.get('contract_id') is not None and row.get('contract_id')!=contract: errors.append(f'stage[{i}]:contract-mismatch')
         if state=='SKIPPED':
             if row.get('skip_allowed') is not True or not _text(row.get('skip_rationale')): errors.append(f'stage[{i}]:unjustified-skip')
             if mode=='DEEP': errors.append(f'stage[{i}]:deep-required-skip')
@@ -150,7 +150,7 @@ def validate(payload):
     unresolved=0
     for i,row in enumerate(conflicts):
         if not isinstance(row,dict): errors.append(f'reconciliation[{i}]:not-object'); continue
-        if row.get('candidate_id') not in {None,cid}: errors.append(f'reconciliation[{i}]:candidate-mismatch')
+        if row.get('candidate_id') is not None and row.get('candidate_id')!=cid: errors.append(f'reconciliation[{i}]:candidate-mismatch')
         if not isinstance(row.get('status'),str) or row.get('status') not in RECONCILIATION_CLASSES: errors.append(f'reconciliation[{i}]:status')
         if row.get('status')=='CONFLICT' and row.get('resolved') is not True: unresolved+=1
         if row.get('resolved') is True and not _text(row.get('resolution_basis')): errors.append(f'reconciliation[{i}]:resolution-without-basis')

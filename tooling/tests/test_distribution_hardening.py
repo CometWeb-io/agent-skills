@@ -15,16 +15,10 @@ TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 import package_skill as package
 import public_safety as safety
-import publish_public_dry_run as public
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _tooling_fixtures import root, add  # noqa: F401  (root is a fixture)
-
-
-def approve(root):
-    _, manifest = package.payload(root, "demo")
-    (root / "registry/public-allowlist.json").write_text(json.dumps({"schema": "cometweb.public-allowlist/v1", "approved": [{"id": "demo", "version": "1.0.0", "payload_sha256": manifest["payload_sha256"]}]}))
 
 
 @pytest.mark.parametrize("name", [".env", ".env.production", "references/a.local.json", "assets/id_rsa", "scripts/service-account-demo.json", "scripts/credentials.json", "assets/key.pem", "assets/key.key"])
@@ -171,62 +165,6 @@ def test_archive_tamper_is_rejected(root):
         package.inspect_archive(package.archive(entries, manifest))
 
 
-def test_active_private_skill_is_not_public_permission(root):
-    result = public.stage(root, [])
-    assert result["status"] == "disabled"
-    assert not (root / "dist/public-mirror").exists()
-    with pytest.raises(ValueError, match="approval"):
-        public.stage(root, ["demo"])
-
-
-def test_public_export_is_verified_and_never_remote(root):
-    approve(root)
-    result = public.stage(root, [])
-    assert result["published"] is False
-    receipt = public.verify_mirror(root, root / "dist/public-mirror")
-    assert receipt["skills"] == ["demo"]
-
-
-def test_public_approval_expires_on_source_change(root):
-    approve(root)
-    add(root, "README.md", b"changed")
-    with pytest.raises(ValueError, match="approval"):
-        public.stage(root, [])
-
-
-def test_public_private_path_blocks_even_with_approval(root):
-    add(root, "README.md", ("personal/" + "gtm-cometweb/fixture.md").encode())
-    approve(root)
-    with pytest.raises((subprocess.CalledProcessError, ValueError)):
-        public.stage(root, [])
-    assert not (root / "dist/public-mirror").exists()
-
-
-@pytest.mark.parametrize("exit_code", [1, 2, 127])
-def test_scanner_failure_propagates(root, exit_code):
-    approve(root)
-    (root / "tooling/public_safety.py").write_text(f"raise SystemExit({exit_code})\n")
-    with pytest.raises(subprocess.CalledProcessError):
-        public.stage(root, [])
-    assert not (root / "dist/public-mirror").exists()
-
-
-def test_mirror_modification_is_detected(root):
-    approve(root)
-    public.stage(root, [])
-    (root / "dist/public-mirror/skills/demo/LICENSE").write_text("tampered")
-    with pytest.raises(ValueError, match="integrity"):
-        public.verify_mirror(root, root / "dist/public-mirror")
-
-
-def test_retracted_approval_blocks_prebuilt_mirror(root):
-    approve(root)
-    public.stage(root, [])
-    (root / "registry/public-allowlist.json").write_text('{"schema":"cometweb.public-allowlist/v1","approved":[]}')
-    with pytest.raises(ValueError, match="approvals"):
-        public.verify_mirror(root, root / "dist/public-mirror")
-
-
 @pytest.mark.parametrize("name", ["untracked/.env", "data/secret.local.json", "hidden/.env.test"])
 def test_scan_includes_untracked_and_hidden_files(tmp_path, name):
     path = tmp_path / name
@@ -295,29 +233,6 @@ def test_history_detects_deleted_files(tmp_path):
     git("commit", "-m", "remove")
     assert not safety.scan(tmp_path)
     assert any(item["rule"] == "forbidden-name" and item.get("revision") for item in safety.scan_history(tmp_path))
-
-
-def test_forged_receipt_does_not_authorize_modified_payload(root):
-    approve(root)
-    public.stage(root, [])
-    mirror = root / "dist/public-mirror"
-    target = mirror / "skills/demo/LICENSE"
-    target.write_text("modified harmless content")
-    path = mirror / "MIRROR-MANIFEST.json"
-    receipt = json.loads(path.read_text())
-    receipt["files"]["skills/demo/LICENSE"] = package.digest(target.read_bytes())
-    path.write_text(json.dumps(receipt))
-    with pytest.raises(ValueError, match="integrity"):
-        public.verify_mirror(root, mirror)
-
-
-def test_nested_receipt_named_file_cannot_escape_inventory(root):
-    approve(root)
-    public.stage(root, [])
-    mirror = root / "dist/public-mirror"
-    (mirror / "skills/demo/MIRROR-MANIFEST.json").write_text("{}")
-    with pytest.raises(ValueError, match="integrity"):
-        public.verify_mirror(root, mirror)
 
 
 def test_case_collision_blocks_cross_host_package(root, monkeypatch):

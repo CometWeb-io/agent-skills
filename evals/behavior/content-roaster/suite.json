@@ -1867,6 +1867,24 @@
           "FAIL: evals.json requires at least 24 behavior evals\nFAIL: trigger-evals unreadable: [Errno 2] No such file or directory: '{tmp}/content-roaster/evals/trigger-evals.json'\nFAIL: trigger-evals requires at least 36 rows\nFAIL: trigger-evals requires >=8 positive and >=8 negative near-misses\nFAIL: metamorphic-evals unreadable: [Errno 2] No such file or directory: '{tmp}/content-roaster/evals/metamorphic-evals.json'\nFAIL: metamorphic-evals requires at least 12 relations\nFAIL: behavior eval taxonomy missing: domain_specific, false_positive_control, multi_source, operational, partial_scope, revision, source_safety\nFAIL: behavior eval taxonomy requires boundary_handoff\nFAIL: behavior evals require an embedded-instruction/source-injection case\nFAIL: behavior evals require a clean/restraint case\nFAIL: behavior evals require a revision/recheck case\n"
         ]
       }
+    },
+    {
+      "id": "eval-corpus-that-is-not-an-object-is-refused",
+      "kind": "refuse",
+      "behavior": "An evals.json that holds a JSON list is refused with one named failure instead of a traceback.",
+      "run": [
+        "scripts/validate_evals.py",
+        "{tmp}/content-roaster"
+      ],
+      "files": {
+        "content-roaster/evals/evals.json": "[]"
+      },
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "FAIL: evals/evals.json must be an object"
+        ]
+      }
     }
   ]
 }

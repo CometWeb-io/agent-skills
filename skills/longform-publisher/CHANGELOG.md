@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.4] - 2026-10-03
+
+### Fixed
+
+- The description is 539 characters, down from 751, and its "Do not use" clause now ends at character 428. The 1.1.3 reorder still ended the clause at character 553, past the roughly 546 characters Codex shows when it shortens descriptions to fit its skill-list budget, so the last neighbour in the boundary was cut. Every neighbour is still named; "workbook", "cover" and "research-backed article" were dropped from the wording.
+
+### Changed
+
+- The front door no longer tells every run to read seven references (about 12 KB) up front. Each reference has its own line naming when to open it: the state model before a stage is named, the source policy before the mode is fixed or a source admitted, the claim-use contract before a material claim is drafted from or reconciled, the fidelity gate after a substantial rewrite, the format lineage before a derived artifact is generated or checked, the report contract before `publication-report.json` is written or checked, and the output contract before the reply. A full build or refresh meets every trigger, so the frozen workflow reads the same files it did before.
+
+### Tests
+
+- `tests/front-door-rules.json` pins at least one rule in each of the seven references, so `tooling/tests/test_front_door_rules.py` fails if a reference loses its trigger line.
+- `tooling/tests/test_longform_front_door.py` holds the description under 540 characters with its whole "Do not use" clause, and requires a trigger on each reference's own line.
+
 ## [1.1.3] - 2026-10-03
 
 ### Fixed

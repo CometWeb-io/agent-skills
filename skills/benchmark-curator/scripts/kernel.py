@@ -6,9 +6,9 @@ def _text(v):return isinstance(v,str) and bool(v.strip())
 def _norm(v):return ' '.join(str(v or '').casefold().split())
 def _hash(v):return hashlib.sha256(json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()
 def validate(x):
-    if not isinstance(x,dict):return {'status':'INVALID','errors':['payload:not-object']}
+    if not isinstance(x,dict):return {'status':'INVALID','errors':['payload:not-object'],'split_counts':{'dev':0,'holdout':0},'missing_classes':[],'contaminated_holdout':0}
     e=[]; mode=x.get('mode','STANDARD')
-    if mode not in MODES:e.append('mode:invalid')
+    if not isinstance(mode,str) or mode not in MODES:e.append('mode:invalid')
     for k in ('benchmark_id','revision','objective','target_skill'):
         if not _text(x.get(k)):e.append(f'{k}:required')
     required=x.get('required_classes',[])

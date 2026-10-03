@@ -20,7 +20,7 @@ records[]:
   proposed_change?: {change, expected_effect, evaluation_plan}   # required under strict
 min_count?                          # positive integer, default 2
 as_of?                              # timezone-aware ISO time
-window_days?                        # positive integer; needs as_of
+window_days?                        # positive integer; without as_of it is refused
 strict?: true|false                 # default false
 ```
 
@@ -37,7 +37,16 @@ proposals[]: {pattern, independence_count, run_count, severity, root_layers[], r
 watch[]                             # same shape plus reason
 retired[]                           # same shape plus reason, or {pattern, context_id, reason}
 invalid[]: {index?, reason}
+errors[]                            # one string per invalid[] entry; empty otherwise
 ```
+
+A run that cannot start is refused with one `invalid[]` entry and the same
+string in `errors`: `payload:not-object` (the case input is not an object),
+`records:not-list`, `as_of:invalid`, `min_count:invalid`, `window_days:invalid`
+or `window_days:requires-as_of` (a window with no `as_of` to count back from).
+A malformed record keeps its index: `{index: 1, reason: "pattern"}` in
+`invalid[]` is `records[1]:pattern` in `errors`, and a record that is not an
+object is `records[1]:not-object`.
 
 `reason` is one of `false-positive-dominant`, `resolved-no-current-recurrence`,
 `root-cause-ambiguous`, `insufficient-independent-contexts`,

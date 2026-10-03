@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4 — 2026-10-03
+
+- `references/composability.md` spelled the Release Readiness verdict `NO-GO`, the Council spelling; it now uses `NO_GO`, the token Release Readiness returns.
+
 ## 1.3.3 — 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

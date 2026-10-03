@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.4] - 2026-10-03
+
+- `portfolio_kernel.py validate` and `render` died with an `AttributeError` traceback on a report file that was not a JSON object. `validate` now reports `valid: false` with `report must be a JSON object` (exit 1), and `render` exits 2 with the same message.
+- `references/delegation.md` wrote the Release Readiness verdict as `GO-NO_GO`; it now reads `GO/NO_GO`, the tokens Release Readiness returns.
+
 ## [1.2.3] - 2026-10-03
 
 - `scripts/run_evals.py` ranking cases may pin `expected_scores` for every item, since a score inside one gate class never changes the leader. New cases pin the future-gate score penalty and a delegation with no delegate that is refused even when user-defined. Eval strength 59/65 -> 62/65 guards held.

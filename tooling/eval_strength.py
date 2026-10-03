@@ -24,7 +24,9 @@ from __future__ import annotations
 
 import argparse
 import ast
+from concurrent.futures import ThreadPoolExecutor
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -38,6 +40,7 @@ HARNESS = "scripts/run_evals.py"
 BASELINE = ROOT / "registry" / "eval-strength.json"
 POLICY = ROOT / "registry" / "eval-strength-policy.json"
 TIMEOUT = 120
+JOBS = min(8, os.cpu_count() or 2)
 
 # Guards a harness cannot reach by construction, not ones it fails to cover.
 SKIP_PREFIXES = ("if __name__", "if args.", "elif args.")
@@ -135,51 +138,50 @@ def unexercised(package: Path, loaded: list[Path]) -> list[str]:
     return sorted(p.name for p in (package / "scripts").glob("*.py") if p.name not in names)
 
 
-def measure(package: Path) -> dict:
+def _harness_fails(package: Path, kernel: str | None = None, index: int | None = None) -> bool:
+    """Run the package's harness on a private copy, with at most one guard disabled.
+
+    Every run gets its own copy, so mutants of one package can run side by side
+    without seeing each other's edits, and the working tree is never touched.
+    """
     with tempfile.TemporaryDirectory() as tmp:
         # .resolve(): on macOS the temp dir is /var/... while the harness's own
         # Path(__file__).resolve() reports /private/var/..., and the module filter
-        # below compares those strings.
+        # in kernels() compares those strings.
         work = Path(tmp).resolve() / package.name
         shutil.copytree(package, work, ignore=shutil.ignore_patterns("__pycache__"))
-        harness = work / HARNESS
-        if subprocess.run([sys.executable, "-B", str(harness)], cwd=ROOT, capture_output=True,
-                          stdin=subprocess.DEVNULL, timeout=TIMEOUT, check=False).returncode != 0:
-            raise SystemExit(f"FAIL: {package.name} harness does not pass unmutated")
+        if kernel is not None and index is not None:
+            target = work / "scripts" / kernel
+            lines = target.read_text(encoding="utf-8").splitlines(keepends=True)
+            lines[index] = disable(lines[index])
+            target.write_text("".join(lines), encoding="utf-8")
+        return subprocess.run([sys.executable, "-B", str(work / HARNESS)], cwd=ROOT, capture_output=True,
+                              stdin=subprocess.DEVNULL, timeout=TIMEOUT, check=False).returncode != 0
 
-        loaded = kernels(work)
-        held = unheld = 0
-        loose: list[str] = []
-        for kernel in loaded:
-            original = kernel.read_text(encoding="utf-8")
-            lines = original.splitlines(keepends=True)
-            for index in guard_lines(original):
-                kernel.write_text(
-                    "".join(lines[:index] + [disable(lines[index])] + lines[index + 1:]),
-                    encoding="utf-8")
-                proc = subprocess.run([sys.executable, "-B", str(harness)], cwd=ROOT,
-                                      capture_output=True, stdin=subprocess.DEVNULL,
-                                      timeout=TIMEOUT, check=False)
-                if proc.returncode == 0:
-                    unheld += 1
-                    loose.append(f"{kernel.name}:{index + 1} {lines[index].strip()[:80]}")
-                else:
-                    held += 1
-                kernel.write_text(original, encoding="utf-8")
-        total = held + unheld
-        return {"id": package.name, "guards": total, "held": held,
-                "strength": round(held / total, 3) if total else 0.0,
-                "modules": sorted(p.name for p in loaded),
-                "unexercised": unexercised(work, loaded),
-                "unheld": sorted(loose)}
+
+def measure(package: Path) -> dict:
+    if _harness_fails(package):
+        raise SystemExit(f"FAIL: {package.name} harness does not pass unmutated")
+    loaded = kernels(package)
+    mutants = []
+    for kernel in loaded:
+        lines = kernel.read_text(encoding="utf-8").splitlines()
+        mutants += [(kernel.name, index, lines[index]) for index in guard_lines(kernel.read_text(encoding="utf-8"))]
+    with ThreadPoolExecutor(max_workers=JOBS) as pool:
+        outcomes = list(pool.map(lambda m: _harness_fails(package, m[0], m[1]), mutants))
+    loose = [f"{name}:{index + 1} {line.strip()[:80]}"
+             for (name, index, line), held in zip(mutants, outcomes, strict=True) if not held]
+    held, total = sum(outcomes), len(mutants)
+    return {"id": package.name, "guards": total, "held": held,
+            "strength": round(held / total, 3) if total else 0.0,
+            "modules": sorted(p.name for p in loaded),
+            "unexercised": unexercised(package, loaded),
+            "unheld": sorted(loose)}
 
 
 def current() -> list[dict]:
-    rows = []
-    for package in sorted(SKILLS.iterdir()):
-        if (package / HARNESS).is_file():
-            rows.append(measure(package))
-    return rows
+    # Packages one after another; within a package, mutants run side by side.
+    return [measure(package) for package in sorted(SKILLS.iterdir()) if (package / HARNESS).is_file()]
 
 
 def table(rows: list[dict]) -> str:

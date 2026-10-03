@@ -81,6 +81,9 @@
      "expect": ["FORBIDDEN_PHRASE:clean-from-glance"]},
     {"id": "broken-representative-by-size", "base": "good-needs-rebalance.md",
      "mutations": [{"replace": "Do not freeze this revision.", "with": "The set is representative because it is large enough. Do not freeze this revision."}],
-     "expect": ["FORBIDDEN_PHRASE:representative-by-size"]}
+     "expect": ["FORBIDDEN_PHRASE:representative-by-size"]},
+    {"id": "broken-stated-hash-retyped", "base": "good-ready-to-freeze.md", "note": "The benchmark_hash in the identity section differs by one character from the one the kernel issues.", "mutations": [{"replace": "3c6c4b4`", "with": "3c6c4b5`"}], "expect": ["KERNEL_MISMATCH:benchmark-hash-stated"]},
+    {"id": "broken-dev-count-misstated", "base": "good-ready-to-freeze.md", "mutations": [{"replace": "Splits: dev 8, holdout 2", "with": "Splits: dev 9, holdout 2"}], "expect": ["KERNEL_MISMATCH:dev-count-stated"]},
+    {"id": "broken-holdout-count-misstated", "base": "good-needs-rebalance.md", "mutations": [{"replace": "Splits: dev 5, holdout 0", "with": "Splits: dev 5, holdout 1"}], "expect": ["KERNEL_MISMATCH:holdout-count-stated"]}
   ]
 }

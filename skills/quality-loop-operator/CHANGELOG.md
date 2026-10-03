@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.4] - 2026-10-03
+
+- A payload that is not an object returned no `unresolved_conflicts` or `blocking_quality_debt`, which every other refusal carries; it now returns them at zero.
+- A `profile`, `mode` or `replay_status` that is a list or an object, or a `candidate_id`/`contract_id` that is one, raised `TypeError`; each is now reported as its own error (`profile:invalid`, `candidate_id:required`, ...).
+- The cross-skill check `tooling/kernel_error_envelope.py` now holds this kernel to the shared error envelope (see CONTRIBUTING.md).
+- `references/profiles.md` named the Release Readiness hand-off verdicts `GO/NO-GO/DEFER`, the Council spelling. Release Readiness returns `GO`, `GO_WITH_CONTROLS`, `NO_GO` or `DEFER`, and the line now says so.
+
 ## [1.7.3] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

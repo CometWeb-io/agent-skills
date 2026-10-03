@@ -147,3 +147,45 @@ def test_envelope_validation_fails_closed_without_jsonschema(tmp_path: Path) -> 
     )
     assert result.returncode != 0
     assert "jsonschema dependency is required" in result.stderr
+
+
+def _documented_required(block_title: str, list_key: str) -> list[str]:
+    """Fields kernel-contract.md marks required for one list under a kind payload."""
+    text = (ROOT / "references" / "kernel-contract.md").read_text(encoding="utf-8")
+    block = text.split(block_title, 1)[1]
+    lines = block.split(f"{list_key}[]", 1)[1].splitlines()[1:]
+    required: list[str] = []
+    for line in lines:
+        if not line.startswith("    "):
+            break
+        names, _, rule = line.strip().partition(":")
+        if rule.strip() == "required":
+            required += [name.strip() for name in names.split(",")]
+    return sorted(required)
+
+
+def test_kernel_contract_lists_every_required_evidence_claim_field() -> None:
+    # The gate validates against the bundled kind schema; a field the schema
+    # requires but the reference leaves optional is refused with no warning.
+    schema = json.loads((ROOT / "references" / "evidence-envelope.schema.json").read_text(encoding="utf-8"))
+    kind = next(part for part in schema["allOf"] if "payload" in part.get("properties", {}))
+    claim = kind["properties"]["payload"]["properties"]["material_claims"]["items"]
+    assert _documented_required("EvidenceEnvelope (v1) payload:", "material_claims") == sorted(claim["required"])
+
+
+def test_evidence_claim_without_epistemic_kind_is_refused() -> None:
+    data = {
+        "id": "evidence-researcher:EvidenceEnvelope:claims",
+        "type": "EvidenceEnvelope",
+        "producer": "evidence-researcher",
+        "protocol_version": "1.0",
+        "subject": "example.com/pricing claims",
+        "as_of": "2026-08-26T00:00:00+02:00",
+        "payload": {
+            "research_contract": "Is the listed plan price current?",
+            "material_claims": [{"claim_id": "c1", "text": "Pro costs 39 USD.", "status": "VERIFIED"}],
+            "evidence_pack_hash": "sha256:" + "0" * 64,
+        },
+    }
+    errors = validate_envelope(data, expected_type="EvidenceEnvelope")
+    assert any("epistemic_kind" in e for e in errors), errors

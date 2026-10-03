@@ -87,15 +87,15 @@ def _invariant_errors(report):
 
 def validate(report):
     if not isinstance(report,dict):
-        return {'status':'FAIL','errors':['report:not-object'],'release_eligible':False,'unresolved_material':0,'mode':'DRAFT'}
+        return {'status':'FAIL','errors':['report:not-object'],'release_eligible':False,'unresolved_material':0,'mode':'FINAL'}
     claims=report.get('claims',[])
-    if not isinstance(claims,list):
-        return {'status':'FAIL','errors':['claims:not-list'],'release_eligible':False,'unresolved_material':0,'mode':report.get('mode','DRAFT')}
-    errors=[]; unresolved_material=0; seen=set()
     mode=report.get('mode','FINAL')
-    if mode not in VALID_MODES: errors.append('mode:invalid')
+    if not isinstance(claims,list):
+        return {'status':'FAIL','errors':['claims:not-list'],'release_eligible':False,'unresolved_material':0,'mode':mode if isinstance(mode,str) and mode in VALID_MODES else 'FINAL'}
+    errors=[]; unresolved_material=0; seen=set()
+    if not isinstance(mode,str) or mode not in VALID_MODES: errors.append('mode:invalid')
     policy=report.get('evidence_policy','EVIDENCE_REQUIRED')
-    if policy not in VALID_POLICIES: errors.append('evidence_policy:invalid')
+    if not isinstance(policy,str) or policy not in VALID_POLICIES: errors.append('evidence_policy:invalid')
     candidate_id=report.get('candidate_id'); brief_id=report.get('brief_id')
     if candidate_id is not None and not _text(candidate_id): errors.append('candidate_id:invalid')
     if brief_id is not None and not _text(brief_id): errors.append('brief_id:invalid')
@@ -145,7 +145,7 @@ def validate(report):
     valid=not errors
     release_eligible=valid and unresolved_material==0 and mode!='DRAFT'
     if policy=='CONTEXTUAL_DRAFT': release_eligible=False
-    return {'status':'PASS' if valid else 'FAIL','errors':errors,'release_eligible':release_eligible,'unresolved_material':unresolved_material,'mode':mode}
+    return {'status':'PASS' if valid else 'FAIL','errors':errors,'release_eligible':release_eligible,'unresolved_material':unresolved_material,'mode':mode if isinstance(mode,str) and mode in VALID_MODES else 'FINAL'}
 
 
 def evaluate_case(case):

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.3] - 2026-10-03
+
+- `score_candidate.py`, `select_cohort.py` and `assess_partner_health.py` died with an `AttributeError` traceback on a payload that was not a JSON object; each now exits 2 with `input must be a JSON object`.
+
 ## [1.2.2] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

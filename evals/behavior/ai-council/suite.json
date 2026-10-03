@@ -8,28 +8,28 @@
       "kind": "accept",
       "behavior": "A GO with confidence above the threshold, CLEAR freshness and every required gate CLEAR stays GO and exits 0 under --require-go.",
       "run": ["scripts/council_kernel.py", "gate", "--verdict", "GO", "--confidence", "0.9", "--required-confidence", "0.8", "--freshness-status", "CLEAR", "--required-gates-json", "[\"security\"]", "--gate-statuses-json", "{\"security\": \"CLEAR\"}", "--require-go"],
-      "expect": {"exit_code": 0, "json": {"$": {"verdict": "GO"}}}
+      "expect": {"exit_code": 0, "json": {"$": {"verdict": "GO", "envelope_verdict": "GO"}}}
     },
     {
       "id": "gate-missing-required-role-defers",
       "kind": "refuse",
       "behavior": "A required gatekeeper with no supplied status defers the decision instead of letting the GO through.",
       "run": ["scripts/council_kernel.py", "gate", "--verdict", "GO", "--confidence", "0.9", "--required-confidence", "0.8", "--freshness-status", "CLEAR", "--required-gates-json", "[\"security\", \"legal\"]", "--gate-statuses-json", "{\"security\": \"CLEAR\"}", "--require-go"],
-      "expect": {"exit_code": 1, "json": {"$": {"verdict": "DEFER"}}}
+      "expect": {"exit_code": 1, "json": {"$": {"verdict": "DEFER", "envelope_verdict": "DEFER"}}}
     },
     {
       "id": "gate-block-is-no-go",
       "kind": "refuse",
-      "behavior": "A supplied BLOCK from a required gate turns a confident GO into NO-GO.",
+      "behavior": "A supplied BLOCK from a required gate turns a confident GO into NO-GO, reported as NO_GO for a CW-AIP v2 DecisionEnvelope.",
       "run": ["scripts/council_kernel.py", "gate", "--verdict", "GO", "--confidence", "0.9", "--required-confidence", "0.8", "--freshness-status", "CLEAR", "--required-gates-json", "[\"security\"]", "--gate-statuses-json", "{\"security\": \"BLOCK\"}", "--require-go"],
-      "expect": {"exit_code": 1, "json": {"$": {"verdict": "NO-GO"}}}
+      "expect": {"exit_code": 1, "json": {"$": {"verdict": "NO-GO", "envelope_verdict": "NO_GO"}}}
     },
     {
       "id": "gate-freshness-defaults-to-unknown",
       "kind": "boundary",
       "behavior": "When freshness is not assessed the CLI treats it as UNKNOWN and defers rather than assuming CLEAR.",
       "run": ["scripts/council_kernel.py", "gate", "--verdict", "GO", "--confidence", "0.9", "--required-confidence", "0.8", "--require-go"],
-      "expect": {"exit_code": 1, "json": {"$": {"verdict": "DEFER"}}}
+      "expect": {"exit_code": 1, "json": {"$": {"verdict": "DEFER", "envelope_verdict": "DEFER"}}}
     },
     {
       "id": "freshness-stale-pricing-requires-refresh",
@@ -72,6 +72,15 @@
       "behavior": "An unknown decision_type is an input error with exit 2, not a silent fallback, and no result is printed.",
       "run": ["scripts/council_kernel.py", "contract", "--query", "Should we enter a new market?", "--context-json", "{\"decision_type\": \"lottery\"}"],
       "expect": {"exit_code": 2, "stderr_contains": ["\"status\": \"INVALID\"", "\"execution_authorized\": false"], "stdout_absent": ["lottery"]}
+    },
+    {
+      "id": "envelope-verdict-refuses-the-wire-spelling-as-input",
+      "kind": "refuse",
+      "behavior": "envelope_verdict maps only Council verdicts; an already-converted NO_GO is refused rather than passed through, so a value cannot be converted twice unnoticed.",
+      "run": ["scripts/council_kernel.py"],
+      "call": "envelope_verdict",
+      "args": ["NO_GO"],
+      "expect": {"exit_code": 1, "stderr_contains": ["not a Council verdict"]}
     }
   ]
 }

@@ -5,7 +5,7 @@ Portfolio Operator owns cross-domain allocation, not specialist depth.
 | Need | Delegate to | Portfolio Operator consumes |
 | --- | --- | --- |
 | Deep next-actions/state inside one product/repo | Product Operator | current critical path, blockers, verify/decision/now/next/stop |
-| Pinned release readiness / GO-NO_GO | Release Readiness | release verdict, hard gates, required controls |
+| Pinned release readiness / GO/NO_GO | Release Readiness | release verdict, hard gates, required controls |
 | Customer incident/support/account risk | Customer Ops | severity, commitments, customer-visible state, next operational action |
 | Material claim verification/due diligence | Evidence Researcher | accepted claims, contradictions, gaps |
 | Consequential strategic/portfolio trade-off | AI Council | decision/verdict + conditions |

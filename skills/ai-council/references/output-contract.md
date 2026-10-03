@@ -18,6 +18,8 @@ Nie używaj słowa `current` dla materialnego claimu bez temporal verification.
 
 `GO | NO-GO | TEST | DEFER` — Overall Decision Confidence `0–100%`.
 
+Na granicy CW-AIP v2 (`DecisionEnvelope`, `protocol/cw-aip-v2/decision.schema.json`) werdykt zapisuj w pisowni schematu: `NO-GO` → `NO_GO`; `GO`, `TEST` i `DEFER` bez zmian. Kernel robi to sam: `envelope_verdict()` oraz pole `envelope_verdict` w wyniku `gate`. W raporcie dla człowieka zostaje `NO-GO`.
+
 Pokaż także:
 
 - Council Mode,

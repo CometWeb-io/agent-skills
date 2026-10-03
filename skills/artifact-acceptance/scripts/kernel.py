@@ -102,14 +102,14 @@ def decide(payload):
     candidate_id=_candidate_id(payload); contract_id=_contract_id(payload)
     if candidate_id is None or contract_id is None: return {'verdict':'DEFER','errors':['candidate-or-contract-unbound']}
     mode=payload.get('mode','STANDARD'); profile=payload.get('profile','CUSTOM')
-    if mode not in MODES: return {'verdict':'DEFER','errors':['mode:invalid']}
-    if profile not in PROFILES: return {'verdict':'DEFER','errors':['profile:invalid']}
+    if not isinstance(mode,str) or mode not in MODES: return {'verdict':'DEFER','errors':['mode:invalid']}
+    if not isinstance(profile,str) or profile not in PROFILES: return {'verdict':'DEFER','errors':['profile:invalid']}
     as_of=_dt(payload.get('as_of')) if payload.get('as_of') is not None else None
     if payload.get('as_of') is not None and as_of is None: return {'verdict':'DEFER','errors':['as_of:invalid']}
     lock_errors=_policy_lock_errors(payload)
     if lock_errors: return {'verdict':'DEFER','errors':lock_errors}
     minimum_grade=payload.get('minimum_gate_evidence_grade')
-    if minimum_grade is not None and minimum_grade not in GRADE: return {'verdict':'DEFER','errors':['minimum-gate-evidence-grade:invalid']}
+    if minimum_grade is not None and (not isinstance(minimum_grade,str) or minimum_grade not in GRADE): return {'verdict':'DEFER','errors':['minimum-gate-evidence-grade:invalid']}
     gates=payload.get('gates')
     if not isinstance(gates,list): return {'verdict':'DEFER','errors':['gates:not-list']}
     required=[]; gate_errors=[]; seen=set(); by_id={}

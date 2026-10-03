@@ -9,6 +9,7 @@ def validate(root:Path)->list[str]:
  e=[]; sid=root.name; d=root/'evals'
  try: behavior=json.loads((d/'evals.json').read_text())
  except Exception as x:return [f'evals/evals.json unreadable: {x}']
+ if not isinstance(behavior,dict):return ['evals/evals.json must be an object']
  if behavior.get('skill_name')!=sid:e.append('evals.json skill_name mismatch')
  rows=behavior.get('evals')
  if not isinstance(rows,list) or len(rows)<24:e.append('evals.json requires at least 24 behavior evals');rows=rows if isinstance(rows,list) else []

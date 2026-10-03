@@ -40,6 +40,9 @@ An invariant check `state` other than PASS fails that invariant.
 `kernel.validate(report)` returns `{status: PASS|FAIL, errors[],
 release_eligible, unresolved_material, mode}`. `release_eligible` needs PASS,
 no material UNRESOLVED/UNSUPPORTED claim, a mode other than DRAFT, and a policy
-other than CONTEXTUAL_DRAFT.
+other than CONTEXTUAL_DRAFT. A report that is not an object fails with
+`report:not-object`, and one whose `claims` is not a list with `claims:not-list`;
+both report the default mode `FINAL` unless the report names another, and a mode
+that is not one of the three is reported as `FINAL` next to `mode:invalid`.
 
 Do not expose the full ledger unless useful to the user or a downstream reviewer. `PASS` from the kernel means the sidecar obeys claim/source/invariant rules; it does not independently verify source truth.

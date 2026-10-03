@@ -106,6 +106,30 @@
       "run": ["scripts/assess_partner_health.py"],
       "stdin": {"ratings": {"workflow_usage": 4, "learning_yield": 4, "user_champion_engagement": 4, "implementation_progress": 4, "feedback_quality": 4, "transferability": 4, "value_signal": 4}, "product_ready_for_conversion": "yes"},
       "expect": {"exit_code": 2, "stderr_contains": ["{\"error\": \"product_ready_for_conversion must be boolean\"}"]}
+    },
+    {
+      "id": "non-object-candidate-is-refused",
+      "kind": "refuse",
+      "behavior": "A candidate payload that is a JSON list exits 2 with a reason instead of a traceback.",
+      "run": ["scripts/score_candidate.py"],
+      "stdin": [],
+      "expect": {"exit_code": 2, "stderr_contains": ["input must be a JSON object"]}
+    },
+    {
+      "id": "non-object-cohort-is-refused",
+      "kind": "refuse",
+      "behavior": "A cohort payload that is a JSON string exits 2 with a reason instead of a traceback.",
+      "run": ["scripts/select_cohort.py"],
+      "stdin": "\"candidates\"",
+      "expect": {"exit_code": 2, "stderr_contains": ["input must be a JSON object"]}
+    },
+    {
+      "id": "non-object-partner-health-is-refused",
+      "kind": "refuse",
+      "behavior": "A partner-health payload that is JSON null exits 2 with a reason instead of a traceback.",
+      "run": ["scripts/assess_partner_health.py"],
+      "stdin": "null",
+      "expect": {"exit_code": 2, "stderr_contains": ["input must be a JSON object"]}
     }
   ]
 }

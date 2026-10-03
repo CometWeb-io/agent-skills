@@ -100,6 +100,46 @@ there are at most 32 cues. `suite.json` (`negation-*`) and
 `policy-suite.json` hold the positive and negated near-miss cases in English
 and Polish.
 
+## Dismissed clauses
+
+Negation reads forward from a cue, so it misses a refusal that comes after the
+thing refused ("A re-review of the branch isn't necessary, fix the accepted
+findings"), a statement that the work is already done ("The landing page roast
+is done. Now rewrite the hero copy", "Roast repo już mieliśmy, teraz napraw…")
+and "I'm not asking for a roast of the repo". Before round 6 each of those went
+to the reviewer the clause names, and the lexical ranker could not help: it only
+runs when signals are silent or near-tied.
+
+`registry/routing-policy.json` → `dismissed` handles them without blanking text
+for everyone:
+
+1. Clauses are cut with `negation.boundary`. A clause holding one of the
+   `cues` (an activity noun such as review, roast, audit, recenzja, przegląd
+   followed by "is done", "isn't needed", "już mieliśmy", "nie jest
+   potrzebny"; "we already did the … review"; "not asking for") and no
+   `unless` match ("whether", "make sure", "czy") is dismissed from
+   `max_scope_chars` before the cue to `max_scope_chars` after it, never past
+   the clause.
+2. Spans are read from the user's own words only, so quoted or pasted text
+   cannot wave a request off.
+3. A skill whose every matching signal lies inside dismissed spans is
+   **demoted**: it leaves `scores` (the result lists it under `demoted` with
+   the score it would have had), so it can neither win nor make a near-tie; the
+   lexical ranker does not rank it and reads the text without the dismissed
+   spans; and a dismissed clause is not a step of a sequence.
+4. A skill with any signal outside the spans keeps its whole score: "The
+   README review is done; now roast the repo" still goes to `repo-roaster`, and
+   `repair-operator` keeps signals that need the review it repairs.
+5. Explicit invocations are never demoted; exclusions and narrow-intent guards
+   run first and keep their own reasons.
+
+`tooling/tests/test_routing_dismissed.py` shows each case misrouting with the
+block removed and routing correctly with it, and that suite prompts without a
+dismissed clause route exactly as before. Limits: the cues name the activity
+(review, roast, audit and their Polish forms); "Roast of the codebase? No."
+and back-references such as "fix the issues from yesterday's repo roast" are
+not dismissals and still go to the roaster (pinned as `r6-*` in `known-gaps.json`).
+
 ## Multi-skill requests
 
 `registry/routing-policy.json` → `sequence` routes a request that hands
@@ -148,7 +188,9 @@ so the result is a deterministic-proxy discovery estimate, not a model result.
 `--check` still holds the roasters to the recall, rejection and near-miss
 floors in `TRIGGER_EVAL_FLOORS` (in `tooling/routing_coverage.py`), set just
 under the measured numbers; raise a floor when routing improves, never lower
-one to make a signal change pass.
+one to make a signal change pass. `--check` also fails a floor that sits more
+than `TRIGGER_EVAL_MAX_SLACK` (1) under what the routing signals alone measure
+with the lexical ranker off, so an improvement has to be ratcheted in.
 
 ## Frozen holdout
 
@@ -276,10 +318,12 @@ prompts"; 144 of them (A and B) were tuned on and batch C was only scored. The
 suite, canonical, policy and adversarial suites, the confusion report and the
 roaster trigger-eval floors are unchanged with the ranker on.
 
-Known limits: lexical evidence cannot recover a signal winner that is wrong (a
-"don't re-review, just fix" request still goes to the reviewer its signals
-name), the Council still needs an explicit request, and a single stray
-two-letter word only counts when the lexicon lists it ("qa", "ux", "ci").
+Known limits: lexical evidence cannot recover a signal winner that is wrong.
+A reviewer named only in a clause that calls the review done or unwanted is now
+demoted before the ranker runs (see [Dismissed clauses](#dismissed-clauses));
+other wrong winners still stand. The Council still needs an explicit request,
+and a single stray two-letter word only counts when the lexicon lists it ("qa",
+"ux", "ci").
 
 ## Confusion report
 

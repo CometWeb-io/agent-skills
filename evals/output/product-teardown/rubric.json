@@ -78,6 +78,7 @@
      "defined_in": [{"json": "source_targets[*].id", "when": {"schema_version": "2.0"}}],
      "defined_by": "the ledger's source_targets[] has no target with that id"}
   ],
+  "hooks": ["teardown_ledger"],
   "sidecars": [
     {"rule": "pattern-ledger-v2", "detect": {"has_keys": ["patterns", "evidence"], "equals": {"schema_version": "2.0"}},
      "validator": "skills/product-teardown/scripts/validate_pattern_ledger.py", "function": "validate"}

@@ -2399,5 +2399,75 @@
         "payload:not-object"
       ]
     }
+  },
+  {
+    "id": "mode-of-the-wrong-type-is-deferred",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ],
+      "mode": [
+        "DEEP"
+      ]
+    },
+    "expect": {
+      "verdict": "DEFER",
+      "errors": [
+        "mode:invalid"
+      ]
+    }
+  },
+  {
+    "id": "profile-of-the-wrong-type-is-deferred",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ],
+      "profile": {
+        "name": "GENERAL"
+      }
+    },
+    "expect": {
+      "verdict": "DEFER",
+      "errors": [
+        "profile:invalid"
+      ]
+    }
   }
 ]

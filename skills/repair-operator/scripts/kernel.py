@@ -77,11 +77,11 @@ def _dependency_cycles(items):
 
 
 def validate(payload):
-    if not isinstance(payload,dict): return {'status':'INVALID','closed':0,'open':0,'errors':['payload:not-object']}
+    if not isinstance(payload,dict): return {'status':'INVALID','closed':0,'open':0,'errors':['payload:not-object'],'strict_closure':False,'portfolio_mode':False,'effort_units':0}
     items=payload.get('items')
-    if not isinstance(items,list): return {'status':'INVALID','closed':0,'open':0,'errors':['items:not-list']}
     candidate_id=payload.get('candidate_id'); strict=payload.get('strict_closure') is True or payload.get('mode')=='DEEP'
     errors=[]; closed=0; open_count=0; seen=set(); finding_to_repair={}; effort_units=0; portfolio_mode=payload.get('portfolio_mode') is True
+    if not isinstance(items,list): return {'status':'INVALID','closed':0,'open':0,'errors':['items:not-list'],'strict_closure':strict,'portfolio_mode':portfolio_mode,'effort_units':0}
     if payload.get('mode') is not None and not (isinstance(payload.get('mode'),str) and payload.get('mode') in MODES): errors.append('mode:invalid')
     if candidate_id is not None and not _text(candidate_id): errors.append('candidate_id:invalid')
     errors.extend(_dependency_cycles(items))

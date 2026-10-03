@@ -395,7 +395,15 @@
       ]
     },
     "majority_vote": {},
-    "missing_binding_dimensions": {}
+    "missing_binding_dimensions": {},
+    "envelope_verdict": {
+      "enum": [
+        "DEFER",
+        "GO",
+        "NO_GO",
+        "TEST"
+      ]
+    }
   },
   "internal": {
     "STANDARD": "council mode value compared after normalisation, not a payload key",

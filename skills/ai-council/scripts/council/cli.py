@@ -44,7 +44,7 @@ from .deliberation import (
         minority_sentinel,
         value_of_information,
     )
-from .risk_gates import build_human_handoff_packet, gate_verdict, tool_authority_assessment
+from .risk_gates import build_human_handoff_packet, envelope_verdict, gate_verdict, tool_authority_assessment
 from .routing import (
     detect_missing_perspectives,
     dynamic_specialists,
@@ -327,12 +327,13 @@ def main() -> int:
     elif args.command == "snapshot":
         result = {"snapshot_hash": snapshot_hash(_load_cli_json(args.snapshot_json), args.version), "snapshot_version": args.version}
     elif args.command == "gate":
-        result = {"verdict": gate_verdict(
+        verdict = gate_verdict(
             args.verdict, args.confidence, args.required_confidence, args.reversible_experiment,
             args.critical_gap, _load_cli_json(args.gate_statuses_json), args.controls_implemented,
             args.freshness_status, args.human_approval_required, args.human_approved,
             _load_cli_json(args.required_gates_json),
-        )}
+        )
+        result = {"verdict": verdict, "envelope_verdict": envelope_verdict(verdict)}
     elif args.command == "regime":
         result = {"regime_tags": infer_regime_tags(_load_cli_json(args.context_json))}
     elif args.command == "due-reviews":

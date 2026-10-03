@@ -300,6 +300,111 @@
       ],
       "expected_status": "single_skill",
       "expected_primary_skill": "release-readiness"
+    },
+    {
+      "id": "council-explicit-pl-subject-first",
+      "prompt": "Rada niech oceni, czy otwieramy drugi rynek.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "council-explicit-pl-modal",
+      "prompt": "Rada powinna zdecydować o zamknięciu planu darmowego.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "council-explicit-pl-hand-over",
+      "prompt": "Przekaż tę decyzję Radzie: zostajemy przy obecnym cenniku?",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "council-explicit-pl-agenda",
+      "prompt": "Poddajmy pod obrady Rady wejście na nowy rynek.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "council-explicit-en-let",
+      "prompt": "Let the council decide whether we keep the legacy plan.",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "council-explicit-en-bring",
+      "prompt": "Bring this to the council: build or buy the billing module?",
+      "expected_status": "single_skill",
+      "expected_primary_skill": "ai-council",
+      "must_not_trigger": []
+    },
+    {
+      "id": "council-implicit-pl-advice",
+      "prompt": "Daj mi kilka rad, jak ustalić ceny.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-implicit-pl-manage",
+      "prompt": "Dajmy radę skończyć to w piątek.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-implicit-pl-board",
+      "prompt": "Przedstaw ten plan radzie nadzorczej.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-implicit-en-city",
+      "prompt": "Bring this to the city council meeting notes.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-denied-pl-hand-over",
+      "prompt": "Nie przekazuj tego Radzie, po prostu policz koszty.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-denied-pl-subject-first",
+      "prompt": "Nie chcę, żeby Rada to oceniała.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
+    },
+    {
+      "id": "council-denied-en-let",
+      "prompt": "Don't let the council decide this one.",
+      "expected_status": "no_skill",
+      "expected_primary_skill": null,
+      "must_not_trigger": [
+        "ai-council"
+      ]
     }
   ]
 }

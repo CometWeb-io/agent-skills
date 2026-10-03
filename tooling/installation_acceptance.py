@@ -11,8 +11,10 @@ This is NOT verified_runtime_acceptance for Cursor/ChatGPT/Codex sessions.
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import io
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -96,10 +98,12 @@ def all_skills(root: Path) -> list[str]:
     )
 
 
-def accept_one(root: Path, skill: str, work: Path, *, run_helpers: bool = False) -> dict:
-    from package_skill import identifier, inspect_archive
+def stage_fixture(root: Path, work: Path) -> Path:
+    """Copy the checkout into a clean, committed Git tree that packages are built from.
 
-    identifier(skill)
+    Packaging refuses a dirty tree and writes only under the ignored dist/, so one
+    fixture serves every skill in a run: building a package leaves it clean.
+    """
     package_root = work / "repo"
     shutil.copytree(
         root,
@@ -116,7 +120,21 @@ def accept_one(root: Path, skill: str, work: Path, *, run_helpers: bool = False)
     subprocess.run(["git", "add", "-A"], cwd=package_root, check=True, capture_output=True)
     subprocess.run(["git", "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false",
                     "commit", "-m", "acceptance"], cwd=package_root, check=True, capture_output=True)
+    return package_root
 
+
+def accept_one(root: Path, skill: str, work: Path, *, run_helpers: bool = False) -> dict:
+    from package_skill import identifier
+
+    identifier(skill)
+    return accept_staged(root, stage_fixture(root, work), skill, work, run_helpers=run_helpers)
+
+
+def accept_staged(root: Path, package_root: Path, skill: str, work: Path, *, run_helpers: bool = False) -> dict:
+    """Package one skill from a staged fixture, install the zip under `work` and check it."""
+    from package_skill import identifier, inspect_archive
+
+    identifier(skill)
     proc = subprocess.run(
         [sys.executable, "-B", str(package_root / "tooling" / "package_skill.py"), skill, "--root", str(package_root)],
         cwd=package_root,
@@ -165,17 +183,26 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--skill", action="append", default=[])
     parser.add_argument("--run-helpers", action="store_true", help="Run bundled offline checks after extraction")
     parser.add_argument("--trusted-checkout", action="store_true", help="Acknowledge execution of trusted package code")
+    parser.add_argument("--jobs", type=int, default=min(8, os.cpu_count() or 2),
+                        help="skills to build and smoke at once (default: CPU count, at most 8)")
     args = parser.parse_args(argv)
     if args.run_helpers and not args.trusted_checkout:
         parser.error("--run-helpers requires --trusted-checkout; this is not a sandbox")
+    if args.jobs < 1:
+        parser.error("--jobs must be at least 1")
     selected = list(dict.fromkeys(args.skill)) or (all_skills(args.root) if args.all else skills_with_runtime(args.root))
     if not selected or not set(selected) <= set(all_skills(args.root)):
         print(json.dumps({"status": "failed", "reason": "no skills selected or unknown skill"}))
         return 1
-    rows = []
     with tempfile.TemporaryDirectory(prefix="cw-install-accept-") as tmp:
-        for skill in selected:
-            rows.append(accept_one(args.root, skill, Path(tmp) / skill, run_helpers=args.run_helpers))
+        package_root = stage_fixture(args.root, Path(tmp))
+        # Each skill builds into its own dist/<skill>/ and installs into its own
+        # directory, so the work is independent; results keep the selected order.
+        with ThreadPoolExecutor(max_workers=max(1, min(args.jobs, len(selected)))) as pool:
+            rows = list(pool.map(
+                lambda skill: accept_staged(args.root, package_root, skill, Path(tmp) / "work" / skill,
+                                            run_helpers=args.run_helpers),
+                selected))
     failed = [row for row in rows if row["status"] != "passed"]
     result = {
         "schema": "cometweb.installation-acceptance/v1",

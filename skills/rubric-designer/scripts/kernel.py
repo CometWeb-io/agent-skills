@@ -7,7 +7,7 @@ def _text(v): return isinstance(v,str) and bool(v.strip())
 def _canon(x): return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False)
 def _hash(x): return hashlib.sha256(_canon(x).encode()).hexdigest()
 def validate(x):
-    if not isinstance(x,dict): return {'status':'INVALID','errors':['payload:not-object']}
+    if not isinstance(x,dict): return {'status':'INVALID','errors':['payload:not-object'],'missing_dimensions':[]}
     e=[]; mode=x.get('mode','STANDARD')
     if not _member(mode,MODES):e.append('mode:invalid')
     for k in ('rubric_id','revision','purpose','target_type'):

@@ -29,18 +29,3 @@ def run(script: str, *arguments: str, cwd: Path) -> subprocess.CompletedProcess:
     )
 
 
-@pytest.mark.parametrize(
-    "arguments, expected",
-    [([], 1), (["--skill", "ai-humanize"], 1), (["--skip-safety"], 2)],
-)
-def test_export_has_no_side_effects(tmp_path, arguments, expected):
-    (tmp_path / "private-note.txt").write_text("Keep this file local.")
-    before = inventory(tmp_path)
-    result = run(
-        "publish_public_dry_run.py", "--root", str(tmp_path), *arguments, cwd=tmp_path
-    )
-    # Unapproved export exits 1; an attempt to bypass the safety scan is not a
-    # recognized option at all and exits 2.
-    assert result.returncode == expected, result.stderr
-    assert inventory(tmp_path) == before
-    assert not (tmp_path / "dist").exists()

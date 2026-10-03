@@ -79,6 +79,17 @@
       "behavior": "An event without a field_path is refused before anything is written to the log.",
       "run": ["scripts/ci_kernel.py", "append-event", "--root", "{tmp}/ws", "--event-json", "{\"competitor_id\": \"rival\", \"category\": \"PRICING_PACKAGING\"}"],
       "expect": {"exit_code": 2, "stderr_contains": ["{\"error\": \"event requires field_path\"}"]}
+    },
+    {
+      "id": "diff-of-a-non-object-snapshot-is-refused",
+      "kind": "refuse",
+      "behavior": "A snapshot file that holds a JSON list instead of an object is refused with exit 2 and a reason, not a traceback.",
+      "run": ["scripts/ci_kernel.py", "diff", "--old", "{tmp}/old.json", "--new", "{tmp}/new.json"],
+      "files": {
+        "old.json": [],
+        "new.json": {"schema_version": "1.0", "competitor_id": "rival", "competitor_name": "Rival Example", "captured_at": "2026-08-25T10:00:00Z", "state": {}, "evidence": []}
+      },
+      "expect": {"exit_code": 2, "stderr_contains": ["diff needs two snapshots that are JSON objects"]}
     }
   ]
 }

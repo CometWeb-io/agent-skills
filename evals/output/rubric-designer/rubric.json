@@ -64,6 +64,13 @@
     {"rule": "rubric-payload", "detect": {"has_keys": ["rubric_id", "criteria", "anti_gaming"]},
      "validator": "skills/rubric-designer/scripts/kernel.py", "function": "validate",
      "error_statuses": ["INVALID"],
-     "recompute": {"result": "status"}}
+     "recompute": {"result": "status"},
+     "cross_checks": [
+       {"rule": "rubric-hash-stated", "result": "rubric_hash", "section": "identity",
+        "pattern": "sha-?256[^\\n]*?\\b([0-9a-f]{64})\\b"},
+       {"rule": "criteria-listed", "result": "criteria_count", "section": "coverage", "count": "table_rows"},
+       {"rule": "blockers-listed", "result": "blocker_count", "section": "blocker-criteria", "count": "items",
+        "none_pattern": "^none\\b"}
+     ]}
   ]
 }

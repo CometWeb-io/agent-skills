@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.4] - 2026-10-03
+
+- A report that is not an object reported mode `DRAFT`, and one with a non-list `claims` defaulted to `DRAFT` too, although the documented default is `FINAL`; both now report `FINAL` unless the report names another mode.
+- A `mode` or `evidence_policy` that is a list or an object raised `TypeError`; it is now `mode:invalid` / `evidence_policy:invalid`, and an invalid mode is reported as `FINAL`.
+- The cross-skill check `tooling/kernel_error_envelope.py` now holds this kernel to the shared error envelope (see CONTRIBUTING.md).
+
 ## [1.7.3] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

@@ -41,20 +41,20 @@ def _coverage(rows,required):
 
 def review(payload):
     if not isinstance(payload,dict):
-        return {'status':'INVALID','blockers':0,'majors':0,'errors':['payload:not-object'],'coverage_complete':False,'covered_axes':0}
+        return {'status':'INVALID','blockers':0,'majors':0,'errors':['payload:not-object'],'coverage_complete':False,'covered_axes':0,'mode':'STANDARD'}
     findings=payload.get('findings')
-    if not isinstance(findings,list):
-        return {'status':'INVALID','blockers':0,'majors':0,'errors':['findings:not-list'],'coverage_complete':False,'covered_axes':0}
     mode=payload.get('mode','STANDARD')
+    if not isinstance(findings,list):
+        return {'status':'INVALID','blockers':0,'majors':0,'errors':['findings:not-list'],'coverage_complete':False,'covered_axes':0,'mode':mode if isinstance(mode,str) and mode in MODES else 'STANDARD'}
     errors=[]; seen=set(); fingerprints=set(); blockers=0; majors=0; covered_axes=0; coverage_complete=True
-    if mode not in MODES: errors.append('mode:invalid')
+    if not isinstance(mode,str) or mode not in MODES: errors.append('mode:invalid')
     candidate_id=payload.get('candidate_id')
     if candidate_id is not None and not _text(candidate_id): errors.append('candidate_id:invalid')
     enforce_grade=payload.get('enforce_evidence_floor') is True
     required_axes=set(payload.get('required_axes',[])) if isinstance(payload.get('required_axes',[]),list) else set()
     if any(axis not in REQUIRED_AXES for axis in required_axes): errors.append('required_axes:invalid')
     if mode=='DEEP' and not required_axes: required_axes=set(AXES)
-    if mode in {'DEEP','DELTA'} or payload.get('coverage') is not None:
+    if isinstance(mode,str) and mode in {'DEEP','DELTA'} or payload.get('coverage') is not None:
         ok,cov_errors,covered_axes=_coverage(payload.get('coverage'),required_axes)
         errors.extend(cov_errors); coverage_complete=ok
     for i,finding in enumerate(findings):
@@ -91,11 +91,10 @@ def review(payload):
             errors.append(f'{i}:taste-cannot-be-material')
         if sev=='BLOCKER' and finding.get('blocks_acceptance') is not True: errors.append(f'{i}:blocker-must-block-acceptance')
     status='INVALID' if errors else ('CHANGES_REQUIRED' if blockers or majors else 'REVIEWED')
-    return {'status':status,'blockers':blockers,'majors':majors,'errors':errors,'coverage_complete':coverage_complete and not any(e.startswith('coverage:') for e in errors),'covered_axes':covered_axes,'mode':mode}
+    return {'status':status,'blockers':blockers,'majors':majors,'errors':errors,'coverage_complete':coverage_complete and not any(e.startswith('coverage:') for e in errors),'covered_axes':covered_axes,'mode':mode if isinstance(mode,str) and mode in MODES else 'STANDARD'}
 
 
 def evaluate_case(case):
     if not isinstance(case,dict): return review(None)
     payload=case.get('input')
-    if isinstance(payload,dict) and 'findings' in payload: return review(payload)
-    return review(None)
+    return review(payload)

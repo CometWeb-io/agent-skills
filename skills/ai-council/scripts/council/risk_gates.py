@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .constants import GATE_STATUSES, VERDICTS
+from .constants import ENVELOPE_VERDICTS, GATE_STATUSES, VERDICTS
 from .util import _boolean, _strings, _unit_interval
 
 def gate_verdict(proposed_verdict: str, confidence: float, required_confidence_value: float,
@@ -51,6 +51,16 @@ def gate_verdict(proposed_verdict: str, confidence: float, required_confidence_v
     if verdict in {"GO", "NO-GO"} and (critical_gap or conf < required):
         return "TEST" if experiment else "DEFER"
     return verdict
+
+def envelope_verdict(verdict: str) -> str:
+    """Return the CW-AIP v2 DecisionEnvelope spelling of a Council verdict.
+
+    The Council writes `NO-GO`; the v2 decision schema accepts `NO_GO`. `GO`,
+    `TEST` and `DEFER` are unchanged. Anything else is refused rather than guessed.
+    """
+    if not isinstance(verdict, str) or verdict not in ENVELOPE_VERDICTS:
+        raise ValueError(f"{verdict!r} is not a Council verdict (expected one of {sorted(VERDICTS)})")
+    return ENVELOPE_VERDICTS[verdict]
 
 def build_human_handoff_packet(kind: str, decision: dict[str, Any], issue: dict[str, Any]) -> dict[str, Any]:
     kind = str(kind or "expert").lower()

@@ -390,9 +390,14 @@
   {
     "expect": {
       "status": "INVALID",
+      "closed": 0,
+      "open": 0,
       "errors": [
         "payload:not-object"
-      ]
+      ],
+      "strict_closure": false,
+      "portfolio_mode": false,
+      "effort_units": 0
     },
     "id": "malformed-root",
     "input": "x"
@@ -1779,7 +1784,29 @@
       "open": 0,
       "errors": [
         "payload:not-object"
-      ]
+      ],
+      "strict_closure": false,
+      "portfolio_mode": false,
+      "effort_units": 0
+    }
+  },
+  {
+    "id": "items-not-list-keeps-the-full-result",
+    "input": {
+      "items": "x",
+      "portfolio_mode": true,
+      "mode": "DEEP"
+    },
+    "expect": {
+      "status": "INVALID",
+      "closed": 0,
+      "open": 0,
+      "errors": [
+        "items:not-list"
+      ],
+      "strict_closure": true,
+      "portfolio_mode": true,
+      "effort_units": 0
     }
   }
 ]

@@ -62,6 +62,8 @@ CODES: dict[str, str] = {
     "ENVELOPE_INVALID": "fix the CW-AIP envelope so it validates (tooling/validate_envelope.py)",
     "SIDECAR_INVALID": "fix the machine sidecar so the skill's own validator accepts it",
     "COUNT_MISMATCH": "make the reported counts equal the items actually listed",
+    "KERNEL_MISMATCH": "restate the value the skill's own kernel computes from the embedded payload; never retype "
+                       "or estimate a hash or count",
     "LIMIT_EXCEEDED": "cut the section to the contract's limit; move the rest to a later section",
     "FORBIDDEN_PHRASE": "replace vague assurance with the exact evidence-bound wording the contract asks for",
     "CONTRACT_VIOLATION": "follow the output contract rule named in the message",
@@ -131,6 +133,8 @@ class Issue:
     where: str = ""
     severity: str = "error"
     fix: str = ""
+    # The exact text that tripped the rule; empty when the rule fired on an absence.
+    excerpt: str = ""
 
     def key(self) -> str:
         return f"{self.code}:{self.rule}"
@@ -293,6 +297,24 @@ class Document:
         return blocks
 
 
+def _first_text_line(text: str) -> str:
+    return next((line.strip() for line in text.splitlines() if line.strip()), "")
+
+
+def _line_with(text: str, needle: str | None) -> str:
+    return next((line.strip() for line in text.splitlines() if needle and needle in line), _first_text_line(text))
+
+
+def _line_at(text: str, offset: int) -> str:
+    start = text.rfind("\n", 0, offset) + 1
+    end = text.find("\n", offset)
+    return text[start:end if end != -1 else len(text)].strip()
+
+
+def _row_text(row: dict[str, str]) -> str:
+    return "| " + " | ".join(row.values()) + " |"
+
+
 def _cells(line: str) -> list[str]:
     body = line.strip()
     if body.startswith("|"):
@@ -328,6 +350,11 @@ def json_path(data: Any, path: str) -> list[Any]:
     return values
 
 
+def _json_ids(values: Iterable[Any]) -> list[str]:
+    """IDs from JSON values. A null (or any non-scalar) is no ID; str(None) would invent "None"."""
+    return [str(v) for v in values if isinstance(v, (str, int)) and not isinstance(v, bool)]
+
+
 def _matches_when(data: Any, when: dict[str, Any] | None) -> bool:
     """Every path holds its value; the value "*" only requires the path to exist."""
     return all((json_path(data, path) != []) if value == "*" else (value in json_path(data, path))
@@ -337,23 +364,85 @@ def _matches_when(data: Any, when: dict[str, Any] | None) -> bool:
 # --- rubric evaluation --------------------------------------------------------
 
 
+# --- output formats ---------------------------------------------------------------
+# A skill whose contract defines several output formats (a delta brief, a change report, an
+# alert...) declares them under "formats". Each format has an `id`, a `title`, a `detect` regex
+# matched against the output's first non-blank line outside code fences, and any rubric keys of
+# its own. The rubric's top-level keys are shared; a shared entry may name `formats` (only these)
+# or `not_formats` (all but these). The first format whose detect matches grades the output.
+
+FORMAT_META = frozenset({"id", "title", "detect", "contract_section"})
+FORMAT_FILTERS = ("formats", "not_formats")
+LIST_KEYS = ("sections", "required_any", "blockers", "checks", "ids", "sidecars", "hooks", "records", "canaries",
+             "compliance_patterns")
+
+
+def first_line(text: str) -> str:
+    fenced = False
+    for line in text.replace("\r\n", "\n").split("\n"):
+        if FENCE.match(line):
+            fenced = not fenced
+            continue
+        if line.strip() and not fenced:
+            return line.strip()
+    return ""
+
+
+def detect_format(rubric: dict[str, Any], text: str) -> dict[str, Any] | None:
+    head = first_line(text)
+    return next((fmt for fmt in rubric.get("formats", []) if re.search(fmt["detect"], head, re.I)), None)
+
+
+def _applies(entry: Any, format_id: str | None) -> bool:
+    if not isinstance(entry, dict):
+        return True
+    if "formats" in entry and format_id not in entry["formats"]:
+        return False
+    return format_id is None or format_id not in entry.get("not_formats", [])
+
+
+def effective_rubric(rubric: dict[str, Any], fmt: dict[str, Any] | None) -> dict[str, Any]:
+    """The flat rubric one format is graded with: shared entries that apply to it, then its own.
+
+    With fmt None this is the shared part alone, used when no format matches.
+    """
+    format_id = fmt["id"] if fmt else None
+    merged: dict[str, Any] = {}
+    for key, value in rubric.items():
+        if key == "formats":
+            continue
+        merged[key] = [entry for entry in value if _applies(entry, format_id)] if key in LIST_KEYS else value
+    for key, value in (fmt or {}).items():
+        if key in FORMAT_META:
+            continue
+        merged[key] = [*merged.get(key, []), *value] if key in LIST_KEYS else value
+    return merged
+
+
 class Grader:
     def __init__(self, skill: str, rubric: dict[str, Any]):
         self.skill = skill
         self.rubric = rubric
         self.sections_spec = {spec["id"]: spec for spec in rubric.get("sections", [])}
+        self.format: str | None = None  # the format id the last graded output matched
 
     # Utilities ---------------------------------------------------------------
 
     def _issue(self, code: str, rule: str, message: str, where: str = "", severity: str = "error",
-               fix: str | None = None) -> Issue:
-        return Issue(code, rule, message, where, severity, fix or CODES[code])
+               fix: str | None = None, excerpt: str = "") -> Issue:
+        return Issue(code, rule, message, where, severity, fix or CODES[code], excerpt.strip())
 
     def _section(self, doc: Document, section_id: str) -> Section | None:
         spec = self.sections_spec.get(section_id)
         if spec is None:
             raise KeyError(f"{self.skill}: rubric refers to unknown section {section_id!r}")
         return doc.section(spec["aliases"])
+
+    def _check_scope(self, doc: Document, check: dict[str, Any]) -> Section | None:
+        """The section a check reads, or the whole document when the check names none."""
+        if "section" in check:
+            return self._section(doc, check["section"])
+        return Section("document", 0, -1, len(doc.lines), doc.prose_lines)
 
     def _scope_text(self, doc: Document, check: dict[str, Any]) -> tuple[str | None, str]:
         """The text a check reads; None when its section is absent (SECTION_MISSING reports that)."""
@@ -378,6 +467,17 @@ class Grader:
         issues: list[Issue] = []
         if not text.strip():
             return [self._issue("SECTION_MISSING", "empty-output", "the output is empty")]
+        if self.rubric.get("formats"):
+            fmt = detect_format(self.rubric, text)
+            inner = Grader(self.skill, effective_rubric(self.rubric, fmt))
+            found = inner.grade(text, canaries, sidecars)
+            self.format = fmt["id"] if fmt else None
+            if fmt is None:
+                titles = "; ".join(f"{f['title']} (/{f['detect']}/)" for f in self.rubric["formats"])
+                found.insert(0, self._issue("CONTRACT_VIOLATION", "format",
+                                            f"the output's first line matches none of the contract's formats: "
+                                            f"{titles}", "line 1", excerpt=first_line(text)))
+            return found
         verdict = self._verdict(doc, issues)
         self._sections(doc, verdict, issues)
         self._blockers(doc, verdict, issues)
@@ -456,7 +556,7 @@ class Grader:
         spec = self.rubric.get("verdict")
         if not spec:
             return None
-        present, verdict, _ = self._find_verdict(doc, spec["primary"])
+        present, verdict, searched = self._find_verdict(doc, spec["primary"])
         allowed = " | ".join(spec["tokens"])
         if not present:
             if spec.get("required", True):
@@ -474,10 +574,11 @@ class Grader:
             return None
         if verdict is None:
             issues.append(self._issue("VERDICT_INVALID", "verdict",
-                                      f"verdict location found but it holds no token from {allowed}"))
+                                      f"verdict location found but it holds no token from {allowed}",
+                                      excerpt=_first_text_line(searched)))
             return None
         for location in spec.get("also", []):
-            found, other, _ = self._find_verdict(doc, location)
+            found, other, located = self._find_verdict(doc, location)
             if not found:
                 if location.get("required"):
                     issues.append(self._issue("VERDICT_MISSING", location["rule"],
@@ -485,10 +586,12 @@ class Grader:
                 continue
             if other is None:
                 issues.append(self._issue("VERDICT_INVALID", location["rule"],
-                                          f"{location['describe']} holds no token from {allowed}"))
+                                          f"{location['describe']} holds no token from {allowed}",
+                                          excerpt=_first_text_line(located)))
             elif other != verdict:
                 issues.append(self._issue("VERDICT_CONFLICT", location["rule"],
-                                          f"{location['describe']} says {other} but the verdict is {verdict}"))
+                                          f"{location['describe']} says {other} but the verdict is {verdict}",
+                                          excerpt=_line_with(located, other)))
         for line, data, _error in doc.json_blocks:
             if data is None:
                 continue
@@ -503,7 +606,8 @@ class Grader:
                     if not ok:
                         issues.append(self._issue("VERDICT_CONFLICT", location["rule"],
                                                   f"JSON at {line} has {location['path']}={value!r} "
-                                                  f"but the prose verdict is {verdict}", line))
+                                                  f"but the prose verdict is {verdict}", line,
+                                                  excerpt=json.dumps(value)))
         return verdict
 
     def _blockers(self, doc: Document, verdict: str | None, issues: list[Issue]) -> None:
@@ -540,7 +644,8 @@ class Grader:
                 issues.append(self._issue(
                     "VERDICT_WITH_BLOCKERS", spec["rule"],
                     f"verdict {verdict} authorizes, but '{self.sections_spec[spec['section']]['title']}' has "
-                    f"{len(open_items)} open item(s), first: {first!r}", spec["section"]))
+                    f"{len(open_items)} open item(s), first: {first!r}", spec["section"],
+                    excerpt=open_items[0].splitlines()[0]))
 
     # IDs -----------------------------------------------------------------------
 
@@ -561,7 +666,7 @@ class Grader:
                         values = json_path(data, source["json"])
                         if values or json_path(data, source["json"].split("[*]")[0]):
                             sources += 1
-                        defined += [str(v) for v in values]
+                        defined += _json_ids(values)
             else:
                 section = self._section(doc, source["section"])
                 if section is None:
@@ -589,7 +694,8 @@ class Grader:
                 for identifier in local:
                     if identifier in seen:
                         issues.append(self._issue("DUPLICATE_ID", spec["rule"],
-                                                  f"{identifier} is defined more than once", source["section"]))
+                                                  f"{identifier} is defined more than once", source["section"],
+                                                  excerpt=identifier))
                     seen.add(identifier)
                 defined += local
         return set(defined) if sources else None
@@ -601,6 +707,7 @@ class Grader:
             if defined is None:
                 continue  # nothing defines this kind of ID here; SECTION_MISSING covers a missing table
             references: dict[str, str] = {}
+            contexts: dict[str, str] = {}
             scopes = spec.get("scope") or [None]
             for scope in scopes:
                 if scope is None:
@@ -609,16 +716,20 @@ class Grader:
                     section = self._section(doc, scope)
                     text = section.text if section else ""
                 for match in pattern.finditer(text):
-                    references.setdefault(match.group(match.lastindex or 0), scope or "document")
+                    identifier = match.group(match.lastindex or 0)
+                    references.setdefault(identifier, scope or "document")
+                    contexts.setdefault(identifier, _line_at(text, match.start()))
             for path in spec.get("refs_json", []):
                 for _, data, _ in doc.json_blocks:
                     if data is not None:
-                        for value in json_path(data, path):
-                            references.setdefault(str(value), f"json {path}")
+                        for identifier in _json_ids(json_path(data, path)):
+                            references.setdefault(identifier, f"json {path}")
+                            contexts.setdefault(identifier, f'{path}: "{identifier}"')
             for identifier, where in sorted(references.items()):
                 if identifier not in defined:
                     issues.append(self._issue("UNDEFINED_ID", spec["rule"],
-                                              f"{identifier} is referenced but {spec['defined_by']}", where))
+                                              f"{identifier} is referenced but {spec['defined_by']}", where,
+                                              excerpt=contexts.get(identifier, identifier)))
 
     # Embedded JSON ---------------------------------------------------------------
 
@@ -630,7 +741,7 @@ class Grader:
         for where, data, error in doc.json_blocks:
             if error:
                 issues.append(self._issue("SIDECAR_INVALID", "json-parse", f"JSON block does not parse: {error}",
-                                          where))
+                                          where, excerpt=error))
                 continue
             if isinstance(data, dict) and isinstance(data.get("protocol_version"), str) and "type" in data \
                     and data["protocol_version"] in {"1.0", "2.0"}:
@@ -650,6 +761,48 @@ class Grader:
                     code = "EVIDENCE_MISSING" if SIDECAR_EVIDENCE_ERROR.search(message) else "SIDECAR_INVALID"
                     issues.append(self._issue(code, sidecar["rule"], message, where))
                 self._recomputed_verdict(sidecar, data, result, verdict, where, issues)
+                if not messages:  # an invalid payload's hash and counts mean nothing; SIDECAR_INVALID says so
+                    self._cross_checks(doc, sidecar, result, where, issues)
+            for record in self.rubric.get("records", []):
+                if isinstance(data, dict) and _sidecar_matches(data, record["detect"]):
+                    for message, excerpt in record_errors(record, data):
+                        issues.append(self._issue("SIDECAR_INVALID", record["rule"], message, where, excerpt=excerpt))
+
+    def _cross_checks(self, doc: Document, sidecar: dict[str, Any], result: Any, where: str,
+                      issues: list[Issue]) -> None:
+        """A hash or count the prose states must equal the one the kernel computes from the payload.
+
+        Each cross-check names a kernel `result` path and either a `pattern` whose first group is
+        the stated value, or `count` ("items" | "table_rows") for a listed set the prose shows.
+        Runs only on a payload the kernel accepted; a value it did not compute is not compared.
+        """
+        if not isinstance(result, dict):
+            return
+        for check in sidecar.get("cross_checks", []):
+            values = json_path(result, check["result"])
+            if not values or not isinstance(values[0], (str, int)) or isinstance(values[0], bool):
+                continue
+            computed = str(values[0])
+            scope = self._check_scope(doc, check)
+            if scope is None:
+                continue
+            stated: list[tuple[str, str]] = []
+            if "pattern" in check:
+                for match in re.finditer(check["pattern"], scope.text, re.I | re.M):
+                    stated.append((match.group(1), _line_at(scope.text, match.start())))
+            elif check["count"] == "items":
+                none = re.compile(check["none_pattern"], re.I) if check.get("none_pattern") else None
+                listed = [item for item in doc.items(scope) if not (none and none.search(item))]
+                stated.append((str(len(listed)), f"{len(listed)} item(s) listed in '{scope.title}'"))
+            else:
+                rows = [row for table in doc.tables(scope) for row in table]
+                stated.append((str(len(rows)), f"{len(rows)} table row(s) in '{scope.title}'"))
+            for value, excerpt in stated:
+                if value.strip().lower() != computed.lower():
+                    issues.append(self._issue(
+                        "KERNEL_MISMATCH", check["rule"],
+                        f"the report states {check['result']} = {value} but {sidecar['validator']} computes "
+                        f"{computed} from the embedded payload", check.get("section", where), excerpt=excerpt))
 
     def _recomputed_verdict(self, sidecar: dict[str, Any], data: dict[str, Any], result: Any,
                             verdict: str | None, where: str, issues: list[Issue]) -> None:
@@ -679,7 +832,8 @@ class Grader:
         reasons = "; ".join(str(e) for e in result.get("errors", [])[:3])
         issues.append(self._issue(code, f"{sidecar['rule']}-recomputed",
                                   f"the report states {stated} but {sidecar['validator']} computes {computed} "
-                                  f"from the same payload" + (f" ({reasons})" if reasons else ""), where))
+                                  f"from the same payload" + (f" ({reasons})" if reasons else ""), where,
+                                  excerpt=f"stated {stated}; computed {computed}"))
 
     # Untrusted content -------------------------------------------------------------
 
@@ -695,16 +849,35 @@ class Grader:
             if compliance.search(block) or (extra_re and extra_re.search(block)):
                 issues.append(self._issue("INJECTION_FOLLOWED", "compliance",
                                           f"output says it acted on instructions from reviewed content: {snippet!r}",
-                                          where))
+                                          where, excerpt=block))
             for canary in canaries:
                 if canary and canary in block:
                     issues.append(self._issue("INJECTION_FOLLOWED", "canary",
                                               f"planted canary {canary!r} appears without an untrusted-data label",
-                                              where))
+                                              where, excerpt=block))
             if INJECTION_IMPERATIVE.search(block):
                 issues.append(self._issue("INJECTION_UNFLAGGED", "quoted-instruction",
                                           f"instruction-like text is repeated without marking it untrusted: "
-                                          f"{snippet!r}", where))
+                                          f"{snippet!r}", where, excerpt=block))
+
+
+def record_errors(record: dict[str, Any], data: dict[str, Any]) -> list[tuple[str, str]]:
+    """(message, excerpt) for a machine record that lacks a key or holds a value outside its closed set.
+
+    `required` keys must be present (null is allowed: the contract asks for null over an unsourced
+    fact); `enums` and `patterns` apply to non-null values only.
+    """
+    errors = [(f"the record has no {key!r} key", "") for key in record.get("required", []) if key not in data]
+    for key, allowed in record.get("enums", {}).items():
+        value = data.get(key)
+        if value is not None and value not in allowed:
+            errors.append((f"{key}={value!r} is not one of {' | '.join(map(str, allowed))}",
+                           f'"{key}": {json.dumps(value)}'))
+    for key, pattern in record.get("patterns", {}).items():
+        value = data.get(key)
+        if value is not None and not (isinstance(value, str) and re.search(pattern, value)):
+            errors.append((f"{key}={value!r} does not match /{pattern}/", f'"{key}": {json.dumps(value)}'))
+    return errors
 
 
 def _sidecar_matches(data: dict[str, Any], detect: dict[str, Any]) -> bool:
@@ -718,7 +891,7 @@ def _sidecar_matches(data: dict[str, Any], detect: dict[str, Any]) -> bool:
 
 def _check_table_column_nonempty(g: Grader, doc: Document, check: dict, verdict: str | None,
                                  issues: list[Issue]) -> None:
-    section = g._section(doc, check["section"])
+    section = g._check_scope(doc, check)
     if section is None:
         return
     when = check.get("when")
@@ -731,12 +904,12 @@ def _check_table_column_nonempty(g: Grader, doc: Document, check: dict, verdict:
             cell = _column(row, check["column"])
             if cell is not None and EMPTY_CELL.match(cell.strip("`* ")):
                 label = next(iter(row.values()), "")
-                issues.append(g._issue(check["code"], check["rule"], f"row {label!r}: {check['message']}",
-                                       check["section"]))
+                issues.append(g._issue(check_code(check), check["rule"], f"row {label!r}: {check['message']}",
+                                       check.get("section", "document"), excerpt=_row_text(row)))
 
 
 def _check_items(g: Grader, doc: Document, check: dict, verdict: str | None, issues: list[Issue]) -> None:
-    section = g._section(doc, check["section"])
+    section = g._check_scope(doc, check)
     if section is None:
         return
     pattern = re.compile(check["pattern"], re.I | re.S | re.M)
@@ -748,23 +921,26 @@ def _check_items(g: Grader, doc: Document, check: dict, verdict: str | None, iss
         hit = bool(pattern.search(item))
         if hit != (check["type"] == "items_require"):
             label = item.splitlines()[0][:80]
-            issues.append(g._issue(check["code"], check["rule"], f"{label!r}: {check['message']}", check["section"]))
+            issues.append(g._issue(check_code(check), check["rule"], f"{label!r}: {check['message']}",
+                                   check.get("section", "document"), excerpt=item.splitlines()[0]))
 
 
 def _check_section_count(g: Grader, doc: Document, check: dict, verdict: str | None,
                          issues: list[Issue]) -> None:
-    section = g._section(doc, check["section"])
+    section = g._check_scope(doc, check)
     if section is None:
         return
     for pattern in check.get("all_of", [check.get("pattern")]):
-        count = len(re.findall(pattern, section.text, re.I | re.M))
+        matches = list(re.finditer(pattern, section.text, re.I | re.M))
+        count = len(matches)
         if count < check.get("min", 1) or count > check.get("max", 10**9):
-            issues.append(g._issue(check["code"], check["rule"], f"{check['message']} (found {count})",
-                                   check["section"]))
+            excerpt = matches[check.get("max", 10**9)].group(0) if count > check.get("max", 10**9) else ""
+            issues.append(g._issue(check_code(check), check["rule"], f"{check['message']} (found {count})",
+                                   check.get("section", "document"), excerpt=excerpt))
 
 
 def _check_max_items(g: Grader, doc: Document, check: dict, verdict: str | None, issues: list[Issue]) -> None:
-    section = g._section(doc, check["section"])
+    section = g._check_scope(doc, check)
     if section is None:
         return
     count = len(doc.items(section))
@@ -776,7 +952,7 @@ def _check_max_items(g: Grader, doc: Document, check: dict, verdict: str | None,
 def _check_doc_require(g: Grader, doc: Document, check: dict, verdict: str | None, issues: list[Issue]) -> None:
     text, where = g._scope_text(doc, check)
     if text is not None and not re.search(check["pattern"], text, re.I | re.M):
-        issues.append(g._issue(check.get("code", DEFAULT_CHECK_CODES["doc_require"]), check["rule"], check["message"],
+        issues.append(g._issue(check_code(check), check["rule"], check["message"],
                                where))
 
 
@@ -784,8 +960,8 @@ def _check_doc_forbid(g: Grader, doc: Document, check: dict, verdict: str | None
     text, where = g._scope_text(doc, check)
     match = re.search(check["pattern"], text, re.I | re.M) if text is not None else None
     if match:
-        issues.append(g._issue(check.get("code", "FORBIDDEN_PHRASE"), check["rule"],
-                               f"{match.group(0)!r}: {check['message']}", where))
+        issues.append(g._issue(check_code(check), check["rule"],
+                               f"{match.group(0)!r}: {check['message']}", where, excerpt=match.group(0)))
 
 
 def _check_word_budget(g: Grader, doc: Document, check: dict, verdict: str | None, issues: list[Issue]) -> None:
@@ -796,6 +972,19 @@ def _check_word_budget(g: Grader, doc: Document, check: dict, verdict: str | Non
     if words > budget:
         issues.append(g._issue("LIMIT_EXCEEDED", check["rule"], f"{words} words; {mode} budget is {budget}",
                                severity=check.get("severity", "warning")))
+
+
+# The code a check emits when its rubric entry names none. Every check type has one, so a
+# rubric that leaves `code` out grades instead of raising KeyError.
+DEFAULT_CHECK_CODES: dict[str, str] = {
+    "table_column_nonempty": "FIELD_MISSING", "items_require": "CONTRACT_VIOLATION",
+    "items_forbid": "CONTRACT_VIOLATION", "section_count": "COUNT_MISMATCH", "max_items": "LIMIT_EXCEEDED",
+    "doc_require": "FIELD_MISSING", "doc_forbid": "FORBIDDEN_PHRASE", "word_budget": "LIMIT_EXCEEDED",
+}
+
+
+def check_code(check: dict[str, Any]) -> str:
+    return check.get("code") or DEFAULT_CHECK_CODES.get(check.get("type", ""), "CONTRACT_VIOLATION")
 
 
 CHECKS: dict[str, Callable[..., None]] = {
@@ -900,16 +1089,60 @@ def _hook_evidence_safe_inference(g: Grader, doc: Document, verdict: str | None,
                                            "downstream use; move it under 'requires caveats'", "handoff"))
 
 
+TEARDOWN_VERDICTS = ("ADOPT", "EXPERIMENT", "CANDIDATE", "BACKLOG", "REJECT", "REVIEW_REQUIRED")
+
+
+def _hook_teardown_ledger(g: Grader, doc: Document, verdict: str | None, issues: list[Issue]) -> None:
+    """Each pattern card's verdict, and the executive action mix, must equal the pattern ledger.
+
+    The ledger (schema_version 2.0) is what downstream skills read; a card that says ADOPT over a
+    ledger entry that says REVIEW_REQUIRED hands two different decisions to two readers.
+    """
+    ledgers = [data for _, data, _ in doc.json_blocks
+               if isinstance(data, dict) and data.get("schema_version") == "2.0" and isinstance(data.get("patterns"), list)]
+    portfolio = doc.section(g.sections_spec["portfolio"]["aliases"])
+    if not ledgers or portfolio is None:
+        return
+    ledger = {p.get("id"): p.get("verdict") for p in ledgers[0]["patterns"] if isinstance(p, dict)}
+    for title, body in doc.subsections(portfolio):
+        card = re.match(r"\W*(PT-\d{3})\b", title)
+        stated = re.search(r"Verdict:\s*`?([A-Z_]+)", body)
+        if not card or not stated or card.group(1) not in ledger:
+            continue
+        recorded = ledger[card.group(1)]
+        if stated.group(1) != recorded:
+            issues.append(g._issue("VERDICT_CONFLICT", "pattern-verdict-ledger",
+                                   f"{card.group(1)} card says {stated.group(1)} but the pattern ledger records "
+                                   f"{recorded!r}", "portfolio", excerpt=stated.group(0)))
+    executive = doc.section(g.sections_spec["executive"]["aliases"])
+    mix = re.search(r"Action mix:([^\n]*)", executive.text) if executive else None
+    if mix:
+        stated_mix = {token: int(count) for count, token in
+                      re.findall(r"(\d+)\s+(%s)\b" % "|".join(TEARDOWN_VERDICTS), mix.group(1))}
+        counted: dict[str, int] = {}
+        for recorded in ledger.values():
+            if isinstance(recorded, str):
+                counted[recorded] = counted.get(recorded, 0) + 1
+        for token in sorted(set(stated_mix) | set(counted)):
+            if stated_mix.get(token, 0) != counted.get(token, 0):
+                issues.append(g._issue("COUNT_MISMATCH", "action-mix-ledger",
+                                       f"the action mix states {stated_mix.get(token, 0)} {token} but the pattern "
+                                       f"ledger records {counted.get(token, 0)}", "executive",
+                                       excerpt=mix.group(0)))
+
+
 # The rule keys each hook can emit, so the pinned-rule check covers hooks too.
 HOOK_RULES: dict[str, frozenset[str]] = {
     "evidence_safe_inference": frozenset({"CONTRACT_VIOLATION:inference-as-fact"}),
     "waa_counts": frozenset({"COUNT_MISMATCH:counts"}),
+    "teardown_ledger": frozenset({"VERDICT_CONFLICT:pattern-verdict-ledger", "COUNT_MISMATCH:action-mix-ledger"}),
     "seo_composite": frozenset({"CONTRACT_VIOLATION:partial-maxx", "CONTRACT_VIOLATION:withheld-composite",
                                 "CONTRACT_VIOLATION:tier-label", "VERDICT_WITH_BLOCKERS:gate-cap"}),
 }
 HOOKS: dict[str, Callable[..., None]] = {
     "evidence_safe_inference": _hook_evidence_safe_inference,
     "waa_counts": _hook_waa_counts,
+    "teardown_ledger": _hook_teardown_ledger,
     "seo_composite": _hook_seo_composite,
 }
 
@@ -1052,6 +1285,133 @@ def hard_canary_issues(texts: Iterable[tuple[str, str]], tokens: Iterable[str]) 
     return issues
 
 
+# --- explain ---------------------------------------------------------------------------
+# --explain shows, for each failure, where its rule is written down and the exact text that
+# tripped it, so a reader can check the rule against the output without reading the grader.
+
+# Rules the grader applies to every output, and the code that defines each one.
+BUILTIN_RULES: dict[str, str] = {
+    "compliance": "INJECTION_COMPLIANCE", "quoted-instruction": "INJECTION_IMPERATIVE", "canary": "Grader._injection",
+    "canary-file": "hard_canary_issues", "json-parse": "Grader._json_blocks", "cw-aip": "envelope_errors",
+    "producer": "Grader._json_blocks", "raw-sidecar-in-brief": "Grader._json_blocks",
+    "section-order": "Grader._sections", "empty-output": "Grader.grade", "format": "detect_format",
+}
+
+
+def _code_line(name: str) -> int:
+    """Line in this file where a top-level name, or Class.method, is defined."""
+    lines = Path(__file__).read_text(encoding="utf-8").splitlines()
+    owner, _, member = name.rpartition(".")
+    pattern = re.compile(r"^\s*(?:def|class)\s+%s\b|^%s\s*[:=]" % (re.escape(member), re.escape(member)))
+    start = next((i for i, line in enumerate(lines) if owner and re.match(r"class\s+%s\b" % owner, line)), 0)
+    return next((i + 1 for i, line in enumerate(lines) if i >= start and pattern.match(line)), 1)
+
+
+def _rubric_entries(rubric: dict[str, Any], prefix: str) -> Iterable[tuple[str, str, dict[str, Any]]]:
+    """(rule key, JSON path, entry) for every rule-emitting entry of one flat rubric part."""
+    for spec in rubric.get("sections", []):
+        yield f"SECTION_MISSING:{spec['id']}", f"{prefix}sections[{spec['id']}]", spec
+    for group in rubric.get("required_any", []):
+        yield f"SECTION_MISSING:{group['id']}", f"{prefix}required_any[{group['id']}]", group
+    for blocker in rubric.get("blockers", []):
+        yield f"VERDICT_WITH_BLOCKERS:{blocker['rule']}", f"{prefix}blockers[{blocker['rule']}]", blocker
+    for check in rubric.get("checks", []):
+        yield f"{check_code(check)}:{check['rule']}", f"{prefix}checks[{check['rule']}]", check
+    for spec in rubric.get("ids", []):
+        for code in ("UNDEFINED_ID", "DUPLICATE_ID"):
+            yield f"{code}:{spec['rule']}", f"{prefix}ids[{spec['rule']}]", spec
+    for sidecar in rubric.get("sidecars", []):
+        for code in ("SIDECAR_INVALID", "EVIDENCE_MISSING"):
+            yield f"{code}:{sidecar['rule']}", f"{prefix}sidecars[{sidecar['rule']}]", sidecar
+        for code in ("VERDICT_WITH_BLOCKERS", "VERDICT_CONFLICT"):
+            yield (f"{code}:{sidecar['rule']}-recomputed", f"{prefix}sidecars[{sidecar['rule']}].recompute",
+                   sidecar)
+        for check in sidecar.get("cross_checks", []):
+            yield (f"KERNEL_MISMATCH:{check['rule']}",
+                   f"{prefix}sidecars[{sidecar['rule']}].cross_checks[{check['rule']}]", check)
+    for record in rubric.get("records", []):
+        yield f"SIDECAR_INVALID:{record['rule']}", f"{prefix}records[{record['rule']}]", record
+    verdict = rubric.get("verdict")
+    if verdict:
+        for code in ("VERDICT_MISSING", "VERDICT_INVALID"):
+            yield f"{code}:verdict", f"{prefix}verdict.primary", verdict
+        for location in [*verdict.get("also", []), *verdict.get("json", [])]:
+            for code in ("VERDICT_MISSING", "VERDICT_INVALID", "VERDICT_CONFLICT"):
+                yield f"{code}:{location['rule']}", f"{prefix}verdict[{location['rule']}]", location
+
+
+def _rubric_line(path: Path, name: str, after: int = 0) -> int:
+    """First line at or after `after` that names `name` as a rule or id; 0 when none does."""
+    pattern = re.compile(r'"(?:rule|id)"\s*:\s*"%s"' % re.escape(name))
+    lines = path.read_text(encoding="utf-8").splitlines()
+    return next((i + 1 for i, line in enumerate(lines) if i >= after and pattern.search(line)), 0)
+
+
+def rule_source(skill: str, rubric: dict[str, Any], format_id: str | None, issue: Issue) -> str:
+    """'file:line  path' of the rubric entry (or grader code) that emitted the issue."""
+    path = OUTPUT_EVALS / skill / "rubric.json"
+    relative = path.relative_to(ROOT).as_posix()
+    fmt = next((f for f in rubric.get("formats", []) if f["id"] == format_id), None)
+    parts: list[tuple[dict[str, Any], str, int]] = []
+    if fmt is not None:
+        start = _rubric_line(path, fmt["id"], after=max(_rubric_line_key(path, "formats") - 1, 0))
+        parts.append((fmt, f"formats[{fmt['id']}].", max(start - 1, 0)))
+    parts.append((effective_rubric(rubric, fmt) if fmt else rubric, "", 0))
+    for part, prefix, after in parts:
+        for key, json_where, entry in _rubric_entries(part, prefix):
+            if key == issue.key():
+                if json_where.endswith("verdict.primary"):
+                    line = _rubric_line_key(path, "primary", after)
+                else:
+                    name = entry.get("rule") or entry.get("id") or issue.rule
+                    line = _rubric_line(path, name, after) or _rubric_line(path, name)
+                return f"{relative}:{line}  {json_where}" if line else f"{relative}  {json_where}"
+    for hook, keys in HOOK_RULES.items():
+        if issue.key() in keys:
+            function = HOOKS[hook].__name__
+            return f"tooling/grade_output.py:{_code_line(function)}  hook {hook} ({function})"
+    builtin = BUILTIN_RULES.get(issue.rule)
+    if builtin:
+        return f"tooling/grade_output.py:{_code_line(builtin)}  built-in rule {issue.rule} ({builtin})"
+    return f"{relative}  (no entry names {issue.key()})"
+
+
+def _rubric_line_key(path: Path, key: str, after: int = 0) -> int:
+    """First line at or after `after` where `key` is a JSON key; 0 when none is."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    pattern = re.compile(r'(?:^|[{,\s])"%s"\s*:' % re.escape(key))
+    return next((i + 1 for i, line in enumerate(lines) if i >= after and pattern.search(line)), 0)
+
+
+def excerpt_line(text: str, excerpt: str) -> int | None:
+    """1-based line of the excerpt in the graded text, when it is there verbatim."""
+    if not excerpt:
+        return None
+    index = text.find(excerpt)
+    if index == -1:
+        index = text.find(excerpt.splitlines()[0])
+    return text[:index].count("\n") + 1 if index != -1 else None
+
+
+def explain(skill: str, text: str, issue: Issue, format_id: str | None) -> dict[str, Any]:
+    rubric = load_rubric(skill)
+    return {"source": rule_source(skill, rubric, format_id, issue), "excerpt": issue.excerpt,
+            "excerpt_line": excerpt_line(text, issue.excerpt)}
+
+
+def render_explained(issue: Issue, detail: dict[str, Any]) -> str:
+    lines = [f"{issue.severity.upper():7} {issue.code}:{issue.rule}" + (f" [{issue.where}]" if issue.where else ""),
+             f"        rule:    {detail['source']}"]
+    if detail["excerpt"]:
+        body = detail["excerpt"] if len(detail["excerpt"]) <= 240 else detail["excerpt"][:237] + "..."
+        at = f"line {detail['excerpt_line']}" if detail["excerpt_line"] else "derived"
+        lines.append(f"        excerpt ({at}): " + body.replace("\n", "\n" + " " * 18))
+    else:
+        lines.append("        excerpt: none, the rule fired on something absent from the output")
+    lines += [f"        why:     {issue.message}", f"        fix:     {issue.fix}"]
+    return "\n".join(lines)
+
+
 # --- rubric and case loading --------------------------------------------------------
 
 
@@ -1115,10 +1475,14 @@ def load_cases(skill: str) -> list[dict[str, Any]]:
 
 
 SIDECAR_KEYS = frozenset({"rule", "detect", "validator", "function", "kwargs", "status_key", "error_statuses",
-                          "recompute"})
+                          "recompute", "cross_checks", *FORMAT_FILTERS})
+CROSS_CHECK_KEYS = frozenset({"rule", "result", "section", "pattern", "count", "none_pattern"})
+RECORD_KEYS = frozenset({"rule", "detect", "required", "enums", "patterns", *FORMAT_FILTERS})
 RUBRIC_KEYS = frozenset({"skill", "contract", "ordered_sections", "forbid_embedded_json", "sections", "required_any",
                          "verdict", "blockers", "checks", "ids", "sidecars", "hooks", "canaries",
-                         "compliance_patterns", "envelope_producer"})
+                         "compliance_patterns", "envelope_producer", "records", "formats"})
+# Keys a format may set for itself; the rest of RUBRIC_KEYS belong to the skill.
+FORMAT_KEYS = (RUBRIC_KEYS - {"skill", "contract", "formats"}) | FORMAT_META
 
 
 def validate_rubric(skill: str, rubric: dict[str, Any]) -> list[str]:
@@ -1129,6 +1493,47 @@ def validate_rubric(skill: str, rubric: dict[str, Any]) -> list[str]:
         problems.append(f"rubric skill {rubric.get('skill')!r} does not match its directory")
     if not (ROOT / str(rubric.get("contract", ""))).is_file():
         problems.append(f"contract {rubric.get('contract')!r} does not exist")
+    formats = rubric.get("formats", [])
+    format_ids = [fmt.get("id") for fmt in formats]
+    if len(set(format_ids)) != len(format_ids):
+        problems.append("duplicate format id")
+    for fmt in formats:
+        where = f"format {fmt.get('id')}"
+        problems += [f"{where}: unknown key {key!r}" for key in sorted(set(fmt) - FORMAT_KEYS)]
+        if not fmt.get("title") or not fmt.get("detect"):
+            problems.append(f"{where}: needs a title and a detect pattern")
+        else:
+            try:
+                re.compile(fmt["detect"])
+            except re.error as exc:
+                problems.append(f"{where}: bad detect pattern {fmt['detect']!r}: {exc}")
+    for key in LIST_KEYS:
+        for entry in rubric.get(key, []):
+            if not isinstance(entry, dict):
+                continue
+            for name in FORMAT_FILTERS:
+                if name in entry and not formats:
+                    problems.append(f"{key} {entry.get('rule') or entry.get('id')}: {name} without declared formats")
+                unknown = sorted(set(entry.get(name, [])) - set(format_ids))
+                if unknown:
+                    problems.append(f"{key} {entry.get('rule') or entry.get('id')}: {name} names unknown "
+                                    f"format(s) {unknown}")
+    if not formats:
+        problems += _validate_body(rubric)
+    else:
+        seen: set[str] = set()
+        for fmt in [None, *formats]:
+            label = f"format {fmt['id']}: " if fmt else "shared: "
+            for problem in _validate_body(effective_rubric(rubric, fmt)):
+                if problem not in seen:
+                    seen.add(problem)
+                    problems.append(label + problem)
+    return [f"{skill}: rubric: {problem}" for problem in problems]
+
+
+def _validate_body(rubric: dict[str, Any]) -> list[str]:
+    """Rule-level problems of one flat rubric (a whole rubric, or one format's effective rubric)."""
+    problems: list[str] = []
     section_ids = [s["id"] for s in rubric.get("sections", [])]
     if len(set(section_ids)) != len(section_ids):
         problems.append("duplicate section id")
@@ -1165,7 +1570,9 @@ def validate_rubric(skill: str, rubric: dict[str, Any]) -> list[str]:
                 pattern(f"blocker {blocker['rule']}", blocker[key])
         if "when" in blocker:
             pattern(f"blocker {blocker['rule']}", blocker["when"].get("pattern"))
-        if verdict and not set(blocker.get("forbids", [])) <= set(verdict["tokens"]):
+        if not verdict:
+            problems.append(f"blocker {blocker['rule']}: a blocker needs a verdict to forbid")
+        elif not set(blocker.get("forbids", [])) <= set(verdict["tokens"]):
             problems.append(f"blocker {blocker['rule']}: forbids a token the verdict does not have")
     rules = [check["rule"] for check in rubric.get("checks", [])]
     problems += [f"duplicate check rule {rule!r}" for rule in sorted({r for r in rules if rules.count(r) > 1})]
@@ -1173,13 +1580,13 @@ def validate_rubric(skill: str, rubric: dict[str, Any]) -> list[str]:
         where = f"check {check.get('rule')}"
         if check.get("type") not in CHECKS:
             problems.append(f"{where}: unknown type {check.get('type')!r}")
-        if check.get("code", "CONTRACT_VIOLATION") not in CODES:
+        if check_code(check) not in CODES:
             problems.append(f"{where}: unknown code {check.get('code')!r}")
         section_ref(where, check.get("section"))
         for key in ("pattern", "all_of", "when_item", "none_pattern", "mode_pattern"):
             if key in check:
                 pattern(where, check[key])
-        if check.get("when_verdict") and verdict and not set(check["when_verdict"]) <= set(verdict["tokens"]):
+        if check.get("when_verdict") and not (verdict and set(check["when_verdict"]) <= set(verdict["tokens"])):
             problems.append(f"{where}: when_verdict names a token the verdict does not have")
     for spec in rubric.get("ids", []):
         if "pattern" in spec:
@@ -1203,27 +1610,65 @@ def validate_rubric(skill: str, rubric: dict[str, Any]) -> list[str]:
                 problems.append(f"sidecar {sidecar['rule']}: recompute needs 'result' and allows only stated/map")
             elif verdict and not set(recompute.get("map", {}).values()) <= set(verdict["tokens"]):
                 problems.append(f"sidecar {sidecar['rule']}: recompute maps to a token the verdict does not have")
+        for check in sidecar.get("cross_checks", []):
+            where = f"sidecar {sidecar['rule']} cross_check {check.get('rule')}"
+            problems += [f"{where}: unknown key {key!r}" for key in sorted(set(check) - CROSS_CHECK_KEYS)]
+            if not check.get("rule") or not check.get("result"):
+                problems.append(f"{where}: needs 'rule' and 'result'")
+            if ("pattern" in check) == ("count" in check):
+                problems.append(f"{where}: give exactly one of 'pattern' or 'count'")
+            elif "pattern" in check:
+                pattern(where, check["pattern"])
+                if isinstance(check["pattern"], str) and _groups(check["pattern"]) < 1:
+                    problems.append(f"{where}: the pattern needs a group that captures the stated value")
+            elif check["count"] not in {"items", "table_rows"}:
+                problems.append(f"{where}: count must be 'items' or 'table_rows'")
+            section_ref(where, check.get("section"))
+            if "none_pattern" in check:
+                pattern(where, check["none_pattern"])
+    for record in rubric.get("records", []):
+        where = f"record {record.get('rule')}"
+        problems += [f"{where}: unknown key {key!r}" for key in sorted(set(record) - RECORD_KEYS)]
+        if not record.get("required") and not record.get("enums") and not record.get("patterns"):
+            problems.append(f"{where}: a record check needs required keys, enums or patterns")
+        for value in record.get("patterns", {}).values():
+            pattern(where, value)
     problems += [f"unknown hook {hook!r}" for hook in rubric.get("hooks", []) if hook not in HOOKS]
-    return [f"{skill}: rubric: {problem}" for problem in problems]
+    return problems
 
 
-# The code a check emits when its rubric entry names none.
-DEFAULT_CHECK_CODES = {"max_items": "LIMIT_EXCEEDED", "word_budget": "LIMIT_EXCEEDED",
-                       "doc_require": "FIELD_MISSING", "doc_forbid": "FORBIDDEN_PHRASE"}
+def _groups(pattern: str) -> int:
+    try:
+        return re.compile(pattern).groups
+    except re.error:
+        return 1  # the bad pattern is already reported
+
+
+def _verdict_rules(verdict: dict[str, Any] | None) -> set[str]:
+    if not verdict:
+        return set()
+    rules = {"VERDICT_MISSING:verdict"} if verdict.get("required", True) else set()
+    rules |= {f"VERDICT_CONFLICT:{loc['rule']}" for loc in verdict.get("also", [])}
+    rules |= {f"VERDICT_CONFLICT:{loc['rule']}" for loc in verdict.get("json", [])}
+    return rules
 
 
 def rubric_rules(rubric: dict[str, Any]) -> set[str]:
     """Every declarative rule the rubric can emit as an error, for the pinned-rule report.
 
-    Hook rules come from HOOK_RULES, next to the code that emits them.
+    Hook rules come from HOOK_RULES, next to the code that emits them. For a rubric with
+    formats this is the union over every format; rules_by_format splits it.
     """
+    if rubric.get("formats"):
+        shared, per_format = rules_by_format(rubric)
+        return shared.union(*per_format.values())
     rules = {f"SECTION_MISSING:{s['id']}" for s in rubric.get("sections", [])
              if s.get("required") or s.get("required_when_verdict")}
     rules |= {f"SECTION_MISSING:{g['id']}" for g in rubric.get("required_any", [])}
     rules |= {f"VERDICT_WITH_BLOCKERS:{b['rule']}" for b in rubric.get("blockers", [])}
     for check in rubric.get("checks", []):
         if check["type"] != "word_budget" or check.get("severity") == "error":
-            rules.add(f"{check.get('code') or DEFAULT_CHECK_CODES[check['type']]}:{check['rule']}")
+            rules.add(f"{check_code(check)}:{check['rule']}")
     rules |= {f"UNDEFINED_ID:{i['rule']}" for i in rubric.get("ids", [])}
     for hook in rubric.get("hooks", []):
         rules |= HOOK_RULES.get(hook, frozenset())
@@ -1231,11 +1676,32 @@ def rubric_rules(rubric: dict[str, Any]) -> set[str]:
         if sidecar.get("recompute"):
             code = "VERDICT_WITH_BLOCKERS" if (rubric.get("verdict") or {}).get("authorizing") else "VERDICT_CONFLICT"
             rules.add(f"{code}:{sidecar['rule']}-recomputed")
-    if rubric.get("verdict"):
-        rules |= {"VERDICT_MISSING:verdict"} if rubric["verdict"].get("required", True) else set()
-        rules |= {f"VERDICT_CONFLICT:{loc['rule']}" for loc in rubric["verdict"].get("also", [])}
-        rules |= {f"VERDICT_CONFLICT:{loc['rule']}" for loc in rubric["verdict"].get("json", [])}
-    return rules
+        rules |= {f"KERNEL_MISMATCH:{check['rule']}" for check in sidecar.get("cross_checks", [])}
+    rules |= {f"SIDECAR_INVALID:{record['rule']}" for record in rubric.get("records", [])}
+    return rules | _verdict_rules(rubric.get("verdict"))
+
+
+def rules_by_format(rubric: dict[str, Any]) -> tuple[set[str], dict[str, set[str]]]:
+    """(shared rules, {format id: rules its own entries add}).
+
+    A shared rule is pinned by a broken case of any format. A format's own rule (its sections,
+    checks, verdict...) must be pinned by a broken case of that format, so a rule two formats
+    both declare is proved in each.
+    """
+    formats = rubric.get("formats", [])
+    if not formats:
+        return rubric_rules(rubric), {}
+    shared = {"CONTRACT_VIOLATION:format"}
+    per_format: dict[str, set[str]] = {}
+    for fmt in formats:
+        merged = effective_rubric(rubric, fmt)
+        own_entries = {key: value for key, value in fmt.items() if key in RUBRIC_KEYS}
+        own = rubric_rules({**own_entries, "verdict": merged.get("verdict")})
+        if "verdict" not in fmt:
+            own -= _verdict_rules(merged.get("verdict"))
+        per_format[fmt["id"]] = own
+        shared |= rubric_rules(merged) - own
+    return shared, per_format
 
 
 def section_sweep(skill: str, rubric: dict[str, Any], text: str) -> tuple[set[str], list[str]]:
@@ -1283,7 +1749,8 @@ def coverage_failures() -> list[str]:
 def self_test(verbose: bool = False, only: Iterable[str] = ()) -> int:
     failures: list[str] = []
     total = 0
-    unpinned: dict[str, list[str]] = {}
+    rules_total = 0
+    rules_open = 0
     selected = [skill for skill in skills_with_rubrics() if not only or skill in set(only)]
     if not only:
         # A freshly scaffolded skill must pass the fast gates before it has a rubric, so coverage is
@@ -1292,7 +1759,11 @@ def self_test(verbose: bool = False, only: Iterable[str] = ()) -> int:
             print(f"NOTE {note}")
     for skill in selected:
         rubric = load_rubric(skill)
-        failures += validate_rubric(skill, rubric)
+        problems = validate_rubric(skill, rubric)
+        failures += problems
+        if problems:
+            continue  # a malformed rubric would only add noise below
+        formats = {fmt["id"]: fmt for fmt in rubric.get("formats", [])}
         cases = load_cases(skill)
         good_files = {case.get("file") for case in cases if not case["expect"] and not case.get("mutations")}
         for case in cases:
@@ -1301,6 +1772,8 @@ def self_test(verbose: bool = False, only: Iterable[str] = ()) -> int:
                 failures.append(f"{skill}/{case['id']}: base {case['base']!r} is not itself a passing golden")
         covered: set[str] = set()
         pinned: set[str] = set()
+        pinned_in: dict[str | None, set[str]] = {}
+        first_good: dict[str | None, str] = {}
         goods = 0
         for case in cases:
             total += 1
@@ -1309,6 +1782,8 @@ def self_test(verbose: bool = False, only: Iterable[str] = ()) -> int:
             except (OSError, ValueError, KeyError) as exc:
                 failures.append(f"{skill}/{case.get('id')}: {exc}")
                 continue
+            fmt = detect_format(rubric, text)
+            format_id = fmt["id"] if fmt else None
             targets = {m.get("target") for m in case.get("mutations", [])}
             if targets and all(materialize(skill, case, target) == materialize(skill, {**case, "mutations": []}, target)
                                for target in targets):
@@ -1322,33 +1797,44 @@ def self_test(verbose: bool = False, only: Iterable[str] = ()) -> int:
             got = sorted({issue.key() for issue in errors})
             want = sorted(set(case["expect"]))
             goods += not want
+            if not want and not case.get("mutations"):
+                first_good.setdefault(format_id, text)
             pinned |= set(want)
+            pinned_in.setdefault(format_id, set()).update(want)
             covered |= {key.split(":")[0] for key in want}
             if got != want:
                 failures.append(f"{skill}/{case['id']}: expected {want or 'PASS'}, got {got or 'PASS'}"
                                 + "".join(f"\n    {i.render()}" for i in errors if i.key() not in want))
             elif verbose:
-                print(f"ok   {skill}/{case['id']}: {want or 'PASS'}")
+                print(f"ok   {skill}/{case['id']}{f' [{format_id}]' if format_id else ''}: {want or 'PASS'}")
         if goods < MIN_PASSING_CASES:
             failures.append(f"{skill}: {goods} passing golden case(s); at least {MIN_PASSING_CASES} are required")
-        if not any(not c["expect"] and not c.get("mutations") for c in cases):
+        if not first_good:
             failures.append(f"{skill}: no golden case that passes")
-        if any(not c["expect"] and not c.get("mutations") for c in cases):
-            first_good = next(c for c in cases if not c["expect"] and not c.get("mutations"))
-            swept, sweep_failures = section_sweep(skill, rubric, materialize(skill, first_good))
+        # Every declared format needs a passing golden of its own, swept section by section.
+        for format_id in formats or [None]:
+            if format_id not in first_good:
+                failures.append(f"{skill}: format {format_id!r} has no passing golden file")
+                continue
+            swept, sweep_failures = section_sweep(skill, effective_rubric(rubric, formats.get(format_id))
+                                                  if format_id else rubric, first_good[format_id])
             pinned |= swept
-            failures += sweep_failures
+            pinned_in.setdefault(format_id, set()).update(swept)
+            failures += [f"{failure} [format {format_id}]" if format_id else failure for failure in sweep_failures]
         for category, codes in REQUIRED_CATEGORIES.items():
             if not covered & codes:
                 failures.append(f"{skill}: no broken case covers '{category}' ({' or '.join(sorted(codes))})")
-        unpinned[skill] = sorted(rubric_rules(rubric) - pinned)
-        for rule in unpinned[skill]:
-            # A rule no broken golden trips could be deleted without any case noticing.
-            failures.append(f"{skill}: rule {rule} is not pinned by any broken case")
+        shared, per_format = rules_by_format(rubric)
+        unpinned = [f"rule {rule} is not pinned by any broken case" for rule in sorted(shared - pinned)]
+        for format_id, own in per_format.items():
+            # A rule no broken golden of its own format trips could be deleted without any case noticing.
+            unpinned += [f"rule {rule} is not pinned by any broken case of format {format_id!r}"
+                         for rule in sorted(own - pinned_in.get(format_id, set()))]
+        failures += [f"{skill}: {message}" for message in unpinned]
+        rules_total += len(shared) + sum(len(own) for own in per_format.values())
+        rules_open += len(unpinned)
     for failure in failures:
         print(f"FAIL {failure}")
-    rules_total = sum(len(rubric_rules(load_rubric(s))) for s in selected)
-    rules_open = sum(len(v) for v in unpinned.values())
     print(f"{total} golden cases across {len(selected)} skills; "
           f"{rules_total - rules_open}/{rules_total} rubric rules pinned by a broken case")
     if failures:
@@ -1375,6 +1861,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--sidecar", action="append", default=[], type=Path,
                         help="a machine sidecar the skill wrote to its own file (repeatable)")
     parser.add_argument("--strict", action="store_true", help="treat warnings as failures")
+    parser.add_argument("--explain", action="store_true",
+                        help="for each failure, print the rubric rule source (file:line and entry) and the exact "
+                             "excerpt that tripped it")
     parser.add_argument("--list", action="store_true", help="list graded skills")
     parser.add_argument("--self-test", action="store_true", help="run every golden case")
     parser.add_argument("--skill", dest="only_skills", action="append", default=[],
@@ -1435,14 +1924,27 @@ def main(argv: list[str] | None = None) -> int:
     errors = [i for i in issues if i.severity == "error"]
     warnings = [i for i in issues if i.severity != "error"]
     failed = bool(errors) or (args.strict and bool(warnings))
+    rubric = load_rubric(args.skill)
+    fmt = detect_format(rubric, text) if rubric.get("formats") else None
+    format_id = fmt["id"] if fmt else None
+
+    def as_json(issue: Issue) -> dict[str, Any]:
+        data = asdict(issue)
+        data.pop("excerpt")
+        return {**data, **explain(args.skill, text, issue, format_id)} if args.explain else data
+
     if args.json:
-        print(json.dumps({"skill": args.skill, "file": args.output, "status": "FAIL" if failed else "PASS",
-                          "errors": [asdict(i) for i in errors], "warnings": [asdict(i) for i in warnings]},
-                         indent=2, ensure_ascii=False))
+        result = {"skill": args.skill, "file": args.output, "status": "FAIL" if failed else "PASS",
+                  "errors": [as_json(i) for i in errors], "warnings": [as_json(i) for i in warnings]}
+        if rubric.get("formats"):
+            result["format"] = format_id
+        print(json.dumps(result, indent=2, ensure_ascii=False))
     else:
-        print(f"{'FAIL' if failed else 'PASS'} {args.skill}: {len(errors)} error(s), {len(warnings)} warning(s)")
+        shape = f" (format: {fmt['title'] if fmt else 'none matched'})" if rubric.get("formats") else ""
+        print(f"{'FAIL' if failed else 'PASS'} {args.skill}{shape}: {len(errors)} error(s), {len(warnings)} warning(s)")
         for issue in errors + warnings:
-            print(issue.render())
+            print(render_explained(issue, explain(args.skill, text, issue, format_id)) if args.explain
+                  else issue.render())
         if not issues:
             print("Structure matches the output contract. This does not verify that the claims are true.")
     return 1 if failed else 0

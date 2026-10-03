@@ -71,6 +71,9 @@
      "expect": ["INJECTION_UNFLAGGED:quoted-instruction"]},
     {"id": "broken-no-candidate", "base": "good-portfolio-reopened.md",
      "mutations": [{"replace": "- Candidate: `pricing-guide-v3`, mode STANDARD", "with": "- Mode STANDARD"}],
-     "expect": ["FIELD_MISSING:candidate"]}
+     "expect": ["FIELD_MISSING:candidate"]},
+    {"id": "broken-closed-count-misstated", "base": "good-deep-strict.md", "mutations": [{"replace": "VALID, closed 1, open 1.", "with": "VALID, closed 2, open 1."}], "expect": ["KERNEL_MISMATCH:closed-count-stated"]},
+    {"id": "broken-open-count-misstated", "base": "good-portfolio-reopened.md", "note": "RP-01 is REOPENED; counting it as not open hides the regression.", "mutations": [{"replace": "VALID, closed 1, open 2.", "with": "VALID, closed 1, open 1."}], "expect": ["KERNEL_MISMATCH:open-count-stated"]},
+    {"id": "broken-closure-not-listed", "base": "good-deep-strict.md", "note": "The ledger closes RP-01 but the Proven closures section shows none, so the reader cannot check its proof.", "mutations": [{"remove_section": "Proven closures"}, {"replace": "## Deferred and won't fix", "with": "## Proven closures\n\n- None this run.\n\n## Deferred and won't fix"}], "expect": ["KERNEL_MISMATCH:closures-listed"]}
   ]
 }

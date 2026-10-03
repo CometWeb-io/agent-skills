@@ -73,3 +73,6 @@ missing_classes[]
 contaminated_holdout           # holdout cases marked SUSPECTED or KNOWN
 split_counts                   # both shapes: {dev, holdout}
 ```
+
+A payload that is not an object is `INVALID` with `payload:not-object`, no
+missing classes, no contaminated holdout and zero split counts.

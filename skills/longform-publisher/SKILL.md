@@ -1,36 +1,31 @@
 ---
 name: longform-publisher
 description: >-
-  Run the publication control plane for a long-form work such as an ebook, report, playbook, white
-  paper, guide, handbook, or research-backed article: one canonical manuscript, claim-use
-  traceability, derived DOCX/PDF/HTML lineage, and release-stage discipline. Do not use to create a
-  new CometWeb ebook or workbook from research through cover and design (use ebook-publisher), for
-  primary evidence research (evidence-researcher), prose-only humanization (ai-humanize), a standalone
-  article draft (content-writer), or low-level PDF/DOCX file manipulation. Use when an existing
-  publication must be refreshed into a new edition, when a manuscript and its derived formats must be
-  reconciled, or when a publication needs a RELEASE_READY gate across formats.
+  Run the publication control plane for long-form work (ebook, report, playbook, white paper, guide,
+  handbook): one canonical manuscript, claim traceability, derived DOCX/PDF/HTML lineage, release
+  stages. Do not use to create a new CometWeb ebook from research to design (ebook-publisher), for
+  primary research (evidence-researcher), humanization (ai-humanize), an article draft
+  (content-writer), or PDF/DOCX file edits. Use to refresh a publication into a new edition, reconcile
+  a manuscript with its derived formats, or gate RELEASE_READY.
 ---
 
 # Longform Publisher
 
-Protocol version: **longform-publisher/1**. Skill release: **1.1.3**.
+Protocol version: **longform-publisher/1**. Skill release: **1.1.4**.
 
 Operate as a publication control plane. Own the canonical manuscript, source policy, claim-use traceability, editorial gates, version lineage, derived-artifact readiness, and publication state. Do not become a duplicate research, rewriting, DOCX, PDF, or marketing-copy specialist.
 
 ## 0. Load the control plane
 
-Always read:
+Open each reference when its trigger applies; a full build or refresh run meets every trigger.
 
-- [references/state-model.md](references/state-model.md)
-- [references/source-policy.md](references/source-policy.md)
-- [references/claim-use.md](references/claim-use.md)
-- [references/fidelity-gate.md](references/fidelity-gate.md)
-- [references/format-lineage.md](references/format-lineage.md)
-- [references/report-contract.md](references/report-contract.md)
-- [references/output-contract.md](references/output-contract.md)
-
-Read when relevant:
-
+- [references/state-model.md](references/state-model.md) before you name, infer or change a stage;
+- [references/source-policy.md](references/source-policy.md) before you fix the mode or admit a source;
+- [references/claim-use.md](references/claim-use.md) before you draft from, cite or reconcile a material claim;
+- [references/fidelity-gate.md](references/fidelity-gate.md) after `ai-humanize`, a substantial rewrite or a re-expressing translation;
+- [references/format-lineage.md](references/format-lineage.md) before you generate, check or mark a derived artifact;
+- [references/report-contract.md](references/report-contract.md) before you write or check `publication-report.json`;
+- [references/output-contract.md](references/output-contract.md) before you return the publication or a status, readiness or refresh plan;
 - [references/delegation.md](references/delegation.md) before specialist handoff;
 - [references/evaluation.md](references/evaluation.md) when testing or modifying this skill.
 

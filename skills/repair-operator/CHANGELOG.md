@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.7.4] - 2026-10-03
+
+- A ledger that is not an object, or has no `items` list, returned only `{status, closed, open, errors}` and dropped the documented `strict_closure`, `portfolio_mode` and `effort_units`; every result now carries all seven keys.
+- The cross-skill check `tooling/kernel_error_envelope.py` now holds this kernel to the shared error envelope (see CONTRIBUTING.md).
+
 ## [1.7.3] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

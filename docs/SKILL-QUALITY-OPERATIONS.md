@@ -36,6 +36,22 @@ Before a release, also inspect reachable history:
 python3 tooling/public_safety.py --history
 ```
 
+## Diagnostics outside CI
+
+Two read-only tools are run by hand rather than by a gate:
+
+```bash
+uv run python tooling/doctor.py ai-council --installed-root /path/to/installed/skills
+uv run python tooling/check_knowledge.py registry/knowledge-rules.json --strict
+```
+
+`doctor.py` compares one skill's registry entry, source, built package and an
+installed copy; it reports a directory as present, never as discovered by a
+host session. `check_knowledge.py` reports which recorded rules are past their
+TTL and need re-verification; it fetches nothing, and a rule within its TTL is
+still not re-verified. Its result depends on the date, which is why it is not a
+gate. [`TOOLING.md`](TOOLING.md) lists every tool and the gate that runs it.
+
 ## Runtime and side-effect boundary
 
 A host may load a skill while lacking browser, filesystem, code-execution, or

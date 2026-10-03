@@ -76,6 +76,13 @@
     {"rule": "benchmark-kernel", "detect": {"has_keys": ["benchmark_id", "required_classes", "cases"]},
      "validator": "skills/benchmark-curator/scripts/kernel.py", "function": "validate",
      "error_statuses": ["INVALID"],
-     "recompute": {"result": "status"}}
+     "recompute": {"result": "status"},
+     "cross_checks": [
+       {"rule": "benchmark-hash-stated", "result": "benchmark_hash", "section": "identity",
+        "pattern": "benchmark_hash\\W*([0-9a-f]{64})"},
+       {"rule": "dev-count-stated", "result": "split_counts.dev", "section": "taxonomy", "pattern": "\\bdev\\s+(\\d+)"},
+       {"rule": "holdout-count-stated", "result": "split_counts.holdout", "section": "taxonomy",
+        "pattern": "\\bholdout\\s+(\\d+)"}
+     ]}
   ]
 }

@@ -54,6 +54,9 @@ class Gate:
     cost: float = 1.0
     # Extra arguments under --ci only, where a check must not be skipped.
     ci_args: tuple[str, ...] = ()
+    # (other gate id, arguments): appended when that other gate runs in the same
+    # invocation, so work it already does is not done twice.
+    defer: tuple[str, tuple[str, ...]] | None = None
 
 
 def _python(*args: str) -> tuple[str, ...]:
@@ -61,7 +64,8 @@ def _python(*args: str) -> tuple[str, ...]:
 
 
 # Test modules that check one skill package at a time and finish in seconds.
-# pytest runs them again in the full suite; this list is what --fast adds.
+# This list is what --fast adds; a full run leaves them out of the pytest gate
+# (see Gate.defer) so they are not collected and run twice.
 PACKAGE_TESTS = (
     "test_skill_eval_harnesses.py",
     "test_untrusted_content_rules.py",
@@ -83,8 +87,10 @@ GATES: tuple[Gate, ...] = (
     Gate("shellcheck", ("shellcheck", "{shell_scripts}"), "shell scripts", tool="shellcheck", cost=1.5),
     Gate("uv_lock", ("uv", "lock", "--check"), "uv.lock matches pyproject.toml", tool="uv",
          fix=("uv", "lock")),
+    # Locally a clean result is reused while every input hashes the same; CI
+    # always runs the engine.
     Gate("sast", _python("tooling/sast.py"), "semgrep rules for Python and shell (pinned engine, offline)",
-         tool="uv", fast=False, cost=25),
+         tool="uv", fast=False, cost=25, ci_args=("--no-cache",)),
     Gate("runtime_deps_locked", _python("tooling/audit_deps.py", "--coverage"),
          "skill RUNTIME.json dependencies are locked, so pip-audit covers them"),
     Gate("sbom", _python("tooling/sbom.py", "--check"), "plugin CycloneDX SBOM builds and validates"),
@@ -128,7 +134,8 @@ GATES: tuple[Gate, ...] = (
     Gate("routing_adversarial", _python("tooling/run_policy_evals.py", "--suite",
                                         "evals/routing/adversarial-suite.json"),
          "injection-style prompts cannot invoke or lift a denial"),
-    Gate("behavior_evals", _python("tooling/run_behavior_evals.py"), "behavior fixtures"),
+    Gate("behavior_evals", _python("tooling/run_behavior_evals.py"), "behavior fixtures",
+         ci_args=("--require-runtime",)),
     Gate("blind_eval_harness", _python("tooling/run_blind_eval_harness.py"),
          "behavior suites are well formed"),
     Gate("output_grading", _python("tooling/grade_output.py", "--self-test"),
@@ -151,8 +158,11 @@ GATES: tuple[Gate, ...] = (
     Gate("public_safety_history", _python("tooling/public_safety.py", "--root", ".", "--history"),
          "leak scan, every reachable commit", fast=False, cost=6),
     # Tests and packaging.
+    # When skill_package_tests runs too, the full suite leaves those modules to
+    # it instead of collecting and running them a second time.
     Gate("pytest", _python("-m", "pytest", "-q", "-n", "auto", "-p", "no:cacheprovider"),
-         "full test suite", fast=False, cost=60),
+         "full test suite", fast=False, cost=60,
+         defer=("skill_package_tests", tuple(f"--ignore=tooling/tests/{name}" for name in PACKAGE_TESTS))),
     Gate("installation_acceptance", _python("tooling/installation_acceptance.py", "--all",
                                             "--run-helpers", "--trusted-checkout"),
          "build, extract and run every package", fast=False, cost=150),
@@ -219,13 +229,20 @@ def run_command(argv: list[str], root: Path, timeout: int) -> tuple[int | None, 
     return code, output, time.monotonic() - started
 
 
-def run_gate(gate: Gate, root: Path, timeout: int, ci: bool) -> Result:
+def gate_argv(gate: Gate, ci: bool, selected: frozenset[str] = frozenset()) -> tuple[str, ...]:
+    argv = (*gate.argv, *gate.ci_args) if ci else gate.argv
+    if gate.defer and gate.defer[0] in selected:
+        argv = (*argv, *gate.defer[1])
+    return argv
+
+
+def run_gate(gate: Gate, root: Path, timeout: int, ci: bool, selected: frozenset[str] = frozenset()) -> Result:
     if gate.tool and shutil.which(gate.tool) is None:
         message = f"{gate.tool} is not installed"
         return Result(gate, "failed" if ci else "skipped", 0.0, message)
     if gate.id == "shellcheck" and not shell_scripts(root):
         return Result(gate, "passed", 0.0, "no shell scripts")
-    argv = (*gate.argv, *gate.ci_args) if ci else gate.argv
+    argv = gate_argv(gate, ci, selected)
     code, output, seconds = run_command(expand(argv, root), root, timeout)
     return Result(gate, "passed" if code == 0 else "failed", seconds, output, code)
 
@@ -338,7 +355,8 @@ def main(argv: list[str] | None = None) -> int:
     before = tree_state(root)
     results: dict[str, Result] = {}
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
-        futures = {pool.submit(run_gate, gate, root, args.timeout, args.ci): gate
+        selected = frozenset(g.id for g in gates)
+        futures = {pool.submit(run_gate, gate, root, args.timeout, args.ci, selected): gate
                    for gate in sorted(gates, key=lambda g: -g.cost)}
         for future in as_completed(futures):
             result = future.result()

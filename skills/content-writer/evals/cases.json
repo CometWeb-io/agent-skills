@@ -1208,7 +1208,37 @@
       ],
       "release_eligible": false,
       "unresolved_material": 0,
-      "mode": "DRAFT"
+      "mode": "FINAL"
+    }
+  },
+  {
+    "id": "mode-of-the-wrong-type-is-invalid",
+    "input": {
+      "claims": [
+        {
+          "claim_id": "c1",
+          "evidence": [
+            {
+              "locator": "https://example.test/doc",
+              "source": "official-doc"
+            }
+          ],
+          "material": true,
+          "presented_as_fact": true,
+          "status": "SUPPORTED"
+        }
+      ],
+      "mode": [
+        "FINAL"
+      ]
+    },
+    "expect": {
+      "status": "FAIL",
+      "errors": [
+        "mode:invalid"
+      ],
+      "release_eligible": false,
+      "mode": "FINAL"
     }
   }
 ]

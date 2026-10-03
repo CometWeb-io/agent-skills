@@ -12,6 +12,12 @@
       "final": true
     },
     {
+      "file": "valid/decision-council-no-go.json",
+      "expect": "accept",
+      "final": true,
+      "note": "A Council NO-GO written in the schema spelling (ai-council gate: envelope_verdict)"
+    },
+    {
       "file": "valid/finding-open.json",
       "expect": "accept",
       "final": true
@@ -184,6 +190,13 @@
       "final": false,
       "error": "verdict",
       "note": "GO_WITH_CONTROLS is a release verdict, not a decision verdict"
+    },
+    {
+      "file": "invalid/decision-council-hyphen-verdict.json",
+      "expect": "reject",
+      "final": false,
+      "error": "verdict",
+      "note": "The Council report spelling NO-GO is not the envelope spelling NO_GO"
     },
     {
       "file": "invalid/finding-unknown-severity.json",
