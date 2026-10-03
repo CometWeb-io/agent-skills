@@ -107,3 +107,27 @@ def test_expected_artifacts_include_compatibility_matrix():
     data = json.loads((ROOT / "registry" / "skills.json").read_text(encoding="utf-8"))
     artifacts = gen.expected_artifacts(data["skills"])
     assert gen.OUT_COMPAT in artifacts
+
+
+def test_readme_skill_counts_follow_the_registry():
+    gen = load_generator()
+    skills = [{"id": "alpha", "version": "1.0.0"}, {"id": "beta", "version": "1.0.0"}]
+    catalog = {"groups": [{"title": "All", "skills": [{"id": "alpha", "summary": "A."},
+                                                     {"id": "beta", "summary": "B."}]}]}
+    current = ("![Skills](https://img.shields.io/badge/skills-7-informational.svg)\n"
+               "This repository contains 7 reusable skill packages.\n"
+               f"{gen.README_BEGIN}\nold\n{gen.README_END}\n")
+    rendered = gen.render_readme(current, skills, catalog)
+    assert "badge/skills-2-informational" in rendered
+    assert "contains 2 reusable skill packages" in rendered
+
+
+def test_host_manifest_package_list_follows_the_registry():
+    gen = load_generator()
+    manifest = json.dumps({"name": "x", "description": "Skills (1 packages): Old One.", "version": "1"},
+                          indent=2) + "\n"
+    rendered = json.loads(gen.render_host_manifest(manifest, [{"id": "repo-to-roadmap"}, {"id": "ai-council"}]))
+    assert rendered["description"] == "Skills (2 packages): AI Council, Repo to Roadmap."
+    assert rendered["version"] == "1"
+    untouched = json.dumps({"description": "No package list here."}) + "\n"
+    assert gen.render_host_manifest(untouched, [{"id": "ai-council"}]) == untouched

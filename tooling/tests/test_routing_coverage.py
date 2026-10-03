@@ -98,6 +98,57 @@ def test_runner_fails_a_suite_with_hollow_cases(tmp_path, monkeypatch, capsys):
     assert "duplicate case id" in capsys.readouterr().err
 
 
+# Per-language floors: a skill reachable only from English prompts is not covered.
+
+def test_every_active_skill_meets_the_polish_floor_on_the_live_suite():
+    rows = cov.coverage(SUITE["cases"], REGISTRY)
+    assert cov.language_floor_problems(rows) == []
+    assert cov.LANGUAGE_FLOORS["pl"] == {"positive": 3, "boundary": 1}
+    for row in rows:
+        assert row["languages"]["pl"]["positive"] >= 3, row
+        assert row["languages"]["pl"]["boundary"] >= 1, row
+
+
+def test_language_counts_split_positives_and_boundary_negatives():
+    cases = [_case(id="a", prompt="Zroastuj to repo.", lang="pl", expected_primary_skill="repo-roaster"),
+             _case(id="b", prompt="Roast this repo.", expected_primary_skill="repo-roaster"),
+             _case(id="c", prompt="Upiecz ten landing.", lang="pl", expected_primary_skill="content-roaster",
+                   must_not_trigger=["repo-roaster"]),
+             _case(id="d", prompt="Pogoda w Warszawie?", lang="pl", must_not_trigger=["repo-roaster"])]
+    row = next(r for r in cov.coverage(cases, REGISTRY) if r["id"] == "repo-roaster")
+    assert row["languages"]["pl"] == {"positive": 1, "boundary": 1}
+    assert row["languages"]["en"] == {"positive": 1, "boundary": 0}
+
+
+def test_a_language_floor_miss_names_the_skill_language_and_kind():
+    rows = [{"id": "a", "languages": {"pl": {"positive": 3, "boundary": 1}}},
+            {"id": "b", "languages": {"pl": {"positive": 1, "boundary": 0}}},
+            {"id": "c"}]
+    assert cov.language_floor_problems(rows) == [
+        "b: 0 pl boundary negative(s) < 1", "b: 1 pl positive routing case(s) < 3",
+        "c: 0 pl boundary negative(s) < 1", "c: 0 pl positive routing case(s) < 3"]
+
+
+@pytest.mark.parametrize("case,needle", [
+    (_case(prompt="Zrób przegląd.", lang="pl"), None),
+    (_case(prompt="Zrób przegląd."), "tag it \"lang\": \"pl\""),
+    (_case(prompt="Zrób przegląd.", lang="en"), "tag it"),
+    (_case(prompt="Explain this.", lang="de"), "lang must be one of"),
+])
+def test_language_tags_are_validated(case, needle):
+    problems = cov.structural_problems([case], REGISTRY)
+    if needle is None:
+        assert problems == []
+    else:
+        assert any(needle in p for p in problems), problems
+
+
+def test_dropping_polish_cases_fails_the_check():
+    cases = [c for c in SUITE["cases"] if c.get("lang") != "pl"]
+    problems = cov.language_floor_problems(cov.coverage(cases, REGISTRY))
+    assert any(" pl positive routing case(s) < 3" in p for p in problems), problems
+
+
 # Known gaps: pinned misroutes, so a routing fix announces itself.
 
 def test_every_known_gap_still_reproduces():

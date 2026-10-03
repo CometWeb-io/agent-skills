@@ -10,10 +10,12 @@ Accepts both protocol versions, dispatching on ``protocol_version``:
   ``payload_hash`` is recomputed unless it is the draft marker ``pending``.
 
 For both versions an authorizing verdict (``GO``, and for releases
-``GO_WITH_CONTROLS``) next to a non-empty ``blockers`` list is rejected. Full v2
-payload semantics (evidence graph, decision gates) stay with the producing skill
-and ``tooling/validate_envelope.py``; this gate checks what a parent needs before
-step N+1.
+``GO_WITH_CONTROLS``) next to a non-empty ``blockers`` list is rejected. For v2 it
+is also rejected next to a ``BLOCK`` or ``COUNSEL_REQUIRED`` gate, and a decision
+``GO`` next to a ``human_approval`` that is ``required``, ``pending`` or ``denied``.
+Full v2 payload semantics (evidence graph, schema enums) stay with the producing
+skill and ``tooling/validate_envelope.py``; this gate checks what a parent needs
+before step N+1.
 """
 
 from __future__ import annotations
@@ -46,6 +48,11 @@ V2_AUTHORIZING_VERDICTS: dict[str, frozenset[str]] = {
     "DecisionEnvelope": frozenset({"GO"}),
     "ReleaseEnvelope": frozenset({"GO", "GO_WITH_CONTROLS"}),
 }
+# Gate states that leave the decision unresolved. Compared case-insensitively:
+# release gate statuses are free-form and the readiness engine writes lowercase.
+V2_UNRESOLVED_GATE_STATUSES = frozenset({"BLOCK", "COUNSEL_REQUIRED"})
+# A decision GO is coherent only when approval is not needed or has been given.
+V2_GO_COMPATIBLE_APPROVAL = frozenset({"not_required", "granted"})
 
 REQUIRED_BY_TYPE: dict[str, list[str]] = {
     "EvidenceEnvelope": ["payload"],
@@ -99,18 +106,32 @@ def check_payload_hash(data: dict, final: bool) -> list[str]:
 
 
 def check_authorizing_verdict(data: dict) -> list[str]:
-    """v2 Decision/Release: an authorizing verdict cannot carry open blockers.
+    """v2 Decision/Release: an authorizing verdict cannot sit next to anything unresolved.
 
-    The v1 ``DecisionHandoff`` kind schema expresses the same rule in JSON Schema.
+    Open blockers, a ``BLOCK``/``COUNSEL_REQUIRED`` gate, and (for a decision) an
+    approval that is required, pending or denied all reject the step. The v1
+    ``DecisionHandoff`` kind schema expresses the blockers rule in JSON Schema.
     """
     verdicts = V2_AUTHORIZING_VERDICTS.get(data.get("type"))  # type: ignore[arg-type]
     payload = data.get("payload")
     if not verdicts or not isinstance(payload, dict):
         return []
     verdict = payload.get("verdict")
-    if verdict in verdicts and isinstance(payload.get("blockers"), list) and payload["blockers"]:
-        return [f"payload.blockers: {verdict} cannot have blockers"]
-    return []
+    if verdict not in verdicts:
+        return []
+    errors: list[str] = []
+    if isinstance(payload.get("blockers"), list) and payload["blockers"]:
+        errors.append(f"payload.blockers: {verdict} cannot have blockers")
+    gates = payload.get("gates")
+    for gate in gates if isinstance(gates, list) else []:
+        status = gate.get("status") if isinstance(gate, dict) else None
+        if isinstance(status, str) and status.strip().upper() in V2_UNRESOLVED_GATE_STATUSES:
+            errors.append(f"payload.gates: {verdict} blocked by gate {gate.get('gate_id')} status={status}")
+    if data.get("type") == "DecisionEnvelope" and "human_approval" in payload:
+        approval = payload["human_approval"]
+        if approval not in V2_GO_COMPATIBLE_APPROVAL:
+            errors.append(f"payload.human_approval: {verdict} is incompatible with human_approval={approval}")
+    return errors
 
 
 def load_schema(path: Path) -> dict:

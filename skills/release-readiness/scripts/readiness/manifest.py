@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import difflib
 import json
 import math
 import re
@@ -10,7 +11,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 MANIFEST_VERSION = 2
-ENGINE_VERSION = "2.1.0"
+ENGINE_VERSION = "2.2.0"
 
 DOMAINS = ("product", "qa", "security", "ops", "docs", "billing", "support")
 PROFILES = ("saas_web", "api_service", "mobile_app", "desktop_app", "internal_tool", "oss_library", "generic")
@@ -38,6 +39,18 @@ SCOPE_FLAG_KEYS = (
     "incident_recovery_release",
     "high_impact_ai_change",
     "legal_or_regulatory_change",
+)
+
+# Keys `_normalize_scope` reads. Anything else in `scope` is ignored by the
+# engine, so it is reported in `scope_warnings` instead of vanishing silently.
+SCOPE_KEYS = (
+    "audience",
+    "commercial",
+    "commercial_model",
+    "governance_surfaces",
+    "notes",
+    "risk_assessment_complete",
+    "risk_flags",
 )
 
 HIGH_RISK_FLAGS = {
@@ -233,8 +246,13 @@ def _normalize_scope(raw: Any, profile: str) -> Tuple[Dict[str, Any], List[str],
     raw_flags = raw.get("risk_flags", {})
     if not isinstance(raw_flags, dict):
         raise ManifestError("scope.risk_flags must be an object")
-    if set(raw_flags) - set(SCOPE_FLAG_KEYS):
-        raise ManifestError("unknown risk flag; check spelling")
+    unknown_flags = sorted(set(raw_flags) - set(SCOPE_FLAG_KEYS))
+    if unknown_flags:
+        hints = []
+        for flag in unknown_flags:
+            match = difflib.get_close_matches(flag.lower().strip(), SCOPE_FLAG_KEYS, n=1, cutoff=0.75)
+            hints.append(f"{flag!r}" + (f" (did you mean {match[0]!r}?)" if match else ""))
+        raise ManifestError("unknown risk flag; check spelling: " + ", ".join(hints))
     flags: Dict[str, str] = {}
     gaps: List[str] = []
     for key in SCOPE_FLAG_KEYS:
@@ -282,6 +300,38 @@ def _normalize_scope(raw: Any, profile: str) -> Tuple[Dict[str, Any], List[str],
         "notes": str(raw.get("notes", ""))[:1000],
     }
     return normalized, gaps, risk_tier, surfaces
+
+
+def _scope_key_warnings(raw: Any) -> List[Dict[str, str]]:
+    """Report scope keys the engine does not read, with a likely intended key.
+
+    A typo such as ``comercial`` or ``governance_surface`` would otherwise be
+    dropped without a trace. Warnings never change the verdict: a misspelled
+    required answer already reads as unresolved, and an unread optional key is
+    the author's to correct.
+    """
+    if not isinstance(raw, dict):
+        return []
+    candidates = {key: key for key in SCOPE_KEYS}
+    candidates.update({flag: f"risk_flags.{flag}" for flag in SCOPE_FLAG_KEYS})
+    warnings: List[Dict[str, str]] = []
+    for key in sorted(k for k in raw if k not in SCOPE_KEYS):
+        warning = {"code": "unknown_scope_key", "key": key}
+        if key in SCOPE_FLAG_KEYS:
+            suggestion = f"risk_flags.{key}"
+            message = (f"scope.{key} was ignored: risk flags belong under scope.risk_flags; "
+                       f"did you mean scope.{suggestion}?")
+        else:
+            match = difflib.get_close_matches(key.lower().strip(), list(candidates), n=1, cutoff=0.75)
+            suggestion = candidates[match[0]] if match else ""
+            message = f"scope.{key} is not a recognized scope key and was ignored"
+            if suggestion:
+                message += f"; did you mean scope.{suggestion}?"
+        if suggestion:
+            warning["suggestion"] = suggestion
+        warning["message"] = message
+        warnings.append(warning)
+    return warnings
 
 
 def _domain_weights(raw: Any) -> Dict[str, float]:

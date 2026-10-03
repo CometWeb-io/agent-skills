@@ -59,20 +59,17 @@ def build(context: Dict[str, Any]) -> Dict[str, Any]:
         raise engine.ManifestError("release must be an object")
 
     raw_scope = context.get("scope")
-    if isinstance(raw_scope, dict):
-        known = set(engine.SCOPE_FLAG_KEYS) | {
-            "audience", "commercial", "commercial_model", "governance_surfaces",
-            "notes", "risk_assessment_complete", "risk_flags",
-        }
-        unknown_keys = sorted(k for k in raw_scope if k not in known)
-        if unknown_keys:
-            # Silently dropping these turned answered flags back into "unknown",
-            # so an operator who resolved the risk scope saw a manifest claiming
-            # they had not. Fail the way an invalid audience already does.
-            raise engine.ManifestError(
-                "unrecognized scope keys: " + ", ".join(repr(k) for k in unknown_keys)
-                + "; valid risk flags are " + ", ".join(engine.SCOPE_FLAG_KEYS)
-            )
+    warnings = engine._scope_key_warnings(raw_scope)
+    if warnings:
+        # Silently dropping these turned answered flags back into "unknown",
+        # so an operator who resolved the risk scope saw a manifest claiming
+        # they had not. A risk flag written directly under `scope` was dropped
+        # the same way: the engine reads flags only from `scope.risk_flags`.
+        # Fail the way an invalid audience already does.
+        raise engine.ManifestError(
+            "unrecognized scope keys: " + "; ".join(w["message"] for w in warnings)
+            + "; valid risk flags (under scope.risk_flags) are " + ", ".join(engine.SCOPE_FLAG_KEYS)
+        )
     scope, _, _, surfaces = engine._normalize_scope(raw_scope, profile)
     required = engine._required_gates(profile, scope)
     checks: List[Dict[str, Any]] = []

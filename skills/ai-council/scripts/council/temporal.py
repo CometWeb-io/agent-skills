@@ -111,12 +111,22 @@ def freshness_gate(rows: list[dict[str, Any]], as_of: str) -> dict[str, Any]:
     warnings = [r for r in evaluated if r["status"] == "NEAR_EXPIRY"]
     material_ages = [r["age_hours"] for r in evaluated if r["material"] and r["age_hours"] is not None]
     counts = {status: sum(1 for r in evaluated if r["status"] == status) for status in sorted(TEMPORAL_STATUSES)}
+    # Rows marked non-material cannot carry the decision. With none material the
+    # gate has nothing to clear, exactly as with no rows; otherwise stale evidence
+    # relabelled `material: false` would read CLEAR.
+    has_material = any(r["material"] for r in evaluated)
+    if not evaluated:
+        reason = "no evidence rows supplied"
+    elif not has_material:
+        reason = "no material evidence rows supplied"
+    else:
+        reason = "supplied rows evaluated"
     return {
         "as_of": as_of,
-        "status": "REFRESH_REQUIRED" if blockers or not evaluated else "CLEAR",
-        "decision_ready": bool(evaluated) and not blockers,
+        "status": "REFRESH_REQUIRED" if blockers or not has_material else "CLEAR",
+        "decision_ready": has_material and not blockers,
         "coverage_assessed": False,
-        "reason": "no evidence rows supplied" if not evaluated else "supplied rows evaluated",
+        "reason": reason,
         "material_blocker_count": len(blockers),
         "near_expiry_count": len(warnings),
         "oldest_material_evidence_hours": round(max(material_ages), 3) if material_ages else None,

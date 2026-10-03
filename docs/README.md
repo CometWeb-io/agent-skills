@@ -49,4 +49,6 @@ they differ from what the registry produces. Change the registry and regenerate.
 - [`generated-skills-table.md`](generated-skills-table.md)
 - [`generated-compatibility-matrix.md`](generated-compatibility-matrix.md)
 - `generated-cursor-routing.mdc`
+- [`../extras/cursor-routing.mdc`](../extras/cursor-routing.mdc) and [`../extras/AGENTS.snippet.md`](../extras/AGENTS.snippet.md) — compact routing for Cursor and AGENTS.md hosts
+- the skill list in the `description` of `.cursor-plugin/plugin.json` and `.claude-plugin/plugin.json`
 - the skill catalog block in [`../README.md`](../README.md#skill-catalog) — grouping and summaries from `registry/readme-catalog.json`

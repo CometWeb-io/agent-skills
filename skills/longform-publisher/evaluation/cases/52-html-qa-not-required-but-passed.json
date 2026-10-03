@@ -1,0 +1,9 @@
+{
+  "scenario": "html_qa_not_required_but_passed",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

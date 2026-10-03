@@ -17,6 +17,9 @@
       "source_of_truth": "skills/",
       "agents_file": "agents/openai.yaml",
       "recommended_interface_keys": ["display_name", "short_description", "default_prompt"],
+      "short_description_min": 25,
+      "short_description_max": 64,
+      "routing_rule": "extras/AGENTS.snippet.md",
       "capabilities": ["filesystem", "code_execution", "git"],
       "profile_verified_at": "2026-09-11",
       "profile_basis": "OpenAI Codex Agent Skills documentation"
@@ -33,6 +36,8 @@
       "sync": "daily_or_sync_now",
       "agents_file": "agents/openai.yaml",
       "recommended_interface_keys": ["display_name", "short_description", "default_prompt"],
+      "short_description_min": 25,
+      "short_description_max": 64,
       "capabilities": ["managed_skills", "web", "files", "connectors", "code_execution"],
       "profile_verified_at": "2026-09-11",
       "profile_basis": "OpenAI ChatGPT Skills documentation"

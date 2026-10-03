@@ -1,0 +1,13 @@
+{
+  "scenario": "html_qa_not_required_but_failed",
+  "expect": {
+    "validation": [
+      "STAGE_INFLATION"
+    ],
+    "manuscript": [],
+    "derived": [
+      "DERIVED_QA_FAILED"
+    ],
+    "stage": "MASTER_LOCKED"
+  }
+}

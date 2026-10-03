@@ -70,6 +70,7 @@ def main(argv: List[str] | None = None) -> int:
                 "contract_mismatch": result["contract_mismatch"],
                 "missing_required_gates": result["missing_required_gates"],
                 "scope_gaps": result["scope_gaps"],
+                "scope_warnings": result["scope_warnings"],
             }
     except ManifestError as exc:
         print(json.dumps({"error": str(exc)}), file=sys.stderr)

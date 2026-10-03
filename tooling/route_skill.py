@@ -17,7 +17,21 @@ ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 
 def normalize(text: str) -> str:
     text = unicodedata.normalize("NFKD", text.casefold()).replace("ł", "l")
-    return "".join(ch for ch in text if not unicodedata.combining(ch))
+    # Format characters (zero-width space/joiner, soft hyphen, bidi controls) are
+    # invisible: left in, they split a skill name so a denial stops matching it.
+    return "".join(ch for ch in text if not unicodedata.combining(ch) and unicodedata.category(ch) != "Cf")
+
+
+# Quoted, fenced or blockquoted text is someone else's words, not an invocation.
+_QUOTED = re.compile(
+    r"```.*?(?:```|\Z)"
+    r'|"[^"\n]{0,2000}"'
+    r"|\u201c[^\u201d]{0,2000}\u201d"
+    r"|\u201e[^\u201c\u201d]{0,2000}[\u201c\u201d]"
+    r"|\u00ab[^\u00bb]{0,2000}\u00bb"
+    r"|^[ \t]{0,3}>.*$",
+    re.DOTALL | re.MULTILINE,
+)
 
 
 @lru_cache(maxsize=1024)
@@ -86,6 +100,8 @@ def _catalog(registry: dict, policy: dict) -> dict:
             raise ValueError("invalid narrow intent guard")
         _pattern(guard["when"]); _pattern(guard["unless"])
     _negation_rules(policy)
+    _sequence_rules(policy)
+    _override_cues(policy)
     workflow = policy.get("workflow_skill")
     if not isinstance(workflow, str) or not ID.fullmatch(workflow):
         raise ValueError("invalid workflow identifier")
@@ -103,6 +119,95 @@ def _negation_rules(policy: dict):
     if not isinstance(cues, list) or not 1 <= len(cues) <= 32 or type(cap) is not int or not 1 <= cap <= 400:
         raise ValueError("invalid negation rules")
     return tuple(_pattern(c) for c in cues), _pattern(boundary), cap
+
+
+def _sequence_rules(policy: dict):
+    """Validate and return (connector, min_step_score), or None when unset."""
+    rules = policy.get("sequence")
+    if rules is None:
+        return None
+    if not isinstance(rules, dict) or not {"connector", "min_step_score"} <= rules.keys():
+        raise ValueError("invalid sequence rules")
+    floor = rules["min_step_score"]
+    if type(floor) is not int or not 1 <= floor <= 10000:
+        raise ValueError("invalid sequence rules")
+    return _pattern(rules["connector"]), floor
+
+
+def sequence_steps(signal_text: str, active: dict, blocked: dict, policy: dict, canonical) -> list[str]:
+    """Distinct specialists that win successive steps of a "do X, then Y" request.
+
+    The prompt is cut at sequencing connectors ("then", "potem", "a po nim",
+    "na tej podstawie", ...). In each step the specialist with the single
+    highest signal score (at least ``min_step_score``) is that step's skill.
+    An explicit-only skill such as the Council counts as a step when its own
+    signals name it, because orchestrating it is still a request for it.
+    Skills excluded by name, by a narrow-intent guard or aliases of the
+    workflow skill never count. Consecutive repeats collapse to one step.
+    """
+    rules = _sequence_rules(policy)
+    if rules is None:
+        return []
+    connector, floor = rules
+    workflow = policy["workflow_skill"]
+    cuts = [0]
+    for m in connector.finditer(signal_text):
+        cuts.extend((m.start(), m.end()))
+    cuts.append(len(signal_text))
+    if len(cuts) < 4:
+        return []
+    steps: list[str] = []
+    for start, end in zip(cuts[::2], cuts[1::2], strict=True):
+        segment = signal_text[start:end]
+        best: dict[str, int] = {}
+        for sid, entry in active.items():
+            if blocked.get(sid, "requires_explicit_invocation") != "requires_explicit_invocation":
+                continue
+            canon = canonical(sid)
+            if canon == workflow:
+                continue
+            score = sum(w for w, pat in entry.get("routing_signals", []) if matches(pat, segment))
+            if score >= floor:
+                best[canon] = max(best.get(canon, 0), score)
+        if best:
+            top = max(best.values())
+            winners = [sid for sid, score in best.items() if score == top]
+            if len(winners) == 1 and (not steps or steps[-1] != winners[0]):
+                steps.append(winners[0])
+    return steps
+def _override_cues(policy: dict) -> tuple:
+    rules = policy.get("untrusted_text")
+    if rules is None:
+        return ()
+    cues = rules.get("override_cues") if isinstance(rules, dict) else None
+    if not isinstance(cues, list) or not 1 <= len(cues) <= 32:
+        raise ValueError("invalid untrusted_text rules")
+    return tuple(_pattern(c) for c in cues)
+
+
+def untrusted_spans(text: str, policy: dict) -> tuple[list[tuple[int, int]], list[tuple[int, int]]]:
+    """(quoted, overridden) character ranges of normalized ``text``.
+
+    ``quoted`` covers fenced code, blockquote lines and text in double or
+    typographic quotes. ``overridden`` runs from the first override cue that is
+    not itself quoted ("ignore previous instructions", "you are now") to the end
+    of the prompt: whatever follows such a phrase reads as pasted content trying
+    to steer the agent, not as the user's own request.
+    """
+    quoted = [(m.start(), m.end()) for m in _QUOTED.finditer(text)]
+    starts = [
+        m.start()
+        for cue in _override_cues(policy)
+        for m in cue.finditer(text)
+        if not any(a <= m.start() < b for a, b in quoted)
+    ]
+    return quoted, ([(min(starts), len(text))] if starts else [])
+
+
+def _blank(text: str, spans: list[tuple[int, int]]) -> str:
+    for start, end in spans:
+        text = text[:start] + " " * (end - start) + text[end:]
+    return text
 
 
 def negated_spans(text: str, policy: dict) -> list[tuple[int, int]]:
@@ -158,20 +263,23 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
     if not isinstance(prompt, str) or len(prompt) > 65536 or not isinstance(invoked, (tuple, list)) or any(not isinstance(s, str) for s in invoked):
         raise ValueError("invalid routing request")
     text = normalize(prompt)
-    signal_text = mask_negated(text, policy)
+    quoted, overridden = untrusted_spans(text, policy)
+    # Denials read the whole prompt; invocations and signals only the user's own words.
+    own_text = _blank(text, quoted + overridden)
+    signal_text = _blank(mask_negated(text, policy), quoted + overridden)
     if any(sid not in active for sid in invoked):
         raise ValueError("explicit invocation references an unavailable skill")
     explicit, scores, blocked = set(invoked), {}, {}
     for sid in active:
-        if re.search(r"(?<![\w-])[$@]" + re.escape(sid) + r"(?![\w-])", text):
+        if re.search(r"(?<![\w-])[$@]" + re.escape(sid) + r"(?![\w-])", own_text):
             explicit.add(sid)
         # Natural "use product-operator" / "run evidence-researcher" invocations.
         if re.search(
             r"(?<![\w-])(?:use|run|invoke|load)\s+(?:the\s+)?" + re.escape(sid) + r"(?![\w-])",
-            text,
+            own_text,
         ):
             explicit.add(sid)
-        if any(matches(p, text) for p in policy.get("explicit_patterns", {}).get(sid, [])):
+        if any(matches(p, own_text) for p in policy.get("explicit_patterns", {}).get(sid, [])):
             explicit.add(sid)
         if _denied_by_name(sid, text) or any(matches(p, text) for p in policy.get("denied_patterns", {}).get(sid, [])):
             blocked[sid] = "explicitly_excluded"
@@ -239,7 +347,17 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
         primary = candidates[0]
         canonical = _canonical(primary)
         kind = "workflow" if canonical == workflow else "single_skill"
-    return {"status": kind, "primary_skill": primary, "candidates": candidates, "scores": scores, "blocked": blocked, "mode": "deterministic_proxy", "runtime_acceptance": "not_assessed"}
+    # A request that hands different steps to different specialists ("audit the
+    # signup flow, then gate the release") is a workflow, whatever one step scored.
+    steps: list[str] = []
+    if not invoked and kind != "workflow" and workflow in active and workflow not in blocked:
+        steps = sequence_steps(signal_text, active, blocked, policy, _canonical)
+        if len(set(steps)) > 1:
+            primary, kind, candidates = workflow, "workflow", [workflow]
+    result = {"status": kind, "primary_skill": primary, "candidates": candidates, "scores": scores, "blocked": blocked, "override_suspected": bool(overridden), "mode": "deterministic_proxy", "runtime_acceptance": "not_assessed"}
+    if len(set(steps)) > 1:
+        result["sequence"] = steps
+    return result
 
 
 def main() -> None:

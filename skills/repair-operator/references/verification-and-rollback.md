@@ -14,4 +14,4 @@ DEEP/strict closure requires a plan containing method and concrete checks before
 
 `CLOSED` is not a writing choice. Re-open when the original symptom returns, a protected invariant fails, or a regression invalidates prior verification.
 
-`WONT_FIX` in strict/deep workflows requires an authorized decision with rationale and expiry/revisit condition; it cannot be used as a garbage chute for inconvenient findings.
+`WONT_FIX` in strict/deep workflows requires an authorized `decision_source` with rationale and an `expires_at` revisit time; it cannot be used as a garbage chute for inconvenient findings.

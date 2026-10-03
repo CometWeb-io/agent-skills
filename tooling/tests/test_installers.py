@@ -11,6 +11,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
+# Installers link every registered package; the count follows the registry.
 
 
 HOSTS = {
@@ -21,6 +22,17 @@ HOSTS = {
     "qoder": "QODER_SKILLS_DIR",
     "lingma": "LINGMA_SKILLS_DIR",
 }
+
+
+def skill_count() -> int:
+    """Installed links per host, derived so adding a skill does not break this file.
+
+    Pinned to the registry so an empty glob cannot pass vacuously.
+    """
+    names = {path.parent.name for path in (ROOT / "skills").glob("*/SKILL.md")}
+    registry = json.loads((ROOT / "registry" / "skills.json").read_text(encoding="utf-8"))
+    assert names and names == {entry["id"] for entry in registry["skills"]}
+    return len(names)
 
 
 def install(
@@ -312,12 +324,13 @@ def test_uninstall_removes_only_links_into_this_checkout(host: str, tmp_path: Pa
 
     preview = run_installer(host, target, tmp_path, "--uninstall", "--dry-run")
     assert preview.returncode == 0, preview.stderr
-    assert "would remove 32" in preview.stdout
-    assert len(list(target.iterdir())) == 34
+    count = skill_count()
+    assert f"would remove {count}" in preview.stdout
+    assert len(list(target.iterdir())) == count + 2
 
     result = run_installer(host, target, tmp_path, "--uninstall")
     assert result.returncode == 0, result.stderr
-    assert "removed 32" in result.stdout
+    assert f"removed {count}" in result.stdout
     assert {p.name for p in target.iterdir()} == {"my-own-skill", "notes.txt"}
     assert (target / "my-own-skill").resolve() == foreign
     assert (ROOT / "skills" / "ai-council" / "SKILL.md").is_file()
@@ -429,7 +442,7 @@ def test_install_all_installs_then_uninstalls_every_host(tmp_path: Path) -> None
     installed = subprocess.run([script], env=env, capture_output=True, text=True, check=False)
     assert installed.returncode == 0, installed.stderr
     for host in HOSTS:
-        assert len(list((tmp_path / host).iterdir())) == 32
+        assert len(list((tmp_path / host).iterdir())) == skill_count()
     removed = subprocess.run([script, "--uninstall"], env=env, capture_output=True, text=True, check=False)
     assert removed.returncode == 0, removed.stderr
     for host in HOSTS:

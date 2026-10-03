@@ -53,6 +53,7 @@ from readiness import (  # noqa: F401 — private helpers used by bootstrap/test
     _required_gates,
     _revalidation_triggers,
     _risk_acceptance_valid,
+    _scope_key_warnings,
     _slim_check,
     _snapshot_hash,
     _summarize_domain,

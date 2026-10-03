@@ -1,5 +1,17 @@
 # Evidence and confidence policy
 
+## Contents
+
+1. Evidence classes
+2. Evidence object contract
+3. Claim labels
+4. Verdict discipline
+5. N/A anti-gaming rule
+6. Distribution evidence
+7. Sitewide-claim rule
+8. Correlation policy
+9. Evidence quality grade
+
 Use evidence before inference. Separate platform rules from target-site state.
 
 ## Evidence classes
@@ -30,6 +42,27 @@ For `PASS`, `WEAK`, and `FAIL`, use a non-empty list:
     "source": "https://example.com/robots.txt"
   }
 ]
+```
+
+A platform-control check pairs the target artifact with the current platform rule it relies on:
+
+```json
+{
+  "id": "GEO-06",
+  "verdict": "PASS",
+  "evidence": [
+    {
+      "class": "E2_SITE_DIRECT",
+      "artifact": "robots.txt does not disallow OAI-SearchBot on critical public paths",
+      "source": "https://example.com/robots.txt"
+    },
+    {
+      "class": "E1_FIRST_PARTY_LIVE",
+      "artifact": "Current OpenAI publisher guidance identifies OAI-SearchBot as the Search control",
+      "source": "https://help.openai.com/en/articles/12627856-publishers-and-developers-faq"
+    }
+  ]
+}
 ```
 
 `artifact` must name what was actually observed. A generic sentence such as `SEO looks good` is not

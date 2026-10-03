@@ -1,4 +1,4 @@
-# CI Integration — engine 2.1
+# CI Integration — engine 2.2
 
 CI must use a candidate-specific manifest produced from actual scope and evidence.
 JSON consistency is not evidence authentication and never authorizes deployment.

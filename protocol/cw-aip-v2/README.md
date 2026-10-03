@@ -82,7 +82,9 @@ claim IDs are unique, and `READY` excludes blocking gaps and unresolved
 critical/material contradictions. A `DecisionEnvelope` with verdict `GO` may not
 have blockers, a `BLOCK` or `COUNSEL_REQUIRED` gate, or `human_approval:
 required`. A `ReleaseEnvelope` with verdict `GO` or `GO_WITH_CONTROLS` may not have
-blockers: controls bound residual risk, they do not clear a blocker.
+blockers or a gate whose status is `BLOCK` or `COUNSEL_REQUIRED` (compared
+case-insensitively, since release gate statuses are free-form): controls bound
+residual risk, they do not clear a blocker.
 
 Conformance cases, valid and invalid, live in `fixtures/cwaip-v2/conformance/` and
 run through `tooling/tests/test_cwaip_conformance.py` with and without
@@ -127,7 +129,9 @@ conventions inside one payload document.
   multiagent gate (`skills/skill-orchestrator-multiagent/scripts/validate_envelope.py`)
   dispatches on `protocol_version`, checks the bundled v1 or v2 core schema, and for
   v2 recomputes `payload_hash` and rejects a `GO` (or release `GO_WITH_CONTROLS`)
-  verdict that lists blockers. A step planned as v1 `DecisionHandoff` accepts a v2
+  verdict that lists blockers or sits next to a `BLOCK`/`COUNSEL_REQUIRED` gate, and
+  a decision `GO` whose `human_approval` is `required`, `pending` or `denied`. A step
+  planned as v1 `DecisionHandoff` accepts a v2
   `DecisionEnvelope` (Council) or `ReleaseEnvelope` (Release Readiness).
 
 ## Spec revisions
@@ -136,6 +140,22 @@ The wire value stays `protocol_version: "2.0"`; the third component numbers
 revisions of this document and its schemas. A revision MAY reject documents that
 were incoherent under the earlier text; it MUST NOT change the meaning of a field
 or reject the output of a shipped producer.
+
+### 2.0.2 — 2026-10-03
+
+- `ReleaseEnvelope`: `GO` and `GO_WITH_CONTROLS` reject a gate whose status is
+  `BLOCK` or `COUNSEL_REQUIRED`, compared case-insensitively. An empty `blockers`
+  array no longer clears a gate that still says `BLOCK`. Enforced in
+  `tooling/validate_envelope.py` (with and without `jsonschema`) and in the
+  multiagent gate. New conformance cases `release-go-with-block-gate`,
+  `release-go-with-controls-with-block-gate`,
+  `release-go-with-lowercase-block-gate` and
+  `release-go-with-counsel-required-gate` (invalid) and
+  `release-defer-with-block-gate` (valid).
+- The multiagent gate now applies the `DecisionEnvelope` rules that
+  `tooling/validate_envelope.py` already enforced: a `GO` next to a
+  `BLOCK`/`COUNSEL_REQUIRED` gate or a `human_approval` of `required`, `pending` or
+  `denied` is rejected between steps instead of being handed to step N+1.
 
 ### 2.0.1 — 2026-10-02
 

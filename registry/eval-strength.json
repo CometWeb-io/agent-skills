@@ -3,9 +3,9 @@
   "skills": [
     {
       "guards": 63,
-      "held": 52,
+      "held": 62,
       "id": "artifact-acceptance",
-      "strength": 0.825,
+      "strength": 0.984,
       "unexercised": []
     },
     {
@@ -44,10 +44,10 @@
       "unexercised": []
     },
     {
-      "guards": 67,
-      "held": 63,
+      "guards": 68,
+      "held": 65,
       "id": "longform-publisher",
-      "strength": 0.94,
+      "strength": 0.956,
       "unexercised": []
     },
     {
@@ -59,23 +59,23 @@
     },
     {
       "guards": 189,
-      "held": 140,
+      "held": 176,
       "id": "product-operator",
-      "strength": 0.741,
+      "strength": 0.931,
       "unexercised": []
     },
     {
       "guards": 91,
-      "held": 75,
+      "held": 91,
       "id": "quality-loop-operator",
-      "strength": 0.824,
+      "strength": 1.0,
       "unexercised": []
     },
     {
       "guards": 52,
-      "held": 44,
+      "held": 50,
       "id": "repair-operator",
-      "strength": 0.846,
+      "strength": 0.962,
       "unexercised": []
     },
     {

@@ -202,6 +202,12 @@ def test_orchestrator_gate_accepts_valid_v2_envelopes(case: dict) -> None:
         ("release-go-with-blockers", False, "GO cannot have blockers"),
         ("release-go-with-controls-with-blockers", False, "GO_WITH_CONTROLS cannot have blockers"),
         ("decision-go-with-blockers", False, "GO cannot have blockers"),
+        ("decision-go-blocked-by-gate", False, "GO blocked by gate"),
+        ("decision-go-awaiting-human-approval", False, "human_approval=required"),
+        ("release-go-with-block-gate", False, "GO blocked by gate security status=BLOCK"),
+        ("release-go-with-controls-with-block-gate", False, "GO_WITH_CONTROLS blocked by gate security status=BLOCK"),
+        ("release-go-with-lowercase-block-gate", False, "GO blocked by gate privacy status=block"),
+        ("release-go-with-counsel-required-gate", False, "GO_WITH_CONTROLS blocked by gate legal status=COUNSEL_REQUIRED"),
     ],
 )
 def test_orchestrator_gate_rejects_bad_v2_envelope_shapes(name: str, final: bool, marker: str) -> None:
@@ -338,6 +344,6 @@ def test_spec_documents_revisions() -> None:
     spec = (ROOT / "protocol" / "cw-aip-v1" / "cw-interchange-v1.md").read_text(encoding="utf-8")
     readme = (ROOT / "protocol" / "cw-aip-v2" / "README.md").read_text(encoding="utf-8")
     assert "## Spec revisions" in spec and "1.0.1" in spec
-    assert "## Spec revisions" in readme and "2.0.1" in readme
+    assert "## Spec revisions" in readme and "2.0.1" in readme and "2.0.2" in readme
     for stem in V2_DRAFT_KINDS.values():
         assert f"draft/{stem}.schema.json" in readme

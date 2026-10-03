@@ -10,6 +10,19 @@ Never jump directly from a file, issue, or intuition to a priority.
 
 ## Claim schema
 
+Every material claim must record:
+
+- claim text,
+- claim lane/type,
+- materiality,
+- whether current-sensitive,
+- supporting/contradicting evidence rows,
+- source identity/ref/fingerprint when available,
+- directness/freshness/scope match,
+- independence group,
+- confidence/status.
+
+
 Use stable claim IDs. Material claims should include:
 
 ```json

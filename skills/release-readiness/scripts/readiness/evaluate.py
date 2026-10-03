@@ -28,6 +28,7 @@ from .manifest import (
     _normalize_scope,
     _parse_dt,
     _release_identity_gaps,
+    _scope_key_warnings,
     _thresholds,
     _validate_json,
 )
@@ -123,6 +124,7 @@ def evaluate(manifest: Dict[str, Any], *, expected_contract_hash: str | None = N
         raise ManifestError("release must be an object")
     identity_gaps = _release_identity_gaps(release)
     scope, scope_gaps, risk_tier, governance_surfaces = _normalize_scope(manifest.get("scope"), profile)
+    scope_warnings = _scope_key_warnings(manifest.get("scope"))
     mode_floor = RISK_MODE_FLOOR[risk_tier]
     mode_gap = MODE_RANK[mode] < MODE_RANK[mode_floor]
 
@@ -207,6 +209,15 @@ def evaluate(manifest: Dict[str, Any], *, expected_contract_hash: str | None = N
     ]
 
     material_unknowns = [c for c in checks if c["effective_status"] == "unknown" and c["severity"] in ("blocker", "critical", "major")]
+    # `accepted_risk` and `pass_with_controls` assert a condition the release depends
+    # on. A pending, denied, expired or incomplete acceptance, or a control with no
+    # owner or due date, leaves that condition unmet; without this rule a minor one
+    # fell through to an unconditional GO, ranking above the same check recorded
+    # properly (GO_WITH_CONTROLS).
+    unresolved_conditions = [
+        c for c in checks
+        if c["status"] in ("accepted_risk", "pass_with_controls") and c["effective_status"] == "unknown"
+    ]
     score = round(overall_score, 1)
     coverage = round(overall_coverage, 1)
     reasons: List[str] = []
@@ -238,6 +249,9 @@ def evaluate(manifest: Dict[str, Any], *, expected_contract_hash: str | None = N
     elif missing_governance_gates or governance_unknowns:
         verdict = "DEFER"
         reasons.append("required governance gate unresolved")
+    elif unresolved_conditions:
+        verdict = "DEFER"
+        reasons.append("a declared control or risk acceptance is not in force")
     elif material_unknowns:
         verdict = "DEFER"
         reasons.append("material finding remains unverified")
@@ -278,6 +292,7 @@ def evaluate(manifest: Dict[str, Any], *, expected_contract_hash: str | None = N
         "thresholds": thresholds,
         "release_identity_gaps": identity_gaps,
         "scope_gaps": scope_gaps,
+        "scope_warnings": scope_warnings,
         "required_gates": required_gates,
         "missing_required_gates": missing_required_gates,
         "required_governance_surfaces": sorted(governance_surfaces),
@@ -293,6 +308,7 @@ def evaluate(manifest: Dict[str, Any], *, expected_contract_hash: str | None = N
         "minor_failures": [_slim_check(c) for c in minor_failures],
         "controlled_risks": [_slim_check(c) for c in controlled],
         "accepted_risks": [_slim_check(c) for c in accepted_risks],
+        "unresolved_conditions": [_slim_check(c) for c in unresolved_conditions],
         "evidence_downgrades": [_slim_check(c) for c in downgraded_unknowns],
         "checks_evaluated": len(checks),
         "snapshot_hash": _snapshot_hash(manifest),

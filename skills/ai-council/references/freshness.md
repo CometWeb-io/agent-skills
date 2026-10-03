@@ -59,6 +59,6 @@ Nie obniżaj tylko confidence dla stale prawa/security/system-of-record. Jeśli 
 
 Kernel odrzuca jako niedopuszczalne przyszłą publikację/weryfikację, odwrócony przedział obowiązywania i nieprawidłową datę wygaśnięcia. `expires_at` i koniec TTL są granicami wyłącznymi: w chwili wygaśnięcia dowód nie jest już aktualny. Nieznana polityka daje `UNKNOWN`, zamiast przejścia do łagodniejszej polityki ogólnej.
 
-Flagi mają być wartościami JSON `true`/`false`, nie tekstem. Puste wejście `freshness` daje `REFRESH_REQUIRED`. Wynik ocenia wyłącznie dostarczone wiersze (`coverage_assessed: false`); nie dowodzi pełnego pokrycia pytań ani faktycznego wykonania weryfikacji przez model.
+Flagi mają być wartościami JSON `true`/`false`, nie tekstem. Puste wejście `freshness` daje `REFRESH_REQUIRED`; tak samo wejście, w którym żaden wiersz nie jest materialny (`material: false` wszędzie), bo nie ma czego dopuścić do decyzji. Wynik ocenia wyłącznie dostarczone wiersze (`coverage_assessed: false`); nie dowodzi pełnego pokrycia pytań ani faktycznego wykonania weryfikacji przez model.
 
 [Zasady końcowego gate i migracja CLI](kernel-admission.md).

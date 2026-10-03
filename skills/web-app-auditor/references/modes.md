@@ -100,3 +100,67 @@ actually measured.
 
 "Przeklikaj billing i sprawdz liczby" = `area` mode with data-integrity bar,
 not two separate audits. Keep one scope card and one report.
+
+## Universal passes
+
+Run passes in order: recon, inventory, interaction, data integrity, adversarial
+states, source cross-check. Execute only passes supported by the capability
+profile and selected mode.
+
+### Pass 0 — Recon
+
+- Load/inspect the target and record URL/route, persona, title, nav/chrome.
+- Map in-scope screens/templates and data objects.
+- Record available browser diagnostics (console/network) if actually present.
+- Capture baseline desktop/mobile evidence when screenshot capability exists.
+- Confirm environment and mutation policy before Pass 2.
+
+### Pass 1 — Inventory
+
+Build:
+
+1. **Interactive map** — buttons, links, tabs, inputs, selects, toggles,
+   menus, row actions, pagination, modal triggers, fake-clickable surfaces.
+2. **Claim map** — numbers, names, IDs, dates, statuses, prices, counts,
+   badges, tooltips, empty/error copy, and where each repeats.
+
+For repeated controls, mark whether each instance must be tested or may be
+sampled under the selected depth.
+
+### Pass 2 — Interaction
+
+Use `click-through.md` and the mutation policy.
+
+- `recon`: primary navigation and obvious safe interactions only.
+- `standard`: 100% primary actions, 100% unique interaction patterns, every
+  form/state class, representative repeated instances, all policy-safe high-risk
+  controls; account for all others.
+- `forensic`: exhaust every in-scope activatable instance unless policy or the
+  environment blocks it.
+
+After a safe mutation, re-read the durable state and clean up test data when
+possible. A toast alone is not proof of persistence.
+
+### Pass 3 — Data integrity
+
+Use `data-integrity.md`.
+
+- Build a contradiction matrix for facts repeated across surfaces.
+- Recalculate aggregates from visible/available inputs.
+- Check counts, filters, pagination, currency/unit/locale/timezone, status,
+  identity, stale state, impossible values, and duplicate identifiers.
+- Prioritize high-risk facts: money, permissions, identity, quotas, status,
+  terminal-flow outcomes.
+
+### Pass 4 — Adversarial states
+
+Use forms/accessibility/responsive references.
+
+Test only policy-safe states: empty/invalid values, loading/error handling,
+keyboard, back/refresh, overflow, long content, disabled states, duplicate-safe
+submission behavior, and recovery paths.
+
+### Pass 5 — Source cross-check
+
+Only when source is available. Observe or prove reachability first, then use
+source to explain the root cause.

@@ -1,5 +1,17 @@
 # Discovery playbook
 
+## Context and systems of record
+
+Use the best available context before external discovery.
+
+1. Read `.agents/product-marketing.md` when present; also accept `.claude/product-marketing.md` and legacy `product-marketing-context.md`.
+2. For product truth, prefer the active repository and product documentation over old strategy notes. If GitHub is connected and the user names a product/repository, inspect relevant capabilities, integrations, constraints, maturity, and unresolved product questions.
+3. For roadmap/tasks, prefer the current execution system such as Linear or the canonical Notion project space.
+4. For known relationships, ownership, previous outreach, and commercial history, prefer CRM/email systems such as HubSpot and Gmail when available and relevant.
+5. For existing research, inspect the canonical Notion/Drive research artifacts rather than re-deriving context from public web sources.
+6. Never send private raw content into public web searches. Convert internal context into minimal non-sensitive search concepts.
+7. Ask only for missing information that materially changes the decision; otherwise state assumptions and continue.
+
 ## Discovery order
 
 ### 1. Warm graph

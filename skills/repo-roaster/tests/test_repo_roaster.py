@@ -278,3 +278,56 @@ def test_v6_assurance_requires_auditable_pass_records():
 
 def test_v6_outcome_basis_must_match_surviving_findings():
     r=valid_report(); r["outcome_basis"]["surviving_finding_ids"]=[]; assert any("surviving_finding_ids" in x for x in v.validate(r))
+
+
+def _hostile_repo(tmp_path):
+    """A target repository whose own .git/config names an fsmonitor hook."""
+    repo = tmp_path / "target"
+    repo.mkdir()
+    marker = tmp_path / "fsmonitor-ran"
+    hook = tmp_path / "hook.sh"
+    hook.write_text(f"#!/bin/sh\ntouch '{marker}'\n", encoding="utf-8")
+    hook.chmod(0o755)
+    git = ["git", "-C", str(repo)]
+    subprocess.run([*git, "init", "-q"], check=True)
+    subprocess.run([*git, "config", "user.email", "fixture@example.com"], check=True)
+    subprocess.run([*git, "config", "user.name", "Fixture"], check=True)
+    (repo / "a.txt").write_text("a\n", encoding="utf-8")
+    subprocess.run([*git, "add", "a.txt"], check=True)
+    subprocess.run([*git, "-c", "commit.gpgsign=false", "commit", "-q", "-m", "a"], check=True)
+    subprocess.run([*git, "config", "core.fsmonitor", str(hook)], check=True)
+    return repo, marker
+
+
+def test_inventory_git_snapshot_does_not_run_repo_fsmonitor_hook(tmp_path):
+    repo, marker = _hostile_repo(tmp_path)
+    inv = load("repo_roast_inventory", BASE / "scripts" / "inventory_repo.py")
+    report = inv.inventory(repo, set(inv.DEFAULT_EXCLUDES), include_git=True, base="HEAD", head="HEAD")
+    assert report["git"]["available"] is True
+    assert not marker.exists(), "target repo config executed a command during inventory"
+
+
+def test_inventory_rejects_option_shaped_refs(tmp_path):
+    repo, _ = _hostile_repo(tmp_path)
+    inv = load("repo_roast_inventory_refs", BASE / "scripts" / "inventory_repo.py")
+    out = tmp_path / "written"
+    import pytest
+    with pytest.raises(ValueError):
+        inv.inventory(repo, set(inv.DEFAULT_EXCLUDES), base=f"--output={out}", head="HEAD")
+    assert not any(tmp_path.glob("written*"))
+
+
+def test_inventory_workspace_hints_do_not_follow_symlinks_out_of_target(tmp_path):
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (outside / "secret.yaml").write_text("token = abc/def-outside-secret\n", encoding="utf-8")
+    (outside / "secret.json").write_text('{"workspaces": ["outside/leaked"]}', encoding="utf-8")
+    repo = tmp_path / "target"
+    repo.mkdir()
+    (repo / "pnpm-workspace.yaml").symlink_to(outside / "secret.yaml")
+    (repo / "package.json").symlink_to(outside / "secret.json")
+    inv = load("repo_roast_inventory_links", BASE / "scripts" / "inventory_repo.py")
+    report = inv.inventory(repo, set(inv.DEFAULT_EXCLUDES))
+    assert report["workspace_hints"] == []
+    assert "outside-secret" not in json.dumps(report)
+    assert sorted(report["symlinks"]) == ["package.json", "pnpm-workspace.yaml"]

@@ -13,19 +13,19 @@ gate — and those are listed rather than hidden.
 
 | Skill | Guards | Held | Strength |
 | --- | ---: | ---: | ---: |
+| `quality-loop-operator` | 91 | 91 | 1.00 |
+| `artifact-acceptance` | 63 | 62 | 0.98 |
 | `benchmark-curator` | 33 | 32 | 0.97 |
 | `rubric-designer` | 29 | 28 | 0.97 |
 | `content-writer` | 52 | 50 | 0.96 |
-| `longform-publisher` | 67 | 63 | 0.94 |
+| `repair-operator` | 52 | 50 | 0.96 |
+| `longform-publisher` | 68 | 65 | 0.96 |
 | `feedback-integrator` | 33 | 31 | 0.94 |
+| `product-operator` | 189 | 176 | 0.93 |
 | `skill-auditor` | 53 | 48 | 0.91 |
 | `portfolio-operator` | 62 | 56 | 0.90 |
 | `brief-architect` | 67 | 60 | 0.90 |
 | `skill-evaluator` | 54 | 48 | 0.89 |
 | `content-reviewer` | 43 | 38 | 0.88 |
-| `repair-operator` | 52 | 44 | 0.85 |
-| `artifact-acceptance` | 63 | 52 | 0.82 |
-| `quality-loop-operator` | 91 | 75 | 0.82 |
-| `product-operator` | 189 | 140 | 0.74 |
 
-**14 harnesses.** 765 of 888 reachable guards are held (86% if every skill counted equally, which they do not).
+**14 harnesses.** 835 of 889 reachable guards are held (94% if every skill counted equally, which they do not).

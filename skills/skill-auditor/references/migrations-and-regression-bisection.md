@@ -19,7 +19,4 @@ When behavior regresses across versions, compare only measurements with the same
 
 For an ordered sequence of comparable versions, locate the last known good and first known bad. A good result after a bad result is non-monotonic and should not be reported as a clean bisection boundary.
 
-When suite tooling is available, use:
-
-- `tooling/migration_planner.py`
-- `tooling/regression_bisect.py`
+No migration planner or bisection helper ships with this repository; do the comparison by hand and record each version, its comparison fingerprint and its outcome so the boundary can be rechecked.

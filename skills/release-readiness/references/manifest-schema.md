@@ -1,4 +1,4 @@
-# Readiness Manifest v2 — engine 2.1 admission rules
+# Readiness Manifest v2 — engine 2.2 admission rules
 
 The manifest is a declaration of assessed scope and evidence. Engine validation does
 not authenticate a CI run, inspect an application, grant approval, or authorize a
@@ -20,6 +20,16 @@ evidence changes, update the manifest and re-run rather than overriding the resu
 `scope.commercial` is the canonical key. `scope.commercial_model` is accepted as an
 alias for manifests written from older instructions; supplying both with different
 values is rejected.
+
+Any other key under `scope` is not read. The engine reports each one in
+`scope_warnings` (`code: unknown_scope_key`, the `key`, a `message`, and a
+`suggestion` when a known key is close, e.g. `comercial` → `commercial`,
+`governance_surface` → `governance_surfaces`). A risk flag written directly under
+`scope` is reported with the suggestion `risk_flags.<flag>`. Warnings never change
+the verdict or the contract hash: a misspelled required answer already reads as
+unresolved. Fix every warning before relying on the result: a misspelled
+`governance_surfaces` drops a routed governance gate. The bootstrapper rejects
+these keys instead of warning.
 
 ## Root contract
 
@@ -66,7 +76,8 @@ remain historical and must not be sold as current permission to release.
 `scope.commercial`: `paid | free | not_applicable | unknown`.
 `scope.risk_assessment_complete` must be the boolean `true` for an unconditional
 verdict. Each risk flag below is `yes | no | unknown`; missing flags stay unknown.
-Unknown flag names are rejected, so a typo cannot silently conceal new scope.
+Unknown flag names are rejected, so a typo cannot silently conceal new scope; the
+error names the closest valid flag.
 
 ```text
 first_production_release       auth_change
@@ -142,8 +153,17 @@ A controlled pass needs nonempty string `control_owner` and `mitigation`, plus
 
 Accepted risk is limited to nonbinding `major`/`minor`. Its `risk_acceptance`
 object requires nonempty string `approved_by`, `owner`, `rationale`, `mitigation`,
-and an unexpired `expires_at`. These records are declarations, not proof of the
+and an unexpired `expires_at`. Optional `status` or `approval_status`, when
+present, must be `approved` or `granted`; optional `approved`, when present, must
+be the boolean `true`. A named approver next to `pending`, `requested` or `denied`
+is a request, not an acceptance. These records are declarations, not proof of the
 approver's authority. Accepted risk cannot clear a binding/blocker/critical issue.
+
+A controlled pass or accepted risk whose control or acceptance is not in force
+(missing owner, past due, pending, denied, expired, or inadmissible evidence) is
+listed in `unresolved_conditions` and defers the release at any severity. Before
+engine 2.2 a minor one read as an ordinary unknown and could yield an
+unconditional `GO`, ranking above the same check recorded properly.
 
 `na` needs a substantive nonempty `na_reason`; not tested means `unknown`.
 

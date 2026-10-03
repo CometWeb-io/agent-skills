@@ -151,6 +151,8 @@ def build_scenario(name: str) -> tuple[dict, str]:
         r["derived_artifacts"][0]["qa_status"] = "MISSING"
     elif name == "html_qa_not_required_but_failed":
         r["derived_artifacts"][0]["qa_status"] = "FAIL"
+    elif name == "html_qa_not_required_but_passed":
+        r["derived_artifacts"][0]["qa_status"] = "PASS"
     elif name == "no_derived_artifacts":
         r["derived_artifacts"] = []
     elif name.startswith("lifecycle_gap:"):

@@ -27,6 +27,10 @@ PAYLOAD_SCHEMAS = {
 OWN_FALLBACK = frozenset({"ContextEnvelope", "EvidenceEnvelope", "DecisionEnvelope"})
 # Release verdicts that authorize shipping; neither may sit next to an open blocker.
 RELEASE_AUTHORIZING_VERDICTS = frozenset({"GO", "GO_WITH_CONTROLS"})
+# Gate states that leave a release unresolved. Release gate statuses are free-form
+# strings, so they are compared case-insensitively: the readiness engine writes
+# governance states in lowercase (`block`, `counsel_required`).
+RELEASE_UNRESOLVED_GATE_STATUSES = frozenset({"BLOCK", "COUNSEL_REQUIRED"})
 HASH_RE = re.compile(r"^(sha256:)?[a-fA-F0-9]{64}$|^pending$")
 RFC3339_RE = re.compile(
     r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}"
@@ -236,9 +240,15 @@ def semantic_payload(envelope_type: str, payload: dict[str, Any]) -> None:
         verdict = payload.get("verdict")
         if verdict not in {"GO", "NO_GO", "DEFER", "GO_WITH_CONTROLS"}:
             fail("release:verdict must be GO|NO_GO|DEFER|GO_WITH_CONTROLS")
-        if verdict in RELEASE_AUTHORIZING_VERDICTS and payload.get("blockers"):
-            # Controls bound residual risk; they do not neutralize an open blocker.
-            fail(f"release: {verdict} cannot have blockers")
+        if verdict in RELEASE_AUTHORIZING_VERDICTS:
+            if payload.get("blockers"):
+                # Controls bound residual risk; they do not neutralize an open blocker.
+                fail(f"release: {verdict} cannot have blockers")
+            for gate in payload.get("gates") or []:
+                status = gate.get("status") if isinstance(gate, dict) else None
+                if isinstance(status, str) and status.strip().upper() in RELEASE_UNRESOLVED_GATE_STATUSES:
+                    # An empty blockers list does not clear a gate that still says BLOCK.
+                    fail(f"release: {verdict} blocked by gate {gate.get('gate_id')} status={status}")
         return
 
 

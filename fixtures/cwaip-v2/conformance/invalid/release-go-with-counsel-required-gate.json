@@ -1,0 +1,32 @@
+{
+  "id": "example:ReleaseEnvelope:go-with-counsel-required-gate",
+  "type": "ReleaseEnvelope",
+  "producer": "example-producer",
+  "producer_version": "1.0.0",
+  "protocol_version": "2.0",
+  "subject": "example.com pricing page",
+  "generated_at": "2026-09-08T12:00:00Z",
+  "as_of": "2026-09-08T12:00:00Z",
+  "sensitivity": "public",
+  "dependencies": [],
+  "payload": {
+    "schema": "cometweb.release/v2",
+    "release_candidate": "v1.4.0-rc.2",
+    "environment": "production",
+    "verdict": "GO_WITH_CONTROLS",
+    "gates": [
+      {
+        "gate_id": "legal",
+        "status": "COUNSEL_REQUIRED"
+      }
+    ],
+    "blockers": [],
+    "controls": [
+      "feature flag at 5%"
+    ],
+    "as_of": "2026-09-08T12:00:00Z",
+    "manifest_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+    "score": 0.82
+  },
+  "payload_hash": "sha256:27efd4cf20020a86bc09c1a081f30dbed0205ee8d8dffdd40548643ed8526ea2"
+}

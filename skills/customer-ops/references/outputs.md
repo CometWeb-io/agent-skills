@@ -21,6 +21,12 @@
 
 Adapt to the requested format, but keep decision-critical fields visible.
 
+Every material output exposes, when relevant: `as_of` and source freshness; evidence and
+provenance grade; severity vs priority vs account escalation vs retention risk; owner and
+next action; authoritative SLA/deadline state; open commitments and handoffs; linked
+case/cluster/incident/GitHub IDs; contradictions and unknowns; actions performed vs
+proposed; verification/closure state.
+
 For current-state outputs include:
 
 ```text

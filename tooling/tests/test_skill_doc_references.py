@@ -56,3 +56,31 @@ def test_absent_by_design_entries_are_still_relevant() -> None:
         assert not (package / relative).exists(), (
             f"{skill}/{relative} now exists; drop it from ABSENT_BY_DESIGN"
         )
+
+
+# Repository tools named from inside a skill's docs. Every one of these used to
+# be introduced with "when suite tooling is available, use tooling/x.py" for a
+# file that never shipped in this repository, so an agent following the
+# reference went looking for nine tools that do not exist. Changelogs are
+# history and may name retired files.
+REPO_TOOL = re.compile(r"(?:^|[\s`(\[])(tooling/[\w./-]+\.(?:py|sh))")
+
+
+def skill_markdown() -> list[Path]:
+    return sorted(p for p in ROOT.glob("skills/*/**/*.md") if p.name != "CHANGELOG.md")
+
+
+def test_repository_tools_named_in_skill_docs_exist() -> None:
+    missing = sorted(
+        f"{doc.relative_to(ROOT)}: {ref}"
+        for doc in skill_markdown()
+        for ref in set(REPO_TOOL.findall(doc.read_text(encoding="utf-8")))
+        if not (ROOT / ref).is_file()
+    )
+    assert not missing, "skill docs name repository tools that do not exist:\n" + "\n".join(missing)
+
+
+def test_repository_tool_pattern_still_matches_real_references() -> None:
+    """Guard against the pattern silently matching nothing."""
+    found = {ref for doc in skill_markdown() for ref in REPO_TOOL.findall(doc.read_text(encoding="utf-8"))}
+    assert found and all((ROOT / ref).is_file() for ref in found)

@@ -11,6 +11,20 @@ Run `python scripts/check_freshness.py --strict` before relying on volatile plat
 required group is stale, refresh official sources and record a live override in the audit rather
 than silently using old memory.
 
+`score_maxx.py` refuses stale bundled facts, and bundled knowledge verified after a historical
+audit's `as_of` date. Record the refreshed official sources in the audit as an override:
+
+```json
+"freshness_overrides": {
+  "openai_search": {
+    "verified_at": "2026-08-25",
+    "sources": ["https://help.openai.com/en/articles/12627856-publishers-and-developers-faq"]
+  }
+}
+```
+
+If current first-party evidence cannot be obtained, keep the claim narrow and label it `UNVERIFIED`.
+
 Prioritize official product docs, official changelogs/blogs, first-party help centers, then
 reproducible first-party product data. Keep secondary research out of platform-control claims.
 

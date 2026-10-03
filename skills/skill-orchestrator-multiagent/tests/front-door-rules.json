@@ -1,0 +1,21 @@
+{
+  "skill": "skill-orchestrator-multiagent",
+  "note": "Normative rules the skill must keep. Front-door rules live in SKILL.md; the rest sit in a reference SKILL.md points to with a load trigger. Removing or moving a rule means editing this inventory deliberately. Rules with a `facet` are the untrusted-content contract checked by tooling/tests/test_untrusted_content_rules.py.",
+  "rules": [
+    {
+      "id": "rule-01",
+      "text": "Canonical planning and sequencing live in `skill-orchestrator`, which must be installed alongside this package.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "rule-02",
+      "text": "If it is unavailable, stop and ask the user to install it; do not improvise the missing planning contract.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "rule-03",
+      "text": "Shared references (do not fork):",
+      "where": "SKILL.md"
+    }
+  ]
+}

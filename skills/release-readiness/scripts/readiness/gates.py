@@ -284,6 +284,12 @@ def _control_valid(check: Dict[str, Any], as_of: datetime | None) -> bool:
     return True
 
 
+# An acceptance record may say where its approval stands. When it does, only an
+# affirmative state counts: a named approver next to `pending` or `denied` is a
+# request, not an acceptance.
+RISK_ACCEPTANCE_APPROVED = frozenset({"approved", "granted"})
+
+
 def _risk_acceptance_valid(check: Dict[str, Any], as_of: datetime | None) -> bool:
     ra = check.get("risk_acceptance")
     if not isinstance(ra, dict):
@@ -291,6 +297,11 @@ def _risk_acceptance_valid(check: Dict[str, Any], as_of: datetime | None) -> boo
     for key in ("approved_by", "owner", "rationale", "mitigation", "expires_at"):
         if not _text(ra.get(key)):
             return False
+    for key in ("status", "approval_status"):
+        if key in ra and _text(ra[key]).lower() not in RISK_ACCEPTANCE_APPROVED:
+            return False
+    if "approved" in ra and ra["approved"] is not True:
+        return False
     expiry = _parse_dt(ra.get("expires_at"))
     if expiry is None:
         return False

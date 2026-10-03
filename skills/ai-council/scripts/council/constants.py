@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 COUNCIL_VERSION = "5.0"
-KERNEL_VERSION = "5.0.1"
+KERNEL_VERSION = "5.0.2"
 
 VERDICTS = {"GO", "NO-GO", "TEST", "DEFER"}
 GATE_STATUSES = {"NOT_REQUIRED", "CLEAR", "CLEAR_WITH_CONTROLS", "COUNSEL_REQUIRED", "BLOCK"}

@@ -15,6 +15,7 @@ from __future__ import annotations
 import contextlib
 import importlib.util
 import io
+import json
 import sys
 from pathlib import Path
 
@@ -69,20 +70,10 @@ def test_skill_eval_harness_passes(skill: str) -> None:
 
 def test_every_harness_skill_is_discovered() -> None:
     # Guards against a skill quietly losing its harness: if one disappears the
-    # parametrized test above would simply stop running for it.
-    assert harness_skills() == [
-        "artifact-acceptance",
-        "benchmark-curator",
-        "brief-architect",
-        "content-reviewer",
-        "content-writer",
-        "feedback-integrator",
-        "longform-publisher",
-        "portfolio-operator",
-        "product-operator",
-        "quality-loop-operator",
-        "repair-operator",
-        "rubric-designer",
-        "skill-auditor",
-        "skill-evaluator",
-    ]
+    # parametrized test above would simply stop running for it. The recorded
+    # eval-strength baseline is the list of skills that must ship one;
+    # tooling/new_skill.py adds a new skill's row there when it scaffolds it.
+    baseline = json.loads((ROOT / "registry" / "eval-strength.json").read_text(encoding="utf-8"))
+    recorded = sorted(row["id"] for row in baseline["skills"])
+    assert recorded, "registry/eval-strength.json records no harnesses"
+    assert harness_skills() == recorded
