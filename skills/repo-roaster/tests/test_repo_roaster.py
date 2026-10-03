@@ -2,7 +2,8 @@ from __future__ import annotations
 import importlib.util, json, subprocess, sys
 from pathlib import Path
 
-import jsonschema
+import pytest
+
 
 BASE = Path(__file__).resolve().parents[1]
 
@@ -22,6 +23,8 @@ SCHEMA = json.loads((BASE / "references" / "report.schema.json").read_text(encod
 
 
 def schema_errors(report):
+    # Only schema-parity checks need jsonschema; the validator itself is stdlib-only.
+    jsonschema = pytest.importorskip("jsonschema")
     return [e.message for e in jsonschema.Draft202012Validator(SCHEMA).iter_errors(report)]
 
 

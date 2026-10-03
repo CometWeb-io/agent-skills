@@ -4,7 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 
-import jsonschema
+import pytest
+
 
 BASE = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("content_roast_validator", BASE / "scripts" / "validate_roast.py")
@@ -21,6 +22,8 @@ SCHEMA = json.loads((BASE / "references" / "report.schema.json").read_text(encod
 
 
 def schema_errors(report):
+    # Only schema-parity checks need jsonschema; the validator itself is stdlib-only.
+    jsonschema = pytest.importorskip("jsonschema")
     return [e.message for e in jsonschema.Draft202012Validator(SCHEMA).iter_errors(report)]
 
 
