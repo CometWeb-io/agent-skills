@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.2 — 2026-10-03
+
+- Live source registry re-verified against first-party sources on 2026-10-03; `check_freshness.py --strict` is clean. Google: generative AI performance reports reached all sites on 2026-08-31 (impressions only, no query dimension), and the per-site "Search generative AI features" control is now listed as an eligibility condition for AI Overviews and AI Mode. Moved sources updated (support.claude.com, the OpenAI search help slug, Bing blog paths).
+- Two claims now say what the source states rather than what we infer: independence of the Anthropic controls, and agent vs search readiness as this skill's method.
+- Freshness tests derive their fresh, stale and future audit dates from the registry, so refreshing `last_verified` no longer breaks them. `references/live-source-registry.md` gains a Contents section.
+
 ## 1.3.1 — 2026-10-03
 
 - `score_maxx.py` merged each check row over its registry definition, so a row carrying `weight`, `pillar`, `na_policy` or any other registry field silently rescored the check: a FAIL with `"weight": 0` left MAXX unchanged. Such a row is now rejected with `<id> cannot override registry field(s): ...`; `tests/test_score_maxx.py` pins the exact message.

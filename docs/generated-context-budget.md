@@ -15,7 +15,7 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `science-roaster` | 11,967 B | 2,991 | 74,408 B | 18,602 | 21 | 0.86 |
 | `repo-to-roadmap` | 11,946 B | 2,986 | 61,545 B | 15,386 | 12 | 0.84 |
 | `portfolio-operator` | 11,910 B | 2,977 | 19,888 B | 4,972 | 6 | 0.63 |
-| `seo-geo-aeo-maxxing` | 11,894 B | 2,973 | 75,210 B | 18,802 | 19 | 0.86 |
+| `seo-geo-aeo-maxxing` | 11,894 B | 2,973 | 75,883 B | 18,970 | 19 | 0.86 |
 | `repo-roaster` | 11,863 B | 2,965 | 76,873 B | 19,218 | 20 | 0.87 |
 | `content-roaster` | 11,844 B | 2,961 | 69,060 B | 17,265 | 20 | 0.85 |
 | `customer-ops` | 11,843 B | 2,960 | 131,214 B | 32,803 | 18 | 0.92 |

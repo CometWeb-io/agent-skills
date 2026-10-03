@@ -3,7 +3,14 @@
 Human-readable control plane for volatile platform facts. Machine state lives in
 `live-source-registry.json` and is enforced by the scoring script.
 
-Last verified: 2026-08-25. Default TTL: 30 days.
+Last verified: 2026-10-03. Default TTL: 30 days.
+
+## Contents
+
+- Refresh protocol
+- Current platform guardrails
+- Machine registry groups
+- Maintenance rule
 
 ## Refresh protocol
 
@@ -36,9 +43,13 @@ reproducible first-party product data. Keep secondary research out of platform-c
 - Google Search does not use `llms.txt` as a special visibility mechanism.
 - `Google-Extended` is not the control for Google Search inclusion/ranking.
 - No special schema is required for Google generative Search.
-- Search Console Generative AI reports began rolling out to a subset of properties in June 2026.
-  Current announced dimensions include impressions, pages, countries, devices for Search, and dates;
-  do not invent a query dimension that the report does not expose.
+- Search Console Generative AI performance reports reached all websites on 2026-08-31. They report
+  impressions only, by pages, countries, dates and devices; there is no query dimension. Low-volume
+  properties may still show nothing, which is not measured, not zero.
+- Search Console has a per-site "Search generative AI features" control (included by default since
+  2026-08-31). Opting out removes the site from AI Overviews, AI Mode and Discover generative
+  features, and Google lists inclusion as an eligibility condition. Check it first when a site is
+  missing from AI Overviews.
 - Google confirms query fan-out, but explicitly warns against scaled pages created merely for every
   fan-out variant.
 - Preferred Sources can highlight publishers selected by a user in eligible Top Stories, AI Mode,
@@ -58,7 +69,9 @@ reproducible first-party product data. Keep secondary research out of platform-c
 ### Anthropic / Claude
 
 Keep `ClaudeBot` (model development), `Claude-SearchBot` (search), and `Claude-User` (user-directed
-retrieval) separate. Their controls are independent.
+retrieval) separate: each has its own robots.txt token. Anthropic does not state outright that
+blocking one leaves the others unaffected, so treat independence as inferred, and note its warning
+that IP blocking may not reliably opt a site out. The help article now lives on support.claude.com.
 
 ### Perplexity
 

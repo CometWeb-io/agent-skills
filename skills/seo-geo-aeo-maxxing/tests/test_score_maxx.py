@@ -7,6 +7,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "score_maxx.py"
+
+# Audit dates derived from the registry, so refreshing last_verified does not
+# break the fresh / stale / future cases: fresh = the verification day,
+# stale = past the 30-day TTL, future = before the verification day.
+from datetime import date as _date, timedelta as _td
+_VERIFIED = min(_date.fromisoformat(g["last_verified"]) for g in json.loads((ROOT / "references" / "live-source-registry.json").read_text())["groups"])
+AS_OF_FRESH = _VERIFIED.isoformat()
+AS_OF_STALE = (_VERIFIED + _td(days=37)).isoformat()
+AS_OF_FUTURE = (_VERIFIED - _td(days=24)).isoformat()
 REGISTRY = json.loads((ROOT / "references" / "check-registry.json").read_text(encoding="utf-8"))
 PILLARS = ["foundation", "relevance", "authority", "geo", "aeo"]
 DEFAULT_SURFACES = list(REGISTRY["default_surfaces"])
@@ -47,7 +56,7 @@ def payload(active, mode="PILLAR", surfaces=None, overrides=None, **extra):
     return data
 
 
-def run(data, as_of="2026-08-25"):
+def run(data, as_of=AS_OF_FRESH):
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as f:
         json.dump(data, f)
         path = f.name
@@ -150,7 +159,7 @@ def test_unknown_archetype_and_override_group_rejected():
     p = run(data)
     assert p.returncode != 0
     assert "Unknown site archetypes" in p.stderr
-    data2 = payload(["foundation"], freshness_overrides={"typo_group": {"verified_at":"2026-08-25","sources":["https://example.com/"]}})
+    data2 = payload(["foundation"], freshness_overrides={"typo_group": {"verified_at":AS_OF_FRESH,"sources":["https://example.com/"]}})
     p2 = run(data2)
     assert p2.returncode != 0
     assert "Unknown freshness override groups" in p2.stderr
@@ -209,16 +218,16 @@ def test_freshness_override_rejects_nonofficial_host():
     surfaces = ["chatgpt-search"]
     data = payload(["geo"], surfaces=surfaces)
     data["freshness_overrides"] = {
-        "openai_search": {"verified_at": "2026-10-01", "sources": ["https://example.com/openai-search-policy"]}
+        "openai_search": {"verified_at": AS_OF_STALE, "sources": ["https://example.com/openai-search-policy"]}
     }
-    p = run(data, as_of="2026-10-01")
+    p = run(data, as_of=AS_OF_STALE)
     assert p.returncode != 0
     assert "official registry host" in p.stderr
 
 
 def test_stale_platform_group_requires_refresh_override():
     surfaces = ["chatgpt-search"]
-    p = run(payload(["geo"], surfaces=surfaces), as_of="2026-10-01")
+    p = run(payload(["geo"], surfaces=surfaces), as_of=AS_OF_STALE)
     assert p.returncode != 0
     assert "openai_search is stale" in p.stderr
 
@@ -227,9 +236,9 @@ def test_freshness_override_allows_scoring():
     surfaces = ["chatgpt-search"]
     data = payload(["geo"], surfaces=surfaces)
     data["freshness_overrides"] = {
-        "openai_search": {"verified_at": "2026-10-01", "sources": ["https://help.openai.com/en/articles/12627856-publishers-and-developers-faq"]}
+        "openai_search": {"verified_at": AS_OF_STALE, "sources": ["https://help.openai.com/en/articles/12627856-publishers-and-developers-faq"]}
     }
-    p = run(data, as_of="2026-10-01")
+    p = run(data, as_of=AS_OF_STALE)
     assert p.returncode == 0, p.stderr
 
 
@@ -237,7 +246,7 @@ def test_freshness_override_allows_scoring():
 
 def test_historical_asof_rejects_future_bundled_policy():
     surfaces = ["chatgpt-search"]
-    p = run(payload(["geo"], surfaces=surfaces), as_of="2026-08-01")
+    p = run(payload(["geo"], surfaces=surfaces), as_of=AS_OF_FUTURE)
     assert p.returncode != 0
     assert "after audit as_of" in p.stderr
 
@@ -246,9 +255,9 @@ def test_historical_asof_accepts_historical_override():
     surfaces = ["chatgpt-search"]
     data = payload(["geo"], surfaces=surfaces)
     data["freshness_overrides"] = {
-        "openai_search": {"verified_at": "2026-08-01", "sources": ["https://help.openai.com/en/articles/12627856-publishers-and-developers-faq"]}
+        "openai_search": {"verified_at": AS_OF_FUTURE, "sources": ["https://help.openai.com/en/articles/12627856-publishers-and-developers-faq"]}
     }
-    p = run(data, as_of="2026-08-01")
+    p = run(data, as_of=AS_OF_FUTURE)
     assert p.returncode == 0, p.stderr
 
 
@@ -314,14 +323,14 @@ def test_full_requires_all_five_pillars():
 
 def test_google_schema_support_self_expires_when_google_surface_is_targeted():
     data = payload(["aeo"], surfaces=["google-ai-search"])
-    p = run(data, as_of="2026-10-01")
+    p = run(data, as_of=AS_OF_STALE)
     assert p.returncode != 0
     assert "google_structured_data is stale" in p.stderr
 
 
 def test_google_schema_freshness_not_forced_when_google_surface_out_of_scope():
     data = payload(["aeo"], surfaces=["chatgpt-search"])
-    p = run(data, as_of="2026-10-01")
+    p = run(data, as_of=AS_OF_STALE)
     assert p.returncode == 0, p.stderr
 
 

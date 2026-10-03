@@ -125,6 +125,11 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Changed
 
+- `seo-geo-aeo-maxxing` 1.3.2 (plugin 2.2.1): live source registry re-verified
+  against first-party sources on 2026-10-03, including the new Search Console
+  "Search generative AI features" control; freshness tests derive their dates from
+  the registry so a refresh no longer breaks them.
+
 - **Plugin 2.2.0.** Every skill's `VERSION` moves by one patch release for the
   contract, documentation and kernel fixes below; the shipped set is recorded
   in `registry/plugin-release.json`.

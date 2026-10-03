@@ -30,7 +30,7 @@
 | `repo-to-roadmap` | 1.1.1 | domain | active | ACTIVE | 1005 | False |
 | `rubric-designer` | 1.7.2 | foundation | active | ACTIVE | 672 | False |
 | `science-roaster` | 6.1.1 | domain | active | ACTIVE | 739 | False |
-| `seo-geo-aeo-maxxing` | 1.3.1 | domain | active | ACTIVE | 659 | False |
+| `seo-geo-aeo-maxxing` | 1.3.2 | domain | active | ACTIVE | 659 | False |
 | `skill-auditor` | 1.7.2 | foundation | active | ACTIVE | 751 | False |
 | `skill-evaluator` | 1.7.2 | foundation | active | ACTIVE | 742 | False |
 | `skill-orchestrator` | 1.1.4 | foundation | active | ACTIVE | 728 | False |
