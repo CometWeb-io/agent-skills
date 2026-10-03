@@ -214,3 +214,92 @@ def test_behavior_evals_survive_a_contributor_signing_config(tmp_path):
     proc = subprocess.run([sys.executable, str(ROOT / "tooling/run_behavior_evals.py")],
                           capture_output=True, text=True, cwd=ROOT, env=env, check=False)
     assert proc.returncode == 0, proc.stderr[-2000:]
+
+
+# Confusion report over every labelled prompt in the repository.
+
+def _row(prompt, forbidden=(), **expected):
+    return {"source": "t", "prompt": prompt, "forbidden": list(forbidden), **expected}
+
+
+def test_confusion_counts_misroutes_false_positives_and_unlabelled_rows():
+    rows = [
+        _row("Run AI Council on this decision.", expected="ai-council"),
+        _row("Run AI Council on this decision, please.", expected="repo-roaster"),
+        _row("Run AI Council on this choice.", ["ai-council"]),
+        _row("What is two plus two?", expected=None),
+    ]
+    data = cov.confusion(rows, REGISTRY, POLICY)
+    assert data["prompts"] == 4 and data["labelled"] == 3
+    assert data["pairs"] == [["repo-roaster", "ai-council", 1]]
+    by_id = {row["id"]: row for row in data["skills"]}
+    assert by_id["repo-roaster"] == {"id": "repo-roaster", "expected": 1, "routed": 0,
+                                     "misses": {"ai-council": 1}, "false_positives": 0}
+    assert by_id["ai-council"]["false_positives"] == 1
+    # The unlabelled forbidden-only row is an error but never an accuracy denominator.
+    assert {err["expected"] for err in data["errors"]} == {"repo-roaster", "(unlabelled)"}
+    splits = data["splits"]
+    assert sum(s["labelled"] for s in splits.values()) == 3
+    assert sum(s["correct"] for s in splits.values()) == 2
+    assert sum(s["false_positive"] for s in splits.values()) == 1
+
+
+def test_split_is_stable_and_ignores_case_and_punctuation():
+    assert cov.split_of("Roast this repo!") == cov.split_of("roast this repo")
+    halves = {cov.split_of(f"prompt number {i}") for i in range(40)}
+    assert halves == {"tune", "holdout"}
+
+
+def test_labelled_prompts_read_every_source(tmp_path):
+    skill = tmp_path / "skills" / "repo-roaster" / "evals"
+    skill.mkdir(parents=True)
+    (skill / "trigger-evals.json").write_text(json.dumps([
+        {"query": "roast the repo", "should_trigger": True},
+        {"query": "roast the landing page", "should_trigger": False, "near_miss": "content-roaster"},
+        {"query": "summarize this", "should_trigger": False, "near_miss": "summarization"},
+    ]), encoding="utf-8")
+    (skill / "real-host.json").write_text(json.dumps({"evals": [
+        {"id": "a", "prompt": "red-team this PR", "should_trigger": True},
+        {"id": "b", "prompt": "forced", "should_trigger": True, "force_skill_invocation": True},
+        {"id": "c", "prompt": "write a poem", "should_trigger": False},
+    ]}), encoding="utf-8")
+    registry = {"skills": [{"id": "repo-roaster", "lifecycle": "active", "trigger_examples": ["x"],
+                            "negative_trigger_examples": ["y"]},
+                           {"id": "content-roaster", "lifecycle": "active"}]}
+    rows = cov.labelled_prompts(registry, [_case(must_not_trigger=["repo-roaster"])], root=tmp_path)
+    by_prompt = {row["prompt"]: row for row in rows}
+    assert by_prompt["Explain two plus two."] == {"source": "suite:c1", "prompt": "Explain two plus two.",
+                                                  "forbidden": ["repo-roaster"], "expected": None}
+    assert by_prompt["roast the repo"]["expected"] == "repo-roaster"
+    assert by_prompt["roast the landing page"]["expected"] == "content-roaster"
+    # A near miss naming a task type, not a skill, is a forbidden-only row.
+    assert "expected" not in by_prompt["summarize this"]
+    assert by_prompt["red-team this PR"]["expected"] == "repo-roaster"
+    assert "forced" not in by_prompt
+    assert by_prompt["write a poem"]["forbidden"] == ["repo-roaster"] and "expected" not in by_prompt["write a poem"]
+    assert by_prompt["x"]["expected"] == "repo-roaster"
+    assert by_prompt["y"]["forbidden"] == ["repo-roaster"]
+
+
+def test_live_labelled_prompts_have_no_false_positives():
+    # Every negative label in the repo (suite must_not_trigger, should-not-trigger
+    # rows, registry negatives) holds; misroutes left are boundary cases, not
+    # a forbidden skill firing.
+    data = cov.confusion_report()
+    assert data["labelled"] > 300
+    assert all(split["false_positive"] == 0 for split in data["splits"].values()), data["errors"]
+
+
+def test_natural_real_host_prompts_route_to_their_skill():
+    rows = [row for row in cov.labelled_prompts(REGISTRY, []) if row["source"].startswith("real-host:")]
+    assert len(rows) >= 20
+    data = cov.confusion(rows, REGISTRY, POLICY)
+    assert data["errors"] == [], data["errors"]
+
+
+def test_confusion_cli_is_read_only(capsys):
+    assert cov.main(["--confusion"]) == 0
+    out = capsys.readouterr().out
+    assert "labelled prompts" in out and "tune:" in out and "holdout:" in out
+    assert cov.main(["--confusion", "--json"]) == 0
+    assert json.loads(capsys.readouterr().out)["schema"] == "cometweb.routing-confusion/v1"

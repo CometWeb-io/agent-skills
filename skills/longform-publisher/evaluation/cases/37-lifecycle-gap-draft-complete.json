@@ -1,0 +1,9 @@
+{
+  "scenario": "lifecycle_gap:draft_complete:OUTLINE_LOCKED",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "OUTLINE_LOCKED"
+  }
+}

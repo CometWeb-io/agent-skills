@@ -51,7 +51,9 @@
       "family": "ide-agent",
       "description_max": 2048,
       "skill_dirs": ["~/.cursor/skills"],
-      "optional_extras": ["extras/cursor-rule.mdc"],
+      "routing_rule": "docs/generated-cursor-routing.mdc",
+      "routing_rule_fallback": "extras/cursor-routing.mdc",
+      "package_optional_extras": ["extras/cursor-rule.mdc"],
       "capabilities": ["filesystem", "code_execution", "git"],
       "profile_verified_at": "2026-09-11",
       "profile_basis": "Cursor Agent Skills documentation"

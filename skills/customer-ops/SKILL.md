@@ -10,18 +10,12 @@ description: >
   actually resolved the customer-visible symptom. Composes with Gmail/support tools,
   HubSpot/CRM, billing, product analytics, GitHub, Notion/incident records, and connected
   files. Do not use for broad VOC/persona research, retention-program design, general CRM
-  architecture, analytics implementation, product roadmap prioritization, or security
-  exploitation; hand those workflows to the specialist skill.
+  architecture, analytics implementation, product roadmap prioritization (Product
+  Operator), release-candidate GO/NO_GO (Release Readiness), or security exploitation;
+  hand those workflows to the specialist skill.
 ---
 
 # Customer Ops
-
-## Quality preflight
-
-Read [runtime evidence and safety](references/runtime-policy.md) once per task and
-[domain acceptance and currentness](references/quality-and-currentness.md) before
-applying the workflow. Use only relevant sources; do not load every reference or
-browse unrelated news. Preserve the output protocol and report untested capabilities.
 
 Protocol version: **2.0**.
 
@@ -35,18 +29,21 @@ unless the user asks otherwise.
 
 ## 0. Load only what the task needs
 
-Always read:
+Read once per task, before the first source pass:
 
-- [references/operating-model.md](references/operating-model.md)
-- [references/evidence-and-provenance.md](references/evidence-and-provenance.md)
-- [references/connectors-and-sor.md](references/connectors-and-sor.md)
-- [references/write-authority.md](references/write-authority.md)
-- [references/outputs.md](references/outputs.md)
+- [references/runtime-policy.md](references/runtime-policy.md) — evidence and safety contract;
+- [references/quality-and-currentness.md](references/quality-and-currentness.md) — domain acceptance;
+- [references/operating-model.md](references/operating-model.md) — case graph, entities, state machines;
+- [references/workflow.md](references/workflow.md) — the full A–I stage procedure;
+- [references/evidence-and-provenance.md](references/evidence-and-provenance.md) — grades, temporal truth, contradictions;
+- [references/connectors-and-sor.md](references/connectors-and-sor.md) — system of record per fact, capability discovery.
 
-Then load only the relevant modules:
+Read when the trigger applies:
 
-| Need | Read |
+| Trigger | Read |
 |---|---|
+| before any write, send, close, or approval request | [references/write-authority.md](references/write-authority.md) |
+| before writing the final output | [references/outputs.md](references/outputs.md) |
 | queue triage, priority, aging | [references/triage-priority.md](references/triage-priority.md) |
 | SLA/deadline semantics, support metrics | [references/metrics-and-sla.md](references/metrics-and-sla.md) |
 | outage/degradation/incident | [references/incidents.md](references/incidents.md) |
@@ -54,41 +51,26 @@ Then load only the relevant modules:
 | promises, escalations, internal handoffs | [references/commitments-and-handoffs.md](references/commitments-and-handoffs.md) |
 | customer reply / incident communication | [references/safety-and-comms.md](references/safety-and-comms.md) |
 | GitHub dedupe/create/update/verification | [references/github-loop.md](references/github-loop.md) |
-| handoff to adjacent skills | [references/composability.md](references/composability.md) |
-| QA, golden cases, quality rubric | [references/evaluation.md](references/evaluation.md) |
+| work that an adjacent skill may own | [references/composability.md](references/composability.md) |
+| changing or testing this skill | [references/evaluation.md](references/evaluation.md) |
 
-When code execution is available, use `scripts/customer_ops_kernel.py` for deterministic
-fallback priority, retention-risk classification, incident impact severity, authoritative
-deadline status, dedupe fingerprints, case gates, commitment status, transition checks,
-and best-effort privacy preflight. Do not claim the kernel ran unless it actually ran.
+Do not load every reference or browse unrelated news. When code execution is available,
+use `scripts/customer_ops_kernel.py` for deterministic fallback priority, retention-risk
+classification, incident impact severity, authoritative deadline status, dedupe
+fingerprints, case gates, commitment status, transition checks, and best-effort privacy
+preflight. Do not claim the kernel ran unless it actually ran.
 
 ## 1. Choose the tightest operating mode
 
-Use one primary mode and chain others only when needed. Keep each mode's status explicit.
-
-- `triage-queue` — inventory, dedupe, risk-gate, and rank a queue.
-- `case` — investigate one customer problem end to end.
-- `incident` — coordinate a material service incident and customer exposure.
-- `feedback` — extract/cluster operational product feedback.
-- `churn-watch` — classify evidence-backed non-renewal/churn risk for accounts.
-- `commitment-watch` — find customer promises that are due, overdue, or ownerless.
-- `handoff-watch` — find stalled support→CS/product/engineering/billing escalations.
-- `github-loop` — dedupe, draft/create/update, link, or verify engineering work.
-- `account-360` — consolidate current operational account context around a question.
-- `ops-brief` — produce a current daily/weekly decision brief.
-- `closure-loop` — verify remedy, follow-up, commitments, and closure state.
-
-Do not expand a focused request into a full customer-ops audit without a material reason.
+Use one primary mode and chain others only when needed: `triage-queue`, `case`,
+`incident`, `feedback`, `churn-watch`, `commitment-watch`, `handoff-watch`, `github-loop`,
+`account-360`, `ops-brief`, `closure-loop`. Keep each mode's status explicit. Do not
+expand a focused request into a full customer-ops audit without a material reason.
 
 ## 2. Establish capability, scope, and `as_of`
 
-Before current-state analysis, determine which evidence sources and write capabilities are
-actually available. Examples: Gmail/support platform, HubSpot/CRM, billing, analytics,
-GitHub, Notion/incident record, logs, and user-provided files.
-
-Classify each relevant source:
-
-`available-read | available-write | user-provided | unavailable | unknown`
+Before current-state analysis, classify each relevant source as
+`available-read | available-write | user-provided | unavailable | unknown`.
 
 For `triage-queue`, `account-360`, `churn-watch`, `handoff-watch`, `commitment-watch`, and
 `ops-brief`, record an `as_of` time and last-checked time for material current sources.
@@ -97,40 +79,16 @@ Do not reuse an old state as current merely because it appeared earlier in the t
 If a critical source is unavailable, mark the result `PARTIAL` and state which decisions
 are blocked. Never say a system was checked or mutated unless it actually was.
 
-If `.agents/product-marketing.md` or equivalent product context exists, read it for
-product/ICP background. Treat it as context, never as current evidence about an account.
+Product context files (for example `.agents/product-marketing.md`) are background,
+never current evidence about an account.
 
-## 3. Use the case graph as a reasoning model, not a shadow CRM
-
-Normalize evidence into the graph defined in `operating-model.md`:
+## 3. Case graph — a reasoning model, not a shadow CRM
 
 `Account → Contact → Conversation → Case → CaseEvent / Signal → Problem Cluster → Incident / Exposure → Handoff → Engineering Work Item → Commitment / Intervention → Outcome`
 
-Not every case needs every entity. Preserve source IDs and timestamps for material facts.
-Do not create a second operational database merely because the graph exists; persist only
-into the organization's designated systems when the user asks.
-
-For each investigated case establish, at minimum:
-
-```text
-case_id
-source + source_id
-account/contact identity or unknown
-opened_at / last_activity_at
-customer-visible symptom / desired outcome
-type + state
-confirmed impact + breadth
-evidence grade
-operational priority
-account escalation level if relevant
-retention-risk level if relevant
-owner class or unassigned
-next action + due/checkpoint if known
-linked incident / cluster / GitHub work
-open commitments / handoffs
-evidence gaps / contradictions
-```
-
+Preserve source IDs and timestamps for material facts; the minimum per-case fields are in
+`operating-model.md`. Do not create a second operational database merely because the
+graph exists; persist only into the organization's designated systems when the user asks.
 Never merge customers, accounts, cases, or incidents on name/text similarity alone.
 
 ## 4. Keep the decision axes separate
@@ -150,104 +108,18 @@ only when policy is absent.
 
 ## 5. Universal workflow
 
-Execute these stages in order unless the selected mode explicitly skips one.
+Run stages A–I in order unless the mode skips one; the full procedure is in
+`references/workflow.md`. Rules a stage must never drop:
 
-### A. Frame the operational decision
-
-- State what action/decision the work must enable.
-- Bound the queue/account/time window/repositories in scope.
-- Route each material fact to its system of record.
-- Decide what evidence is required before any external write.
-
-### B. Inventory cheaply, then deepen selectively
-
-For large queues, use two passes:
-
-1. metadata/summary pass across the complete in-scope inventory;
-2. full evidence pass for incident candidates, safety gates, SLA risk, P0/P1, explicit
-   churn/non-renewal intent, overdue commitments, stalled handoffs, and ambiguous cases.
-
-If pagination/result limits prevent full inventory, say so. Do not claim complete coverage.
-
-### C. Normalize evidence and provenance
-
-Separate:
-
-`reported | observed | reproduced | telemetry-confirmed | engineering-confirmed | commercial-record | inferred`
-
-Keep `confirmed facts`, `hypotheses`, `unknowns`, and `contradictions` distinct. Current
-operational facts need a timestamp/verification state.
-
-### D. Deduplicate conservatively
-
-- Preserve raw source records.
-- Distinguish identity dedupe from problem dedupe.
-- Search existing GitHub work before proposing a new engineering issue.
-- Treat deterministic fingerprints as candidate keys, never proof of semantic identity.
-- Track `case_count` and `account_count` separately.
-
-### E. Run gates before ordinary ranking
-
-Surface before normal queue ordering:
-
-- active incident or credible incident candidate,
-- security/privacy/data-loss/legal/fraud/material financial-harm signal,
-- provider-native SLA breach/near-breach,
-- explicit cancellation/non-renewal/switch intent,
-- overdue customer commitment,
-- ownerless or blocked critical handoff.
-
-Risk-gating a case does not prove root cause or incident scope.
-
-### F. Classify, route, and assign one next action
-
-Choose one primary next-action owner class:
-
-`support | customer_success | product | engineering | incident_commander | billing | security | privacy | legal | revops | unknown`
-
-If unknown, use `unassigned`; do not invent a person. Use handoff acceptance and due state
-from `commitments-and-handoffs.md` for cross-team work rather than hiding it in
-`WAITING_INTERNAL`.
-
-### G. Act only within authority
-
-Reads, drafts, writes, sends, financial actions, destructive actions, and sensitive
-publication have different authority. Apply `write-authority.md` before any mutation.
-
-Before a write:
-
-- verify target identity/repository/account,
-- dedupe/idempotency-check when applicable,
-- minimize customer data,
-- validate factual claims,
-- match the mutation to explicit user intent.
-
-After a write, verify the resulting state and report the returned external ID/state.
-
-### H. Verify the customer outcome
-
-Internal completion is not customer resolution. Use:
-
-`RESOLVED → VERIFIED → CLOSED`
-
-`VERIFIED` requires an explicit criterion tied to the original customer-visible symptom.
-If a PR is merged but not deployed, a ticket is solved but immediately reopens, or the
-customer still reproduces the symptom, keep the case unresolved/unverified.
-
-### I. Close the learning loop
-
-After resolution, check whether the case creates:
-
-- a recurring problem cluster,
-- regression/prevention engineering work,
-- docs/self-service candidate,
-- analytics gap,
-- customer-research input,
-- retention follow-up,
-- post-incident action,
-- product evidence pack.
-
-Route the specialist work instead of expanding Customer Ops into a monolith.
+- **A. Frame** — name the decision the work enables and the evidence required before any external write.
+- **B. Inventory** — metadata pass over the full scope, then deep reads. If pagination/result limits prevent full inventory, say so. Do not claim complete coverage.
+- **C. Normalize** — keep confirmed facts, hypotheses, unknowns, and contradictions distinct.
+- **D. Dedupe** — fingerprints are candidate keys, never proof of semantic identity; track `case_count` and `account_count` separately.
+- **E. Gates before ranking** — incident candidates, security/privacy/data-loss/legal/fraud/financial harm, SLA breach, explicit churn intent, overdue commitments, and ownerless critical handoffs surface first. Risk-gating a case does not prove root cause or incident scope.
+- **F. Route** — one owner class per next action (`support`, `customer_success`, `product`, `engineering`, `incident_commander`, `billing`, `security`, `privacy`, `legal`, `revops`, or `unassigned`); do not invent a person.
+- **G. Authority** — apply `write-authority.md` before any mutation; after a write, verify the resulting state and report the returned external ID/state.
+- **H. Verify** — `RESOLVED → VERIFIED → CLOSED`; `VERIFIED` requires an explicit criterion tied to the original customer-visible symptom.
+- **I. Learn** — route recurring clusters, regressions, docs gaps, and retention follow-up to the specialist instead of expanding Customer Ops into a monolith.
 
 ## 6. Mode rules
 
@@ -267,35 +139,22 @@ are the ones a mode must never drop, even when the reference is not loaded.
 | `ops-brief` | [outputs.md](references/outputs.md) §11 | Now / Next / Watch / Closed loop / Quality / Data quality, ranked by actionability and customer impact. One critical case is never buried under aggregates. |
 | metrics | [metrics-and-sla.md](references/metrics-and-sla.md) | Only metrics with a definition and source timestamps; always show window and denominator; warn before comparing periods with different coverage or policy. |
 
-Route deep VOC/persona work, retention-program mechanics (cancel flows, save offers,
-dunning, win-back), and product allocation through [composability.md](references/composability.md).
+Customer Ops owns **operational evidence → safe routing → verified closure**. Hand off,
+do not absorb, deep VOC/persona work, retention-program mechanics (cancel flows, save
+offers, dunning, win-back), product allocation, analytics implementation, security
+assessment, release readiness, or CRM architecture; read `composability.md` when one of
+these appears.
 
-## 7. Composability
+## 7. Output discipline
 
-Use `composability.md` when adjacent skills may own the deeper workflow. Customer Ops owns
-**operational evidence → safe routing → verified closure**. It should hand off, not absorb,
-deep market research, product allocation, analytics implementation, retention mechanics,
-security assessment, release readiness, or CRM architecture.
+Every material output exposes, when relevant: `as_of` and source freshness; evidence and
+provenance grade; severity vs priority vs account escalation vs retention risk; owner and
+next action; authoritative SLA/deadline state; open commitments and handoffs; linked
+case/cluster/incident/GitHub IDs; contradictions and unknowns; actions performed vs
+proposed; verification/closure state. Prefer a short ranked operating queue when the user
+needs to act.
 
-## 8. Output discipline
-
-Use `outputs.md`. Every material output should expose, when relevant:
-
-- `as_of` / source freshness,
-- evidence + provenance grade,
-- severity vs priority vs account escalation vs retention risk,
-- owner + next action,
-- authoritative SLA/deadline state,
-- open commitments/handoffs,
-- linked case/cluster/incident/GitHub IDs,
-- contradictions and unknowns,
-- actions performed vs proposed,
-- verification/closure state.
-
-Prefer a short ranked operating queue when the user needs to act. Use narrative only where
-it improves diagnosis or decision quality.
-
-## 9. Hard boundaries
+## 8. Hard boundaries
 
 - Never invent customer identity, account value, usage, renewal date, contract/SLA, or ETA.
 - Never call a heuristic retention score a churn probability or validated model output.

@@ -2,101 +2,101 @@
   "note": "Recorded by tooling/eval_strength.py --update. Held counts may rise freely; a fall means a rule stopped being pinned.",
   "skills": [
     {
-      "guards": 5,
-      "held": 5,
+      "guards": 63,
+      "held": 52,
       "id": "artifact-acceptance",
-      "strength": 1.0,
+      "strength": 0.825,
       "unexercised": []
     },
     {
-      "guards": 3,
-      "held": 3,
+      "guards": 33,
+      "held": 32,
       "id": "benchmark-curator",
-      "strength": 1.0,
+      "strength": 0.97,
       "unexercised": []
     },
     {
-      "guards": 23,
-      "held": 23,
+      "guards": 67,
+      "held": 60,
       "id": "brief-architect",
-      "strength": 1.0,
+      "strength": 0.896,
       "unexercised": []
     },
     {
-      "guards": 7,
-      "held": 7,
+      "guards": 43,
+      "held": 38,
       "id": "content-reviewer",
-      "strength": 1.0,
+      "strength": 0.884,
       "unexercised": []
     },
     {
-      "guards": 11,
-      "held": 11,
+      "guards": 52,
+      "held": 50,
       "id": "content-writer",
-      "strength": 1.0,
+      "strength": 0.962,
       "unexercised": []
     },
     {
-      "guards": 8,
-      "held": 8,
+      "guards": 33,
+      "held": 31,
       "id": "feedback-integrator",
-      "strength": 1.0,
+      "strength": 0.939,
+      "unexercised": []
+    },
+    {
+      "guards": 67,
+      "held": 63,
+      "id": "longform-publisher",
+      "strength": 0.94,
+      "unexercised": []
+    },
+    {
+      "guards": 62,
+      "held": 56,
+      "id": "portfolio-operator",
+      "strength": 0.903,
+      "unexercised": []
+    },
+    {
+      "guards": 189,
+      "held": 140,
+      "id": "product-operator",
+      "strength": 0.741,
+      "unexercised": []
+    },
+    {
+      "guards": 91,
+      "held": 75,
+      "id": "quality-loop-operator",
+      "strength": 0.824,
+      "unexercised": []
+    },
+    {
+      "guards": 52,
+      "held": 44,
+      "id": "repair-operator",
+      "strength": 0.846,
+      "unexercised": []
+    },
+    {
+      "guards": 29,
+      "held": 28,
+      "id": "rubric-designer",
+      "strength": 0.966,
+      "unexercised": []
+    },
+    {
+      "guards": 53,
+      "held": 48,
+      "id": "skill-auditor",
+      "strength": 0.906,
       "unexercised": []
     },
     {
       "guards": 54,
-      "held": 35,
-      "id": "longform-publisher",
-      "strength": 0.648,
-      "unexercised": []
-    },
-    {
-      "guards": 61,
-      "held": 55,
-      "id": "portfolio-operator",
-      "strength": 0.902,
-      "unexercised": []
-    },
-    {
-      "guards": 167,
-      "held": 64,
-      "id": "product-operator",
-      "strength": 0.383,
-      "unexercised": []
-    },
-    {
-      "guards": 8,
-      "held": 8,
-      "id": "quality-loop-operator",
-      "strength": 1.0,
-      "unexercised": []
-    },
-    {
-      "guards": 3,
-      "held": 3,
-      "id": "repair-operator",
-      "strength": 1.0,
-      "unexercised": []
-    },
-    {
-      "guards": 2,
-      "held": 2,
-      "id": "rubric-designer",
-      "strength": 1.0,
-      "unexercised": []
-    },
-    {
-      "guards": 2,
-      "held": 2,
-      "id": "skill-auditor",
-      "strength": 1.0,
-      "unexercised": []
-    },
-    {
-      "guards": 5,
-      "held": 5,
+      "held": 48,
       "id": "skill-evaluator",
-      "strength": 1.0,
+      "strength": 0.889,
       "unexercised": []
     }
   ]

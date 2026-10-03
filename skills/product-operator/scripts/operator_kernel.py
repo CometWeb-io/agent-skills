@@ -409,6 +409,9 @@ def reconcile_items(items: list[dict[str, Any]], as_of: str | None = None) -> di
 
 
 def sequence_candidates(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    for idx, row in enumerate(rows):
+        if isinstance(row, dict) and row.get("depends_on") is not None:
+            list_value(row["depends_on"], f"candidates[{idx}].depends_on")
     ranked_rows = rank_candidates(rows)["ranked"]
     by_id = {str(row.get("id")): row for row in ranked_rows if str(row.get("id") or "").strip()}
     missing_dependencies: list[dict[str, str]] = []
@@ -460,6 +463,7 @@ def sequence_candidates(rows: list[dict[str, Any]]) -> dict[str, Any]:
 def readiness_report(payload: dict[str, Any]) -> dict[str, Any]:
     reasons: list[str] = []
     coverage = payload.get("coverage") or {}
+    object_value(coverage, "coverage")
     goal_known = boolish(payload.get("goal_known", True))
     critical_gap = boolish(payload.get("critical_gap_open"))
     unresolved_gate = boolish(payload.get("unresolved_gate"))
@@ -519,6 +523,8 @@ def build_plan(payload: dict[str, Any]) -> dict[str, Any]:
         raise InputError("as_of must be an ISO-8601 timestamp with timezone")
 
     candidates = unique_rows(source.get("candidates", []), "candidates")
+    if source.get("coverage") is not None:
+        object_value(source["coverage"], "coverage")
     state_items = list_value(source.get("state_items", []), "state_items")
     for idx, item in enumerate(state_items):
         if not isinstance(item, dict):
@@ -818,7 +824,10 @@ def validate_action(action: Any, path: str, errors: list[str], warnings: list[st
     if require_why and not str(action.get("why_now") or "").strip():
         errors.append(f"{path}.why_now is required")
     confidence = action.get("confidence")
-    if confidence is None or clamp(confidence, 0, 1, -1) < 0:
+    # clamp() pulls 1.5 down to 1 and -0.5 up to 0, so testing its result for < 0
+    # only ever caught non-numbers. Compare the unclamped value with the range.
+    number = clamp(confidence, -math.inf, math.inf, math.nan)
+    if confidence is None or not 0 <= number <= 1:
         errors.append(f"{path}.confidence must be between 0 and 1")
     evidence = action.get("evidence")
     if not isinstance(evidence, list) or not evidence:

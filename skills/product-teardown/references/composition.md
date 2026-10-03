@@ -27,7 +27,10 @@ It does not own portfolio-level product priority, ongoing monitoring, a broad co
 
 ## 2. Adjacent skills
 
-### competitor-profiling
+### competitor-profiling (when installed)
+
+Not part of this repository; route here only when the host has such a skill. Otherwise keep the teardown narrow and say a dossier is out of scope.
+
 
 Use when the main deliverable is a broad dossier: company, ICP, positioning, pricing, product surface, strengths/weaknesses, and competitive posture.
 
@@ -39,7 +42,10 @@ Use for repeated observation over time, release/change deltas, monitoring, watch
 
 Product Teardown may emit `watch_candidates` for patterns whose version/freshness matters, but should not create an ongoing monitoring loop itself.
 
-### competitors
+### competitors (when installed)
+
+Not part of this repository; route here only when the host has such a skill.
+
 
 Use for external-facing comparison/alternative pages, battlecards, and positioning against a competitor.
 

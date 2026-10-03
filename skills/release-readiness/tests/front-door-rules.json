@@ -1,0 +1,311 @@
+{
+  "skill": "release-readiness",
+  "note": "Normative rules the skill must keep. Front-door rules live in SKILL.md; the rest sit in a reference SKILL.md points to with a load trigger. Removing or moving a rule means editing this inventory deliberately.",
+  "rules": [
+    {
+      "id": "false-green-bias",
+      "text": "must reduce confidence or block the verdict rather than disappear from scoring",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-average-blocker",
+      "text": "Never average away a blocker",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "derive-gates",
+      "text": "do not let omitted checks create a false green result",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "na-no-credit",
+      "text": "Treat `N/A` as exclusion with rationale, never as credit",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "not-deploy-authorization",
+      "text": "not authorization to deploy or perform side effects",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "gates-before-scoring",
+      "text": "Never start scoring before this step",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "route-selectively",
+      "text": "do not recursively invoke every specialist",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-verdict-inertia",
+      "text": "Do not preserve a previous verdict for consistency",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-invented-facts",
+      "text": "Do not invent unknown values",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "identity-caps-defer",
+      "text": "the final verdict cannot exceed `DEFER`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "tag-not-identity",
+      "text": "Branch, tag, deployment ID and release name are descriptive, not immutable identities",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "profile-no-hiding",
+      "text": "Do not use a profile to hide risk",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "mode-floor",
+      "text": "Do not downgrade mode merely to obtain a faster `GO`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "unknown-not-no",
+      "text": "Prefer `DEFER` over assuming `no`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "unknown-flag-rejected",
+      "text": "a key the engine does not recognise is rejected rather than guessed",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "blocker-not-averaged",
+      "text": "`BLOCKER`, `CRITICAL`, or binding failure must not be averaged away",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "major-blocks",
+      "text": "`MAJOR` unresolved failure blocks by default",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "controls-require",
+      "text": "`PASS_WITH_CONTROLS` requires a real compensating control, owner, mitigation, and non-expired due/expiry point",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "accepted-risk-scope",
+      "text": "`ACCEPTED_RISK` is allowed only for non-binding `MAJOR/MINOR` risk with explicit approver, owner, rationale, mitigation, and expiry",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "accepted-risk-never-binding",
+      "text": "Never use `ACCEPTED_RISK` for binding, blocker, or critical findings",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "na-rationale",
+      "text": "\"Not checked\" means `UNKNOWN`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "binding-pass-downgrade",
+      "text": "A binding `PASS` with insufficient evidence, missing timestamp, candidate mismatch, stale evidence, or unknown freshness becomes `UNKNOWN` for gating",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "gov-block",
+      "text": "`BLOCK` → `NO_GO`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "gov-counsel",
+      "text": "`COUNSEL_REQUIRED` → `DEFER`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "gov-missing",
+      "text": "Missing a required governance gate → `DEFER`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "gov-controls-cap",
+      "text": "can yield at most `GO_WITH_CONTROLS`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "gov-no-override",
+      "text": "Do not let a score or majority opinion override a governance `BLOCK`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "gov-no-overclaim",
+      "text": "Do not claim legal/privacy/compliance assurance beyond the evidence actually obtained",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "placeholders",
+      "text": "Never treat generated placeholders as evidence",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "bootstrap-unknown",
+      "text": "The bootstrapper preserves unknown risk flags as `unknown`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "engine-authority",
+      "text": "do not manually override the engine result",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "unknown-reenters",
+      "text": "Any new material unknown must re-enter the manifest and gate logic",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "defer-vs-nogo",
+      "text": "Use `DEFER` for \"we do not yet know\" and `NO_GO` for \"we know this should not ship\"",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "immutable-snapshot",
+      "text": "do not edit an old snapshot to make a new candidate appear covered",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "blocker-fields",
+      "text": "Every blocker carries domain and gate, production failure mode, exact evidence or gap, smallest credible remediation, owner if known, and exact closure verification",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "read-only",
+      "text": "Operate read-only by default",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-side-effects",
+      "text": "Do not deploy, merge, charge, refund, migrate, delete, publish, or notify users merely because readiness is `GO`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-overclaim-assurance",
+      "text": "Do not claim penetration testing, formal compliance, legal approval, or production safety unless that work was actually performed and evidenced",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-proxy-metrics",
+      "text": "Do not use test count, issue count, repository cleanliness, code coverage, Lighthouse score, or a single security score as a proxy for release readiness",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-timeless-law",
+      "text": "Do not encode current law, platform policy, vendor requirements, payment-network rules, or security advisories as timeless facts",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "redteam-omitted-gate",
+      "text": "Was a required gate omitted rather than passed?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-flag-no",
+      "text": "Was a risk flag set to `no` without evidence?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-other-build",
+      "text": "Is evidence from another commit/build/environment/configuration?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-skipped-path",
+      "text": "Did a green suite skip the actually changed critical path?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-binding",
+      "text": "Is a supposedly verified check missing candidate/timestamp binding?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-rollback",
+      "text": "Is rollback/recovery theoretical rather than operationally credible?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-money",
+      "text": "Can migration/retry/idempotency behavior corrupt data or money?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-alerts",
+      "text": "Are alerts present but unactionable or unowned?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-users",
+      "text": "Could users be charged incorrectly, lose entitlements, get locked out, or lose data?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-disguised",
+      "text": "Was a `MAJOR` risk disguised as `PASS_WITH_CONTROLS` without a real control?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-authority",
+      "text": "Was risk acceptance used without authority or after expiry?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-na",
+      "text": "Did `N/A` remove inconvenient scope?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-stale-claim",
+      "text": "Did a current vendor/platform/security/legal claim rely on stale evidence?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "redteam-incident",
+      "text": "Did a release after an incident verify the actual regression/failure mode?",
+      "where": "references/red-team.md"
+    },
+    {
+      "id": "context-capture",
+      "text": "deployment topology and rollout mechanism",
+      "where": "references/risk-routing.md"
+    },
+    {
+      "id": "engine-enforces",
+      "text": "risk-tier mode floor; evidence admissibility; governance gates",
+      "where": "references/manifest-schema.md"
+    },
+    {
+      "id": "binding-evidence-fields",
+      "text": "The engine requires structured summary + timestamp for binding passes",
+      "where": "references/evidence-policy.md"
+    },
+    {
+      "id": "revalidate-on-build-change",
+      "text": "commit/build/artifact changes;",
+      "where": "references/rollout-revalidation.md"
+    },
+    {
+      "id": "delta-score-not-readiness",
+      "text": "Do not interpret score improvement as readiness improvement",
+      "where": "references/rollout-revalidation.md"
+    },
+    {
+      "id": "council-no-override",
+      "text": "it cannot convert failed technical evidence into passing evidence",
+      "where": "references/integrations.md"
+    },
+    {
+      "id": "na-bypass",
+      "text": "Do not mark the required gate N/A to bypass the matrix",
+      "where": "references/risk-routing.md"
+    }
+  ]
+}

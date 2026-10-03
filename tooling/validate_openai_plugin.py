@@ -15,6 +15,7 @@ REGISTRY = ROOT / "registry/skills.json"
 SKILLS = ROOT / "skills"
 PLUGIN_NAME = "cometweb-agent-skills"
 REPOSITORY = "https://github.com/CometWeb-io/agent-skills"
+INSTALLATION_POLICIES = frozenset({"AVAILABLE", "INSTALLED_BY_DEFAULT", "NOT_AVAILABLE"})
 
 
 def fail(message: str) -> None:
@@ -59,6 +60,13 @@ def main() -> None:
     source = entry.get("source")
     if source != {"source": "local", "path": "./"}:
         fail("marketplace plugin must point at the repository root with source.path='./'")
+    # OpenAI's marketplace format asks every entry for an install policy and a
+    # category; the desktop app uses them to decide how the plugin is offered.
+    policy = entry.get("policy")
+    if not isinstance(policy, dict) or policy.get("installation") not in INSTALLATION_POLICIES:
+        fail(f"marketplace plugin policy.installation must be one of {sorted(INSTALLATION_POLICIES)}")
+    string(policy.get("authentication"), "marketplace plugin policy.authentication")
+    string(entry.get("category"), "marketplace plugin category")
 
     if plugin.get("name") != PLUGIN_NAME:
         fail("plugin.name is invalid")

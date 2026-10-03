@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2 — 2026-10-03
+
+- `score_maxx.py` rejects a non-object audit and non-string pillar, surface, check id, verdict, profile or evidence class values with `ERROR:` and exit 1 instead of a traceback.
+- `compare_scores.py` validates both score files (object shape, numeric scores and coverage, string ids and groups) and names the offending file and field instead of failing with a traceback.
+
 ## 1.2.1 — 2026-09-25
 
 - Add a content-rewrite route to `references/composability.md`: which findings go to a writing skill, what to pass (priority question, failed extraction criteria, preserve list) and which findings need evidence work first.

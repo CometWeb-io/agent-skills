@@ -9,6 +9,18 @@ Generate a skeleton with `scripts/bootstrap_manifest.py`; required gates start a
 The stricter admission rules in skill 1.1.0 deliberately invalidate some former
 false-green manifests. Do not fill missing fields from guesses to regain `GO`.
 
+## What the engine enforces
+
+Artifact identity; scope completeness; profile/risk-derived required gates;
+risk-tier mode floor; evidence admissibility; governance gates; risk-tier threshold
+floors; blocker precedence; controlled-risk and accepted-risk rules; immutable
+snapshot hash; revalidation triggers. Use its output as the default authority: if
+evidence changes, update the manifest and re-run rather than overriding the result.
+
+`scope.commercial` is the canonical key. `scope.commercial_model` is accepted as an
+alias for manifests written from older instructions; supplying both with different
+values is rejected.
+
 ## Root contract
 
 The input is one JSON object, at most 4 MiB. Duplicate keys, non-finite numbers,

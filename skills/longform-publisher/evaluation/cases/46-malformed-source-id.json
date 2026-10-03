@@ -1,0 +1,15 @@
+{
+  "scenario": "malformed_source_id",
+  "expect": {
+    "validation": [
+      "FIELD_TYPE_INVALID:sources.id"
+    ],
+    "manuscript": [
+      "FIELD_TYPE_INVALID:sources.id"
+    ],
+    "derived": [
+      "FIELD_TYPE_INVALID:sources.id"
+    ],
+    "stage": "RELEASE_READY"
+  }
+}

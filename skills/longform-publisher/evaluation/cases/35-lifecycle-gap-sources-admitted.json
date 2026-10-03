@@ -1,0 +1,9 @@
+{
+  "scenario": "lifecycle_gap:sources_admitted:BRIEFED",
+  "expect": {
+    "validation": [],
+    "manuscript": [],
+    "derived": [],
+    "stage": "BRIEFED"
+  }
+}

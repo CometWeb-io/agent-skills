@@ -10,6 +10,7 @@
 6. Claim-check memo
 7. Executive brief
 8. Alert contract
+9. Quality gate before finalizing
 
 ## 1. General rules
 
@@ -164,3 +165,18 @@ Event key: sha256:...
 ```
 
 Never alert repeatedly for the same event key unless the verification state, materiality, or implication materially changes.
+
+## 9. Quality gate before finalizing
+
+A report is ready only when:
+
+- every material event maps to at least one evidence item,
+- current claims have verification timestamps,
+- high/critical events have contradiction checks,
+- cosmetic noise is suppressed,
+- duplicate events are suppressed,
+- fact and implication are clearly separated,
+- uncertainty is visible,
+- coverage gaps are disclosed,
+- recommended action is proportional to evidence strength,
+- persisted snapshots validate successfully when files are being maintained.

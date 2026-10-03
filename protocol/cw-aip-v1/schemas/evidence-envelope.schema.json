@@ -6,6 +6,7 @@
     { "$ref": "envelope.core.schema.json" },
     {
       "type": "object",
+      "required": ["payload"],
       "properties": {
         "type": { "const": "EvidenceEnvelope" },
         "payload": {

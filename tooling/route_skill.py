@@ -85,10 +85,66 @@ def _catalog(registry: dict, policy: dict) -> dict:
         if not isinstance(guard, dict) or not {"when", "unless"} <= guard.keys():
             raise ValueError("invalid narrow intent guard")
         _pattern(guard["when"]); _pattern(guard["unless"])
+    _negation_rules(policy)
     workflow = policy.get("workflow_skill")
     if not isinstance(workflow, str) or not ID.fullmatch(workflow):
         raise ValueError("invalid workflow identifier")
     return {sid:entry for sid,entry in all_skills.items() if entry.get("lifecycle") == "active"}
+
+
+def _negation_rules(policy: dict):
+    """Validate and return (cues, boundary, max_scope_chars), or None when unset."""
+    rules = policy.get("negation")
+    if rules is None:
+        return None
+    if not isinstance(rules, dict) or not {"cues", "boundary", "max_scope_chars"} <= rules.keys():
+        raise ValueError("invalid negation rules")
+    cues, boundary, cap = rules["cues"], rules["boundary"], rules["max_scope_chars"]
+    if not isinstance(cues, list) or not 1 <= len(cues) <= 32 or type(cap) is not int or not 1 <= cap <= 400:
+        raise ValueError("invalid negation rules")
+    return tuple(_pattern(c) for c in cues), _pattern(boundary), cap
+
+
+def negated_spans(text: str, policy: dict) -> list[tuple[int, int]]:
+    """Character ranges of ``text`` that sit inside a negated clause.
+
+    A clause is the text between two boundary matches (punctuation, contrast or
+    subordinating words such as "but", "just", "until", "tylko", "zanim"). The
+    first cue found in a clause negates from the end of the cue to the end of
+    that clause, capped at ``max_scope_chars``. Cues anchored with ``^`` only
+    fire at the start of a clause, which keeps "find what's not working" or
+    "sprawdz, czy strona nie dziala" out of scope.
+    """
+    rules = _negation_rules(policy)
+    if rules is None:
+        return []
+    cues, boundary, cap = rules
+    cuts = [0]
+    for m in boundary.finditer(text):
+        cuts.extend((m.start(), m.end()))
+    cuts.append(len(text))
+    spans = []
+    for start, end in zip(cuts[::2], cuts[1::2], strict=True):
+        clause = text[start:end]
+        hits = [m.end() for cue in cues if (m := cue.search(clause))]
+        if hits:
+            begin = start + min(hits)
+            if begin < end:
+                spans.append((begin, min(end, begin + cap)))
+    return spans
+
+
+def mask_negated(text: str, policy: dict) -> str:
+    """Blank negated clause text so routing signals cannot match inside it.
+
+    Blanking (rather than checking where a match starts) also stops a greedy
+    signal such as ``roast.*codebase`` from starting in a positive clause and
+    reaching into a negated one. Offsets are preserved.
+    """
+    out = text
+    for start, end in negated_spans(text, policy):
+        out = out[:start] + " " * (end - start) + out[end:]
+    return out
 
 
 def _denied_by_name(sid: str, text: str) -> bool:
@@ -102,6 +158,7 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
     if not isinstance(prompt, str) or len(prompt) > 65536 or not isinstance(invoked, (tuple, list)) or any(not isinstance(s, str) for s in invoked):
         raise ValueError("invalid routing request")
     text = normalize(prompt)
+    signal_text = mask_negated(text, policy)
     if any(sid not in active for sid in invoked):
         raise ValueError("explicit invocation references an unavailable skill")
     explicit, scores, blocked = set(invoked), {}, {}
@@ -137,10 +194,12 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
             blocked[sid] = "requires_explicit_invocation"
             continue
         guard = policy.get("narrow_intent_guards", {}).get(sid)
-        if guard and sid not in explicit and matches(guard["when"], text) and not matches(guard["unless"], text):
+        # A negated exception ("don't humanize it") must not lift the guard.
+        if guard and sid not in explicit and matches(guard["when"], text) and not matches(guard["unless"], signal_text):
             blocked[sid] = "outside_declared_scope"
             continue
-        total = sum(weight for weight, pattern in entry.get("routing_signals", []) if matches(pattern, text))
+        # Explicit invocations and exclusions keep their own rules.
+        total = sum(weight for weight, pattern in entry.get("routing_signals", []) if matches(pattern, signal_text))
         if total or sid in explicit:
             scores[sid] = total
     def _canonical(sid: str) -> str:

@@ -139,3 +139,9 @@ For `VERIFY NOW`, `NOW`, and `NEXT`, evidence + measurable `done_when` are manda
 Never invent owner, deadline, capacity, customer requirement, or metric unless supplied by an authoritative source/user.
 
 Create `operator-snapshot.json` separately via the kernel when useful rather than embedding snapshot hash logic in prose.
+
+## Sidecar validation
+
+For `STANDARD`, `DEEP`, `DELTA`, and `RELEASE`, when filesystem + execution exist, emit `operator-report.json`
+and run `python scripts/operator_kernel.py validate --report-json operator-report.json`. Fix every `ERROR`
+before claiming the brief is complete. Warnings may remain only with an explicit explanation.

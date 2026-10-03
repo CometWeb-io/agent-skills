@@ -1,0 +1,15 @@
+{
+  "scenario": "malformed_evidence_ref",
+  "expect": {
+    "validation": [
+      "FIELD_TYPE_INVALID:claim_uses.evidence_refs"
+    ],
+    "manuscript": [
+      "FIELD_TYPE_INVALID:claim_uses.evidence_refs"
+    ],
+    "derived": [
+      "FIELD_TYPE_INVALID:claim_uses.evidence_refs"
+    ],
+    "stage": "RELEASE_READY"
+  }
+}

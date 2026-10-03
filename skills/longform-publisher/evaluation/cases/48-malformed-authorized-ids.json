@@ -1,0 +1,15 @@
+{
+  "scenario": "malformed_authorized_ids",
+  "expect": {
+    "validation": [
+      "FIELD_TYPE_INVALID:source_policy.authorized_source_ids"
+    ],
+    "manuscript": [
+      "FIELD_TYPE_INVALID:source_policy.authorized_source_ids"
+    ],
+    "derived": [
+      "FIELD_TYPE_INVALID:source_policy.authorized_source_ids"
+    ],
+    "stage": "RELEASE_READY"
+  }
+}

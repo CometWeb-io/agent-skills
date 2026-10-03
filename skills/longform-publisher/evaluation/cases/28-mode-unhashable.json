@@ -1,0 +1,11 @@
+{
+  "scenario": "mode_unhashable",
+  "expect": {
+    "validation": [
+      "MODE_INVALID"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

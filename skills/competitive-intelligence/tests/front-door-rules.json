@@ -1,0 +1,196 @@
+{
+  "skill": "competitive-intelligence",
+  "note": "Normative rules the skill must keep. Front-door rules live in SKILL.md; the rest sit in a reference SKILL.md points to with a load trigger. Removing or moving a rule means editing this inventory deliberately.",
+  "rules": [
+    {
+      "id": "four-layers",
+      "text": "Always separate four layers",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "implication-not-fact",
+      "text": "Never collapse an implication into a fact",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-cosmetic-inference",
+      "text": "Never infer a strategic move from a cosmetic page edit without corroboration",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "not-a-daemon",
+      "text": "it does not claim to run continuously in the background",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "ask-only-blocking",
+      "text": "Only ask for missing information that blocks execution",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "one-mode",
+      "text": "Select exactly one primary mode per run",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-surveillance",
+      "text": "Do not use employee-level personal surveillance as a source strategy",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "bootstrap-no-delta",
+      "text": "A bootstrap run does not invent a delta",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "low-authority",
+      "text": "Treat SEO/traffic estimates, social chatter, review anecdotes, and scraped summaries as lower-authority evidence unless triangulated",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-raw-diff",
+      "text": "Never use raw HTML/text diff as the final truth layer",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "diff-is-start",
+      "text": "Treat the diff as the starting set, not the final feed",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-weak-confirmed",
+      "text": "Do not label a change `CONFIRMED` from community chatter, SEO estimates, or a single weak secondary source",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "score-triage",
+      "text": "Treat the score as a triage aid, not truth",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "override-rationale",
+      "text": "Override only with an explicit rationale",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "noise",
+      "text": "`NOISE` is never promoted to an event",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "ambiguity-state",
+      "text": "keep the event `LIKELY`, `UNVERIFIED`, or `DISPUTED` and state the crux",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "pattern-independent",
+      "text": "only when multiple independent observations support a coherent theme",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-copy-default",
+      "text": "Do not recommend copying a competitor by default",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-action-option",
+      "text": "Include a no-action option",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "immutable-history",
+      "text": "Never overwrite a historical snapshot",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "revision-append",
+      "text": "is appended as a revision instead of rewriting history",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "as-of-coverage",
+      "text": "Always include `as_of`, coverage, and known blind spots",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "authorized-only",
+      "text": "Use only public or explicitly authorized sources and connector access",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-bypass",
+      "text": "Do not bypass authentication, access controls, paywalls, CAPTCHAs, rate limits, or tool restrictions",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-confidential",
+      "text": "Do not attempt to obtain confidential competitor information",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "minimize-pii",
+      "text": "Minimize personal data",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "handoff-facts-only",
+      "text": "Pass only accepted facts, timestamps, source references, and clearly labeled hypotheses",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "contradiction-distinguish",
+      "text": "announced intent from shipped capability",
+      "where": "references/source-policy.md"
+    },
+    {
+      "id": "contradiction-list-price",
+      "text": "list price from effective customer economics",
+      "where": "references/source-policy.md"
+    },
+    {
+      "id": "unsupported-claims",
+      "text": "revenue inferred from traffic",
+      "where": "references/source-policy.md"
+    },
+    {
+      "id": "scheduler-semantics",
+      "text": "A skill run is not a daemon",
+      "where": "references/monitoring-policy.md"
+    },
+    {
+      "id": "failure-cookie",
+      "text": "Alerting on cookie banners, dates, counters, A/B copy, tracking parameters, or layout-only changes",
+      "where": "references/monitoring-policy.md"
+    },
+    {
+      "id": "failure-no-scheduler",
+      "text": "Claiming background monitoring when no scheduler exists",
+      "where": "references/monitoring-policy.md"
+    },
+    {
+      "id": "quality-gate",
+      "text": "high/critical events have contradiction checks",
+      "where": "references/output-contract.md"
+    },
+    {
+      "id": "quality-proportional",
+      "text": "recommended action is proportional to evidence strength",
+      "where": "references/output-contract.md"
+    },
+    {
+      "id": "normalize-pricing",
+      "text": "Keep monthly and annual pricing separate",
+      "where": "references/data-model.md"
+    },
+    {
+      "id": "external-skills-optional",
+      "text": "hand off only when the host has one installed",
+      "where": "references/integrations.md"
+    },
+    {
+      "id": "tool-failure",
+      "text": "Do not silently substitute a weaker source as equivalent",
+      "where": "references/integrations.md"
+    }
+  ]
+}

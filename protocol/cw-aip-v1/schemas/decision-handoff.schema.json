@@ -6,6 +6,7 @@
     { "$ref": "envelope.core.schema.json" },
     {
       "type": "object",
+      "required": ["payload"],
       "properties": {
         "type": { "const": "DecisionHandoff" },
         "payload": {
@@ -20,6 +21,18 @@
             "controls": { "type": "array", "items": { "type": "string" } },
             "release_candidate": { "type": "string" },
             "environment": { "type": "string" }
+          },
+          "if": {
+            "required": ["verdict"],
+            "properties": { "verdict": { "enum": ["GO", "GO_WITH_CONTROLS"] } }
+          },
+          "then": {
+            "properties": {
+              "blockers": {
+                "maxItems": 0,
+                "description": "An authorizing verdict (GO, GO_WITH_CONTROLS) cannot carry open blockers"
+              }
+            }
           }
         }
       }

@@ -1,0 +1,11 @@
+{
+  "scenario": "no_derived_artifacts",
+  "expect": {
+    "validation": [
+      "STAGE_INFLATION"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "MASTER_LOCKED"
+  }
+}

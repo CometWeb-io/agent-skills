@@ -16,3 +16,28 @@ Use only with a real previous Product Operator snapshot/baseline. Report only ma
 
 ## RELEASE
 Focus on a named release or ship horizon. Separate release scope/intent, implementation, verification, deploy evidence, operational/customer readiness, unresolved release decisions, and post-release outcome only when decision-relevant. Delegate exhaustive readiness to `release-readiness` when needed.
+
+## Operating contract
+
+Resolve from available context before asking the user:
+
+```text
+TARGET:          <product / repo(s) / workspace>
+MODE:            PULSE | STANDARD | DEEP | DELTA | RELEASE
+GOAL:            <current product/business objective or UNKNOWN>
+HORIZON:         <this week / sprint / release / quarter / user-defined>
+GITHUB:          <repo(s) or unavailable>
+NOTION:          <page/database/data source(s) or unavailable>
+PRODUCT CONTEXT: <canonical source or unavailable>
+OUTCOME DATA:    <analytics/customer/revenue/support or unavailable/not-required>
+PRIOR SNAPSHOT:  <snapshot or unavailable>
+MUTATIONS:       read-only
+AS OF:           <ISO timestamp with timezone>
+```
+
+Defaults: `STANDARD` for ordinary "what next?" work; `DEEP` for comprehensive/finish/client-ready/production-ready
+requests; `RELEASE` for a named release or readiness horizon; `DELTA` only when a real previous snapshot/baseline
+exists; `PULSE` for a fast checkpoint.
+
+If a source is unavailable, continue with reduced coverage when the remaining evidence can still support a
+useful result. Do not fabricate missing state. Do not ask for information that a connected source can resolve.

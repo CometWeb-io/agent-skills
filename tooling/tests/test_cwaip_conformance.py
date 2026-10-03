@@ -5,7 +5,9 @@ with the expected outcome. v2 cases run through tooling/validate_envelope.py
 twice, with jsonschema and with the standard library only (``python -S``), and
 both runs must reach the same verdict: a host without the optional dependency
 must not accept a document that CI rejects. v1 cases run against the canonical
-v1 schemas and the orchestrator's between-step gate.
+v1 schemas and the orchestrator's between-step gate, which applies the v1 kind
+schemas; without jsonschema the gate fails closed, so it never accepts a case
+either way.
 """
 
 from __future__ import annotations
@@ -30,6 +32,13 @@ V1_SCHEMAS = ROOT / "protocol" / "cw-aip-v1" / "schemas"
 V1_KIND_SCHEMAS = {
     "EvidenceEnvelope": "evidence-envelope.schema.json",
     "DecisionHandoff": "decision-handoff.schema.json",
+}
+V2_DRAFTS = ROOT / "protocol" / "cw-aip-v2" / "draft"
+V2_DRAFT_EXAMPLES = ROOT / "fixtures" / "cwaip-v2" / "draft"
+V2_DRAFT_KINDS = {
+    "SpecialistHandoff": "specialist-handoff",
+    "ArtifactEnvelope": "artifact",
+    "SnapshotMetadata": "snapshot",
 }
 
 
@@ -145,15 +154,31 @@ def test_v1_case_against_canonical_schemas(case: dict) -> None:
 
 @pytest.mark.parametrize("case", cases(V1), ids=case_id)
 def test_v1_case_through_orchestrator_gate(case: dict) -> None:
+    """The gate applies the kind schemas, so it rejects core and kind cases alike."""
     proc = subprocess.run(
         [sys.executable, str(GATE), str(V1 / case["file"])],
         capture_output=True, text=True, timeout=60,
     )
     if case["expect"] == "accept":
         assert proc.returncode == 0, proc.stderr
-    elif case["layer"] == "core":
-        assert proc.returncode == 1
+    else:
+        assert proc.returncode == 1, proc.stdout
         assert proc.stderr.startswith("FAIL:")
+        assert "Traceback" not in proc.stderr
+        assert case["error"] in proc.stderr
+
+
+@pytest.mark.parametrize(
+    "path",
+    [*(V1 / c["file"] for c in cases(V1) if c["expect"] == "reject"),
+     *(V2 / c["file"] for c in cases(V2) if c["expect"] == "reject")],
+    ids=lambda p: f"{p.parent.parent.parent.name}/{p.stem}",
+)
+def test_orchestrator_gate_never_accepts_invalid_case_without_jsonschema(path: Path) -> None:
+    """Stdlib-only hosts fail closed rather than accept what the full gate rejects."""
+    proc = subprocess.run([sys.executable, "-S", str(GATE), str(path)], capture_output=True, text=True, timeout=60)
+    assert proc.returncode == 1
+    assert "Traceback" not in proc.stderr
 
 
 @pytest.mark.parametrize("case", [c for c in cases(V2) if c["expect"] == "accept"], ids=case_id)
@@ -174,6 +199,9 @@ def test_orchestrator_gate_accepts_valid_v2_envelopes(case: dict) -> None:
         ("core-unknown-property", False, "schema:"),
         ("core-protocol-version-1", False, "schema:"),
         ("core-missing-payload-hash", False, "payload_hash"),
+        ("release-go-with-blockers", False, "GO cannot have blockers"),
+        ("release-go-with-controls-with-blockers", False, "GO_WITH_CONTROLS cannot have blockers"),
+        ("decision-go-with-blockers", False, "GO cannot have blockers"),
     ],
 )
 def test_orchestrator_gate_rejects_bad_v2_envelope_shapes(name: str, final: bool, marker: str) -> None:
@@ -246,3 +274,70 @@ def test_v2_readme_documents_core_fields_and_payload_types() -> None:
         assert f"`{field}`" in readme, field
     for kind in core["properties"]["type"]["enum"]:
         assert kind in readme, kind
+
+
+def test_v1_kind_schemas_require_payload_and_gate_bundles_them() -> None:
+    """Spec revision 1.0.1: a kind with a kind schema must carry its payload."""
+    for name in V1_KIND_SCHEMAS.values():
+        schema = json.loads((V1_SCHEMAS / name).read_text(encoding="utf-8"))
+        assert "payload" in schema["allOf"][1]["required"], name
+        bundled = GATE.parents[1] / "references" / name
+        assert bundled.read_bytes() == (V1_SCHEMAS / name).read_bytes(), name
+    gate = load(GATE, "_cwaip_gate")
+    assert set(gate.V1_KIND_SCHEMAS) == set(V1_KIND_SCHEMAS)
+
+
+def test_valid_v1_fixtures_carry_payload() -> None:
+    """Making payload required in the kind schemas broke no shipped valid document."""
+    for case in cases(V1):
+        if case["expect"] == "accept":
+            data = json.loads((V1 / case["file"]).read_text(encoding="utf-8"))
+            assert isinstance(data.get("payload"), dict), case["file"]
+
+
+@pytest.mark.parametrize("kind,stem", sorted(V2_DRAFT_KINDS.items()))
+def test_v2_draft_payload_schemas_are_well_formed_and_not_enforced(kind: str, stem: str) -> None:
+    schema = json.loads((V2_DRAFTS / f"{stem}.schema.json").read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    assert schema["title"].startswith("DRAFT ") and "not enforced" in schema["title"]
+    assert schema["properties"]["schema"]["const"].endswith("/v2-draft")
+    assert schema["$id"].endswith(f"/v2/draft/{stem}.schema.json")
+    example = json.loads((V2_DRAFT_EXAMPLES / f"{stem}.json").read_text(encoding="utf-8"))
+    assert list(Draft202012Validator(schema).iter_errors(example)) == []
+    mod = load(VALIDATOR, "_cwaip_validate_envelope")
+    # Promotion-ready for the stdlib fallback: only keywords it can enforce.
+    mod.validate_schema_subset(schema, example, "draft")
+    with pytest.raises(ValueError, match="required property"):
+        mod.validate_schema_subset(schema, {}, "draft")
+    # Still reserved: no validator maps the kind to a payload schema.
+    assert kind not in mod.PAYLOAD_SCHEMAS
+    core = json.loads((ROOT / "protocol" / "cw-aip-v2" / "core.schema.json").read_text(encoding="utf-8"))
+    assert kind in core["properties"]["type"]["enum"]
+
+
+def test_v2_draft_directory_matches_reserved_kinds() -> None:
+    assert sorted(p.name for p in V2_DRAFTS.glob("*.json")) == sorted(
+        f"{stem}.schema.json" for stem in V2_DRAFT_KINDS.values()
+    )
+    assert sorted(p.name for p in V2_DRAFT_EXAMPLES.glob("*.json")) == sorted(
+        f"{stem}.json" for stem in V2_DRAFT_KINDS.values()
+    )
+
+
+def test_v2_reserved_kind_with_draft_payload_is_still_rejected() -> None:
+    """A draft payload must not make a reserved kind pass the enforcing validator."""
+    mod = load(VALIDATOR, "_cwaip_validate_envelope")
+    payload = json.loads((V2_DRAFT_EXAMPLES / "specialist-handoff.json").read_text(encoding="utf-8"))
+    envelope = json.loads((V2 / "valid" / "finding-open.json").read_text(encoding="utf-8"))
+    envelope.update(type="SpecialistHandoff", payload=payload, payload_hash=mod.payload_hash(payload))
+    with pytest.raises(ValueError, match="SpecialistHandoff"):
+        mod.validate_envelope(envelope)
+
+
+def test_spec_documents_revisions() -> None:
+    spec = (ROOT / "protocol" / "cw-aip-v1" / "cw-interchange-v1.md").read_text(encoding="utf-8")
+    readme = (ROOT / "protocol" / "cw-aip-v2" / "README.md").read_text(encoding="utf-8")
+    assert "## Spec revisions" in spec and "1.0.1" in spec
+    assert "## Spec revisions" in readme and "2.0.1" in readme
+    for stem in V2_DRAFT_KINDS.values():
+        assert f"draft/{stem}.schema.json" in readme

@@ -6,7 +6,7 @@ description: >-
 
 # Longform Publisher
 
-Protocol version: **longform-publisher/1**. Skill release: **1.1.1**.
+Protocol version: **longform-publisher/1**. Skill release: **1.1.2**.
 
 Operate as a publication control plane. Own the canonical manuscript, source policy, claim-use traceability, editorial gates, version lineage, derived-artifact readiness, and publication state. Do not become a duplicate research, rewriting, DOCX, PDF, or marketing-copy specialist.
 

@@ -70,3 +70,27 @@ the description, the release line and the registry routing signals changed; the
 workflow, kernel and report contract are untouched and the release stays
 `FROZEN`. Guarded by the `longform-regenerate-derived-formats` and
 `ebook-new-from-research` cases in `evals/routing/suite.json`.
+
+## Freeze exception — 1.1.2, 2026-10-03
+
+The 1.1.0 exception covered a malformed root and list- or dict-valued enum
+fields. A wrongly typed nested field still escaped: `sources` given as a
+string, a list where an object belongs, an evidence ref or authorized source id
+that is itself a list, a numeric citation marker, or an action lane that is not
+a list made `validate`, `check-manuscript`, `check-derived` and
+`render-manifest` die with `AttributeError` or `TypeError` tracebacks instead
+of returning error codes.
+
+Treated as the same contract change as 1.1.0, not speculative hardening. Such a
+report now yields `FIELD_TYPE_INVALID:<field>` from every check and the CLI
+exits 1 without rendering a manifest. No behaviour on valid input changed, the
+frozen control-plane workflow is untouched, and the release stays `FROZEN`.
+Guarded by evaluation cases 44–50 and by
+`tooling/tests/test_skill_script_cli_contract.py`. `scripts/run_evals.py` also
+answers `--help` and rejects unknown arguments instead of ignoring them.
+
+The same release carries an eval-harness-only change: a case must now state all
+four expected results (a missing key used to default to the actual value), and
+cases 25–43 pin the report-shape, lifecycle-gap and manifest rules the harness
+did not hold before. No kernel or report-contract behaviour changed for those
+cases.

@@ -30,9 +30,11 @@ Read-only, offline, standard library only. Not a model evaluation.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,9 +54,9 @@ GAPS_SCHEMA = "cometweb.routing-known-gaps/v1"
 # (should-not-trigger cases kept away from it) and near_miss (near-miss cases
 # routed to the skill they name). Raise them when routing improves.
 TRIGGER_EVAL_FLOORS: dict[str, dict[str, int]] = {
-    "content-roaster": {"recall": 14, "rejected": 18, "near_miss": 7},
-    "repo-roaster": {"recall": 15, "rejected": 18, "near_miss": 7},
-    "science-roaster": {"recall": 14, "rejected": 18, "near_miss": 4},
+    "content-roaster": {"recall": 16, "rejected": 18, "near_miss": 8},
+    "repo-roaster": {"recall": 17, "rejected": 18, "near_miss": 7},
+    "science-roaster": {"recall": 17, "rejected": 18, "near_miss": 5},
 }
 
 sys.path.insert(0, str(ROOT / "tooling"))
@@ -304,13 +306,164 @@ def table(data: dict) -> str:
     return "\n".join(out) + "\n"
 
 
+# Confusion report: every routing label the repo already holds, in one matrix.
+
+def labelled_prompts(registry: dict, suite_cases: list[dict], *, root: Path = ROOT) -> list[dict]:
+    """Prompts with a routing label, from every place the repository keeps one.
+
+    ``expected`` is a skill ID, None for "no skill", or absent when the source
+    only says which skill must *not* win (a registry negative example, a
+    should-not-trigger row whose near miss is a task type rather than a skill).
+    ``forbidden`` lists skills that must not be primary or a candidate.
+    Real-host rows that force the skill on are left out: they say nothing about
+    routing.
+    """
+    known = {s["id"] for s in registry["skills"]}
+    rows: list[dict] = []
+
+    def add(source: str, prompt, forbidden=(), **expected) -> None:
+        if isinstance(prompt, str) and prompt.strip():
+            rows.append({"source": source, "prompt": prompt, "forbidden": list(forbidden), **expected})
+
+    for case in suite_cases:
+        if isinstance(case, dict):
+            add(f"suite:{case.get('id')}", case.get("prompt"), case.get("must_not_trigger") or [],
+                expected=case.get("expected_primary_skill"))
+    for path in sorted((root / "skills").glob("*/evals/trigger-evals.json")):
+        sid = path.parent.parent.name
+        data = json.loads(path.read_text(encoding="utf-8"))
+        for index, row in enumerate(data if isinstance(data, list) else []):
+            if not isinstance(row, dict):
+                continue
+            where = f"trigger-evals:{sid}:{index}"
+            if row.get("should_trigger") is True:
+                add(where, row.get("query"), expected=sid)
+            elif row.get("should_trigger") is False:
+                near = row.get("near_miss")
+                add(where, row.get("query"), [sid], **({"expected": near} if near in known else {}))
+    for path in sorted((root / "skills").glob("*/evals/real-host.json")):
+        sid = path.parent.parent.name
+        data = json.loads(path.read_text(encoding="utf-8"))
+        for row in data.get("evals", []) if isinstance(data, dict) else []:
+            if not isinstance(row, dict) or row.get("force_skill_invocation"):
+                continue
+            where = f"real-host:{sid}:{row.get('id')}"
+            if row.get("should_trigger") is True:
+                add(where, row.get("prompt"), expected=sid)
+            elif row.get("should_trigger") is False:
+                add(where, row.get("prompt"), [sid])
+    for skill in registry["skills"]:
+        if skill.get("lifecycle") != "active":
+            continue
+        for index, example in enumerate(skill.get("trigger_examples", [])):
+            add(f"registry:{skill['id']}:positive:{index}", example, expected=skill["id"])
+        for index, example in enumerate(skill.get("negative_trigger_examples", [])):
+            add(f"registry:{skill['id']}:negative:{index}", example, [skill["id"]])
+    return rows
+
+
+def split_of(prompt: str) -> str:
+    """Stable tune/holdout half for a prompt, so signal work can be checked on unseen cases."""
+    digest = hashlib.sha256(prompt_key(prompt).encode("utf-8")).digest()
+    return "tune" if digest[0] % 2 == 0 else "holdout"
+
+
+def confusion(rows: list[dict], registry: dict, policy: dict) -> dict:
+    """Misroutes and false positives over labelled prompts; deterministic proxy only."""
+    pairs: Counter = Counter()
+    skills: dict[str, dict] = {}
+    errors: list[dict] = []
+    splits = {name: {"labelled": 0, "correct": 0, "false_positive": 0} for name in ("tune", "holdout")}
+
+    def skill_row(sid: str) -> dict:
+        return skills.setdefault(sid, {"id": sid, "expected": 0, "routed": 0, "misses": Counter(),
+                                        "false_positives": 0})
+
+    for row in rows:
+        result = route(row["prompt"], registry, policy)
+        got, status = result["primary_skill"], result["status"]
+        got_label = got or f"({status})"
+        split = splits[split_of(row["prompt"])]
+        wrong = False
+        if "expected" in row:
+            expected = row["expected"]
+            split["labelled"] += 1
+            if expected is not None:
+                entry = skill_row(expected)
+                entry["expected"] += 1
+                entry["routed"] += got == expected
+                if got != expected:
+                    entry["misses"][got_label] += 1
+            if got == expected:
+                split["correct"] += 1
+            else:
+                wrong = True
+                pairs[(expected or "(no skill)", got_label)] += 1
+        for sid in row["forbidden"]:
+            if sid == got or sid in result["candidates"]:
+                wrong = True
+                skill_row(sid)["false_positives"] += 1
+                split["false_positive"] += 1
+        if wrong:
+            errors.append({"source": row["source"], "prompt": row["prompt"],
+                           "expected": row.get("expected", "(unlabelled)"), "predicted": got,
+                           "status": status, "candidates": result["candidates"]})
+    return {
+        "schema": "cometweb.routing-confusion/v1",
+        "mode": "deterministic_proxy",
+        "runtime_acceptance": "not_assessed",
+        "prompts": len(rows),
+        "labelled": sum("expected" in row for row in rows),
+        "errors": errors,
+        "pairs": [[exp, got, n] for (exp, got), n in sorted(pairs.items(), key=lambda kv: (-kv[1], kv[0]))],
+        "skills": [dict(entry, misses=dict(entry["misses"])) for _, entry in sorted(skills.items())],
+        "splits": splits,
+    }
+
+
+def confusion_report(*, root: Path = ROOT) -> dict:
+    registry, policy, suite = _load(REGISTRY), _load(POLICY), _load(SUITE)
+    return confusion(labelled_prompts(registry, suite.get("cases", []), root=root), registry, policy)
+
+
+def confusion_table(data: dict) -> str:
+    out = [f"{data['prompts']} labelled prompts ({data['labelled']} with an expected route), "
+           f"{len(data['errors'])} misroute(s) or false positive(s); deterministic proxy, not a model run."]
+    for name, split in data["splits"].items():
+        out.append(f"{name}: {split['correct']}/{split['labelled']} routed as labelled, "
+                   f"{split['false_positive']} false positive(s)")
+    if data["pairs"]:
+        out += ["", "| Expected | Routed to | Count |", "| --- | --- | ---: |"]
+        out += [f"| `{exp}` | `{got}` | {n} |" for exp, got, n in data["pairs"]]
+    noisy = [row for row in data["skills"] if row["misses"] or row["false_positives"]]
+    if noisy:
+        out += ["", "| Skill | Routed / expected | False positives | Lost to |", "| --- | ---: | ---: | --- |"]
+        for row in noisy:
+            lost = ", ".join(f"{k} x{v}" for k, v in sorted(row["misses"].items(), key=lambda kv: -kv[1]))
+            out.append(f"| `{row['id']}` | {row['routed']}/{row['expected']} | {row['false_positives']} | {lost} |")
+    if data["errors"]:
+        out.append("")
+        for err in data["errors"]:
+            out.append(f"- [{err['source']}] expected {err['expected']}, got {err['predicted']} "
+                       f"({err['status']}): {err['prompt'][:140]}")
+    return "\n".join(out) + "\n"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--check", action="store_true", help="exit 1 on suite defects, floor misses or stale gaps")
     parser.add_argument("--json", action="store_true", help="print the report as JSON")
     parser.add_argument("--trigger-evals", action="store_true",
                         help="also report every skill-local trigger-evals.json replay (floored skills are checked regardless)")
+    parser.add_argument("--confusion", action="store_true",
+                        help="report misroutes and false positives over every labelled prompt in the repo, "
+                             "split into stable tune/holdout halves (read-only)")
     args = parser.parse_args(argv)
+    if args.confusion:
+        conf = confusion_report()
+        print(json.dumps(conf, indent=2, ensure_ascii=False) if args.json else confusion_table(conf), end="")
+        if not args.check:
+            return 0
     data = report(with_trigger_evals=args.trigger_evals)
     print(json.dumps(data, indent=2, ensure_ascii=False) if args.json else table(data), end="" if not args.json else "\n")
     if args.check:

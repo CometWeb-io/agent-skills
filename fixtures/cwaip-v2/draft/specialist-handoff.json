@@ -1,0 +1,10 @@
+{
+  "schema": "cometweb.specialist/v2-draft",
+  "skill": "web-app-auditor",
+  "scope": "checkout flow on example.com",
+  "stop_rule": "first blocker",
+  "return_contract": "FindingEnvelope",
+  "inputs": ["example:ContextEnvelope:conformance"],
+  "constraints": ["read-only"],
+  "deadline": null
+}

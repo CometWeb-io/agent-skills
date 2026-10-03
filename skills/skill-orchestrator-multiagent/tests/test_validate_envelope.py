@@ -27,7 +27,11 @@ class ValidateEnvelopeTests(unittest.TestCase):
             "protocol_version": "1.0",
             "subject": "cometweb.io/pricing claims",
             "as_of": "2026-08-26T00:00:00+02:00",
-            "payload": {"claims": []},
+            "payload": {
+                "research_contract": "Is the listed plan price current?",
+                "material_claims": [],
+                "evidence_pack_hash": "sha256:" + "0" * 64,
+            },
         }
         errors = validate_envelope(data, expected_type="EvidenceEnvelope")
         self.assertEqual(errors, [])
@@ -76,14 +80,59 @@ def test_relocated_package_rejects_invalid_envelope(tmp_path: Path, remove_schem
 
 
 def test_multiagent_package_contains_usable_validator() -> None:
+    # Packaging is repository tooling, not this skill's runtime: the isolated
+    # runtime-matrix venv installs only RUNTIME.json dependencies.
+    pytest.importorskip("yaml", reason="repository packaging tooling needs PyYAML")
     sys.path.insert(0, str(ROOT.parents[1] / "tooling"))
     from package_skill import payload
 
     entries, _manifest = payload(ROOT.parents[1], "skill-orchestrator-multiagent")
     assert "scripts/validate_envelope.py" in entries
-    assert entries["references/envelope.core.schema.json"] == (
-        ROOT.parents[1] / "protocol" / "schemas" / "envelope.core.schema.json"
-    ).read_bytes()
+    for name in ("envelope.core.schema.json", "evidence-envelope.schema.json", "decision-handoff.schema.json"):
+        assert entries[f"references/{name}"] == (ROOT.parents[1] / "protocol" / "schemas" / name).read_bytes()
+
+
+V1_DECISION = {
+    "id": "release-readiness:DecisionHandoff:demo", "type": "DecisionHandoff", "producer": "release-readiness",
+    "protocol_version": "1.0", "subject": "demo", "as_of": "2026-09-25T00:00:00Z",
+    "payload": {"verdict": "GO", "blockers": [], "controls": []},
+}
+
+
+def test_v1_kind_schema_applies_payload_rules() -> None:
+    assert validate_envelope(V1_DECISION, expected_type="DecisionHandoff") == []
+    missing_verdict = {**V1_DECISION, "payload": {"blockers": []}}
+    assert any("verdict" in e for e in validate_envelope(missing_verdict))
+    evidence = {**V1_DECISION, "type": "EvidenceEnvelope", "payload": {"claims": []}}
+    assert any("research_contract" in e for e in validate_envelope(evidence))
+
+
+@pytest.mark.parametrize("verdict,ok", [("GO", False), ("GO_WITH_CONTROLS", False), ("NO_GO", True), ("DEFER", True)])
+def test_v1_authorizing_verdict_rejects_blockers(verdict: str, ok: bool) -> None:
+    data = {**V1_DECISION, "payload": {"verdict": verdict, "blockers": ["checkout returns 500"]}}
+    errors = validate_envelope(data)
+    assert (errors == []) is ok, errors
+    if not ok:
+        assert any("blockers" in e for e in errors)
+
+
+def test_relocated_package_fails_closed_without_kind_schema(tmp_path: Path) -> None:
+    """A missing kind schema must not silently downgrade the check to the core."""
+    package = tmp_path / "skill-orchestrator-multiagent"
+    (package / "scripts").mkdir(parents=True)
+    (package / "references").mkdir()
+    (package / "scripts" / "validate_envelope.py").write_bytes((ROOT / "scripts" / "validate_envelope.py").read_bytes())
+    (package / "references" / "envelope.core.schema.json").write_bytes(
+        (ROOT / "references" / "envelope.core.schema.json").read_bytes()
+    )
+    envelope = tmp_path / "decision.json"
+    envelope.write_text(json.dumps(V1_DECISION), encoding="utf-8")
+    result = subprocess.run(
+        [sys.executable, str(package / "scripts" / "validate_envelope.py"), str(envelope)],
+        capture_output=True, text=True, check=False,
+    )
+    assert result.returncode == 1
+    assert "bundled kind schema is missing: decision-handoff.schema.json" in result.stderr
 
 
 def test_envelope_validation_fails_closed_without_jsonschema(tmp_path: Path) -> None:

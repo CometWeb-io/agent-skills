@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.2.0] - 2026-10-02
+
+### Changed
+
+- Front door cut from 16.3 KB to 13.0 KB. The A–I workflow procedure moved to
+  `references/workflow.md`; SKILL.md keeps the stage names and the rules each
+  stage must never drop. The case field list, source classes and output fields
+  are pointed to rather than repeated.
+- `write-authority.md` and `outputs.md` are no longer listed as read-always:
+  they load before any write/send/close and before writing the output, which
+  is when their rules apply.
+- The description sends roadmap prioritization to Product Operator and
+  release-candidate verdicts to Release Readiness by name.
+- `tests/front-door-rules.json` pins every hard boundary and never-drop rule.
+
+### Fixed
+
+- The owner-class list offered `unknown` and the next sentence said to use
+  `unassigned`; the kernel warns on `unknown`. The list now ends in
+  `unassigned`.
+
 ## [2.1.1] - 2026-10-02
 
 ### Changed

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cometweb.io/schemas/cw-aip/v2/draft/artifact.schema.json",
+  "title": "DRAFT CW-AIP v2 ArtifactEnvelope payload (not enforced)",
+  "description": "Draft only. No validator applies this schema and a v2 ArtifactEnvelope envelope is still rejected; keep emitting ArtifactEnvelope as v1 until this draft is promoted. Fields may change without notice.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "artifact_kind", "artifact_hash", "locator"],
+  "properties": {
+    "schema": { "const": "cometweb.artifact/v2-draft" },
+    "artifact_kind": {
+      "type": "string",
+      "minLength": 1,
+      "description": "What the immutable artifact is, e.g. audit-report, ci-snapshot, evidence-pack"
+    },
+    "artifact_hash": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Content hash of the artifact bytes, e.g. sha256:<hex>"
+    },
+    "locator": {
+      "type": "string",
+      "minLength": 1,
+      "description": "URI, path or commit-pinned pointer to the artifact"
+    },
+    "media_type": { "type": "string" },
+    "size_bytes": { "type": "integer" },
+    "summary": { "type": "string" }
+  }
+}

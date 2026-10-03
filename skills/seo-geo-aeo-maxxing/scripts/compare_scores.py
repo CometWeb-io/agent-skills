@@ -23,7 +23,45 @@ def gate_ids(score):
     return {row["id"] for row in score.get("gates_applied", [])}
 
 
+def _is_number(value):
+    return value is None or (isinstance(value, (int, float)) and not isinstance(value, bool))
+
+
+def validate_score_shape(score, label):
+    """Reject a hand-edited or foreign score file with a clear message.
+
+    compare() reads score_maxx.py output; a wrongly typed field would otherwise
+    surface as an AttributeError or TypeError traceback.
+    """
+    def bad(msg):
+        raise ValueError(f"{label} score: {msg}")
+
+    if not isinstance(score, dict):
+        bad("must be a JSON object")
+    active = score.get("active_pillars", [])
+    if not isinstance(active, list) or any(not isinstance(x, str) for x in active):
+        bad("active_pillars must be a list of strings")
+    pillars = score.get("pillars", {})
+    if not isinstance(pillars, dict) or any(not isinstance(v, dict) for v in pillars.values()):
+        bad("pillars must be an object of objects")
+    for name, row in pillars.items():
+        if not (_is_number(row.get("score")) and _is_number(row.get("coverage"))):
+            bad(f"pillars.{name} score and coverage must be numbers")
+    for key in ("maxx", "focused_score", "overall_coverage"):
+        if not _is_number(score.get(key)):
+            bad(f"{key} must be a number")
+    for key, field in (("check_results", "id"), ("gates_applied", "id"), ("freshness_used", "group")):
+        rows = score.get(key, [])
+        if not isinstance(rows, list) or any(not isinstance(r, dict) or not isinstance(r.get(field), str) for r in rows):
+            bad(f"{key} must be a list of objects with a string {field}")
+    for row in score.get("check_results", []):
+        if not _is_number(row.get("points")):
+            bad(f"check_results {row['id']} points must be a number")
+
+
 def compare(base, current, kind="delta"):
+    validate_score_shape(base, "baseline")
+    validate_score_shape(current, "current")
     reasons = []
     for key in ["scoring_engine_version", "registry_version", "profile", "weights", "active_pillars", "target_surfaces"]:
         if key not in base or key not in current:

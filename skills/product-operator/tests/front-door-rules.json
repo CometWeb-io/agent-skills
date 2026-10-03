@@ -1,0 +1,311 @@
+{
+  "skill": "product-operator",
+  "note": "Normative rules the skill must keep. Front-door rules live in SKILL.md; the rest sit in a reference SKILL.md points to with a load trigger. Removing or moving a rule means editing this inventory deliberately.",
+  "rules": [
+    {
+      "id": "stages-separate",
+      "text": "Never collapse stages",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "merge-not-deploy",
+      "text": "Merge is not verification or deployment",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "deploy-not-outcome",
+      "text": "Deployment is\nnot outcome evidence",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "decision-boundaries-pointer",
+      "text": "what Product Operator must not decide",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "connector-pointer",
+      "text": "when GitHub/Notion retrieval must be planned",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "script-honesty",
+      "text": "Never claim either script ran if it did not",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-fabricated-state",
+      "text": "Do not fabricate missing state",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "ask-last",
+      "text": "Do not ask for information that a connected source can resolve",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "snapshot-index-only",
+      "text": "only as a retrieval index and comparison baseline",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "claim-lanes",
+      "text": "never one global source precedence",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "admissibility",
+      "text": "it is not admissible for a\n   confident current conclusion",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "blocked-not-idle",
+      "text": "`BLOCKED` does\n   not mean \"do nothing\"",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-generic-actions",
+      "text": "Do not create\n   generic \"best practice\" actions",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "blocker-goal-relative",
+      "text": "set `blocks_current_goal=true` only when\n   current evidence shows the condition prevents the stated goal",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "future-gate",
+      "text": "A condition that blocks only a later motion is `future_gate=true`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "unproven-blocker",
+      "text": "An unproven blocker is `VERIFY NOW`",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-option-selection",
+      "text": "**do not select the option** inside Product Operator",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-copy-specialists",
+      "text": "Never copy\n   their audit frameworks into this skill",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "dependency-order",
+      "text": "Do not allow a\n   high score to jump over an unresolved prerequisite",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "cycle-is-problem",
+      "text": "A dependency cycle is itself a planning problem",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-priority-inertia",
+      "text": "Do not preserve a previous priority merely\n    because it existed",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "thrash",
+      "text": "`PRIORITY_THRASH` and must be explained or fixed",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "sidecar-errors",
+      "text": "fix every `ERROR` before claiming\n    the brief is complete",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "stop-retrieval",
+      "text": "Stop retrieval once more evidence cannot change",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-choosing",
+      "text": "it must\nnot choose an unresolved material option",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "gate-over-arithmetic",
+      "text": "Priority arithmetic cannot override a binding gate",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "brief-not-ledger",
+      "text": "evidence depth must not become user-facing verbosity",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "brief-scan",
+      "text": "The\nuser should understand within seconds",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "brief-budgets",
+      "text": "PULSE <=180 words, STANDARD/DELTA <=350, DEEP/RELEASE <=500",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "brief-caps",
+      "text": "show at most 3 each",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-noise",
+      "text": "Do not print the full operating contract, coverage matrix, evidence ledger,\nconfidence fields, or tool-limit noise by default",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "read-only",
+      "text": "Remain read-only by default",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-execution",
+      "text": "Do not implement code, create issues, edit Notion, deploy, publish, spend money, or message customers",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-runtime",
+      "text": "Do not infer runtime behavior solely from source",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-roadmap",
+      "text": "Do not infer implementation from roadmap status",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-merge",
+      "text": "Do not infer deployment from merge",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-success",
+      "text": "Do not infer success from deployment",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-snapshot",
+      "text": "Do not treat a prior snapshot as current evidence",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-stale",
+      "text": "Do not use stale/superseded evidence for a required-current material claim",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-average",
+      "text": "Do not silently average contradictory authoritative sources",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-invent",
+      "text": "Do not invent owner, deadline, capacity, score, metric, or customer requirement",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-duplicate",
+      "text": "Do not duplicate specialist audits simply to appear comprehensive",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-majority",
+      "text": "Do not let a majority priority score override a legal/security/privacy/financial/reputation blocker that actually gates the current goal",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "hb-no-writeback",
+      "text": "Never write snapshot state back into GitHub/Notion as if it were authoritative product truth",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "contract-block",
+      "text": "OUTCOME DATA:    <analytics/customer/revenue/support or unavailable/not-required>",
+      "where": "references/modes.md"
+    },
+    {
+      "id": "delta-requires-baseline",
+      "text": "`DELTA` only when a real previous snapshot/baseline\nexists",
+      "where": "references/modes.md"
+    },
+    {
+      "id": "ledger-fields",
+      "text": "outcome_required: true | false",
+      "where": "references/state-model.md"
+    },
+    {
+      "id": "no-whole-inventory",
+      "text": "Do not inventory the whole repository or every backlog row unless the goal\nrequires it",
+      "where": "references/state-model.md"
+    },
+    {
+      "id": "drift-orphaned",
+      "text": "`ORPHANED_WIP`",
+      "where": "references/state-model.md"
+    },
+    {
+      "id": "contradiction-not-defect",
+      "text": "A contradiction is not automatically a defect",
+      "where": "references/state-model.md"
+    },
+    {
+      "id": "evidence-object",
+      "text": "\"freshness_status\": \"CURRENT\"",
+      "where": "references/source-routing.md"
+    },
+    {
+      "id": "candidate-close-gap",
+      "text": "An action must close at least one of",
+      "where": "references/prioritization.md"
+    },
+    {
+      "id": "candidate-contract",
+      "text": "blocker, blocks_current_goal, blocked_item, future_gate, trust_critical, verify_first, stop",
+      "where": "references/prioritization.md"
+    },
+    {
+      "id": "learning-value",
+      "text": "Do not reward telemetry or research merely because it exists",
+      "where": "references/prioritization.md"
+    },
+    {
+      "id": "anti-thrash",
+      "text": "If state is identical but an action changes tier, flag `PRIORITY_THRASH`",
+      "where": "references/prioritization.md"
+    },
+    {
+      "id": "stop-rule",
+      "text": "More repository traversal after this point is not higher quality",
+      "where": "references/control-loop.md"
+    },
+    {
+      "id": "definition-of-done",
+      "text": "Machine sidecar validates when execution is available",
+      "where": "references/control-loop.md"
+    },
+    {
+      "id": "no-shadow-roadmap",
+      "text": "Do not write inferred statuses back to Notion/GitHub",
+      "where": "references/control-loop.md"
+    },
+    {
+      "id": "warnings-explained",
+      "text": "Warnings may remain only with an explicit explanation",
+      "where": "references/output-contract.md"
+    },
+    {
+      "id": "private-data",
+      "text": "Never send raw private chunks, secrets, tokens, customer PII, or internal identifiers to public web search",
+      "where": "references/safety.md"
+    },
+    {
+      "id": "gate-not-voted",
+      "text": "A blocking gate is not voted away by product value",
+      "where": "references/safety.md"
+    }
+  ]
+}

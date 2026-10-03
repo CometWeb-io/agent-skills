@@ -15,6 +15,7 @@ SHARED = (
     "references/eval-protocol.md",
     "references/handoff-contract.md",
     "references/production-ops.md",
+    "references/review-operations.md",
     "references/revision-protocol.md",
     "references/source-safety.md",
     "references/workspace-ops.md",

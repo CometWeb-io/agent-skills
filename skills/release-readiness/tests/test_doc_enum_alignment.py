@@ -35,7 +35,7 @@ DOCS = [ROOT / "SKILL.md", ROOT / "references" / "manifest-schema.md"]
 # are excluded on purpose: their members read as ordinary English ("a mobile app
 # with backend billing..."), so scanning prose for them finds sentences, not
 # declarations.
-DECLARED = [("AUDIENCES", "audience"), ("COMMERCIAL", "commercial_model")]
+DECLARED = [("AUDIENCES", "scope.audience"), ("COMMERCIAL", "scope.commercial")]
 
 
 def _declaration_lines(text: str, doc_key: str) -> list[str]:

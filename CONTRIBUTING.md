@@ -150,8 +150,14 @@ uv run python tooling/eval_strength.py --update --table docs/generated-eval-stre
 
 `eval_strength.py` copies each package to a temporary directory, replaces one
 `if` guard at a time with `if False:`, and runs that package's own harness. A
-guard the harness still passes without is a guard nothing is holding. The
-working tree is never touched.
+guard the harness still passes without is a guard nothing is holding. One-line
+guards (`if not ok: errors.append(...)`) and `elif` branches count too; the
+compact kernels write most of their rules that way. The working tree is never
+touched.
+
+A case that asserts only `status: INVALID` holds no single rule: removing any
+one check still leaves another error, and the status stays the same. Pin the
+exact `errors` list instead.
 
 Treat the number as a floor, not a target. A guard can be unheld because it is
 genuinely unobservable — the same value either way, or masked by an earlier gate

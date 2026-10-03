@@ -5,10 +5,14 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from copy import deepcopy
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tooling"))
+from compatibility import safe_load_unique  # noqa: E402
+
 REGISTRY = ROOT / "registry" / "skills.json"
 SKILLS = ROOT / "skills"
 HOST_TARGETS = [
@@ -25,25 +29,23 @@ FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
 
 
 def parse_description(skill_md: Path) -> str:
-    text = skill_md.read_text(encoding="utf-8")
-    match = FRONTMATTER_RE.match(text)
+    """The frontmatter description as a YAML loader reads it, whitespace-collapsed.
+
+    Hosts read SKILL.md with a YAML parser, so a hand-rolled line reader here
+    could register a different description than the one they route on: a
+    blank line inside a folded block, a ``|`` literal, an escaped quote or a
+    trailing comment all parse differently. Collapsing whitespace matches the
+    comparison validate_repo.py makes between the package and the registry.
+    """
+    match = FRONTMATTER_RE.match(skill_md.read_text(encoding="utf-8"))
     if not match:
         raise ValueError(f"missing frontmatter: {skill_md}")
-    block = match.group(1).splitlines()
-    for i, line in enumerate(block):
-        if not line.startswith("description:"):
-            continue
-        value = line.split(":", 1)[1].strip()
-        if value not in {">", ">-", "|", ""}:
-            return value.strip('"').strip("'")
-        parts: list[str] = []
-        for following in block[i + 1 :]:
-            if following.startswith("  "):
-                parts.append(following.strip())
-            else:
-                break
-        return " ".join(parts).strip()
-    raise ValueError(f"missing description: {skill_md}")
+    # Duplicate keys are rejected rather than silently resolved.
+    data = safe_load_unique(match.group(1))
+    description = data.get("description") if isinstance(data, dict) else None
+    if not isinstance(description, str) or not description.strip():
+        raise ValueError(f"missing description: {skill_md}")
+    return " ".join(description.split())
 
 
 def package_identity(skill_id: str) -> tuple[str, str]:
@@ -84,7 +86,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["deep single-product sequencing", "release GO/NO_GO", "specialist implementation"],
         "trigger_examples": ["What should I focus on for the next 14 days across all my projects?", "Which commitments conflict and what should I pause?"],
         "negative_trigger_examples": ["What should we build next inside this one repo?", "Is this release candidate safe to ship?"],
-        "routing_signals": [[12, "portfolio operator|portfolio-wide"], [10, "next (7|14|30) days.*(projects|commitments|focus)"], [9, "capacity conflicts?|what should (i|we) pause|across multiple projects"], [8, "client.*product.*research|cross-domain allocation"], [9, "focus on across (all )?(my|our) (projects|commitments)|across (all )?(my|our) (projects|commitments).{0,40}(focus|pause|drop|delegate)"]],
+        "routing_signals": [[12, "portfolio operator|portfolio-wide"], [10, "next (7|14|30) days.*(projects|commitments|focus)"], [9, "capacity conflicts?|what should (i|we) pause|across multiple projects"], [8, "client.*product.*research|cross-domain allocation"], [9, "focus on across (all )?(my|our) (projects|commitments)|across (all )?(my|our) (projects|commitments).{0,40}(focus|pause|drop|delegate)|\\bacross (?:all )?(?:my|our)\\b.{0,80}\\b(?:what should (?:i|we) (?:focus|pause|drop|delegate)|focus on for the next)"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "connectors"],
     },
@@ -95,7 +97,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["primary evidence research", "generic prose humanization", "DOCX/PDF rendering internals"],
         "trigger_examples": ["Refresh this old ebook into a publication-ready 2026 edition", "Build this evidence-backed report through manuscript, DOCX and PDF release readiness"],
         "negative_trigger_examples": ["Humanize this paragraph", "Rotate this PDF page"],
-        "routing_signals": [[11, "regenerate.*(docx|pdf)|(existing|current|old|previous) (ebook|white paper|report|handbook|playbook|guide).*(manuscript|edition|docx|pdf)"], [12, "longform publisher|publication workflow"], [11, "(ebook|white paper|playbook|handbook|report).*(refresh|publication-ready|release ready)"], [10, "canonical manuscript|publication-report\\.json"], [10, "through manuscript|manuscript.*(docx|pdf)"], [9, "refresh.*(ebook|report|guide)|derived artifacts?.*(docx|pdf)"]],
+        "routing_signals": [[11, "\\bregenerat\\w*\\b.{0,30}\\b(?:docx|pdf|html)\\b.{0,10}(?:\\band\\b|/|,) ?(?:the )?(?:docx|pdf|html)\\b|\\bregenerat\\w*\\b.{0,30}\\bderived\\b|(existing|current|old|previous) (ebook|white paper|report|handbook|playbook|guide)\\b.{0,80}\\b(?:manuscript|edition)\\b"], [12, "longform publisher|publication workflow"], [11, "(ebook|white paper|playbook|handbook|guide|report)\\b.{0,60}\\b(?:publication.ready|release.ready|new edition|\\d{4} edition)"], [10, "canonical manuscript|publication-report\\.json"], [10, "\\b(?:e-?book|white paper|report|handbook|playbook|guide)\\b.{0,80}\\b(?:docx|pdf) ?(?:/|and|,|&) ?(?:the )?(?:docx|pdf)\\b"], [10, "through (?:the )?manuscript|manuscript\\b.{0,60}\\b(?:derived|lineage|regenerat\\w*|rebuil\\w*|edition)\\b|\\b(?:docx|pdf)\\b.{0,40}\\bfrom (?:the |one |a |its )?(?:canonical |single )?manuscript"], [9, "\\brefresh\\w*\\b.{0,30}\\b(?:e-?book|white paper|handbook|playbook|guide)\\b|\\brefresh\\w*\\b.{0,30}\\breport\\b.{0,40}\\b(?:edition|manuscript|docx|pdf)\\b|derived artifacts?.*(docx|pdf)"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "web", "files"],
     },
@@ -112,7 +114,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["software release verdicts", "initial editorial review", "consequential strategic decisions"],
         "trigger_examples": ["Is this report ready to publish against its brief?", "Run the final acceptance gate on this knowledge artifact"],
         "negative_trigger_examples": ["Is this software release ready?", "Review this article for the first time"],
-        "routing_signals": [[12, "artifact acceptance|acceptance gate.*(artifact|report|content)|report ready against its brief"], [10, "ready.*(publish|deliver).*brief"], [9, "final (artifact|knowledge) gate"], [8, "artifact.*(READY_WITH_CONTROLS|NOT_READY|DEFER)"], [7, "acceptance contract.*evidence"]],
+        "routing_signals": [[12, "artifact acceptance|acceptance gate.*(artifact|report|content)|report ready against its brief"], [10, "ready.*(publish|deliver).*brief"], [9, "final (artifact|knowledge) gate"], [8, "artifact.*(READY_WITH_CONTROLS|NOT_READY|DEFER)"], [7, "acceptance contract.*evidence"], [10, "\\bfinal acceptance\\b.{0,40}\\b(?:report|artifact|candidate|contract|brief|deliverable)\\b"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "files"],
     },
@@ -134,7 +136,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["final artifact production", "broad product discovery", "consequential strategic decisions"],
         "trigger_examples": ["Turn this vague request into an executable brief", "Define acceptance criteria before we write the report"],
         "negative_trigger_examples": ["Write the final article", "Choose the product strategy"],
-        "routing_signals": [[10, "(write|draft|create) (a|the) (content |research |writing )?brief for|brief before (anyone|we) (starts? )?(writ|research)"], [20, "vague request.*executable brief|acceptance criteria before|vague.*(ebook|report|guide).*artifact brief"], [12, "brief architect|artifact brief"], [10, "turn this vague request into a brief"], [9, "acceptance criteria before (writing|research|production)"], [8, "evidence policy.*handoff"], [7, "underspecified.*(artifact|report|guide)"]],
+        "routing_signals": [[10, "(write|draft|create) (a|the) (content |research |writing )?brief for|brief before (anyone|we) (starts? )?(writ|research)"], [20, "vague request.*executable brief|acceptance criteria before|vague.*(ebook|report|guide).*artifact brief"], [12, "brief architect|artifact brief"], [10, "turn this vague request into a brief"], [9, "acceptance criteria before (writing|research|production)"], [8, "evidence policy.*handoff"], [7, "underspecified.*(artifact|report|guide)"], [10, "\\b(?:executable|execution|artifact) contract\\b"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "files"],
     },
@@ -145,7 +147,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["adversarial roasting", "full content rewrites", "final publication acceptance"],
         "trigger_examples": ["Review this draft against its brief", "Give me actionable editorial QA before publication"],
         "negative_trigger_examples": ["Brutally roast this landing page", "Rewrite the whole article"],
-        "routing_signals": [[9, "review (this|the|my) (article|blog post|guide|report|white paper|documentation|draft)"], [12, "content reviewer|editorial (review|qa)"], [10, "review this (draft|article|report).*brief"], [9, "pre.publication review|actionable editorial findings"], [8, "content.*(clarity|specificity|internal consistency).*review"], [7, "constructive review.*content"]],
+        "routing_signals": [[9, "review (this|the|my) (article|blog post|guide|report|white paper|documentation|draft)"], [12, "content reviewer|editorial (review|qa)"], [10, "review this (draft|article|report).*brief"], [9, "pre.publication review|actionable editorial findings"], [8, "content.*(clarity|specificity|internal consistency).*review"], [7, "constructive review.*content"], [10, "\\breview (?:this|the|my) (?:draft|article|report|paragraph|section|text|copy|post|chapter)\\b.{0,40}\\bagainst (?:the|its|our|this) brief\\b"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "web", "files"],
     },
@@ -156,7 +158,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["scientific peer review", "repository/code critique", "rewrite-only editing"],
         "trigger_examples": ["Roast this landing page with evidence", "Red-team the claims and objections in this offer"],
         "negative_trigger_examples": ["Peer-review this scientific manuscript", "Audit the repository code"],
-        "routing_signals": [[14, "content roaster|content roast|roast.*(landing page|offer|article|copy)"], [12, "red.team.*(content|copy|offer)"], [10, "adversarial.*(content|marketing|sales) review"], [9, "proof debt|claim.*counterevidence.*repair"], [8, "brutal.*critique.*(copy|content|page)"], [12, "(?:roast|tear (?:it |this |them )?apart|rip (?:it )?apart|red.team|stress.test|poke holes in|(?:brutal|harsh|ruthless|savage)(?:ly)? (?:critique|review|roast)).{0,60}(?:\\b(?:landing|pricing|product|home|sales|procurement|trust|comparison|trial|feature)[ -]?page|\\b(?:e-?mails?|newsletter|outbound|sales deck|pitch deck|deck|post|linkedin|blog|article|case study|one.pager|brochure|ad copy|headline|cta|offer|copy|messaging|positioning)\\b)"], [18, "(?:roast|tear (?:it |this |them )?apart|rip (?:it )?apart|red.team|stress.test|poke holes in|(?:brutal|harsh|ruthless|savage)(?:ly)? (?:critique|review|roast)).{0,60}\\b(?:e-?book|white.?paper|lead magnet)"], [11, "\\b(?:re-?check|re-?review|re-?roast|re-?audit).{0,40}(?:landing page|homepage|pricing page|product page|sales page|\\bcopy\\b|\\boffer\\b|e-?mail|\\bdeck\\b)"], [10, "\\bproof (?:gaps?|audit|burden)\\b"], [6, "skeptical (?:b2b |enterprise |procurement )?(?:buyer|customer|prospect)"], [12, "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|bezlitosn\\w* (?:ocen|przejrz|skrytykuj)|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad)).{0,60}(?:ofert|stron|landing|cennik|maila?\\b|e-?mail|wpis|post|artykul(?! naukow)|deck|prezentacj|copy|case study|ebook|newsletter)"]],
+        "routing_signals": [[14, "content roaster|content roast|roast.*(landing page|offer|article|copy)"], [12, "red.team.*(content|copy|offer)"], [10, "adversarial.*(content|marketing|sales) review"], [9, "proof debt|claim.*counterevidence.*repair"], [8, "brutal.*critique.*(copy|content|page)"], [12, "(?:roast|tear (?:it |this |them )?apart|rip (?:it )?apart|red.team|stress.test|poke holes in|(?:brutal|harsh|ruthless|savage)(?:ly)? (?:critique|review|roast)).{0,60}(?:\\b(?:landing|pricing|product|home|sales|procurement|trust|comparison|trial|feature)[ -]?page|\\b(?:e-?mails?|newsletter|outbound|sales deck|pitch deck|deck|post|linkedin|blog|article|case study|one.pager|brochure|ad copy|headline|cta|offer|copy|messaging|positioning|(?:marketing|sales|launch|product) claims?)\\b)"], [18, "(?:roast|tear (?:it |this |them )?apart|rip (?:it )?apart|red.team|stress.test|poke holes in|(?:brutal|harsh|ruthless|savage)(?:ly)? (?:critique|review|roast)).{0,60}\\b(?:e-?book|white.?paper|lead magnet)"], [11, "\\b(?:re-?check|re-?review|re-?roast|re-?audit).{0,40}(?:landing page|homepage|pricing page|product page|sales page|\\bcopy\\b|\\boffer\\b|e-?mail|\\bdeck\\b|case stud|announcement|\\barticle|blog post|newsletter|white ?paper|e-?book|lead magnet)"], [10, "\\bproof (?:gaps?|audit|burden)\\b"], [6, "skeptical (?:b2b |enterprise |procurement )?(?:buyer|customer|prospect)"], [12, "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|bezlitosn\\w* (?:ocen|przejrz|skrytykuj)|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad)).{0,60}(?:ofert|stron|landing|cennik|maila?\\b|e-?mail|wpis|post|artykul(?! naukow)|deck|prezentacj|copy|case study|ebook|newsletter)"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "web", "files"],
     },
@@ -178,7 +180,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["silent self-modification", "single-signal generalization", "product or research analytics"],
         "trigger_examples": ["Turn repeated skill failures into a regression plan", "Run a retrospective across these quality incidents"],
         "negative_trigger_examples": ["Patch the skill silently from one correction", "Analyze product retention"],
-        "routing_signals": [[10, "recurring (failure patterns?|mistakes|findings)|same mistakes across"], [20, "retrospective.*quality incidents"], [12, "feedback integrator|integrate.*feedback|aggregate recurring reviewer findings"], [10, "repeated.*(skill failure|quality failure|user correction)"], [9, "retrospective.*(skill|quality workflow)"], [8, "failure pattern.*regression test"], [7, "improve reliability.*repeated incidents"]],
+        "routing_signals": [[10, "recurring (failure patterns?|mistakes|findings)|same mistakes across"], [9, "\\b(?:eval|skill) runs?\\b.{0,40}\\bfail\\w*|\\bskill improvements?\\b"], [20, "retrospective.*quality incidents"], [12, "feedback integrator|\\bintegrat\\w*\\b.{0,40}\\bfeedback\\b.{0,60}\\b(?:skills?|skill runs?|evals?|routing|instructions|regression tests?)\\b|aggregate recurring reviewer findings"], [10, "repeated.*(skill failure|quality failure|user correction)"], [9, "retrospective.*(skill|quality workflow)"], [8, "failure pattern.*regression test"], [7, "improve reliability.*repeated incidents"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "git"],
     },
@@ -189,7 +191,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["general multi-skill orchestration", "consequential strategy decisions", "software production-readiness verdicts"],
         "trigger_examples": ["Run the full content quality loop", "Resume this quality workflow from the last accepted stage"],
         "negative_trigger_examples": ["Orchestrate an unrelated product workflow", "Give a software release GO/NO_GO"],
-        "routing_signals": [[20, "full content quality loop"], [14, "quality loop operator|quality workflow|full artifact quality loop"], [12, "full quality loop|resume.*quality workflow"], [10, "brief.*review.*roast.*repair.*acceptance"], [9, "quality.*(revalidation|rollout|rollback)"], [8, "coordinate quality specialists"], [12, "run (the )?quality loop|\\bquality loop\\b.{0,60}(brief|review|roast|repair|accept)"]],
+        "routing_signals": [[20, "full content quality loop"], [14, "quality loop operator|quality workflow|full artifact quality loop"], [12, "full quality loop|resume.*quality workflow"], [10, "brief.*review.*roast.*repair.*acceptance"], [9, "quality.*(revalidation|rollout|rollback)"], [8, "coordinate quality specialists"], [12, "run (?:the )?(?:full |complete |whole |entire )?quality loop|\\bquality loop\\b.{0,60}(brief|review|roast|repair|accept)"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "git", "web", "files"],
     },
@@ -200,7 +202,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["initial broad audit", "inventing new requirements", "production release verdicts"],
         "trigger_examples": ["Turn these review findings into the smallest repair set", "Apply the authorized fixes and verify they close the root cause"],
         "negative_trigger_examples": ["Audit the whole repo from scratch", "Decide whether the release is ready"],
-        "routing_signals": [[20, "authorized fixes.*verify.*root cause"], [12, "repair operator|repair set|repair the accepted review findings"], [10, "fix these findings.*(root cause|verify)"], [9, "convert.*findings.*(repair|patch)"], [8, "authorized.*(repair|fix).*fresh verification"], [7, "close.*finding.*without regressions"], [10, "(fix|repair|close) (the |these |all )?(accepted )?(review|roast|audit|acceptance) findings"], [10, "apply (the )?fixes (from|for) (the |this |that )?(last |latest )?(review|roast|audit|acceptance)"]],
+        "routing_signals": [[20, "authorized fixes.*verify.*root cause"], [12, "repair operator|repair set|repair the accepted review findings"], [10, "fix these findings.*(root cause|verify)"], [9, "convert.*findings.*(repair|patch)"], [8, "authorized.*(repair|fix).*fresh verification"], [7, "close.*finding.*without regressions"], [10, "\\brepair (?:the )?findings?\\b"], [10, "(fix|repair|close) (the |these |all )?(accepted )?(review|roast|audit|acceptance) findings"], [10, "apply (the )?fixes (from|for) (the |this |that )?(last |latest )?(review|roast|audit|acceptance)"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "git"],
     },
@@ -211,7 +213,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["whole-project roadmapping", "runtime web QA", "final production release verdicts"],
         "trigger_examples": ["Roast this repository with file and test evidence", "Red-team the critical invariants and failure paths in this codebase"],
         "negative_trigger_examples": ["Create the whole-project roadmap", "Decide whether the release can ship"],
-        "routing_signals": [[14, "repo roast|repository roast|roast.*(repo|codebase)|brutalny przeglad repo"], [12, "red.team.*(repository|codebase|software)"], [10, "adversarial.*(repository|codebase) review"], [9, "critical invariant.*(repo|code)"], [8, "file.*symbol.*reachability.*blast radius"], [12, "red.team (this|the|our|my) (pr|pull request)\\b|roast (this|the|our|my) (pr|pull request)\\b"], [12, "(?:roast|tear (?:it |this |them )?apart|rip (?:it )?apart|red.team|stress.test|poke holes in|(?:brutal|harsh|ruthless|savage)(?:ly)? (?:critique|review|roast)).{0,60}\\b(?:repo|repos|repository|repositories|codebase|monorepo|pull requests?|prs?|diff|branch|commits?|code)\\b"], [11, "\\b(?:re-?check|re-?review|re-?roast|re-?audit).{0,40}\\b(?:branch|prs?|pull requests?|repo|repository|codebase|diff|commits?)\\b|\\b(?:old|previous|earlier|prior|original) (?:repo|code|codebase) findings"], [10, "\\b(?:forensic|hostile|adversarial|brutal|ruthless) (?:repo|code|codebase|pr) (?:review|audit|roast)"], [6, "\\breview (?:this|the|our|my) .{0,30}\\b(?:repo|repository|codebase|monorepo|diff|pull request|pr|branch|commit)\\b"], [8, "\\b(?:repo|repository|codebase|monorepo|diff|pull request|pr|branch|code)\\b.{0,80}(?:trust boundar|blast radius|reachab|tenant isolation|idempoten|race condition|double.charge|tool.call|partial.failure|data.integrity)"], [12, "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|bezlitosn\\w* (?:ocen|przejrz|skrytykuj)|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad)).{0,40}(?:\\brepo|repozytori|\\bkod|codebase|\\bpr\\b|pull request|\\bdiff|galez)"]],
+        "routing_signals": [[14, "repo roast|repository roast|roast.*(repo|codebase)|brutalny przeglad repo"], [12, "red.team.*(repository|codebase|software)"], [10, "adversarial.*(repository|codebase) review"], [9, "critical invariant.*(repo|code)"], [8, "file.*symbol.*reachability.*blast radius"], [12, "red.team (this|the|our|my) (pr|pull request)\\b|roast (this|the|our|my) (pr|pull request)\\b"], [12, "(?:roast|tear (?:it |this |them )?apart|rip (?:it )?apart|red.team|stress.test|poke holes in|(?:brutal|harsh|ruthless|savage)(?:ly)? (?:critique|review|roast)).{0,60}\\b(?:repo|repos|repository|repositories|codebase|monorepo|pull requests?|prs?|diff|branch|commits?|code)\\b"], [11, "\\b(?:re-?check|re-?review|re-?roast|re-?audit).{0,40}\\b(?:branch|prs?|pull requests?|repo|repository|codebase|diff|commits?)\\b|\\b(?:old|previous|earlier|prior|original) (?:repo|code|codebase) findings"], [10, "\\b(?:forensic|hostile|adversarial|brutal|ruthless) (?:repo|code|codebase|pr) (?:review|audit|roast)"], [10, "\\b(?:forensic|deep) (?:code |repo )?(?:review|audit)\\b.{0,40}\\b(?:worker|service|module|repo|repository|codebase|code|queue|handler|migration)s?\\b"], [6, "\\breview (?:this|the|our|my) .{0,30}\\b(?:repo|repository|codebase|monorepo|diff|pull request|pr|branch|commit)\\b"], [8, "\\b(?:repo|repository|codebase|monorepo|diff|pull request|pr|branch|code)\\b.{0,80}(?:trust boundar|blast radius|reachab|tenant isolation|idempoten|race condition|double.charge|tool.call|partial.failure|data.integrity)"], [12, "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|bezlitosn\\w* (?:ocen|przejrz|skrytykuj)|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad)).{0,40}(?:\\brepo|repozytori|\\bkod|codebase|\\bpr\\b|pull request|\\bdiff|galez)"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "git"],
     },
@@ -233,7 +235,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["generic content critique", "repository/code review", "research-program planning"],
         "trigger_examples": ["Reviewer-2 roast this manuscript", "Red-team the methods, estimand, and validity of this study"],
         "negative_trigger_examples": ["Critique this marketing article", "Audit the software repository"],
-        "routing_signals": [[14, "science roaster|scientific peer review|reviewer.{0,3}2"], [12, "roast.*(manuscript|(?<!white )paper|(?<!case )study|protocol)"], [10, "red.team.*(scientific|study|method)"], [9, "estimand.*validity.*(review|critique)"], [8, "methodological.*(repair|counterevidence)"], [12, "re-?review.{0,30}(revised|revision of).{0,20}(paper|manuscript|(?<!case )study)|peer.review (my|this|the|our) (paper|manuscript|study)"], [12, "(?:roast|tear (?:it |this |them )?apart|rip (?:it )?apart|red.team|stress.test|poke holes in|(?:brutal|harsh|ruthless|savage)(?:ly)? (?:critique|review|roast)).{0,60}\\b(?:manuscript|preprint|(?<!white )paper|thesis|dissertation|grant (?:proposal|application)|preregistration|meta.analysis|systematic review|(?<!case )study|(?:clinical|randomi[sz]ed|controlled) trial|causal (?:inference|claims?)|statistical (?:analysis|inference|claims?)|survival analysis|methods section)\\b"], [10, "\\bpeer.review(?:er)? .{0,40}\\b(?:paper|manuscript|preprint|study|analysis|thesis|grant|protocol|trial|methods|meta.analysis)\\b|\\b(?:hostile|harsh|critical|hypercritical|skeptical) (?:peer|journal|academic|scientific) reviewer"], [12, "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|bezlitosn\\w* (?:ocen|przejrz|skrytykuj)|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad)).{0,60}(?:naukow|manuskrypt|badani|preprint|rozpraw|grantow|protokol)"], [10, "(?:hiper)?krytyczn\\w* recenzent|recenzent\\w* (?:nr |numer |#)?2\\b"]],
+        "routing_signals": [[14, "science roaster|scientific peer review|reviewer.{0,3}2|\\breviewer (?:#|no\\.? |number )?(?:2|two)\\b"], [10, "\\bauthors?'? response\\b|\\bresponse to (?:the )?reviewers\\b|\\brebuttal letter\\b"], [12, "roast.*(manuscript|(?<!white )paper|(?<!case )study|protocol)"], [10, "red.team.*(scientific|study|method|validation (?:split|study|design|set)|confound)"], [9, "estimand.*validity.*(review|critique)"], [8, "methodological.*(repair|counterevidence)"], [12, "re-?review.{0,30}(revised|revision of).{0,20}(paper|manuscript|(?<!case )study)|peer.review (my|this|the|our) (paper|manuscript|study)"], [12, "(?:roast|tear (?:it |this |them )?apart|rip (?:it )?apart|red.team|stress.test|poke holes in|(?:brutal|harsh|ruthless|savage)(?:ly)? (?:critique|review|roast)).{0,60}\\b(?:manuscript|preprint|(?<!white )paper|thesis|dissertation|grant (?:proposal|application)|preregistration|meta.analysis|systematic review|(?<!case )study|(?:clinical|randomi[sz]ed|controlled) trial|causal (?:inference|claims?)|statistical (?:analysis|inference|claims?)|survival analysis|methods section)\\b"], [10, "\\bpeer.review(?:er)? .{0,40}\\b(?:paper|manuscript|preprint|study|analysis|thesis|grant|protocol|trial|methods|meta.analysis)\\b|\\b(?:hostile|harsh|critical|hypercritical|skeptical) (?:peer|journal|academic|scientific) reviewer"], [12, "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|bezlitosn\\w* (?:ocen|przejrz|skrytykuj)|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad)).{0,60}(?:naukow|manuskrypt|badani|preprint|rozpraw|grantow|protokol)"], [10, "(?:hiper)?krytyczn\\w* recenzent|recenzent\\w* (?:nr |numer |#)?2\\b"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "web", "files"],
     },
@@ -255,7 +257,7 @@ OVERRIDES: dict[str, dict] = {
         "does_not_own": ["static package audits", "editing the skill", "universal superiority claims"],
         "trigger_examples": ["Measure whether this skill improves behavior over the baseline", "Design a fair A/B eval for the new skill version"],
         "negative_trigger_examples": ["Static-audit the package", "Claim this skill is universally best from one run"],
-        "routing_signals": [[20, "measure whether this skill improves behavior over the baseline"], [12, "skill evaluator|evaluate.*skill"], [10, "benchmark.*(skill|model behavior)|A/B.*skill"], [9, "measure.*(behavioral lift|trigger precision|recall)"], [8, "compare.*(no.skill|baseline).*skill"], [7, "host/model.*(comparison|experiment)"]],
+        "routing_signals": [[20, "measure whether this skill improves behavior over the baseline"], [12, "skill evaluator|\\bevaluat\\w*\\b.{0,40}\\b(?:this|the|our|new|agent|an?) (?:[\\w-]{1,40} )?skill\\b(?! gaps?\\b| levels?\\b| sets?\\b)"], [12, "\\b(?:measure|test|check|experiment\\w*)\\b.{0,60}\\bskill\\b.{0,40}\\b(?:improves?|lifts?|helps?|better than|beats?|baseline)\\b"], [10, "benchmark.*(skill|model behavior)|A/B.*skill"], [9, "measure.{0,40}(?:behavioral lift|trigger (?:precision|recall)|(?:discovery|trigger|routing) (?:rate|accuracy)|trigger precision and recall)"], [8, "compare.*(no.skill|baseline).*skill|\\bcompar\\w*\\b.{0,40}\\bskill\\b.{0,60}\\b(?:no.skill|baseline|prior version)\\b"], [7, "host/model.*(comparison|experiment)"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "git"],
     },

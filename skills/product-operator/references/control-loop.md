@@ -60,3 +60,33 @@ the critical path under the new goal.
 
 Do not write inferred statuses back to Notion/GitHub or treat the snapshot as task state. Current product truth
 continues to live in the original systems of record.
+
+## Stop rule
+
+Stop retrieval when all are true:
+
+- goal/horizon are sufficiently established;
+- the material state ledger covers the critical path;
+- current required evidence is admissible or the gap is explicitly blocking/provisional;
+- dependencies among top actions are known or explicitly unresolved;
+- new retrieval is unlikely to change `BLOCKER / VERIFY NOW / DECISION NOW / NOW / NEXT`;
+- specialist/gate escalation is routed where required.
+
+More repository traversal after this point is not higher quality.
+
+## Definition of done
+
+A complete `STANDARD/DEEP/RELEASE/DELTA` run requires:
+
+- [ ] Operating contract and `as_of` recorded.
+- [ ] Source coverage recorded without fabricated values.
+- [ ] Material state ledger reconciled.
+- [ ] Required-current evidence admissibility checked.
+- [ ] Readiness classified.
+- [ ] Candidate actions trace to evidence/gaps.
+- [ ] Dependencies sequenced or explicitly unresolved.
+- [ ] `VERIFY NOW`, `DECISION NOW`, `NOW`, and `NEXT` remain bounded.
+- [ ] Specialist/gate handoffs are narrow and decision-relevant.
+- [ ] Previous-run delta is reported when a baseline exists.
+- [ ] Machine sidecar validates when execution is available.
+- [ ] Snapshot is created when useful and supported.

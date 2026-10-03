@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline package smoke check, not host discovery or LLM acceptance."""
 from __future__ import annotations
+import argparse
 import copy
 import hashlib
 import importlib.util
@@ -23,6 +24,7 @@ def load(name,path):
 
 
 def main()->int:
+    argparse.ArgumentParser(description='Offline package smoke check of the bundled Product Operator resources.').parse_args()
     results=[]
     def check(name,fn):
         try:

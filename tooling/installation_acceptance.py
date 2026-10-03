@@ -38,14 +38,22 @@ def helper_smoke(install: Path, skill: str, timeout: int = 120) -> dict:
             envelope = {
                 "id": "fixture:EvidenceEnvelope:smoke", "type": "EvidenceEnvelope",
                 "producer": "fixture", "protocol_version": "1.0", "subject": "synthetic smoke",
-                "as_of": "2026-09-25T00:00:00Z", "payload": {},
+                "as_of": "2026-09-25T00:00:00Z",
+                "payload": {
+                    "research_contract": "synthetic smoke", "material_claims": [],
+                    "evidence_pack_hash": "sha256:" + "0" * 64,
+                },
             }
             valid, invalid = cwd / "valid.json", cwd / "invalid.json"
+            invalid_kind = cwd / "invalid-kind.json"
             valid.write_text(json.dumps(envelope), encoding="utf-8")
             invalid.write_text(json.dumps({**envelope, "id": 17}), encoding="utf-8")
+            invalid_kind.write_text(json.dumps({**envelope, "payload": {}}), encoding="utf-8")
             commands.extend([
                 ("valid_envelope", [sys.executable, "-B", str(validator), str(valid)], 0, "OK:"),
                 ("invalid_envelope", [sys.executable, "-B", str(validator), str(invalid)], 1, "FAIL: schema:"),
+                ("invalid_kind_payload", [sys.executable, "-B", str(validator), str(invalid_kind)],
+                 1, "research_contract"),
                 ("missing_dependency", [sys.executable, "-B", "-S", str(validator), str(valid)],
                  1, "jsonschema dependency is required"),
             ])

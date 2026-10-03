@@ -1,0 +1,15 @@
+{
+  "id": "example-producer:EvidenceEnvelope:no-payload",
+  "type": "EvidenceEnvelope",
+  "producer": "example-producer",
+  "protocol_version": "1.0",
+  "subject": "example.com pricing page",
+  "as_of": "2026-09-08T12:00:00Z",
+  "source": "live-app",
+  "locator": "https://example.com/pricing",
+  "authority": "PRIMARY",
+  "freshness": "CURRENT",
+  "confidence": 0.9,
+  "status": "verified_for_research",
+  "dependencies": []
+}

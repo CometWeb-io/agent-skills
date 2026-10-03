@@ -38,12 +38,53 @@ def test_guards_skips_only_what_a_harness_cannot_reach() -> None:
         "    if args.command == 'rank':\n"
         "        if item.get('blocks_current_goal'):\n"
         "            if False:\n"
+        "                pass\n"
         "        value = 1 if x else 2\n"
     )
     assert module.guard_lines(source) == [2], (
         "only the real guard counts: __main__ and CLI dispatch are unreachable from a "
         "harness, an already-dead branch is not a guard, and a ternary is not a branch"
     )
+
+
+def test_inline_and_elif_guards_are_measured_too() -> None:
+    # The compact kernels write most rules on one line. Counting only block-form
+    # `if` lines reported rubric-designer at 2 guards when it has 29, and every
+    # one-line rule was invisible to the gate however weak its cases were.
+    module = load()
+    source = (
+        "def check(x, args):\n"
+        "    \"\"\"\n"
+        "    if this line is prose in a docstring: it is not a guard\n"
+        "    \"\"\"\n"
+        "    if not x: errors.append('x:required')\n"
+        "    elif x == {'a': 1}: return 2\n"
+        "    elif args.command == 'rank': return 3\n"
+        "    if x[1:2] == 'a:b': y = lambda q: q\n"
+        "    if (x and\n"
+        "            x):\n"
+        "        pass\n"
+        "    if True: pass\n"
+    )
+    assert module.guard_lines(source) == [4, 5, 7], (
+        "one-line and elif guards count; docstring prose, CLI dispatch, a condition "
+        "that spans lines and an already-constant branch do not"
+    )
+    lines = source.splitlines(keepends=True)
+    assert module.disable(lines[4]) == "    if False: errors.append('x:required')\n"
+    assert module.disable(lines[5]) == "    elif False: return 2\n"
+    assert module.disable(lines[7]) == "    if False: y = lambda q: q\n", (
+        "the colon inside a slice, a string or a lambda must not end the condition"
+    )
+
+
+def test_disabled_guard_still_compiles() -> None:
+    module = load()
+    source = "def f(x):\n    if x: return 1\n    elif x is None:\n        return 2\n    return 3\n"
+    lines = source.splitlines(keepends=True)
+    for index in module.guard_lines(source):
+        mutated = "".join(lines[:index] + [module.disable(lines[index])] + lines[index + 1:])
+        compile(mutated, "<mutant>", "exec")
 
 
 def test_a_dropped_guard_fails_the_check() -> None:

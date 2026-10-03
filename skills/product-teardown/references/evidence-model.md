@@ -11,6 +11,8 @@
 7. Confidence and independence
 8. Destination evidence discipline
 9. Licensing and provenance
+10. Inspection routing and identity
+11. Dual ledger lanes
 
 ## 1. Evidence subjects and lanes
 
@@ -200,3 +202,34 @@ Distinguish:
 Before recommending code reuse, inspect repository license and relevant notices. Before asset/copy reuse, require explicit rights/permission evidence.
 
 Public accessibility is not permission to copy.
+
+## 10. Inspection routing and identity
+
+Record what was actually inspected before interpreting it: product/site/app identity and relevant
+plan/account/platform/state; repository, branch/tag/commit, package/workspace, and license when code is
+involved; documentation/release/changelog version when material; `observed_at` or `as_of` for behavior that
+can change. Never silently combine evidence from incompatible releases, plans, platforms, cohorts, or branches.
+
+Repositories: use the connected repository source when available, especially for private code; inspect
+manifests, entrypoints, architecture boundaries, code, tests, CI, migrations, releases, issues/PRs, and
+runtime/config evidence only as relevant; treat README and marketing claims as documentation claims until
+code/tests/runtime evidence corroborate them.
+
+Products/apps/sites: prefer live behavior or user-provided screenshots for UI/flow claims, official
+docs/help/changelog/API docs for documented capabilities, and a clearly associated source repository for
+implementation claims. Use third-party/community evidence for reported perception, failure modes, or gaps,
+not as authoritative implementation evidence.
+
+Destination: the repository is the system of record for current code state; analytics/experiments for
+measured behavior; product docs/requirements are evidence of intended, not necessarily shipped, behavior;
+issue/project trackers are evidence of planned, not shipped, work.
+
+Never send private source chunks into public search.
+
+## 11. Dual ledger lanes
+
+Record evidence at a locator precise enough to re-check it: URL/section, screenshot/state identifier, repo path
+plus line/range, commit/release, issue/PR, trace, test, or document section. Keep source lanes (behavior,
+implementation, rationale, outcome) apart from destination lanes (problem, existing capability, constraints,
+baseline/outcome). For each material item capture source, locator, subject, lane, claim state, version/time,
+note, confidence, and independence group when relevant.

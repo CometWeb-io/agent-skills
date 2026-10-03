@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1.0] - 2026-10-02
+
+### Changed
+
+- Front door cut from 15.7 KB to 8.7 KB, with a trigger table for the six
+  references. Continuous-monitoring semantics and failure modes moved to
+  `references/monitoring-policy.md` §9–10, the contradiction checklist into
+  `references/source-policy.md` §6, and the report quality gate to
+  `references/output-contract.md` §9.
+- SKILL.md and `references/integrations.md` routed to nine skills this catalog
+  does not ship (`competitors`, `sales-enablement`, `pricing`, `ads`,
+  `customer-research`, `seo-audit`, `ai-seo`, `product-marketing`,
+  `marketing-loops`) as if they were present. In-repo handoffs are now listed
+  first; the others are used only when the host has them installed.
+- The description sends mechanism extraction for your own product to
+  product-teardown.
+- `tests/front-door-rules.json` pins every rule and moved checklist.
+
 ## [1.0.2] - 2026-10-02
 
 ### Changed

@@ -19,27 +19,40 @@ SKILLS = ROOT / "skills"
 FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
 
 
-if yaml is not None:
+def _reject_duplicate_keys(node) -> None:
+    """Walk a composed YAML node tree and fail on a repeated mapping key.
 
-    class UniqueLoader(yaml.SafeLoader):
-        """SafeLoader that rejects duplicate keys instead of silently
-        keeping the last one, so a skill cannot declare two descriptions
-        and have the quieter tooling read the wrong one."""
+    yaml.safe_load keeps the last of two equal keys without a word, so a skill
+    could declare two descriptions and have the quieter tooling read the wrong
+    one. Composing builds nodes only, never Python objects, so this pass runs
+    no constructors and needs no custom loader.
+    """
+    stack = [node]
+    seen_nodes: set[int] = set()
+    while stack:
+        current = stack.pop()
+        if current is None or id(current) in seen_nodes:
+            continue
+        seen_nodes.add(id(current))  # anchors/aliases reuse a node
+        if isinstance(current, yaml.MappingNode):
+            keys = set()
+            for key_node, value_node in current.value:
+                if isinstance(key_node, yaml.ScalarNode):
+                    key = (key_node.tag, key_node.value)
+                    if key in keys:
+                        raise ValueError(f"duplicate YAML key: {key_node.value}")
+                    keys.add(key)
+                stack.extend((key_node, value_node))
+        elif isinstance(current, yaml.SequenceNode):
+            stack.extend(current.value)
 
-    def _unique_mapping(loader, node, deep=False):
-        result = {}
-        for key_node, value_node in node.value:
-            key = loader.construct_object(key_node, deep=deep)
-            if key in result:
-                raise ValueError(f"duplicate YAML key: {key}")
-            result[key] = loader.construct_object(value_node, deep=deep)
-        return result
 
-    UniqueLoader.add_constructor(
-        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _unique_mapping
-    )
-else:  # pragma: no cover - yaml is a declared dev dependency
-    UniqueLoader = None
+def safe_load_unique(text: str):
+    """yaml.safe_load, except that a duplicate mapping key is an error."""
+    if yaml is None:  # pragma: no cover - yaml is a declared dev dependency
+        raise RuntimeError("PyYAML is required to read YAML frontmatter")
+    _reject_duplicate_keys(yaml.compose(text, Loader=yaml.SafeLoader))
+    return yaml.safe_load(text)
 
 
 def fail(msg: str) -> None:
@@ -50,7 +63,7 @@ def fail(msg: str) -> None:
 def parse_frontmatter(path: Path) -> dict:
     """Parse and validate a skill's YAML frontmatter.
 
-    Parsed with UniqueLoader rather than a hand-rolled line reader so that a
+    Parsed with safe_load_unique rather than a hand-rolled line reader so that a
     duplicate key is an error instead of silently resolving to whichever copy
     happened to come last, and so the name/description contract is enforced
     at the point of reading rather than by whoever remembers to check.
@@ -58,8 +71,7 @@ def parse_frontmatter(path: Path) -> dict:
     match = FRONTMATTER_RE.match(path.read_text(encoding="utf-8"))
     if not match:
         raise ValueError(f"missing YAML frontmatter: {path}")
-    # UniqueLoader subclasses yaml.SafeLoader; duplicate keys are rejected.
-    data = yaml.load(match.group(1), Loader=UniqueLoader)  # nosec B506
+    data = safe_load_unique(match.group(1))
     if not isinstance(data, dict):
         raise ValueError("frontmatter must be a mapping")
     name, desc = data.get("name"), data.get("description")
