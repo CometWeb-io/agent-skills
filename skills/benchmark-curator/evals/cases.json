@@ -5897,5 +5897,15 @@
         "leakage:not-object"
       ]
     }
+  },
+  {
+    "id": "case-that-is-not-an-object-is-invalid",
+    "raw_case": "input",
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "payload:not-object"
+      ]
+    }
   }
 ]

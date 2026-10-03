@@ -739,5 +739,144 @@
         }
       ]
     }
+  },
+  {
+    "id": "coverage-row-with-unknown-axis-is-rejected",
+    "input": {
+      "mode": "STANDARD",
+      "coverage": [
+        {
+          "axis": "tone",
+          "state": "COVERED"
+        }
+      ],
+      "findings": []
+    },
+    "expect": {
+      "status": "INVALID",
+      "blockers": 0,
+      "majors": 0,
+      "errors": [
+        "coverage[0]:axis"
+      ],
+      "coverage_complete": false,
+      "covered_axes": 0,
+      "mode": "STANDARD"
+    }
+  },
+  {
+    "id": "deep-without-required-axes-requires-all-seven",
+    "input": {
+      "mode": "DEEP",
+      "coverage": [
+        {
+          "axis": "brief-compliance",
+          "state": "COVERED"
+        },
+        {
+          "axis": "reader-value",
+          "state": "COVERED"
+        },
+        {
+          "axis": "structure",
+          "state": "COVERED"
+        },
+        {
+          "axis": "claim-integrity",
+          "state": "COVERED"
+        },
+        {
+          "axis": "actionability",
+          "state": "COVERED"
+        },
+        {
+          "axis": "consistency",
+          "state": "COVERED"
+        }
+      ],
+      "findings": []
+    },
+    "expect": {
+      "status": "INVALID",
+      "blockers": 0,
+      "majors": 0,
+      "errors": [
+        "coverage:missing:language-ux"
+      ],
+      "coverage_complete": false,
+      "covered_axes": 6,
+      "mode": "DEEP"
+    }
+  },
+  {
+    "id": "unknown-evidence-grade-rejected-without-floor",
+    "input": {
+      "findings": [
+        {
+          "finding_id": "f1",
+          "severity": "MINOR",
+          "evidence_grade": "Z"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "blockers": 0,
+      "majors": 0,
+      "errors": [
+        "0:evidence-grade"
+      ],
+      "coverage_complete": true,
+      "covered_axes": 0,
+      "mode": "STANDARD"
+    }
+  },
+  {
+    "id": "floor-requires-a-grade-on-a-major",
+    "input": {
+      "enforce_evidence_floor": true,
+      "findings": [
+        {
+          "finding_id": "f1",
+          "severity": "MAJOR",
+          "locator": "p2",
+          "impact": "misleads",
+          "evidence": [
+            {
+              "kind": "OBSERVATION",
+              "source": "artifact",
+              "locator": "p2"
+            }
+          ]
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "blockers": 0,
+      "majors": 1,
+      "errors": [
+        "0:evidence-grade-required"
+      ],
+      "coverage_complete": true,
+      "covered_axes": 0,
+      "mode": "STANDARD"
+    }
+  },
+  {
+    "id": "case-that-is-not-an-object-is-invalid",
+    "raw_case": [
+      "findings"
+    ],
+    "expect": {
+      "status": "INVALID",
+      "blockers": 0,
+      "majors": 0,
+      "errors": [
+        "payload:not-object"
+      ],
+      "coverage_complete": false,
+      "covered_axes": 0
+    }
   }
 ]

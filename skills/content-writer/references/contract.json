@@ -152,9 +152,9 @@
       ]
     }
   },
-  "internal": [
-    "input"
-  ],
+  "internal": {
+    "input": "eval case wrapper: the case-runner reads the payload from a case's input, never a payload key"
+  },
   "doc_terms": [],
   "evals": [
     {

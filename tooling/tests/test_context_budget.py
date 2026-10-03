@@ -97,3 +97,15 @@ def test_generated_table_is_current() -> None:
     table = ROOT / "docs" / "generated-context-budget.md"
     assert table.is_file(), "run tooling/context_budget.py --table docs/generated-context-budget.md"
     assert table.read_text(encoding="utf-8") == module().render_table(module().measure())
+
+
+def test_check_reports_a_stale_table_with_the_command_that_fixes_it(tmp_path: Path) -> None:
+    """Editing a reference changes the table; the fast gate, not only pytest, must say so."""
+    stale = tmp_path / "table.md"
+    stale.write_text("# out of date\n", encoding="utf-8")
+    proc = run("--check", "--verify-table", str(stale))
+    assert proc.returncode == 1
+    assert "is stale" in proc.stderr and "check_all.py --fix" in proc.stderr, proc.stderr
+    current = tmp_path / "current.md"
+    current.write_text(module().render_table(module().measure()), encoding="utf-8")
+    assert run("--check", "--verify-table", str(current)).returncode == 0

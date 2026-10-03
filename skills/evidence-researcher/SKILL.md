@@ -91,7 +91,7 @@ Delta/refresh without full rerun → `refresh-delta.md`.
 
 Emit progressive disclosure:
 
-1. research status + bottom line
+1. research status (`READY`, `PARTIAL`, `REFRESH_REQUIRED`, or `BLOCKED_BY_CONTRADICTION`) + bottom line
 2. critical/material claim ledger
 3. contradictions and gaps
 4. readiness/freshness summary

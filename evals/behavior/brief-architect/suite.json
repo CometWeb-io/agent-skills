@@ -1,0 +1,545 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "brief-architect",
+  "description": "Offline behavior of the brief kernel the references document as kernel.readiness(brief) and kernel.delta(old, new), and of the bundled eval runner.",
+  "cases": [
+    {
+      "id": "complete-brief-is-ready",
+      "kind": "accept",
+      "behavior": "A brief with objective, audience, deliverable, observable criteria and an evidence policy is READY to hand off.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "readiness",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "READY",
+          "missing": [],
+          "errors": [],
+          "open_material_decisions": 0,
+          "material_assumptions": 0,
+          "mode": "STANDARD"
+        }
+      }
+    },
+    {
+      "id": "open-decision-keeps-brief-provisional",
+      "kind": "accept",
+      "behavior": "An unresolved material decision keeps the brief PROVISIONAL instead of silently assuming an answer.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "readiness",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND",
+          "decision_needed": [
+            "Which audit tool's screenshots may be shown?"
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PROVISIONAL",
+          "missing": [],
+          "errors": [],
+          "open_material_decisions": 1,
+          "material_assumptions": 0,
+          "mode": "STANDARD"
+        }
+      }
+    },
+    {
+      "id": "consequential-assumption-is-refused",
+      "kind": "refuse",
+      "behavior": "A consequential choice written down as an assumption is refused; it must be raised as a decision.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "readiness",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND",
+          "assumptions": [
+            {
+              "value": "The guide may quote list prices",
+              "consequential": true
+            }
+          ]
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "missing": [],
+          "errors": [
+            "assumptions[0]:consequential-cannot-be-assumed"
+          ],
+          "open_material_decisions": 0,
+          "material_assumptions": 1,
+          "mode": "STANDARD"
+        }
+      }
+    },
+    {
+      "id": "missing-audience-and-criteria-blocks",
+      "kind": "refuse",
+      "behavior": "A brief without an audience or acceptance criteria is BLOCKED and names what is missing.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "readiness",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [],
+          "evidence_policy": "SOURCE_BOUND"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "BLOCKED",
+          "missing": [
+            "acceptance_criteria",
+            "audience"
+          ],
+          "errors": [],
+          "open_material_decisions": 0,
+          "material_assumptions": 0,
+          "mode": "STANDARD"
+        }
+      }
+    },
+    {
+      "id": "unobservable-criterion-is-invalid",
+      "kind": "refuse",
+      "behavior": "A criterion that cannot be observed, or a must-pass evidence criterion with no verification method, is refused.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "readiness",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "reads well",
+              "observable": false
+            },
+            {
+              "id": "ac2",
+              "check": "all numbers are sourced",
+              "observable": true,
+              "evidence_required": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "missing": [],
+          "errors": [
+            "acceptance_criteria[0]:not-observable",
+            "acceptance_criteria[1]:must-evidence-without-method"
+          ],
+          "open_material_decisions": 0,
+          "material_assumptions": 0,
+          "mode": "STANDARD"
+        }
+      }
+    },
+    {
+      "id": "scope-and-invariants-required-when-deep-and-high-risk",
+      "kind": "boundary",
+      "behavior": "A DEEP brief at HIGH risk is blocked until use moment, scope and protected invariants are stated.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "readiness",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND",
+          "mode": "DEEP",
+          "risk_level": "HIGH"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "BLOCKED",
+          "missing": [
+            "protected_invariants",
+            "scope",
+            "use_moment"
+          ],
+          "errors": [],
+          "open_material_decisions": 0,
+          "material_assumptions": 0,
+          "mode": "DEEP"
+        }
+      }
+    },
+    {
+      "id": "brief-version-must-be-positive",
+      "kind": "boundary",
+      "behavior": "A versioned brief needs a positive integer version, so version 0 is refused.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "readiness",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND",
+          "brief_id": "brief-7",
+          "brief_version": 0
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "missing": [],
+          "errors": [
+            "brief_version:positive-int"
+          ],
+          "open_material_decisions": 0,
+          "material_assumptions": 0,
+          "mode": "STANDARD"
+        }
+      }
+    },
+    {
+      "id": "rubric-lock-must-be-prelocked",
+      "kind": "boundary",
+      "behavior": "A rubric lock that was not frozen before execution is refused.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "readiness",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND",
+          "rubric_lock": {
+            "pack_id": "editorial",
+            "revision": "2",
+            "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "locked_before_execution": false
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "missing": [],
+          "errors": [
+            "rubric_lock:not-prelocked"
+          ],
+          "open_material_decisions": 0,
+          "material_assumptions": 0,
+          "mode": "STANDARD"
+        }
+      }
+    },
+    {
+      "id": "unknown-evidence-policy-is-invalid",
+      "kind": "boundary",
+      "behavior": "An evidence policy outside the documented set is refused rather than guessed.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "readiness",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "LOOSE"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "missing": [],
+          "errors": [
+            "evidence_policy:invalid"
+          ],
+          "open_material_decisions": 0,
+          "material_assumptions": 0,
+          "mode": "STANDARD"
+        }
+      }
+    },
+    {
+      "id": "rubric-change-requires-revalidation",
+      "kind": "accept",
+      "behavior": "Changing the locked rubric between brief versions is a material change that forces downstream revalidation.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "delta",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND",
+          "rubric_lock": {
+            "pack_id": "editorial",
+            "revision": "2",
+            "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "locked_before_execution": true
+          }
+        },
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND",
+          "rubric_lock": {
+            "pack_id": "editorial",
+            "revision": "3",
+            "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "locked_before_execution": true
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "CHANGED",
+          "material_changes": [
+            "rubric_lock"
+          ],
+          "requires_downstream_revalidation": true,
+          "errors": []
+        }
+      }
+    },
+    {
+      "id": "non-material-change-is-unchanged",
+      "kind": "boundary",
+      "behavior": "A change to deliverables only is not a material brief change.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "delta",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND"
+        },
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md",
+            "guide.pdf"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND"
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "UNCHANGED",
+          "material_changes": [],
+          "requires_downstream_revalidation": false,
+          "errors": []
+        }
+      }
+    },
+    {
+      "id": "delta-of-non-object-fails-closed",
+      "kind": "refuse",
+      "behavior": "Comparing against something that is not a brief fails closed and still demands revalidation.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "delta",
+      "args": [
+        {
+          "objective": "Explain how to read a website audit report",
+          "audience": "marketing leads at small agencies",
+          "deliverables": [
+            "guide.md"
+          ],
+          "acceptance_criteria": [
+            {
+              "id": "ac1",
+              "check": "every score in the guide links to its source table",
+              "observable": true
+            }
+          ],
+          "evidence_policy": "SOURCE_BOUND"
+        },
+        null
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "material_changes": [],
+          "requires_downstream_revalidation": true,
+          "errors": [
+            "brief-delta:not-object"
+          ]
+        }
+      }
+    },
+    {
+      "id": "bundled-evals-pass",
+      "kind": "accept",
+      "behavior": "The bundled offline eval cases all pass when run as documented.",
+      "run": [
+        "scripts/run_evals.py"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PASS",
+          "failures": []
+        }
+      }
+    }
+  ]
+}

@@ -43,9 +43,9 @@
     "boundaries": {},
     "single_skill_alternative": {}
   },
-  "internal": [
-    "orchestrated_goal"
-  ],
+  "internal": {
+    "orchestrated_goal": "intent label the router assigns from its own patterns"
+  },
   "doc_terms": [],
   "evals": []
 }

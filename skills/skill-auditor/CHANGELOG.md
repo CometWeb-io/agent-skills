@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object; a new case pins how `evaluate_case` refuses one.
+- New eval cases pin a numeric `version`, a BREAKING migration plan without `rollback_ref` or without `verification_cases`, and `checks` that is not a list, each with its exact error or issue list. Eval strength 49/54 -> 54/54 guards held.
+- The definition of done adds the `INVALID` status the kernel returns, and the check states and severities. The closing sentence that loaded seven references is a table with triggers and now includes `version-and-contract-compatibility.md`, which the front door never named.
+- The description is 517 characters, down from 751. Codex shows about the first 546 characters of each description in its skill list, which cut the "Do not use" clause part-way; the whole description now fits, with the routing boundaries and named alternatives kept.
+
 ## [1.7.2] - 2026-10-03
 
 - `references/output-contract.md` now lists the audit payload `scripts/kernel.py` validates, and new `references/contract.json` declares it. Of the 42 fields the kernel reads, only `skill_id` and the three `migration_plan` keys were named anywhere: `version`/`previous_version`/`baseline_version`, `contract_compatibility` (with its default `NOT_APPLICABLE`), `runtime_host_status`, `runtime_support_claimed`, `empirical_eval_required`, the eleven `package` counters and lists, the check-row keys (`status`, `severity`, `material`, `evidence`, `rationale`) and the nine `deep_checks` keys DEEP requires were documented nowhere. The reference also says `version` must be semver (the output section's "version/commit" suggested a commit hash would do) and names the outputs `issues`, `unknown_material`, `next_skill`, `version_bump`, `migration_required` and `empirical_effectiveness_proven`.

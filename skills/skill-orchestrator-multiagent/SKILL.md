@@ -10,11 +10,7 @@ This package is a **thin alias**. Canonical planning and sequencing live in
 unavailable, stop and ask the user to install it; do not improvise the missing
 planning contract.
 
-Immediately load and follow:
-
-the installed `skill-orchestrator` skill entrypoint
-
-with:
+Immediately load and follow the installed `skill-orchestrator` SKILL.md with:
 
 ```text
 execution_mode: isolated_subagents
@@ -22,9 +18,9 @@ execution_mode: isolated_subagents
 
 Shared references (do not fork):
 
-- `skill-orchestrator` workflow archetypes and sequencing rules from its installed package
-- `references/multiagent-execution.md`
-- `references/subagent-prompt-template.md`
+- `skill-orchestrator` sequencing rules from its installed package; the archetype table is copied here as `references/workflow-archetypes.md` — read it before choosing an archetype
+- `references/multiagent-execution.md` — read before launching the first subagent
+- `references/subagent-prompt-template.md` — build every subagent prompt from it
 
 Script inputs and outputs (payload builder, envelope gate): `references/kernel-contract.md`.
 

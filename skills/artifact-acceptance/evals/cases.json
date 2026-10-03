@@ -2389,5 +2389,15 @@
         "finding[0]:severity"
       ]
     }
+  },
+  {
+    "id": "case-that-is-not-an-object-is-invalid",
+    "raw_case": "input",
+    "expect": {
+      "verdict": "DEFER",
+      "errors": [
+        "payload:not-object"
+      ]
+    }
   }
 ]

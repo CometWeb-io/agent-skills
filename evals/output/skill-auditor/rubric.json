@@ -1,0 +1,80 @@
+{
+  "skill": "skill-auditor",
+  "contract": "skills/skill-auditor/references/output-contract.md",
+  "ordered_sections": false,
+  "sections": [
+    {"id": "identity", "title": "Package identity", "aliases": ["package identity", "identity"], "required": true},
+    {"id": "coverage", "title": "Coverage by audit surface", "aliases": ["coverage"], "required": true},
+    {"id": "findings", "title": "Findings", "aliases": ["findings"], "required": true},
+    {"id": "version-compat", "title": "Semantic version and contract compatibility", "aliases": ["semantic version", "semantic-version", "contract compatibility", "version and contract"], "required": true},
+    {"id": "migration", "title": "Migration plan", "aliases": ["migration"]},
+    {"id": "host-claims", "title": "Host compatibility claims", "aliases": ["host compatibility", "host claims", "unsupported or stale host"], "required": true},
+    {"id": "unknowns", "title": "Unknowns and deferred checks", "aliases": ["unknowns", "deferred checks"], "required": true},
+    {"id": "drift", "title": "Package, eval, registry and documentation drift", "aliases": ["package, eval", "drift"], "required": true},
+    {"id": "bisection", "title": "Regression bisection", "aliases": ["regression bisection", "bisection"]},
+    {"id": "payload", "title": "Audit payload", "aliases": ["audit payload", "payload"]},
+    {"id": "next-owner", "title": "Next owner", "aliases": ["next owner"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["PASS", "CHANGES_REQUIRED", "DEFER"],
+    "aliases": {"CHANGES-REQUIRED": "CHANGES_REQUIRED"},
+    "authorizing": ["PASS"],
+    "primary": {"line": "^\\s*[-*]?\\s*\\**Audit (?:verdict|status)\\**\\s*:"}
+  },
+  "blockers": [
+    {"rule": "severe-finding", "type": "items_matching", "section": "findings",
+     "pattern": "Severity:\\s*\\**(?:BLOCKER|MAJOR)\\b"},
+    {"rule": "unresolved-surface", "type": "table_rows", "section": "coverage", "column": ["status"],
+     "pattern": "^(?:FAIL|UNKNOWN)"},
+    {"rule": "open-unknown", "type": "section_items", "section": "unknowns",
+     "none_pattern": "^(?:none\\b|none material)"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "skill-id", "section": "identity", "pattern": "skill_id[^\\n:]*:\\s*\\S",
+     "message": "the identity section does not name the audited skill_id"},
+    {"type": "doc_require", "rule": "version", "section": "identity",
+     "pattern": "version[^\\n:]*:\\s*`?\\d+\\.\\d+\\.\\d+",
+     "message": "the identity section has no semver version (a commit hash alone is not a version)"},
+    {"type": "doc_require", "rule": "mode", "section": "identity", "pattern": "mode[^\\n:]*:\\s*\\**(?:LIGHT|STANDARD|DEEP|DELTA)\\b",
+     "message": "the identity section has no audit mode (LIGHT | STANDARD | DEEP | DELTA)"},
+    {"type": "doc_require", "rule": "compatibility", "section": "version-compat",
+     "pattern": "compatibility[^\\n:]*:\\s*\\**(?:BACKWARD_COMPATIBLE|BREAKING|UNKNOWN|NOT_APPLICABLE)\\b",
+     "message": "no direction-aware contract compatibility token (BACKWARD_COMPATIBLE | BREAKING | UNKNOWN | NOT_APPLICABLE)"},
+    {"type": "doc_require", "rule": "next-owner", "section": "next-owner",
+     "pattern": "\\b(?:skill-creator|skill-evaluator|quality-loop-operator|none)\\b",
+     "message": "the next owner is not one of skill-creator, skill-evaluator, quality-loop-operator or none"},
+    {"type": "table_column_nonempty", "rule": "coverage-evidence", "section": "coverage", "column": ["evidence"],
+     "when": {"column": ["status"], "pattern": "^(?:PASS|FAIL)"}, "code": "EVIDENCE_MISSING",
+     "message": "a checked audit surface cites no evidence"},
+    {"type": "table_column_nonempty", "rule": "host-evidence", "section": "host-claims", "column": ["evidence"],
+     "when": {"column": ["status"], "pattern": "^REAL_HOST_VERIFIED"}, "code": "EVIDENCE_MISSING",
+     "message": "a host marked REAL_HOST_VERIFIED cites no fresh real-host run; metadata is not runtime verification"},
+    {"type": "items_require", "rule": "finding-evidence", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "Evidence:\\s*\\S", "code": "EVIDENCE_MISSING", "message": "a finding has no evidence"},
+    {"type": "items_require", "rule": "finding-locator", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "Locator:\\s*`?\\S", "code": "EVIDENCE_MISSING", "message": "a finding has no concrete locator"},
+    {"type": "items_require", "rule": "finding-severity", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "Severity:\\s*\\**(?:BLOCKER|MAJOR|MINOR|NOTE)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a finding has no severity from BLOCKER | MAJOR | MINOR | NOTE"},
+    {"type": "items_require", "rule": "finding-fields", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "(?=.*Impact:\\s*\\S)(?=.*Falsifier:\\s*\\S)(?=.*Repair(?: direction)?:\\s*\\S)", "code": "CONTRACT_VIOLATION",
+     "message": "a finding lacks impact, falsifier or repair direction"},
+    {"type": "doc_forbid", "rule": "effectiveness-overclaim",
+     "pattern": "(?:proves?|proven|demonstrates?|confirms?|shows?) (?:that )?the skill (?:improves|works|is effective|helps)|empirical(?:ly)? (?:effectiveness|lift) (?:is )?(?:proven|confirmed|established)",
+     "message": "an audit does not prove effectiveness (empirical_effectiveness_proven is false); hand off to skill-evaluator"},
+    {"type": "doc_forbid", "rule": "absence-from-search-miss",
+     "pattern": "(?:there (?:is|are) no|does not have any|has no) [\\w -]{1,30} (?:in|anywhere in) (?:this|the) (?:package|skill|repo|repository)\\b",
+     "message": "a search miss is not absence; cite a bounded inventory or explicit probe, or record an unknown"}
+  ],
+  "ids": [
+    {"rule": "finding-ids", "pattern": "\\bSA-\\d{3}\\b",
+     "defined_in": [{"section": "findings", "as": "subheading"}],
+     "defined_by": "no '### SA-NNN' finding with that ID is in the findings section"}
+  ],
+  "sidecars": [
+    {"rule": "skill-audit-kernel", "detect": {"has_keys": ["skill_id", "package"]},
+     "validator": "skills/skill-auditor/scripts/kernel.py", "function": "validate",
+     "error_statuses": ["INVALID"],
+     "recompute": {"result": "status"}}
+  ]
+}

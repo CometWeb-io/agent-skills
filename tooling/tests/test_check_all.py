@@ -186,3 +186,21 @@ def test_plugin_release_requires_a_base_only_under_ci(monkeypatch) -> None:
     check_all.run_gate(gate, ROOT, 10, ci=True)
     assert "--require-base" not in seen[0]
     assert seen[1][-1] == "--require-base"
+
+
+def test_fast_runs_the_per_skill_package_tests() -> None:
+    """A harness broken by a new rule, or a skill missing its untrusted-content
+    block, used to pass --fast and surface only in the three-minute full run."""
+    gate = next(g for g in check_all.GATES if g.id == "skill_package_tests")
+    assert gate.fast
+    named = [t for t in gate.argv if t.startswith("tooling/tests/")]
+    for required in ("test_skill_eval_harnesses.py", "test_untrusted_content_rules.py",
+                     "test_front_door_rules.py", "test_bundle_version.py"):
+        assert f"tooling/tests/{required}" in named
+    for path in named:
+        assert (ROOT / path).is_file(), path
+
+
+def test_fast_context_gate_checks_the_generated_table() -> None:
+    gate = next(g for g in check_all.GATES if g.id == "context_budget")
+    assert gate.fast and "--verify-table" in gate.argv

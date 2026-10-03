@@ -1,0 +1,53 @@
+{
+  "protocol_version": "1.0",
+  "as_of": "2026-10-02T09:00:00+02:00",
+  "horizon": "14d",
+  "primary_goal": "Ship the client migration without letting the beta stall",
+  "portfolio_scope": ["client-migration", "beta-onboarding", "paper-revision", "newsletter", "bookkeeping-automation"],
+  "constraints": ["read-only run"],
+  "capacity": {"source": "unknown"},
+  "coverage": {"calendar": "available", "tasks": "available", "code": "partial", "client": "available"},
+  "readiness": {"status": "PROVISIONAL", "reason": "capacity is unknown and two hard commitments compete for the same week"},
+  "portfolio_items": [
+    {"id": "client-migration", "domain": "CLIENT", "commitment_type": "hard_external", "effort_class": "L"},
+    {"id": "paper-revision", "domain": "RESEARCH", "commitment_type": "hard_external", "effort_class": "L"},
+    {"id": "beta-onboarding", "domain": "PRODUCT", "commitment_type": "strategic", "effort_class": "M"}
+  ],
+  "must_do": [
+    {"id": "client-migration", "domain": "CLIENT", "commitment_type": "hard_external", "effort_class": "L",
+     "scope_level": "portfolio",
+     "portfolio_outcome": "Deliver the Example Org site migration agreed for this horizon",
+     "done_when": "the client signs off the staging review",
+     "evidence": [{"source": "email", "locator": "client thread on migration scope", "claim": "migration due in this horizon"}]}
+  ],
+  "capacity_conflicts": [
+    {"id": "conflict-deep-work", "item_ids": ["client-migration", "paper-revision"],
+     "reason": "both need deep work in the same week; decision needed on which gets the primary focus stream"}
+  ],
+  "now": [
+    {"id": "beta-onboarding", "domain": "PRODUCT", "commitment_type": "strategic", "effort_class": "M",
+     "scope_level": "portfolio", "depth_required": "product",
+     "portfolio_outcome": "Bring beta onboarding to where a pilot user completes setup alone",
+     "done_when": "one pilot user finishes setup without help",
+     "evidence": [{"source": "tracker", "locator": "example-org/beta board", "claim": "setup is the top pilot complaint"}]}
+  ],
+  "delegate": [
+    {"id": "beta-blockers", "delegate_to": "product-operator",
+     "question": "what blocks the beta onboarding journey, in order?",
+     "return_contract": "ranked blockers with evidence"}
+  ],
+  "delegate_candidate": [
+    {"id": "landing-copy", "condition": "confirm a freelance copywriter's availability before the landing copy moves"}
+  ],
+  "waiting": [
+    {"id": "newsletter", "domain": "GROWTH", "reason": "waits for the onboarding outcome"}
+  ],
+  "pause_drop": [
+    {"id": "bookkeeping-automation", "domain": "OPS", "reason": "no capacity this horizon"}
+  ],
+  "next": [
+    {"id": "paper-camera-ready", "domain": "RESEARCH", "reason": "after the revision decision"}
+  ],
+  "decision_now": [],
+  "unknowns": ["exact weekly capacity"]
+}

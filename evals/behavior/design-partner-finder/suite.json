@@ -1,0 +1,111 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "design-partner-finder",
+  "description": "Offline behavior of score_candidate.py, select_cohort.py and assess_partner_health.py as references/kernel-inputs.md and SKILL.md tell a user to run them.",
+  "cases": [
+    {
+      "id": "strong-researched-candidate-is-priority-discovery",
+      "kind": "accept",
+      "behavior": "A well-evidenced research candidate with a professional contact path and score at or above 80 is marked PRIORITY_DISCOVERY and recommended for a discovery conversation.",
+      "run": ["scripts/score_candidate.py", "--stage", "research", "--input", "{input}"],
+      "input": {"candidate": "Alpha Example", "ratings": {"problem_evidence": 5, "representativeness": 4, "urgency": 4, "learning_value": 4, "implementation_plausibility": 4, "stakeholder_path": 4, "credibility": 4, "commercial_optionality": 4, "reference_network_value": 4}, "evidence_confidence": 4, "professional_contact_path": true},
+      "expect": {"exit_code": 0, "json": {"stage": "research", "status": "PRIORITY_DISCOVERY", "score": 85.0, "base_score": 85.0, "recommended_action": "CONTACT_FOR_DISCOVERY", "caps_applied": [], "hard_reasons": [], "hold_reasons": []}}
+    },
+    {
+      "id": "no-contact-path-never-priority",
+      "kind": "boundary",
+      "behavior": "The same strong candidate without a professional contact path is held at DISCOVERY and never promoted to PRIORITY_DISCOVERY.",
+      "run": ["scripts/score_candidate.py", "--input", "{input}"],
+      "input": {"candidate": "Alpha Example", "ratings": {"problem_evidence": 5, "representativeness": 4, "urgency": 4, "learning_value": 4, "implementation_plausibility": 4, "stakeholder_path": 4, "credibility": 4, "commercial_optionality": 4, "reference_network_value": 4}, "evidence_confidence": 4},
+      "expect": {"exit_code": 0, "json": {"status": "DISCOVERY", "score": 85.0, "recommended_action": "VALIDATE_HIGHEST_VALUE_GAP", "gates.professional_contact_path": false}}
+    },
+    {
+      "id": "omitted-evidence-confidence-holds-candidate",
+      "kind": "boundary",
+      "behavior": "Leaving out evidence_confidence defaults it to 0, which caps the score at 49 and holds the candidate for verification.",
+      "run": ["scripts/score_candidate.py", "--input", "{input}"],
+      "input": {"ratings": {"problem_evidence": 5, "representativeness": 4, "urgency": 4, "learning_value": 4, "implementation_plausibility": 4, "stakeholder_path": 4, "credibility": 4, "commercial_optionality": 4, "reference_network_value": 4}, "professional_contact_path": true},
+      "expect": {"exit_code": 0, "json": {"status": "HOLD_VERIFY", "score": 49.0, "base_score": 85.0, "caps_applied": [{"limit": 49.0, "reason": "evidence_confidence_at_or_below_1"}], "hold_reasons": ["insufficient_evidence_confidence"], "hard_reasons": []}}
+    },
+    {
+      "id": "weak-problem-evidence-is-rejected",
+      "kind": "refuse",
+      "behavior": "A candidate whose problem evidence is below 2 is rejected regardless of how well it scores elsewhere.",
+      "run": ["scripts/score_candidate.py", "--stage", "research"],
+      "stdin": {"ratings": {"problem_evidence": 1, "representativeness": 4, "urgency": 4, "learning_value": 4, "implementation_plausibility": 4, "stakeholder_path": 4, "credibility": 4, "commercial_optionality": 4, "reference_network_value": 4}, "evidence_confidence": 4, "professional_contact_path": true},
+      "expect": {"exit_code": 0, "json": {"status": "REJECT", "score": 49.0, "base_score": 65.0, "recommended_action": "DO_NOT_PURSUE", "hard_reasons": ["problem_evidence_below_2"], "caps_applied": [{"limit": 49.0, "reason": "hard_reject_rule"}]}}
+    },
+    {
+      "id": "missing-ratings-are-refused",
+      "kind": "refuse",
+      "behavior": "A payload missing required Stage A ratings exits 2 and names every missing rating instead of scoring a partial candidate.",
+      "run": ["scripts/score_candidate.py"],
+      "stdin": {"ratings": {"problem_evidence": 5}},
+      "expect": {"exit_code": 2, "stderr_contains": ["missing ratings: representativeness, urgency, learning_value, implementation_plausibility, stakeholder_path, credibility, commercial_optionality, reference_network_value"]}
+    },
+    {
+      "id": "live-score-without-direct-evidence-holds",
+      "kind": "refuse",
+      "behavior": "Live readiness is never PARTNER_READY while live evidence is unconfirmed, however high the ratings are.",
+      "run": ["scripts/score_candidate.py", "--stage", "live", "--input", "{input}"],
+      "input": {"ratings": {"problem_confirmed": 5, "urgency_confirmed": 4, "user_champion_access": 4, "implementation_readiness": 4, "feedback_commitment": 4, "decision_procurement_feasibility": 4, "mutual_value_alignment": 4, "pilot_measurability": 4, "transferability": 4}},
+      "expect": {"exit_code": 0, "json": {"stage": "live", "status": "HOLD_VERIFY", "score": 83.0, "recommended_action": "RESOLVE_BLOCKER", "hold_reasons": ["live_evidence_not_confirmed"], "alignment_reasons": [], "hard_reasons": []}}
+    },
+    {
+      "id": "paid-pilot-without-commitment-needs-alignment",
+      "kind": "boundary",
+      "behavior": "A confirmed live partner in PAID_PILOT mode with insufficient commercial commitment needs alignment rather than activation.",
+      "run": ["scripts/score_candidate.py", "--stage", "live", "--input", "{input}"],
+      "input": {"engagement_mode": "PAID_PILOT", "live_evidence_confirmed": true, "commercial_commitment": 1, "ratings": {"problem_confirmed": 5, "urgency_confirmed": 4, "user_champion_access": 4, "implementation_readiness": 4, "feedback_commitment": 4, "decision_procurement_feasibility": 4, "mutual_value_alignment": 4, "pilot_measurability": 4, "transferability": 4}},
+      "expect": {"exit_code": 0, "json": {"status": "ALIGNMENT_REQUIRED", "score": 83.0, "recommended_action": "RESOLVE_COMMITMENT_OR_IMPLEMENTATION_GAPS", "alignment_reasons": ["paid_pilot_commercial_commitment_insufficient"], "hold_reasons": []}}
+    },
+    {
+      "id": "slate-respects-segment-cap-and-excludes-held",
+      "kind": "accept",
+      "behavior": "An outreach slate covers every learning question within the segment cap, skips the second candidate from a capped segment and excludes a candidate still held for verification.",
+      "run": ["scripts/select_cohort.py", "--selection-stage", "outreach_slate", "--input", "{input}"],
+      "input": {"size": 2, "max_per_segment": 1, "questions": [{"id": "q1", "must_cover": true}, {"id": "q2"}], "candidates": [{"company": "Alpha Example", "status": "PRIORITY_DISCOVERY", "score": 85, "segment": "agency", "learning_coverage": {"q1": 5}}, {"company": "Beta Example", "status": "DISCOVERY", "score": 70, "segment": "agency", "learning_coverage": {"q2": 5}}, {"company": "Gamma Example", "status": "DISCOVERY", "score": 68, "segment": "retail", "learning_coverage": {"q2": 4}}, {"company": "Delta Example", "status": "HOLD_VERIFY", "score": 90, "segment": "retail"}]},
+      "expect": {"exit_code": 0, "json": {"selection_stage": "outreach_slate", "selected_count": 2, "selected.0.company": "Alpha Example", "selected.1.company": "Gamma Example", "excluded": [{"company": "Delta Example", "reason": "status:HOLD_VERIFY"}], "not_selected": [{"company": "Beta Example", "reasons": ["segment_cap"], "score": 70.0, "status": "DISCOVERY"}], "must_cover_unmet": [], "coverage_ratio": 1.0, "cohort_complete": true}}
+    },
+    {
+      "id": "active-cohort-reports-unmet-must-cover",
+      "kind": "boundary",
+      "behavior": "An active cohort without the alignment opt-in excludes ALIGNMENT_REQUIRED candidates and reports the must-cover question left unanswered instead of calling the cohort complete.",
+      "run": ["scripts/select_cohort.py", "--selection-stage", "active_cohort"],
+      "stdin": {"size": 3, "questions": [{"id": "q1", "must_cover": true}, {"id": "q2", "must_cover": true}], "candidates": [{"company": "Alpha Example", "status": "PARTNER_READY", "score": 85, "segment": "agency", "learning_coverage": {"q1": 5}}, {"company": "Beta Example", "status": "ALIGNMENT_REQUIRED", "score": 80, "segment": "retail", "learning_coverage": {"q2": 5}}]},
+      "expect": {"exit_code": 0, "json": {"selected_count": 1, "must_cover_unmet": ["q2"], "cohort_complete": false, "coverage_ratio": 0.5, "excluded": [{"company": "Beta Example", "reason": "status:ALIGNMENT_REQUIRED"}]}}
+    },
+    {
+      "id": "zero-cohort-size-is-refused",
+      "kind": "refuse",
+      "behavior": "A cohort size below 1 is refused with exit 2.",
+      "run": ["scripts/select_cohort.py"],
+      "stdin": {"size": 0, "candidates": []},
+      "expect": {"exit_code": 2, "stderr_contains": ["{\"error\": \"size must be >= 1\"}"]}
+    },
+    {
+      "id": "proven-value-becomes-conversion-candidate",
+      "kind": "accept",
+      "behavior": "A healthy partner with demonstrated value, willingness to buy and a conversion-ready product is handed off to normal commercial qualification.",
+      "run": ["scripts/assess_partner_health.py", "--input", "{input}"],
+      "input": {"partner": "Alpha Example", "ratings": {"workflow_usage": 4, "learning_yield": 4, "user_champion_engagement": 4, "implementation_progress": 4, "feedback_quality": 4, "transferability": 4, "value_signal": 5}, "willingness_to_buy": 3, "product_ready_for_conversion": true},
+      "expect": {"exit_code": 0, "json": {"partner": "Alpha Example", "status": "CONVERSION_CANDIDATE", "health_score": 82.0, "risk_penalty": 0.0, "recommended_action": "HAND_OFF_TO_NORMAL_COMMERCIAL_QUALIFICATION", "reasons": []}}
+    },
+    {
+      "id": "low-learning-with-bespoke-pressure-goes-to-exit-review",
+      "kind": "boundary",
+      "behavior": "Low learning yield combined with high bespoke pressure sends the partner to exit review even when usage is good.",
+      "run": ["scripts/assess_partner_health.py"],
+      "stdin": {"ratings": {"workflow_usage": 4, "learning_yield": 1, "user_champion_engagement": 4, "implementation_progress": 4, "feedback_quality": 4, "transferability": 4, "value_signal": 4}, "bespoke_pressure": 4},
+      "expect": {"exit_code": 0, "json": {"status": "EXIT_REVIEW", "health_score": 60.0, "risk_penalty": 8.0, "recommended_action": "REVIEW_EXIT_AND_CAPTURE_LEARNINGS", "reasons": ["low_learning_yield", "high_bespoke_pressure"]}}
+    },
+    {
+      "id": "string-boolean-is-refused",
+      "kind": "refuse",
+      "behavior": "A gate flag given as a string instead of a JSON boolean is refused rather than read as true.",
+      "run": ["scripts/assess_partner_health.py"],
+      "stdin": {"ratings": {"workflow_usage": 4, "learning_yield": 4, "user_champion_engagement": 4, "implementation_progress": 4, "feedback_quality": 4, "transferability": 4, "value_signal": 4}, "product_ready_for_conversion": "yes"},
+      "expect": {"exit_code": 2, "stderr_contains": ["{\"error\": \"product_ready_for_conversion must be boolean\"}"]}
+    }
+  ]
+}

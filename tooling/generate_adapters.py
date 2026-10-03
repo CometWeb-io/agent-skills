@@ -11,9 +11,13 @@ Writes:
     Codex `default_prompt` that invokes the skill as `$skill-id`
   - extras/cursor-routing.mdc (compact Cursor rule; fallback when the full rule is absent)
   - extras/AGENTS.snippet.md (routing block for AGENTS.md hosts such as Codex)
-  - the skill list in the `description` of .cursor-plugin/plugin.json and
-    .claude-plugin/plugin.json (every other manifest field stays hand-owned;
-    a description without the '(N packages): ...' tail fails)
+  - rules/cometweb-agent-skills.mdc (the routing rule the Cursor plugin ships;
+    Cursor discovers rules/ at the plugin root)
+  - the skill list in the `description` of .claude-plugin/plugin.json (every
+    other manifest field stays hand-owned; a description without the
+    '(N packages): ...' tail fails)
+  - .cursor-plugin/plugin.json: the Claude manifest restricted to the keys
+    Cursor documents (registry/hosts.json `cursor.plugin_format`)
 """
 from __future__ import annotations
 
@@ -461,6 +465,48 @@ def build_agents_snippet(skills: list[dict]) -> str:
 render_plugin_manifest = render_host_manifest
 
 
+def build_cursor_plugin_rule(skills: list[dict]) -> str:
+    """The rule a Cursor plugin install applies: compact, and free of repository-only paths."""
+    lines = [
+        "---",
+        "description: Route CometWeb Agent Skills shipped by this plugin (generated from registry/skills.json).",
+        "alwaysApply: true",
+        "---",
+        "",
+        GENERATED_MARK,
+        "",
+        "# CometWeb Agent Skills routing",
+        "",
+        f"{len(skills)} skills, shipped in this plugin's `skills/` directory.",
+        "",
+        *ROUTING_RULES,
+        "",
+        "## Primary routing",
+        "",
+        *_routing_table(skills),
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def cursor_plugin_format() -> dict | None:
+    """Cursor's documented plugin format from registry/hosts.json, or None in a reduced tree."""
+    path = hosts_file()
+    if not path.is_file():
+        return None
+    cursor = json.loads(path.read_text(encoding="utf-8"))["hosts"].get("cursor") or {}
+    fmt = cursor.get("plugin_format")
+    return {**fmt, "plugin_rule": cursor.get("plugin_rule")} if fmt else None
+
+
+def cursor_manifest_from(claude: dict, fmt: dict) -> dict:
+    """The Claude manifest with only the top-level and author keys Cursor documents."""
+    keys, author_keys = set(fmt["manifest_keys"]), set(fmt["author_keys"])
+    out = {key: value for key, value in claude.items() if key in keys}
+    if isinstance(out.get("author"), dict):
+        out["author"] = {key: value for key, value in out["author"].items() if key in author_keys}
+    return out
+
+
 def out_cursor_fallback() -> Path:
     return ROOT / "extras" / "cursor-routing.mdc"
 
@@ -478,6 +524,12 @@ def host_artifacts(skills: list[dict]) -> dict[Path, str]:
     # A reduced tree without host manifests has nothing to keep in step.
     for path in host_manifests():
         artifacts[path] = render_host_manifest(path.read_text(encoding="utf-8"), skills)
+    claude, cursor, fmt = ROOT / HOST_PLUGIN_MANIFESTS[0], ROOT / HOST_PLUGIN_MANIFESTS[1], cursor_plugin_format()
+    if fmt and claude in artifacts and cursor in artifacts:
+        projected = cursor_manifest_from(json.loads(artifacts[claude]), fmt)
+        artifacts[cursor] = json.dumps(projected, indent=2, ensure_ascii=False) + "\n"
+    if fmt and fmt.get("plugin_rule") and cursor in artifacts:
+        artifacts[ROOT / fmt["plugin_rule"]] = build_cursor_plugin_rule(skills)
     return artifacts
 
 

@@ -1,0 +1,84 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "competitive-intelligence",
+  "description": "Offline behavior of scripts/ci_kernel.py subcommands as references/kernel-inputs.md and SKILL.md tell a user to run them.",
+  "cases": [
+    {
+      "id": "diff-reports-price-change-only",
+      "kind": "accept",
+      "behavior": "A price change between two snapshots is reported as one MODIFIED pricing delta, while a new capture time and a reordered segment list are not reported as competitor changes.",
+      "run": ["scripts/ci_kernel.py", "diff", "--old", "{tmp}/old.json", "--new", "{tmp}/new.json"],
+      "files": {
+        "old.json": {"schema_version": "1.0", "competitor_id": "rival", "competitor_name": "Rival Example", "captured_at": "2026-08-01T10:00:00Z", "state": {"positioning": {"target_segments": ["SMB", "Agency"]}, "pricing": {"tiers": {"pro_monthly": 39}}}, "evidence": [{"evidence_id": "ev-1", "source": "https://rival.example.com/pricing", "last_verified_at": "2026-08-01T09:55:00Z"}]},
+        "new.json": {"schema_version": "1.0", "competitor_id": "rival", "competitor_name": "Rival Example", "captured_at": "2026-08-25T10:00:00Z", "state": {"positioning": {"target_segments": ["Agency", "SMB"]}, "pricing": {"tiers": {"pro_monthly": 49}}}, "evidence": [{"evidence_id": "ev-2", "source": "https://rival.example.com/pricing", "last_verified_at": "2026-08-25T09:55:00Z"}]}
+      },
+      "expect": {"exit_code": 0, "json": {"competitor_id": "rival", "change_count": 1, "changes.0.change_type": "MODIFIED", "changes.0.field_path": "state.pricing.tiers.pro_monthly", "changes.0.category": "PRICING_PACKAGING", "changes.0.before": 39, "changes.0.after": 49}, "json_len": {"changes": 1}}
+    },
+    {
+      "id": "invalid-snapshot-is-refused",
+      "kind": "refuse",
+      "behavior": "A snapshot with no state or evidence, a non-slug competitor id and a timestamp without timezone is rejected with every structural error listed and exit code 2.",
+      "run": ["scripts/ci_kernel.py", "validate-snapshot", "--snapshot", "{tmp}/bad.json"],
+      "files": {
+        "bad.json": {"schema_version": "1.0", "competitor_id": "Rival Example", "competitor_name": "Rival Example", "captured_at": "2026-08-01T10:00:00"}
+      },
+      "expect": {"exit_code": 2, "json": {"valid": false, "errors": ["missing required keys: evidence, state", "competitor_id must be a stable lowercase slug", "captured_at must be ISO-8601 with timezone"], "warnings": []}}
+    },
+    {
+      "id": "duplicate-evidence-id-is-an-error-missing-source-warns",
+      "kind": "refuse",
+      "behavior": "Two evidence items sharing one evidence_id invalidate the snapshot, while evidence without a source or verification time only warns.",
+      "run": ["scripts/ci_kernel.py", "validate-snapshot", "--snapshot", "{tmp}/dup.json"],
+      "files": {
+        "dup.json": {"schema_version": "1.0", "competitor_id": "rival", "competitor_name": "Rival Example", "captured_at": "2026-08-01T10:00:00Z", "state": {}, "evidence": [{"evidence_id": "ev-1", "source": "https://rival.example.com/", "last_verified_at": "2026-08-01T09:55:00Z"}, {"evidence_id": "ev-1"}]}
+      },
+      "expect": {"exit_code": 2, "json": {"valid": false, "errors": ["duplicate evidence_id: ev-1"], "warnings": ["evidence[1] has no source", "evidence[1] has no last_verified_at"]}}
+    },
+    {
+      "id": "score-at-critical-threshold",
+      "kind": "boundary",
+      "behavior": "A tier-1 event whose weighted materiality lands exactly on 80 is bucketed CRITICAL, not HIGH.",
+      "run": ["scripts/ci_kernel.py", "score", "--event-json", "{\"relevance\": 0.8, \"magnitude\": 0.8, \"confidence\": 0.8, \"novelty\": 0.8, \"persistence\": 0.8, \"competitor_tier\": 1}"],
+      "expect": {"exit_code": 0, "json": {"score": 80, "severity": "CRITICAL", "tier_factor": 1.0}}
+    },
+    {
+      "id": "unknown-competitor-tier-is-refused",
+      "kind": "refuse",
+      "behavior": "A competitor tier outside 1, 2 or 3 is refused instead of being silently scored as some other tier.",
+      "run": ["scripts/ci_kernel.py", "score", "--event-json", "{\"relevance\": 1, \"magnitude\": 1, \"competitor_tier\": 4}"],
+      "expect": {"exit_code": 2, "stdout_absent": ["severity"], "stderr_contains": ["{\"error\": \"competitor_tier must be 1, 2 or 3\"}"]}
+    },
+    {
+      "id": "freshness-near-expiry-past-eighty-percent",
+      "kind": "boundary",
+      "behavior": "Evidence verified 9 days ago against a 10-day TTL is NEAR_EXPIRY, not CURRENT and not yet STALE.",
+      "run": ["scripts/ci_kernel.py", "freshness", "--last-verified-at", "2026-09-01T00:00:00Z", "--ttl-days", "10", "--as-of", "2026-09-10T00:00:00Z"],
+      "expect": {"exit_code": 0, "json": {"status": "NEAR_EXPIRY", "age_days": 9.0, "ttl_days": 10}}
+    },
+    {
+      "id": "freshness-without-verification-is-unknown",
+      "kind": "boundary",
+      "behavior": "A claim with no last-verified time is reported UNKNOWN rather than treated as current.",
+      "run": ["scripts/ci_kernel.py", "freshness", "--ttl-days", "7", "--as-of", "2026-09-10T00:00:00Z"],
+      "expect": {"exit_code": 0, "json": {"status": "UNKNOWN", "age_days": null, "ttl_days": 7}}
+    },
+    {
+      "id": "append-event-deduplicates-same-revision",
+      "kind": "accept",
+      "behavior": "Appending an event whose key and revision fields match an event already in the log is reported as a duplicate and not appended again.",
+      "run": ["scripts/ci_kernel.py", "append-event", "--root", "{tmp}/ws", "--event-json", "@{tmp}/event.json"],
+      "files": {
+        "event.json": {"event_key": "sha256:feedface", "competitor_id": "rival", "category": "PRICING_PACKAGING", "field_path": "state.pricing.tiers.pro_monthly", "before": 39, "after": 49, "first_observed_at": "2026-08-25T10:00:00Z", "verification_state": "CONFIRMED", "disposition": "VERIFY"},
+        "ws/events/2026-08.jsonl": "{\"event_id\":\"evt-0001\",\"event_key\":\"sha256:feedface\",\"competitor_id\":\"rival\",\"category\":\"PRICING_PACKAGING\",\"field_path\":\"state.pricing.tiers.pro_monthly\",\"before\":39,\"after\":49,\"first_observed_at\":\"2026-08-25T10:00:00Z\",\"verification_state\":\"CONFIRMED\",\"disposition\":\"VERIFY\"}\n"
+      },
+      "expect": {"exit_code": 0, "json": {"appended": false, "duplicate": true, "event_key": "sha256:feedface", "existing_event_id": "evt-0001"}}
+    },
+    {
+      "id": "append-event-requires-field-path",
+      "kind": "refuse",
+      "behavior": "An event without a field_path is refused before anything is written to the log.",
+      "run": ["scripts/ci_kernel.py", "append-event", "--root", "{tmp}/ws", "--event-json", "{\"competitor_id\": \"rival\", \"category\": \"PRICING_PACKAGING\"}"],
+      "expect": {"exit_code": 2, "stderr_contains": ["{\"error\": \"event requires field_path\"}"]}
+    }
+  ]
+}

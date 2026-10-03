@@ -33,7 +33,7 @@ CHECKS = (
     ("routing_adversarial", "tooling/run_policy_evals.py", ("--suite", "evals/routing/adversarial-suite.json")),
     ("context_fixtures", "tooling/run_behavior_evals.py", ()),
     ("protocol", "tooling/validate_envelope.py", ("fixtures/cwaip-v2/evidence-final.json", "--final")),
-    ("context_budget", "tooling/context_budget.py", ("--check",)),
+    ("context_budget", "tooling/context_budget.py", ("--check", "--verify-table", "docs/generated-context-budget.md")),
     ("eval_strength", "tooling/eval_strength.py", ("--check",)),
 )
 # Gates that run as an installed module rather than a repo script. They are kept

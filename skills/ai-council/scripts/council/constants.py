@@ -221,6 +221,9 @@ RISK_LEVELS = {"low", "medium", "high"}
 RISK_SURFACES = set(RISK_SURFACE_RULES)
 DECISION_KINDS = set(DECISION_KIND.values())
 WATCH_OPERATORS = {"changed", "gt", "gte", "lt", "lte", "pct_change_gt"}
+# A forecast row scores only a resolved binary outcome; the string aliases
+# forecast_score_report normalises ("yes", "occurred", ...) map onto these two.
+FORECAST_OUTCOMES = (0, 1)
 
 _MEMORY_ALLOWLIST_V4 = {
     "decision_key", "domain", "decision_kind", "decision_type", "risk", "risk_level", "reversibility",

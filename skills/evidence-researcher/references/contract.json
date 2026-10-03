@@ -37,7 +37,11 @@
         "SOURCE_STATES": "source_state",
         "DIRECTIONS": "direction",
         "ADMISSION_STATUSES": "admission",
-        "FIT_LEVELS": ["authority_fit", "directness", "scope_fit"],
+        "FIT_LEVELS": [
+          "authority_fit",
+          "directness",
+          "scope_fit"
+        ],
         "MEASUREMENT_LEVELS": "measurement_quality",
         "CONTRADICTION_RESOLUTIONS": "resolution",
         "SEARCH_PURPOSES": "purpose",
@@ -433,13 +437,13 @@
     },
     "stop": {}
   },
-  "internal": [
-    "claim",
-    "dependency_ids",
-    "inference",
-    "local_gate",
-    "source"
-  ],
+  "internal": {
+    "claim": "record kind label used to index ids, not a payload key",
+    "dependency_ids": "coverage row the kernel builds per claim",
+    "inference": "coverage row flag the kernel derives from epistemic_kind",
+    "local_gate": "coverage row flag the kernel derives per claim",
+    "source": "record kind label used to index ids, not a payload key"
+  },
   "doc_terms": [],
   "evals": []
 }

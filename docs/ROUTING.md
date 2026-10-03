@@ -52,10 +52,21 @@ uv run python tooling/route_skill.py 'Click through the checkout and find UX bug
 9. **Detect sequences.** A prompt cut at "then", "potem", "->" and similar
    connectors whose steps are won by different specialists routes to the
    workflow skill, with the steps listed in `sequence` (`sequence`).
+10. **Fall back to the lexical ranker.** When no signal scored, or a near-tie
+    left the result `ambiguous`, a BM25 ranker reads each skill's description,
+    `owns` list, trigger examples and a curated English and Polish lexicon, with
+    light stemming, and picks a skill only on enough distinct evidence and a
+    clear lead (`lexical`). It never runs after an invocation or a detected
+    sequence, never ranks a blocked skill, abstains on conceptual and plain
+    coding requests, and leaves a near-tie ambiguous when the text supports a
+    second request on its own. A result it decided says `"decided_by":
+    "lexical"`.
 
 The result reports `status` (`single_skill`, `workflow`, `ambiguous` or
 `no_skill`), `primary_skill`, `candidates`, `scores`, the reason each skill was
-`blocked`, and `override_suspected`.
+`blocked`, and `override_suspected`. `--explain` adds the signals that matched,
+the negated spans and the ranker's per-term contributions for its top skills;
+`--lexical` and `--no-lexical` override the policy's switch for one call.
 
 ## Policy blocks
 
@@ -67,6 +78,7 @@ The result reports `status` (`single_skill`, `workflow`, `ambiguous` or
 | `negation` | Negation `cues`, the clause `boundary`, and `max_scope_chars` (1–400) for how far a negation reaches. |
 | `sequence` | The step `connector` and `min_step_score`, the score a specialist needs to own a step. |
 | `untrusted_text` | The `override_cues` after which nothing counts as the user's instruction. |
+| `lexical` | The ranker's switch (`enabled`), BM25 parameters, acceptance thresholds (`min_score`, `min_terms`, `min_margin`, `min_ratio`), `abstain` patterns, per-skill `veto` phrases, stopwords, suffixes and the per-skill `lexicon`. |
 | `ties` | The outcome of a near-tie between specialists: `ambiguous`. |
 | `workflow_skill` | The skill that runs multi-step work: `skill-orchestrator`. |
 

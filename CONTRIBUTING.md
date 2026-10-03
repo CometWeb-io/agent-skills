@@ -8,9 +8,15 @@ Thanks for improving CometWeb Agent Skills. This repo optimizes for
 ```bash
 uv sync --group dev                            # 1. once; needs uv and Python 3.12+
 # 2. make the change
-uv run python tooling/check_all.py --fix --fast    # 3. regenerate derived files, quick gates (~10 s)
-uv run python tooling/check_all.py                 # 4. every gate, exactly as CI runs them (~3 min)
+uv run python tooling/check_all.py --fix --fast    # 3. the inner loop: regenerate, quick gates (~10 s)
+uv run python tooling/check_all.py                 # 4. before you push: every gate, as CI runs them (~3 min)
 ```
+
+Run step 3 after every change; it is the loop that is meant to be fast. It
+includes the per-skill slice of the test suite (eval harnesses, the front-door
+and untrusted-content rules, script CLIs, manifest versions), so a skill change
+that passes it rarely fails step 4. To run one skill's own tests as well:
+`uv run pytest skills/<skill-id>`.
 
 `tooling/check_all.py` is the only gate list. CI calls it with `--ci`, and a
 test fails if the workflow grows a gate of its own, so a green local run means
@@ -19,7 +25,7 @@ and exits non-zero if any gate fails or if a gate modified the checkout.
 
 | Option | Effect |
 | --- | --- |
-| `--fast` | Leave out pytest, eval strength, the plugin-version record, package builds, the history leak scan, semgrep (`sast`) and `pip-audit` |
+| `--fast` | Leave out the full pytest suite (its per-skill slice still runs), eval strength, the plugin-version record, package builds, the history leak scan, semgrep (`sast`) and `pip-audit` |
 | `--fix` | Run the selected gates' generators first: registry sync, adapters and README catalog, shared copies, context table, `uv lock` |
 | `--only ids` / `--skip ids` | Comma-separated gate ids; `--list` shows them all |
 | `--verbose` | Print the output of passing gates too |
@@ -83,7 +89,8 @@ a placeholder that works. Replace it in this order:
    examples in `registry/skills.json`. Each skill needs three prompts it must
    claim and two it must not; [docs/ROUTING.md](docs/ROUTING.md) explains how
    they are scored.
-4. **Bump the plugin version.** A new skill changes what the plugin ships; see
+4. **Bump the plugin version.** A new skill changes what the plugin ships:
+   `uv run python tooling/plugin_release.py --bump minor`. See
    [Plugin version](#plugin-version).
 5. **Regenerate and run every gate** with the [flow](#the-flow) above. A grown
    front door or a changed eval-strength count is accepted deliberately; the
@@ -105,7 +112,9 @@ ownership boundaries and routing signals. Entries for the skills listed in
 `OVERRIDES` in `tooling/sync_skill_registry.py` are generated from that table:
 edit `OVERRIDES`, not the registry. Never hand-edit generated output: the
 adapters, the `docs/generated-*` tables, the host routing files
-(`extras/cursor-routing.mdc`, `extras/AGENTS.snippet.md`), each skill's
+(`extras/cursor-routing.mdc`, `extras/AGENTS.snippet.md`,
+`rules/cometweb-agent-skills.mdc`), `.cursor-plugin/plugin.json` (the Claude
+manifest restricted to Cursor's documented keys), each skill's
 `agents/openai.yaml` interface block (its `short_description` is built to fit
 the 25-64 characters Codex shows, and its `default_prompt` is one sentence that
 invokes the skill as `$skill-id`), the README skill catalog and every skill
@@ -124,6 +133,15 @@ a stale number behind.
 | Vague routing | Explicit negatives in the description + a routing eval case |
 | Silent handoffs | CW-AIP envelope fields in the output contract |
 
+**Offline behavior suite.** Every skill that ships a script also has
+`evals/behavior/<skill>/suite.json` (schema `cometweb.behavior-suite/v1`):
+cases that run the skill's scripts the way its references tell a user to, or
+call a documented library function with `"call"` and `"args"`, and pin the exit
+code plus exact JSON values or output text. Each case states the behaviour it
+holds and is tagged `accept`, `refuse` or `boundary`; a suite needs at least
+three cases, one accepted and one refused. `tooling/run_behavior_evals.py`
+fails for a skill without one (`--coverage` lists counts, `--skill ID` runs one).
+
 Harnesses in `scripts/run_evals.py` run under pytest through
 `tooling/tests/test_skill_eval_harnesses.py`; the eval-strength baseline is the list
 of skills that must ship one.
@@ -134,9 +152,12 @@ that enforces it, the reference that documents it, and the eval corpora whose
 inputs must conform. `tooling/skill_contracts.py --check` fails when a script
 reads an undeclared key, an enum drifts, the reference names a field the
 contract lacks (or omits one it has, or spells an enum value differently), or an
-eval case expects a pass on off-contract input. Start one with
-`tooling/skill_contracts.py --draft <skill>`; its module docstring lists the
-keys.
+eval case expects a pass on off-contract input. A key a script reads that is
+not a payload field goes under `internal` with the reason (`{"name": "why"}`);
+when one key carries different enums in rows passed whole by argument, declare
+each row set under `lists` and qualify the field by it (`forecasts.outcome`).
+Start one with `tooling/skill_contracts.py --draft <skill>`; its module
+docstring lists the keys.
 
 **A green suite proves nothing on its own.** `eval_strength.py` copies each
 package to a temporary directory, replaces one `if` guard at a time with
@@ -184,14 +205,19 @@ version in the same pull request.
 
 - Patch for fixes only; minor when a skill gains behaviour or a skill is added;
   major when a skill is removed or renamed, or a contract breaks.
-- One value everywhere: `VERSION`, `pyproject.toml` (then `uv lock`),
-  `plugin.json`, `.claude-plugin/plugin.json` and `.cursor-plugin/plugin.json`.
-- Record the shipped set for that version:
+- One value everywhere: `VERSION`, `pyproject.toml`, `uv.lock`, `plugin.json`,
+  `.claude-plugin/plugin.json` and `.cursor-plugin/plugin.json`. One command
+  writes all six and records the shipped set:
 
 ```bash
-uv run python tooling/plugin_release.py --record   # after bumping VERSION
-uv run python tooling/plugin_release.py --check    # check_all runs it with --require-base under --ci
+uv run python tooling/plugin_release.py --bump patch   # or minor / major
+uv run python tooling/plugin_release.py --check        # check_all runs it with --require-base under --ci
 ```
+
+`--bump` counts from the version at the merge base with `origin/main`, so
+rerunning it on a branch does not bump twice, and `--bump minor` after an
+earlier `--bump patch` on the same branch lands on the minor version.
+`--record` alone re-records the shipped set without touching any version.
 
 `registry/plugin-release.json` holds the plugin version and every shipped skill
 with its `VERSION`. `--check` fails when the tree differs from that record, and
@@ -202,18 +228,36 @@ different skill set under a version that was already recorded.
 
 ## Releases
 
-`check_all.py` already runs the history leak scan and the all-package
-installation acceptance. For a recorded evidence report (per-check logs, JUnit,
-source fingerprints) use `tooling/validate_local.py`; see
-[docs/LOCAL-VALIDATION.md](docs/LOCAL-VALIDATION.md). Build a deterministic,
-scanned package for a skill with:
+A release is a `v*` tag on `main`. Pushing the tag runs
+[`attest-packages.yml`](.github/workflows/attest-packages.yml), which refuses a
+tag that does not equal `v` + `VERSION`, revalidates the tree, builds one
+deterministic `skill.zip` per skill, writes a CycloneDX SBOM of the plugin,
+attests both with Sigstore build provenance and uploads them as a workflow
+artifact. Nothing is published to a registry.
 
-```bash
-uv run python tooling/package_skill.py <skill-id>
-```
+1. Merge the pull request that bumped the plugin version (see
+   [Plugin version](#plugin-version)) and passed every gate.
+2. Rehearse the packaging locally on a clean checkout of that commit. These are
+   the workflow's own build steps; they write only under `dist/`, which is
+   ignored:
 
-Publication is approval-gated per skill and has no safety-scan bypass; see
-`tooling/publish_public_dry_run.py`. A file removed from `HEAD` stays in history
-until that history is rewritten.
+   ```bash
+   uv run python tooling/check_all.py --ci        # every gate; the tag workflow reruns them
+   for skill in skills/*/SKILL.md; do
+     uv run python tooling/package_skill.py "$(basename "$(dirname "$skill")")"
+   done
+   uv run python tooling/sbom.py --dist dist --output dist/agent-skills.cdx.json
+   ```
+
+3. Tag and push: `git tag "v$(cat VERSION)" && git push origin "v$(cat VERSION)"`.
+4. When the workflow finishes, download the `agent-skills-packages` artifact
+   and verify a package: `gh attestation verify skill.zip --repo CometWeb-io/agent-skills`.
+
+Packages built with `package_skill.py --dev` go under `dist/<skill>/dev/` and
+are never attested. For a recorded evidence report of a local run (per-check
+logs, JUnit, source fingerprints) use `tooling/validate_local.py`; see
+[docs/LOCAL-VALIDATION.md](docs/LOCAL-VALIDATION.md). A file removed from `HEAD`
+stays in history until that history is rewritten, which is why `check_all.py`
+scans every reachable commit for leaks.
 
 Longer-form background lives in [`docs/`](docs/README.md).

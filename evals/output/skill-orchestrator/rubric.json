@@ -1,0 +1,64 @@
+{
+  "skill": "skill-orchestrator",
+  "contract": "skills/skill-orchestrator/SKILL.md",
+  "ordered_sections": true,
+  "envelope_producer": null,
+  "sections": [
+    {"id": "plan", "title": "Workflow plan", "aliases": ["workflow plan", "plan"], "required": true},
+    {"id": "steps", "title": "Step outputs", "aliases": ["step outputs", "steps"], "required": true},
+    {"id": "result", "title": "Workflow result", "aliases": ["workflow result", "result"], "required": true},
+    {"id": "handoff", "title": "CW-AIP handoff block", "aliases": ["cw-aip handoff", "handoff block", "cw-aip"]}
+  ],
+  "verdict": {
+    "tokens": ["GO", "NO-GO", "TEST", "DEFER", "NOT_RUN"],
+    "aliases": {"NO_GO": "NO-GO", "not run": "NOT_RUN", "NOT RUN": "NOT_RUN"},
+    "authorizing": ["GO"],
+    "primary": {"line": "^\\s*[-*]?\\s*\\**Council verdict\\**\\s*:"},
+    "json": [
+      {"rule": "envelope-verdict", "path": "payload.verdict", "when": {"type": "DecisionEnvelope"}},
+      {"rule": "envelope-verdict", "path": "payload.verdict", "when": {"type": "DecisionHandoff"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "rejected-envelope", "type": "items_matching", "section": "steps",
+     "pattern": "Validation:\\s*\\**(?:FAIL|REJECTED|NOT_VALIDATED|not validated|skipped)"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "archetype", "section": "plan",
+     "pattern": "\\b(?:research_then_council|research_then_operator|audit_then_release|competitive_then_council|orchestrated_goal|single_skill|disambiguate_only)\\b",
+     "message": "the plan names no archetype from scripts/orchestrate_kernel.py"},
+    {"type": "doc_require", "rule": "execution-mode", "section": "plan",
+     "pattern": "execution_mode[^\\n]*\\b(?:single_thread|isolated_subagents)\\b",
+     "message": "the plan does not state execution_mode (auto must say what it resolved to)"},
+    {"type": "doc_require", "rule": "execution-mode-resolved", "section": "result",
+     "pattern": "execution_mode[^\\n]*\\b(?:single_thread|isolated_subagents)\\b",
+     "message": "the workflow result does not state the resolved execution_mode"},
+    {"type": "doc_require", "rule": "result-envelopes", "section": "result",
+     "pattern": "envelopes?[^\\n:]*:\\s*\\S",
+     "message": "the workflow result lists no envelope IDs/hashes per step"},
+    {"type": "items_require", "rule": "step-skill-loaded", "section": "steps", "pattern": "SKILL\\.md",
+     "code": "CONTRACT_VIOLATION", "message": "a step does not say it loaded that skill's SKILL.md"},
+    {"type": "items_require", "rule": "step-envelope-type", "section": "steps",
+     "pattern": "Envelope(?: type)?:\\s*\\**(?:EvidenceEnvelope|DecisionHandoff|DecisionEnvelope|FindingEnvelope|SpecialistHandoff|SnapshotMetadata|ReleaseEnvelope|ContextEnvelope|ArtifactEnvelope|RoadmapEnvelope|none\\b|own output contract)",
+     "code": "CONTRACT_VIOLATION", "message": "a step names no CW-AIP envelope type"},
+    {"type": "items_require", "rule": "step-envelope-pointer", "section": "steps",
+     "pattern": "Envelope (?:ID|id|hash|pointer):\\s*`?\\S",
+     "code": "EVIDENCE_MISSING", "message": "a step gives no envelope ID or pointer to its output"},
+    {"type": "items_require", "rule": "step-protocol-version", "section": "steps",
+     "pattern": "protocol_version\\s*:?\\s*[12]\\.0",
+     "code": "FIELD_MISSING", "message": "a step does not record its envelope's protocol_version"},
+    {"type": "items_require", "rule": "step-validation", "section": "steps",
+     "pattern": "Validation:\\s*\\S",
+     "code": "CONTRACT_VIOLATION", "message": "a step does not say whether its envelope was validated"},
+    {"type": "items_forbid", "rule": "evidence-step-verdict", "section": "steps",
+     "when_item": "\\A[^\\n]*evidence-researcher", "pattern": "(?-i:\\b(?:GO|NO-GO|NO_GO)\\b)",
+     "code": "CONTRACT_VIOLATION",
+     "message": "the Evidence Researcher step issues a GO/NO-GO; that belongs to a separate ai-council step"}
+  ],
+  "ids": [
+    {"rule": "envelope-ids", "pattern": "\\b[a-z][a-z-]*:[A-Z][A-Za-z]+:[\\w.-]*\\w",
+     "defined_in": [{"json": "id", "when": {"protocol_version": "*"}}],
+     "refs_json": ["dependencies[*]", "payload.evidence_deps[*]"],
+     "defined_by": "no embedded CW-AIP envelope has that id"}
+  ]
+}

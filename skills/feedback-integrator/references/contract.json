@@ -136,10 +136,10 @@
     "index": {},
     "errors": {}
   },
-  "internal": [
-    "input",
-    "operation"
-  ],
+  "internal": {
+    "input": "eval case wrapper: the case-runner reads the payload from a case's input, never a payload key",
+    "operation": "eval case wrapper selecting validate or promotion, not part of a payload"
+  },
   "doc_terms": [],
   "evals": [
     {

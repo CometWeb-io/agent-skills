@@ -44,6 +44,20 @@ GATE_DEFAULTS = {
 }
 
 
+def _rejection(warning: Dict[str, str]) -> str:
+    """Phrase a scope-key warning as the rejection bootstrap makes of it.
+
+    The engine's warning says the key "was ignored", which is what an
+    assessment does; bootstrap refuses the context instead.
+    """
+    message = f"scope.{warning['key']} is not accepted"
+    if warning["key"] in engine.SCOPE_FLAG_KEYS:
+        message += ": risk flags belong under scope.risk_flags"
+    if warning.get("suggestion"):
+        message += f"; did you mean scope.{warning['suggestion']}?"
+    return message
+
+
 def build(context: Dict[str, Any]) -> Dict[str, Any]:
     if not isinstance(context, dict):
         raise engine.ManifestError("context must be a JSON object")
@@ -67,7 +81,7 @@ def build(context: Dict[str, Any]) -> Dict[str, Any]:
         # the same way: the engine reads flags only from `scope.risk_flags`.
         # Fail the way an invalid audience already does.
         raise engine.ManifestError(
-            "unrecognized scope keys: " + "; ".join(w["message"] for w in warnings)
+            "unrecognized scope keys: " + "; ".join(_rejection(w) for w in warnings)
             + "; valid risk flags (under scope.risk_flags) are " + ", ".join(engine.SCOPE_FLAG_KEYS)
         )
     scope, _, _, surfaces = engine._normalize_scope(raw_scope, profile)

@@ -161,7 +161,8 @@ def test_new_skill_passes_every_fast_gate_out_of_the_box(checkout_copy: Path) ->
     changed = {line[3:] for line in git(checkout_copy, "status", "--porcelain", "-uall").splitlines()}
     for expected in ("registry/skills.json", "registry/readme-catalog.json", "evals/routing/suite.json",
                      "registry/context-baseline.json", "registry/eval-strength.json", "README.md",
-                     "skills/scaffold-probe/SKILL.md", "skills/scaffold-probe/agents/openai.yaml"):
+                     "skills/scaffold-probe/SKILL.md", "skills/scaffold-probe/agents/openai.yaml",
+                     "evals/behavior/scaffold-probe/suite.json"):
         assert expected in changed, f"new_skill.py did not write {expected}"
 
     proc = subprocess.run([sys.executable, "-B", "tooling/check_all.py", "--fast"], cwd=checkout_copy,
@@ -195,7 +196,7 @@ def test_next_steps_name_every_placeholder_file_the_scaffold_writes(scaffolded: 
         assert (scaffolded / relative).is_file(), f"PLACEHOLDER_FILES names an unwritten file: {relative}"
         assert f"skills/scaffold-probe-skill/{relative}" in text
     assert "scaffold-probe-skill-scaffold-*" in text
-    assert "plugin_release.py --record" in text
+    assert "plugin_release.py --bump minor" in text
 
 
 def test_cli_prints_every_file_it_wrote(tmp_path: Path) -> None:
@@ -231,3 +232,19 @@ def test_every_file_stating_the_skill_count_is_generated() -> None:
     assert found, "pattern matched nothing; the count wording changed"
     generated = set(adapters.expected_artifacts(registry["skills"]))
     assert found <= generated, f"files repeat the skill count but are not generated: {sorted(found - generated)}"
+
+
+def test_scaffold_ships_the_untrusted_content_contract(scaffolded: Path) -> None:
+    """Every skill keeps the shared untrusted-content block on its front door and
+    tags it in tests/front-door-rules.json; a scaffold without them failed the
+    full suite on the day it was created."""
+    inventory = json.loads((scaffolded / "tests" / "front-door-rules.json").read_text(encoding="utf-8"))
+    assert inventory["skill"] == scaffolded.name
+    facets = {rule.get("facet") for rule in inventory["rules"]}
+    assert {"data-not-instructions", "no-embedded-execution", "no-exfiltration", "no-credential-entry",
+            "confirm-side-effects"} <= facets
+    skill_md = " ".join((scaffolded / "SKILL.md").read_text(encoding="utf-8").split())
+    assert "## Untrusted content" in (scaffolded / "SKILL.md").read_text(encoding="utf-8")
+    for rule in inventory["rules"]:
+        assert rule["where"] == "SKILL.md"
+        assert " ".join(rule["text"].split()) in skill_md, rule["id"]

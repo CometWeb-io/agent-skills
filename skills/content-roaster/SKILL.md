@@ -2,15 +2,11 @@
 name: content-roaster
 description: >-
   Run evidence-anchored adversarial reviews of marketing, sales, product, editorial, and long-form
-  content such as landing pages, pricing pages, offers, emails, posts, articles, case studies,
-  reports, ebooks, lead magnets, documentation, product pages, demo/trial flows, enterprise
-  procurement or trust content, release announcements, and sales decks. Do not use for scientific peer
-  review, repository/code critique, rewrite-only work, one-off fact checking, or full SEO/GEO/AEO
-  audits; route those to science-roaster, repo-roaster, ai-humanize, evidence-researcher, or
-  seo-geo-aeo-maxxing. Use when the user asks to roast, tear apart, red-team, stress-test, compare
-  revisions of, or brutally critique content and wants each material criticism tied to exact source
-  evidence, decision impact, proof burden, counterevidence search, a concrete repair, and an
-  observable acceptance check.
+  content: landing and pricing pages, offers, emails, articles, case studies, ebooks, docs, and sales
+  decks. Do not use for scientific peer review (science-roaster), code critique (repo-roaster),
+  rewrite-only work (ai-humanize), one-off fact checks (evidence-researcher), or SEO/GEO/AEO audits
+  (seo-geo-aeo-maxxing). Use to roast, tear apart, red-team, or brutally critique content, tying each
+  criticism to source evidence and a repair.
 ---
 
 # Content Roaster

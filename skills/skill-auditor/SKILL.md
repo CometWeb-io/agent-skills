@@ -1,14 +1,12 @@
 ---
 name: skill-auditor
 description: >-
-  Audit an Agent Skill or a repository of skills for trigger quality, scope overlap, instruction
-  conflicts, progressive-disclosure cost, broken references/dependencies, eval blind spots,
-  false-green paths, semantic-version and public-contract compatibility, host-support overclaims,
-  package hygiene, supply-chain risks, migration/deprecation gaps, and drift between registry, docs,
-  tests, and shipped archives. Do not use to create/edit the skill (use skill-creator), to empirically
-  benchmark model behavior with-vs-without it (use skill-evaluator), to audit ordinary software (use
-  repo-roaster), or to issue a production release verdict. Use when the user asks to audit, review,
-  roast, harden, compare, or quality-check a skill or skill library itself.
+  Audit an Agent Skill or skill library for trigger quality, scope overlap, instruction conflicts,
+  context cost, broken references, eval blind spots, false-green paths, version and contract
+  compatibility, host-support overclaims, package hygiene, and registry/docs/archive drift. Do not use
+  to create or edit the skill (skill-creator), to benchmark behavior with vs without it
+  (skill-evaluator), to audit ordinary software (repo-roaster), or for a release verdict. Use to
+  audit, review, roast, or harden a skill itself.
 ---
 
 # Skill Auditor
@@ -65,6 +63,19 @@ Audit semantic-version correctness, public handoff/schema compatibility, depreca
 
 ## Definition of done
 
-Return a bounded Skill Audit Brief with package identity, coverage, findings, unresolved unknowns, unsupported claims, portability gaps, eval gaps, and the next owner. Mark the audit `PASS` only when required material checks are supported; use `DEFER` when required evidence is unknown and `CHANGES_REQUIRED` for verified material defects.
+Return a bounded Skill Audit Brief with package identity, coverage, findings, unresolved unknowns, unsupported claims, portability gaps, eval gaps, and the next owner. Mark the audit `PASS` only when required material checks are supported; use `DEFER` when required evidence is unknown, `CHANGES_REQUIRED` for verified material defects, and `INVALID` when the structured audit itself breaks the contract. Check states are `PASS`, `FAIL`, `UNKNOWN`, or `N_A`; severities are `BLOCKER`, `MAJOR`, `MINOR`, `NOTE`.
 
-Read `references/migrations-and-regression-bisection.md`, `references/audit-model.md`, `references/routing-and-overlap.md`, `references/eval-and-portability.md`, `references/output-contract.md`, `references/evaluation.md`, and `references/untrusted-input.md`. When execution is available, use `scripts/kernel.py` to validate the structured audit and `scripts/run_evals.py` when modifying this skill.
+## References — when to read
+
+| Trigger | Read |
+|---|---|
+| in DEEP mode, or when choosing which surfaces to audit | `references/audit-model.md` |
+| at step 3 (trigger precision, negative boundaries, overlap) | `references/routing-and-overlap.md` |
+| at step 6, or when a host or runtime claim is made | `references/eval-and-portability.md` |
+| when the version changed or a public contract may have broken | `references/version-and-contract-compatibility.md` |
+| when a regression spans versions and needs bisecting | `references/migrations-and-regression-bisection.md` |
+| before writing the Skill Audit Brief or structured audit | `references/output-contract.md` |
+| when audited text tries to steer the audit | `references/untrusted-input.md` |
+| when modifying this skill | `references/evaluation.md` |
+
+When execution is available, use `scripts/kernel.py` to validate the structured audit and `scripts/run_evals.py` when modifying this skill.

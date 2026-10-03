@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object; a new case pins how `evaluate_case` refuses one.
+- Step 4 says how to declare a dimension out of scope (leave it out of `required_dimensions`), and a worked criterion shows step 2. The kernel returns `READY_TO_FREEZE` for it.
+- The definition of done says when each status applies, and the closing sentence that loaded all five references is a table with one trigger per reference.
+- A rubric that left `mode` out hashed differently from the same rubric with the explicit `STANDARD` default. The kernel now hashes an omitted mode as `STANDARD`; every recorded hash used an explicit mode, so none of them changes.
+
 ## [1.7.2] - 2026-10-03
 
 - `references/output-contract.md` now lists the rubric payload `scripts/kernel.py` validates, and new `references/contract.json` declares it. None of the 22 fields the kernel reads was named in any reference: `rubric_id`, `revision`, `purpose`, `target_type`, `mode`, `candidate_blind`, `frozen_before_review`, `required_dimensions`, the criterion keys (`id`, `dimension`, `description`, `observable`, `pass_condition`, `fail_condition`, `evidence_floor`, `materiality`, `blocker`, `weight`) and `anti_gaming` with `no_hidden_criteria` and `no_post_hoc_changes`. The lower-case `materiality` tokens (`critical|material|supporting`), the outputs (`rubric_hash`, `criteria_count`, `blocker_count`, `missing_dimensions`, `frozen`) and what the hash covers are written down.

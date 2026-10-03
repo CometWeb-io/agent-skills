@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -65,6 +66,17 @@ class OrchestrateKernelTests(unittest.TestCase):
                 self.assertEqual(set(step), {"skill", "purpose", "envelope_out", "read_skill"})
                 if step["envelope_out"] is not None:
                     self.assertIn(step["envelope_out"], orchestrate_kernel.ENVELOPE_TYPES)
+
+
+    def test_blank_goal_is_a_usage_error_not_a_traceback(self) -> None:
+        for goal in ("   ", "\t\n"):
+            proc = subprocess.run(
+                [sys.executable, str(ROOT / "scripts" / "orchestrate_kernel.py"), goal],
+                capture_output=True, text=True, check=False,
+            )
+            self.assertEqual(proc.returncode, 2, proc.stderr)
+            self.assertNotIn("Traceback", proc.stderr)
+            self.assertIn("goal is required", proc.stderr)
 
 
 if __name__ == "__main__":

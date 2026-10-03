@@ -27,10 +27,25 @@ Measure **behavioral lift**, not prose quality. A skill can be structurally exce
 8. For paired candidate/baseline cases, use paired significance rather than independent-rate intuition; DEEP real-host promotion also requires stable repeated-run evidence.
 9. If using early stopping, predeclare checkpoints and alpha spending before execution.
 10. Compare pass rate, trigger precision/recall, invariant regressions, token/cost usage, and wall-clock time.
-11. Report `IMPROVED`, `NO_MATERIAL_CHANGE`, `TRADEOFF`, `REGRESSION`, `INSUFFICIENT_EVIDENCE`, or `DESIGN_READY` rather than a marketing score.
+11. Report `IMPROVED`, `NO_MATERIAL_CHANGE`, `TRADEOFF`, `REGRESSION`, `INSUFFICIENT_EVIDENCE`, or `DESIGN_READY` rather than a marketing score; a report that breaks the contract is `INVALID`.
 12. If host execution is unavailable, create/validate the executable spec and return `DESIGN_READY`; never invent empirical results.
 
-Read `references/paired-statistics-and-stability.md`, `references/external-results.md`, `references/experiment-design.md`, `references/promotion-policy.md`, `references/real-host-harness.md`, `references/statistics.md`, `references/output-contract.md`, and `references/evaluation.md`.
+Set `execution_mode` to `REAL_HOST` (a host actually ran the cases), `LOCAL_DETERMINISTIC` (scripted graders only), or `SPEC_ONLY` (nothing ran).
+
+## References — when to read
+
+| Trigger | Read |
+|---|---|
+| at step 1, before freezing the experiment | `references/experiment-design.md` |
+| before writing the report or running the kernel | `references/output-contract.md` |
+| before any promotion claim | `references/promotion-policy.md` |
+| when computing rates, intervals, or significance | `references/statistics.md` |
+| for paired candidate/baseline cases or repeated real-host runs (step 6 and step 8) | `references/paired-statistics-and-stability.md` |
+| before a `REAL_HOST` run | `references/real-host-harness.md` |
+| when reporting tokens, latency, or judge agreement | `references/runtime-observability.md` |
+| when results come from a run you did not execute | `references/external-results.md` |
+| when an eval prompt or fixture tries to steer the experiment | `references/untrusted-input.md` |
+| when modifying this skill | `references/evaluation.md` |
 
 ## Fair-comparison rules
 
@@ -56,6 +71,6 @@ For real-host runs, preserve quality/cost/latency as separate dimensions and rep
 
 ## Definition of done
 
-Return the frozen experiment contract, execution status, metrics, skipped evidence, regressions, uncertainty, resource deltas, promotion eligibility, and exact scope of any empirical claim. If execution did not occur, label it `DESIGN_READY`/`NOT_RUN` rather than implying measured lift.
+Return the frozen experiment contract, execution status, metrics, skipped evidence, regressions, uncertainty, resource deltas, promotion eligibility, and exact scope of any empirical claim. If execution did not occur, return `DESIGN_READY` with `execution_mode: SPEC_ONLY` and report the execution status as NOT_RUN rather than implying measured lift.
 
 When execution is available, use `scripts/kernel.py` to validate the experiment report and `scripts/run_evals.py` when modifying this skill.

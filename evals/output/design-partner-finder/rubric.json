@@ -1,0 +1,66 @@
+{
+  "skill": "design-partner-finder",
+  "contract": "skills/design-partner-finder/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "learning-contract", "title": "Learning Contract", "aliases": ["learning contract"], "required": true},
+    {"id": "evidence-readiness", "title": "Evidence readiness", "aliases": ["evidence readiness"], "required": true},
+    {"id": "shortlist", "title": "Research-stage shortlist", "aliases": ["research-stage shortlist", "research stage shortlist", "shortlist"]},
+    {"id": "dossiers", "title": "Candidate dossiers", "aliases": ["candidate dossiers?"]},
+    {"id": "observed", "title": "Observed / confirmed evidence", "aliases": ["observed / confirmed evidence", "observed/confirmed evidence"], "label": true},
+    {"id": "inference", "title": "Inference", "aliases": ["inference"], "label": true},
+    {"id": "live-readiness", "title": "Live Partner Readiness", "aliases": ["live partner readiness"]},
+    {"id": "cohort", "title": "Cohort portfolio", "aliases": ["cohort portfolio"]},
+    {"id": "rejections", "title": "Rejections and near misses", "aliases": ["rejections"]},
+    {"id": "review", "title": "Activation / review output", "aliases": ["activation / review", "activation/review", "review output"],
+     "required_when_verdict": ["CONTINUE", "REPAIR", "PAUSE", "EXIT_REVIEW", "CONVERSION_CANDIDATE"]},
+    {"id": "reproducibility", "title": "Reproducibility", "aliases": ["reproducibility"]}
+  ],
+  "verdict": {
+    "tokens": ["CONTINUE", "REPAIR", "PAUSE", "EXIT_REVIEW", "CONVERSION_CANDIDATE"],
+    "authorizing": ["CONTINUE", "CONVERSION_CANDIDATE"],
+    "required": false,
+    "primary": {"line": "^\\s*[-*]?\\s*\\**Lifecycle state\\**\\s*:"}
+  },
+  "checks": [
+    {"type": "doc_require", "rule": "as-of", "pattern": "\\bas[- ]of\\b\\W{0,6}\\d{4}-\\d{2}-\\d{2}",
+     "message": "the output has no as-of date/time (Reproducibility)"},
+    {"type": "section_count", "rule": "research-stage-partner-ready", "section": "shortlist", "min": 0, "max": 0,
+     "pattern": "\\bPARTNER_READY\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a research-stage shortlist cannot label a company PARTNER_READY"},
+    {"type": "section_count", "rule": "dossier-partner-ready", "section": "dossiers", "min": 0, "max": 0,
+     "pattern": "^#{2,6}\\s[^\\n]*\\bPARTNER_READY\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a candidate dossier carries a Stage A status; PARTNER_READY needs live Stage B evidence"},
+    {"type": "items_require", "rule": "observed-lineage", "section": "observed",
+     "pattern": "(?:\\d{4}-\\d{2}-\\d{2}|date unavailable)[\\s\\S]*—\\s*\\S", "code": "EVIDENCE_MISSING",
+     "message": "an observed/confirmed fact has no date (or 'date unavailable') and source"},
+    {"type": "items_require", "rule": "rejection-evidence", "section": "rejections", "none_pattern": "^none\\b",
+     "pattern": "Evidence:\\s*\\S", "code": "EVIDENCE_MISSING",
+     "message": "a rejection or near miss does not name the evidence that caused it"},
+    {"type": "items_require", "rule": "rejection-reconsider", "section": "rejections", "none_pattern": "^none\\b",
+     "pattern": "Reconsider", "code": "CONTRACT_VIOLATION",
+     "message": "a rejection or near miss does not say what change would justify reconsideration"},
+    {"type": "doc_require", "rule": "next-review-date", "section": "review",
+     "when_verdict": ["CONTINUE", "REPAIR", "PAUSE", "EXIT_REVIEW", "CONVERSION_CANDIDATE"],
+     "pattern": "next review date\\W{0,6}\\d{4}-\\d{2}-\\d{2}",
+     "message": "an activation/review output has no next review date"},
+    {"type": "doc_forbid", "rule": "unsupported-readiness-claim",
+     "pattern": "\\b(?:is|are|seems?|appears?|very)\\s+interested\\b|\\bready to buy\\b|\\bwill convert\\b|\\bagreed to (?:partner|be (?:a|our) (?:design )?partner)\\b|\\b(?:is|are|has|have) committed\\b",
+     "message": "the contract's honest-language list rules out interest, commitment or readiness claims that were not directly confirmed"},
+    {"type": "doc_forbid", "rule": "unauthorized-external-action", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\b(?:I|we) (?:sent|emailed|messaged)\\b[^.\\n]{0,40}\\b(?:outreach|intro(?:duction)?|email|message)\\b|\\b(?:I|we) (?:updated|created|changed)\\b[^.\\n]{0,20}\\bCRM\\b",
+     "message": "outreach and CRM changes stay gated behind explicit authorization"}
+  ],
+  "ids": [
+    {"rule": "hypothesis-ids", "pattern": "\\bH\\d+\\b",
+     "defined_in": [{"section": "learning-contract", "as": "list_lead"}],
+     "defined_by": "the Learning Contract defines no hypothesis with that ID"}
+  ],
+  "sidecars": [
+    {"rule": "research-score", "detect": {"equals": {"stage": "research"}},
+     "validator": "skills/design-partner-finder/scripts/score_candidate.py", "function": "score_research"},
+    {"rule": "partner-health", "detect": {"has_keys": ["partner", "ratings"]},
+     "validator": "skills/design-partner-finder/scripts/assess_partner_health.py", "function": "assess",
+     "recompute": {"result": "status"}}
+  ]
+}

@@ -1,0 +1,1586 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "longform-publisher",
+  "description": "Offline behavior of scripts/publication_kernel.py subcommands in the order references/report-contract.md documents, on the bundled example report and variants of it.",
+  "cases": [
+    {
+      "id": "release-ready-example-validates",
+      "kind": "accept",
+      "behavior": "A release-ready report whose gates, sources and claims are consistent is admitted with OK.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/publication-report.json"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "BUILD",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "RESEARCH_EXPAND",
+            "authorized_source_ids": [
+              "src-1"
+            ]
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": true,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "SUPPORTED",
+              "evidence_refs": [
+                "src-1"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "OK\n"
+        ]
+      }
+    },
+    {
+      "id": "stage-inflation-refused",
+      "kind": "refuse",
+      "behavior": "Declaring RELEASE_READY while claims are not reconciled is refused as stage inflation.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/publication-report.json"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "BUILD",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "RESEARCH_EXPAND",
+            "authorized_source_ids": [
+              "src-1"
+            ]
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": false,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "SUPPORTED",
+              "evidence_refs": [
+                "src-1"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "stdout_contains": [
+          "STAGE_INFLATION\n"
+        ],
+        "stdout_absent": [
+          "OK"
+        ]
+      }
+    },
+    {
+      "id": "material-fact-without-support-refused",
+      "kind": "refuse",
+      "behavior": "A material FACT that is unresolved and cites an unregistered source is refused for both reasons.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/publication-report.json"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "BUILD",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "RESEARCH_EXPAND",
+            "authorized_source_ids": [
+              "src-1"
+            ]
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": true,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "UNRESOLVED",
+              "evidence_refs": [
+                "src-9"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "stdout_contains": [
+          "EVIDENCE_REF_UNRESOLVED\nMATERIAL_CLAIM_UNSUPPORTED\n"
+        ],
+        "stdout_absent": [
+          "OK"
+        ]
+      }
+    },
+    {
+      "id": "source-bound-unauthorized-source-refused",
+      "kind": "refuse",
+      "behavior": "In SOURCE_BOUND mode a source missing from the authorized list is refused.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/publication-report.json"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "SOURCE_BOUND",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "SOURCE_BOUND",
+            "authorized_source_ids": []
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": true,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "SUPPORTED",
+              "evidence_refs": [
+                "src-1"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "stdout_contains": [
+          "SOURCE_BOUND_UNAUTHORIZED_SOURCE\n"
+        ]
+      }
+    },
+    {
+      "id": "critical-gap-blocks-release",
+      "kind": "refuse",
+      "behavior": "An open CRITICAL gap blocks a report that claims release readiness.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/publication-report.json"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "BUILD",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "RESEARCH_EXPAND",
+            "authorized_source_ids": [
+              "src-1"
+            ]
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": true,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "SUPPORTED",
+              "evidence_refs": [
+                "src-1"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [
+            {
+              "id": "g1",
+              "materiality": "CRITICAL",
+              "status": "OPEN"
+            }
+          ],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "stdout_contains": [
+          "CRITICAL_GAP_OPEN\n"
+        ]
+      }
+    },
+    {
+      "id": "report-not-an-object",
+      "kind": "boundary",
+      "behavior": "A report file that is a JSON list returns an error code instead of crashing.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/publication-report.json"
+      ],
+      "files": {
+        "publication-report.json": []
+      },
+      "expect": {
+        "exit_code": 1,
+        "stdout_contains": [
+          "REPORT_NOT_AN_OBJECT\n"
+        ]
+      }
+    },
+    {
+      "id": "manuscript-matches-master",
+      "kind": "accept",
+      "behavior": "The locked manuscript matches the master hash, keeps protected facts and carries the required citation marker.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "check-manuscript",
+        "--report-json",
+        "{tmp}/publication-report.json",
+        "--manuscript-file",
+        "{tmp}/manuscript.md"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "BUILD",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "RESEARCH_EXPAND",
+            "authorized_source_ids": [
+              "src-1"
+            ]
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": true,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "SUPPORTED",
+              "evidence_refs": [
+                "src-1"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        },
+        "manuscript.md": "# Practical Publication Workflow\n\nIn 2026, a canonical manuscript can reduce duplicated editorial work when DOCX, PDF, and HTML are treated as derived outputs rather than separate sources of truth [1].\n\nThe publication should preserve claim scope, citations, protected facts, and format lineage through every substantial edit.\n"
+      },
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "OK\n"
+        ]
+      }
+    },
+    {
+      "id": "edited-manuscript-drifts",
+      "kind": "refuse",
+      "behavior": "A manuscript edited after locking fails on the master hash and on the dropped citation marker.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "check-manuscript",
+        "--report-json",
+        "{tmp}/publication-report.json",
+        "--manuscript-file",
+        "{tmp}/manuscript.md"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "BUILD",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "RESEARCH_EXPAND",
+            "authorized_source_ids": [
+              "src-1"
+            ]
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": true,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "SUPPORTED",
+              "evidence_refs": [
+                "src-1"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        },
+        "manuscript.md": "# Practical Publication Workflow\n\nIn 2026, a canonical manuscript can reduce duplicated editorial work when DOCX, PDF, and HTML are treated as derived outputs rather than separate sources of truth.\n\nThe publication should preserve claim scope, citations, protected facts, and format lineage through every substantial edit.\n"
+      },
+      "expect": {
+        "exit_code": 1,
+        "stdout_contains": [
+          "MASTER_HASH_MISMATCH\nCITATION_MARKER_MISSING\n"
+        ],
+        "stdout_absent": [
+          "PROTECTED_FACT_MISSING"
+        ]
+      }
+    },
+    {
+      "id": "pdf-without-visual-qa",
+      "kind": "refuse",
+      "behavior": "A derived PDF cannot skip visual QA even when parity passes.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "check-derived",
+        "--report-json",
+        "{tmp}/publication-report.json"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "BUILD",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "RESEARCH_EXPAND",
+            "authorized_source_ids": [
+              "src-1"
+            ]
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": true,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "SUPPORTED",
+              "evidence_refs": [
+                "src-1"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            },
+            {
+              "id": "pdf1",
+              "format": "PDF",
+              "path": "publication.pdf",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "stdout_contains": [
+          "VISUAL_QA_REQUIRED\n"
+        ],
+        "stdout_absent": [
+          "DERIVED_PARITY_FAILED"
+        ]
+      }
+    },
+    {
+      "id": "brief-matches-report",
+      "kind": "accept",
+      "behavior": "A brief rendered from the report passes check-brief.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "check-brief",
+        "--report-json",
+        "{tmp}/publication-report.json",
+        "--brief-file",
+        "{tmp}/publication-brief.md"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "BUILD",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "RESEARCH_EXPAND",
+            "authorized_source_ids": [
+              "src-1"
+            ]
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": true,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "SUPPORTED",
+              "evidence_refs": [
+                "src-1"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        },
+        "publication-brief.md": "Stan: READY — Canonical master and required HTML artifact passed current release gates.\n\nPUBLICATION SUMMARY\n\n| Field | Value |\n| --- | --- |\n| Publication | Practical Publication Workflow |\n| Type | EBOOK |\n| Mode | BUILD |\n| Master | manuscript.md @ 1.0.0 |\n| Derived | HTML |\n\nCURRENT STAGE\n\n- RELEASE_READY\n\nNEXT MILESTONE\n\n- Publish the release-ready artifact to the approved destination. — Done: A publication event is evidenced and the stage can move to PUBLISHED.\n"
+      },
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "OK\n"
+        ]
+      }
+    },
+    {
+      "id": "hand-edited-brief-mismatch",
+      "kind": "refuse",
+      "behavior": "A brief edited by hand after rendering no longer matches the report.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "check-brief",
+        "--report-json",
+        "{tmp}/publication-report.json",
+        "--brief-file",
+        "{tmp}/publication-brief.md"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "BUILD",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "RESEARCH_EXPAND",
+            "authorized_source_ids": [
+              "src-1"
+            ]
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": true,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "SUPPORTED",
+              "evidence_refs": [
+                "src-1"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        },
+        "publication-brief.md": "Stan: READY — Canonical master and required HTML artifact passed current release gates.\n\nPUBLICATION SUMMARY\n\n| Field | Value |\n| --- | --- |\n| Publication | Practical Publication Workflow |\n| Type | EBOOK |\n| Mode | BUILD |\n| Master | manuscript.md @ 1.0.0 |\n| Derived | HTML |\n\nCURRENT STAGE\n\n- PUBLISHED\n\nNEXT MILESTONE\n\n- Publish the release-ready artifact to the approved destination. — Done: A publication event is evidenced and the stage can move to PUBLISHED.\n"
+      },
+      "expect": {
+        "exit_code": 1,
+        "stdout_contains": [
+          "BRIEF_MISMATCH\n"
+        ]
+      }
+    },
+    {
+      "id": "render-manifest-writes-brief",
+      "kind": "accept",
+      "behavior": "render-manifest writes the brief file and reports OK.",
+      "run": [
+        "scripts/publication_kernel.py",
+        "render-manifest",
+        "--report-json",
+        "{tmp}/publication-report.json",
+        "--output",
+        "{tmp}/publication-brief.md"
+      ],
+      "files": {
+        "publication-report.json": {
+          "protocol_version": "longform-publisher/1",
+          "as_of": "2026-09-10T21:00:00+02:00",
+          "mode": "BUILD",
+          "status": "READY",
+          "status_reason": "Canonical master and required HTML artifact passed current release gates.",
+          "publication": {
+            "id": "example-pub",
+            "title": "Practical Publication Workflow",
+            "type": "EBOOK",
+            "audience": "Content and product teams",
+            "objective": "Explain a canonical-master publication workflow."
+          },
+          "source_policy": {
+            "mode": "RESEARCH_EXPAND",
+            "authorized_source_ids": [
+              "src-1"
+            ]
+          },
+          "sources": [
+            {
+              "id": "src-1",
+              "system": "USER",
+              "locator": "example fixture",
+              "authorized": true,
+              "freshness": "CURRENT",
+              "observed_at": "2026-09-10T20:50:00+02:00"
+            }
+          ],
+          "lifecycle": {
+            "brief_complete": true,
+            "sources_admitted": true,
+            "outline_locked": true,
+            "draft_complete": true,
+            "claims_reconciled": true,
+            "edited_complete": true,
+            "master_locked": true,
+            "release_ready": true
+          },
+          "current_stage": "RELEASE_READY",
+          "canonical_master": {
+            "path": "manuscript.md",
+            "version": "1.0.0",
+            "sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374"
+          },
+          "sections": [
+            {
+              "id": "s1",
+              "heading": "Practical Publication Workflow",
+              "status": "COMPLETE"
+            }
+          ],
+          "claim_uses": [
+            {
+              "id": "c1",
+              "section_id": "s1",
+              "claim_text": "A canonical manuscript can reduce duplicated editorial work when formats are derived.",
+              "materiality": "MATERIAL",
+              "claim_kind": "FACT",
+              "support_status": "SUPPORTED",
+              "evidence_refs": [
+                "src-1"
+              ],
+              "citation_state": "REQUIRED",
+              "citation_marker": "[1]",
+              "volatile_current": false,
+              "freshness_state": "CURRENT"
+            }
+          ],
+          "protected_facts": [
+            {
+              "id": "p1",
+              "value": "2026",
+              "required": true
+            },
+            {
+              "id": "p2",
+              "value": "canonical manuscript",
+              "required": true
+            }
+          ],
+          "fidelity": {
+            "required": false,
+            "passed": true,
+            "checked_at": "2026-09-10T20:55:00+02:00"
+          },
+          "edit_history": [],
+          "unresolved_gaps": [],
+          "derived_artifacts": [
+            {
+              "id": "html1",
+              "format": "HTML",
+              "path": "publication.html",
+              "master_sha256": "e0941a90c522c5b30f12f103aad0daacfaa9ef028dd6c8aaac083df0d72a5374",
+              "generation_status": "COMPLETE",
+              "qa_required": false,
+              "qa_status": "NOT_REQUIRED",
+              "parity_status": "PASS",
+              "direct_material_edit": false
+            }
+          ],
+          "publication_evidence": [],
+          "actions": {
+            "blockers": [],
+            "verify_now": [],
+            "decision_now": [],
+            "now": [],
+            "next_milestone": [
+              {
+                "id": "nm1",
+                "action": "Publish the release-ready artifact to the approved destination.",
+                "done_when": "A publication event is evidenced and the stage can move to PUBLISHED."
+              }
+            ],
+            "delegate": [],
+            "waiting": [],
+            "stop": []
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "OK\n"
+        ]
+      }
+    }
+  ]
+}

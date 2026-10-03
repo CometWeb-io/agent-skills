@@ -1,0 +1,81 @@
+{
+  "skill": "science-roaster",
+  "contract": "skills/science-roaster/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "claims", "title": "What the paper actually claims", "aliases": ["what the paper"], "required": true},
+    {"id": "first-attack", "title": "First thing Reviewer #2 attacks", "aliases": ["first thing"], "required_when_verdict": ["MATERIAL_FINDINGS"]},
+    {"id": "findings", "title": "Fatal / major / minor findings", "aliases": ["fatal / major / minor", "findings"], "required": true},
+    {"id": "mismatches", "title": "Claim-evidence / validity mismatches", "aliases": ["claim-evidence", "validity mismatches"], "required": true},
+    {"id": "root-causes", "title": "Root causes", "aliases": ["root causes"]},
+    {"id": "verification-queue", "title": "External verification queue", "aliases": ["external verification"], "required": true},
+    {"id": "revision-ledger", "title": "Revision ledger", "aliases": ["revision ledger"]},
+    {"id": "survives", "title": "What survives / minimal surviving claim", "aliases": ["what survives", "minimal surviving claim"], "required": true},
+    {"id": "core-fix", "title": "Core scientific fix", "aliases": ["core scientific fix", "core fix"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["MATERIAL_FINDINGS", "NO_MATERIAL_FINDINGS", "INSUFFICIENT_EVIDENCE"],
+    "authorizing": ["NO_MATERIAL_FINDINGS", "INSUFFICIENT_EVIDENCE"],
+    "required": false,
+    "primary": {"line": "^\\s*[-*]?\\s*\\**(?:Review )?Outcome\\**\\s*:"},
+    "json": [
+      {"rule": "sidecar-outcome", "path": "review_outcome", "when": {"schema": "cometweb.science-roaster/v6"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "listed-finding", "type": "section_items", "section": "findings", "none_pattern": "^none\\b"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "artifact-pin", "pattern": "^\\s*[-*]?\\s*Artifact:\\s*\\S",
+     "message": "the report has no 'Artifact:' line naming the reviewed artifact and version"},
+    {"type": "doc_require", "rule": "mode", "pattern": "\\bMode:\\s*(?:FULL|QUICK|REVIEWER_2|REVISION)\\b",
+     "message": "the report does not state its mode (FULL | QUICK | REVIEWER_2 | REVISION)"},
+    {"type": "doc_forbid", "rule": "revision-ledger", "code": "SECTION_MISSING",
+     "pattern": "(?s)\\A(?!.*^#{1,6}\\s*(?:\\d+[.)]\\s*)?Revision ledger).*\\bMode:\\s*REVISION\\b",
+     "message": "a REVISION review needs the Revision ledger section"},
+    {"type": "items_require", "rule": "finding-anchor", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "Anchor:\\s*\\S", "code": "EVIDENCE_MISSING", "message": "a finding has no source anchor"},
+    {"type": "items_require", "rule": "finding-evidence", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "\\bEV-\\d+\\b", "code": "EVIDENCE_MISSING", "message": "a finding cites no evidence ref (EV-NN)"},
+    {"type": "items_require", "rule": "severity", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "\\A[^\\n]*\\b(?:FATAL|MAJOR|MINOR)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a finding heading carries no severity (FATAL | MAJOR | MINOR)"},
+    {"type": "items_require", "rule": "evidence-state", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "Evidence state:\\s*`?(?:OBSERVED|NOT_REPORTED|INFERRED|EXTERNAL_VERIFIED)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a finding has no evidence state (OBSERVED | NOT_REPORTED | INFERRED | EXTERNAL_VERIFIED)"},
+    {"type": "items_require", "rule": "fatal-admission", "section": "findings",
+     "when_item": "\\A[^\\n]*\\bFATAL\\b", "pattern": "repair level:?\\s*`?(?:REANALYSIS|NEW_DATA|REDESIGN)\\b",
+     "code": "CONTRACT_VIOLATION", "message": "FATAL requires a repair level that changes the analysis, data or design (REANALYSIS | NEW_DATA | REDESIGN)"},
+    {"type": "items_require", "rule": "falsifier", "section": "findings",
+     "when_item": "\\A[^\\n]*\\b(?:FATAL|MAJOR)\\b", "pattern": "Falsifier",
+     "code": "CONTRACT_VIOLATION", "message": "a FATAL or MAJOR finding records no falsifier pass"},
+    {"type": "items_require", "rule": "verification", "section": "findings", "none_pattern": "^none\\b",
+     "pattern": "Verification:\\s*\\S", "code": "CONTRACT_VIOLATION", "message": "a finding has no verification contract"},
+    {"type": "doc_forbid", "rule": "not-reported-as-not-done",
+     "pattern": "\\b(?:clearly|obviously|evidently)\\s+(?:did not|didn't|never|failed to)\\b",
+     "message": "NOT_REPORTED never means NOT_DONE; say the method is not reported and what cannot be assessed"},
+    {"type": "doc_forbid", "rule": "personal-attack",
+     "pattern": "\\b(?:authors?|researchers?|you|team)\\b.{0,40}\\b(?:stupid|idiot|moron|lazy|incompetent|clueless|fraud|dishonest)\\b",
+     "message": "attack the inference, not the people"}
+  ],
+  "ids": [
+    {"rule": "finding-ids", "pattern": "\\bSR-\\d{3}\\b",
+     "defined_in": [{"section": "findings", "as": "subheading"}],
+     "refs_json": ["findings[*].id", "outcome_basis.surviving_finding_ids[*]"],
+     "defined_by": "no '### SR-NNN' finding with that ID is in the findings section"},
+    {"rule": "claim-ids", "pattern": "\\bCL-\\d+\\b",
+     "defined_in": [{"section": "claims", "as": "list_lead"}],
+     "refs_json": ["claim_map[*].id", "claim_survival[*].claim_ref", "inferential_claim_ledger[*].claim_ref"],
+     "defined_by": "the claims section declares no claim with that ID"},
+    {"rule": "evidence-ids", "pattern": "\\bEV-\\d+\\b",
+     "defined_in": [{"json": "evidence_register[*].id", "when": {"schema": "cometweb.science-roaster/v6"}}],
+     "defined_by": "the v6 evidence_register has no entry with that ID"},
+    {"rule": "queue-ids", "pattern": "\\bXV-\\d+\\b",
+     "defined_in": [{"json": "external_verification_queue[*].id", "when": {"schema": "cometweb.science-roaster/v6"}}],
+     "defined_by": "the v6 external_verification_queue has no entry with that ID"}
+  ],
+  "sidecars": [
+    {"rule": "science-roast-v6", "detect": {"equals": {"schema": "cometweb.science-roaster/v6"}},
+     "validator": "skills/science-roaster/scripts/validate_review.py", "function": "validate"}
+  ]
+}

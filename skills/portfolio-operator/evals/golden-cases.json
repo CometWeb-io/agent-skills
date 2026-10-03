@@ -1630,5 +1630,70 @@
       "must_do[0]: commitment_type 'hard-external' is not one of hard_external, hard_internal, strategic, optional",
       "must_do[0]: scope_level 'Portfolio' is not one of portfolio, specialist"
     ]
+  },
+  {
+    "name": "future gates are scored down by the same penalty, pinned per item",
+    "kind": "ranking",
+    "items": [
+      {
+        "id": "gate-a",
+        "future_gate": true,
+        "commitment_type": "optional",
+        "effort_class": "S",
+        "goal_alignment": 2
+      },
+      {
+        "id": "gate-b",
+        "future_gate": true,
+        "commitment_type": "strategic",
+        "effort_class": "M"
+      }
+    ],
+    "expected_first": "gate-b",
+    "expected_scores": {
+      "gate-b": -18.0,
+      "gate-a": -25.0
+    }
+  },
+  {
+    "name": "a delegation with no delegate is refused even when user-defined",
+    "kind": "validation",
+    "report": {
+      "protocol_version": "1.0",
+      "capacity": {
+        "source": "unknown"
+      },
+      "now": [],
+      "delegate": [
+        {
+          "id": "copy",
+          "action": "Draft the launch email",
+          "question": "Which offer goes first?",
+          "return_contract": "one approved draft",
+          "user_defined": true
+        }
+      ],
+      "waiting": [],
+      "pause_drop": [],
+      "next": [],
+      "capacity_conflicts": [],
+      "must_do": [
+        {
+          "id": "client",
+          "action": "Finish the client migration",
+          "commitment_type": "hard_external",
+          "scope_level": "portfolio",
+          "done_when": "Cutover verified",
+          "evidence": [
+            "crm:deal-1"
+          ]
+        }
+      ]
+    },
+    "expected_valid": false,
+    "expected_errors": [
+      "delegate[0].delegate_to is required",
+      "delegate[0] violates delegate reality gate: external person/agent/system requires delegate_evidence_ref or user_defined=true; otherwise use delegate_candidate or pause"
+    ]
   }
 ]

@@ -263,13 +263,13 @@
     "skill_evaluation_result": {},
     "rollout_status": {}
   },
-  "internal": [
-    "input",
-    "artifact-acceptance",
-    "benchmark-curator",
-    "rubric-designer",
-    "skill-evaluator"
-  ],
+  "internal": {
+    "input": "eval case wrapper: the case-runner reads the payload from a case's input, never a payload key",
+    "artifact-acceptance": "skill id the kernel looks up in its own stage index",
+    "benchmark-curator": "skill id the kernel looks up in its own stage index",
+    "rubric-designer": "skill id the kernel looks up in its own stage index",
+    "skill-evaluator": "skill id the kernel looks up in its own stage index"
+  },
   "doc_terms": [],
   "evals": [
     {

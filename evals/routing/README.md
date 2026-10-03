@@ -189,14 +189,14 @@ A case passes when the primary skill equals `expected_primary_skill` and no
 `must_not_trigger` skill is primary or a candidate, the same rule
 `run_routing_evals.py` applies.
 
-| Holdout 1.0.0 (144 cases) | Baseline | After round 4 |
-| --- | ---: | ---: |
-| Overall | 93 (64.6%) | 112 (77.8%) |
-| Positive (100) | 60 | 76 |
-| Near-miss (26) | 15 | 18 |
-| No skill (18) | 18 | 18 |
-| English (100) | 58 | 73 |
-| Polish (44) | 35 | 39 |
+| Holdout 1.0.0 (144 cases) | Baseline | After round 4 | Round 5, lexical ranker |
+| --- | ---: | ---: | ---: |
+| Overall | 93 (64.6%) | 112 (77.8%) | 132 (91.7%) |
+| Positive (100) | 60 | 76 | 92 |
+| Near-miss (26) | 15 | 18 | 22 |
+| No skill (18) | 18 | 18 | 18 |
+| English (100) | 58 | 73 | 91 |
+| Polish (44) | 35 | 39 | 41 |
 
 The round-4 column is the second of two reads, both in the lock's log. The
 first (113/144) came before two signal changes that pinned policy tests
@@ -210,6 +210,76 @@ was smaller than on the batch being tuned: the second batch routed 38/68 on the 
 and 42/68 on the first round's signals, the third 22/44 and 28/44 on the
 signals written before it. Expect the next unseen set to land nearer those
 numbers than the 100% the tuned sets now show.
+
+## Lexical ranker
+
+Regex signals generalize weakly: each round of them lifted the batch being
+tuned far more than the next unseen one. `registry/routing-policy.json` →
+`lexical` adds a deterministic, standard-library BM25 ranker that only acts
+where the signals have nothing to say.
+
+What it reads, per active skill: the description (sentences starting "Do not
+use…" count against the skill, since they name its neighbours), `owns`,
+`trigger_examples`, and a curated English and Polish `lexicon`. Single-word
+lexicon entries and the word pairs of multi-word entries carry the lexicon
+weight; the loose words of a phrase count like description words, so "go live"
+does not make every "go" a release request. `does_not_own` and
+`negative_trigger_examples` are subtracted. Words are casefolded and
+accent-stripped like the prompt, stopwords dropped, two inflectional endings
+stripped and the rest truncated to `stem_chars` (6), which is what lets
+"konkurencja" and "konkurencji", or "competitor" and "competitors", meet.
+
+When it decides:
+
+1. Only when the signal result is `no_skill` or `ambiguous`. An invocation, a
+   detected sequence, or a single signal winner is never revisited.
+2. Blocked skills are not ranked: explicit-only skills such as the Council,
+   excluded skills and guarded skills stay out.
+3. It reads the negation-masked, untrusted-blanked text the signals read.
+4. It abstains on prompts matching an `abstain` pattern: conceptual questions
+   ("explain…", "what is…", "co to jest…"), and tool or code chores (git,
+   docker, SQL, "write unit tests for…").
+5. A skill competes only with at least `min_terms` (3) distinct concepts; a
+   matched word pair absorbs the words it is made of, so one strong phrase
+   ("tear down", "quality loop", "design partner") neither wins nor blocks a
+   winner. A per-skill `veto` phrase withdraws a skill outright ("paying down"
+   debt is not a whole-project roadmap; "use this rubric" is not rubric design).
+6. The best competing skill needs `min_score` (8), a lead of `min_margin` and a
+   ratio of `min_ratio` over the next competing skill.
+7. On a near-tie it only picks among the tied candidates, and keeps the result
+   `ambiguous` when any other candidate has more than one concept of its own:
+   "a roadmap from scratch and what to do this week" is two requests.
+
+A result the ranker decided carries `"decided_by": "lexical"`, the ranked
+skills, and (with a near-tie) the original `signal_candidates`.
+`route_skill.py --explain` shows every matched signal, the negated spans, the
+abstain pattern that fired and each top skill's per-term contributions;
+`--lexical` / `--no-lexical` override `enabled` for one call. With `enabled:
+false` the router returns exactly what it returned before the block existed;
+`tooling/tests/test_routing_lexical.py` replays the suite to check that.
+
+How it was measured (round 5, October 2026). The fresh prompts were written in
+three batches of 72 by someone who read only each skill's description, `owns`
+and `does_not_own`, never the signals, the lexicon or any eval set. Each batch
+was routed before anything it showed was tuned:
+
+| Fresh batch (72 each) | Signals only | Ranker, first read | After tuning on it |
+| --- | ---: | ---: | ---: |
+| A (tuned on) | 46 | 56 | 64 |
+| B (tuned on) | 46 | 62 | 64 |
+| C (read only) | 44 | 56 | — |
+
+So the ranker added 10–16 prompts per unseen batch of 72, where the signals
+alone stayed at 61–64%. The holdout was then read once, with the ranker
+enabled (132/144 above). The log label for that read says "216 tune-only
+prompts"; 144 of them (A and B) were tuned on and batch C was only scored. The
+suite, canonical, policy and adversarial suites, the confusion report and the
+roaster trigger-eval floors are unchanged with the ranker on.
+
+Known limits: lexical evidence cannot recover a signal winner that is wrong (a
+"don't re-review, just fix" request still goes to the reviewer its signals
+name), the Council still needs an explicit request, and a single stray
+two-letter word only counts when the lexicon lists it ("qa", "ux", "ci").
 
 ## Confusion report
 

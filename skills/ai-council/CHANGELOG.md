@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.3] - 2026-10-03
+
+- Forecast and Decision Memory rows both carry `outcome` with different values. `references/contract.json` declares the two row sets as lists and qualifies the field by each: `forecasts.outcome` is `0` or `1`, bound to the new `FORECAST_OUTCOMES` constant that `forecast-score` checks; `memory.outcome` is `Pending`, `Success`, `Failure` or `Mixed`. `references/kernel-admission.md` documents the forecast values and the string aliases `forecast-score` normalises. No behaviour change.
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- Workflow step 4 names the verdict the run must end with (`GO | NO-GO | TEST | DEFER` with Overall Decision Confidence, gate statuses and a one-sentence recommendation) instead of only pointing at `references/output-contract.md`.
+- `references/kernel-admission.md` was never named by the front door, so nothing loaded it. The Kernel CLI section now says to read it before the final gate.
+
 ## [5.2.2] - 2026-10-03
 
 ### Fixed

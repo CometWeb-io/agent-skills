@@ -1,0 +1,1034 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "ebook-publisher",
+  "description": "Offline behavior of scripts/ebook_check.py init, fingerprints and validate as references/validation.md documents them; dates are pinned with --as-of.",
+  "cases": [
+    {
+      "id": "init-creates-incomplete-draft",
+      "kind": "accept",
+      "behavior": "init creates a new publication workspace and reports it as an initialized draft that is not ready.",
+      "run": [
+        "scripts/ebook_check.py",
+        "init",
+        "{tmp}/new-publication"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "result": "INITIALIZED_DRAFT",
+          "path": "{tmp}/new-publication",
+          "ready": false
+        }
+      }
+    },
+    {
+      "id": "init-never-overwrites",
+      "kind": "refuse",
+      "behavior": "init refuses an existing directory instead of overwriting it.",
+      "run": [
+        "scripts/ebook_check.py",
+        "init",
+        "{tmp}/existing"
+      ],
+      "files": {
+        "existing/notes.md": "keep me\n"
+      },
+      "expect": {
+        "exit_code": 2,
+        "json": {
+          "result": "INPUT_ERROR",
+          "error": "init requires a new nonexistent directory; nothing was overwritten"
+        }
+      }
+    },
+    {
+      "id": "template-fails-research-stage",
+      "kind": "refuse",
+      "behavior": "The untouched template is incomplete and must be BLOCKED at the research stage with every missing record listed.",
+      "run": [
+        "scripts/ebook_check.py",
+        "validate",
+        "{tmp}/publication.json",
+        "--stage",
+        "research",
+        "--as-of",
+        "2026-10-03"
+      ],
+      "files": {
+        "publication.json": {
+          "schema": "cometweb.ebook/v1",
+          "publication": {
+            "id": "new-ebook",
+            "title": "",
+            "language": "pl",
+            "edition": "1.0",
+            "revision": "1",
+            "as_of": ""
+          },
+          "scope": {
+            "audience": "",
+            "outcome": "",
+            "questions": [
+              {
+                "id": "Q001",
+                "question": "",
+                "status": "open",
+                "chapter_ids": [
+                  "ch01"
+                ],
+                "rationale": ""
+              }
+            ]
+          },
+          "chapters": [
+            {
+              "id": "ch01",
+              "title": "",
+              "outcome": "",
+              "question_ids": [
+                "Q001"
+              ]
+            }
+          ],
+          "sources": [],
+          "claims": [],
+          "files": {
+            "manuscript": "manuscript.md",
+            "pdf": "ebook.pdf",
+            "deliverables": [
+              "ebook.pdf",
+              "manuscript.md",
+              "publication.json",
+              "qa-report.md"
+            ]
+          },
+          "checks": [],
+          "visual": {
+            "renderer": "",
+            "pdf_sha256": "",
+            "page_count": 0,
+            "pages": []
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "result": "BLOCKED",
+          "stage": "research",
+          "blockers": [
+            {
+              "code": "missing_text",
+              "detail": "publication.title: meaningful text is required"
+            },
+            {
+              "code": "invalid_date",
+              "detail": "publication.as_of: invalid ISO calendar date"
+            },
+            {
+              "code": "missing_text",
+              "detail": "scope.audience: meaningful text is required"
+            },
+            {
+              "code": "missing_text",
+              "detail": "scope.outcome: meaningful text is required"
+            },
+            {
+              "code": "missing_text",
+              "detail": "Q001.question: meaningful text is required"
+            },
+            {
+              "code": "open_question",
+              "detail": "Q001"
+            },
+            {
+              "code": "missing_text",
+              "detail": "ch01.title: meaningful text is required"
+            },
+            {
+              "code": "missing_text",
+              "detail": "ch01.outcome: meaningful text is required"
+            },
+            {
+              "code": "coverage_mismatch",
+              "detail": "ch01 -> Q001 has no reciprocal covered mapping"
+            },
+            {
+              "code": "empty_claims",
+              "detail": "A research record requires a nonempty claim ledger"
+            },
+            {
+              "code": "missing_check",
+              "detail": "scope_coverage"
+            },
+            {
+              "code": "missing_check",
+              "detail": "source_entailment"
+            },
+            {
+              "code": "missing_check",
+              "detail": "counterevidence"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "complete-research-records",
+      "kind": "accept",
+      "behavior": "A research ledger with a supported, counterchecked claim and three passing reviews bound to the current fingerprint reaches RECORDS_COMPLETE without needing a PDF.",
+      "run": [
+        "scripts/ebook_check.py",
+        "validate",
+        "{tmp}/publication.json",
+        "--stage",
+        "research",
+        "--as-of",
+        "2026-10-03"
+      ],
+      "files": {
+        "publication.json": {
+          "schema": "cometweb.ebook/v1",
+          "publication": {
+            "id": "sample-guide",
+            "title": "Sample Guide",
+            "language": "en",
+            "edition": "1.0",
+            "revision": "1",
+            "as_of": "2026-09-30"
+          },
+          "scope": {
+            "audience": "Site owners",
+            "outcome": "Know the upload limit",
+            "questions": [
+              {
+                "id": "Q001",
+                "question": "What is the upload limit?",
+                "status": "covered",
+                "chapter_ids": [
+                  "ch01"
+                ],
+                "rationale": ""
+              }
+            ]
+          },
+          "chapters": [
+            {
+              "id": "ch01",
+              "title": "Limits",
+              "outcome": "Reader knows the limit",
+              "question_ids": [
+                "Q001"
+              ]
+            }
+          ],
+          "sources": [
+            {
+              "id": "S001",
+              "title": "Upload documentation",
+              "source_type": "primary",
+              "origin": "example.com",
+              "inspected": true,
+              "accessed_on": "2026-09-29",
+              "url": "https://example.com/docs/uploads"
+            }
+          ],
+          "claims": [
+            {
+              "id": "C001",
+              "text": "The upload limit is 10 MB.",
+              "chapter_id": "ch01",
+              "kind": "fact",
+              "materiality": "material",
+              "conclusion": "supported",
+              "time_sensitive": true,
+              "as_of": "2026-09-29",
+              "review_by": "2026-12-31",
+              "freshness_rationale": "Limits change with plan updates.",
+              "evidence": [
+                {
+                  "source_id": "S001",
+                  "relation": "supports",
+                  "locator": "section Limits",
+                  "explanation": "States the 10 MB limit."
+                }
+              ],
+              "countercheck": {
+                "performed": true,
+                "checked_on": "2026-09-29",
+                "queries": [
+                  "upload limit changed"
+                ],
+                "outcome": "No newer limit found.",
+                "source_ids": []
+              }
+            }
+          ],
+          "files": {
+            "manuscript": "manuscript.md",
+            "pdf": "ebook.pdf",
+            "deliverables": [
+              "publication.json"
+            ]
+          },
+          "checks": [
+            {
+              "id": "scope_coverage",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            },
+            {
+              "id": "source_entailment",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            },
+            {
+              "id": "counterevidence",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            }
+          ],
+          "visual": {
+            "renderer": "",
+            "pdf_sha256": "",
+            "page_count": 0,
+            "pages": []
+          }
+        },
+        "review-log.txt": "Reviewed questions, sources and counterevidence on 2026-09-30.\n"
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "result": "RECORDS_COMPLETE",
+          "stage": "research",
+          "as_of": "2026-10-03",
+          "blockers": [],
+          "warnings": [],
+          "fingerprints": {
+            "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a",
+            "manuscript": null,
+            "pdf": null
+          }
+        }
+      }
+    },
+    {
+      "id": "time-sensitive-claim-goes-stale",
+      "kind": "boundary",
+      "behavior": "The same records evaluated after the claim's review_by date are blocked as a stale claim.",
+      "run": [
+        "scripts/ebook_check.py",
+        "validate",
+        "{tmp}/publication.json",
+        "--stage",
+        "research",
+        "--as-of",
+        "2027-01-05"
+      ],
+      "files": {
+        "publication.json": {
+          "schema": "cometweb.ebook/v1",
+          "publication": {
+            "id": "sample-guide",
+            "title": "Sample Guide",
+            "language": "en",
+            "edition": "1.0",
+            "revision": "1",
+            "as_of": "2026-09-30"
+          },
+          "scope": {
+            "audience": "Site owners",
+            "outcome": "Know the upload limit",
+            "questions": [
+              {
+                "id": "Q001",
+                "question": "What is the upload limit?",
+                "status": "covered",
+                "chapter_ids": [
+                  "ch01"
+                ],
+                "rationale": ""
+              }
+            ]
+          },
+          "chapters": [
+            {
+              "id": "ch01",
+              "title": "Limits",
+              "outcome": "Reader knows the limit",
+              "question_ids": [
+                "Q001"
+              ]
+            }
+          ],
+          "sources": [
+            {
+              "id": "S001",
+              "title": "Upload documentation",
+              "source_type": "primary",
+              "origin": "example.com",
+              "inspected": true,
+              "accessed_on": "2026-09-29",
+              "url": "https://example.com/docs/uploads"
+            }
+          ],
+          "claims": [
+            {
+              "id": "C001",
+              "text": "The upload limit is 10 MB.",
+              "chapter_id": "ch01",
+              "kind": "fact",
+              "materiality": "material",
+              "conclusion": "supported",
+              "time_sensitive": true,
+              "as_of": "2026-09-29",
+              "review_by": "2026-12-31",
+              "freshness_rationale": "Limits change with plan updates.",
+              "evidence": [
+                {
+                  "source_id": "S001",
+                  "relation": "supports",
+                  "locator": "section Limits",
+                  "explanation": "States the 10 MB limit."
+                }
+              ],
+              "countercheck": {
+                "performed": true,
+                "checked_on": "2026-09-29",
+                "queries": [
+                  "upload limit changed"
+                ],
+                "outcome": "No newer limit found.",
+                "source_ids": []
+              }
+            }
+          ],
+          "files": {
+            "manuscript": "manuscript.md",
+            "pdf": "ebook.pdf",
+            "deliverables": [
+              "publication.json"
+            ]
+          },
+          "checks": [
+            {
+              "id": "scope_coverage",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            },
+            {
+              "id": "source_entailment",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            },
+            {
+              "id": "counterevidence",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            }
+          ],
+          "visual": {
+            "renderer": "",
+            "pdf_sha256": "",
+            "page_count": 0,
+            "pages": []
+          }
+        },
+        "review-log.txt": "Reviewed questions, sources and counterevidence on 2026-09-30.\n"
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "result": "BLOCKED",
+          "as_of": "2027-01-05",
+          "blockers": [
+            {
+              "code": "stale_claim",
+              "detail": "C001: review due after 2026-12-31"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "edited-ledger-invalidates-reviews",
+      "kind": "refuse",
+      "behavior": "Changing a claim after review invalidates every research review bound to the old fingerprint.",
+      "run": [
+        "scripts/ebook_check.py",
+        "validate",
+        "{tmp}/publication.json",
+        "--stage",
+        "research",
+        "--as-of",
+        "2026-10-03"
+      ],
+      "files": {
+        "publication.json": {
+          "schema": "cometweb.ebook/v1",
+          "publication": {
+            "id": "sample-guide",
+            "title": "Sample Guide",
+            "language": "en",
+            "edition": "1.0",
+            "revision": "1",
+            "as_of": "2026-09-30"
+          },
+          "scope": {
+            "audience": "Site owners",
+            "outcome": "Know the upload limit",
+            "questions": [
+              {
+                "id": "Q001",
+                "question": "What is the upload limit?",
+                "status": "covered",
+                "chapter_ids": [
+                  "ch01"
+                ],
+                "rationale": ""
+              }
+            ]
+          },
+          "chapters": [
+            {
+              "id": "ch01",
+              "title": "Limits",
+              "outcome": "Reader knows the limit",
+              "question_ids": [
+                "Q001"
+              ]
+            }
+          ],
+          "sources": [
+            {
+              "id": "S001",
+              "title": "Upload documentation",
+              "source_type": "primary",
+              "origin": "example.com",
+              "inspected": true,
+              "accessed_on": "2026-09-29",
+              "url": "https://example.com/docs/uploads"
+            }
+          ],
+          "claims": [
+            {
+              "id": "C001",
+              "text": "The upload limit is 20 MB.",
+              "chapter_id": "ch01",
+              "kind": "fact",
+              "materiality": "material",
+              "conclusion": "supported",
+              "time_sensitive": true,
+              "as_of": "2026-09-29",
+              "review_by": "2026-12-31",
+              "freshness_rationale": "Limits change with plan updates.",
+              "evidence": [
+                {
+                  "source_id": "S001",
+                  "relation": "supports",
+                  "locator": "section Limits",
+                  "explanation": "States the 10 MB limit."
+                }
+              ],
+              "countercheck": {
+                "performed": true,
+                "checked_on": "2026-09-29",
+                "queries": [
+                  "upload limit changed"
+                ],
+                "outcome": "No newer limit found.",
+                "source_ids": []
+              }
+            }
+          ],
+          "files": {
+            "manuscript": "manuscript.md",
+            "pdf": "ebook.pdf",
+            "deliverables": [
+              "publication.json"
+            ]
+          },
+          "checks": [
+            {
+              "id": "scope_coverage",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            },
+            {
+              "id": "source_entailment",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            },
+            {
+              "id": "counterevidence",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            }
+          ],
+          "visual": {
+            "renderer": "",
+            "pdf_sha256": "",
+            "page_count": 0,
+            "pages": []
+          }
+        },
+        "review-log.txt": "Reviewed questions, sources and counterevidence on 2026-09-30.\n"
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "result": "BLOCKED",
+          "blockers": [
+            {
+              "code": "stale_check",
+              "detail": "scope_coverage: current research fingerprint required"
+            },
+            {
+              "code": "stale_check",
+              "detail": "source_entailment: current research fingerprint required"
+            },
+            {
+              "code": "stale_check",
+              "detail": "counterevidence: current research fingerprint required"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "manuscript-stage-needs-draft-and-reviews",
+      "kind": "refuse",
+      "behavior": "Research-complete records do not pass the manuscript stage without the manuscript file and the manuscript reviews.",
+      "run": [
+        "scripts/ebook_check.py",
+        "validate",
+        "{tmp}/publication.json",
+        "--stage",
+        "manuscript",
+        "--as-of",
+        "2026-10-03"
+      ],
+      "files": {
+        "publication.json": {
+          "schema": "cometweb.ebook/v1",
+          "publication": {
+            "id": "sample-guide",
+            "title": "Sample Guide",
+            "language": "en",
+            "edition": "1.0",
+            "revision": "1",
+            "as_of": "2026-09-30"
+          },
+          "scope": {
+            "audience": "Site owners",
+            "outcome": "Know the upload limit",
+            "questions": [
+              {
+                "id": "Q001",
+                "question": "What is the upload limit?",
+                "status": "covered",
+                "chapter_ids": [
+                  "ch01"
+                ],
+                "rationale": ""
+              }
+            ]
+          },
+          "chapters": [
+            {
+              "id": "ch01",
+              "title": "Limits",
+              "outcome": "Reader knows the limit",
+              "question_ids": [
+                "Q001"
+              ]
+            }
+          ],
+          "sources": [
+            {
+              "id": "S001",
+              "title": "Upload documentation",
+              "source_type": "primary",
+              "origin": "example.com",
+              "inspected": true,
+              "accessed_on": "2026-09-29",
+              "url": "https://example.com/docs/uploads"
+            }
+          ],
+          "claims": [
+            {
+              "id": "C001",
+              "text": "The upload limit is 10 MB.",
+              "chapter_id": "ch01",
+              "kind": "fact",
+              "materiality": "material",
+              "conclusion": "supported",
+              "time_sensitive": true,
+              "as_of": "2026-09-29",
+              "review_by": "2026-12-31",
+              "freshness_rationale": "Limits change with plan updates.",
+              "evidence": [
+                {
+                  "source_id": "S001",
+                  "relation": "supports",
+                  "locator": "section Limits",
+                  "explanation": "States the 10 MB limit."
+                }
+              ],
+              "countercheck": {
+                "performed": true,
+                "checked_on": "2026-09-29",
+                "queries": [
+                  "upload limit changed"
+                ],
+                "outcome": "No newer limit found.",
+                "source_ids": []
+              }
+            }
+          ],
+          "files": {
+            "manuscript": "manuscript.md",
+            "pdf": "ebook.pdf",
+            "deliverables": [
+              "publication.json"
+            ]
+          },
+          "checks": [
+            {
+              "id": "scope_coverage",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            },
+            {
+              "id": "source_entailment",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            },
+            {
+              "id": "counterevidence",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            }
+          ],
+          "visual": {
+            "renderer": "",
+            "pdf_sha256": "",
+            "page_count": 0,
+            "pages": []
+          }
+        },
+        "review-log.txt": "Reviewed questions, sources and counterevidence on 2026-09-30.\n"
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "result": "BLOCKED",
+          "stage": "manuscript",
+          "blockers": [
+            {
+              "code": "missing_manuscript",
+              "detail": "Editable manuscript is absent"
+            },
+            {
+              "code": "missing_check",
+              "detail": "claim_coverage"
+            },
+            {
+              "code": "missing_check",
+              "detail": "cross_chapter_consistency"
+            },
+            {
+              "code": "missing_check",
+              "detail": "semantic_fidelity"
+            },
+            {
+              "code": "missing_check",
+              "detail": "editorial_review"
+            },
+            {
+              "code": "missing_check",
+              "detail": "examples_and_numbers"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fingerprints-are-read-only",
+      "kind": "accept",
+      "behavior": "fingerprints prints the current hashes and states that no review was updated.",
+      "run": [
+        "scripts/ebook_check.py",
+        "fingerprints",
+        "{tmp}/publication.json"
+      ],
+      "files": {
+        "publication.json": {
+          "schema": "cometweb.ebook/v1",
+          "publication": {
+            "id": "sample-guide",
+            "title": "Sample Guide",
+            "language": "en",
+            "edition": "1.0",
+            "revision": "1",
+            "as_of": "2026-09-30"
+          },
+          "scope": {
+            "audience": "Site owners",
+            "outcome": "Know the upload limit",
+            "questions": [
+              {
+                "id": "Q001",
+                "question": "What is the upload limit?",
+                "status": "covered",
+                "chapter_ids": [
+                  "ch01"
+                ],
+                "rationale": ""
+              }
+            ]
+          },
+          "chapters": [
+            {
+              "id": "ch01",
+              "title": "Limits",
+              "outcome": "Reader knows the limit",
+              "question_ids": [
+                "Q001"
+              ]
+            }
+          ],
+          "sources": [
+            {
+              "id": "S001",
+              "title": "Upload documentation",
+              "source_type": "primary",
+              "origin": "example.com",
+              "inspected": true,
+              "accessed_on": "2026-09-29",
+              "url": "https://example.com/docs/uploads"
+            }
+          ],
+          "claims": [
+            {
+              "id": "C001",
+              "text": "The upload limit is 10 MB.",
+              "chapter_id": "ch01",
+              "kind": "fact",
+              "materiality": "material",
+              "conclusion": "supported",
+              "time_sensitive": true,
+              "as_of": "2026-09-29",
+              "review_by": "2026-12-31",
+              "freshness_rationale": "Limits change with plan updates.",
+              "evidence": [
+                {
+                  "source_id": "S001",
+                  "relation": "supports",
+                  "locator": "section Limits",
+                  "explanation": "States the 10 MB limit."
+                }
+              ],
+              "countercheck": {
+                "performed": true,
+                "checked_on": "2026-09-29",
+                "queries": [
+                  "upload limit changed"
+                ],
+                "outcome": "No newer limit found.",
+                "source_ids": []
+              }
+            }
+          ],
+          "files": {
+            "manuscript": "manuscript.md",
+            "pdf": "ebook.pdf",
+            "deliverables": [
+              "publication.json"
+            ]
+          },
+          "checks": [
+            {
+              "id": "scope_coverage",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            },
+            {
+              "id": "source_entailment",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            },
+            {
+              "id": "counterevidence",
+              "status": "pass",
+              "reviewer": "Reviewer One",
+              "method": "manual",
+              "checked_on": "2026-09-30",
+              "notes": "Checked against the ledger.",
+              "evidence_file": "review-log.txt",
+              "evidence_sha256": "16bf59d82461f98ecc2c77e5495769bc0da8189bbedbc228df442934650bda29",
+              "fingerprints": {
+                "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a"
+              }
+            }
+          ],
+          "visual": {
+            "renderer": "",
+            "pdf_sha256": "",
+            "page_count": 0,
+            "pages": []
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "fingerprints": {
+            "research": "00becb131e9915d975b7ec9618f537ffd3b7e024c15fa59142a541ea3261c66a",
+            "manuscript": null,
+            "pdf": null
+          },
+          "reviews_updated": false
+        }
+      }
+    },
+    {
+      "id": "duplicate-key-is-input-error",
+      "kind": "boundary",
+      "behavior": "A manifest with a duplicate JSON key is rejected as INPUT_ERROR with exit 2 rather than validated.",
+      "run": [
+        "scripts/ebook_check.py",
+        "validate",
+        "{tmp}/publication.json",
+        "--stage",
+        "research",
+        "--as-of",
+        "2026-10-03"
+      ],
+      "files": {
+        "publication.json": "{\"schema\": \"cometweb.ebook/v1\", \"schema\": \"x\"}\n"
+      },
+      "expect": {
+        "exit_code": 2,
+        "json": {
+          "result": "INPUT_ERROR",
+          "error": "Duplicate JSON key: schema"
+        }
+      }
+    }
+  ]
+}

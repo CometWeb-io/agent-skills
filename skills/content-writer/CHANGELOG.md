@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object; a new case pins how `evaluate_case` refuses one.
+- Step 1 offered an `EVIDENCE_BACKED` source mode that the kernel rejects (`evidence_policy:invalid`); the value is `EVIDENCE_REQUIRED`, the same one `brief-architect` writes into the ArtifactBrief. The step now names the `evidence_policy` field, `approved_sources` for `SOURCE_BOUND`, and the `DRAFT`/`REVISION`/`FINAL` modes.
+- The claim ledger list adds `UNSUPPORTED`, which the kernel already accepts.
+- References are listed in a table with load triggers; the v1.3 section is folded into the `evidence-calibration.md` row.
+- The description is 535 characters, down from 748. Codex shows about the first 546 characters of each description in its skill list, which cut the "Do not use" clause part-way; the whole description now fits, with the routing boundaries and named alternatives kept.
+
 ## [1.7.2] - 2026-10-03
 
 - The sidecar in `references/output-contract.md` used names the kernel never

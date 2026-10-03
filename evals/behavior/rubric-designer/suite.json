@@ -1,0 +1,475 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "rubric-designer",
+  "description": "Offline behavior of the rubric validator the references document as kernel.validate(rubric), plus the bundled eval runner's command line.",
+  "cases": [
+    {
+      "id": "frozen-rubric-is-ready-and-hashed",
+      "kind": "accept",
+      "behavior": "A complete, candidate-blind rubric frozen before review is READY_TO_FREEZE with its SHA-256 lock and blocker count.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "rubric_id": "pricing-brief",
+          "revision": "r1",
+          "purpose": "grade pricing briefs before publication",
+          "target_type": "pricing brief",
+          "mode": "STANDARD",
+          "candidate_blind": true,
+          "frozen_before_review": true,
+          "required_dimensions": [
+            "accuracy",
+            "clarity"
+          ],
+          "criteria": [
+            {
+              "id": "c1",
+              "dimension": "accuracy",
+              "description": "Prices match the live pricing page",
+              "observable": true,
+              "pass_condition": "every listed price matches the pricing page",
+              "fail_condition": "any listed price differs from the pricing page",
+              "evidence_floor": "A",
+              "materiality": "critical",
+              "blocker": true,
+              "weight": 0.6
+            },
+            {
+              "id": "c2",
+              "dimension": "clarity",
+              "description": "Each section opens with its conclusion",
+              "observable": true,
+              "pass_condition": "each section states its conclusion in the first sentence",
+              "fail_condition": "a section buries its conclusion",
+              "evidence_floor": "C",
+              "materiality": "supporting",
+              "weight": 0.4
+            }
+          ],
+          "anti_gaming": {
+            "no_hidden_criteria": true,
+            "no_post_hoc_changes": true
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "READY_TO_FREEZE",
+          "errors": [],
+          "rubric_hash": "9c4b6015b6b282f33909d68a2cda2560a36249948fe5006eb6fe30bc87e0c0c2",
+          "criteria_count": 2,
+          "blocker_count": 1,
+          "missing_dimensions": [],
+          "frozen": true
+        }
+      }
+    },
+    {
+      "id": "unfrozen-draft-needs-revision-with-same-hash",
+      "kind": "boundary",
+      "behavior": "A valid draft not yet frozen needs revision, and freezing it later keeps the same rubric hash.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "rubric_id": "pricing-brief",
+          "revision": "r1",
+          "purpose": "grade pricing briefs before publication",
+          "target_type": "pricing brief",
+          "mode": "STANDARD",
+          "candidate_blind": true,
+          "frozen_before_review": false,
+          "required_dimensions": [
+            "accuracy",
+            "clarity"
+          ],
+          "criteria": [
+            {
+              "id": "c1",
+              "dimension": "accuracy",
+              "description": "Prices match the live pricing page",
+              "observable": true,
+              "pass_condition": "every listed price matches the pricing page",
+              "fail_condition": "any listed price differs from the pricing page",
+              "evidence_floor": "A",
+              "materiality": "critical",
+              "blocker": true,
+              "weight": 0.6
+            },
+            {
+              "id": "c2",
+              "dimension": "clarity",
+              "description": "Each section opens with its conclusion",
+              "observable": true,
+              "pass_condition": "each section states its conclusion in the first sentence",
+              "fail_condition": "a section buries its conclusion",
+              "evidence_floor": "C",
+              "materiality": "supporting",
+              "weight": 0.4
+            }
+          ],
+          "anti_gaming": {
+            "no_hidden_criteria": true,
+            "no_post_hoc_changes": true
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "NEEDS_REVISION",
+          "errors": [],
+          "rubric_hash": "9c4b6015b6b282f33909d68a2cda2560a36249948fe5006eb6fe30bc87e0c0c2",
+          "frozen": false
+        }
+      }
+    },
+    {
+      "id": "uncovered-dimension-is-invalid",
+      "kind": "refuse",
+      "behavior": "A required dimension with no criterion is reported missing instead of silently dropped.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "rubric_id": "pricing-brief",
+          "revision": "r1",
+          "purpose": "grade pricing briefs before publication",
+          "target_type": "pricing brief",
+          "mode": "STANDARD",
+          "candidate_blind": true,
+          "frozen_before_review": true,
+          "required_dimensions": [
+            "accuracy",
+            "clarity",
+            "tone"
+          ],
+          "criteria": [
+            {
+              "id": "c1",
+              "dimension": "accuracy",
+              "description": "Prices match the live pricing page",
+              "observable": true,
+              "pass_condition": "every listed price matches the pricing page",
+              "fail_condition": "any listed price differs from the pricing page",
+              "evidence_floor": "A",
+              "materiality": "critical",
+              "blocker": true,
+              "weight": 0.6
+            },
+            {
+              "id": "c2",
+              "dimension": "clarity",
+              "description": "Each section opens with its conclusion",
+              "observable": true,
+              "pass_condition": "each section states its conclusion in the first sentence",
+              "fail_condition": "a section buries its conclusion",
+              "evidence_floor": "C",
+              "materiality": "supporting",
+              "weight": 0.4
+            }
+          ],
+          "anti_gaming": {
+            "no_hidden_criteria": true,
+            "no_post_hoc_changes": true
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "dimensions:missing"
+          ],
+          "missing_dimensions": [
+            "tone"
+          ]
+        }
+      }
+    },
+    {
+      "id": "diluted-blocker-is-invalid",
+      "kind": "refuse",
+      "behavior": "A blocker criterion with supporting materiality, a weak evidence floor and zero weight is refused rather than averaged away.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "rubric_id": "pricing-brief",
+          "revision": "r1",
+          "purpose": "grade pricing briefs before publication",
+          "target_type": "pricing brief",
+          "mode": "STANDARD",
+          "candidate_blind": true,
+          "frozen_before_review": true,
+          "required_dimensions": [
+            "accuracy",
+            "clarity"
+          ],
+          "criteria": [
+            {
+              "id": "c1",
+              "dimension": "accuracy",
+              "description": "Prices match the live pricing page",
+              "observable": true,
+              "pass_condition": "every listed price matches the pricing page",
+              "fail_condition": "any listed price differs from the pricing page",
+              "evidence_floor": "C",
+              "materiality": "supporting",
+              "blocker": true,
+              "weight": 0
+            },
+            {
+              "id": "c2",
+              "dimension": "clarity",
+              "description": "Each section opens with its conclusion",
+              "observable": true,
+              "pass_condition": "each section states its conclusion in the first sentence",
+              "fail_condition": "a section buries its conclusion",
+              "evidence_floor": "C",
+              "materiality": "supporting",
+              "weight": 0.4
+            }
+          ],
+          "anti_gaming": {
+            "no_hidden_criteria": true,
+            "no_post_hoc_changes": true
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "criteria[0]:blocker-materiality",
+            "criteria[0]:blocker-evidence-floor",
+            "criteria[0]:blocker-zero-weight"
+          ],
+          "missing_dimensions": []
+        }
+      }
+    },
+    {
+      "id": "deep-rubric-must-be-blind-and-prefrozen",
+      "kind": "refuse",
+      "behavior": "A DEEP rubric designed after seeing the candidate and not frozen before review is refused.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "rubric_id": "pricing-brief",
+          "revision": "r1",
+          "purpose": "grade pricing briefs before publication",
+          "target_type": "pricing brief",
+          "mode": "DEEP",
+          "candidate_blind": false,
+          "frozen_before_review": false,
+          "required_dimensions": [
+            "accuracy",
+            "clarity"
+          ],
+          "criteria": [
+            {
+              "id": "c1",
+              "dimension": "accuracy",
+              "description": "Prices match the live pricing page",
+              "observable": true,
+              "pass_condition": "every listed price matches the pricing page",
+              "fail_condition": "any listed price differs from the pricing page",
+              "evidence_floor": "A",
+              "materiality": "critical",
+              "blocker": true,
+              "weight": 0.6
+            },
+            {
+              "id": "c2",
+              "dimension": "clarity",
+              "description": "Each section opens with its conclusion",
+              "observable": true,
+              "pass_condition": "each section states its conclusion in the first sentence",
+              "fail_condition": "a section buries its conclusion",
+              "evidence_floor": "C",
+              "materiality": "supporting",
+              "weight": 0.4
+            }
+          ],
+          "anti_gaming": {
+            "no_hidden_criteria": true,
+            "no_post_hoc_changes": true
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "deep:candidate_blind-required",
+            "deep:pre-review-freeze-required"
+          ]
+        }
+      }
+    },
+    {
+      "id": "duplicate-ids-identical-conditions-and-missing-anti-gaming",
+      "kind": "refuse",
+      "behavior": "Duplicate criterion ids, a pass condition identical to its fail condition, a non-observable criterion and an incomplete anti-gaming block are all reported.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "rubric_id": "pricing-brief",
+          "revision": "r1",
+          "purpose": "grade pricing briefs before publication",
+          "target_type": "pricing brief",
+          "mode": "STANDARD",
+          "candidate_blind": true,
+          "frozen_before_review": true,
+          "required_dimensions": [
+            "accuracy",
+            "clarity"
+          ],
+          "criteria": [
+            {
+              "id": "c1",
+              "dimension": "accuracy",
+              "description": "Prices match the live pricing page",
+              "observable": true,
+              "pass_condition": "every listed price matches the pricing page",
+              "fail_condition": "any listed price differs from the pricing page",
+              "evidence_floor": "A",
+              "materiality": "critical",
+              "blocker": true,
+              "weight": 0.6
+            },
+            {
+              "id": "c1",
+              "dimension": "clarity",
+              "description": "Each section opens with its conclusion",
+              "observable": "yes",
+              "pass_condition": "Section is clear",
+              "fail_condition": "  section is CLEAR ",
+              "evidence_floor": "C",
+              "materiality": "supporting",
+              "weight": 0.4
+            }
+          ],
+          "anti_gaming": {
+            "no_hidden_criteria": true
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "criteria[1]:observable",
+            "criteria[1]:pass-fail-identical",
+            "criteria:duplicate-id",
+            "anti_gaming:required"
+          ]
+        }
+      }
+    },
+    {
+      "id": "unknown-mode-and-empty-criteria",
+      "kind": "boundary",
+      "behavior": "An unknown mode and an empty criteria list are errors, and every required dimension is reported missing.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "rubric_id": "pricing-brief",
+          "revision": "r1",
+          "purpose": "grade pricing briefs before publication",
+          "target_type": "pricing brief",
+          "mode": "EXPRESS",
+          "candidate_blind": true,
+          "frozen_before_review": true,
+          "required_dimensions": [
+            "accuracy",
+            "clarity"
+          ],
+          "criteria": [],
+          "anti_gaming": {
+            "no_hidden_criteria": true,
+            "no_post_hoc_changes": true
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "mode:invalid",
+            "criteria:required",
+            "dimensions:missing"
+          ],
+          "missing_dimensions": [
+            "accuracy",
+            "clarity"
+          ]
+        }
+      }
+    },
+    {
+      "id": "non-object-rubric-is-invalid",
+      "kind": "boundary",
+      "behavior": "A rubric that is not a JSON object is reported invalid instead of crashing.",
+      "run": [
+        "scripts/kernel.py"
+      ],
+      "call": "validate",
+      "args": [
+        [
+          "c1"
+        ]
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INVALID",
+          "errors": [
+            "payload:not-object"
+          ]
+        }
+      }
+    },
+    {
+      "id": "eval-runner-rejects-arguments",
+      "kind": "refuse",
+      "behavior": "The bundled eval runner takes no arguments and refuses an unexpected one with a usage error.",
+      "run": [
+        "scripts/run_evals.py",
+        "--update"
+      ],
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "usage: run_evals.py [-h]",
+          "unrecognized arguments: --update"
+        ]
+      }
+    }
+  ]
+}

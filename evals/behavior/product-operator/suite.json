@@ -1,0 +1,482 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "product-operator",
+  "description": "Offline behavior of scripts/operator_kernel.py (readiness, plan, rank, sequence, validate), scripts/prepare_brief.py and scripts/self_check.py as SKILL.md and references/local-workflow.md document them.",
+  "cases": [
+    {
+      "id": "full-coverage-is-ready",
+      "kind": "accept",
+      "behavior": "With every source lane verified and no open gaps, planning readiness is READY with no reasons.",
+      "run": [
+        "scripts/operator_kernel.py",
+        "readiness",
+        "--input-json",
+        "{\"coverage\": {\"github\": \"verified\", \"notion\": \"verified\", \"product_context\": \"verified\", \"outcome_data\": \"not-required\"}}"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "READY",
+          "reasons": []
+        }
+      }
+    },
+    {
+      "id": "critical-gap-blocks-readiness",
+      "kind": "refuse",
+      "behavior": "An open critical gap makes readiness BLOCKED even when every lane is verified.",
+      "run": [
+        "scripts/operator_kernel.py",
+        "readiness",
+        "--input-json",
+        "{\"coverage\": {\"github\": \"verified\", \"notion\": \"verified\", \"product_context\": \"verified\", \"outcome_data\": \"not-required\"}, \"critical_gap_open\": true}"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "BLOCKED",
+          "reasons": [
+            "critical_gap_open"
+          ]
+        }
+      }
+    },
+    {
+      "id": "unavailable-code-lane-is-provisional",
+      "kind": "boundary",
+      "behavior": "An unavailable code lane makes readiness PROVISIONAL and names the missing lane instead of assuming it.",
+      "run": [
+        "scripts/operator_kernel.py",
+        "readiness",
+        "--input-json",
+        "{\"coverage\": {\"github\": \"unavailable\", \"notion\": \"verified\", \"product_context\": \"verified\", \"outcome_data\": \"not-required\"}}"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "PROVISIONAL",
+          "reasons": [
+            "coverage_github_unavailable"
+          ]
+        }
+      }
+    },
+    {
+      "id": "readiness-list-input-rejected",
+      "kind": "boundary",
+      "behavior": "A readiness input that is not an object is rejected with exit 2.",
+      "run": [
+        "scripts/operator_kernel.py",
+        "readiness",
+        "--input-json",
+        "[]"
+      ],
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "\"status\": \"FAIL\"",
+          "\"error\": \"readiness input must be an object\""
+        ]
+      }
+    },
+    {
+      "id": "provisional-plan-holds-implementation",
+      "kind": "refuse",
+      "behavior": "While readiness is PROVISIONAL the plan runs the verification first and holds the implementation action.",
+      "run": [
+        "scripts/operator_kernel.py",
+        "plan",
+        "--input-json",
+        "{tmp}/plan.json"
+      ],
+      "files": {
+        "plan.json": {
+          "target": "example/app",
+          "goal": "ship the export flow",
+          "horizon": "this week",
+          "as_of": "2026-09-12T12:00:00Z",
+          "coverage": {
+            "github": "unavailable",
+            "notion": "verified",
+            "product_context": "verified"
+          },
+          "state_items": [],
+          "candidates": [
+            {
+              "id": "A",
+              "action": "build export",
+              "why_now": "goal",
+              "done_when": "export works",
+              "confidence": 1,
+              "evidence_strength": 1,
+              "impact": 5,
+              "goal_alignment": 5,
+              "action_type": "implement",
+              "evidence": []
+            },
+            {
+              "id": "V",
+              "action": "check current export code",
+              "why_now": "code lane unavailable",
+              "done_when": "code state recorded",
+              "confidence": 0.8,
+              "verify_first": true,
+              "action_type": "verify",
+              "evidence": []
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "readiness": {
+            "status": "PROVISIONAL",
+            "reasons": [
+              "coverage_github_unavailable"
+            ]
+          },
+          "immediate_actions.0.id": "V",
+          "next_actions": [],
+          "held_by_readiness_action_ids": [
+            "A"
+          ],
+          "held_implementation_action_ids": [
+            "A"
+          ]
+        },
+        "json_len": {
+          "immediate_actions": 1
+        }
+      }
+    },
+    {
+      "id": "stop-candidate-never-ranked-as-work",
+      "kind": "accept",
+      "behavior": "A candidate flagged stop goes to the STOP group with a zero score, however high its impact.",
+      "run": [
+        "scripts/operator_kernel.py",
+        "rank",
+        "--candidates-json",
+        "[{\"id\": \"a\", \"action\": \"verify billing route\", \"why_now\": \"blocks goal\", \"done_when\": \"route verified\", \"confidence\": 0.8, \"evidence\": [], \"impact\": 5, \"goal_alignment\": 5, \"urgency\": 5, \"dependency_leverage\": 5, \"risk_reduction\": 5, \"learning_value\": 5, \"effort\": 1, \"evidence_strength\": 1}, {\"id\": \"b\", \"action\": \"rewrite landing page\", \"why_now\": \"none\", \"done_when\": \"n/a\", \"confidence\": 0.8, \"evidence\": [], \"stop\": true, \"impact\": 5}]"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "groups.NOW.0.id": "a",
+          "groups.STOP.0.id": "b",
+          "groups.STOP.0.priority_score": 0.0,
+          "groups.BLOCKER": [],
+          "groups.NEXT": []
+        },
+        "json_len": {
+          "groups.NOW": 1,
+          "groups.STOP": 1
+        }
+      }
+    },
+    {
+      "id": "sequence-surfaces-cycle-and-missing-dependency",
+      "kind": "refuse",
+      "behavior": "A dependency cycle and a reference to an unknown action are surfaced instead of being silently ordered.",
+      "run": [
+        "scripts/operator_kernel.py",
+        "sequence",
+        "--candidates-json",
+        "[{\"id\": \"a\", \"action\": \"x\", \"depends_on\": [\"b\"]}, {\"id\": \"b\", \"action\": \"y\", \"depends_on\": [\"a\"]}, {\"id\": \"c\", \"action\": \"z\", \"depends_on\": [\"missing\"]}]"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "is_acyclic": false,
+          "cycle_action_ids": [
+            "a",
+            "b"
+          ],
+          "blocked_by": {
+            "a": [
+              "b"
+            ],
+            "b": [
+              "a"
+            ]
+          },
+          "missing_dependencies": [
+            {
+              "action_id": "c",
+              "missing_dependency": "missing"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "decision-now-cannot-recommend",
+      "kind": "refuse",
+      "behavior": "A report whose decision_now entry recommends an option fails validation with exit 1; the operator delegates material decisions.",
+      "run": [
+        "scripts/operator_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/operator-report.json"
+      ],
+      "files": {
+        "operator-report.json": {
+          "as_of": "2026-09-12T12:00:00Z",
+          "assessment_scope": "supplied_records_only",
+          "authorization": "not_provided",
+          "blockers": [],
+          "coverage": {
+            "github": "verified",
+            "notion": "verified",
+            "outcome_data": "unavailable",
+            "product_context": "verified"
+          },
+          "decision": "READY: 1 immediate action(s); remaining work follows dependencies and evidence gates.",
+          "decision_now": [
+            {
+              "id": "D1",
+              "question": "Which pilot first?",
+              "decision_domain": "product",
+              "why_now": "blocks scope",
+              "options": [
+                "pilot A",
+                "pilot B"
+              ],
+              "delegated_to": "product owner",
+              "done_when": "option chosen",
+              "evidence": [
+                {
+                  "source": "notion",
+                  "locator": "page:1",
+                  "claim": "two pilots proposed",
+                  "claim_type": "intent",
+                  "stage": "intent",
+                  "authority": "notion",
+                  "freshness_status": "CURRENT"
+                }
+              ],
+              "recommendation": "pilot A"
+            }
+          ],
+          "decision_origin": "derived",
+          "delegations": [],
+          "drift": [],
+          "evidence_authentication": "not_performed",
+          "goal": "repair route",
+          "horizon": "this week",
+          "later": [],
+          "mode": "STANDARD",
+          "mutations": "read-only",
+          "next": [],
+          "now": [],
+          "protocol_version": "2.2",
+          "readiness": {
+            "reasons": [],
+            "status": "READY"
+          },
+          "state_items": [],
+          "stop": [],
+          "target": "example/app",
+          "unknowns": [],
+          "verify_now": [
+            {
+              "action": "verify a route",
+              "action_type": "verify",
+              "confidence": 0.9,
+              "depends_on": [],
+              "done_when": "record verified state",
+              "effort": 1,
+              "evidence": [
+                {
+                  "authority": "github",
+                  "claim": "implemented in pinned source",
+                  "claim_type": "implementation",
+                  "locator": "repo/file:1",
+                  "max_age_days": 2,
+                  "observed_at": "2026-09-12T12:00:00Z",
+                  "required_current": true,
+                  "source": "github",
+                  "stage": "implemented"
+                }
+              ],
+              "evidence_strength": 0.9,
+              "goal_alignment": 5,
+              "id": "A",
+              "impact": 5,
+              "priority_score": 19.35,
+              "priority_tier": "VERIFY_NOW",
+              "score_breakdown": {
+                "base": 21.5,
+                "effort_penalty": 1.0,
+                "quality": 0.9
+              },
+              "urgency": 4,
+              "verify_first": true,
+              "why_now": "required by goal"
+            }
+          ],
+          "watch": []
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "status": "FAIL",
+          "errors": [
+            "decision_now[0] must not select or recommend an option; delegate the unresolved material decision"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "brief-renders-from-example-plan",
+      "kind": "accept",
+      "behavior": "prepare_brief renders a readable brief from a valid plan, stating it rests on supplied records only.",
+      "run": [
+        "scripts/prepare_brief.py",
+        "--input",
+        "{tmp}/plan.json",
+        "--language",
+        "en"
+      ],
+      "files": {
+        "plan.json": {
+          "target": "example/app",
+          "goal": "repair route",
+          "horizon": "this week",
+          "as_of": "2026-09-12T12:00:00Z",
+          "coverage": {
+            "github": "verified",
+            "notion": "verified",
+            "product_context": "verified"
+          },
+          "state_items": [],
+          "candidates": [
+            {
+              "id": "A",
+              "impact": 5,
+              "goal_alignment": 5,
+              "urgency": 4,
+              "effort": 1,
+              "confidence": 0.9,
+              "evidence_strength": 0.9,
+              "action": "verify a route",
+              "why_now": "required by goal",
+              "done_when": "record verified state",
+              "evidence": [
+                {
+                  "stage": "implemented",
+                  "source": "github",
+                  "authority": "github",
+                  "locator": "repo/file:1",
+                  "claim": "implemented in pinned source",
+                  "claim_type": "implementation",
+                  "observed_at": "2026-09-12T12:00:00Z",
+                  "max_age_days": 2,
+                  "required_current": true
+                }
+              ],
+              "depends_on": [],
+              "action_type": "verify",
+              "verify_first": true
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "# Product operating brief",
+          "Scope: supplied records; no live product verification.",
+          "**Planning readiness: READY**",
+          "### A — verify a route"
+        ]
+      }
+    },
+    {
+      "id": "brief-rejects-unknown-mode",
+      "kind": "refuse",
+      "behavior": "An unknown planning mode is rejected with exit 2 and no artifact is claimed.",
+      "run": [
+        "scripts/prepare_brief.py",
+        "--input",
+        "{tmp}/plan.json"
+      ],
+      "files": {
+        "plan.json": {
+          "target": "example/app",
+          "goal": "repair route",
+          "horizon": "this week",
+          "as_of": "2026-09-12T12:00:00Z",
+          "coverage": {
+            "github": "verified",
+            "notion": "verified",
+            "product_context": "verified"
+          },
+          "state_items": [],
+          "candidates": [
+            {
+              "id": "A",
+              "impact": 5,
+              "goal_alignment": 5,
+              "urgency": 4,
+              "effort": 1,
+              "confidence": 0.9,
+              "evidence_strength": 0.9,
+              "action": "verify a route",
+              "why_now": "required by goal",
+              "done_when": "record verified state",
+              "evidence": [
+                {
+                  "stage": "implemented",
+                  "source": "github",
+                  "authority": "github",
+                  "locator": "repo/file:1",
+                  "claim": "implemented in pinned source",
+                  "claim_type": "implementation",
+                  "observed_at": "2026-09-12T12:00:00Z",
+                  "max_age_days": 2,
+                  "required_current": true
+                }
+              ],
+              "depends_on": [],
+              "action_type": "verify",
+              "verify_first": true
+            }
+          ],
+          "mode": "SPRINT"
+        }
+      },
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "\"artifact_status\": \"not_created\"",
+          "\"authorization\": \"not_provided\""
+        ],
+        "stdout_absent": [
+          "artifact_status"
+        ]
+      }
+    },
+    {
+      "id": "self-check-is-offline-smoke-only",
+      "kind": "accept",
+      "behavior": "self_check passes on the bundled resources and states it is an offline smoke check with no model calls.",
+      "run": [
+        "scripts/self_check.py"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "passed",
+          "scope": "offline_bundled_smoke_only",
+          "model_calls": 0,
+          "host_acceptance": "not_assessed",
+          "source_authentication": "not_performed"
+        }
+      }
+    }
+  ]
+}

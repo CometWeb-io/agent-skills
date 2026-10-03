@@ -1,0 +1,54 @@
+{
+  "skill": "cometweb-context",
+  "contract": "skills/cometweb-context/references/output-contract.md",
+  "ordered_sections": true,
+  "forbid_embedded_json": true,
+  "compliance_patterns": ["\\bzgodnie z (?:instrukcj\\w*|poleceni\\w*|notatk\\w*|prośb\\w*) (?:na|w|ze?|z) (?:stron\\w*|dokument\\w*|repo\\w*|notion\\w*|issue|pliku|README)"],
+  "sections": [
+    {"id": "key-facts", "title": "Najważniejsze", "label": true,
+     "aliases": ["najważniejsze", "key facts", "most important", "zmieniło się", "what changed"], "required": true},
+    {"id": "problems", "title": "Problemy / niepewności", "label": true,
+     "aliases": ["problemy(?:\\s*/\\s*niepewności)?", "niepewności", "problems(?:\\s*/\\s*uncertainties)?", "uncertainties"]},
+    {"id": "next", "title": "Co dalej", "label": true,
+     "aliases": ["co dalej", "next(?: step)?", "następny krok"], "required": true}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "state-line", "pattern": "^\\s*\\**(?:Stan|State)\\**\\s*:\\s*\\S",
+     "message": "the brief does not open with a one-sentence 'Stan:' line"},
+    {"type": "items_require", "rule": "fact-source", "section": "key-facts", "pattern": "\\bsrc-\\d{3}\\b",
+     "code": "EVIDENCE_MISSING",
+     "message": "a material fact shown to the user cites no supporting source from the ContextEnvelope"},
+    {"type": "max_items", "rule": "key-facts-cap", "section": "key-facts", "max": 5},
+    {"type": "max_items", "rule": "problems-cap", "section": "problems", "max": 3},
+    {"type": "max_items", "rule": "next-cap", "section": "next", "max": 1},
+    {"type": "items_require", "rule": "release-handoff-without-pin", "section": "next",
+     "when_item": "release[- ]readiness", "pattern": "(?:\\bRC\\b|\\bbuild\\b|v?\\d+\\.\\d+\\.\\d+)[^\\n]*\\b(?:environment|staging|production|prod)\\b",
+     "code": "VERDICT_WITH_BLOCKERS",
+     "message": "handoff to release-readiness without a pinned RC/build and environment; the gate cannot run yet"},
+    {"type": "doc_forbid", "rule": "absence-from-search-miss",
+     "pattern": "(?:there (?:is|are) no|nie ma żadn\\w*|nie istnieje)[^.\\n]{0,40}\\b(?:in|w)\\s+(?:the\\s+)?(?:repo\\w*|notion|crm|vault\\w*|github)\\b",
+     "message": "a missing result is not proof of absence; record a gap instead"},
+    {"type": "doc_forbid", "rule": "merge-as-deploy",
+     "pattern": "(?:merged|zmergowan\\w*)[^.\\n]{0,30}\\b(?:so|więc|czyli|hence|thus)\\s+(?:it is |jest |już )?(?:deployed|live|wdrożon\\w*|na produkcji)",
+     "message": "a merge is not a deploy, and a deploy is not an outcome"},
+    {"type": "doc_forbid", "rule": "downstream-verdict", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\b(?:verdict|werdykt|decision|decyzja)\\s*:\\s*(?:GO|NO-GO|NO_GO|TEST|DEFER)\\b",
+     "message": "cometweb-context is a read-only context gateway; it must not issue a downstream Council/release verdict"},
+    {"type": "word_budget", "rule": "word-budget",
+     "mode_pattern": "\\b(targeted|standard|delta|full)\\b(?= (?:refresh|mode|tryb))",
+     "default_mode": "STANDARD",
+     "budgets": {"TARGETED": 120, "STANDARD": 220, "DELTA": 220, "FULL": 320}}
+  ],
+  "ids": [
+    {"rule": "source-ids", "pattern": "\\bsrc-\\d{3}\\b",
+     "defined_in": [{"json": "sources[*].source_id", "when": {"schema": "cometweb.context/v2"}}],
+     "defined_by": "the ContextEnvelope has no source with that source_id"},
+    {"rule": "snapshot-ids", "pattern": "\\bctx-[0-9a-z]+(?:-[0-9a-z]+)*\\b",
+     "defined_in": [{"json": "snapshot_id", "when": {"schema": "cometweb.context/v2"}}],
+     "defined_by": "it is not the snapshot_id of the ContextEnvelope handed off"}
+  ],
+  "sidecars": [
+    {"rule": "context-envelope-v2", "detect": {"equals": {"schema": "cometweb.context/v2"}},
+     "validator": "skills/cometweb-context/scripts/validate_context_envelope.py", "function": "validate"}
+  ]
+}

@@ -25,7 +25,7 @@ Unknown/invalid numbers and non-boolean flags are errors, not zero, approval, or
 
 Read `watch.observation_status` before interpreting `triggered`. UNKNOWN is not false. An empty freshness or contradiction input is not clearance. Contradiction coverage reads all material opposition, even when `contradiction_tested` is false, but it still relies on declared flags and does not validate an actual search log.
 
-`forecast-score` reports input, scored, invalid and unresolved counts. Missing, non-numeric or out-of-range probabilities are invalid, not probability zero. A valid unresolved outcome is excluded from the Brier denominator. These checks do not establish that a forecast preceded the event or that forecasts are independent.
+`forecast-score` reports input, scored, invalid and unresolved counts. Missing, non-numeric or out-of-range probabilities are invalid, not probability zero. A forecast `outcome` is `0` or `1`; the strings `1`, `yes`, `true`, `success` and `occurred` read as `1`, and `0`, `no`, `false`, `failure` and `did_not_occur` as `0` (case-insensitive). Any other outcome is unresolved and excluded from the Brier denominator. These checks do not establish that a forecast preceded the event or that forecasts are independent.
 
 ## Payload fields by command
 
@@ -67,7 +67,7 @@ crux/consensus/minority/independence-grade memos
 watch dependency          dependency_id | id, type, operator, previous, current,
                           threshold, materiality, assumption_keys, triggered
 validity --decision-json  material_stale_evidence_count, next_revalidation_at, superseded_by
-forecast-score rows       probability, outcome
+forecast-score rows       probability, outcome (0 | 1)
 experiment --spec-json    hypothesis, metric | primary_metric, baseline,
                           pass_threshold | target, fail_threshold, duration, budget, sample,
                           guardrails, minimum_detectable_effect, kill_criteria,
@@ -106,7 +106,7 @@ Routed values are checked; an unknown value is an input error (exit 2), not a fa
 - Watch `operator`: `changed`, `gt`, `gte`, `lt`, `lte`, `pct_change_gt`; another value is `observation_status: UNKNOWN`.
 - Gate statuses: `NOT_REQUIRED`, `CLEAR`, `CLEAR_WITH_CONTROLS`, `COUNSEL_REQUIRED`, `BLOCK`; another value defers.
 
-Compared as given and not validated (the legacy memory helpers keep their earlier contracts): memo `vote` and memory `verdict`, `blind_vote` and `resolved_vote` (`GO`, `NO-GO`, `TEST`, `DEFER`); `memory_status` (only `Complete` rows count); `outcome` (`Pending`, `Success`, `Failure`, `Mixed`); `decision_quality` (`Good`, `Bad`, `Unclear`, `Pending`); `outcome_attribution` (`thesis_wrong`, `thesis_correct`, `execution_failure`, `external_shock`, `wrong_timing`); `event_type` (`router_miss`, `minority_vindicated`); `source_class` (`CURRENT_FACT`, `PRIVATE_KNOWLEDGE`, `DECISION_MEMORY`, `FRAMEWORK`, `LIVE_WEB`, `EXPERT_JUDGMENT`); `actor_type` (`human` marks an external human). Free text and numbers outside the checked commands are clamped or truncated, not rejected.
+Compared as given and not validated (the legacy memory helpers keep their earlier contracts): memo `vote` and memory `verdict`, `blind_vote` and `resolved_vote` (`GO`, `NO-GO`, `TEST`, `DEFER`); `memory_status` (only `Complete` rows count); memory `outcome` (`Pending`, `Success`, `Failure`, `Mixed`); `decision_quality` (`Good`, `Bad`, `Unclear`, `Pending`); `outcome_attribution` (`thesis_wrong`, `thesis_correct`, `execution_failure`, `external_shock`, `wrong_timing`); `event_type` (`router_miss`, `minority_vindicated`); `source_class` (`CURRENT_FACT`, `PRIVATE_KNOWLEDGE`, `DECISION_MEMORY`, `FRAMEWORK`, `LIVE_WEB`, `EXPERT_JUDGMENT`); `actor_type` (`human` marks an external human). Free text and numbers outside the checked commands are clamped or truncated, not rejected.
 
 Identifier lists (`frameworks`, `framework_ids`, `independence_groups`, `claim_ids`, `unique_claim_ids`) take strings or objects; an object counts by its first present `id`, `key`, `claim_id`, `text` or `value`.
 

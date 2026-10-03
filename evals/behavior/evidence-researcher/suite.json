@@ -1,0 +1,834 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "evidence-researcher",
+  "description": "Offline behavior of the evidence kernel CLI (scripts/evidence_kernel.py) as references/kernel-cli.md documents it: audit gate, validation, refresh plan, stop rule, URL and policy helpers.",
+  "cases": [
+    {
+      "id": "ready-ledger-passes-gate",
+      "kind": "accept",
+      "behavior": "A critical vendor-policy claim with current official support and a recorded falsifier search passes the research gate as READY.",
+      "run": [
+        "scripts/evidence_kernel.py",
+        "audit",
+        "--ledger-json",
+        "{tmp}/evidence.json",
+        "--require-ready"
+      ],
+      "files": {
+        "evidence.json": {
+          "schema_version": "2.0",
+          "research_id": "res_policy",
+          "research_contract": {
+            "question": "Does the vendor policy currently state X?",
+            "objective": "Verify current policy wording",
+            "scope": {
+              "product": "Example"
+            },
+            "as_of": "2026-08-25T21:44:00+02:00",
+            "mode": "STANDARD",
+            "consumers": [
+              "release-readiness"
+            ],
+            "constraints": [],
+            "known_facts": [],
+            "known_unknowns": [],
+            "privacy_lane": "PUBLIC"
+          },
+          "claims": [
+            {
+              "claim_id": "clm_policy",
+              "claim_text": "The vendor policy currently states X.",
+              "claim_type": "vendor_policy",
+              "materiality": "critical",
+              "epistemic_kind": "FACT",
+              "temporal_sensitivity": "high",
+              "scope": {},
+              "depends_on_claim_ids": [],
+              "contradiction_tested": true,
+              "status": "VERIFIED",
+              "confidence": "high"
+            }
+          ],
+          "sources": [
+            {
+              "source_id": "src_policy",
+              "title": "Official policy",
+              "canonical_ref": "https://example.com/policy",
+              "source_class": "LIVE_WEB",
+              "source_role": "OFFICIAL",
+              "provenance_lane": "PUBLIC",
+              "independence_group": "example-vendor",
+              "independence_confidence": "high",
+              "source_state": "final",
+              "published_at": null,
+              "effective_from": null,
+              "effective_to": null,
+              "last_verified_at": "2026-08-25T21:30:00+02:00",
+              "expires_at": null,
+              "source_version": null,
+              "superseded_by_source_id": null,
+              "requires_live_verification": false,
+              "verified_for_research": true,
+              "freshness_ttl_days": null,
+              "derived_from_source_ids": [],
+              "content_hash": null
+            }
+          ],
+          "evidence": [
+            {
+              "evidence_id": "ev_policy_support",
+              "claim_id": "clm_policy",
+              "source_id": "src_policy",
+              "direction": "SUPPORT",
+              "locator": "Policy section 2",
+              "evidence_form": "paraphrase",
+              "summary": "Policy states X.",
+              "authority_fit": "high",
+              "directness": "high",
+              "scope_fit": "high",
+              "measurement_quality": "not_applicable",
+              "admission": "ACCEPTED"
+            }
+          ],
+          "contradictions": [],
+          "searches": [
+            {
+              "search_id": "srch_policy_falsifier",
+              "claim_id": "clm_policy",
+              "purpose": "FALSIFIER",
+              "source_lane": "PUBLIC",
+              "query_summary": "Checked current policy, supersession and contrary vendor notices",
+              "completed": true,
+              "completed_at": "2026-08-25T21:35:00+02:00",
+              "result_source_ids": [
+                "src_policy"
+              ],
+              "novelty_count": 0
+            }
+          ],
+          "gaps": [],
+          "research_status": "PARTIAL",
+          "stop_reason": null
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "research_status": "READY",
+          "reason": "material evidence gate satisfied",
+          "validation.valid": true,
+          "validation.errors": [],
+          "validation.warnings": [],
+          "coverage.material_ready_rate": 1.0,
+          "coverage.critical_gaps": []
+        }
+      }
+    },
+    {
+      "id": "unverified-live-source-requires-refresh",
+      "kind": "refuse",
+      "behavior": "A live-verification claim whose source was not re-verified for this run is REFRESH_REQUIRED and fails --require-ready with exit 1.",
+      "run": [
+        "scripts/evidence_kernel.py",
+        "audit",
+        "--ledger-json",
+        "{tmp}/evidence.json",
+        "--require-ready"
+      ],
+      "files": {
+        "evidence.json": {
+          "schema_version": "2.0",
+          "research_id": "res_policy",
+          "research_contract": {
+            "question": "Does the vendor policy currently state X?",
+            "objective": "Verify current policy wording",
+            "scope": {
+              "product": "Example"
+            },
+            "as_of": "2026-08-25T21:44:00+02:00",
+            "mode": "STANDARD",
+            "consumers": [
+              "release-readiness"
+            ],
+            "constraints": [],
+            "known_facts": [],
+            "known_unknowns": [],
+            "privacy_lane": "PUBLIC"
+          },
+          "claims": [
+            {
+              "claim_id": "clm_policy",
+              "claim_text": "The vendor policy currently states X.",
+              "claim_type": "vendor_policy",
+              "materiality": "critical",
+              "epistemic_kind": "FACT",
+              "temporal_sensitivity": "high",
+              "scope": {},
+              "depends_on_claim_ids": [],
+              "contradiction_tested": true,
+              "status": "VERIFIED",
+              "confidence": "high"
+            }
+          ],
+          "sources": [
+            {
+              "source_id": "src_policy",
+              "title": "Official policy",
+              "canonical_ref": "https://example.com/policy",
+              "source_class": "LIVE_WEB",
+              "source_role": "OFFICIAL",
+              "provenance_lane": "PUBLIC",
+              "independence_group": "example-vendor",
+              "independence_confidence": "high",
+              "source_state": "final",
+              "published_at": null,
+              "effective_from": null,
+              "effective_to": null,
+              "last_verified_at": "2026-08-25T21:30:00+02:00",
+              "expires_at": null,
+              "source_version": null,
+              "superseded_by_source_id": null,
+              "requires_live_verification": false,
+              "verified_for_research": false,
+              "freshness_ttl_days": null,
+              "derived_from_source_ids": [],
+              "content_hash": null
+            }
+          ],
+          "evidence": [
+            {
+              "evidence_id": "ev_policy_support",
+              "claim_id": "clm_policy",
+              "source_id": "src_policy",
+              "direction": "SUPPORT",
+              "locator": "Policy section 2",
+              "evidence_form": "paraphrase",
+              "summary": "Policy states X.",
+              "authority_fit": "high",
+              "directness": "high",
+              "scope_fit": "high",
+              "measurement_quality": "not_applicable",
+              "admission": "ACCEPTED"
+            }
+          ],
+          "contradictions": [],
+          "searches": [
+            {
+              "search_id": "srch_policy_falsifier",
+              "claim_id": "clm_policy",
+              "purpose": "FALSIFIER",
+              "source_lane": "PUBLIC",
+              "query_summary": "Checked current policy, supersession and contrary vendor notices",
+              "completed": true,
+              "completed_at": "2026-08-25T21:35:00+02:00",
+              "result_source_ids": [
+                "src_policy"
+              ],
+              "novelty_count": 0
+            }
+          ],
+          "gaps": [],
+          "research_status": "PARTIAL",
+          "stop_reason": null
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "research_status": "REFRESH_REQUIRED",
+          "reason": "material time-sensitive claim lacks fresh admissible support",
+          "validation.valid": true
+        }
+      }
+    },
+    {
+      "id": "refresh-plan-names-the-source-to-reinspect",
+      "kind": "accept",
+      "behavior": "The refresh plan names the stale claim and source and asks for an immediate refresh, without doing the refresh itself.",
+      "run": [
+        "scripts/evidence_kernel.py",
+        "refresh-plan",
+        "--ledger-json",
+        "{tmp}/evidence.json"
+      ],
+      "files": {
+        "evidence.json": {
+          "schema_version": "2.0",
+          "research_id": "res_policy",
+          "research_contract": {
+            "question": "Does the vendor policy currently state X?",
+            "objective": "Verify current policy wording",
+            "scope": {
+              "product": "Example"
+            },
+            "as_of": "2026-08-25T21:44:00+02:00",
+            "mode": "STANDARD",
+            "consumers": [
+              "release-readiness"
+            ],
+            "constraints": [],
+            "known_facts": [],
+            "known_unknowns": [],
+            "privacy_lane": "PUBLIC"
+          },
+          "claims": [
+            {
+              "claim_id": "clm_policy",
+              "claim_text": "The vendor policy currently states X.",
+              "claim_type": "vendor_policy",
+              "materiality": "critical",
+              "epistemic_kind": "FACT",
+              "temporal_sensitivity": "high",
+              "scope": {},
+              "depends_on_claim_ids": [],
+              "contradiction_tested": true,
+              "status": "VERIFIED",
+              "confidence": "high"
+            }
+          ],
+          "sources": [
+            {
+              "source_id": "src_policy",
+              "title": "Official policy",
+              "canonical_ref": "https://example.com/policy",
+              "source_class": "LIVE_WEB",
+              "source_role": "OFFICIAL",
+              "provenance_lane": "PUBLIC",
+              "independence_group": "example-vendor",
+              "independence_confidence": "high",
+              "source_state": "final",
+              "published_at": null,
+              "effective_from": null,
+              "effective_to": null,
+              "last_verified_at": "2026-08-25T21:30:00+02:00",
+              "expires_at": null,
+              "source_version": null,
+              "superseded_by_source_id": null,
+              "requires_live_verification": false,
+              "verified_for_research": false,
+              "freshness_ttl_days": null,
+              "derived_from_source_ids": [],
+              "content_hash": null
+            }
+          ],
+          "evidence": [
+            {
+              "evidence_id": "ev_policy_support",
+              "claim_id": "clm_policy",
+              "source_id": "src_policy",
+              "direction": "SUPPORT",
+              "locator": "Policy section 2",
+              "evidence_form": "paraphrase",
+              "summary": "Policy states X.",
+              "authority_fit": "high",
+              "directness": "high",
+              "scope_fit": "high",
+              "measurement_quality": "not_applicable",
+              "admission": "ACCEPTED"
+            }
+          ],
+          "contradictions": [],
+          "searches": [
+            {
+              "search_id": "srch_policy_falsifier",
+              "claim_id": "clm_policy",
+              "purpose": "FALSIFIER",
+              "source_lane": "PUBLIC",
+              "query_summary": "Checked current policy, supersession and contrary vendor notices",
+              "completed": true,
+              "completed_at": "2026-08-25T21:35:00+02:00",
+              "result_source_ids": [
+                "src_policy"
+              ],
+              "novelty_count": 0
+            }
+          ],
+          "gaps": [],
+          "research_status": "PARTIAL",
+          "stop_reason": null
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "refresh_required": true,
+          "refresh_soon": false,
+          "dependent_claim_ids": [],
+          "items": [
+            {
+              "action": "REFRESH_NOW",
+              "claim_id": "clm_policy",
+              "computed_expires_at": null,
+              "reason": "live verification required but not explicitly recorded",
+              "source_id": "src_policy",
+              "temporal_status": "UNKNOWN"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "inference-cannot-be-verified",
+      "kind": "refuse",
+      "behavior": "An inference marked VERIFIED is rejected by validation instead of passing as a checked fact.",
+      "run": [
+        "scripts/evidence_kernel.py",
+        "validate",
+        "--ledger-json",
+        "{tmp}/evidence.json"
+      ],
+      "files": {
+        "evidence.json": {
+          "schema_version": "2.0",
+          "research_id": "res_policy",
+          "research_contract": {
+            "question": "Does the vendor policy currently state X?",
+            "objective": "Verify current policy wording",
+            "scope": {
+              "product": "Example"
+            },
+            "as_of": "2026-08-25T21:44:00+02:00",
+            "mode": "STANDARD",
+            "consumers": [
+              "release-readiness"
+            ],
+            "constraints": [],
+            "known_facts": [],
+            "known_unknowns": [],
+            "privacy_lane": "PUBLIC"
+          },
+          "claims": [
+            {
+              "claim_id": "clm_policy",
+              "claim_text": "The vendor policy currently states X.",
+              "claim_type": "vendor_policy",
+              "materiality": "critical",
+              "epistemic_kind": "INFERENCE",
+              "temporal_sensitivity": "high",
+              "scope": {},
+              "depends_on_claim_ids": [],
+              "contradiction_tested": true,
+              "status": "VERIFIED",
+              "confidence": "high"
+            }
+          ],
+          "sources": [
+            {
+              "source_id": "src_policy",
+              "title": "Official policy",
+              "canonical_ref": "https://example.com/policy",
+              "source_class": "LIVE_WEB",
+              "source_role": "OFFICIAL",
+              "provenance_lane": "PUBLIC",
+              "independence_group": "example-vendor",
+              "independence_confidence": "high",
+              "source_state": "final",
+              "published_at": null,
+              "effective_from": null,
+              "effective_to": null,
+              "last_verified_at": "2026-08-25T21:30:00+02:00",
+              "expires_at": null,
+              "source_version": null,
+              "superseded_by_source_id": null,
+              "requires_live_verification": false,
+              "verified_for_research": true,
+              "freshness_ttl_days": null,
+              "derived_from_source_ids": [],
+              "content_hash": null
+            }
+          ],
+          "evidence": [
+            {
+              "evidence_id": "ev_policy_support",
+              "claim_id": "clm_policy",
+              "source_id": "src_policy",
+              "direction": "SUPPORT",
+              "locator": "Policy section 2",
+              "evidence_form": "paraphrase",
+              "summary": "Policy states X.",
+              "authority_fit": "high",
+              "directness": "high",
+              "scope_fit": "high",
+              "measurement_quality": "not_applicable",
+              "admission": "ACCEPTED"
+            }
+          ],
+          "contradictions": [],
+          "searches": [
+            {
+              "search_id": "srch_policy_falsifier",
+              "claim_id": "clm_policy",
+              "purpose": "FALSIFIER",
+              "source_lane": "PUBLIC",
+              "query_summary": "Checked current policy, supersession and contrary vendor notices",
+              "completed": true,
+              "completed_at": "2026-08-25T21:35:00+02:00",
+              "result_source_ids": [
+                "src_policy"
+              ],
+              "novelty_count": 0
+            }
+          ],
+          "gaps": [],
+          "research_status": "PARTIAL",
+          "stop_reason": null
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "valid": false,
+          "errors": [
+            "clm_policy is INFERENCE and cannot be marked VERIFIED"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "v1-ledger-points-to-migration",
+      "kind": "refuse",
+      "behavior": "A ledger without schema_version 2.0 is invalid and the error points the user to migrate-v1.",
+      "run": [
+        "scripts/evidence_kernel.py",
+        "validate",
+        "--ledger-json",
+        "{tmp}/evidence.json"
+      ],
+      "files": {
+        "evidence.json": {
+          "research_id": "res_policy",
+          "research_contract": {
+            "question": "Does the vendor policy currently state X?",
+            "objective": "Verify current policy wording",
+            "scope": {
+              "product": "Example"
+            },
+            "as_of": "2026-08-25T21:44:00+02:00",
+            "mode": "STANDARD",
+            "consumers": [
+              "release-readiness"
+            ],
+            "constraints": [],
+            "known_facts": [],
+            "known_unknowns": [],
+            "privacy_lane": "PUBLIC"
+          },
+          "claims": [
+            {
+              "claim_id": "clm_policy",
+              "claim_text": "The vendor policy currently states X.",
+              "claim_type": "vendor_policy",
+              "materiality": "critical",
+              "epistemic_kind": "FACT",
+              "temporal_sensitivity": "high",
+              "scope": {},
+              "depends_on_claim_ids": [],
+              "contradiction_tested": true,
+              "status": "VERIFIED",
+              "confidence": "high"
+            }
+          ],
+          "sources": [
+            {
+              "source_id": "src_policy",
+              "title": "Official policy",
+              "canonical_ref": "https://example.com/policy",
+              "source_class": "LIVE_WEB",
+              "source_role": "OFFICIAL",
+              "provenance_lane": "PUBLIC",
+              "independence_group": "example-vendor",
+              "independence_confidence": "high",
+              "source_state": "final",
+              "published_at": null,
+              "effective_from": null,
+              "effective_to": null,
+              "last_verified_at": "2026-08-25T21:30:00+02:00",
+              "expires_at": null,
+              "source_version": null,
+              "superseded_by_source_id": null,
+              "requires_live_verification": false,
+              "verified_for_research": true,
+              "freshness_ttl_days": null,
+              "derived_from_source_ids": [],
+              "content_hash": null
+            }
+          ],
+          "evidence": [
+            {
+              "evidence_id": "ev_policy_support",
+              "claim_id": "clm_policy",
+              "source_id": "src_policy",
+              "direction": "SUPPORT",
+              "locator": "Policy section 2",
+              "evidence_form": "paraphrase",
+              "summary": "Policy states X.",
+              "authority_fit": "high",
+              "directness": "high",
+              "scope_fit": "high",
+              "measurement_quality": "not_applicable",
+              "admission": "ACCEPTED"
+            }
+          ],
+          "contradictions": [],
+          "searches": [
+            {
+              "search_id": "srch_policy_falsifier",
+              "claim_id": "clm_policy",
+              "purpose": "FALSIFIER",
+              "source_lane": "PUBLIC",
+              "query_summary": "Checked current policy, supersession and contrary vendor notices",
+              "completed": true,
+              "completed_at": "2026-08-25T21:35:00+02:00",
+              "result_source_ids": [
+                "src_policy"
+              ],
+              "novelty_count": 0
+            }
+          ],
+          "gaps": [],
+          "research_status": "PARTIAL",
+          "stop_reason": null
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "valid": false,
+          "errors": [
+            "schema_version must be 2.0; use migrate-v1 for v1 ledgers"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "empty-template-is-partial-not-ready",
+      "kind": "boundary",
+      "behavior": "A fresh template with no claims is structurally valid but PARTIAL, so --require-ready exits 1 rather than reporting research done.",
+      "run": [
+        "scripts/evidence_kernel.py",
+        "audit",
+        "--ledger-json",
+        "{tmp}/evidence.json",
+        "--require-ready"
+      ],
+      "files": {
+        "evidence.json": {
+          "claims": [],
+          "contradictions": [],
+          "evidence": [],
+          "gaps": [],
+          "research_contract": {
+            "as_of": "2026-01-01T12:00:00+00:00",
+            "constraints": [],
+            "consumers": [],
+            "known_facts": [],
+            "known_unknowns": [],
+            "mode": "STANDARD",
+            "objective": null,
+            "privacy_lane": "PUBLIC",
+            "question": "Is the example claim true?",
+            "scope": {}
+          },
+          "research_id": "res_example",
+          "research_status": "PARTIAL",
+          "schema_version": "2.0",
+          "searches": [],
+          "sources": [],
+          "stop_reason": null
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "research_status": "PARTIAL",
+          "reason": "no material research scope has been assessed",
+          "validation.valid": true,
+          "coverage.material_claim_count": 0
+        }
+      }
+    },
+    {
+      "id": "malformed-ledger-is-input-error",
+      "kind": "boundary",
+      "behavior": "A ledger file that is not JSON exits 2 and says research was not assessed.",
+      "run": [
+        "scripts/evidence_kernel.py",
+        "audit",
+        "--ledger-json",
+        "{tmp}/evidence.json",
+        "--require-ready"
+      ],
+      "files": {
+        "evidence.json": "{not json"
+      },
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "\"error\": \"invalid input; research was not assessed\""
+        ]
+      }
+    },
+    {
+      "id": "canonical-url-strips-tracking",
+      "kind": "accept",
+      "behavior": "Canonical URLs drop tracking parameters and fragments and sort the remaining query so the same page is recognised once.",
+      "run": [
+        "scripts/evidence_kernel.py",
+        "canonical-url",
+        "--url",
+        "https://Example.com/page?utm_source=x&b=2&a=1#section"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "https://example.com/page?a=1&b=2"
+        ]
+      }
+    },
+    {
+      "id": "unknown-claim-type-is-flagged",
+      "kind": "boundary",
+      "behavior": "An unknown claim type is reported as not known with no default TTL instead of borrowing a policy.",
+      "run": [
+        "scripts/evidence_kernel.py",
+        "source-policy",
+        "--claim-type",
+        "horoscope"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "claim_type": "horoscope",
+          "known_claim_type": false,
+          "default_ttl_days": null,
+          "requires_live_verification": false
+        }
+      }
+    },
+    {
+      "id": "stop-when-ready-and-no-novelty",
+      "kind": "accept",
+      "behavior": "Research stops once the gate is READY and further rounds add no novelty.",
+      "run": [
+        "scripts/evidence_kernel.py",
+        "stop",
+        "--ledger-json",
+        "{tmp}/evidence.json",
+        "--no-novelty-rounds",
+        "2",
+        "--expected-information-gain",
+        "0.1",
+        "--research-cost",
+        "0.2"
+      ],
+      "files": {
+        "evidence.json": {
+          "schema_version": "2.0",
+          "research_id": "res_policy",
+          "research_contract": {
+            "question": "Does the vendor policy currently state X?",
+            "objective": "Verify current policy wording",
+            "scope": {
+              "product": "Example"
+            },
+            "as_of": "2026-08-25T21:44:00+02:00",
+            "mode": "STANDARD",
+            "consumers": [
+              "release-readiness"
+            ],
+            "constraints": [],
+            "known_facts": [],
+            "known_unknowns": [],
+            "privacy_lane": "PUBLIC"
+          },
+          "claims": [
+            {
+              "claim_id": "clm_policy",
+              "claim_text": "The vendor policy currently states X.",
+              "claim_type": "vendor_policy",
+              "materiality": "critical",
+              "epistemic_kind": "FACT",
+              "temporal_sensitivity": "high",
+              "scope": {},
+              "depends_on_claim_ids": [],
+              "contradiction_tested": true,
+              "status": "VERIFIED",
+              "confidence": "high"
+            }
+          ],
+          "sources": [
+            {
+              "source_id": "src_policy",
+              "title": "Official policy",
+              "canonical_ref": "https://example.com/policy",
+              "source_class": "LIVE_WEB",
+              "source_role": "OFFICIAL",
+              "provenance_lane": "PUBLIC",
+              "independence_group": "example-vendor",
+              "independence_confidence": "high",
+              "source_state": "final",
+              "published_at": null,
+              "effective_from": null,
+              "effective_to": null,
+              "last_verified_at": "2026-08-25T21:30:00+02:00",
+              "expires_at": null,
+              "source_version": null,
+              "superseded_by_source_id": null,
+              "requires_live_verification": false,
+              "verified_for_research": true,
+              "freshness_ttl_days": null,
+              "derived_from_source_ids": [],
+              "content_hash": null
+            }
+          ],
+          "evidence": [
+            {
+              "evidence_id": "ev_policy_support",
+              "claim_id": "clm_policy",
+              "source_id": "src_policy",
+              "direction": "SUPPORT",
+              "locator": "Policy section 2",
+              "evidence_form": "paraphrase",
+              "summary": "Policy states X.",
+              "authority_fit": "high",
+              "directness": "high",
+              "scope_fit": "high",
+              "measurement_quality": "not_applicable",
+              "admission": "ACCEPTED"
+            }
+          ],
+          "contradictions": [],
+          "searches": [
+            {
+              "search_id": "srch_policy_falsifier",
+              "claim_id": "clm_policy",
+              "purpose": "FALSIFIER",
+              "source_lane": "PUBLIC",
+              "query_summary": "Checked current policy, supersession and contrary vendor notices",
+              "completed": true,
+              "completed_at": "2026-08-25T21:35:00+02:00",
+              "result_source_ids": [
+                "src_policy"
+              ],
+              "novelty_count": 0
+            }
+          ],
+          "gaps": [],
+          "research_status": "PARTIAL",
+          "stop_reason": null
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "stop": true,
+          "saturation": true,
+          "voi_exhausted": true,
+          "reason": "evidence gate is ready and marginal research value is exhausted"
+        }
+      }
+    }
+  ]
+}

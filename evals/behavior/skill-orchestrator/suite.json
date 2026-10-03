@@ -1,0 +1,182 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "skill-orchestrator",
+  "description": "Offline behavior of the workflow planner the references document as python3 scripts/orchestrate_kernel.py \"<goal>\" --json.",
+  "cases": [
+    {
+      "id": "audit-then-release-plan",
+      "kind": "accept",
+      "behavior": "An audit-then-release goal plans the web app audit first and the pinned release gate second, each with its CW-AIP output type.",
+      "run": [
+        "scripts/orchestrate_kernel.py",
+        "web app audit then release gate for build v2.3 on staging",
+        "--json"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "archetype": "audit_then_release",
+          "goal_summary": "web app audit then release gate for build v2.3 on staging",
+          "steps": [
+            {
+              "skill": "web-app-auditor",
+              "purpose": "Produce findings with evidence",
+              "envelope_out": "FindingEnvelope",
+              "read_skill": true
+            },
+            {
+              "skill": "release-readiness",
+              "purpose": "Gate pinned RC/build with audit findings",
+              "envelope_out": "DecisionHandoff",
+              "read_skill": true
+            }
+          ],
+          "boundaries": [
+            "Release Readiness requires pinned RC/build + environment.",
+            "Audit findings feed gates; score cannot override hard gates."
+          ],
+          "single_skill_alternative": null
+        }
+      }
+    },
+    {
+      "id": "evidence-then-weekly-priorities",
+      "kind": "accept",
+      "behavior": "Evidence followed by weekly priorities plans evidence verification before the product operator, and keeps prioritization out of the research step.",
+      "run": [
+        "scripts/orchestrate_kernel.py",
+        "  verify evidence then weekly operator priorities  ",
+        "--json"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "archetype": "research_then_operator",
+          "goal_summary": "verify evidence then weekly operator priorities",
+          "steps.0.skill": "evidence-researcher",
+          "steps.0.envelope_out": "EvidenceEnvelope",
+          "steps.1.skill": "product-operator",
+          "steps.1.envelope_out": "SpecialistHandoff",
+          "boundaries": [
+            "Evidence Researcher does not prioritize or sequence product work.",
+            "Product Operator owns NOW/NEXT/LATER after evidence is admitted."
+          ]
+        },
+        "json_len": {
+          "steps": 2
+        }
+      }
+    },
+    {
+      "id": "single-specialist-request-is-not-orchestrated",
+      "kind": "refuse",
+      "behavior": "A request for one specialist's output only is not turned into a multi-step workflow; it plans that single skill.",
+      "run": [
+        "scripts/orchestrate_kernel.py",
+        "evidence pack only on the pricing claims",
+        "--json"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "archetype": "single_skill",
+          "single_skill_alternative": "evidence-researcher",
+          "steps": [
+            {
+              "skill": "evidence-researcher",
+              "purpose": "User requested a single specialist skill",
+              "envelope_out": null,
+              "read_skill": true
+            }
+          ],
+          "boundaries": [
+            "Single-skill mode — load only the target SKILL.md.",
+            "Re-run orchestrator when the user wants a multi-step workflow."
+          ]
+        }
+      }
+    },
+    {
+      "id": "skill-selection-question-runs-nothing",
+      "kind": "refuse",
+      "behavior": "A question about which skill to use yields a routing recommendation with no execution steps.",
+      "run": [
+        "scripts/orchestrate_kernel.py",
+        "which skill should I use for this?",
+        "--json"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "archetype": "disambiguate_only",
+          "steps": [],
+          "single_skill_alternative": null,
+          "boundaries": [
+            "Emit routing recommendation only — do not execute domain skills in this turn unless user confirms."
+          ]
+        }
+      }
+    },
+    {
+      "id": "broad-goal-without-decision-prunes-to-evidence",
+      "kind": "boundary",
+      "behavior": "A broad orchestration goal with no decision, roadmap or release in it is pruned to the evidence step only.",
+      "run": [
+        "scripts/orchestrate_kernel.py",
+        "orchestrate a full workflow for the checkout launch",
+        "--json"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "archetype": "orchestrated_goal",
+          "steps": [
+            {
+              "skill": "evidence-researcher",
+              "purpose": "Verify material factual claims first",
+              "envelope_out": "EvidenceEnvelope",
+              "read_skill": true
+            }
+          ]
+        },
+        "json_len": {
+          "boundaries": 3
+        }
+      }
+    },
+    {
+      "id": "empty-goal-is-an-error",
+      "kind": "refuse",
+      "behavior": "An empty goal is rejected with a usage error instead of producing a plan.",
+      "run": [
+        "scripts/orchestrate_kernel.py",
+        "",
+        "--json"
+      ],
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "error: goal is required"
+        ]
+      }
+    },
+    {
+      "id": "text-plan-lists-steps-and-boundaries",
+      "kind": "boundary",
+      "behavior": "Without --json the planner prints the archetype, numbered steps with their output types and the boundaries in plain text.",
+      "run": [
+        "scripts/orchestrate_kernel.py",
+        "web app audit then release gate for build v2.3 on staging"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "archetype: audit_then_release",
+          "  1. web-app-auditor: Produce findings with evidence → FindingEnvelope",
+          "  2. release-readiness: Gate pinned RC/build with audit findings → DecisionHandoff",
+          "boundary: Release Readiness requires pinned RC/build + environment."
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,1354 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "seo-geo-aeo-maxxing",
+  "description": "Offline behavior of build_audit_template.py, score_maxx.py, compare_scores.py and check_freshness.py as SKILL.md and references/scoring.md tell a user to run them.",
+  "cases": [
+    {
+      "id": "template-for-one-pillar",
+      "kind": "accept",
+      "behavior": "A PILLAR template for AEO lists every AEO check as NOT_ASSESSED with what evidence is needed, so nothing is scored by default.",
+      "run": [
+        "scripts/build_audit_template.py",
+        "--mode",
+        "PILLAR",
+        "--pillars",
+        "aeo",
+        "--surfaces",
+        "chatgpt-search",
+        "--subject",
+        "https://example.com/"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "registry_version": "3.0.0",
+          "mode": "PILLAR",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "subject": "https://example.com/",
+          "gates": [],
+          "checks.0": {
+            "id": "AEO-01",
+            "verdict": "NOT_ASSESSED",
+            "needed": "Collect evidence for: Answer-first clarity"
+          }
+        },
+        "json_len": {
+          "checks": 7
+        }
+      }
+    },
+    {
+      "id": "pillar-template-without-pillars-is-refused",
+      "kind": "refuse",
+      "behavior": "Asking for a PILLAR audit without naming the pillars is refused with a usage error.",
+      "run": [
+        "scripts/build_audit_template.py",
+        "--mode",
+        "PILLAR"
+      ],
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "error: PILLAR mode requires --pillars"
+        ]
+      }
+    },
+    {
+      "id": "focused-score-with-sufficient-coverage",
+      "kind": "accept",
+      "behavior": "A single-pillar audit with evidenced PASS verdicts and one unassessed check gets a publishable Focused readiness score, not a MAXX score.",
+      "run": [
+        "scripts/score_maxx.py",
+        "{tmp}/audit.json",
+        "--as-of",
+        "2026-10-03"
+      ],
+      "files": {
+        "audit.json": {
+          "registry_version": "3.0.0",
+          "mode": "PILLAR",
+          "subject": "https://example.com/",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "checks": [
+            {
+              "id": "AEO-01",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-02",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-03",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-04",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-05",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-06",
+              "verdict": "NOT_ASSESSED",
+              "needed": "Rendered page sample"
+            },
+            {
+              "id": "AEO-07",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            }
+          ],
+          "gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "score_name": "Focused readiness",
+          "maxx": null,
+          "focused_score": 100.0,
+          "tier": null,
+          "provisional": false,
+          "overall_coverage": 88.9,
+          "unpublishable_pillars": [],
+          "score_withheld_reason": null,
+          "pillars.aeo.assessed_checks": 6,
+          "pillars.aeo.not_assessed_checks": 1,
+          "pillars.aeo.evidence_grade": "A"
+        }
+      }
+    },
+    {
+      "id": "low-coverage-score-is-withheld",
+      "kind": "boundary",
+      "behavior": "When evidence covers less than half of the pillar's weight the score is withheld with a reason instead of being published.",
+      "run": [
+        "scripts/score_maxx.py",
+        "{tmp}/audit.json",
+        "--as-of",
+        "2026-10-03"
+      ],
+      "files": {
+        "audit.json": {
+          "registry_version": "3.0.0",
+          "mode": "PILLAR",
+          "subject": "https://example.com/",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "checks": [
+            {
+              "id": "AEO-01",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-02",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-03",
+              "verdict": "NOT_ASSESSED",
+              "needed": "Rendered page sample"
+            },
+            {
+              "id": "AEO-04",
+              "verdict": "NOT_ASSESSED",
+              "needed": "Rendered page sample"
+            },
+            {
+              "id": "AEO-05",
+              "verdict": "NOT_ASSESSED",
+              "needed": "Rendered page sample"
+            },
+            {
+              "id": "AEO-06",
+              "verdict": "NOT_ASSESSED",
+              "needed": "Rendered page sample"
+            },
+            {
+              "id": "AEO-07",
+              "verdict": "NOT_ASSESSED",
+              "needed": "Rendered page sample"
+            }
+          ],
+          "gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "focused_score": null,
+          "provisional": true,
+          "overall_coverage": 37.0,
+          "unpublishable_pillars": [
+            "aeo"
+          ],
+          "score_withheld_reason": "Evidence coverage is below the minimum publishable threshold (50%) for: aeo",
+          "pillars.aeo.publishable": false
+        }
+      }
+    },
+    {
+      "id": "pass-without-evidence-is-refused",
+      "kind": "refuse",
+      "behavior": "A PASS verdict with no evidence list is refused rather than scored.",
+      "run": [
+        "scripts/score_maxx.py",
+        "{tmp}/audit.json",
+        "--as-of",
+        "2026-10-03"
+      ],
+      "files": {
+        "audit.json": {
+          "registry_version": "3.0.0",
+          "mode": "PILLAR",
+          "subject": "https://example.com/",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "checks": [
+            {
+              "id": "AEO-01",
+              "verdict": "PASS"
+            },
+            {
+              "id": "AEO-02",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-03",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-04",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-05",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-06",
+              "verdict": "NOT_ASSESSED",
+              "needed": "Rendered page sample"
+            },
+            {
+              "id": "AEO-07",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            }
+          ],
+          "gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "ERROR: AEO-01 scored verdict requires a non-empty evidence list"
+        ]
+      }
+    },
+    {
+      "id": "never-na-check-cannot-be-na",
+      "kind": "refuse",
+      "behavior": "A check whose policy forbids N/A cannot be excused from scoring with N/A.",
+      "run": [
+        "scripts/score_maxx.py",
+        "{tmp}/audit.json",
+        "--as-of",
+        "2026-10-03"
+      ],
+      "files": {
+        "audit.json": {
+          "registry_version": "3.0.0",
+          "mode": "PILLAR",
+          "subject": "https://example.com/",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "checks": [
+            {
+              "id": "AEO-01",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-02",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-03",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-04",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-05",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-06",
+              "verdict": "NOT_ASSESSED",
+              "needed": "Rendered page sample"
+            },
+            {
+              "id": "AEO-07",
+              "verdict": "N/A",
+              "reason": "not relevant"
+            }
+          ],
+          "gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "ERROR: AEO-07 cannot be N/A; use PASS/WEAK/FAIL or NOT_ASSESSED"
+        ]
+      }
+    },
+    {
+      "id": "stale-platform-facts-block-scoring",
+      "kind": "refuse",
+      "behavior": "A platform-dependent check cannot be scored on bundled platform facts older than their TTL without a fresh official-source override.",
+      "run": [
+        "scripts/score_maxx.py",
+        "{tmp}/audit.json",
+        "--as-of",
+        "2030-01-01"
+      ],
+      "files": {
+        "audit.json": {
+          "registry_version": "3.0.0",
+          "mode": "PILLAR",
+          "subject": "https://example.com/",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "google-ai-search"
+          ],
+          "checks": [
+            {
+              "id": "AEO-01",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-02",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-03",
+              "verdict": "FAIL",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-04",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-05",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-06",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            },
+            {
+              "id": "AEO-07",
+              "verdict": "PASS",
+              "evidence": [
+                {
+                  "class": "E2_SITE_DIRECT",
+                  "artifact": "answer block observed on the page",
+                  "source": "https://example.com/"
+                }
+              ]
+            }
+          ],
+          "gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "ERROR: Platform fact group google_structured_data",
+          "freshness_overrides.google_structured_data"
+        ]
+      }
+    },
+    {
+      "id": "delta-reports-verdict-change",
+      "kind": "accept",
+      "behavior": "Comparing two comparable score files reports the score delta and the one check that moved from PASS to FAIL.",
+      "run": [
+        "scripts/compare_scores.py",
+        "{tmp}/before.json",
+        "{tmp}/after.json",
+        "--kind",
+        "delta"
+      ],
+      "files": {
+        "before.json": {
+          "scoring_engine_version": "3.0.0",
+          "audit_fingerprint": "f28019cc92c432536273d741802347ae1cdf4836d0623522a7e8cfaffee792eb",
+          "registry_version": "3.0.0",
+          "subject": "https://example.com/",
+          "site_archetypes": [],
+          "scope": {},
+          "as_of": "2026-10-03",
+          "mode": "PILLAR",
+          "profile": "balanced",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "weights": {
+            "aeo": 10.0
+          },
+          "maxx": null,
+          "focused_score": 100.0,
+          "score_name": "Focused readiness",
+          "tier": null,
+          "indicative_tier": null,
+          "maxx_cap": null,
+          "provisional": false,
+          "overall_coverage": 88.9,
+          "overall_evidence_quality": 100.0,
+          "overall_evidence_grade": "A",
+          "missing_active_pillars": [],
+          "unpublishable_pillars": [],
+          "coverage_rules": {
+            "withhold_below": 50.0,
+            "provisional_below": 75.0
+          },
+          "score_withheld_reason": null,
+          "pillars": {
+            "aeo": {
+              "score": 100.0,
+              "coverage": 88.9,
+              "evidence_quality": 100.0,
+              "evidence_grade": "A",
+              "provisional": false,
+              "publishable": true,
+              "assessed_checks": 6,
+              "not_assessed_checks": 1,
+              "na_checks": 0
+            }
+          },
+          "gates_applied": [],
+          "freshness_used": [],
+          "check_results": [
+            {
+              "id": "AEO-01",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.5,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-02",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-03",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-04",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-05",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-06",
+              "pillar": "aeo",
+              "verdict": "NOT_ASSESSED",
+              "points": null,
+              "weight": 0.75,
+              "evidence_quality": null
+            },
+            {
+              "id": "AEO-07",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            }
+          ]
+        },
+        "after.json": {
+          "scoring_engine_version": "3.0.0",
+          "audit_fingerprint": "cce40207c50c088ce23499b648af74f815e27c2fbb8c7ed5b80a1560892ff4cc",
+          "registry_version": "3.0.0",
+          "subject": "https://example.com/",
+          "site_archetypes": [],
+          "scope": {},
+          "as_of": "2026-10-03",
+          "mode": "PILLAR",
+          "profile": "balanced",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "weights": {
+            "aeo": 10.0
+          },
+          "maxx": null,
+          "focused_score": 83.3,
+          "score_name": "Focused readiness",
+          "tier": null,
+          "indicative_tier": null,
+          "maxx_cap": null,
+          "provisional": false,
+          "overall_coverage": 88.9,
+          "overall_evidence_quality": 100.0,
+          "overall_evidence_grade": "A",
+          "missing_active_pillars": [],
+          "unpublishable_pillars": [],
+          "coverage_rules": {
+            "withhold_below": 50.0,
+            "provisional_below": 75.0
+          },
+          "score_withheld_reason": null,
+          "pillars": {
+            "aeo": {
+              "score": 83.3,
+              "coverage": 88.9,
+              "evidence_quality": 100.0,
+              "evidence_grade": "A",
+              "provisional": false,
+              "publishable": true,
+              "assessed_checks": 6,
+              "not_assessed_checks": 1,
+              "na_checks": 0
+            }
+          },
+          "gates_applied": [],
+          "freshness_used": [],
+          "check_results": [
+            {
+              "id": "AEO-01",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.5,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-02",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-03",
+              "pillar": "aeo",
+              "verdict": "FAIL",
+              "points": 0.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-04",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-05",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-06",
+              "pillar": "aeo",
+              "verdict": "NOT_ASSESSED",
+              "points": null,
+              "weight": 0.75,
+              "evidence_quality": null
+            },
+            {
+              "id": "AEO-07",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "kind": "DELTA",
+          "comparable": true,
+          "comparability_reasons": [],
+          "score_name": "Focused readiness",
+          "baseline_score": 100.0,
+          "current_score": 83.3,
+          "score_delta": -16.7,
+          "check_verdict_changes": [
+            {
+              "id": "AEO-03",
+              "from": "PASS",
+              "to": "FAIL",
+              "points_delta": -1.0
+            }
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "versus-with-different-profile-is-flagged",
+      "kind": "boundary",
+      "behavior": "A VERSUS comparison across different weighting profiles is marked not comparable and warned about before a winner is declared.",
+      "run": [
+        "scripts/compare_scores.py",
+        "{tmp}/a.json",
+        "{tmp}/b.json",
+        "--kind",
+        "versus"
+      ],
+      "files": {
+        "a.json": {
+          "scoring_engine_version": "3.0.0",
+          "audit_fingerprint": "f28019cc92c432536273d741802347ae1cdf4836d0623522a7e8cfaffee792eb",
+          "registry_version": "3.0.0",
+          "subject": "https://example.com/",
+          "site_archetypes": [],
+          "scope": {},
+          "as_of": "2026-10-03",
+          "mode": "PILLAR",
+          "profile": "balanced",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "weights": {
+            "aeo": 10.0
+          },
+          "maxx": null,
+          "focused_score": 100.0,
+          "score_name": "Focused readiness",
+          "tier": null,
+          "indicative_tier": null,
+          "maxx_cap": null,
+          "provisional": false,
+          "overall_coverage": 88.9,
+          "overall_evidence_quality": 100.0,
+          "overall_evidence_grade": "A",
+          "missing_active_pillars": [],
+          "unpublishable_pillars": [],
+          "coverage_rules": {
+            "withhold_below": 50.0,
+            "provisional_below": 75.0
+          },
+          "score_withheld_reason": null,
+          "pillars": {
+            "aeo": {
+              "score": 100.0,
+              "coverage": 88.9,
+              "evidence_quality": 100.0,
+              "evidence_grade": "A",
+              "provisional": false,
+              "publishable": true,
+              "assessed_checks": 6,
+              "not_assessed_checks": 1,
+              "na_checks": 0
+            }
+          },
+          "gates_applied": [],
+          "freshness_used": [],
+          "check_results": [
+            {
+              "id": "AEO-01",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.5,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-02",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-03",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-04",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-05",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-06",
+              "pillar": "aeo",
+              "verdict": "NOT_ASSESSED",
+              "points": null,
+              "weight": 0.75,
+              "evidence_quality": null
+            },
+            {
+              "id": "AEO-07",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            }
+          ]
+        },
+        "b.json": {
+          "scoring_engine_version": "3.0.0",
+          "audit_fingerprint": "cce40207c50c088ce23499b648af74f815e27c2fbb8c7ed5b80a1560892ff4cc",
+          "registry_version": "3.0.0",
+          "subject": "https://example.com/",
+          "site_archetypes": [],
+          "scope": {},
+          "as_of": "2026-10-03",
+          "mode": "PILLAR",
+          "profile": "ai-first",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "weights": {
+            "aeo": 10.0
+          },
+          "maxx": null,
+          "focused_score": 83.3,
+          "score_name": "Focused readiness",
+          "tier": null,
+          "indicative_tier": null,
+          "maxx_cap": null,
+          "provisional": false,
+          "overall_coverage": 88.9,
+          "overall_evidence_quality": 100.0,
+          "overall_evidence_grade": "A",
+          "missing_active_pillars": [],
+          "unpublishable_pillars": [],
+          "coverage_rules": {
+            "withhold_below": 50.0,
+            "provisional_below": 75.0
+          },
+          "score_withheld_reason": null,
+          "pillars": {
+            "aeo": {
+              "score": 83.3,
+              "coverage": 88.9,
+              "evidence_quality": 100.0,
+              "evidence_grade": "A",
+              "provisional": false,
+              "publishable": true,
+              "assessed_checks": 6,
+              "not_assessed_checks": 1,
+              "na_checks": 0
+            }
+          },
+          "gates_applied": [],
+          "freshness_used": [],
+          "check_results": [
+            {
+              "id": "AEO-01",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.5,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-02",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-03",
+              "pillar": "aeo",
+              "verdict": "FAIL",
+              "points": 0.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-04",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-05",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-06",
+              "pillar": "aeo",
+              "verdict": "NOT_ASSESSED",
+              "points": null,
+              "weight": 0.75,
+              "evidence_quality": null
+            },
+            {
+              "id": "AEO-07",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "kind": "VERSUS",
+          "comparable": false,
+          "comparability_reasons": [
+            "profile differs"
+          ],
+          "warnings": [
+            "VERSUS comparison is asymmetric; align engine, registry, profile, pillars, and target surfaces before declaring a winner."
+          ]
+        }
+      }
+    },
+    {
+      "id": "hand-edited-score-is-refused",
+      "kind": "refuse",
+      "behavior": "A score file whose pillar score is not a number is refused with a clear message instead of a traceback.",
+      "run": [
+        "scripts/compare_scores.py",
+        "{tmp}/before.json",
+        "{tmp}/after.json"
+      ],
+      "files": {
+        "before.json": {
+          "scoring_engine_version": "3.0.0",
+          "audit_fingerprint": "f28019cc92c432536273d741802347ae1cdf4836d0623522a7e8cfaffee792eb",
+          "registry_version": "3.0.0",
+          "subject": "https://example.com/",
+          "site_archetypes": [],
+          "scope": {},
+          "as_of": "2026-10-03",
+          "mode": "PILLAR",
+          "profile": "balanced",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "weights": {
+            "aeo": 10.0
+          },
+          "maxx": null,
+          "focused_score": 100.0,
+          "score_name": "Focused readiness",
+          "tier": null,
+          "indicative_tier": null,
+          "maxx_cap": null,
+          "provisional": false,
+          "overall_coverage": 88.9,
+          "overall_evidence_quality": 100.0,
+          "overall_evidence_grade": "A",
+          "missing_active_pillars": [],
+          "unpublishable_pillars": [],
+          "coverage_rules": {
+            "withhold_below": 50.0,
+            "provisional_below": 75.0
+          },
+          "score_withheld_reason": null,
+          "pillars": {
+            "aeo": {
+              "score": "100",
+              "coverage": 88.9,
+              "evidence_quality": 100.0,
+              "evidence_grade": "A",
+              "provisional": false,
+              "publishable": true,
+              "assessed_checks": 6,
+              "not_assessed_checks": 1,
+              "na_checks": 0
+            }
+          },
+          "gates_applied": [],
+          "freshness_used": [],
+          "check_results": [
+            {
+              "id": "AEO-01",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.5,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-02",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-03",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-04",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-05",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-06",
+              "pillar": "aeo",
+              "verdict": "NOT_ASSESSED",
+              "points": null,
+              "weight": 0.75,
+              "evidence_quality": null
+            },
+            {
+              "id": "AEO-07",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            }
+          ]
+        },
+        "after.json": {
+          "scoring_engine_version": "3.0.0",
+          "audit_fingerprint": "cce40207c50c088ce23499b648af74f815e27c2fbb8c7ed5b80a1560892ff4cc",
+          "registry_version": "3.0.0",
+          "subject": "https://example.com/",
+          "site_archetypes": [],
+          "scope": {},
+          "as_of": "2026-10-03",
+          "mode": "PILLAR",
+          "profile": "balanced",
+          "active_pillars": [
+            "aeo"
+          ],
+          "target_surfaces": [
+            "chatgpt-search"
+          ],
+          "weights": {
+            "aeo": 10.0
+          },
+          "maxx": null,
+          "focused_score": 83.3,
+          "score_name": "Focused readiness",
+          "tier": null,
+          "indicative_tier": null,
+          "maxx_cap": null,
+          "provisional": false,
+          "overall_coverage": 88.9,
+          "overall_evidence_quality": 100.0,
+          "overall_evidence_grade": "A",
+          "missing_active_pillars": [],
+          "unpublishable_pillars": [],
+          "coverage_rules": {
+            "withhold_below": 50.0,
+            "provisional_below": 75.0
+          },
+          "score_withheld_reason": null,
+          "pillars": {
+            "aeo": {
+              "score": 83.3,
+              "coverage": 88.9,
+              "evidence_quality": 100.0,
+              "evidence_grade": "A",
+              "provisional": false,
+              "publishable": true,
+              "assessed_checks": 6,
+              "not_assessed_checks": 1,
+              "na_checks": 0
+            }
+          },
+          "gates_applied": [],
+          "freshness_used": [],
+          "check_results": [
+            {
+              "id": "AEO-01",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.5,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-02",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-03",
+              "pillar": "aeo",
+              "verdict": "FAIL",
+              "points": 0.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-04",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 1.0,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-05",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            },
+            {
+              "id": "AEO-06",
+              "pillar": "aeo",
+              "verdict": "NOT_ASSESSED",
+              "points": null,
+              "weight": 0.75,
+              "evidence_quality": null
+            },
+            {
+              "id": "AEO-07",
+              "pillar": "aeo",
+              "verdict": "PASS",
+              "points": 1.0,
+              "weight": 0.75,
+              "evidence_quality": 100.0
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "ERROR: baseline score: pillars.aeo score and coverage must be numbers"
+        ]
+      }
+    },
+    {
+      "id": "strict-freshness-fails-on-stale-group",
+      "kind": "boundary",
+      "behavior": "The strict freshness check exits non-zero and marks a platform source group stale once its TTL has passed.",
+      "run": [
+        "scripts/check_freshness.py",
+        "--as-of",
+        "2030-01-01",
+        "--groups",
+        "openai_search",
+        "--strict"
+      ],
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "as_of": "2030-01-01",
+          "has_stale": true,
+          "has_issue": true,
+          "groups.0.group": "openai_search",
+          "groups.0.state": "stale",
+          "groups.0.ttl_days": 30
+        },
+        "json_len": {
+          "groups": 1
+        }
+      }
+    },
+    {
+      "id": "unknown-source-group-is-refused",
+      "kind": "refuse",
+      "behavior": "Naming a source group the registry does not know is refused instead of silently checking nothing.",
+      "run": [
+        "scripts/check_freshness.py",
+        "--as-of",
+        "2026-10-03",
+        "--groups",
+        "nope"
+      ],
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "ERROR: Unknown source groups: nope"
+        ]
+      }
+    }
+  ]
+}

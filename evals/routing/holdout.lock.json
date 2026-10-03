@@ -105,6 +105,38 @@
           44
         ]
       }
+    },
+    {
+      "label": "round 5: lexical BM25 fallback enabled, tuned on suite + fresh batches A/B (216 tune-only prompts, batch C first-read only); holdout read once",
+      "holdout_version": "1.0.0",
+      "overall": [
+        132,
+        144
+      ],
+      "by_kind": {
+        "near_miss": [
+          22,
+          26
+        ],
+        "no_skill": [
+          18,
+          18
+        ],
+        "positive": [
+          92,
+          100
+        ]
+      },
+      "by_lang": {
+        "en": [
+          91,
+          100
+        ],
+        "pl": [
+          41,
+          44
+        ]
+      }
     }
   ]
 }

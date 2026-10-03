@@ -1,0 +1,545 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "portfolio-operator",
+  "description": "Offline behavior of scripts/portfolio_kernel.py (rank, conflicts, validate, render) as SKILL.md, references/portfolio-model.md, references/prioritization.md and references/output-contract.md document it.",
+  "cases": [
+    {
+      "id": "rank-gates-before-score",
+      "kind": "accept",
+      "behavior": "Ranking puts the hard external commitment first and a future gate last, ordering by score only inside a gate class.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "rank",
+        "--items-json",
+        "{tmp}/items.json"
+      ],
+      "files": {
+        "items.json": [
+          {
+            "id": "client-fix",
+            "project": "alpha",
+            "domain": "CLIENT",
+            "commitment_type": "hard_external",
+            "effort_class": "M",
+            "days_to_deadline": 2,
+            "deadline": "2026-09-12",
+            "goal_alignment": 4,
+            "revenue": 5,
+            "trust": 5,
+            "blocks_current_goal": true
+          },
+          {
+            "id": "research-note",
+            "project": "beta",
+            "domain": "RESEARCH",
+            "commitment_type": "optional",
+            "effort_class": "S",
+            "goal_alignment": 2,
+            "learning": 3
+          },
+          {
+            "id": "paid-beta-gate",
+            "project": "gamma",
+            "domain": "PRODUCT",
+            "commitment_type": "strategic",
+            "effort_class": "L",
+            "future_gate": true,
+            "goal_alignment": 5
+          },
+          {
+            "id": "old-idea",
+            "project": "delta",
+            "domain": "GROWTH",
+            "commitment_type": "optional",
+            "pause": true
+          }
+        ]
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "0.id": "client-fix",
+          "0.gate_rank": 0,
+          "0.priority_score": 128.0,
+          "1.id": "research-note",
+          "1.gate_rank": 4,
+          "2.id": "old-idea",
+          "2.gate_rank": 4,
+          "3.id": "paid-beta-gate",
+          "3.gate_rank": 5
+        },
+        "json_len": {
+          "$": 4
+        }
+      }
+    },
+    {
+      "id": "rank-rejects-unknown-commitment-type",
+      "kind": "refuse",
+      "behavior": "An unknown commitment_type is an input error with exit 2 that names the item and the allowed values.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "rank",
+        "--items-json",
+        "{tmp}/items.json"
+      ],
+      "files": {
+        "items.json": [
+          {
+            "id": "x",
+            "commitment_type": "maybe"
+          }
+        ]
+      },
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "x: commitment_type 'maybe' is not one of hard_external, hard_internal, strategic, optional"
+        ]
+      }
+    },
+    {
+      "id": "same-day-large-hard-commitments-conflict",
+      "kind": "accept",
+      "behavior": "Two large hard commitments due the same day are flagged as an overlap instead of assuming capacity is enough.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "conflicts",
+        "--items-json",
+        "{tmp}/items.json"
+      ],
+      "files": {
+        "items.json": [
+          {
+            "id": "a",
+            "project": "alpha",
+            "commitment_type": "hard_external",
+            "deadline": "2026-09-12",
+            "effort_class": "L"
+          },
+          {
+            "id": "b",
+            "project": "beta",
+            "commitment_type": "hard_internal",
+            "deadline": "2026-09-12",
+            "effort_class": "L"
+          }
+        ]
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": [
+            {
+              "type": "HARD_COMMITMENT_OVERLAP",
+              "deadline": "2026-09-12",
+              "item_ids": [
+                "a",
+                "b"
+              ],
+              "reason": "Multiple large hard commitments share the same deadline; capacity cannot be assumed sufficient."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "no-overlap-no-conflict",
+      "kind": "boundary",
+      "behavior": "A portfolio with a single hard commitment reports no capacity conflict.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "conflicts",
+        "--items-json",
+        "{tmp}/items.json"
+      ],
+      "files": {
+        "items.json": [
+          {
+            "id": "client-fix",
+            "project": "alpha",
+            "domain": "CLIENT",
+            "commitment_type": "hard_external",
+            "effort_class": "M",
+            "days_to_deadline": 2,
+            "deadline": "2026-09-12",
+            "goal_alignment": 4,
+            "revenue": 5,
+            "trust": 5,
+            "blocks_current_goal": true
+          },
+          {
+            "id": "research-note",
+            "project": "beta",
+            "domain": "RESEARCH",
+            "commitment_type": "optional",
+            "effort_class": "S",
+            "goal_alignment": 2,
+            "learning": 3
+          },
+          {
+            "id": "paid-beta-gate",
+            "project": "gamma",
+            "domain": "PRODUCT",
+            "commitment_type": "strategic",
+            "effort_class": "L",
+            "future_gate": true,
+            "goal_alignment": 5
+          },
+          {
+            "id": "old-idea",
+            "project": "delta",
+            "domain": "GROWTH",
+            "commitment_type": "optional",
+            "pause": true
+          }
+        ]
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": []
+        }
+      }
+    },
+    {
+      "id": "valid-report-passes",
+      "kind": "accept",
+      "behavior": "An outcome-level MUST DO with done_when and evidence and a delegation to a known specialist validates cleanly.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/portfolio-report.json"
+      ],
+      "files": {
+        "portfolio-report.json": {
+          "protocol_version": "1.0",
+          "as_of": "2026-09-10T10:00:00+02:00",
+          "horizon": "14d",
+          "primary_goal": "Ship the client fix",
+          "capacity": {
+            "source": "unknown"
+          },
+          "readiness": {
+            "status": "PROVISIONAL",
+            "reason": "calendar not connected"
+          },
+          "must_do": [
+            {
+              "id": "client-fix",
+              "scope_level": "portfolio",
+              "portfolio_outcome": "Client fix delivered and accepted",
+              "done_when": "client confirms the fix in writing",
+              "evidence": [
+                "contract clause on file"
+              ],
+              "commitment_type": "hard_external",
+              "blocks_current_goal": true
+            }
+          ],
+          "capacity_conflicts": [],
+          "now": [],
+          "delegate": [
+            {
+              "id": "release-check",
+              "question": "Is the fix build ready to ship?",
+              "return_contract": "GO or NO_GO with evidence",
+              "delegate_to": "release-readiness"
+            }
+          ],
+          "delegate_candidate": [],
+          "waiting": [],
+          "pause_drop": [],
+          "next": [],
+          "decision_now": []
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "valid": true,
+          "errors": []
+        }
+      }
+    },
+    {
+      "id": "report-invariants-enforced",
+      "kind": "refuse",
+      "behavior": "Invented capacity hours, a NOW item without done_when or evidence, a non-blocking future gate in MUST DO and an unproven external delegate all fail validation.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/portfolio-report.json"
+      ],
+      "files": {
+        "portfolio-report.json": {
+          "protocol_version": "1.0",
+          "as_of": "2026-09-10T10:00:00+02:00",
+          "horizon": "14d",
+          "primary_goal": "Ship the client fix",
+          "capacity": {
+            "source": "unknown",
+            "hours": 20
+          },
+          "readiness": {
+            "status": "PROVISIONAL",
+            "reason": "calendar not connected"
+          },
+          "must_do": [
+            {
+              "id": "client-fix",
+              "scope_level": "portfolio",
+              "portfolio_outcome": "Client fix delivered and accepted",
+              "done_when": "client confirms the fix in writing",
+              "evidence": [
+                "contract clause on file"
+              ],
+              "commitment_type": "hard_external",
+              "blocks_current_goal": true
+            },
+            {
+              "id": "beta-gate",
+              "scope_level": "portfolio",
+              "portfolio_outcome": "Paid beta gate passed",
+              "done_when": "gate passed",
+              "evidence": [
+                "plan"
+              ],
+              "future_gate": true
+            }
+          ],
+          "capacity_conflicts": [],
+          "now": [
+            {
+              "id": "x",
+              "action": "Write the launch post"
+            }
+          ],
+          "delegate": [
+            {
+              "id": "release-check",
+              "question": "Is the fix build ready to ship?",
+              "return_contract": "GO or NO_GO with evidence",
+              "delegate_to": "release-readiness"
+            },
+            {
+              "id": "y",
+              "question": "Can the agency redo the logo?",
+              "return_contract": "quote",
+              "delegate_to": "Example Agency"
+            }
+          ],
+          "delegate_candidate": [],
+          "waiting": [],
+          "pause_drop": [],
+          "next": [],
+          "decision_now": []
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "valid": false,
+          "errors": [
+            "capacity.hours must be absent when capacity source is unknown",
+            "now[0].done_when is required",
+            "now[0].evidence is required",
+            "future gate cannot appear in must_do unless it blocks the current goal",
+            "delegate[1] violates delegate reality gate: external person/agent/system requires delegate_evidence_ref or user_defined=true; otherwise use delegate_candidate or pause"
+          ]
+        }
+      }
+    },
+    {
+      "id": "unsourced-date-fails-provenance",
+      "kind": "refuse",
+      "behavior": "A user-facing date in a MUST DO outcome without evidence_ref or user_defined fails the provenance gate.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/portfolio-report.json"
+      ],
+      "files": {
+        "portfolio-report.json": {
+          "protocol_version": "1.0",
+          "as_of": "2026-09-10T10:00:00+02:00",
+          "horizon": "14d",
+          "primary_goal": "Ship the client fix",
+          "capacity": {
+            "source": "unknown"
+          },
+          "readiness": {
+            "status": "PROVISIONAL",
+            "reason": "calendar not connected"
+          },
+          "must_do": [
+            {
+              "id": "client-fix",
+              "scope_level": "portfolio",
+              "portfolio_outcome": "Client fix delivered by 2026-09-12",
+              "done_when": "client confirms the fix in writing",
+              "evidence": [
+                "contract clause on file"
+              ],
+              "commitment_type": "hard_external",
+              "blocks_current_goal": true
+            }
+          ],
+          "capacity_conflicts": [],
+          "now": [],
+          "delegate": [
+            {
+              "id": "release-check",
+              "question": "Is the fix build ready to ship?",
+              "return_contract": "GO or NO_GO with evidence",
+              "delegate_to": "release-readiness"
+            }
+          ],
+          "delegate_candidate": [],
+          "waiting": [],
+          "pause_drop": [],
+          "next": [],
+          "decision_now": []
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "valid": false,
+          "errors": [
+            "must_do[0] provenance gate: user-facing numeric/date/target claim requires evidence_ref or user_defined=true"
+          ]
+        }
+      }
+    },
+    {
+      "id": "sourced-date-passes-provenance",
+      "kind": "boundary",
+      "behavior": "The same date passes once it carries an evidence_ref.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/portfolio-report.json"
+      ],
+      "files": {
+        "portfolio-report.json": {
+          "protocol_version": "1.0",
+          "as_of": "2026-09-10T10:00:00+02:00",
+          "horizon": "14d",
+          "primary_goal": "Ship the client fix",
+          "capacity": {
+            "source": "unknown"
+          },
+          "readiness": {
+            "status": "PROVISIONAL",
+            "reason": "calendar not connected"
+          },
+          "must_do": [
+            {
+              "id": "client-fix",
+              "scope_level": "portfolio",
+              "portfolio_outcome": "Client fix delivered by 2026-09-12",
+              "done_when": "client confirms the fix in writing",
+              "evidence": [
+                "contract clause on file"
+              ],
+              "commitment_type": "hard_external",
+              "blocks_current_goal": true,
+              "evidence_ref": "contract section 4"
+            }
+          ],
+          "capacity_conflicts": [],
+          "now": [],
+          "delegate": [
+            {
+              "id": "release-check",
+              "question": "Is the fix build ready to ship?",
+              "return_contract": "GO or NO_GO with evidence",
+              "delegate_to": "release-readiness"
+            }
+          ],
+          "delegate_candidate": [],
+          "waiting": [],
+          "pause_drop": [],
+          "next": [],
+          "decision_now": []
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "valid": true,
+          "errors": []
+        }
+      }
+    },
+    {
+      "id": "render-uses-portfolio-outcome",
+      "kind": "accept",
+      "behavior": "The human brief shows readiness, the outcome-level MUST DO text and the delegated question.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "render",
+        "--report-json",
+        "{tmp}/portfolio-report.json"
+      ],
+      "files": {
+        "portfolio-report.json": {
+          "protocol_version": "1.0",
+          "as_of": "2026-09-10T10:00:00+02:00",
+          "horizon": "14d",
+          "primary_goal": "Ship the client fix",
+          "capacity": {
+            "source": "unknown"
+          },
+          "readiness": {
+            "status": "PROVISIONAL",
+            "reason": "calendar not connected"
+          },
+          "must_do": [
+            {
+              "id": "client-fix",
+              "scope_level": "portfolio",
+              "portfolio_outcome": "Client fix delivered and accepted",
+              "done_when": "client confirms the fix in writing",
+              "evidence": [
+                "contract clause on file"
+              ],
+              "commitment_type": "hard_external",
+              "blocks_current_goal": true
+            }
+          ],
+          "capacity_conflicts": [],
+          "now": [],
+          "delegate": [
+            {
+              "id": "release-check",
+              "question": "Is the fix build ready to ship?",
+              "return_contract": "GO or NO_GO with evidence",
+              "delegate_to": "release-readiness"
+            }
+          ],
+          "delegate_candidate": [],
+          "waiting": [],
+          "pause_drop": [],
+          "next": [],
+          "decision_now": []
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "PROVISIONAL — calendar not connected",
+          "MUST DO",
+          "- **Client fix delivered and accepted** — Done: client confirms the fix in writing",
+          "DELEGATE",
+          "- **Is the fix build ready to ship?**"
+        ]
+      }
+    }
+  ]
+}

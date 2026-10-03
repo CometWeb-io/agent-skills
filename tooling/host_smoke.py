@@ -19,10 +19,12 @@ claude  `plugin validate --strict` on both manifests and on a plugin-only stage
 codex   `plugin marketplace add` of the stage, `plugin add`, `plugin list
         --json`, and `debug prompt-input`, which renders the exact skill list
         the model would see. Descriptions Codex shortens to fit its listing
-        budget are reported, with the ones that lose their "Do not use" clause.
+        budget are reported, and each "Do not use" clause is classed as kept
+        whole, partly cut or lost.
 cursor  Static only: Cursor's agent CLI lists plugins only through an account
         marketplace, so the manifests, the default `skills/` layout and the
-        routing rule are checked against Cursor's documented plugin format.
+        routing rules are checked against Cursor's documented plugin format
+        (the key sets in registry/hosts.json `cursor.plugin_format`).
 
 A host whose CLI is absent is SKIP, unless named in --require. Exit status is
 non-zero when any exercised host FAILs.
@@ -47,19 +49,22 @@ from compatibility import read_frontmatter, safe_load_unique  # noqa: E402
 
 PLUGIN = "cometweb-agent-skills"
 # What a host needs to load the plugin; tooling, tests and docs stay behind.
-PAYLOAD = (".claude-plugin", ".cursor-plugin", ".agents", "plugin.json", "skills", "VERSION", "LICENSE",
+PAYLOAD = (".claude-plugin", ".cursor-plugin", ".agents", "plugin.json", "skills", "rules", "VERSION", "LICENSE",
            "NOTICE", "README.md")
 IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc", ".pytest_cache", "*.local.json", "*.local.txt")
 TIMEOUT = 180
 
-# Cursor plugin reference (https://cursor.com/docs/reference/plugins), checked 2026-10-03.
+# Cursor plugin reference (https://cursor.com/docs/reference/plugins); the key
+# sets live in registry/hosts.json with the date they were checked.
 CURSOR_PLUGIN_NAME = re.compile(r"^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$")
-CURSOR_PLUGIN_KEYS = {"name", "description", "version", "author", "homepage", "repository", "license",
-                      "keywords", "logo", "rules", "agents", "skills", "commands", "hooks", "mcpServers",
-                      "variables"}
 CURSOR_PATH_KEYS = ("logo", "rules", "agents", "skills", "commands", "hooks", "mcpServers")
-CURSOR_MARKETPLACE_KEYS = {"name", "owner", "metadata", "plugins"}
-CURSOR_RULES = ("docs/generated-cursor-routing.mdc", "extras/cursor-routing.mdc")
+CURSOR_RULES = ("rules/cometweb-agent-skills.mdc", "docs/generated-cursor-routing.mdc", "extras/cursor-routing.mdc")
+
+
+def cursor_format(root: Path = ROOT) -> dict:
+    """`cursor.plugin_format` from hosts.json, plus the path of the rule the plugin ships."""
+    cursor = json.loads((root / "registry" / "hosts.json").read_text(encoding="utf-8"))["hosts"]["cursor"]
+    return {**cursor["plugin_format"], "plugin_rule": cursor["plugin_rule"]}
 
 
 @dataclass
@@ -266,17 +271,52 @@ def codex_skill_listing(prompt_input: object, namespace: str = PLUGIN) -> dict[s
     return {m.group(1): m.group(2) for text in texts for m in pattern.finditer(text)}
 
 
+SENTENCE_START = re.compile(r"(?<=[.!?])\s+(?=[A-Z])")
+
+
+def do_not_clause_span(text: str) -> tuple[int, int] | None:
+    """(start, end) of the first run of consecutive sentences that open with "Do not"."""
+    starts = [0, *(m.end() for m in SENTENCE_START.finditer(text))]
+    bounds = list(zip(starts, [*(m.start() for m in SENTENCE_START.finditer(text)), len(text)], strict=True))
+    span: tuple[int, int] | None = None
+    for start, end in bounds:
+        if text.startswith("Do not", start):
+            span = (span[0] if span else start, end)
+        elif span:
+            break
+    return span
+
+
+def clause_state(seen: str, whole: str) -> str:
+    """kept | partial | lost | none: how much of the "Do not" clause a shortened prefix keeps."""
+    span = do_not_clause_span(whole)
+    if span is None:
+        return "none"
+    if not whole.startswith(seen):
+        return "lost"
+    if len(seen) >= span[1]:
+        return "kept"
+    return "partial" if len(seen) > span[0] else "lost"
+
+
 def codex_truncation(shown: dict[str, str], expected: dict[str, str]) -> dict[str, dict]:
-    """Per skill: how much of the description Codex shows, and whether a guardrail was cut."""
+    """Per shortened skill: how much of the description Codex shows, and what is left of its guardrail."""
     out = {}
     for name, full in expected.items():
         seen, whole = normalise(shown.get(name, "")), normalise(full)
         if seen == whole:
             continue
-        lost = whole[len(seen):] if whole.startswith(seen) else whole
         out[name] = {"shown": len(seen), "full": len(whole), "prefix": whole.startswith(seen),
-                     "lost_do_not_clause": "Do not" in lost and "Do not" in whole}
+                     "do_not_clause": clause_state(seen, whole)}
     return out
+
+
+def codex_clause_summary(shown: dict[str, str], expected: dict[str, str]) -> dict[str, list[str]]:
+    """Every skill, shortened or not, grouped by what the model sees of its "Do not" clause."""
+    summary: dict[str, list[str]] = {"kept": [], "partial": [], "lost": [], "none": []}
+    for name, full in sorted(expected.items()):
+        summary[clause_state(normalise(shown.get(name, "")), normalise(full))].append(name)
+    return summary
 
 
 def smoke_codex(codex: str, work: Path, expected: dict[str, str], version: str) -> HostResult:
@@ -316,13 +356,17 @@ def smoke_codex(codex: str, work: Path, expected: dict[str, str], version: str) 
     result.facts["descriptions_shortened"] = len(cut)
     result.facts["shown_chars"] = sum(len(v) for v in shown.values())
     result.facts["full_chars"] = sum(len(normalise(v)) for v in expected.values())
-    lost = sorted(n for n, v in cut.items() if v["lost_do_not_clause"])
-    result.facts["do_not_clause_cut"] = lost
+    clauses = codex_clause_summary(shown, expected)
+    result.facts["do_not_clause"] = clauses
     if cut:
         result.findings.append(
             f"Codex shortens {len(cut)} of {len(expected)} descriptions to fit its skill-list budget "
-            f"({result.facts['shown_chars']} of {result.facts['full_chars']} characters shown); "
-            f"{len(lost)} lose all or part of their 'Do not use' clause.")
+            f"({result.facts['shown_chars']} of {result.facts['full_chars']} characters shown).")
+    result.findings.append(
+        f"'Do not' clause in the model-visible list: {len(clauses['kept'])} kept whole, "
+        f"{len(clauses['partial'])} cut part-way, {len(clauses['lost'])} lost, {len(clauses['none'])} without one"
+        + (f"; cut: {', '.join(clauses['partial'] + clauses['lost'])}" if clauses["partial"] or clauses["lost"] else "")
+        + ".")
     return result
 
 
@@ -341,6 +385,7 @@ def relative_path_ok(value: object) -> bool:
 def smoke_cursor(root: Path, expected: dict[str, str], cursor_agent: str | None = None,
                  work: Path | None = None) -> HostResult:
     result = HostResult("cursor")
+    fmt = cursor_format()
     plugin = json.loads((root / ".cursor-plugin" / "plugin.json").read_text(encoding="utf-8"))
     result.check("plugin.json name is a valid Cursor plugin name",
                  isinstance(plugin.get("name"), str) and bool(CURSOR_PLUGIN_NAME.match(plugin["name"])),
@@ -350,9 +395,10 @@ def smoke_cursor(root: Path, expected: dict[str, str], cursor_agent: str | None 
                  author is None or (isinstance(author, dict) and isinstance(author.get("name"), str)), str(author))
     bad_paths = [k for k in CURSOR_PATH_KEYS if k in plugin and not relative_path_ok(plugin[k])]
     result.check("manifest paths are relative and stay inside the plugin", not bad_paths, ", ".join(bad_paths))
-    undocumented = sorted(set(plugin) - CURSOR_PLUGIN_KEYS)
-    if undocumented:
-        result.findings.append(f".cursor-plugin/plugin.json has keys Cursor does not document: {undocumented}")
+    undocumented = sorted(set(plugin) - set(fmt["manifest_keys"]))
+    if isinstance(author, dict):
+        undocumented += [f"author.{k}" for k in sorted(set(author) - set(fmt["author_keys"]))]
+    result.check("plugin.json uses only keys Cursor documents", not undocumented, ", ".join(undocumented))
 
     market = json.loads((root / ".cursor-plugin" / "marketplace.json").read_text(encoding="utf-8"))
     owner = market.get("owner")
@@ -371,9 +417,8 @@ def smoke_cursor(root: Path, expected: dict[str, str], cursor_agent: str | None 
         result.check(f"marketplace source for {entry.get('name')} is a plugin root",
                      relative_path_ok(source_path) and (target / ".cursor-plugin" / "plugin.json").is_file(),
                      str(source_path))
-    undocumented = sorted(set(market) - CURSOR_MARKETPLACE_KEYS)
-    if undocumented:
-        result.findings.append(f".cursor-plugin/marketplace.json has keys Cursor does not document: {undocumented}")
+    undocumented = sorted(set(market) - set(fmt["marketplace_keys"]))
+    result.check("marketplace.json uses only keys Cursor documents", not undocumented, ", ".join(undocumented))
 
     # No `skills` key: Cursor discovers skills/<dir>/SKILL.md by default.
     skills_dir = root / str(plugin.get("skills", "skills"))
@@ -383,15 +428,22 @@ def smoke_cursor(root: Path, expected: dict[str, str], cursor_agent: str | None 
     stray = sorted(p.name for p in skills_dir.iterdir() if p.is_dir() and not (p / "SKILL.md").is_file())
     result.check("no skills/ subdirectory lacks a SKILL.md", not stray, ", ".join(stray))
 
+    # A manifest `rules` key replaces folder discovery, so the rule must sit in
+    # the default rules/ directory with no such key.
+    rule = root / fmt["plugin_rule"]
+    result.check("plugin ships its routing rule where Cursor discovers rules",
+                 "rules" not in plugin and rule.is_file() and rule.parent == root / fmt["rules_dir"]
+                 and rule.suffix in fmt["rule_extensions"],
+                 f"rules key={plugin.get('rules')!r}, {fmt['plugin_rule']} exists={rule.is_file()}")
     for rel in CURSOR_RULES:
+        if not (root / rel).is_file():
+            continue
         fm = read_mdc_frontmatter(root / rel)
         ok = (isinstance(fm, dict) and isinstance(fm.get("description"), str) and fm["description"].strip() != ""
               and isinstance(fm.get("alwaysApply"), bool)
-              and (fm.get("globs") is None or isinstance(fm["globs"], (str, list))))
+              and (fm.get("globs") is None or isinstance(fm["globs"], (str, list)))
+              and set(fm) <= set(fmt["rule_frontmatter_keys"]))
         result.check(f"{rel} has Cursor rule frontmatter", ok, json.dumps(fm, default=str)[:300])
-    if "rules" not in plugin and not (root / "rules").is_dir():
-        result.findings.append("The Cursor plugin ships no rules/ directory, so installing it from a marketplace "
-                               "delivers the skills but not the routing rule; only scripts/install-cursor.sh copies it.")
 
     if cursor_agent and work is not None:
         proc = run([cursor_agent, "--version"], isolated_env(work), work)

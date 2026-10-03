@@ -659,12 +659,12 @@
     "excerpt": {},
     "note": {}
   },
-  "internal": [
-    "activation",
-    "profiles",
-    "signals",
-    "skill"
-  ],
+  "internal": {
+    "activation": "review-pack catalogue entry shipped with the skill, not caller input",
+    "profiles": "review-pack catalogue entry shipped with the skill, not caller input",
+    "signals": "review-pack catalogue entry shipped with the skill, not caller input",
+    "skill": "review-pack catalogue row filter on the shared catalogue"
+  },
   "doc_terms": [],
   "evals": [
     {

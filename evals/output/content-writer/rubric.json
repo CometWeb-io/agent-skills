@@ -1,0 +1,228 @@
+{
+  "skill": "content-writer",
+  "contract": "skills/content-writer/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {
+      "id": "handoff",
+      "title": "Handoff",
+      "aliases": [
+        "handoff"
+      ],
+      "required": true
+    },
+    {
+      "id": "claim-ledger",
+      "title": "Claim ledger",
+      "aliases": [
+        "claim ledger"
+      ],
+      "required": true
+    },
+    {
+      "id": "invariant-checks",
+      "title": "Invariant checks",
+      "aliases": [
+        "invariant checks",
+        "protected invariants"
+      ]
+    },
+    {
+      "id": "unresolved",
+      "title": "Unresolved",
+      "aliases": [
+        "unresolved"
+      ],
+      "required": true
+    },
+    {
+      "id": "next-skill",
+      "title": "Recommended next skill",
+      "aliases": [
+        "recommended next skill",
+        "next skill"
+      ],
+      "required": true
+    }
+  ],
+  "verdict": {
+    "tokens": [
+      "true",
+      "false"
+    ],
+    "aliases": {
+      "yes": "true",
+      "no": "false"
+    },
+    "case_insensitive": true,
+    "authorizing": [
+      "true"
+    ],
+    "primary": {
+      "line": "^\\s*[-*]?\\s*\\**(?:Release[ _]eligible|release_eligible)\\**\\s*:"
+    }
+  },
+  "blockers": [
+    {
+      "rule": "listed-unresolved",
+      "type": "section_items",
+      "section": "unresolved",
+      "none_pattern": "^none\\b"
+    },
+    {
+      "rule": "unresolved-material-claim",
+      "type": "table_rows",
+      "section": "claim-ledger",
+      "column": [
+        "status"
+      ],
+      "pattern": "^(?:UNRESOLVED|UNSUPPORTED)$",
+      "when": {
+        "column": [
+          "material"
+        ],
+        "pattern": "^(?:yes|true)$"
+      }
+    },
+    {
+      "rule": "invariant-not-pass",
+      "type": "table_rows",
+      "section": "invariant-checks",
+      "column": [
+        "state"
+      ],
+      "pattern": "^(?:FAIL|UNKNOWN)$"
+    }
+  ],
+  "checks": [
+    {
+      "type": "doc_require",
+      "rule": "candidate",
+      "section": "handoff",
+      "pattern": "Candidate\\**\\s*:\\s*\\S",
+      "message": "the handoff does not name the candidate_id"
+    },
+    {
+      "type": "doc_require",
+      "rule": "mode",
+      "section": "handoff",
+      "pattern": "Mode\\**\\s*:\\s*`?(?:DRAFT|REVISION|FINAL)\\b",
+      "message": "the handoff does not state the mode (DRAFT | REVISION | FINAL)"
+    },
+    {
+      "type": "doc_require",
+      "rule": "evidence-policy",
+      "section": "handoff",
+      "pattern": "Evidence policy\\**\\s*:\\s*`?(?:SOURCE_BOUND|EVIDENCE_REQUIRED|CONTEXTUAL_DRAFT|CREATIVE)\\b",
+      "message": "the handoff does not state the evidence policy"
+    },
+    {
+      "type": "doc_forbid",
+      "rule": "draft-not-eligible",
+      "section": "handoff",
+      "when_verdict": [
+        "true"
+      ],
+      "code": "VERDICT_WITH_BLOCKERS",
+      "pattern": "(?:Mode|Evidence policy)\\**\\s*:\\s*`?(?:DRAFT|CONTEXTUAL_DRAFT)\\b",
+      "message": "a DRAFT, or anything under CONTEXTUAL_DRAFT, is never release eligible"
+    },
+    {
+      "type": "table_column_nonempty",
+      "rule": "supported-evidence",
+      "section": "claim-ledger",
+      "column": [
+        "evidence"
+      ],
+      "when": {
+        "column": [
+          "status"
+        ],
+        "pattern": "^SUPPORTED$"
+      },
+      "code": "EVIDENCE_MISSING",
+      "message": "a SUPPORTED claim cites no source and locator"
+    },
+    {
+      "type": "table_column_nonempty",
+      "rule": "inference-basis",
+      "section": "claim-ledger",
+      "column": [
+        "basis"
+      ],
+      "when": {
+        "column": [
+          "status"
+        ],
+        "pattern": "^INFERRED$"
+      },
+      "code": "CONTRACT_VIOLATION",
+      "message": "an INFERRED claim names no basis claim"
+    },
+    {
+      "type": "doc_forbid",
+      "rule": "nonfact-as-fact",
+      "section": "claim-ledger",
+      "code": "CONTRACT_VIOLATION",
+      "pattern": "\\|\\s*(?:INFERRED|OPINION|EXAMPLE|UNRESOLVED|UNSUPPORTED)\\s*\\|[^|\\n]*\\|\\s*yes\\s*\\|",
+      "message": "only a SUPPORTED claim may be presented as fact"
+    },
+    {
+      "type": "doc_forbid",
+      "rule": "self-certification",
+      "pattern": "objectively (?:excellent|great|perfect|the best)|\\bflawless\\b|(?:this|the) (?:article|draft|guide|post) is (?:excellent|perfect|publication[- ]ready)",
+      "message": "the writer does not certify its own quality; content-reviewer or artifact-acceptance does"
+    }
+  ],
+  "ids": [
+    {
+      "rule": "claim-ids",
+      "pattern": "\\bCL-\\d{2}\\b",
+      "defined_in": [
+        {
+          "section": "claim-ledger",
+          "as": "table_first_column"
+        }
+      ],
+      "refs_json": [
+        "claims[*].claim_id",
+        "claims[*].basis_claim_ids[*]",
+        "unresolved[*]"
+      ],
+      "defined_by": "the Claim ledger has no row with that claim ID"
+    },
+    {
+      "rule": "invariant-ids",
+      "pattern": "\\bPI-\\d{2}\\b",
+      "defined_in": [
+        {
+          "section": "invariant-checks",
+          "as": "table_first_column"
+        }
+      ],
+      "refs_json": [
+        "protected_invariants[*]",
+        "invariant_checks[*].id"
+      ],
+      "defined_by": "the Invariant checks table has no row with that invariant ID"
+    }
+  ],
+  "sidecars": [
+    {
+      "rule": "content-draft",
+      "detect": {
+        "equals": {
+          "schema": "cometweb.content-draft/v1"
+        }
+      },
+      "validator": "skills/content-writer/scripts/kernel.py",
+      "function": "validate",
+      "error_statuses": [
+        "FAIL"
+      ],
+      "recompute": {
+        "result": "release_eligible"
+      }
+    }
+  ]
+}

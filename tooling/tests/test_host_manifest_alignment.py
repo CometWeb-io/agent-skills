@@ -36,11 +36,22 @@ def skill_count() -> int:
 def test_host_plugin_manifest_shares_identity_with_root(manifest: str) -> None:
     root, host = read_json("plugin.json"), read_json(manifest)
     for field in SHARED_FIELDS:
+        if field == "author" and manifest.startswith(".cursor-plugin"):
+            # Cursor documents only author.name and author.email.
+            assert host[field] == {k: v for k, v in root[field].items() if k in {"name", "email"}}
+            continue
         assert host[field] == root[field], f"{manifest}: {field} drifted from plugin.json"
 
 
-def test_cursor_and_claude_plugin_manifests_are_identical() -> None:
-    assert read_json(".cursor-plugin/plugin.json") == read_json(".claude-plugin/plugin.json")
+def test_cursor_manifest_is_the_claude_manifest_without_undocumented_keys() -> None:
+    """Same plugin on both hosts; Cursor's copy drops what its reference does not define."""
+    cursor, claude = read_json(".cursor-plugin/plugin.json"), read_json(".claude-plugin/plugin.json")
+    assert set(cursor) < set(claude)
+    for key, value in cursor.items():
+        if key == "author":
+            assert value == {k: v for k, v in claude["author"].items() if k in value}
+        else:
+            assert value == claude[key], key
 
 
 @pytest.mark.parametrize("manifest", PLUGIN_MANIFESTS[1:])

@@ -765,14 +765,14 @@
     "git_base": {},
     "git_head": {}
   },
-  "internal": [
-    "activation",
-    "packages",
-    "profiles",
-    "signals",
-    "skill",
-    "workspaces"
-  ],
+  "internal": {
+    "activation": "review-pack catalogue entry shipped with the skill, not caller input",
+    "packages": "package.json workspaces key in the inspected repository, not a payload field",
+    "profiles": "review-pack catalogue entry shipped with the skill, not caller input",
+    "signals": "review-pack catalogue entry shipped with the skill, not caller input",
+    "skill": "review-pack catalogue row filter on the shared catalogue",
+    "workspaces": "package.json key in the inspected repository, not a payload field"
+  },
   "doc_terms": [],
   "evals": [
     {

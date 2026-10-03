@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.3] - 2026-10-03
+
+- `scripts/run_evals.py` ranking cases may pin `expected_scores` for every item, since a score inside one gate class never changes the leader. New cases pin the future-gate score penalty and a delegation with no delegate that is refused even when user-defined. Eval strength 59/65 -> 62/65 guards held.
+
 ## [1.2.2] - 2026-10-03
 
 ### Fixed

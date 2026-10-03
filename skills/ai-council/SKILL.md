@@ -34,7 +34,7 @@ Nie ładuj DEEP cognitive path dla LIGHT. Kernel `plan` wybiera tryb, jeśli uż
 1. Wybierz profil (tabela powyżej).
 2. Załaduj **tylko** odpowiadający `workflow-*.md`.
 3. Stosuj zasady nadrzędne i twarde granice z tego pliku.
-4. Emituj Decision Snapshot / output według `references/output-contract.md`.
+4. Emituj Decision Snapshot / output według `references/output-contract.md`: werdykt `GO | NO-GO | TEST | DEFER` z Overall Decision Confidence, statusy gate'ów i jednozdaniowa rekomendacja.
 
 ## Freshness gate
 
@@ -127,6 +127,8 @@ python scripts/council_kernel.py portfolio --decisions-json '[...]' --capacities
 python scripts/council_kernel.py handoff --kind legal --decision-json '{...}' --issue-json '{...}'
 python scripts/council_kernel.py tool-authority --action-json '{...}'
 ```
+
+Przed final gate (przekazanie `plan.roles.gatekeepers` do `--required-gates-json`) przeczytaj `references/kernel-admission.md`: kernel sprawdza dostarczone rekordy, nie uwierzytelnia źródeł ani zgód.
 
 Zachowaj też v4 commands: `profile`, `route`, `legal`, `select`, `rank`, `calibrate`, `sanitize`, `key`, `mode`, `budget`, `threshold`, `coverage`, `crux`, `consensus`, `minority`, `confidence`, `voi`, `stop`, `specialists`, `missing`, `experiment`, `snapshot`, `gate`, `regime`, `due-reviews`, `info-gain`, `framework-utility`, `health`, `provenance`, `consensus-patterns`, `eval-compare`.
 

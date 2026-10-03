@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object; a new case pins how `evaluate_case` refuses one.
+- New eval cases pin a REAL_HOST `config` without `model`, a `baseline_config` without `host`, and a FLAKY stability result that is a TRADEOFF rather than an improvement. Eval strength 50/54 -> 54/54 guards held.
+- The definition of done said to label an unexecuted run `DESIGN_READY`/`NOT_RUN`, which read as two statuses. It now says `DESIGN_READY` with `execution_mode: SPEC_ONLY`, execution reported as NOT_RUN, matching `references/output-contract.md`. Step 11 adds `INVALID`, and the three execution modes are defined.
+- The sentence that loaded eight references at once is a table with triggers, and adds `runtime-observability.md` and `untrusted-input.md`, which were never named.
+
 ## [1.7.2] - 2026-10-03
 
 - `references/output-contract.md` now lists the experiment-report payload `scripts/kernel.py` validates, and new `references/contract.json` declares it. Of the 46 fields the kernel reads, only `rubric_hash` and `benchmark_hash` were named: `execution_mode` and its tokens `SPEC_ONLY|LOCAL_DETERMINISTIC|REAL_HOST`, `judge_agreement.status` (`CALIBRATED|NEEDS_REVIEW|INSUFFICIENT_DATA|NOT_USED`), `pareto_status` (`FRONTIER|DOMINATED|UNKNOWN|NOT_COMPUTED`), the case-ID lists and control counts, `runtime_executed`, `uses_llm_judge`, `config`/`baseline_config`, the `candidate`/`baseline` metric blocks, `invariant_regressions` and the five `promotion_policy` thresholds with their defaults were documented nowhere.

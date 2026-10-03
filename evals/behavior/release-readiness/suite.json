@@ -1,0 +1,1306 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "release-readiness",
+  "description": "Offline behavior of scripts/readiness_engine.py and scripts/bootstrap_manifest.py as SKILL.md, references/ci-integration.md and references/manifest-schema.md document them.",
+  "cases": [
+    {
+      "id": "green-manifest-is-go-under-strict",
+      "kind": "accept",
+      "behavior": "A candidate-bound manifest with every required gate passing on verified, current evidence is GO and passes the strict CI policy.",
+      "run": [
+        "scripts/readiness_engine.py",
+        "--input",
+        "{tmp}/readiness.json",
+        "--ci-policy",
+        "strict"
+      ],
+      "files": {
+        "readiness.json": {
+          "manifest_version": 2,
+          "profile": "saas_web",
+          "mode": "standard",
+          "release": {
+            "id": "v2.0.0",
+            "commit_sha": "abc1234000000000000000000000000000000000",
+            "environment": "production",
+            "as_of": "2026-08-25T22:03:05+02:00"
+          },
+          "scope": {
+            "audience": "external",
+            "commercial": "free",
+            "risk_assessment_complete": true,
+            "governance_surfaces": [],
+            "risk_flags": {
+              "first_production_release": "no",
+              "auth_change": "no",
+              "billing_change": "no",
+              "schema_or_data_migration": "no",
+              "sensitive_data_change": "no",
+              "public_api_breaking_change": "no",
+              "major_infra_change": "no",
+              "mobile_store_release": "no",
+              "incident_recovery_release": "no",
+              "high_impact_ai_change": "no",
+              "legal_or_regulatory_change": "no"
+            }
+          },
+          "checks": [
+            {
+              "id": "product.acceptance",
+              "gate": "release_scope_acceptance",
+              "domain": "product",
+              "title": "product.acceptance",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "qa.candidate",
+              "gate": "candidate_verification",
+              "domain": "qa",
+              "title": "qa.candidate",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "security.release",
+              "gate": "security_release",
+              "domain": "security",
+              "title": "security.release",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.delivery",
+              "gate": "release_delivery",
+              "domain": "ops",
+              "title": "ops.delivery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.recovery",
+              "gate": "recovery_strategy",
+              "domain": "ops",
+              "title": "ops.recovery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.observability",
+              "gate": "observability",
+              "domain": "ops",
+              "title": "ops.observability",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "docs.operator",
+              "gate": "operator_docs",
+              "domain": "docs",
+              "title": "docs.operator",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "runbook reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "repo"
+              }
+            },
+            {
+              "id": "support.path",
+              "gate": "support_path",
+              "domain": "support",
+              "title": "support.path",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "support escalation route reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "docs"
+              }
+            }
+          ],
+          "governance_gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "GO",
+          "decision_validity": "VALID",
+          "risk_tier": "R1",
+          "missing_required_gates": [],
+          "scope_gaps": [],
+          "scope_warnings": [],
+          "blocking_failures": [],
+          "evidence_coverage": 100.0,
+          "deployment_authorization": "not_provided",
+          "evidence_authentication": "not_performed"
+        }
+      }
+    },
+    {
+      "id": "missing-required-gate-defers",
+      "kind": "refuse",
+      "behavior": "Dropping the recovery-strategy check defers the release and names the missing gate, so strict CI fails with exit 1.",
+      "run": [
+        "scripts/readiness_engine.py",
+        "--input",
+        "{tmp}/readiness.json",
+        "--ci-policy",
+        "strict"
+      ],
+      "files": {
+        "readiness.json": {
+          "manifest_version": 2,
+          "profile": "saas_web",
+          "mode": "standard",
+          "release": {
+            "id": "v2.0.0",
+            "commit_sha": "abc1234000000000000000000000000000000000",
+            "environment": "production",
+            "as_of": "2026-08-25T22:03:05+02:00"
+          },
+          "scope": {
+            "audience": "external",
+            "commercial": "free",
+            "risk_assessment_complete": true,
+            "governance_surfaces": [],
+            "risk_flags": {
+              "first_production_release": "no",
+              "auth_change": "no",
+              "billing_change": "no",
+              "schema_or_data_migration": "no",
+              "sensitive_data_change": "no",
+              "public_api_breaking_change": "no",
+              "major_infra_change": "no",
+              "mobile_store_release": "no",
+              "incident_recovery_release": "no",
+              "high_impact_ai_change": "no",
+              "legal_or_regulatory_change": "no"
+            }
+          },
+          "checks": [
+            {
+              "id": "product.acceptance",
+              "gate": "release_scope_acceptance",
+              "domain": "product",
+              "title": "product.acceptance",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "qa.candidate",
+              "gate": "candidate_verification",
+              "domain": "qa",
+              "title": "qa.candidate",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "security.release",
+              "gate": "security_release",
+              "domain": "security",
+              "title": "security.release",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.delivery",
+              "gate": "release_delivery",
+              "domain": "ops",
+              "title": "ops.delivery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.observability",
+              "gate": "observability",
+              "domain": "ops",
+              "title": "ops.observability",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "docs.operator",
+              "gate": "operator_docs",
+              "domain": "docs",
+              "title": "docs.operator",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "runbook reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "repo"
+              }
+            },
+            {
+              "id": "support.path",
+              "gate": "support_path",
+              "domain": "support",
+              "title": "support.path",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "support escalation route reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "docs"
+              }
+            }
+          ],
+          "governance_gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "verdict": "DEFER",
+          "decision_validity": "NOT_VALID_TO_SHIP",
+          "missing_required_gates": [
+            "recovery_strategy"
+          ],
+          "reason": "required gate set is incomplete"
+        }
+      }
+    },
+    {
+      "id": "failed-security-gate-is-no-go",
+      "kind": "refuse",
+      "behavior": "A failing binding critical security check makes the release NO_GO and lists it as a blocking failure.",
+      "run": [
+        "scripts/readiness_engine.py",
+        "--input",
+        "{tmp}/readiness.json",
+        "--ci-policy",
+        "strict"
+      ],
+      "files": {
+        "readiness.json": {
+          "manifest_version": 2,
+          "profile": "saas_web",
+          "mode": "standard",
+          "release": {
+            "id": "v2.0.0",
+            "commit_sha": "abc1234000000000000000000000000000000000",
+            "environment": "production",
+            "as_of": "2026-08-25T22:03:05+02:00"
+          },
+          "scope": {
+            "audience": "external",
+            "commercial": "free",
+            "risk_assessment_complete": true,
+            "governance_surfaces": [],
+            "risk_flags": {
+              "first_production_release": "no",
+              "auth_change": "no",
+              "billing_change": "no",
+              "schema_or_data_migration": "no",
+              "sensitive_data_change": "no",
+              "public_api_breaking_change": "no",
+              "major_infra_change": "no",
+              "mobile_store_release": "no",
+              "incident_recovery_release": "no",
+              "high_impact_ai_change": "no",
+              "legal_or_regulatory_change": "no"
+            }
+          },
+          "checks": [
+            {
+              "id": "product.acceptance",
+              "gate": "release_scope_acceptance",
+              "domain": "product",
+              "title": "product.acceptance",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "qa.candidate",
+              "gate": "candidate_verification",
+              "domain": "qa",
+              "title": "qa.candidate",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "security.release",
+              "gate": "security_release",
+              "domain": "security",
+              "title": "security.release",
+              "status": "fail",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.delivery",
+              "gate": "release_delivery",
+              "domain": "ops",
+              "title": "ops.delivery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.recovery",
+              "gate": "recovery_strategy",
+              "domain": "ops",
+              "title": "ops.recovery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.observability",
+              "gate": "observability",
+              "domain": "ops",
+              "title": "ops.observability",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "docs.operator",
+              "gate": "operator_docs",
+              "domain": "docs",
+              "title": "docs.operator",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "runbook reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "repo"
+              }
+            },
+            {
+              "id": "support.path",
+              "gate": "support_path",
+              "domain": "support",
+              "title": "support.path",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "support escalation route reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "docs"
+              }
+            }
+          ],
+          "governance_gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "verdict": "NO_GO",
+          "decision_validity": "NOT_VALID_TO_SHIP",
+          "blocking_failures.0.id": "security.release",
+          "blocking_failures.0.effective_status": "fail"
+        },
+        "json_len": {
+          "blocking_failures": 1
+        }
+      }
+    },
+    {
+      "id": "unknown-risk-flag-defers",
+      "kind": "refuse",
+      "behavior": "An unknown risk flag is never assumed no; the release defers and names the flag as a scope gap.",
+      "run": [
+        "scripts/readiness_engine.py",
+        "--input",
+        "{tmp}/readiness.json"
+      ],
+      "files": {
+        "readiness.json": {
+          "manifest_version": 2,
+          "profile": "saas_web",
+          "mode": "standard",
+          "release": {
+            "id": "v2.0.0",
+            "commit_sha": "abc1234000000000000000000000000000000000",
+            "environment": "production",
+            "as_of": "2026-08-25T22:03:05+02:00"
+          },
+          "scope": {
+            "audience": "external",
+            "commercial": "free",
+            "risk_assessment_complete": true,
+            "governance_surfaces": [],
+            "risk_flags": {
+              "first_production_release": "no",
+              "auth_change": "unknown",
+              "billing_change": "no",
+              "schema_or_data_migration": "no",
+              "sensitive_data_change": "no",
+              "public_api_breaking_change": "no",
+              "major_infra_change": "no",
+              "mobile_store_release": "no",
+              "incident_recovery_release": "no",
+              "high_impact_ai_change": "no",
+              "legal_or_regulatory_change": "no"
+            }
+          },
+          "checks": [
+            {
+              "id": "product.acceptance",
+              "gate": "release_scope_acceptance",
+              "domain": "product",
+              "title": "product.acceptance",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "qa.candidate",
+              "gate": "candidate_verification",
+              "domain": "qa",
+              "title": "qa.candidate",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "security.release",
+              "gate": "security_release",
+              "domain": "security",
+              "title": "security.release",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.delivery",
+              "gate": "release_delivery",
+              "domain": "ops",
+              "title": "ops.delivery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.recovery",
+              "gate": "recovery_strategy",
+              "domain": "ops",
+              "title": "ops.recovery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.observability",
+              "gate": "observability",
+              "domain": "ops",
+              "title": "ops.observability",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "docs.operator",
+              "gate": "operator_docs",
+              "domain": "docs",
+              "title": "docs.operator",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "runbook reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "repo"
+              }
+            },
+            {
+              "id": "support.path",
+              "gate": "support_path",
+              "domain": "support",
+              "title": "support.path",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "support escalation route reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "docs"
+              }
+            }
+          ],
+          "governance_gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "DEFER",
+          "scope_gaps": [
+            "risk_flag:auth_change"
+          ],
+          "reason": "release scope/risk assessment incomplete"
+        }
+      }
+    },
+    {
+      "id": "misspelled-scope-key-is-warned",
+      "kind": "boundary",
+      "behavior": "A misspelled scope key is reported with a suggested correction without changing the verdict.",
+      "run": [
+        "scripts/readiness_engine.py",
+        "--input",
+        "{tmp}/readiness.json"
+      ],
+      "files": {
+        "readiness.json": {
+          "manifest_version": 2,
+          "profile": "saas_web",
+          "mode": "standard",
+          "release": {
+            "id": "v2.0.0",
+            "commit_sha": "abc1234000000000000000000000000000000000",
+            "environment": "production",
+            "as_of": "2026-08-25T22:03:05+02:00"
+          },
+          "scope": {
+            "audience": "external",
+            "commercial": "free",
+            "risk_assessment_complete": true,
+            "governance_surfaces": [],
+            "risk_flags": {
+              "first_production_release": "no",
+              "auth_change": "no",
+              "billing_change": "no",
+              "schema_or_data_migration": "no",
+              "sensitive_data_change": "no",
+              "public_api_breaking_change": "no",
+              "major_infra_change": "no",
+              "mobile_store_release": "no",
+              "incident_recovery_release": "no",
+              "high_impact_ai_change": "no",
+              "legal_or_regulatory_change": "no"
+            },
+            "comercial": "free"
+          },
+          "checks": [
+            {
+              "id": "product.acceptance",
+              "gate": "release_scope_acceptance",
+              "domain": "product",
+              "title": "product.acceptance",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "qa.candidate",
+              "gate": "candidate_verification",
+              "domain": "qa",
+              "title": "qa.candidate",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "security.release",
+              "gate": "security_release",
+              "domain": "security",
+              "title": "security.release",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.delivery",
+              "gate": "release_delivery",
+              "domain": "ops",
+              "title": "ops.delivery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.recovery",
+              "gate": "recovery_strategy",
+              "domain": "ops",
+              "title": "ops.recovery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.observability",
+              "gate": "observability",
+              "domain": "ops",
+              "title": "ops.observability",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "docs.operator",
+              "gate": "operator_docs",
+              "domain": "docs",
+              "title": "docs.operator",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "runbook reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "repo"
+              }
+            },
+            {
+              "id": "support.path",
+              "gate": "support_path",
+              "domain": "support",
+              "title": "support.path",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "support escalation route reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "docs"
+              }
+            }
+          ],
+          "governance_gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "verdict": "GO",
+          "scope_warnings": [
+            {
+              "code": "unknown_scope_key",
+              "key": "comercial",
+              "message": "scope.comercial is not a recognized scope key and was ignored; did you mean scope.commercial?",
+              "suggestion": "commercial"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "float-manifest-version-is-invalid",
+      "kind": "boundary",
+      "behavior": "manifest_version 2.0 instead of integer 2 is invalid input with exit 2, not a quiet assessment.",
+      "run": [
+        "scripts/readiness_engine.py",
+        "--input",
+        "{tmp}/readiness.json",
+        "--ci-policy",
+        "strict"
+      ],
+      "files": {
+        "readiness.json": {
+          "manifest_version": 2.0,
+          "profile": "saas_web",
+          "mode": "standard",
+          "release": {
+            "id": "v2.0.0",
+            "commit_sha": "abc1234000000000000000000000000000000000",
+            "environment": "production",
+            "as_of": "2026-08-25T22:03:05+02:00"
+          },
+          "scope": {
+            "audience": "external",
+            "commercial": "free",
+            "risk_assessment_complete": true,
+            "governance_surfaces": [],
+            "risk_flags": {
+              "first_production_release": "no",
+              "auth_change": "no",
+              "billing_change": "no",
+              "schema_or_data_migration": "no",
+              "sensitive_data_change": "no",
+              "public_api_breaking_change": "no",
+              "major_infra_change": "no",
+              "mobile_store_release": "no",
+              "incident_recovery_release": "no",
+              "high_impact_ai_change": "no",
+              "legal_or_regulatory_change": "no"
+            }
+          },
+          "checks": [
+            {
+              "id": "product.acceptance",
+              "gate": "release_scope_acceptance",
+              "domain": "product",
+              "title": "product.acceptance",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "qa.candidate",
+              "gate": "candidate_verification",
+              "domain": "qa",
+              "title": "qa.candidate",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "security.release",
+              "gate": "security_release",
+              "domain": "security",
+              "title": "security.release",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.delivery",
+              "gate": "release_delivery",
+              "domain": "ops",
+              "title": "ops.delivery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.recovery",
+              "gate": "recovery_strategy",
+              "domain": "ops",
+              "title": "ops.recovery",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "ops.observability",
+              "gate": "observability",
+              "domain": "ops",
+              "title": "ops.observability",
+              "status": "pass",
+              "severity": "critical",
+              "binding": true,
+              "evidence_level": "verified",
+              "required_evidence": "verified",
+              "freshness": "current",
+              "evidence": {
+                "summary": "candidate-specific evidence",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "ci",
+                "environment": "production",
+                "candidate_ref": "abc1234000000000000000000000000000000000"
+              }
+            },
+            {
+              "id": "docs.operator",
+              "gate": "operator_docs",
+              "domain": "docs",
+              "title": "docs.operator",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "runbook reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "repo"
+              }
+            },
+            {
+              "id": "support.path",
+              "gate": "support_path",
+              "domain": "support",
+              "title": "support.path",
+              "status": "pass",
+              "severity": "major",
+              "binding": true,
+              "evidence_level": "supported",
+              "required_evidence": "supported",
+              "freshness": "current",
+              "evidence": {
+                "summary": "support escalation route reviewed",
+                "last_verified_at": "2026-08-25T22:03:05+02:00",
+                "source_type": "docs"
+              }
+            }
+          ],
+          "governance_gates": []
+        }
+      },
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "manifest_version must be 2"
+        ]
+      }
+    },
+    {
+      "id": "bootstrap-starts-every-gate-unknown",
+      "kind": "accept",
+      "behavior": "The bootstrapper writes required gates as unknown placeholders and every risk flag as unknown, never pre-filled as passing.",
+      "run": [
+        "scripts/bootstrap_manifest.py",
+        "--context",
+        "{tmp}/release-context.json"
+      ],
+      "files": {
+        "release-context.json": {
+          "profile": "saas_web",
+          "mode": "standard",
+          "release": {
+            "id": "v1.0.0",
+            "environment": "production",
+            "as_of": "2026-08-25T22:03:05+02:00",
+            "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "scope": {
+            "audience": "external",
+            "commercial": "free"
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "manifest_version": 2,
+          "scope.risk_assessment_complete": false,
+          "scope.risk_flags": {
+            "first_production_release": "unknown",
+            "auth_change": "unknown",
+            "billing_change": "unknown",
+            "schema_or_data_migration": "unknown",
+            "sensitive_data_change": "unknown",
+            "public_api_breaking_change": "unknown",
+            "major_infra_change": "unknown",
+            "mobile_store_release": "unknown",
+            "incident_recovery_release": "unknown",
+            "high_impact_ai_change": "unknown",
+            "legal_or_regulatory_change": "unknown"
+          },
+          "checks.0.status": "unknown",
+          "checks.0.evidence_level": "missing",
+          "checks.0.evidence": {}
+        },
+        "json_len": {
+          "checks": 8
+        }
+      }
+    },
+    {
+      "id": "bootstrap-rejects-unknown-scope-key",
+      "kind": "refuse",
+      "behavior": "The bootstrapper rejects a misspelled scope key instead of writing a manifest that silently ignores it.",
+      "run": [
+        "scripts/bootstrap_manifest.py",
+        "--context",
+        "{tmp}/release-context.json"
+      ],
+      "files": {
+        "release-context.json": {
+          "profile": "saas_web",
+          "release": {
+            "id": "v1.0.0",
+            "environment": "production",
+            "as_of": "2026-08-25T22:03:05+02:00",
+            "commit_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "scope": {
+            "comercial": "free"
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "unrecognized scope keys: scope.comercial",
+          "did you mean scope.commercial?"
+        ]
+      }
+    }
+  ]
+}

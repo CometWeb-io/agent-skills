@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object; a new case pins how `evaluate_case` refuses one.
+- New eval cases pin exact error lists for a coverage row with an unknown axis, a DEEP review without `required_axes` (all seven axes required), an unknown `evidence_grade` without the floor, and a MAJOR finding without a grade under the evidence floor. Eval strength 38/43 -> 43/43 guards held.
+- Step 5 told reviewers to label an unverifiable claim `VERIFY` rather than `FALSE`. Neither is a field or value in the review payload; the claim now goes in `verify[]`. The pinned rule in `tests/front-door-rules.json` is updated with it.
+- Step 3 names the severity scale (`BLOCKER`, `MAJOR`, `MINOR`, `NOTE`), and the definition of done names the statuses the kernel returns: `CHANGES_REQUIRED` when a BLOCKER or MAJOR stands, `REVIEWED` otherwise, `INVALID` for a broken ledger.
+- References are listed in a table with load triggers; the v1.3 section is folded into it.
+
 ## [1.7.2] - 2026-10-03
 
 - `references/output-contract.md` documented `coverage` as a map

@@ -1,0 +1,473 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "skill-orchestrator-multiagent",
+  "description": "Offline behavior of the isolated-task payload builder and the envelope gate documented in references/kernel-contract.md.",
+  "cases": [
+    {
+      "id": "payload-builder-isolates-each-step",
+      "kind": "accept",
+      "behavior": "Each planned step becomes its own sequential isolated task for exactly one skill, with the parent limited to planning and merging.",
+      "run": [
+        "scripts/orchestrate_multiagent_kernel.py",
+        "web app audit then release gate for build v2.3 on staging",
+        "--json",
+        "--workspace-root",
+        "{tmp}"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "execution_mode": "isolated_subagents",
+          "parent_role": "orchestrator_only",
+          "plan.archetype": "audit_then_release",
+          "subagent_tasks.0.step_index": 1,
+          "subagent_tasks.0.step_total": 2,
+          "subagent_tasks.0.skill": "web-app-auditor",
+          "subagent_tasks.0.subagent_type": "generalPurpose",
+          "subagent_tasks.0.description": "CW step 1/2: web-app-auditor",
+          "subagent_tasks.0.envelope_out": "FindingEnvelope",
+          "subagent_tasks.0.run_in_background": false,
+          "subagent_tasks.1.skill": "release-readiness",
+          "subagent_tasks.1.description": "CW step 2/2: release-readiness",
+          "subagent_tasks.1.envelope_out": "DecisionHandoff",
+          "subagent_tasks.1.run_in_background": false
+        },
+        "json_len": {
+          "subagent_tasks": 2,
+          "parent_must_not": 3
+        },
+        "stdout_contains": [
+          "Workspace root: {tmp}",
+          "Do NOT run without pinned RC/build + environment in the prompt context.",
+          "Do NOT issue ship/release verdicts — findings only."
+        ]
+      }
+    },
+    {
+      "id": "skill-selection-question-builds-no-tasks",
+      "kind": "refuse",
+      "behavior": "A question about which skill to use builds no isolated tasks at all.",
+      "run": [
+        "scripts/orchestrate_multiagent_kernel.py",
+        "which skill do I need",
+        "--json"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "plan.archetype": "disambiguate_only",
+          "plan.steps": [],
+          "subagent_tasks": []
+        }
+      }
+    },
+    {
+      "id": "repo-baseline-runs-as-explore-task",
+      "kind": "boundary",
+      "behavior": "A whole-repository baseline request maps to one read-only explore task with a placeholder workspace root when none is given.",
+      "run": [
+        "scripts/orchestrate_multiagent_kernel.py",
+        "baseline roadmap for the whole repo",
+        "--json"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "plan.archetype": "single_skill",
+          "subagent_tasks.0.skill": "repo-to-roadmap",
+          "subagent_tasks.0.subagent_type": "explore",
+          "subagent_tasks.0.envelope_out": null
+        },
+        "json_len": {
+          "subagent_tasks": 1
+        },
+        "stdout_contains": [
+          "Workspace root: <host workspace root>",
+          "Emit the skill's standard output contract."
+        ]
+      }
+    },
+    {
+      "id": "valid-v1-evidence-envelope-passes-gate",
+      "kind": "accept",
+      "behavior": "A complete v1 Evidence Envelope of the planned type passes the gate between steps.",
+      "files": {
+        "ev.json": {
+          "id": "env-1",
+          "type": "EvidenceEnvelope",
+          "producer": "evidence-researcher",
+          "protocol_version": "1.0",
+          "subject": "checkout pricing claims",
+          "as_of": "2026-09-30",
+          "payload": {
+            "research_contract": "verify three pricing claims",
+            "material_claims": [
+              {
+                "claim_id": "C1",
+                "text": "Plan A costs 39 USD per month",
+                "epistemic_kind": "FACT",
+                "status": "VERIFIED"
+              }
+            ],
+            "evidence_pack_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        }
+      },
+      "run": [
+        "scripts/validate_envelope.py",
+        "{tmp}/ev.json",
+        "--expect-type",
+        "EvidenceEnvelope"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "OK: envelope env-1 type=EvidenceEnvelope producer=evidence-researcher protocol_version=1.0"
+        ]
+      }
+    },
+    {
+      "id": "v2-release-envelope-answers-decision-step",
+      "kind": "accept",
+      "behavior": "A v2 Release Envelope with a matching payload hash is accepted for a step planned as DecisionHandoff, even with --final.",
+      "files": {
+        "rel.json": {
+          "id": "env-3",
+          "type": "ReleaseEnvelope",
+          "producer": "release-readiness",
+          "producer_version": "2.0.0",
+          "protocol_version": "2.0",
+          "subject": "build v2.3",
+          "generated_at": "2026-09-30T10:00:00Z",
+          "as_of": "2026-09-30",
+          "sensitivity": "internal",
+          "dependencies": [
+            "env-1"
+          ],
+          "payload": {
+            "verdict": "GO",
+            "blockers": [],
+            "gates": [
+              {
+                "gate_id": "qa",
+                "status": "PASS"
+              }
+            ]
+          },
+          "payload_hash": "sha256:a3065ae7c21377303b6421de7dedd36b02df4670277a7014174d673659d903d8"
+        }
+      },
+      "run": [
+        "scripts/validate_envelope.py",
+        "{tmp}/rel.json",
+        "--expect-type",
+        "DecisionHandoff",
+        "--final"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "OK: envelope env-3 type=ReleaseEnvelope producer=release-readiness protocol_version=2.0"
+        ]
+      }
+    },
+    {
+      "id": "wrong-envelope-type-is-rejected",
+      "kind": "refuse",
+      "behavior": "An envelope of a different type than the step planned is rejected before the next step runs.",
+      "files": {
+        "ev.json": {
+          "id": "env-1",
+          "type": "EvidenceEnvelope",
+          "producer": "evidence-researcher",
+          "protocol_version": "1.0",
+          "subject": "checkout pricing claims",
+          "as_of": "2026-09-30",
+          "payload": {
+            "research_contract": "verify three pricing claims",
+            "material_claims": [
+              {
+                "claim_id": "C1",
+                "text": "Plan A costs 39 USD per month",
+                "epistemic_kind": "FACT",
+                "status": "VERIFIED"
+              }
+            ],
+            "evidence_pack_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        }
+      },
+      "run": [
+        "scripts/validate_envelope.py",
+        "{tmp}/ev.json",
+        "--expect-type",
+        "FindingEnvelope"
+      ],
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "FAIL: type: expected 'FindingEnvelope', got 'EvidenceEnvelope'"
+        ],
+        "stdout_absent": [
+          "OK:"
+        ]
+      }
+    },
+    {
+      "id": "go-with-open-blockers-is-rejected",
+      "kind": "refuse",
+      "behavior": "A v1 GO handoff that still lists open blockers is rejected.",
+      "files": {
+        "dh.json": {
+          "id": "env-2",
+          "type": "DecisionHandoff",
+          "producer": "release-readiness",
+          "protocol_version": "1.0",
+          "subject": "build v2.3",
+          "as_of": "2026-09-30",
+          "payload": {
+            "verdict": "GO",
+            "blockers": [
+              "checkout returns 500 on retry"
+            ]
+          }
+        }
+      },
+      "run": [
+        "scripts/validate_envelope.py",
+        "{tmp}/dh.json",
+        "--expect-type",
+        "DecisionHandoff"
+      ],
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "FAIL: schema: $.payload.blockers: ['checkout returns 500 on retry'] is expected to be empty"
+        ]
+      }
+    },
+    {
+      "id": "blocking-gate-rejects-release-go",
+      "kind": "refuse",
+      "behavior": "A v2 release GO_WITH_CONTROLS next to a gate in BLOCK status, in any letter case, is rejected.",
+      "files": {
+        "rel.json": {
+          "id": "env-3",
+          "type": "ReleaseEnvelope",
+          "producer": "release-readiness",
+          "producer_version": "2.0.0",
+          "protocol_version": "2.0",
+          "subject": "build v2.3",
+          "generated_at": "2026-09-30T10:00:00Z",
+          "as_of": "2026-09-30",
+          "sensitivity": "internal",
+          "dependencies": [
+            "env-1"
+          ],
+          "payload": {
+            "verdict": "GO_WITH_CONTROLS",
+            "blockers": [],
+            "gates": [
+              {
+                "gate_id": "security",
+                "status": "block"
+              },
+              {
+                "gate_id": "qa",
+                "status": "PASS"
+              }
+            ]
+          },
+          "payload_hash": "sha256:29234ed571b04723813d87cc41c460bdb69ee30f78ec623467242a95b507d9e8"
+        }
+      },
+      "run": [
+        "scripts/validate_envelope.py",
+        "{tmp}/rel.json"
+      ],
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "FAIL: payload.gates: GO_WITH_CONTROLS blocked by gate security status=block"
+        ]
+      }
+    },
+    {
+      "id": "edited-payload-fails-hash-check",
+      "kind": "refuse",
+      "behavior": "A v2 payload changed after hashing fails the recomputed payload hash.",
+      "files": {
+        "rel.json": {
+          "id": "env-3",
+          "type": "ReleaseEnvelope",
+          "producer": "release-readiness",
+          "producer_version": "2.0.0",
+          "protocol_version": "2.0",
+          "subject": "build v2.3",
+          "generated_at": "2026-09-30T10:00:00Z",
+          "as_of": "2026-09-30",
+          "sensitivity": "internal",
+          "dependencies": [
+            "env-1"
+          ],
+          "payload": {
+            "verdict": "GO",
+            "blockers": [],
+            "gates": []
+          },
+          "payload_hash": "sha256:a3065ae7c21377303b6421de7dedd36b02df4670277a7014174d673659d903d8"
+        }
+      },
+      "run": [
+        "scripts/validate_envelope.py",
+        "{tmp}/rel.json"
+      ],
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "FAIL: payload_hash mismatch: got sha256:a3065ae7c21377303b6421de7dedd36b02df4670277a7014174d673659d903d8, expected sha256:53cf64d72b92b0c20c3982298ebd5ac6fb8007b9dec736f907d355816b28a375"
+        ]
+      }
+    },
+    {
+      "id": "pending-hash-passes-draft-but-not-final",
+      "kind": "boundary",
+      "behavior": "A pending payload hash is a draft marker that the final gate rejects.",
+      "files": {
+        "rel.json": {
+          "id": "env-3",
+          "type": "ReleaseEnvelope",
+          "producer": "release-readiness",
+          "producer_version": "2.0.0",
+          "protocol_version": "2.0",
+          "subject": "build v2.3",
+          "generated_at": "2026-09-30T10:00:00Z",
+          "as_of": "2026-09-30",
+          "sensitivity": "internal",
+          "dependencies": [
+            "env-1"
+          ],
+          "payload": {
+            "verdict": "GO",
+            "blockers": [],
+            "gates": [
+              {
+                "gate_id": "qa",
+                "status": "PASS"
+              }
+            ]
+          },
+          "payload_hash": "pending"
+        }
+      },
+      "run": [
+        "scripts/validate_envelope.py",
+        "{tmp}/rel.json",
+        "--final"
+      ],
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "FAIL: payload_hash: 'pending' is a draft marker and is rejected by --final"
+        ]
+      }
+    },
+    {
+      "id": "pending-hash-accepted-as-draft",
+      "kind": "boundary",
+      "behavior": "Without --final the same pending-hash draft passes the gate.",
+      "files": {
+        "rel.json": {
+          "id": "env-3",
+          "type": "ReleaseEnvelope",
+          "producer": "release-readiness",
+          "producer_version": "2.0.0",
+          "protocol_version": "2.0",
+          "subject": "build v2.3",
+          "generated_at": "2026-09-30T10:00:00Z",
+          "as_of": "2026-09-30",
+          "sensitivity": "internal",
+          "dependencies": [
+            "env-1"
+          ],
+          "payload": {
+            "verdict": "GO",
+            "blockers": [],
+            "gates": [
+              {
+                "gate_id": "qa",
+                "status": "PASS"
+              }
+            ]
+          },
+          "payload_hash": "pending"
+        }
+      },
+      "run": [
+        "scripts/validate_envelope.py",
+        "{tmp}/rel.json"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "stdout_contains": [
+          "OK: envelope env-3 type=ReleaseEnvelope"
+        ]
+      }
+    },
+    {
+      "id": "unknown-protocol-version-fails-closed",
+      "kind": "boundary",
+      "behavior": "An envelope with a protocol version other than 1.0 or 2.0 fails instead of being checked loosely.",
+      "files": {
+        "v3.json": {
+          "id": "env-1",
+          "type": "EvidenceEnvelope",
+          "producer": "evidence-researcher",
+          "protocol_version": "3.0",
+          "subject": "checkout pricing claims",
+          "as_of": "2026-09-30",
+          "payload": {
+            "research_contract": "verify three pricing claims",
+            "material_claims": [
+              {
+                "claim_id": "C1",
+                "text": "Plan A costs 39 USD per month",
+                "epistemic_kind": "FACT",
+                "status": "VERIFIED"
+              }
+            ],
+            "evidence_pack_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        }
+      },
+      "run": [
+        "scripts/validate_envelope.py",
+        "{tmp}/v3.json"
+      ],
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "FAIL: schema: unsupported protocol_version '3.0' (expected '1.0' or '2.0')"
+        ]
+      }
+    },
+    {
+      "id": "malformed-envelope-file-fails",
+      "kind": "boundary",
+      "behavior": "An envelope file that is not valid JSON fails the gate with a FAIL line rather than a crash.",
+      "files": {
+        "bad.json": "{\"id\": "
+      },
+      "run": [
+        "scripts/validate_envelope.py",
+        "{tmp}/bad.json"
+      ],
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "FAIL: Expecting value"
+        ]
+      }
+    }
+  ]
+}

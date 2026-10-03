@@ -1,11 +1,28 @@
 #!/usr/bin/env python3
-"""Executable deterministic behavior evals for cometweb-context (CI-gated).
+"""Executable deterministic behavior evals for every skill that ships a script (CI-gated).
 
-Every assertion string maps to a real handler. No pass-through theatre.
-LLM blind comparisons remain operator-run via run_blind_eval_harness.py.
+Two suite shapes live under evals/behavior/<skill>/suite.json:
+
+- cometweb-context keeps its assertion suite: every assertion string maps to a
+  real handler below. No pass-through theatre.
+- Every other skill has an offline command suite (schema
+  `cometweb.behavior-suite/v1`): each case runs one of the skill's own scripts
+  the way its references tell a user to, and pins what comes back -- the exit
+  code plus exact JSON values or output text. A script the references document
+  as a library (`kernel.review(payload)`) is driven the same way through
+  `"call"`: the named function gets `"args"` and its return value is printed
+  as JSON. A case states the behaviour it
+  holds in one sentence and is tagged `accept`, `refuse` or `boundary`; a suite
+  needs at least three cases and both an accepted and a refused input.
+
+A skill that ships a script under scripts/ without a suite fails the gate, so
+coverage cannot quietly shrink. `--coverage` prints the count per skill and
+`--skill ID` runs one command suite. LLM blind comparisons remain operator-run
+via run_blind_eval_harness.py.
 """
 from __future__ import annotations
 
+import argparse
 import importlib.util
 import json
 import os
@@ -16,6 +33,28 @@ from pathlib import Path
 from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parents[1]
+SKILLS = ROOT / "skills"
+BEHAVIOR = ROOT / "evals" / "behavior"
+COMMAND_SCHEMA = "cometweb.behavior-suite/v1"
+ASSERTION_SUITE_SKILL = "cometweb-context"
+MIN_COMMAND_CASES = 3
+CASE_KINDS = {"accept", "refuse", "boundary"}
+EXPECT_KEYS = {"exit_code", "json", "json_len", "stdout_contains", "stdout_absent", "stderr_contains"}
+CASE_KEYS = {"id", "kind", "behavior", "run", "call", "args", "input", "stdin", "files", "env", "expect"}
+# Imports a script as a module, calls one function with JSON arguments from
+# stdin and prints the return value; an exception exits 1 with its traceback.
+CALL_WRAPPER = """
+import importlib.util, json, sys
+from pathlib import Path
+path, name = Path(sys.argv[1]), sys.argv[2]
+sys.path.insert(0, str(path.parent))
+spec = importlib.util.spec_from_file_location("behavior_subject", path)
+module = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = module
+spec.loader.exec_module(module)
+print(json.dumps(getattr(module, name)(*json.load(sys.stdin)), ensure_ascii=False, sort_keys=True))
+"""
+CASE_TIMEOUT = 60
 SUITE = ROOT / "evals" / "behavior" / "cometweb-context" / "suite.json"
 PLANNER = ROOT / "skills" / "cometweb-context" / "scripts" / "context_plan.py"
 VALIDATOR = ROOT / "skills" / "cometweb-context" / "scripts" / "validate_context_envelope.py"
@@ -431,7 +470,7 @@ def run_case(case: dict, planner, routing, validate_mod) -> None:
         handler(cid, case, planner, routing, validate_mod)
 
 
-def main() -> None:
+def run_assertion_suite() -> int:
     data = json.loads(SUITE.read_text(encoding="utf-8"))
     cases = data.get("cases")
     if not isinstance(cases, list) or len(cases) < 10:
@@ -453,9 +492,230 @@ def main() -> None:
         if not case.get("prompt"):
             fail(f"{cid}: missing prompt")
         run_case(case, planner, routing, validate_mod)
+    return len(cases)
 
-    print(f"OK: behavior evals ({len(cases)} cases, {len(HANDLERS)} assertion handlers)")
+
+# --- offline command suites ------------------------------------------------------------------
+
+_MISSING = object()
+
+
+def skills_with_scripts() -> list[str]:
+    """Skills that ship at least one Python script, which a behavior suite must exercise."""
+    return sorted({p.parent.parent.name for p in SKILLS.glob("*/scripts/*.py")}
+                  | {p.parent.parent.parent.name for p in SKILLS.glob("*/scripts/*/*.py")})
+
+
+def suite_path(skill: str) -> Path:
+    return BEHAVIOR / skill / "suite.json"
+
+
+def json_at(document: Any, path: str) -> Any:
+    """Value at a dotted path (`errors.0`, `result.status`); `$` is the whole document."""
+    if path == "$":
+        return document
+    current = document
+    for part in path.split("."):
+        if isinstance(current, dict) and part in current:
+            current = current[part]
+        elif isinstance(current, list) and part.lstrip("-").isdigit() and -len(current) <= int(part) < len(current):
+            current = current[int(part)]
+        else:
+            return _MISSING
+    return current
+
+
+def suite_problems(skill: str, data: Any) -> list[str]:
+    """Shape problems in a command suite, before anything runs."""
+    if not isinstance(data, dict) or data.get("schema") != COMMAND_SCHEMA:
+        return [f"{skill}: suite schema must be {COMMAND_SCHEMA}"]
+    problems = []
+    if data.get("skill") != skill:
+        problems.append(f"{skill}: suite names skill {data.get('skill')!r}")
+    cases = data.get("cases")
+    if not isinstance(cases, list) or len(cases) < MIN_COMMAND_CASES:
+        return problems + [f"{skill}: needs at least {MIN_COMMAND_CASES} cases"]
+    seen: set[str] = set()
+    for index, case in enumerate(cases):
+        if not isinstance(case, dict):
+            problems.append(f"{skill}: case {index} is not an object")
+            continue
+        cid = case.get("id")
+        label = f"{skill}#{cid or index}"
+        if not isinstance(cid, str) or not cid or cid in seen:
+            problems.append(f"{label}: id must be unique and non-empty")
+        seen.add(str(cid))
+        if set(case) - CASE_KEYS:
+            problems.append(f"{label}: unknown keys {sorted(set(case) - CASE_KEYS)}")
+        if case.get("kind") not in CASE_KINDS:
+            problems.append(f"{label}: kind must be one of {sorted(CASE_KINDS)}")
+        if not isinstance(case.get("behavior"), str) or not case["behavior"].strip():
+            problems.append(f"{label}: state the behavior the case holds")
+        run = case.get("run")
+        if not isinstance(run, list) or not run or not all(isinstance(a, str) for a in run):
+            problems.append(f"{label}: run must be a list of strings, script first")
+        elif not run[0].startswith("scripts/") or not (SKILLS / skill / run[0]).is_file():
+            problems.append(f"{label}: {run[0]!r} is not a script under scripts/")
+        if "call" in case:
+            if not isinstance(case["call"], str) or not case["call"].isidentifier():
+                problems.append(f"{label}: call must name a function")
+            if not isinstance(case.get("args"), list):
+                problems.append(f"{label}: call needs args, a list of the function's arguments")
+            if isinstance(run, list) and len(run) != 1 or {"stdin", "input"} & set(case):
+                problems.append(f"{label}: a call takes its arguments from args only")
+        elif "args" in case:
+            problems.append(f"{label}: args belongs to a call")
+        expect = case.get("expect")
+        if not isinstance(expect, dict) or not isinstance(expect.get("exit_code"), int):
+            problems.append(f"{label}: expect.exit_code is required")
+            continue
+        if set(expect) - EXPECT_KEYS:
+            problems.append(f"{label}: unknown expect keys {sorted(set(expect) - EXPECT_KEYS)}")
+        if not set(expect) & (EXPECT_KEYS - {"exit_code"}):
+            problems.append(f"{label}: an exit code alone pins nothing; add json or output text")
+    kinds = {c.get("kind") for c in cases if isinstance(c, dict)}
+    for needed in ("accept", "refuse"):
+        if needed not in kinds:
+            problems.append(f"{skill}: no {needed} case")
+    return problems
+
+
+def _fill(value: str, slots: dict[str, str]) -> str:
+    for key, replacement in slots.items():
+        value = value.replace("{" + key + "}", replacement)
+    return value
+
+
+def run_command_case(skill: str, case: dict) -> list[str]:
+    """Run one case in a scratch directory and compare what came back."""
+    label = f"{skill}#{case['id']}"
+    with tempfile.TemporaryDirectory() as tmp:
+        work = Path(tmp).resolve()
+        slots = {"tmp": str(work), "skill": str((SKILLS / skill).resolve()), "input": str(work / "input.json")}
+        if "input" in case:
+            (work / "input.json").write_text(json.dumps(case["input"], ensure_ascii=False), encoding="utf-8")
+        for name, content in (case.get("files") or {}).items():
+            target = work / name
+            if work not in target.resolve().parents:
+                return [f"{label}: file {name!r} escapes the scratch directory"]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            text = content if isinstance(content, str) else json.dumps(content, ensure_ascii=False)
+            target.write_text(text, encoding="utf-8")
+        stdin = case.get("stdin")
+        if stdin is not None and not isinstance(stdin, str):
+            stdin = json.dumps(stdin, ensure_ascii=False)
+        script, *args = case["run"]
+        prefix = [sys.executable, "-B"]
+        if "call" in case:
+            prefix += ["-c", CALL_WRAPPER]
+            args = [case["call"]]
+            stdin = json.dumps(case["args"], ensure_ascii=False)
+        env = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1", "PYTHONIOENCODING": "utf-8"}
+        env.update({k: _fill(str(v), slots) for k, v in (case.get("env") or {}).items()})
+        try:
+            proc = subprocess.run([*prefix, str(SKILLS / skill / script), *(_fill(a, slots) for a in args)],
+                                  input=stdin, capture_output=True, text=True, cwd=work, env=env,
+                                  timeout=CASE_TIMEOUT, check=False)
+        except subprocess.TimeoutExpired:
+            return [f"{label}: timed out after {CASE_TIMEOUT} s"]
+        stdout, stderr = proc.stdout.replace(str(work), "{tmp}"), proc.stderr.replace(str(work), "{tmp}")
+    expect = case["expect"]
+    problems = []
+    if proc.returncode != expect["exit_code"]:
+        problems.append(f"{label}: exit code {proc.returncode}, expected {expect['exit_code']}; "
+                        f"stderr: {stderr.strip()[-300:]}")
+    if "json" in expect or "json_len" in expect:
+        try:
+            document = json.loads(stdout)
+        except json.JSONDecodeError:
+            return problems + [f"{label}: stdout is not JSON: {stdout.strip()[:200]!r}"]
+        for path, value in (expect.get("json") or {}).items():
+            got = json_at(document, path)
+            if got is _MISSING:
+                problems.append(f"{label}: {path} is missing")
+            elif got != value:
+                problems.append(f"{label}: {path} is {got!r}, expected {value!r}")
+        for path, length in (expect.get("json_len") or {}).items():
+            got = json_at(document, path)
+            if not isinstance(got, (list, dict, str)) or len(got) != length:
+                problems.append(f"{label}: {path} has length "
+                                f"{len(got) if isinstance(got, (list, dict, str)) else 'n/a'}, expected {length}")
+    for text in expect.get("stdout_contains") or []:
+        if text not in stdout:
+            problems.append(f"{label}: stdout lacks {text!r}")
+    for text in expect.get("stdout_absent") or []:
+        if text in stdout:
+            problems.append(f"{label}: stdout contains {text!r}")
+    for text in expect.get("stderr_contains") or []:
+        if text not in stderr:
+            problems.append(f"{label}: stderr lacks {text!r}")
+    return problems
+
+
+def run_command_suite(skill: str) -> tuple[int, list[str]]:
+    path = suite_path(skill)
+    if not path.is_file():
+        return 0, [f"{skill}: ships scripts but has no {path.relative_to(ROOT)}"]
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return 0, [f"{skill}: suite is not JSON: {exc}"]
+    problems = suite_problems(skill, data)
+    if problems:
+        return 0, problems
+    for case in data["cases"]:
+        problems += run_command_case(skill, case)
+    return len(data["cases"]), problems
+
+
+def coverage() -> list[tuple[str, int]]:
+    rows = []
+    for skill in skills_with_scripts():
+        path = suite_path(skill)
+        try:
+            cases = json.loads(path.read_text(encoding="utf-8")).get("cases") if path.is_file() else []
+        except (json.JSONDecodeError, AttributeError):
+            cases = []
+        rows.append((skill, len(cases) if isinstance(cases, list) else 0))
+    return rows
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--skill", help="run only this skill's command suite")
+    parser.add_argument("--coverage", action="store_true", help="print behavior cases per skill and exit")
+    args = parser.parse_args(argv)
+    if args.coverage:
+        rows = coverage()
+        for skill, count in rows:
+            print(f"{skill:32} {count}")
+        missing = [skill for skill, count in rows if count == 0]
+        print(f"{len(rows) - len(missing)} of {len(rows)} skills with scripts have behavior cases")
+        return 1 if missing else 0
+    if args.skill:
+        count, problems = run_command_suite(args.skill)
+        for problem in problems:
+            print(f"FAIL: {problem}", file=sys.stderr)
+        if not problems:
+            print(f"OK: {args.skill} behavior suite ({count} cases)")
+        return 1 if problems else 0
+
+    assertion_cases = run_assertion_suite()
+    problems: list[str] = []
+    total = 0
+    skills = [s for s in skills_with_scripts() if s != ASSERTION_SUITE_SKILL]
+    for skill in skills:
+        count, found = run_command_suite(skill)
+        total += count
+        problems += found
+    for problem in problems:
+        print(f"FAIL: {problem}", file=sys.stderr)
+    if problems:
+        return 1
+    print(f"OK: behavior evals ({assertion_cases} {ASSERTION_SUITE_SKILL} cases, {len(HANDLERS)} assertion "
+          f"handlers; {total} command cases across {len(skills)} skills)")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

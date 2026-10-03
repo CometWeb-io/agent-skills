@@ -1,0 +1,647 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "repo-to-roadmap",
+  "description": "Offline behavior of scripts/roadmap_kernel.py (evidence, graph, priority, coverage) and scripts/coverage_inventory.py (import-tree, audit) as SKILL.md, references/evidence-model.md, references/output-contract.md and references/file-accounting.md document them.",
+  "cases": [
+    {
+      "id": "behavior-claim-verified-by-test-and-runtime",
+      "kind": "accept",
+      "behavior": "A behavior claim backed by an independent test and a runtime observation is SUPPORTED with its verification requirements met.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "evidence",
+        "--claim-json",
+        "@{tmp}/claim.json"
+      ],
+      "files": {
+        "claim.json": {
+          "claim_id": "C-1",
+          "text": "Sign-in completes for a valid account",
+          "claim_lane": "implementation",
+          "claim_type": "behavior",
+          "materiality": "high",
+          "current_sensitive": false,
+          "evidence": [
+            {
+              "source_type": "test",
+              "direction": "support",
+              "directness": "direct",
+              "freshness": "NOT_TIME_SENSITIVE",
+              "scope_match": "exact",
+              "independence_key": "ci:run-1"
+            },
+            {
+              "source_type": "runtime",
+              "direction": "support",
+              "directness": "direct",
+              "freshness": "NOT_TIME_SENSITIVE",
+              "scope_match": "exact",
+              "independence_key": "runtime:log-1"
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "SUPPORTED",
+          "confidence_band": "VERIFIED",
+          "verification_requirements_met": true,
+          "independent_support_groups": 2,
+          "verification_sources": [
+            "runtime",
+            "test"
+          ],
+          "inadmissible_reasons": [],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "code-presence-does-not-verify-behavior",
+      "kind": "refuse",
+      "behavior": "Code alone cannot verify a behavior claim; it stays INSUFFICIENT_VERIFICATION.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "evidence",
+        "--claim-json",
+        "@{tmp}/claim.json"
+      ],
+      "files": {
+        "claim.json": {
+          "claim_id": "C-2",
+          "text": "Sign-in completes for a valid account",
+          "claim_lane": "implementation",
+          "claim_type": "behavior",
+          "materiality": "high",
+          "current_sensitive": false,
+          "evidence": [
+            {
+              "source_type": "code",
+              "direction": "support",
+              "directness": "direct",
+              "freshness": "NOT_TIME_SENSITIVE",
+              "scope_match": "exact",
+              "independence_key": "repo:src"
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "INSUFFICIENT_VERIFICATION",
+          "verification_requirements_met": false,
+          "verification_sources": [],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "search-miss-is-not-absence",
+      "kind": "refuse",
+      "behavior": "An absence claim resting on a search miss is UNSUPPORTED and warned, never treated as proof something is missing.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "evidence",
+        "--claim-json",
+        "@{tmp}/claim.json"
+      ],
+      "files": {
+        "claim.json": {
+          "claim_id": "C-3",
+          "text": "There is no data export",
+          "claim_lane": "implementation",
+          "claim_type": "absence",
+          "materiality": "high",
+          "evidence": [],
+          "absence_check": {
+            "status": "NOT_FOUND_IN_SEARCH"
+          }
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "UNSUPPORTED",
+          "absence_protocol_complete": false,
+          "confidence_band": "HYPOTHESIS",
+          "warnings": [
+            "absence claim lacks a complete ABSENCE_VERIFIED protocol"
+          ]
+        }
+      }
+    },
+    {
+      "id": "stale-evidence-cannot-carry-current-claim",
+      "kind": "refuse",
+      "behavior": "STALE evidence is inadmissible for a current-sensitive claim and the claim is reported as STALE_EVIDENCE.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "evidence",
+        "--claim-json",
+        "@{tmp}/claim.json"
+      ],
+      "files": {
+        "claim.json": {
+          "claim_id": "C-4",
+          "text": "The vendor rate limit is 100 requests per minute",
+          "claim_lane": "external",
+          "claim_type": "external_current",
+          "materiality": "high",
+          "current_sensitive": true,
+          "evidence": [
+            {
+              "source_type": "vendor_official",
+              "direction": "support",
+              "directness": "direct",
+              "freshness": "STALE",
+              "scope_match": "exact",
+              "independence_key": "vendor:docs"
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "status": "STALE_EVIDENCE",
+          "admissible_evidence_count": 0,
+          "inadmissible_evidence_count": 1,
+          "inadmissible_reasons": [
+            "current_sensitive_claim_rejects_stale"
+          ]
+        }
+      }
+    },
+    {
+      "id": "graph-orders-hard-dependencies",
+      "kind": "accept",
+      "behavior": "A valid dependency chain yields one item per wave in dependency order and credits the root with what it unblocks.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "graph",
+        "--items-json",
+        "[{\"id\": \"R-1\"}, {\"id\": \"R-2\", \"depends_on\": [\"R-1\"]}, {\"id\": \"R-3\", \"depends_on\": [\"R-2\"]}]"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "valid": true,
+          "topological_order": [
+            "R-1",
+            "R-2",
+            "R-3"
+          ],
+          "waves": [
+            {
+              "items": [
+                "R-1"
+              ],
+              "wave": 0
+            },
+            {
+              "items": [
+                "R-2"
+              ],
+              "wave": 1
+            },
+            {
+              "items": [
+                "R-3"
+              ],
+              "wave": 2
+            }
+          ],
+          "duplicate_ids": [],
+          "missing_dependencies": {},
+          "cycle_nodes": [],
+          "dependency_leverage.0": {
+            "direct_unblocks": 1,
+            "id": "R-1",
+            "transitive_unblocks": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "graph-reports-cycle-and-missing-dependency",
+      "kind": "refuse",
+      "behavior": "A dependency cycle and a dependency on an unknown item make the graph invalid and produce no waves.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "graph",
+        "--items-json",
+        "[{\"id\": \"R-1\", \"depends_on\": [\"R-2\"]}, {\"id\": \"R-2\", \"depends_on\": [\"R-1\"]}, {\"id\": \"R-3\", \"depends_on\": [\"R-9\"]}]"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "valid": false,
+          "cycle_nodes": [
+            "R-1",
+            "R-2"
+          ],
+          "missing_dependencies": {
+            "R-3": [
+              "R-9"
+            ]
+          },
+          "waves": [],
+          "topological_order": []
+        }
+      }
+    },
+    {
+      "id": "blocked-security-gate-is-blocker-lane",
+      "kind": "accept",
+      "behavior": "A BLOCK on the security gate puts the item in the BLOCKER lane regardless of its score.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "priority",
+        "--item-json",
+        "{\"id\": \"R-1\", \"mandatory_gate\": \"security\", \"gate_status\": \"BLOCK\", \"gate_basis\": \"penetration test report\"}"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "lane": "BLOCKER",
+          "lane_reason": "binding_security_gate_block",
+          "gate_status": "BLOCK"
+        }
+      }
+    },
+    {
+      "id": "unverified-gate-is-verify-now",
+      "kind": "boundary",
+      "behavior": "A mandatory security gate with no status defaults to UNVERIFIED and lands in VERIFY_NOW, not a normal lane.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "priority",
+        "--item-json",
+        "{\"id\": \"R-1\", \"mandatory_gate\": \"security\"}"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "lane": "VERIFY_NOW",
+          "lane_reason": "binding_security_gate_unverified",
+          "gate_status": "UNVERIFIED"
+        }
+      }
+    },
+    {
+      "id": "unavailable-mandatory-domain-blocks-whole-project-claim",
+      "kind": "refuse",
+      "behavior": "An unavailable mandatory domain makes a whole-project coverage claim not defensible.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "coverage",
+        "--coverage-json",
+        "[{\"name\": \"code\", \"status\": \"COMPLETE\", \"mandatory\": true}, {\"name\": \"ci\", \"status\": \"UNAVAILABLE\", \"mandatory\": true}]"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "scope_claim": "WHOLE_PROJECT_SCOPE_NOT_DEFENSIBLE",
+          "coverage_grade": "D",
+          "coverage_score": 0.5,
+          "errors": [],
+          "incomplete_mandatory_domains": [
+            "ci"
+          ],
+          "unavailable_domains": [
+            "ci"
+          ]
+        }
+      }
+    },
+    {
+      "id": "not-applicable-needs-reason",
+      "kind": "boundary",
+      "behavior": "NOT_APPLICABLE without a reason makes the coverage ledger invalid.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "coverage",
+        "--coverage-json",
+        "[{\"name\": \"billing\", \"status\": \"NOT_APPLICABLE\"}]"
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "scope_claim": "COVERAGE_INVALID",
+          "errors": [
+            "billing: NOT_APPLICABLE requires not_applicable_reason"
+          ]
+        }
+      }
+    },
+    {
+      "id": "unknown-coverage-status-is-input-error",
+      "kind": "boundary",
+      "behavior": "A coverage status outside the documented set is an input error with exit 2.",
+      "run": [
+        "scripts/roadmap_kernel.py",
+        "coverage",
+        "--coverage-json",
+        "[{\"name\": \"code\", \"status\": \"DONE\"}]"
+      ],
+      "expect": {
+        "exit_code": 2,
+        "json": {
+          "status": "error",
+          "error": "invalid input or unreadable file"
+        }
+      }
+    },
+    {
+      "id": "import-tree-pins-full-github-tree",
+      "kind": "accept",
+      "behavior": "A complete recursive tree whose recomputed root matches the expected tree becomes an entire-commit inventory marked as a connector pin.",
+      "run": [
+        "scripts/coverage_inventory.py",
+        "import-tree",
+        "--tree",
+        "{tmp}/tree.json",
+        "--repository",
+        "example/demo",
+        "--commit",
+        "cccccccccccccccccccccccccccccccccccccccc",
+        "--expected-tree",
+        "dad39ed38cd6dbbe15f3db3ed2d584b0432e1783"
+      ],
+      "files": {
+        "tree.json": {
+          "sha": "dad39ed38cd6dbbe15f3db3ed2d584b0432e1783",
+          "truncated": false,
+          "tree": [
+            {
+              "path": "README.md",
+              "mode": "100644",
+              "type": "blob",
+              "sha": "b4f04f43841a9645a9faf665a65270ce2e8051b3"
+            },
+            {
+              "path": "src",
+              "mode": "040000",
+              "type": "tree",
+              "sha": "5f6ed9bfb37c89a89c650f1d713723d459bfcdd9"
+            },
+            {
+              "path": "src/app.py",
+              "mode": "100644",
+              "type": "blob",
+              "sha": "b917a726c93f902e43291d9009d6488385133b67"
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "schema": "cometweb.file-inventory/v1",
+          "scope": "entire_commit_tree",
+          "commit_binding": "asserted_connector_pin",
+          "tree_sha": "dad39ed38cd6dbbe15f3db3ed2d584b0432e1783",
+          "object_format": "sha1",
+          "entries": [
+            {
+              "mode": "100644",
+              "path": "README.md",
+              "sha": "b4f04f43841a9645a9faf665a65270ce2e8051b3",
+              "type": "blob"
+            },
+            {
+              "mode": "040000",
+              "path": "src",
+              "sha": "5f6ed9bfb37c89a89c650f1d713723d459bfcdd9",
+              "type": "tree"
+            },
+            {
+              "mode": "100644",
+              "path": "src/app.py",
+              "sha": "b917a726c93f902e43291d9009d6488385133b67",
+              "type": "blob"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "import-tree-rejects-wrong-root",
+      "kind": "refuse",
+      "behavior": "A tree that does not hash to the independently expected root is rejected and coverage is not assessed.",
+      "run": [
+        "scripts/coverage_inventory.py",
+        "import-tree",
+        "--tree",
+        "{tmp}/tree.json",
+        "--repository",
+        "example/demo",
+        "--commit",
+        "cccccccccccccccccccccccccccccccccccccccc",
+        "--expected-tree",
+        "0000000000000000000000000000000000000000"
+      ],
+      "files": {
+        "tree.json": {
+          "sha": "dad39ed38cd6dbbe15f3db3ed2d584b0432e1783",
+          "truncated": false,
+          "tree": [
+            {
+              "path": "README.md",
+              "mode": "100644",
+              "type": "blob",
+              "sha": "b4f04f43841a9645a9faf665a65270ce2e8051b3"
+            },
+            {
+              "path": "src",
+              "mode": "040000",
+              "type": "tree",
+              "sha": "5f6ed9bfb37c89a89c650f1d713723d459bfcdd9"
+            },
+            {
+              "path": "src/app.py",
+              "mode": "100644",
+              "type": "blob",
+              "sha": "b917a726c93f902e43291d9009d6488385133b67"
+            }
+          ]
+        }
+      },
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "{\"status\":\"invalid\",\"coverage\":\"not_assessed\"}"
+        ]
+      }
+    },
+    {
+      "id": "untouched-template-is-not-exhaustive",
+      "kind": "refuse",
+      "behavior": "A review template nobody filled in leaves every file blocked and reports EXHAUSTIVE_NOT_PROVEN with exit 1.",
+      "run": [
+        "scripts/coverage_inventory.py",
+        "audit",
+        "--inventory",
+        "{tmp}/inventory.json",
+        "--ledger",
+        "{tmp}/review.json"
+      ],
+      "files": {
+        "inventory.json": {
+          "commit_binding": "asserted_connector_pin",
+          "commit_sha": "cccccccccccccccccccccccccccccccccccccccc",
+          "entries": [
+            {
+              "mode": "100644",
+              "path": "README.md",
+              "sha": "b4f04f43841a9645a9faf665a65270ce2e8051b3",
+              "type": "blob"
+            },
+            {
+              "mode": "040000",
+              "path": "src",
+              "sha": "5f6ed9bfb37c89a89c650f1d713723d459bfcdd9",
+              "type": "tree"
+            },
+            {
+              "mode": "100644",
+              "path": "src/app.py",
+              "sha": "b917a726c93f902e43291d9009d6488385133b67",
+              "type": "blob"
+            }
+          ],
+          "inventory_sha256": "f4981a376259231409f4270578ab5727d8ef66c13712a7553525c9f319c070db",
+          "object_format": "sha1",
+          "observed_at": "2026-10-03T18:47:29.413758+00:00",
+          "repository": "example/demo",
+          "schema": "cometweb.file-inventory/v1",
+          "scope": "entire_commit_tree",
+          "tree_sha": "dad39ed38cd6dbbe15f3db3ed2d584b0432e1783"
+        },
+        "review.json": {
+          "inventory_sha256": "f4981a376259231409f4270578ab5727d8ef66c13712a7553525c9f319c070db",
+          "rows": [
+            {
+              "path": "README.md",
+              "reason": "Review not performed",
+              "sha": "b4f04f43841a9645a9faf665a65270ce2e8051b3",
+              "status": "UNAVAILABLE"
+            },
+            {
+              "path": "src/app.py",
+              "reason": "Review not performed",
+              "sha": "b917a726c93f902e43291d9009d6488385133b67",
+              "status": "UNAVAILABLE"
+            }
+          ],
+          "schema": "cometweb.file-review/v1"
+        }
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "result": "EXHAUSTIVE_NOT_PROVEN",
+          "blocked_paths": [
+            "README.md",
+            "src/app.py"
+          ],
+          "counts": {
+            "UNAVAILABLE": 2
+          },
+          "anchor": "self_consistency_only",
+          "review_authentication": "not_performed"
+        }
+      }
+    },
+    {
+      "id": "inspected-records-complete-against-pin",
+      "kind": "accept",
+      "behavior": "Inspection records for every file, checked against the saved inventory hash, report INSPECTION_RECORDS_COMPLETE without claiming review quality.",
+      "run": [
+        "scripts/coverage_inventory.py",
+        "audit",
+        "--inventory",
+        "{tmp}/inventory.json",
+        "--ledger",
+        "{tmp}/review.json",
+        "--expected-inventory-sha256",
+        "f4981a376259231409f4270578ab5727d8ef66c13712a7553525c9f319c070db"
+      ],
+      "files": {
+        "inventory.json": {
+          "commit_binding": "asserted_connector_pin",
+          "commit_sha": "cccccccccccccccccccccccccccccccccccccccc",
+          "entries": [
+            {
+              "mode": "100644",
+              "path": "README.md",
+              "sha": "b4f04f43841a9645a9faf665a65270ce2e8051b3",
+              "type": "blob"
+            },
+            {
+              "mode": "040000",
+              "path": "src",
+              "sha": "5f6ed9bfb37c89a89c650f1d713723d459bfcdd9",
+              "type": "tree"
+            },
+            {
+              "mode": "100644",
+              "path": "src/app.py",
+              "sha": "b917a726c93f902e43291d9009d6488385133b67",
+              "type": "blob"
+            }
+          ],
+          "inventory_sha256": "f4981a376259231409f4270578ab5727d8ef66c13712a7553525c9f319c070db",
+          "object_format": "sha1",
+          "observed_at": "2026-10-03T18:47:29.413758+00:00",
+          "repository": "example/demo",
+          "schema": "cometweb.file-inventory/v1",
+          "scope": "entire_commit_tree",
+          "tree_sha": "dad39ed38cd6dbbe15f3db3ed2d584b0432e1783"
+        },
+        "review.json": {
+          "inventory_sha256": "f4981a376259231409f4270578ab5727d8ef66c13712a7553525c9f319c070db",
+          "rows": [
+            {
+              "path": "README.md",
+              "reason": "",
+              "sha": "b4f04f43841a9645a9faf665a65270ce2e8051b3",
+              "status": "INSPECTED",
+              "reviewer": "reviewer-1",
+              "reviewed_at": "2026-09-01T10:00:00+00:00",
+              "evidence_ref": "review/notes.md",
+              "summary": "Read the whole file."
+            },
+            {
+              "path": "src/app.py",
+              "reason": "",
+              "sha": "b917a726c93f902e43291d9009d6488385133b67",
+              "status": "INSPECTED",
+              "reviewer": "reviewer-1",
+              "reviewed_at": "2026-09-01T10:00:00+00:00",
+              "evidence_ref": "review/notes.md",
+              "summary": "Read the whole file."
+            }
+          ],
+          "schema": "cometweb.file-review/v1"
+        }
+      },
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "result": "INSPECTION_RECORDS_COMPLETE",
+          "anchor": "matched_external_pin",
+          "counts": {
+            "INSPECTED": 2
+          },
+          "blocked_paths": [],
+          "unaccounted_paths": [],
+          "review_authentication": "not_performed",
+          "runtime_verification": "not_performed"
+        }
+      }
+    }
+  ]
+}

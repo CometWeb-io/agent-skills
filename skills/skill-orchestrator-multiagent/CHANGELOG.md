@@ -1,5 +1,11 @@
 # Changelog — skill-orchestrator-multiagent
 
+## [1.1.5] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- The "load and follow" instruction is one sentence, and each shared reference says when to read it. `references/workflow-archetypes.md`, a copy of the orchestrator's table, is now named.
+- The shared `scripts/orchestrate_kernel.py` given a goal of only whitespace stopped with a `ValueError` traceback; it now exits 2 with the usual `goal is required` usage error.
+
 ## [1.1.4] - 2026-10-03
 
 ### Fixed

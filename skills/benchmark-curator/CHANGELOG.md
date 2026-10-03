@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object; a new case pins how `evaluate_case` refuses one.
+- The closing sentence that loaded all seven references at once is now a table with one trigger per reference. It also says the kernel exits non-zero for any status other than `READY_TO_FREEZE`.
+- The description is 534 characters, down from 741. Codex shows about the first 546 characters of each description in its skill list, which cut the "Do not use" clause part-way; the whole description now fits, with the routing boundaries and named alternatives kept.
+
 ## [1.7.2] - 2026-10-03
 
 - A `leakage_scan` supplied in STANDARD mode was ignored: a `CONTAMINATED` or

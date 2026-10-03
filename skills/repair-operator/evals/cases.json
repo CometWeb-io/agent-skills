@@ -1769,5 +1769,17 @@
       "errors": [],
       "closed": 1
     }
+  },
+  {
+    "id": "case-that-is-not-an-object-is-invalid",
+    "raw_case": "input",
+    "expect": {
+      "status": "INVALID",
+      "closed": 0,
+      "open": 0,
+      "errors": [
+        "payload:not-object"
+      ]
+    }
   }
 ]

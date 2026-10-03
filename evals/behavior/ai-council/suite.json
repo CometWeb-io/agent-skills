@@ -1,0 +1,77 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "ai-council",
+  "description": "Offline behavior of the council kernel CLI (scripts/council_kernel.py) as SKILL.md and references/kernel-admission.md document it: final gate, freshness, forecast scoring, tool authority and input validation.",
+  "cases": [
+    {
+      "id": "gate-go-when-every-required-gate-clear",
+      "kind": "accept",
+      "behavior": "A GO with confidence above the threshold, CLEAR freshness and every required gate CLEAR stays GO and exits 0 under --require-go.",
+      "run": ["scripts/council_kernel.py", "gate", "--verdict", "GO", "--confidence", "0.9", "--required-confidence", "0.8", "--freshness-status", "CLEAR", "--required-gates-json", "[\"security\"]", "--gate-statuses-json", "{\"security\": \"CLEAR\"}", "--require-go"],
+      "expect": {"exit_code": 0, "json": {"$": {"verdict": "GO"}}}
+    },
+    {
+      "id": "gate-missing-required-role-defers",
+      "kind": "refuse",
+      "behavior": "A required gatekeeper with no supplied status defers the decision instead of letting the GO through.",
+      "run": ["scripts/council_kernel.py", "gate", "--verdict", "GO", "--confidence", "0.9", "--required-confidence", "0.8", "--freshness-status", "CLEAR", "--required-gates-json", "[\"security\", \"legal\"]", "--gate-statuses-json", "{\"security\": \"CLEAR\"}", "--require-go"],
+      "expect": {"exit_code": 1, "json": {"$": {"verdict": "DEFER"}}}
+    },
+    {
+      "id": "gate-block-is-no-go",
+      "kind": "refuse",
+      "behavior": "A supplied BLOCK from a required gate turns a confident GO into NO-GO.",
+      "run": ["scripts/council_kernel.py", "gate", "--verdict", "GO", "--confidence", "0.9", "--required-confidence", "0.8", "--freshness-status", "CLEAR", "--required-gates-json", "[\"security\"]", "--gate-statuses-json", "{\"security\": \"BLOCK\"}", "--require-go"],
+      "expect": {"exit_code": 1, "json": {"$": {"verdict": "NO-GO"}}}
+    },
+    {
+      "id": "gate-freshness-defaults-to-unknown",
+      "kind": "boundary",
+      "behavior": "When freshness is not assessed the CLI treats it as UNKNOWN and defers rather than assuming CLEAR.",
+      "run": ["scripts/council_kernel.py", "gate", "--verdict", "GO", "--confidence", "0.9", "--required-confidence", "0.8", "--require-go"],
+      "expect": {"exit_code": 1, "json": {"$": {"verdict": "DEFER"}}}
+    },
+    {
+      "id": "freshness-stale-pricing-requires-refresh",
+      "kind": "refuse",
+      "behavior": "Competitor pricing verified months before the decision is STALE, not admissible, and the run reports REFRESH_REQUIRED.",
+      "run": ["scripts/council_kernel.py", "freshness", "--rows-json", "[{\"claim_id\": \"c1\", \"claim_type\": \"competitor_pricing\", \"material\": true, \"verified_for_decision\": true, \"last_verified_at\": \"2026-01-01T00:00:00+00:00\"}]", "--as-of", "2026-08-24T18:59:00+02:00"],
+      "expect": {"exit_code": 0, "json": {"status": "REFRESH_REQUIRED", "decision_ready": false, "material_blocker_count": 1, "blockers.0.claim_id": "c1", "blockers.0.status": "STALE", "blockers.0.admissible": false, "blockers.0.max_age_hours": 24, "coverage_assessed": false}}
+    },
+    {
+      "id": "freshness-current-pricing-is-clear",
+      "kind": "accept",
+      "behavior": "Competitor pricing verified within its 24-hour window is CURRENT and the evidence set is decision-ready.",
+      "run": ["scripts/council_kernel.py", "freshness", "--rows-json", "[{\"claim_id\": \"c1\", \"claim_type\": \"competitor_pricing\", \"material\": true, \"verified_for_decision\": true, \"last_verified_at\": \"2026-08-24T10:00:00+00:00\"}]", "--as-of", "2026-08-24T18:59:00+02:00"],
+      "expect": {"exit_code": 0, "json": {"status": "CLEAR", "decision_ready": true, "blockers": [], "evaluated.0.status": "CURRENT", "evaluated.0.admissible": true, "coverage_assessed": false}}
+    },
+    {
+      "id": "freshness-empty-input-is-not-clearance",
+      "kind": "boundary",
+      "behavior": "An empty freshness input is never read as clearance; it reports REFRESH_REQUIRED.",
+      "run": ["scripts/council_kernel.py", "freshness", "--rows-json", "[]", "--as-of", "2026-08-24T18:59:00+02:00"],
+      "expect": {"exit_code": 0, "json": {"status": "REFRESH_REQUIRED", "decision_ready": false, "reason": "no evidence rows supplied", "evaluated": [], "blockers": []}}
+    },
+    {
+      "id": "forecast-score-excludes-invalid-and-unresolved",
+      "kind": "boundary",
+      "behavior": "Out-of-range probabilities are counted invalid and unrecognised outcomes unresolved, and neither enters the Brier score.",
+      "run": ["scripts/council_kernel.py", "forecast-score", "--forecasts-json", "[{\"probability\": 0.8, \"outcome\": \"yes\"}, {\"probability\": 0.2, \"outcome\": 0}, {\"probability\": 1.5, \"outcome\": 1}, {\"probability\": 0.5, \"outcome\": \"maybe\"}]"],
+      "expect": {"exit_code": 0, "json": {"input_count": 4, "n": 2, "invalid_count": 1, "unresolved_count": 1, "invalid_rows": [{"index": 2, "reason": "invalid_probability"}], "brier_score": 0.04}}
+    },
+    {
+      "id": "tool-authority-public-write-needs-approval",
+      "kind": "accept",
+      "behavior": "A public write with an external side effect is class T2 and is never executed automatically.",
+      "run": ["scripts/council_kernel.py", "tool-authority", "--action-json", "{\"write\": true, \"external_side_effect\": true, \"public\": true}"],
+      "expect": {"exit_code": 0, "json": {"authority_class": "T2", "approval_required": true, "execute_automatically": false}}
+    },
+    {
+      "id": "contract-unknown-decision-type-is-input-error",
+      "kind": "refuse",
+      "behavior": "An unknown decision_type is an input error with exit 2, not a silent fallback, and no result is printed.",
+      "run": ["scripts/council_kernel.py", "contract", "--query", "Should we enter a new market?", "--context-json", "{\"decision_type\": \"lottery\"}"],
+      "expect": {"exit_code": 2, "stderr_contains": ["\"status\": \"INVALID\"", "\"execution_authorized\": false"], "stdout_absent": ["lottery"]}
+    }
+  ]
+}

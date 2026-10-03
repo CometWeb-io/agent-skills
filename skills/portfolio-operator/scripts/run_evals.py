@@ -35,8 +35,15 @@ def main() -> int:
                     actual = None
                 expected = case['expected_error']
             elif kind == 'ranking':
-                actual = rank_items(case['items'])[0]['id']
+                ranked = rank_items(case['items'])
+                actual = ranked[0]['id']
                 expected = case['expected_first']
+                # A score inside one gate class never changes the leader, so a
+                # ranking case can also pin every score it produces.
+                scores = {str(row.get('id')): row['priority_score'] for row in ranked}
+                if 'expected_scores' in case and scores != case['expected_scores']:
+                    failures.append(f"{name}: expected scores {case['expected_scores']!r}, got {scores!r}")
+                    continue
             elif kind == 'lane':
                 actual = classify_lane(case['item'])
                 expected = case['expected']

@@ -236,6 +236,163 @@ def test_a_qualified_field_scopes_its_enum_to_its_parent(package) -> None:
     assert any("items.state='SHUT'" in e for e in package(data, kernel=kernel, doc=doc, cases=bad))
 
 
+def test_internal_keys_may_carry_a_reason_each(package) -> None:
+    data = contract()
+    kernel = KERNEL + "\ndef acc(p):\n    return p.get('scratch')\n"
+    data["internal"] = {"scratch": "the kernel's working copy, never part of a payload"}
+    assert package(data, kernel=kernel) == []
+    data["internal"] = ["scratch"]  # the older bare list stays accepted
+    assert package(data, kernel=kernel) == []
+
+
+@pytest.mark.parametrize("reason", ["", "   ", "scratch", "Internal", 7, None])
+def test_an_internal_reason_must_say_something(package, reason) -> None:
+    data = contract()
+    data["internal"] = {"scratch": reason}
+    errors = package(data, kernel=KERNEL + "\ndef acc(p):\n    return p.get('scratch')\n")
+    assert errors == ["demo: internal.scratch: give the reason it is not a payload field"]
+
+
+def test_internal_must_be_a_map_or_a_list_of_names(package) -> None:
+    data = contract()
+    data["internal"] = "scratch"
+    assert package(data) == ["demo: internal must map each key to its reason (or list key names)"]
+    data["internal"] = ["scratch", ""]
+    assert package(data) == ["demo: internal entries must be key names: ['']"]
+
+
+def test_draft_reasons_are_placeholders_a_contract_cannot_keep(package, tmp_path) -> None:
+    package(kernel=KERNEL + "\ndef acc(p):\n    return p.get('scratch')\n")
+    draft = skill_contracts.draft("demo")
+    assert draft["internal"] == {"scratch": skill_contracts.DRAFT_REASON}
+    data = contract()
+    data["internal"] = draft["internal"]
+    (tmp_path / "skills" / "demo" / "references" / "contract.json").write_text(json.dumps(data), encoding="utf-8")
+    assert skill_contracts.check("demo") == [
+        "demo: internal.scratch: replace the --draft placeholder with a reason"]
+
+
+def test_an_internal_reason_does_not_hide_an_overlap_with_a_field(package) -> None:
+    data = contract()
+    data["internal"] = {"mode": "read before validation"}
+    assert package(data) == ["demo: both a contract name and internal: ['mode']"]
+
+
+LIST_KERNEL = KERNEL + '''
+def score(forecasts, memory):
+    hits = [row.get("outcome") for row in forecasts]
+    return hits + [row.get("outcome") for row in memory]
+'''
+LIST_DOC = DOC + """
+Forecast rows (`score` first argument): `outcome` is `0` or `1`.
+Memory rows (second argument): `outcome` is one of `Pending`, `Success`.
+"""
+
+
+def listed_contract() -> dict:
+    data = contract()
+    data["lists"] = {"forecasts": "rows passed to score as its first argument",
+                     "memory": "rows passed to score as its second argument"}
+    data["fields"]["forecasts.outcome"] = {"enum": [0, 1], "enforced": False}
+    data["fields"]["memory.outcome"] = {"enum": ["Pending", "Success"], "enforced": False}
+    return data
+
+
+def check_rows(package, tmp_path, forecasts: list, memory: list) -> list[str]:
+    """Build the package, add one row corpus per list, then check it."""
+    package(kernel=LIST_KERNEL, doc=LIST_DOC)
+    base = tmp_path / "skills" / "demo"
+    (base / "evals" / "forecasts.json").write_text(json.dumps(forecasts), encoding="utf-8")
+    (base / "evals" / "memory.json").write_text(json.dumps(memory), encoding="utf-8")
+    data = with_row_evals(listed_contract())
+    (base / "references" / "contract.json").write_text(json.dumps(data), encoding="utf-8")
+    return skill_contracts.check("demo")
+
+
+def with_row_evals(data: dict) -> dict:
+    data["evals"] += [
+        {"path": "evals/forecasts.json", "cases": "", "input": "row", "parent": "forecasts", "conform": "always"},
+        {"path": "evals/memory.json", "cases": "", "input": "row", "parent": "memory", "conform": "always"},
+    ]
+    return data
+
+
+def test_one_key_can_carry_a_different_enum_in_each_list(package, tmp_path) -> None:
+    assert check_rows(package, tmp_path, [{"id": "f", "row": {"outcome": 1}}],
+                      [{"id": "m", "row": {"outcome": "Pending"}}]) == []
+
+
+def test_a_list_qualified_enum_applies_only_to_its_own_rows(package, tmp_path) -> None:
+    assert check_rows(package, tmp_path, [{"id": "f", "row": {"outcome": "Pending"}}],
+                      [{"id": "m", "row": {"outcome": 1}}]) == [
+        "demo: evals/forecasts.json#f: input breaks the contract (conform: always): "
+        "[\"forecasts.outcome='Pending' not in enum\"]",
+        "demo: evals/memory.json#m: input breaks the contract (conform: always): "
+        "['memory.outcome=1 not in enum']",
+    ]
+
+
+def test_a_row_outside_any_list_cannot_use_a_list_qualified_key(package, tmp_path) -> None:
+    data = listed_contract()
+    errors = package(data, kernel=LIST_KERNEL, doc=LIST_DOC,
+                     cases=[*CASES, {"id": "loose", "input": {"mode": "A", "outcome": 1},
+                                     "expect": {"status": "VALID"}}])
+    assert errors == ["demo: evals/cases.json#loose: expects 'VALID' but its input breaks the contract: "
+                      "[\"unknown field 'outcome'\"]"]
+
+
+def test_list_qualified_enum_values_must_be_documented(package) -> None:
+    errors = package(listed_contract(), kernel=LIST_KERNEL, doc=LIST_DOC.replace("`Success`", "a success"))
+    assert errors == ["demo: enum values not documented verbatim: ['memory.outcome=Success']; "
+                      "spell each value exactly as declared in references/contract.md"]
+
+
+def test_a_list_qualified_enum_binds_to_a_script_constant(package) -> None:
+    data = listed_contract()
+    del data["fields"]["forecasts.outcome"]["enforced"]
+    assert package(data, kernel=LIST_KERNEL, doc=LIST_DOC) == [
+        "demo: enums no script constant enforces (map one, or declare enforced: false): ['forecasts.outcome']"]
+    data["scripts"]["scripts/kernel.py"]["enums"]["OUTCOMES"] = "forecasts.outcome"
+    assert package(data, kernel=LIST_KERNEL + "OUTCOMES = (0, 1)\n", doc=LIST_DOC) == []
+    assert package(data, kernel=LIST_KERNEL + "OUTCOMES = (0, 1, 2)\n", doc=LIST_DOC) == [
+        "demo: scripts/kernel.py:OUTCOMES accepts ['0', '1', '2'] but the contract declares "
+        "'forecasts.outcome' as [0, 1]"]
+
+
+@pytest.mark.parametrize("mutate,error", [
+    (lambda d: d["fields"].update({"ledger.outcome": {"enum": [0], "enforced": False}}),
+     "fields.ledger.outcome: parent 'ledger' is neither a field nor a declared list"),
+    (lambda d: d["fields"].update({"forecasts.inner.outcome": {"enum": [0], "enforced": False}}),
+     "fields.forecasts.inner.outcome: qualify by one parent only"),
+    (lambda d: d["lists"].update({"items": "the items field again"}),
+     "lists.items: also a payload field; qualify by the field instead"),
+    (lambda d: d["lists"].update({"forecasts": " "}),
+     "lists.forecasts: say which rows the list holds"),
+    (lambda d: d["evals"][0].update({"parent": "ledger"}),
+     "eval evals/cases.json: parent 'ledger' is not a declared list"),
+    (lambda d: d.update({"lists": ["forecasts"]}),
+     "lists must map each list name to what it holds"),
+])
+def test_list_qualifiers_are_declared_before_use(package, mutate, error) -> None:
+    data = listed_contract()
+    mutate(data)
+    assert error in [e.removeprefix("demo: ") for e in package(data, kernel=LIST_KERNEL, doc=LIST_DOC)]
+
+
+def test_every_contract_in_the_tree_gives_internal_reasons() -> None:
+    bare_lists = [s for s in skill_contracts.unique_skills()
+                  if isinstance(skill_contracts.load_contract(s).get("internal", {}), list)
+                  and skill_contracts.load_contract(s).get("internal")]
+    assert not bare_lists, f"contracts still listing internal keys without reasons: {bare_lists}"
+
+
+def test_ai_council_outcome_enum_differs_per_row_list() -> None:
+    """Forecast rows score 0/1; memory rows record Pending/Success/Failure/Mixed."""
+    fields = skill_contracts.load_contract("ai-council")["fields"]
+    assert fields["forecasts.outcome"]["enum"] == [0, 1]
+    assert fields["memory.outcome"]["enum"] == ["Failure", "Mixed", "Pending", "Success"]
+
+
 def test_draft_lists_every_script_and_read(package, tmp_path) -> None:
     package()
     draft = skill_contracts.draft("demo")
@@ -286,3 +443,17 @@ def test_kernel_rejects_a_payload_that_is_not_json(skill: str) -> None:
     proc = subprocess.run([sys.executable, str(kernel)], input="not json",
                           capture_output=True, text=True, timeout=60, check=False)
     assert proc.returncode == 2 and "not JSON" in proc.stderr
+
+
+def test_each_contract_failure_says_where_to_fix_it(package) -> None:
+    """A contributor sees these lines first; each must name the file to change."""
+    undeclared = package(kernel=KERNEL + "\ndef more(p):\n    return p.get('undeclared_key')\n")
+    assert any("undeclared_key" in e and "references/contract.json" in e for e in undeclared), undeclared
+    data = contract()
+    data["fields"]["ghost_field"] = {}
+    stale = package(data, doc=DOC + "\n`ghost_field` is documented.\n")
+    assert any("ghost_field" in e and '"unread": true' in e for e in stale), stale
+    undocumented = package(doc=DOC.replace("  item_id\n", ""))
+    assert any("item_id" in e and "references/" in e and ".md" in e for e in undocumented), undocumented
+    extra = package(doc=DOC.replace("  item_id\n", "  item_id\n  dependencies[]\n"))
+    assert any("dependencies" in e and "doc_terms" in e for e in extra), extra

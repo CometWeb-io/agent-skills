@@ -1,0 +1,69 @@
+{
+  "skill": "rubric-designer",
+  "contract": "skills/rubric-designer/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "status", "title": "Status", "aliases": ["status"], "required": true},
+    {"id": "identity", "title": "Rubric identity", "aliases": ["rubric identity", "identity"], "required": true},
+    {"id": "coverage", "title": "Criterion coverage", "aliases": ["criterion coverage", "criteria coverage", "coverage"], "required": true},
+    {"id": "blocker-criteria", "title": "Blocker criteria", "aliases": ["blocker criteria", "blockers"], "required": true},
+    {"id": "missing-dimensions", "title": "Missing dimensions", "aliases": ["missing dimensions", "unresolved dimensions"], "required": true},
+    {"id": "anti-gaming", "title": "Anti-gaming findings", "aliases": ["anti-gaming"], "required": true},
+    {"id": "next-owner", "title": "Next owner", "aliases": ["next owner"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["READY_TO_FREEZE", "NEEDS_REVISION", "INVALID"],
+    "aliases": {"READY-TO-FREEZE": "READY_TO_FREEZE", "NEEDS-REVISION": "NEEDS_REVISION"},
+    "authorizing": ["READY_TO_FREEZE"],
+    "primary": {"line": "^\\s*[-*]?\\s*\\**Status\\**\\s*:"}
+  },
+  "blockers": [
+    {"rule": "missing-dimension", "type": "section_items", "section": "missing-dimensions", "none_pattern": "^none\\b"},
+    {"rule": "open-anti-gaming", "type": "items_matching", "section": "anti-gaming",
+     "pattern": "\\A\\W*AG-\\d{2}\\b(?![^\\n]*\\bresolved\\b)"},
+    {"rule": "not-frozen", "type": "items_matching", "section": "status",
+     "pattern": "frozen before review\\**\\s*:\\s*(?:no|false)\\b"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "rubric-id", "section": "identity", "pattern": "Rubric[ _]ID\\**\\s*:\\s*\\S",
+     "message": "the report does not state the rubric_id"},
+    {"type": "doc_require", "rule": "revision", "section": "identity", "pattern": "Revision\\**\\s*:\\s*\\S",
+     "message": "the report does not state the rubric revision"},
+    {"type": "doc_require", "rule": "rubric-hash", "section": "identity", "when_verdict": ["READY_TO_FREEZE", "NEEDS_REVISION"],
+     "pattern": "sha-?256[^\\n]*\\b[0-9a-f]{64}\\b",
+     "message": "a valid rubric needs its canonical SHA-256 hash"},
+    {"type": "table_column_nonempty", "rule": "pass-condition", "section": "coverage", "column": ["pass"],
+     "code": "CONTRACT_VIOLATION", "message": "a criterion has no explicit pass condition"},
+    {"type": "table_column_nonempty", "rule": "fail-condition", "section": "coverage", "column": ["fail"],
+     "code": "CONTRACT_VIOLATION", "message": "a criterion has no explicit fail condition"},
+    {"type": "table_column_nonempty", "rule": "criterion-floor", "section": "coverage", "column": ["floor", "evidence floor"],
+     "code": "EVIDENCE_MISSING", "message": "a criterion has no evidence floor (A | B | C | D)"},
+    {"type": "doc_forbid", "rule": "blocker-admission", "section": "coverage", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\|\\s*[CD]\\s*\\|[^|\\n]*\\|\\s*yes\\s*\\||\\|\\s*supporting\\s*\\|\\s*yes\\s*\\|",
+     "message": "a blocker criterion needs critical or material materiality and evidence floor A or B"},
+    {"type": "items_require", "rule": "blocker-floor-stated", "section": "blocker-criteria", "none_pattern": "^none\\b",
+     "pattern": "floor\\W*[AB]\\b", "code": "EVIDENCE_MISSING",
+     "message": "a listed blocker criterion does not state its A or B evidence floor"},
+    {"type": "doc_forbid", "rule": "no-candidate-scoring", "code": "CONTRACT_VIOLATION",
+     "pattern": "\\b(?:the|this) (?:candidate|guide|draft|submission) (?:scores?|scored|passes|passed|fails|failed)\\b|\\bscored the candidate\\b",
+     "message": "the rubric designer never scores the candidate it defines the rubric for"},
+    {"type": "doc_forbid", "rule": "blocker-averaging", "code": "CONTRACT_VIOLATION",
+     "pattern": "blockers? (?:can|may|could) be (?:averaged|offset|outweighed|compensated)",
+     "message": "blocker criteria are gates; they cannot be averaged away"}
+  ],
+  "ids": [
+    {"rule": "criterion-ids", "pattern": "\\bRC-\\d{2}\\b",
+     "defined_in": [{"section": "coverage", "as": "table_first_column"}],
+     "refs_json": ["criteria[*].id"],
+     "defined_by": "the Criterion coverage table has no row with that criterion ID"},
+    {"rule": "anti-gaming-ids", "pattern": "\\bAG-\\d{2}\\b",
+     "defined_in": [{"section": "anti-gaming", "as": "list_lead"}],
+     "defined_by": "the Anti-gaming findings section lists no finding with that ID"}
+  ],
+  "sidecars": [
+    {"rule": "rubric-payload", "detect": {"has_keys": ["rubric_id", "criteria", "anti_gaming"]},
+     "validator": "skills/rubric-designer/scripts/kernel.py", "function": "validate",
+     "error_statuses": ["INVALID"],
+     "recompute": {"result": "status"}}
+  ]
+}

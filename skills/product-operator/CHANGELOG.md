@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.4.2] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- The output section gives the machine spelling of the human lanes: `priority_tier` uses `VERIFY_NOW` and `DECISION_NOW`, and the sidecar keys are `verify_now`, `decision_now` and so on. The brief writes them with a space, which is not a valid tier.
+
 ## [2.4.1] - 2026-10-03
 
 ### Fixed

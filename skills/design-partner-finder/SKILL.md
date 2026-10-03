@@ -58,7 +58,7 @@ Never qualify from a search-result snippet alone. Open the underlying source.
 
 ## Step 3 — Run Stage A: desk-research Discovery Fit
 
-Read `references/partnerability-rubric.md` and `references/evidence-and-freshness.md`. Score only the Stage A dimensions — the ones that can be credibly researched before contact. Run `scripts/score_candidate.py --stage research` when code execution is available.
+Read `references/partnerability-rubric.md` and `references/evidence-and-freshness.md`. Score only the Stage A dimensions (researchable before contact). Run `scripts/score_candidate.py --stage research` when code execution is available; before writing its payload, read `references/kernel-inputs.md`.
 
 Use the research-stage output to choose whom to **contact for discovery**, not to claim they have agreed to be a design partner.
 
@@ -76,7 +76,7 @@ A lack of public evidence is not proof that the company lacks the pain. It means
 
 Use Stage A scores plus evidence gaps to prioritize who deserves a discovery conversation. Write each top candidate up as the dossier in `references/output-contract.md` (why now, hypotheses it tests, observed versus inferred, highest-VOI missing fact, contact path, one low-friction validation question).
 
-When selecting a slate from many similar candidates, use `scripts/select_cohort.py --selection-stage outreach_slate` to reward weighted learning coverage and reduce redundant research effort.
+When selecting a slate from many similar candidates, use `scripts/select_cohort.py --selection-stage outreach_slate` to reward learning coverage over redundancy.
 
 ## Step 6 — Run Stage B: live Partner Readiness
 

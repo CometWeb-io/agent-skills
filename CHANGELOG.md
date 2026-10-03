@@ -8,6 +8,35 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Added
 
+- **Lexical routing fallback.** `tooling/route_skill.py` ranks skills with a
+  deterministic, standard-library BM25 ranker over each skill's description
+  ("Do not use" sentences count against a skill), `owns`, trigger examples and
+  a per-skill lexicon, configured by the `lexical` block in
+  `registry/routing-policy.json`. It decides only when the routing signals are
+  silent or near-tied, never after an explicit invocation, and abstains unless
+  one skill leads clearly. `--explain` shows each term's contribution;
+  `--lexical` / `--no-lexical` override the policy switch for one call. On the
+  frozen 144-prompt holdout, read once after tuning, routing reached 132/144
+  (91.7%), up from 112/144; the tuned suites still pass at 100%.
+- **Output grading for 29 skills.** `evals/output/` now holds 671 golden good
+  and broken outputs covering 29 skills, and every one of the 632 rubric rules is
+  pinned by a broken case. A sidecar can `recompute` the verdict with the
+  skill's own kernel, so prose that disagrees with what the kernel computes
+  fails. Skills without a rubric are listed in `NOT_GRADED` with a reason.
+- **Behavior suites.** 31 skills ship an offline behavior suite
+  (`evals/behavior/<skill>/suite.json`, `cometweb.behavior-suite/v1`) that runs
+  each script and pins its exit code and output; the `behavior_evals` gate
+  requires a suite for every skill that ships scripts, and
+  `tooling/new_skill.py` writes a placeholder one.
+- `skill_package_tests` gate: the per-skill package tests (eval harnesses,
+  front-door rules, script CLIs, manifests) run on their own in the fast gate
+  set, bringing `check_all.py` to 33 gates.
+- The Cursor plugin ships a generated rule, `rules/cometweb-agent-skills.mdc`,
+  that routes requests to the bundled skills.
+- `tooling/plugin_release.py --bump patch|minor|major` raises the plugin
+  version from the merge base's, writes it to every manifest, `pyproject.toml`
+  and `uv.lock`, and records the shipped set.
+
 - **One contract per skill.** Every skill ships `references/contract.json`
   (`cometweb.skill-contract/v1`) listing each payload field and enum once,
   bound to the script constant that enforces it and the reference that
@@ -52,7 +81,7 @@ tags use `vMAJOR.MINOR.PATCH`.
   policy blocks, the known gaps and how to add a case; a test keeps its policy
   block names in step with `registry/routing-policy.json`.
 
-- `tooling/check_all.py` runs every repository gate (32 of them) from one list,
+- `tooling/check_all.py` runs every repository gate (33 of them) from one list,
   in parallel, with a summary table. CI calls `check_all.py --ci`, which fails
   on a missing tool instead of skipping it; `--fast` runs the quick gates,
   `--fix` reruns the generators first and never records a baseline. An optional
@@ -125,6 +154,30 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Changed
 
+- **Plugin 2.3.0.** A minor release: skills gain behavior suites, sharper
+  front doors and fixes below. Each changed skill's `VERSION` moves by one
+  patch release with one changelog entry; the shipped set is recorded in
+  `registry/plugin-release.json`.
+- **Codex installs to `~/.agents/skills`**, the user skills directory Codex
+  documents. `scripts/install-codex.sh` moves the links an earlier install made
+  in `~/.codex/skills` and leaves other entries there alone;
+  `CODEX_SKILLS_DIR` still selects another directory.
+- The Cursor plugin manifest keeps only documented keys, and
+  `tooling/host_smoke.py` checks manifests against those key sets.
+- Front doors of 19 skills were corrected where they disagreed with the
+  kernels (for example `content-writer` uses `EVIDENCE_REQUIRED`,
+  `feedback-integrator` records runtime drift as `HOST`, `release-readiness`
+  spells N/A as `na`, `content-reviewer` lists unverifiable claims under
+  `verify[]`, `skill-evaluator` reports `SPEC_ONLY` when nothing ran), and
+  reference tables say when to read each file. Six descriptions were shortened
+  to at most 540 characters so the "Do not use" clause survives the Codex skill
+  list.
+- Skill contracts give a reason for every `internal` key, support `lists` and
+  parent-qualified enums, and the eval-strength default floor is 0.92.
+- A release tag must match `VERSION`; CONTRIBUTING documents the release steps
+  and the README covers plugin installation. Gate errors say what to run.
+- `tooling/new_skill.py` writes an untrusted-content section and
+  `tests/front-door-rules.json` for a new skill.
 - `seo-geo-aeo-maxxing` 1.3.2 (plugin 2.2.1): live source registry re-verified
   against first-party sources on 2026-10-03, including the new Search Console
   "Search generative AI features" control; freshness tests derive their dates from
@@ -213,6 +266,21 @@ tags use `vMAJOR.MINOR.PATCH`.
 - Ruff 0.16.10 and four development dependency patch updates.
 
 ### Fixed
+
+- `skill-orchestrator`: a goal of only whitespace raised a traceback; it is now
+  a usage error.
+- `rubric-designer`: a rubric without `mode` hashed differently from the same
+  rubric with the explicit `STANDARD` default; an omitted mode now hashes as
+  `STANDARD`. Recorded hashes all used an explicit mode and are unchanged.
+- `release-readiness`: `bootstrap_manifest.py` rejected an unrecognized scope
+  key with a message saying the key "was ignored"; it now says the key is not
+  accepted.
+- The three roasters' `select_review_packs.py` accepted any `--profile`; it now
+  refuses profiles the package's validator rejects.
+- The `sast` gate no longer fails on a file deleted in the working tree, and
+  the test harness no longer reuses a module cached from another skill.
+- Removed `tooling/integration_preview.py`, its test and the stale document
+  describing it.
 
 - Many skill kernels and validators failed open on values outside their
   documented lists: an unknown or lower-case enum (a risk surface, a tier, a
@@ -316,6 +384,11 @@ tags use `vMAJOR.MINOR.PATCH`.
   bilingual rendering; inferred action types no longer crash the brief bridge.
 
 ### Security
+
+- Canary files for prompt-injection checks: `grade_output.py --new-canary`
+  writes a token split into parts, `--plant` appends the planted instruction
+  to a copy of a test input, and `--canary-file` fails a report that joins the
+  token anywhere, so a report that only quotes the instruction is not flagged.
 
 - Workspace JSON written by the competitive-intelligence kernel goes through
   `tempfile.mkstemp` in the target directory (unpredictable name, `O_EXCL`, mode

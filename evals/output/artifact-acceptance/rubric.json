@@ -1,0 +1,73 @@
+{
+  "skill": "artifact-acceptance",
+  "contract": "skills/artifact-acceptance/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "blocking", "title": "Blocking gates and findings", "aliases": ["blocking gates", "blocking findings", "blockers"], "required": true},
+    {"id": "gates", "title": "Gates", "aliases": ["gates", "required gates", "gate results"], "required": true},
+    {"id": "findings", "title": "Findings", "aliases": ["findings", "unresolved findings"], "required": true},
+    {"id": "controls", "title": "Controls", "aliases": ["controls", "controls and waivers"], "required_when_verdict": ["READY_WITH_CONTROLS"]},
+    {"id": "explanation", "title": "Verdict explanation", "aliases": ["verdict explanation", "why this verdict", "explanation"], "required": true},
+    {"id": "handoff", "title": "Handoff", "aliases": ["handoff", "next step"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["READY", "READY_WITH_CONTROLS", "NOT_READY", "DEFER"],
+    "authorizing": ["READY", "READY_WITH_CONTROLS"],
+    "primary": {"line": "^\\s*[-*]?\\s*\\**Verdict\\**\\s*:"},
+    "json": [
+      {"rule": "payload-verdict", "path": "verdict", "when": {"schema": "cometweb.artifact-acceptance/v1"}}
+    ]
+  },
+  "blockers": [
+    {"rule": "listed-blocker", "type": "section_items", "section": "blocking", "none_pattern": "^\\W*none\\b"},
+    {"rule": "required-gate-not-passing", "type": "table_rows", "section": "gates", "column": ["state"],
+     "pattern": "^(?:FAIL|UNKNOWN)$", "when": {"column": ["required"], "pattern": "^(?:yes|true|required)$"}, "forbids": ["READY", "READY_WITH_CONTROLS"]}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "candidate", "pattern": "^\\s*[-*]?\\s*\\**Candidate\\**\\s*:\\s*\\S",
+     "message": "the report does not name the evaluated candidate (artifact ID and version or hash)"},
+    {"type": "doc_require", "rule": "contract", "pattern": "^\\s*[-*]?\\s*\\**Contract\\**\\s*:\\s*\\S",
+     "message": "the report does not name the acceptance contract the verdict is measured against"},
+    {"type": "doc_require", "rule": "as-of", "pattern": "^\\s*[-*]?\\s*\\**As of\\**\\s*:\\s*\\d{4}-\\d{2}-\\d{2}T[\\d:]+(?:Z|[+-]\\d{2}:?\\d{2})",
+     "message": "the report has no timezone-aware as-of time"},
+    {"type": "table_column_nonempty", "rule": "pass-evidence", "section": "gates", "column": ["evidence"],
+     "when": {"column": ["state"], "pattern": "^PASS$"}, "code": "EVIDENCE_MISSING",
+     "message": "a PASS gate cites no candidate-bound evidence"},
+    {"type": "table_column_nonempty", "rule": "na-rationale", "section": "gates", "column": ["evidence"],
+     "when": {"column": ["state"], "pattern": "^N/A$"}, "code": "CONTRACT_VIOLATION",
+     "message": "an N/A gate states no allowance and rationale"},
+    {"type": "items_require", "rule": "finding-severity", "section": "findings", "none_pattern": "^\\W*none\\b",
+     "pattern": "\\b(?:BLOCKER|MAJOR|MINOR|NOTE)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "a finding carries no severity (BLOCKER | MAJOR | MINOR | NOTE)"},
+    {"type": "items_require", "rule": "control-governance", "section": "controls", "none_pattern": "^\\W*none\\b",
+     "pattern": "Owner:\\s*\\S.*Revisit:\\s*\\S", "code": "CONTRACT_VIOLATION",
+     "message": "a control has no owner and revisit condition"},
+    {"type": "items_require", "rule": "control-severity", "section": "controls", "none_pattern": "^\\W*none\\b",
+     "pattern": "\\A\\W*CTL-\\d+\\W+(?:MINOR|NOTE)\\b", "code": "CONTRACT_VIOLATION",
+     "message": "controls may only cover MINOR or NOTE issues"},
+    {"type": "doc_forbid", "rule": "unobservable-criterion",
+     "pattern": "\\blooks (?:professional|polished|good|great|fine|ready)\\b",
+     "message": "an impression is not a gate; name the observable property and its evidence"},
+    {"type": "doc_forbid", "rule": "stale-evidence",
+     "pattern": "\\b(?:passed|was ready|was accepted) (?:in|on|during) (?:a |the )?(?:previous|prior|earlier|last) (?:run|version|review)\\b",
+     "message": "a previous run is not evidence for this candidate; cite fresh evidence bound to it"},
+    {"type": "doc_require", "rule": "stale-if-changed", "section": "handoff", "pattern": "stale_if_changed|stale if (?:it )?changed|makes this verdict stale",
+     "message": "the handoff does not say the verdict goes stale when the candidate changes"}
+  ],
+  "ids": [
+    {"rule": "finding-ids", "pattern": "\\bAF-\\d+\\b",
+     "defined_in": [{"section": "findings", "as": "list_lead"}],
+     "defined_by": "the findings section lists no finding with that ID"},
+    {"rule": "control-ids", "pattern": "\\bCTL-\\d+\\b",
+     "defined_in": [{"section": "controls", "as": "list_lead"}],
+     "defined_by": "the controls section lists no control with that ID"},
+    {"rule": "evidence-ids", "pattern": "\\bEV-\\d+\\b",
+     "defined_in": [{"json": "gates[*].evidence[*].source", "when": {"schema": "cometweb.artifact-acceptance/v1"}}],
+     "defined_by": "no gate in the payload carries evidence with that source ID"}
+  ],
+  "sidecars": [
+    {"rule": "acceptance-kernel", "detect": {"equals": {"schema": "cometweb.artifact-acceptance/v1"}},
+     "validator": "skills/artifact-acceptance/scripts/kernel.py", "function": "decide",
+     "status_key": "verdict", "error_statuses": [], "recompute": {"result": "verdict", "stated": "verdict"}}
+  ]
+}

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.3] - 2026-10-03
+
+- `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.
+- `scripts/run_evals.py` accepts a `raw_case` so a case can hand the kernel something that is not an object; a new case pins how `evaluate_case` refuses one.
+- Step 3 listed a `RUNTIME` root layer that the kernel rejects (only seven layers are valid). Runtime drift is now described under `HOST`, and the step says the kernel accepts only those seven.
+- The definition of done names the statuses and their precedence as the kernel computes them (`INVALID`, `PROPOSED`, `WATCH`, `RETIRED`, `NO_SIGNAL`) and the champion/challenger outcome (`PROMOTE` or `HOLD`).
+- References are listed in a table with load triggers; the v1.3 section is folded into the definition of done.
+
 ## [1.7.2] - 2026-10-03
 
 - `references/output-contract.md` described an output the kernel never
