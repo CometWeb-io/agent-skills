@@ -204,3 +204,34 @@ def test_fast_runs_the_per_skill_package_tests() -> None:
 def test_fast_context_gate_checks_the_generated_table() -> None:
     gate = next(g for g in check_all.GATES if g.id == "context_budget")
     assert gate.fast and "--verify-table" in gate.argv
+
+
+def test_full_suite_leaves_the_package_tests_to_their_own_gate() -> None:
+    """Under --ci both gates run; the package modules were collected and run twice."""
+    pytest_gate = next(g for g in check_all.GATES if g.id == "pytest")
+    package_gate = next(g for g in check_all.GATES if g.id == "skill_package_tests")
+    both = frozenset({"pytest", "skill_package_tests"})
+    ignored = {t.removeprefix("--ignore=") for t in check_all.gate_argv(pytest_gate, True, both)
+               if t.startswith("--ignore=")}
+    named = {t for t in package_gate.argv if t.startswith("tooling/tests/")}
+    # What the full suite skips is exactly what the package gate runs, so nothing is lost.
+    assert ignored == named
+    # Run alone (--only pytest), the full suite still runs every module.
+    assert not any(t.startswith("--ignore=") for t in check_all.gate_argv(pytest_gate, True, frozenset({"pytest"})))
+
+
+def test_the_runner_passes_the_selection_to_each_gate(monkeypatch, scratch) -> None:
+    calls: list[list[str]] = []
+
+    def fake_run(argv, root, timeout):
+        calls.append(argv)
+        return 0, "", 0.0
+
+    gates = [check_all.Gate("main", (check_all.PY, "-c", "pass"), "main", defer=("helper", ("--extra",))),
+             fake_gate("helper", "pass")]
+    monkeypatch.setattr(check_all, "run_command", fake_run)
+    assert run(monkeypatch, scratch, gates) == 0
+    assert any("--extra" in argv for argv in calls)
+    calls.clear()
+    assert run(monkeypatch, scratch, gates, "--only", "main") == 0
+    assert calls and not any("--extra" in argv for argv in calls)

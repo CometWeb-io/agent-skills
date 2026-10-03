@@ -56,8 +56,8 @@ Kind payloads the gate checks:
 EvidenceEnvelope (v1) payload:
   research_contract: required
   material_claims[]: required
-    claim_id, text, status: required
-    epistemic_kind: FACT|INFERENCE
+    claim_id, text, epistemic_kind, status: required
+    epistemic_kind: FACT|INFERENCE; a claim without it is refused
   evidence_pack_hash: required
   gaps[], contradictions[]: optional
 DecisionHandoff (v1), DecisionEnvelope and ReleaseEnvelope (v2) payload:

@@ -1587,5 +1587,64 @@
       "material_assumptions": 0,
       "mode": "STANDARD"
     }
+  },
+  {
+    "id": "evidence-policy-of-the-wrong-type-is-invalid",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Answers five defined questions",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "SaaS founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": [
+        "SOURCE_BOUND"
+      ],
+      "objective": "Teach founders"
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "evidence_policy:invalid"
+      ],
+      "mode": "STANDARD"
+    }
+  },
+  {
+    "id": "wrong-type-mode-and-risk-are-invalid",
+    "input": {
+      "acceptance_criteria": [
+        {
+          "check": "Answers five defined questions",
+          "id": "ac1",
+          "observable": true
+        }
+      ],
+      "audience": "SaaS founders",
+      "deliverables": [
+        "guide"
+      ],
+      "evidence_policy": "EVIDENCE_REQUIRED",
+      "objective": "Teach founders",
+      "mode": [
+        "DEEP"
+      ],
+      "risk_level": [
+        "HIGH"
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "mode:invalid",
+        "risk_level:invalid"
+      ],
+      "mode": "STANDARD"
+    }
   }
 ]

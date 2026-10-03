@@ -3,9 +3,11 @@ from __future__ import annotations
 from typing import Any
 
 COUNCIL_VERSION = "5.0"
-KERNEL_VERSION = "5.0.3"
+KERNEL_VERSION = "5.0.4"
 
 VERDICTS = {"GO", "NO-GO", "TEST", "DEFER"}
+# CW-AIP v2 DecisionEnvelope spelling of each Council verdict (decision.schema.json).
+ENVELOPE_VERDICTS = {"GO": "GO", "NO-GO": "NO_GO", "TEST": "TEST", "DEFER": "DEFER"}
 GATE_STATUSES = {"NOT_REQUIRED", "CLEAR", "CLEAR_WITH_CONTROLS", "COUNSEL_REQUIRED", "BLOCK"}
 TEMPORAL_STATUSES = {"CURRENT", "NEAR_EXPIRY", "STALE", "SUPERSEDED", "DRAFT", "NOT_YET_EFFECTIVE", "UNKNOWN"}
 DECISION_VALIDITY_STATUSES = {"VALID", "WATCH", "STALE", "REOPEN", "SUPERSEDED"}

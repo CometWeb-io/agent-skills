@@ -34,7 +34,8 @@ anti_gaming: {no_hidden_criteria: true, no_post_hoc_changes: true}
 A dimension declared out of scope before candidate review is left out of
 `required_dimensions`; there is no separate out-of-scope field.
 
-The kernel returns `{status, errors[], missing_dimensions[]}` and, when the
+The kernel returns `{status, errors[], missing_dimensions[]}` (an empty
+`missing_dimensions` for a payload that is not an object, `payload:not-object`) and, when the
 rubric is valid, `rubric_hash`, `criteria_count`, `blocker_count` and `frozen`.
 `status` is `READY_TO_FREEZE` (valid and `frozen_before_review: true`),
 `NEEDS_REVISION` (valid, not yet frozen) or `INVALID`. `rubric_hash` is the

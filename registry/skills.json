@@ -7,7 +7,7 @@
   "skills": [
     {
       "id": "ai-council",
-      "version": "5.2.3",
+      "version": "5.2.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -162,6 +162,10 @@
       "routing_signals": [
         [
           9,
+          "\\bsounds?\\s{1,3}less\\s{1,3}(?:like\\s{1,3}(?:a\\s{1,3})?(?:template|boilerplate|press release|brochure)|generic|stiff|canned)\\b"
+        ],
+        [
+          9,
           "\\bsound\\w*\\b.{0,20}\\b(?:machine.generated|ai.generated|robotic|like (?:chatgpt|gpt|an? ai|a bot|a robot))\\b|\\breads? like (?:chatgpt|gpt|an? ai\\b|a bot|a robot|(?:it was )?(?:ai|machine).generated)"
         ],
         [
@@ -188,7 +192,7 @@
     },
     {
       "id": "artifact-acceptance",
-      "version": "1.7.3",
+      "version": "1.7.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -304,7 +308,7 @@
     },
     {
       "id": "benchmark-curator",
-      "version": "1.7.3",
+      "version": "1.7.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -415,7 +419,7 @@
     },
     {
       "id": "brief-architect",
-      "version": "1.7.3",
+      "version": "1.7.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -650,7 +654,7 @@
     },
     {
       "id": "competitive-intelligence",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -743,7 +747,7 @@
     },
     {
       "id": "content-reviewer",
-      "version": "1.7.3",
+      "version": "1.7.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -864,7 +868,7 @@
     },
     {
       "id": "content-roaster",
-      "version": "6.1.2",
+      "version": "6.1.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -977,7 +981,7 @@
     },
     {
       "id": "content-writer",
-      "version": "1.7.3",
+      "version": "1.7.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1042,6 +1046,10 @@
       "eval_suite": null,
       "release_status": "ACTIVE",
       "routing_signals": [
+        [
+          10,
+          "\\b(?:write|draft|create|produce|compose)\\w*\\b.{0,40}\\b(?:explainer|article|guide|post|overview|whitepaper|white paper)\\b.{0,80}\\b(?:citing|cite|cites|with|backed by|using)\\s{1,3}(?:\\w{1,20}\\s{1,3}){0,2}?sources\\b"
+        ],
         [
           10,
           "\\b(?:write|draft|create|produce|compose)\\w*\\b.{0,30}\\b(?:well.sourced|sourced|cited|fact.checked|referenced)\\b.{0,20}\\b(?:explainer|article|guide|post|report|overview)"
@@ -1179,7 +1187,7 @@
     },
     {
       "id": "design-partner-finder",
-      "version": "1.2.2",
+      "version": "1.2.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1431,7 +1439,7 @@
     },
     {
       "id": "feedback-integrator",
-      "version": "1.7.3",
+      "version": "1.8.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1555,12 +1563,12 @@
     },
     {
       "id": "longform-publisher",
-      "version": "1.1.3",
+      "version": "1.1.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run the publication control plane for a long-form work such as an ebook, report, playbook, white paper, guide, handbook, or research-backed article: one canonical manuscript, claim-use traceability, derived DOCX/PDF/HTML lineage, and release-stage discipline. Do not use to create a new CometWeb ebook or workbook from research through cover and design (use ebook-publisher), for primary evidence research (evidence-researcher), prose-only humanization (ai-humanize), a standalone article draft (content-writer), or low-level PDF/DOCX file manipulation. Use when an existing publication must be refreshed into a new edition, when a manuscript and its derived formats must be reconciled, or when a publication needs a RELEASE_READY gate across formats.",
+      "description": "Run the publication control plane for long-form work (ebook, report, playbook, white paper, guide, handbook): one canonical manuscript, claim traceability, derived DOCX/PDF/HTML lineage, release stages. Do not use to create a new CometWeb ebook from research to design (ebook-publisher), for primary research (evidence-researcher), humanization (ai-humanize), an article draft (content-writer), or PDF/DOCX file edits. Use to refresh a publication into a new edition, reconcile a manuscript with its derived formats, or gate RELEASE_READY.",
       "explicit_only": false,
       "owns": [
         "canonical long-form manuscript",
@@ -1660,7 +1668,7 @@
     },
     {
       "id": "portfolio-operator",
-      "version": "1.2.3",
+      "version": "1.2.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2011,7 +2019,7 @@
     },
     {
       "id": "quality-loop-operator",
-      "version": "1.7.3",
+      "version": "1.7.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2210,7 +2218,7 @@
     },
     {
       "id": "repair-operator",
-      "version": "1.7.3",
+      "version": "1.7.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2334,7 +2342,7 @@
     },
     {
       "id": "repo-roaster",
-      "version": "6.1.2",
+      "version": "6.1.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2582,7 +2590,7 @@
     },
     {
       "id": "rubric-designer",
-      "version": "1.7.3",
+      "version": "1.7.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2689,7 +2697,7 @@
     },
     {
       "id": "science-roaster",
-      "version": "6.1.2",
+      "version": "6.1.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2814,7 +2822,7 @@
     },
     {
       "id": "seo-geo-aeo-maxxing",
-      "version": "1.3.3",
+      "version": "1.3.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2889,7 +2897,7 @@
     },
     {
       "id": "skill-auditor",
-      "version": "1.7.3",
+      "version": "1.7.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3219,7 +3227,7 @@
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.1.5",
+      "version": "1.1.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",

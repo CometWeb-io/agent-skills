@@ -31,7 +31,6 @@ import run_model_evals as runner
 def root(tmp_path):
     (tmp_path / "registry").mkdir()
     shutil.copyfile(TOOLS.parent / "registry/package-policy.json", tmp_path / "registry/package-policy.json")
-    (tmp_path / "registry/public-allowlist.json").write_text(json.dumps({"schema": "cometweb.public-allowlist/v1", "approved": []}))
     (tmp_path / "registry/skills.json").write_text(json.dumps({"schema": "cometweb.skills-registry/v1", "skills": [{"id": "demo", "version": "1.0.0", "lifecycle": "active", "visibility": "private_canonical", "description": "Synthetic fixture"}]}))
     source = tmp_path / "skills/demo"
     source.mkdir(parents=True)

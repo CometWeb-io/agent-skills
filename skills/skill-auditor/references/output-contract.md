@@ -66,7 +66,9 @@ deep_checks:                        # DEEP only; every key must be true
   version_contracts
 ```
 
-The kernel returns `{status, errors[], issues[], unknown_material, next_skill}`.
+The kernel returns `{status, errors[], issues[], unknown_material, next_skill}`,
+also for a payload that is not an object (`payload:not-object`, with no issues
+and zero unknowns).
 `status` is `INVALID` (any error), `DEFER` (material unknowns), `CHANGES_REQUIRED`
 (issues; `next_skill` is skill-creator) or `PASS`. A PASS also carries
 `version_bump` (MAJOR, MINOR, PATCH or null when there is no previous version),

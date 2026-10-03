@@ -1,0 +1,43 @@
+{
+  "id": "example:DecisionEnvelope:council-hyphen-verdict",
+  "type": "DecisionEnvelope",
+  "producer": "example-producer",
+  "producer_version": "1.0.0",
+  "protocol_version": "2.0",
+  "subject": "example.com pricing page",
+  "generated_at": "2026-09-08T12:00:00Z",
+  "as_of": "2026-09-08T12:00:00Z",
+  "sensitivity": "internal",
+  "dependencies": [
+    "example:EvidenceEnvelope:conformance"
+  ],
+  "payload": {
+    "schema": "cometweb.decision/v2",
+    "decision_question": "Launch the annual plan in a new market?",
+    "profile": "STANDARD",
+    "as_of": "2026-09-08T12:00:00Z",
+    "verdict": "NO-GO",
+    "option": "Do not launch until the legal gate clears",
+    "gates": [
+      {
+        "gate_id": "legal",
+        "status": "BLOCK"
+      },
+      {
+        "gate_id": "finance",
+        "status": "CLEAR"
+      }
+    ],
+    "blockers": [
+      "legal gate BLOCK: consumer-law review outstanding"
+    ],
+    "controls": [],
+    "evidence_deps": [
+      "example:EvidenceEnvelope:conformance"
+    ],
+    "snapshot_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "validity": "VALID",
+    "human_approval": "not_required"
+  },
+  "payload_hash": "sha256:25cecab4444044beb53f1f23cdad6b95db33b84c4ca89d7ede6eea85d6ef7538"
+}

@@ -16,16 +16,16 @@ gate — and those are listed rather than hidden.
 | `artifact-acceptance` | 64 | 64 | 1.00 |
 | `benchmark-curator` | 34 | 34 | 1.00 |
 | `brief-architect` | 67 | 67 | 1.00 |
-| `content-reviewer` | 43 | 43 | 1.00 |
+| `content-reviewer` | 42 | 42 | 1.00 |
 | `quality-loop-operator` | 95 | 95 | 1.00 |
 | `rubric-designer` | 29 | 29 | 1.00 |
 | `skill-auditor` | 54 | 54 | 1.00 |
 | `skill-evaluator` | 54 | 54 | 1.00 |
 | `content-writer` | 54 | 53 | 0.98 |
 | `repair-operator` | 53 | 52 | 0.98 |
-| `feedback-integrator` | 34 | 33 | 0.97 |
+| `feedback-integrator` | 35 | 34 | 0.97 |
 | `longform-publisher` | 70 | 67 | 0.96 |
-| `portfolio-operator` | 65 | 62 | 0.95 |
+| `portfolio-operator` | 67 | 64 | 0.95 |
 | `product-operator` | 193 | 180 | 0.93 |
 
-**14 harnesses.** 887 of 909 reachable guards are held (98% if every skill counted equally, which they do not).
+**14 harnesses.** 889 of 911 reachable guards are held (98% if every skill counted equally, which they do not).

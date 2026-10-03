@@ -159,6 +159,18 @@ each row set under `lists` and qualify the field by it (`forecasts.outcome`).
 Start one with `tooling/skill_contracts.py --draft <skill>`; its module
 docstring lists the keys.
 
+**One error envelope.** A kernel answers input it cannot use in the shape a
+host already parses. Every `scripts/kernel.py` that takes a JSON payload
+returns an object for any JSON value: a payload that is not an object is
+refused with `errors` holding exactly one `<name>:not-object` entry, a status
+(or `verdict`) that is not a passing one, and every key the kernel returns on
+its other refusals, at its empty value; a field of the wrong type is an error
+in `errors`, never an exception. Every other script that reads a JSON object
+refuses a list, a string or `null` in its place without a traceback.
+`tooling/kernel_error_envelope.py` checks both across all skills (it runs
+under pytest as `tooling/tests/test_kernel_error_envelope.py`); its module
+docstring states each rule.
+
 **A green suite proves nothing on its own.** `eval_strength.py` copies each
 package to a temporary directory, replaces one `if` guard at a time with
 `if False:`, and reruns that package's harness. A guard the harness still passes

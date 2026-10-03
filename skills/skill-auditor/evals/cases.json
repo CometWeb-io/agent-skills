@@ -1798,6 +1798,8 @@
       "errors": [
         "payload:not-object"
       ],
+      "issues": [],
+      "unknown_material": 0,
       "next_skill": null
     }
   }

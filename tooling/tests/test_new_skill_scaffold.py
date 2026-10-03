@@ -165,17 +165,15 @@ def test_new_skill_passes_every_fast_gate_out_of_the_box(checkout_copy: Path) ->
                      "evals/behavior/scaffold-probe/suite.json"):
         assert expected in changed, f"new_skill.py did not write {expected}"
 
-    proc = subprocess.run([sys.executable, "-B", "tooling/check_all.py", "--fast"], cwd=checkout_copy,
-                          capture_output=True, text=True, timeout=600)
-    assert proc.returncode == 0, proc.stdout[-6000:]
-    assert "0 failed" in proc.stdout
-
-    # The generators agree with what new_skill.py wrote: --fix changes nothing.
+    # One --fix run proves both halves. The generators agree with what
+    # new_skill.py wrote, because the tree is unchanged afterwards; so the fast
+    # gates that then pass ran on exactly the tree new_skill.py left behind.
     before = git(checkout_copy, "status", "--porcelain", "-uall") + git(checkout_copy, "diff")
     proc = subprocess.run([sys.executable, "-B", "tooling/check_all.py", "--fast", "--fix"], cwd=checkout_copy,
                           capture_output=True, text=True, timeout=600)
-    assert proc.returncode == 0, proc.stdout[-6000:]
     assert git(checkout_copy, "status", "--porcelain", "-uall") + git(checkout_copy, "diff") == before
+    assert proc.returncode == 0, proc.stdout[-6000:]
+    assert "0 failed" in proc.stdout
 
     registry = json.loads((checkout_copy / "registry" / "skills.json").read_text(encoding="utf-8"))
     entry = next(s for s in registry["skills"] if s["id"] == "scaffold-probe")

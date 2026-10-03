@@ -1,5 +1,9 @@
 # Changelog — skill-orchestrator-multiagent
 
+## [1.1.6] - 2026-10-03
+
+- `references/kernel-contract.md` listed `epistemic_kind` under an EvidenceEnvelope claim without marking it required, while the bundled kind schema the gate validates against requires it; a claim without it was refused with no warning in the reference. The reference now lists it as required, and a test compares that list with the schema.
+
 ## [1.1.5] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

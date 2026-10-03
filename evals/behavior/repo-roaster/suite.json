@@ -2272,6 +2272,24 @@
           "{tmp}/bad.json: inventory must be an object"
         ]
       }
+    },
+    {
+      "id": "eval-corpus-that-is-not-an-object-is-refused",
+      "kind": "refuse",
+      "behavior": "An evals.json that holds a JSON list is refused with one named failure instead of a traceback.",
+      "run": [
+        "scripts/validate_evals.py",
+        "{tmp}/repo-roaster"
+      ],
+      "files": {
+        "repo-roaster/evals/evals.json": "[]"
+      },
+      "expect": {
+        "exit_code": 1,
+        "stderr_contains": [
+          "FAIL: evals/evals.json must be an object"
+        ]
+      }
     }
   ]
 }

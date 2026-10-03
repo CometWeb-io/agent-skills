@@ -682,7 +682,10 @@
       "status": "INVALID",
       "errors": [
         "payload:not-object"
-      ]
+      ],
+      "next_stage": null,
+      "unresolved_conflicts": 0,
+      "blocking_quality_debt": 0
     },
     "id": "payload-not-object",
     "input": "bad"
@@ -4175,6 +4178,47 @@
       "status": "INVALID",
       "errors": [
         "stage[0]:state"
+      ]
+    }
+  },
+  {
+    "id": "profile-of-the-wrong-type-is-invalid",
+    "input": {
+      "candidate_id": "c1",
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": [
+        "EDITORIAL"
+      ],
+      "stages": []
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "profile:invalid"
+      ]
+    }
+  },
+  {
+    "id": "candidate-id-of-the-wrong-type-is-required",
+    "input": {
+      "candidate_id": {
+        "id": "c1"
+      },
+      "contract_id": "ct1",
+      "mode": "STANDARD",
+      "profile": "SKILL_QUALITY",
+      "stages": [
+        {
+          "skill": "skill-auditor",
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "candidate_id:required"
       ]
     }
   }

@@ -7344,6 +7344,135 @@
         "science-roaster"
       ],
       "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
+    },
+    {
+      "id": "r6-council-pl-subject-first",
+      "prompt": "Rada niech zdecyduje: podwyżka cen o 20% czy nowy plan Enterprise.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-6 fresh prompt (tune half), written from skill descriptions before any signal or policy change"
+    },
+    {
+      "id": "r6-council-pl-modal",
+      "prompt": "Rada powinna ocenić, czy zatrudniamy pierwszego handlowca teraz.",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-6 fresh prompt (tune half), written from skill descriptions before any signal or policy change"
+    },
+    {
+      "id": "r6-council-pl-hand-over",
+      "prompt": "Oddaj tę decyzję Radzie: zamykamy wersję desktopową?",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-6 fresh prompt (tune half), written from skill descriptions before any signal or policy change"
+    },
+    {
+      "id": "r6-council-pl-agenda",
+      "prompt": "Dajmy to pod obrady Rady — pivot na enterprise, tak czy nie?",
+      "lang": "pl",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-6 fresh prompt (tune half), written from skill descriptions before any signal or policy change"
+    },
+    {
+      "id": "r6-council-en-let",
+      "prompt": "Let the council decide whether we sunset the free tier.",
+      "lang": "en",
+      "expected_primary_skill": "ai-council",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Round-6 fresh prompt (tune half), written from skill descriptions before any signal or policy change"
+    },
+    {
+      "id": "r6-council-sequence-en",
+      "prompt": "Gather the evidence on churn, then let the council decide on pricing.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "A Council hand-over in a later step is one step of a workflow, as with \"potem niech Rada zdecyduje\""
+    },
+    {
+      "id": "r6-council-pl-board-not-council",
+      "prompt": "Przedstaw ten plan radzie nadzorczej w czwartek.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "ai-council"
+      ],
+      "reason": "A supervisory board is not the Council"
+    },
+    {
+      "id": "r6-dismissed-pl-not-needed",
+      "prompt": "Ponowny roast repozytorium nie jest potrzebny, napraw zaakceptowane uwagi.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Round-6 fresh prompt (tune half), written from skill descriptions before any signal or policy change"
+    },
+    {
+      "id": "r6-dismissed-pl-already-had",
+      "prompt": "Roast repo już mieliśmy, teraz napraw trzy znalezione błędy i zweryfikuj poprawki.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Round-6 fresh prompt (tune half), written from skill descriptions before any signal or policy change"
+    },
+    {
+      "id": "r6-dismissed-en-not-asking",
+      "prompt": "We are not asking for a roast of the codebase here; repair the accepted findings and verify each fix.",
+      "lang": "en",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "A clause saying the review is done or not needed names the reviewer without asking for it (dismissed clause)"
+    },
+    {
+      "id": "r6-dismissed-en-is-done",
+      "prompt": "The offer page roast is finished. Now rewrite the hero copy so it sounds less like a template.",
+      "lang": "en",
+      "expected_primary_skill": "ai-humanize",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "content-roaster"
+      ],
+      "reason": "A clause saying the review is done or not needed names the reviewer without asking for it (dismissed clause)"
+    },
+    {
+      "id": "r6-dismissed-en-live-evidence",
+      "prompt": "The README review is done; now roast the repo for race conditions.",
+      "lang": "en",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Evidence outside the dismissed clause keeps the skill in play"
+    },
+    {
+      "id": "r6-content-writer-citing-sources",
+      "prompt": "Write a 1,500-word explainer on how carbon accounting for websites works, citing primary sources.",
+      "lang": "en",
+      "expected_primary_skill": "content-writer",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "evidence-researcher"
+      ],
+      "reason": "Round-6 fresh prompt (tune half), written from skill descriptions before any signal or policy change"
     }
   ]
 }

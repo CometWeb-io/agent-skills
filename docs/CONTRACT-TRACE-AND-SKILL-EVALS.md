@@ -167,6 +167,23 @@ confidence interval or market-superiority claim is generated. The final decision
 remains human review. A forged record labelled `model` can still look well-formed:
 this is consistency validation, not cryptographic attestation.
 
+### Producing the runs
+
+`tooling/run_model_evals.py --execute` runs a suite under every condition
+through a runner command given as a JSON argv (`--runner-json`). A runner reads
+one `cometweb.eval-request/v1` on stdin and prints one
+`cometweb.eval-response/v1`. `tooling/openai_eval_runner.py` is one such runner:
+text-only, through the OpenAI Responses API, with `store` off. It needs
+`OPENAI_API_KEY` and an explicit `COMETWEB_EVAL_MODEL`, makes no call without
+both, and refuses a request that declares tools, so tool-using skills need a
+host runner instead.
+
+```bash
+uv run python tooling/run_model_evals.py --suite evals/model/suite.json --execute \
+  --current-root /path/to/current --candidate-root /path/to/candidate \
+  --runner-json '["python3", "tooling/openai_eval_runner.py"]' --output /path/to/new-run-dir
+```
+
 ## Regression examples worth running with real models
 
 Use `evals/model/continuation-cases.json` as the historical operator task inventory.

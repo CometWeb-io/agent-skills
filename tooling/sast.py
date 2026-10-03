@@ -3,6 +3,7 @@
 
     uv run python tooling/sast.py              # rule self-test, then the scan
     uv run python tooling/sast.py --list       # the files that would be scanned
+    uv run python tooling/sast.py --no-cache   # scan even when nothing changed (check_all --ci)
 
 The engine is the exact `semgrep` pinned in the `sast` dependency group of
 uv.lock, run through `uv run --isolated --frozen`, so it is installed from the
@@ -19,12 +20,20 @@ Two steps, both must pass:
 2. The scan of every tracked *.py and *.sh outside test directories and the
    rule fixtures (the same scope bandit uses), failing on any finding.
 
+Because the result is a pure function of those inputs, a clean run records the
+SHA-256 of all of them under the ignored dist/.cache/sast/, and the next run
+with the same inputs reports the recorded result instead of starting the engine
+again. Any changed byte -- a scanned file, a rule, a rule case, uv.lock or this
+script -- is a different key. A finding is never recorded. `--no-cache`, which
+check_all passes under --ci, always runs the engine.
+
 Suppress a reviewed finding with a `# nosemgrep: <rule-id>` comment that says why.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 from pathlib import Path
 import subprocess  # nosec B404 - fixed argv, no shell
@@ -36,6 +45,7 @@ RULES = ROOT / "tooling" / "sast"
 RULE_FILES = ("python.yml", "shell.yml")
 FIXTURES = RULES / "tests"
 EXCLUDED_PARTS = {"tests", "fixtures"}
+CACHE = ROOT / "dist" / ".cache" / "sast"
 
 
 def tracked_targets(root: Path = ROOT) -> list[str]:
@@ -71,6 +81,20 @@ def environment(scratch: Path) -> dict[str, str]:
     return env
 
 
+def inputs_key(targets: list[str], root: Path = ROOT) -> str:
+    """SHA-256 over everything a clean result depends on, names included."""
+    digest = hashlib.sha256()
+    rules = root / "tooling" / "sast"
+    named = [*(f"target:{t}" for t in targets),
+             *(f"rule:{p.relative_to(root).as_posix()}" for p in sorted(rules.rglob("*")) if p.is_file()),
+             "lock:uv.lock", "tool:tooling/sast.py"]
+    for name in named:
+        data = (root / name.partition(":")[2]).read_bytes()
+        digest.update(f"{name}\0{len(data)}\0".encode())
+        digest.update(data)
+    return digest.hexdigest()
+
+
 def run(argv: list[str], env: dict[str, str]) -> int:
     return subprocess.run(argv, cwd=ROOT, env=env, check=False).returncode  # nosec B603
 
@@ -78,6 +102,8 @@ def run(argv: list[str], env: dict[str, str]) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--list", action="store_true", help="print the scan targets and exit")
+    parser.add_argument("--no-cache", action="store_true",
+                        help="run the engine even when a clean result for the same inputs is recorded")
     args = parser.parse_args(argv)
     targets = tracked_targets()
     if args.list:
@@ -86,6 +112,12 @@ def main(argv: list[str] | None = None) -> int:
     if not targets:
         print("FAIL: no tracked Python or shell files found (is this a git checkout?)", file=sys.stderr)
         return 1
+    key = inputs_key(targets)
+    marker = CACHE / key
+    if not args.no_cache and marker.is_file():
+        print(f"OK: {len(targets)} Python and shell files clean under {len(RULE_FILES)} rule files "
+              f"(inputs unchanged since the clean run recorded as {key[:12]}; --no-cache rescans)")
+        return 0
     common = ["--metrics=off", "--disable-version-check", "--oss-only", "--quiet"]
     configs = [arg for name in RULE_FILES for arg in ("--config", str(RULES / name))]
     with tempfile.TemporaryDirectory(prefix="cw-sast-") as tmp:
@@ -104,6 +136,8 @@ def main(argv: list[str] | None = None) -> int:
               "with --quiet, so rerun its command from tooling/sast.py without it to see the cause",
               file=sys.stderr)
         return 1
+    CACHE.mkdir(parents=True, exist_ok=True)
+    marker.write_text("clean\n", encoding="utf-8")
     print(f"OK: {len(targets)} Python and shell files clean under {len(RULE_FILES)} rule files")
     return 0
 

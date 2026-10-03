@@ -94,7 +94,9 @@ evaluator stage must carry the same `rubric_hash` (and the evaluator the same
 `benchmark_hash`) as the stages they consume.
 
 To check a sidecar, call `validate(payload)` in `scripts/kernel.py`. It returns
-`{status, next_stage, errors[], unresolved_conflicts, blocking_quality_debt}`,
+`{status, next_stage, errors[], unresolved_conflicts, blocking_quality_debt}`
+(a payload that is not an object is `INVALID` with `payload:not-object` and
+zero counts),
 plus `software_release_verdict: NOT_OWNED` for a complete `REPO_DEEP` run and
 `skill_evaluation_result` and `rollout_status` for `SKILL_QUALITY`. `status` is
 one of `INVALID`, `BLOCKED`, `NEEDS_RECONCILIATION`, `READY_FOR_NEXT`,

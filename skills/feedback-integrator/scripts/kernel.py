@@ -31,16 +31,17 @@ def _proposal_ready(row):
     return _text(proposal.get('change')) and _text(proposal.get('expected_effect')) and _text(proposal.get('evaluation_plan'))
 
 
+def _refuse(reason):
+    return {'status':'INVALID','proposal_count':0,'watch_count':0,'retired_count':0,'invalid_count':1,'proposals':[],'watch':[],'retired':[],'invalid':[{'reason':reason}],'errors':[reason]}
+
+
 def integrate(records,min_count=2,as_of=None,window_days=None,strict=False):
-    if not isinstance(records,list):
-        return {'status':'INVALID','proposal_count':0,'watch_count':0,'retired_count':0,'invalid_count':1,'proposals':[],'watch':[],'retired':[],'invalid':[{'reason':'records:not-list'}]}
+    if not isinstance(records,list): return _refuse('records:not-list')
     now=_dt(as_of) if as_of is not None else None
-    if as_of is not None and now is None:
-        return {'status':'INVALID','proposal_count':0,'watch_count':0,'retired_count':0,'invalid_count':1,'proposals':[],'watch':[],'retired':[],'invalid':[{'reason':'as_of:invalid'}]}
-    if not isinstance(min_count,int) or isinstance(min_count,bool) or min_count<=0:
-        return {'status':'INVALID','proposal_count':0,'watch_count':0,'retired_count':0,'invalid_count':1,'proposals':[],'watch':[],'retired':[],'invalid':[{'reason':'min_count:invalid'}]}
-    if window_days is not None and (not isinstance(window_days,int) or isinstance(window_days,bool) or window_days<=0):
-        return {'status':'INVALID','proposal_count':0,'watch_count':0,'retired_count':0,'invalid_count':1,'proposals':[],'watch':[],'retired':[],'invalid':[{'reason':'window_days:invalid'}]}
+    if as_of is not None and now is None: return _refuse('as_of:invalid')
+    if not isinstance(min_count,int) or isinstance(min_count,bool) or min_count<=0: return _refuse('min_count:invalid')
+    if window_days is not None and (not isinstance(window_days,int) or isinstance(window_days,bool) or window_days<=0): return _refuse('window_days:invalid')
+    if window_days is not None and now is None: return _refuse('window_days:requires-as_of')
     groups=defaultdict(list); invalid=[]; retired=[]
     for i,row in enumerate(records):
         if not isinstance(row,dict): invalid.append({'index':i,'reason':'record:not-object'}); continue
@@ -86,12 +87,13 @@ def integrate(records,min_count=2,as_of=None,window_days=None,strict=False):
             else: item['reason']='proposed-change-with-evaluation-plan-required'
             watch.append(item)
     status='INVALID' if invalid else ('PROPOSED' if proposals else ('WATCH' if watch else ('RETIRED' if retired else 'NO_SIGNAL')))
-    return {'status':status,'proposal_count':len(proposals),'watch_count':len(watch),'retired_count':len(retired),'invalid_count':len(invalid),'proposals':proposals,'watch':watch,'retired':retired,'invalid':invalid}
+    errors=[f"records[{row['index']}]:{row['reason'].removeprefix('record:')}" for row in invalid]
+    return {'status':status,'proposal_count':len(proposals),'watch_count':len(watch),'retired_count':len(retired),'invalid_count':len(invalid),'proposals':proposals,'watch':watch,'retired':retired,'invalid':invalid,'errors':errors}
 
 
 
 def promotion(payload):
-    if not isinstance(payload,dict): return {'status':'INVALID','errors':['promotion:not-object']}
+    if not isinstance(payload,dict): return {'status':'INVALID','errors':['promotion:not-object'],'reason':'invalid-payload'}
     errors=[]
     if not _text(payload.get('baseline_version')) or not _text(payload.get('challenger_version')): errors.append('version:required')
     if payload.get('baseline_version')==payload.get('challenger_version'): errors.append('version:same')
@@ -101,14 +103,14 @@ def promotion(payload):
     if not isinstance(improvements,int) or isinstance(improvements,bool) or improvements<0: errors.append('improvements')
     if not isinstance(regressions,int) or isinstance(regressions,bool) or regressions<0: errors.append('regressions')
     if not _text(payload.get('evaluation_scope')): errors.append('evaluation-scope')
-    if errors: return {'status':'INVALID','errors':errors}
+    if errors: return {'status':'INVALID','errors':errors,'reason':'invalid-payload'}
     if payload.get('safety_regression') is True or regressions>0: return {'status':'HOLD','errors':[],'reason':'regression'}
     if improvements<1: return {'status':'HOLD','errors':[],'reason':'no-repeatable-improvement'}
     return {'status':'PROMOTE','errors':[],'reason':'repeatable-improvement-no-regression'}
 
 def evaluate_case(case):
-    if not isinstance(case,dict): return integrate(None)
+    if not isinstance(case,dict): return _refuse('payload:not-object')
     payload=case.get('input')
-    if not isinstance(payload,dict): return integrate(None)
+    if not isinstance(payload,dict): return _refuse('payload:not-object')
     if case.get('operation')=='promotion': return promotion(payload)
     return integrate(payload.get('records'),payload.get('min_count',2),payload.get('as_of'),payload.get('window_days'),payload.get('strict',False))

@@ -56,7 +56,7 @@
  {"id": "broken-source-only-adopt", "base": "good-source-only.md",
   "note": "Prose promotes a SOURCE_ONLY pattern to ADOPT; it also lacks the destination evidence ADOPT needs. The ledger still says CANDIDATE.",
   "mutations": [{"replace": "- Verdict: CANDIDATE", "with": "- Verdict: ADOPT"}],
-  "expect": ["CONTRACT_VIOLATION:source-only-adopt", "EVIDENCE_MISSING:destination-evidence"]},
+  "expect": ["CONTRACT_VIOLATION:source-only-adopt", "EVIDENCE_MISSING:destination-evidence", "VERDICT_CONFLICT:pattern-verdict-ledger"]},
  {"id": "broken-verdict-not-in-set", "base": "good-source-to-target.md",
   "mutations": [{"replace": "- Verdict: REJECT", "with": "- Verdict: not worth borrowing"}],
   "expect": ["VERDICT_INVALID:verdict-token"]},
@@ -74,5 +74,7 @@
   "expect": ["FORBIDDEN_PHRASE:causal-overclaim"]},
  {"id": "broken-prevalence-as-proof", "base": "good-source-to-target.md",
   "mutations": [{"replace": "it is the reason PT-002 is an experiment.", "with": "it is the reason PT-002 is an experiment. Most note apps ship templates, so the pattern works."}],
-  "expect": ["FORBIDDEN_PHRASE:prevalence-as-proof"]}
-]}
+  "expect": ["FORBIDDEN_PHRASE:prevalence-as-proof"]},
+    {"id": "broken-card-verdict-differs-from-ledger", "base": "good-source-to-target.md", "note": "The PT-002 card says BACKLOG while the pattern ledger downstream skills read still says EXPERIMENT.", "mutations": [{"replace": "- Verdict: EXPERIMENT", "with": "- Verdict: BACKLOG"}], "expect": ["VERDICT_CONFLICT:pattern-verdict-ledger"]},
+    {"id": "broken-action-mix-differs-from-ledger", "base": "good-source-only.md", "mutations": [{"replace": "Action mix: 1 CANDIDATE / 1 REVIEW_REQUIRED", "with": "Action mix: 2 CANDIDATE / 1 REVIEW_REQUIRED"}], "expect": ["COUNT_MISMATCH:action-mix-ledger"]}
+  ]}

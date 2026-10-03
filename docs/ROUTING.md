@@ -45,6 +45,12 @@ uv run python tooling/route_skill.py 'Click through the checkout and find UX bug
 7. **Score signals.** Each remaining skill sums the weights of its signals that
    match. Text inside a negated clause is blanked first, so "Don't review the
    codebase, just fix the test" does not score the reviewer (`negation`).
+   A skill whose every matching signal sits in a clause saying that activity is
+   already done or not wanted ("the repo roast is done", "a re-review isn't
+   necessary", "roast repo już mieliśmy") is demoted: it is dropped from the
+   scores, from the steps of a sequence and from the lexical ranker, which then
+   reads the text without those clauses (`dismissed`). A skill with any signal
+   outside such a clause keeps its whole score.
 8. **Choose.** Invoked skills win over scores. Otherwise the top score wins,
    but if a different specialist is within one point of it the result is
    `ambiguous` rather than a silent pick (`ties`). Two or more invoked skills
@@ -64,18 +70,20 @@ uv run python tooling/route_skill.py 'Click through the checkout and find UX bug
 
 The result reports `status` (`single_skill`, `workflow`, `ambiguous` or
 `no_skill`), `primary_skill`, `candidates`, `scores`, the reason each skill was
-`blocked`, and `override_suspected`. `--explain` adds the signals that matched,
-the negated spans and the ranker's per-term contributions for its top skills;
+`blocked`, `demoted` (only when a skill was, with the score it would have had)
+and `override_suspected`. `--explain` adds the signals that matched,
+the negated and dismissed spans and the ranker's per-term contributions for its top skills;
 `--lexical` and `--no-lexical` override the policy's switch for one call.
 
 ## Policy blocks
 
 | Block | What it holds |
 | --- | --- |
-| `explicit_patterns` | Per skill, extra phrasings that count as invoking it ("przepuść przez Radę"). |
+| `explicit_patterns` | Per skill, extra phrasings that count as invoking it ("przepuść przez Radę", "Rada niech oceni", "let the council decide"). Hand-over phrasings count only at the start of a sentence, so "…, a potem przekaż to Radzie" stays one step of a workflow. |
 | `denied_patterns` | Per skill, extra phrasings that exclude it. |
 | `narrow_intent_guards` | Per skill, a `when` / `unless` pair that keeps a narrow request away from a broad skill. |
 | `negation` | Negation `cues`, the clause `boundary`, and `max_scope_chars` (1–400) for how far a negation reaches. |
+| `dismissed` | `cues` for a clause saying an activity is done or not wanted, an `unless` pattern that keeps a check ("whether the audit is done") out, and `max_scope_chars` around the cue; clauses are cut with the negation `boundary`. |
 | `sequence` | The step `connector` and `min_step_score`, the score a specialist needs to own a step. |
 | `untrusted_text` | The `override_cues` after which nothing counts as the user's instruction. |
 | `lexical` | The ranker's switch (`enabled`), BM25 parameters, acceptance thresholds (`min_score`, `min_terms`, `min_margin`, `min_ratio`), `abstain` patterns, per-skill `veto` phrases, stopwords, suffixes and the per-skill `lexicon`. |

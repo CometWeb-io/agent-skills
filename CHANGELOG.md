@@ -8,6 +8,51 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Added
 
+- **Shared error envelope for skill kernels.** `tooling/kernel_error_envelope.py`
+  (run under pytest as `tooling/tests/test_kernel_error_envelope.py`) holds
+  every payload-taking kernel to one refusal shape: any JSON value gets an
+  object back, a non-object payload is refused with exactly one
+  `<name>:not-object` error and a non-passing status, every refusal carries the
+  keys the skill's other refusals carry, and each script with a behaviour suite
+  refuses `null`, a list or a string without a traceback. CONTRIBUTING.md
+  documents the envelope; 17 skills were brought into line with it.
+- **Multi-format output grading.** A rubric can declare `formats`, each
+  detected from the output's first line and graded with its own sections,
+  checks and IDs. Competitive Intelligence grades its seven report formats and
+  Customer Ops its eleven plus the machine-readable record.
+  `tooling/grade_output.py --explain` points each issue at the rubric line that
+  defines it and the excerpt that triggered it, and `KERNEL_MISMATCH`
+  cross-checks compare the prose against what the skill's kernel computes for
+  an accepted payload. `check_code` defaults and null IDs are handled
+  consistently.
+- **Real-host evaluation kit.** `tooling/real_host_eval.py` plans tasks from the
+  repository's own eval cases (never the frozen holdout), runs them through a
+  host CLI in headless mode with the plugin staged or absent, grades routing
+  and output from the transcripts and reports pass rates with Wilson 95%
+  intervals. `run` is a dry run that prints commands and an estimated cost; it
+  starts nothing without `--execute` and explicit task and spend caps. See
+  `docs/REAL-HOST-EVALS.md`. It is never part of `check_all.py`.
+- **Vocabulary reference.** `docs/VOCABULARY.md` lists every verdict, status and
+  severity enum by owning skill and protocol schema, with the boundary
+  mappings between them; `tooling/tests/test_vocabulary_doc.py` fails when the
+  document and the contracts disagree or a line mixes the Council and release
+  spellings.
+- **Tooling inventory.** `docs/TOOLING.md` describes every script under
+  `tooling/`, the gate that runs it and what it reads and writes;
+  `tooling/tests/test_tooling_inventory.py` fails on a missing row or a gate
+  column that disagrees with `check_all.py`.
+- **Council phrasings.** Polish and English explicit requests to the Council
+  ("Rada niech oceni", "let the council decide", hand-over and agenda forms)
+  route to `ai-council`, and denied patterns keep look-alikes out.
+- **Dismissed clauses in routing.** A new `dismissed` block in
+  `registry/routing-policy.json` demotes a skill whose every signal sits in a
+  clause saying the activity is done or not wanted ("the audit is already
+  done", "nie jest potrzebny"), in Polish and English; `docs/ROUTING.md`
+  documents it and `--explain` shows the dismissed spans. Remaining limits are
+  recorded in `evals/routing/known-gaps.json`.
+- **CW-AIP v2 conformance:** `valid/decision-council-no-go.json` and
+  `invalid/decision-council-hyphen-verdict.json`.
+
 - **Lexical routing fallback.** `tooling/route_skill.py` ranks skills with a
   deterministic, standard-library BM25 ranker over each skill's description
   ("Do not use" sentences count against a skill), `owns`, trigger examples and
@@ -154,6 +199,31 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Changed
 
+- **Plugin 2.4.0.** A minor release: 20 skills change version, with
+  `feedback-integrator` 1.8.0 gaining behaviour and the rest receiving fixes
+  (`ai-council` 5.2.4, `longform-publisher` 1.1.4, `portfolio-operator` 1.2.4,
+  `quality-loop-operator` 1.7.4, `seo-geo-aeo-maxxing` 1.3.4 and the other
+  skills aligned with the shared error envelope).
+- **Faster `check_all.py`.** `installation_acceptance` builds and installs every
+  package in parallel from one clean copy of the checkout, `eval_strength` runs
+  the mutants of a package side by side, behaviour suites run in parallel, a
+  deferred gate stops the per-skill tests from running twice in a full run, and
+  `sast` reuses a clean result while its inputs are unchanged (`--ci` always
+  rescans). A full `--ci` run took 69 s of wall time on the reference machine.
+- `behavior_evals` runs with `--require-runtime` under `--ci`: a case whose
+  script needs an uninstalled `RUNTIME.json` package fails there instead of
+  being skipped.
+- **Longform Publisher 1.1.4 freeze exception.** The description is 539
+  characters with the "Do not use" boundary kept, each reference is loaded only
+  when its stage needs it instead of all seven on every run, and twelve front
+  door rules are pinned by `tests/test_longform_front_door.py`.
+- Routing: the `content-roaster` strength floor is 17, and `--check` fails a
+  floor that sits far below the measured value.
+- Removed the disabled `tooling/publish_public_dry_run.py` and its empty
+  `registry/public-allowlist.json`; publishing is a reviewed pull request.
+- The eval-strength baseline for `content-reviewer` is 42 of 42 guards (was 43
+  of 43): the entry point no longer branches on whether the payload holds
+  `findings`, so that guard is gone, not unpinned.
 - **Plugin 2.3.0.** A minor release: skills gain behavior suites, sharper
   front doors and fixes below. Each changed skill's `VERSION` moves by one
   patch release with one changelog entry; the shipped set is recorded in
@@ -267,6 +337,19 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Fixed
 
+- `ai-council` writes `NO-GO` while the CW-AIP v2 `DecisionEnvelope` schema
+  accepts only `NO_GO`, so a Council verdict copied into a v2 envelope failed
+  validation. The kernel's `gate` now also prints `envelope_verdict` in the
+  schema spelling, `envelope_verdict()` performs the mapping and refuses
+  anything that is not a Council verdict, and the output contract states the
+  rule.
+- Release Readiness verdicts were written in the Council's spelling (`NO-GO`,
+  `GO-NO_GO`) in `portfolio-operator`, `quality-loop-operator` and
+  `seo-geo-aeo-maxxing` references; they now read `NO_GO`.
+- Kernels that died with a traceback on a non-object payload or a wrong-typed
+  field (among them `portfolio-operator`, `quality-loop-operator`,
+  `feedback-integrator`, `content-writer`, `repair-operator` and
+  `rubric-designer`) now return the shared error envelope.
 - `skill-orchestrator`: a goal of only whitespace raised a traceback; it is now
   a usage error.
 - `rubric-designer`: a rubric without `mode` hashed differently from the same

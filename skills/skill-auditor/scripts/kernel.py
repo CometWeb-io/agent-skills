@@ -23,7 +23,7 @@ def _bump(prev,cur):
     return 'PATCH'
 
 def validate(x):
-    if not isinstance(x,dict): return {'status':'INVALID','errors':['payload:not-object'],'next_skill':None}
+    if not isinstance(x,dict): return {'status':'INVALID','errors':['payload:not-object'],'issues':[],'unknown_material':0,'next_skill':None}
     errors=[];issues=[];unknown_material=0
     mode=x.get('mode','STANDARD');sid=x.get('skill_id')
     if not _member(mode,MODES):errors.append('mode:invalid')

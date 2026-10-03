@@ -27,7 +27,9 @@ written by a tool and fail CI when edited by hand.
 | Document | What it covers |
 | --- | --- |
 | [`../CONTRIBUTING.md`](../CONTRIBUTING.md) | The check flow, adding a skill step by step, the quality bar, and which files are generated. |
+| [`TOOLING.md`](TOOLING.md) | Every script under `tooling/`: what it does, which gate runs it, what it reads and writes. |
 | [`QUALITY-SUITE-INTEGRATION.md`](QUALITY-SUITE-INTEGRATION.md) | How imported skill bundles join the one skill tree and registry. |
+| [`VOCABULARY.md`](VOCABULARY.md) | Verdicts, severities, confidence, freshness, gate and run statuses and envelope kinds across every skill, and why they differ. |
 | [`../AGENTS.md`](../AGENTS.md) | Standing repository rules for coding agents (in Polish). |
 | [`../CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) | How contributors are expected to behave. |
 
@@ -39,6 +41,7 @@ written by a tool and fail CI when edited by hand.
 | [`../evals/routing/README.md`](../evals/routing/README.md) | Routing case files, coverage floors, negation and sequence rules, holdout tuning. |
 | [`CONTRACT-TRACE-AND-SKILL-EVALS.md`](CONTRACT-TRACE-AND-SKILL-EVALS.md) | Contract tracing and reviewed skill comparisons with a model. |
 | [`OUTPUT-GRADING.md`](OUTPUT-GRADING.md) | Grading a skill's actual output against its output contract, offline, with golden good and broken cases. |
+| [`REAL-HOST-EVALS.md`](REAL-HOST-EVALS.md) | Running the skills in a real host CLI under budget caps, grading the transcripts, and comparing with and without the plugin. |
 | [`LOCAL-VALIDATION.md`](LOCAL-VALIDATION.md) | A recorded run of every gate without GitHub Actions (in Polish). |
 | [`generated-eval-strength.md`](generated-eval-strength.md) | *Generated* by `tooling/eval_strength.py`. How many guards each harness pins. |
 | [`generated-context-budget.md`](generated-context-budget.md) | *Generated* by `tooling/context_budget.py`. What each skill costs a host in context. |

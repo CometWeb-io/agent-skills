@@ -109,3 +109,40 @@ def test_multiagent_helper_smoke_passes_on_repository_package():
     checks = {row["check"]: row["status"] for row in result["checks"]}
     assert checks.get("invalid_kind_payload") == "passed", result
     assert checks.get("valid_envelope") == "passed", result
+
+
+def test_one_fixture_serves_every_skill_in_a_run(monkeypatch, capsys):
+    """Copying and committing the checkout once per skill was most of the gate's time."""
+    staged, accepted = [], []
+
+    def fake_stage(root, work):
+        staged.append(work)
+        return work / "repo"
+
+    def fake_accept(root, package_root, skill, work, *, run_helpers=False):
+        accepted.append((package_root, skill))
+        return {"skill": skill, "status": "passed"}
+
+    monkeypatch.setattr(mod, "stage_fixture", fake_stage)
+    monkeypatch.setattr(mod, "accept_staged", fake_accept)
+    skills = mod.all_skills(mod.ROOT)[:3]
+    assert mod.main([arg for skill in skills for arg in ("--skill", skill)] + ["--jobs", "3"]) == 0
+    assert len(staged) == 1
+    assert {root for root, _ in accepted} == {staged[0] / "repo"}
+    out = capsys.readouterr().out
+    # Results keep the selected order, however the parallel builds finish.
+    assert [mod.json.loads(out)["skills"][i]["skill"] for i in range(3)] == skills
+
+
+def test_building_a_package_leaves_the_shared_fixture_clean(tmp_path):
+    """The second skill would be refused as a dirty tree if packaging wrote outside dist/."""
+    package_root = mod.stage_fixture(mod.ROOT, tmp_path)
+    for skill in ("product-operator", "repo-to-roadmap"):
+        result = mod.accept_staged(mod.ROOT, package_root, skill, tmp_path / "work" / skill)
+        assert result["status"] == "passed", result
+
+
+def test_jobs_must_be_positive():
+    with pytest.raises(SystemExit) as exc:
+        mod.main(["--jobs", "0"])
+    assert exc.value.code == 2

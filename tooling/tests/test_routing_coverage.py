@@ -223,6 +223,22 @@ def test_a_trigger_eval_floor_miss_names_the_skill_and_the_metric():
     assert missing and "no evals/trigger-evals.json" in missing[0]
 
 
+def test_trigger_eval_floors_sit_within_the_allowed_slack_of_signals_alone():
+    """A floor far under the measured value lets routing erode silently; ratchet it."""
+    signals_only = deepcopy(POLICY)
+    signals_only["lexical"]["enabled"] = False
+    rows = cov.trigger_eval_proxy(REGISTRY, signals_only)
+    assert cov.trigger_eval_slack_problems(rows) == []
+
+
+def test_a_slack_floor_names_the_skill_the_metric_and_the_measured_value():
+    rows = [{"id": "content-roaster", "recall": 18, "should_trigger": 18, "rejected": 18,
+             "should_not_trigger": 18, "near_miss_routed": 9, "near_miss": 10}]
+    problems = cov.trigger_eval_slack_problems(rows, {"content-roaster": {"recall": 15, "near_miss": 8}}, max_slack=1)
+    assert problems == ["trigger-evals content-roaster: recall floor 15 sits 3 under the measured 18; "
+                        "raise it to at least 17"]
+
+
 @pytest.mark.parametrize("sid", sorted(cov.TRIGGER_EVAL_FLOORS))
 def test_dropping_a_roasters_signals_fails_its_recall_floor(sid):
     registry = deepcopy(REGISTRY)

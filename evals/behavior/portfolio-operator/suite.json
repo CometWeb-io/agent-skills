@@ -540,6 +540,49 @@
           "- **Is the fix build ready to ship?**"
         ]
       }
+    },
+    {
+      "id": "non-object-report-is-invalid",
+      "kind": "refuse",
+      "behavior": "A report file that holds a JSON list fails validation with a named error instead of a traceback.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "validate",
+        "--report-json",
+        "{tmp}/portfolio-report.json"
+      ],
+      "files": {
+        "portfolio-report.json": "[]"
+      },
+      "expect": {
+        "exit_code": 1,
+        "json": {
+          "valid": false,
+          "errors": [
+            "report must be a JSON object"
+          ]
+        }
+      }
+    },
+    {
+      "id": "non-object-report-is-not-rendered",
+      "kind": "refuse",
+      "behavior": "Rendering a report file that holds a JSON list exits 2 with a reason instead of a traceback.",
+      "run": [
+        "scripts/portfolio_kernel.py",
+        "render",
+        "--report-json",
+        "{tmp}/portfolio-report.json"
+      ],
+      "files": {
+        "portfolio-report.json": "[]"
+      },
+      "expect": {
+        "exit_code": 2,
+        "stderr_contains": [
+          "report must be a JSON object"
+        ]
+      }
     }
   ]
 }

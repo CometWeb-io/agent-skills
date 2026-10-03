@@ -105,10 +105,11 @@
   },
   {
     "expect": {
+      "status": "INVALID",
       "errors": [
         "payload:not-object"
       ],
-      "status": "INVALID"
+      "missing_dimensions": []
     },
     "id": "not-object",
     "input": null
@@ -1848,7 +1849,8 @@
       "status": "INVALID",
       "errors": [
         "payload:not-object"
-      ]
+      ],
+      "missing_dimensions": []
     }
   }
 ]

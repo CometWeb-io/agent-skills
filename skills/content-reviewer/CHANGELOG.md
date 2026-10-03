@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.4] - 2026-10-03
+
+- A payload that is not an object returned no `mode`; every result now carries it, with an invalid or missing mode reported as `STANDARD`.
+- An object without a `findings` list was refused as `payload:not-object`; it is now `findings:not-list`, keeping `payload:not-object` for input that really is not an object.
+- A `mode` that is a list or an object raised `TypeError`; it is now `mode:invalid`.
+- The cross-skill check `tooling/kernel_error_envelope.py` now holds this kernel to the shared error envelope (see CONTRIBUTING.md).
+
 ## [1.7.3] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

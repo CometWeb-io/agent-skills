@@ -17,6 +17,8 @@ python3 scripts/council_kernel.py gate \
 
 The numbers and status above are a syntax example, not evidence or recommended confidence values. Compute the applicable threshold and provide actual checked state. Freshness on the CLI defaults to `UNKNOWN`; pass `CLEAR` only after assessing applicable evidence and its coverage. The Python function retains `freshness_status="CLEAR"` solely for compatibility with existing callers; new callers must pass the assessed value explicitly.
 
+`gate` prints `{"verdict": ..., "envelope_verdict": ...}`. `envelope_verdict` is the same verdict in the CW-AIP v2 `DecisionEnvelope` spelling (`NO-GO` becomes `NO_GO`; `GO`, `TEST` and `DEFER` are unchanged); copy that field, not `verdict`, into a v2 envelope payload. The Python function `envelope_verdict()` performs the same mapping and raises `ValueError` for anything that is not a Council verdict.
+
 `--require-go`: exit 0 for a resulting GO, 1 for a processed non-GO verdict, and 2 for malformed inputs. Without it, a processed DEFER/NO-GO/TEST is report output with exit 0. No exit code is authorization to execute an action.
 
 Unknown/invalid numbers and non-boolean flags are errors, not zero, approval, or completed controls. Missing binding confidence dimensions yield overall zero and `missing_binding_dimensions`. A critical gap cannot be erased by confidence: GO/NO-GO becomes TEST when a reversible experiment is available, otherwise DEFER. That TEST is a recommendation to design/review an experiment, not permission to run one. Unimplemented required controls always defer, including a proposed TEST. A genuinely separate experiment requires its own scoped gate assessment.

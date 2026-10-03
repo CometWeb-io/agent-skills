@@ -73,6 +73,11 @@
   "sidecars": [
     {"rule": "repair-ledger", "detect": {"equals": {"schema": "cometweb.repair-ledger/v1"}},
      "validator": "skills/repair-operator/scripts/kernel.py", "function": "validate",
-     "recompute": {"result": "status"}}
+     "recompute": {"result": "status"},
+     "cross_checks": [
+       {"rule": "closed-count-stated", "result": "closed", "section": "ledger-status", "pattern": "\\bclosed\\s+(\\d+)"},
+       {"rule": "open-count-stated", "result": "open", "section": "ledger-status", "pattern": "\\bopen\\s+(\\d+)"},
+       {"rule": "closures-listed", "result": "closed", "section": "closures", "count": "items", "none_pattern": "^none\\b"}
+     ]}
   ]
 }

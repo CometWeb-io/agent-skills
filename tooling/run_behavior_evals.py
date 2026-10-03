@@ -15,6 +15,11 @@ Two suite shapes live under evals/behavior/<skill>/suite.json:
   holds in one sentence and is tagged `accept`, `refuse` or `boundary`; a suite
   needs at least three cases and both an accepted and a refused input.
 
+A case whose script imports a package its skill declares in RUNTIME.json is
+skipped, with the reason printed, when the interpreter cannot import that
+package (a bare `python3` rather than `uv run`); `--require-runtime`, which
+check_all passes under `--ci`, fails it instead.
+
 A skill that ships a script under scripts/ without a suite fails the gate, so
 coverage cannot quietly shrink. `--coverage` prints the count per skill and
 `--skill ID` runs one command suite. LLM blind comparisons remain operator-run
@@ -23,9 +28,12 @@ via run_blind_eval_harness.py.
 from __future__ import annotations
 
 import argparse
+import ast
+from concurrent.futures import ThreadPoolExecutor
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -34,6 +42,8 @@ from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
+# Suites run side by side; each case is its own subprocess in its own temp dir.
+JOBS = min(8, os.cpu_count() or 2)
 BEHAVIOR = ROOT / "evals" / "behavior"
 COMMAND_SCHEMA = "cometweb.behavior-suite/v1"
 ASSERTION_SUITE_SKILL = "cometweb-context"
@@ -652,7 +662,46 @@ def run_command_case(skill: str, case: dict) -> list[str]:
     return problems
 
 
-def run_command_suite(skill: str) -> tuple[int, list[str]]:
+def _requirement_name(requirement: str) -> str:
+    return re.split(r"[<>=!~;\[ ]", requirement, maxsplit=1)[0].strip()
+
+
+def absent_runtime_dependencies(skill: str) -> set[str]:
+    """Packages the skill declares in RUNTIME.json that this interpreter cannot import."""
+    path = SKILLS / skill / "RUNTIME.json"
+    try:
+        runtime = json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+    except json.JSONDecodeError:
+        return set()
+    groups = runtime.get("dependencies") if isinstance(runtime, dict) else None
+    names = {_requirement_name(r) for group in (groups or {}).values() if isinstance(group, list)
+             for r in group if isinstance(r, str)}
+    return {name for name in names if name and importlib.util.find_spec(name.replace("-", "_")) is None}
+
+
+def _script_imports(path: Path) -> set[str]:
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except (OSError, SyntaxError):
+        return set()
+    names: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            names.update(alias.name.split(".")[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+            names.add(node.module.split(".")[0])
+    return names
+
+
+def run_command_suite(skill: str, skipped: list[str] | None = None,
+                      require_runtime: bool = False) -> tuple[int, list[str]]:
+    """Run one suite; return the number of cases run and the problems found.
+
+    A case whose script imports a package the skill declares in RUNTIME.json,
+    and which this interpreter cannot import, is not run: a bare interpreter
+    would fail it for the missing package, not for the behaviour it pins. Its
+    reason goes to `skipped`; with `require_runtime` it is a problem instead.
+    """
     path = suite_path(skill)
     if not path.is_file():
         return 0, [f"{skill}: ships scripts but has no {path.relative_to(ROOT)}"]
@@ -663,9 +712,18 @@ def run_command_suite(skill: str) -> tuple[int, list[str]]:
     problems = suite_problems(skill, data)
     if problems:
         return 0, problems
+    absent = absent_runtime_dependencies(skill)
+    count = 0
     for case in data["cases"]:
+        needs = sorted(absent & _script_imports(SKILLS / skill / case["run"][0])) if absent else []
+        if needs:
+            reason = (f"{skill}#{case['id']}: needs {', '.join(needs)}, declared in RUNTIME.json "
+                      f"and not installed in this interpreter")
+            (problems if require_runtime else skipped if skipped is not None else []).append(reason)
+            continue
+        count += 1
         problems += run_command_case(skill, case)
-    return len(data["cases"]), problems
+    return count, problems
 
 
 def coverage() -> list[tuple[str, int]]:
@@ -684,7 +742,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--skill", help="run only this skill's command suite")
     parser.add_argument("--coverage", action="store_true", help="print behavior cases per skill and exit")
+    parser.add_argument("--require-runtime", action="store_true",
+                        help="fail a case whose script needs a RUNTIME.json package this interpreter lacks, "
+                             "instead of skipping it (check_all passes this under --ci)")
     args = parser.parse_args(argv)
+    skipped: list[str] = []
     if args.coverage:
         rows = coverage()
         for skill, count in rows:
@@ -693,27 +755,41 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{len(rows) - len(missing)} of {len(rows)} skills with scripts have behavior cases")
         return 1 if missing else 0
     if args.skill:
-        count, problems = run_command_suite(args.skill)
+        count, problems = run_command_suite(args.skill, skipped, args.require_runtime)
+        for line in skipped:
+            print(f"SKIP: {line}")
         for problem in problems:
             print(f"FAIL: {problem}", file=sys.stderr)
         if not problems:
-            print(f"OK: {args.skill} behavior suite ({count} cases)")
+            print(f"OK: {args.skill} behavior suite ({count} cases{f', {len(skipped)} skipped' if skipped else ''})")
         return 1 if problems else 0
 
-    assertion_cases = run_assertion_suite()
+    skills = [s for s in skills_with_scripts() if s != ASSERTION_SUITE_SKILL]
+    # Every case runs its script in its own temporary directory, so suites are
+    # independent; they run side by side and report in skill order.
+    with ThreadPoolExecutor(max_workers=JOBS) as pool:
+        assertion = pool.submit(run_assertion_suite)
+        # Each suite collects its own skips so the report keeps skill order.
+        per_skill: list[list[str]] = [[] for _ in skills]
+        suites = list(pool.map(lambda pair: run_command_suite(pair[0], pair[1], args.require_runtime),
+                               zip(skills, per_skill, strict=True)))
+        assertion_cases = assertion.result()
+    for found_skips in per_skill:
+        skipped += found_skips
     problems: list[str] = []
     total = 0
-    skills = [s for s in skills_with_scripts() if s != ASSERTION_SUITE_SKILL]
-    for skill in skills:
-        count, found = run_command_suite(skill)
+    for count, found in suites:
         total += count
         problems += found
+    for line in skipped:
+        print(f"SKIP: {line}")
     for problem in problems:
         print(f"FAIL: {problem}", file=sys.stderr)
     if problems:
         return 1
     print(f"OK: behavior evals ({assertion_cases} {ASSERTION_SUITE_SKILL} cases, {len(HANDLERS)} assertion "
-          f"handlers; {total} command cases across {len(skills)} skills)")
+          f"handlers; {total} command cases across {len(skills)} skills"
+          f"{f', {len(skipped)} skipped for a missing RUNTIME.json package' if skipped else ''})")
     return 0
 
 

@@ -139,3 +139,29 @@ value now returns `FIELD_VALUE_INVALID:<list>.<field>`. Reports that use the
 documented capitals are unaffected; the frozen control-plane workflow is
 untouched and the release stays `FROZEN`. Guarded by evaluation cases 53-58 and
 `references/contract.json`, checked by `tooling/tests/test_contract_docs_match_kernels.py`.
+
+## Freeze exception — 1.1.4, 2026-10-03
+
+The 1.1.3 exception moved the "Do not use" boundary to right after the opening
+sentence so that a host which shortens descriptions keeps it. It did not: the
+clause still ended at character 553 of a 751-character description, and Codex
+shows about 546 characters of a shortened description, so the boundary lost its
+last neighbour. Treated as a concrete regression in routing, the failure the
+previous exception set out to fix. The description is now 539 characters with
+the clause ending at character 428; every neighbour it names is unchanged.
+
+The same release replaces the front door's "Always read" list of seven
+references with one line per reference that names when to open it. Treated as
+an explicitly designed change, not speculative hardening: every trigger is a
+step of the frozen workflow (naming a stage, fixing the mode, reconciling a
+claim, the post-edit fidelity gate, deriving a format, writing the report,
+returning the reply), so a full build or refresh run still reads all seven,
+while a status question or a single check no longer pays for every one of
+them. No rule moved, no reference changed, and the workflow, kernel and report
+contract are untouched; the release stays `FROZEN`.
+
+Guarded by `tooling/tests/test_longform_front_door.py` (description length,
+whole boundary, one trigger line per reference) and by
+`tests/front-door-rules.json`, which now pins at least one rule in each of the
+seven references so that `tooling/tests/test_front_door_rules.py` fails if a
+reference loses its trigger.

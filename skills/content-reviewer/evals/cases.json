@@ -876,7 +876,46 @@
         "payload:not-object"
       ],
       "coverage_complete": false,
-      "covered_axes": 0
+      "covered_axes": 0,
+      "mode": "STANDARD"
+    }
+  },
+  {
+    "id": "object-without-findings-is-not-called-a-non-object",
+    "input": {
+      "mode": "DEEP"
+    },
+    "expect": {
+      "status": "INVALID",
+      "blockers": 0,
+      "majors": 0,
+      "errors": [
+        "findings:not-list"
+      ],
+      "coverage_complete": false,
+      "covered_axes": 0,
+      "mode": "DEEP"
+    }
+  },
+  {
+    "id": "mode-of-the-wrong-type-is-invalid",
+    "input": {
+      "findings": [
+        {
+          "finding_id": "f1",
+          "severity": "MINOR"
+        }
+      ],
+      "mode": [
+        "DEEP"
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "mode:invalid"
+      ],
+      "mode": "STANDARD"
     }
   }
 ]

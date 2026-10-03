@@ -252,6 +252,8 @@ def main() -> int:
             payload = json.loads(Path(args.input).read_text(encoding="utf-8"))
         else:
             payload = json.load(sys.stdin)
+        if not isinstance(payload, dict):
+            raise ValueError("input must be a JSON object")
         stage = args.selection_stage or str(payload.get("selection_stage") or "outreach_slate")
         result = select(payload, stage)
     except (OSError, json.JSONDecodeError, ValueError) as exc:

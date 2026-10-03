@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 # bad input, or raise a *deliberate* ValueError — never TypeError/AttributeError.
 VALIDATORS = [
     ("skills/product-teardown/scripts/validate_pattern_ledger.py", "validate"),
+    ("skills/portfolio-operator/scripts/portfolio_kernel.py", "validate_report"),
     ("skills/longform-publisher/scripts/publication_kernel.py", "validate_report"),
     ("skills/cometweb-context/scripts/validate_context_envelope.py", "validate"),
     ("skills/evidence-researcher/scripts/evidence_kernel.py", "validate_ledger"),

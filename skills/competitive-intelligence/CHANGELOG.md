@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.2] - 2026-10-03
+
+- `ci_kernel.py diff` died with an `AttributeError` traceback when a snapshot file held a list, a string or `null`; it now exits 2 with `diff needs two snapshots that are JSON objects`.
+
 ## [1.1.1] - 2026-10-03
 
 ### Fixed

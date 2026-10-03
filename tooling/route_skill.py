@@ -102,6 +102,7 @@ def _catalog(registry: dict, policy: dict) -> dict:
             raise ValueError("invalid narrow intent guard")
         _pattern(guard["when"]); _pattern(guard["unless"])
     _negation_rules(policy)
+    _dismissed_rules(policy)
     _sequence_rules(policy)
     _override_cues(policy)
     _lexical_rules(policy)
@@ -254,6 +255,50 @@ def mask_negated(text: str, policy: dict) -> str:
         out = out[:start] + " " * (end - start) + out[end:]
     return out
 
+
+
+def _dismissed_rules(policy: dict):
+    """Validate and return (cues, unless, max_scope_chars), or None when unset."""
+    rules = policy.get("dismissed")
+    if rules is None:
+        return None
+    if not isinstance(rules, dict) or not {"cues", "unless", "max_scope_chars"} <= rules.keys():
+        raise ValueError("invalid dismissed rules")
+    cues, unless, cap = rules["cues"], rules["unless"], rules["max_scope_chars"]
+    if not isinstance(cues, list) or not 1 <= len(cues) <= 32 or type(cap) is not int or not 1 <= cap <= 400:
+        raise ValueError("invalid dismissed rules")
+    return tuple(_pattern(c) for c in cues), _pattern(unless), cap
+
+
+def dismissed_spans(text: str, policy: dict) -> list[tuple[int, int]]:
+    """Character ranges of ``text`` that state an activity is done or not wanted.
+
+    Clauses are cut with the negation ``boundary``. A clause holding a ``cues``
+    match ("the roast is done", "a re-review isn't necessary", "roast repo juz
+    mielismy") and no ``unless`` match ("whether", "make sure", "czy") is
+    dismissed from ``max_scope_chars`` before the cue to ``max_scope_chars``
+    after it, never beyond the clause. Unlike a negated span, a dismissed span
+    is not blanked for every skill: it only decides which skills are demoted.
+    """
+    rules, negation = _dismissed_rules(policy), _negation_rules(policy)
+    if rules is None or negation is None:
+        return []
+    cues, unless, cap = rules
+    cuts = [0]
+    for m in negation[1].finditer(text):
+        cuts.extend((m.start(), m.end()))
+    cuts.append(len(text))
+    spans = []
+    for start, end in zip(cuts[::2], cuts[1::2], strict=True):
+        clause = text[start:end]
+        if unless.search(clause):
+            continue
+        hits = [m for cue in cues if (m := cue.search(clause))]
+        if hits:
+            begin = start + max(0, min(m.start() for m in hits) - cap)
+            finish = start + min(len(clause), max(m.end() for m in hits) + cap)
+            spans.append((begin, finish))
+    return spans
 
 # ---------------------------------------------------------------------------
 # Lexical ranker: BM25 over each skill's own text, used only when the regex
@@ -486,9 +531,12 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
     # Denials read the whole prompt; invocations and signals only the user's own words.
     own_text = _blank(text, quoted + overridden)
     signal_text = _blank(mask_negated(text, policy), quoted + overridden)
+    # Read from the user's own words: pasted text can neither ask for a skill nor wave one off.
+    dismissed = dismissed_spans(own_text, policy)
+    live_text = _blank(signal_text, dismissed)
     if any(sid not in active for sid in invoked):
         raise ValueError("explicit invocation references an unavailable skill")
-    explicit, scores, blocked = set(invoked), {}, {}
+    explicit, scores, blocked, demoted = set(invoked), {}, {}, {}
     for sid in active:
         if re.search(r"(?<![\w-])[$@]" + re.escape(sid) + r"(?![\w-])", own_text):
             explicit.add(sid)
@@ -527,6 +575,12 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
             continue
         # Explicit invocations and exclusions keep their own rules.
         total = sum(weight for weight, pattern in entry.get("routing_signals", []) if matches(pattern, signal_text))
+        # Every signal sits in a clause saying the activity is done or unwanted:
+        # the prompt names the skill without asking for it.
+        if total and sid not in explicit and dismissed and not any(
+                matches(pattern, live_text) for _, pattern in entry.get("routing_signals", [])):
+            demoted[sid] = total
+            continue
         if total or sid in explicit:
             scores[sid] = total
     def _canonical(sid: str) -> str:
@@ -570,7 +624,8 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
     # signup flow, then gate the release") is a workflow, whatever one step scored.
     steps: list[str] = []
     if not invoked and kind != "workflow" and workflow in active and workflow not in blocked:
-        steps = sequence_steps(signal_text, active, blocked, policy, _canonical)
+        # A step the prompt calls done or unwanted is not a step.
+        steps = sequence_steps(live_text, active, blocked, policy, _canonical)
         if len(set(steps)) > 1:
             primary, kind, candidates = workflow, "workflow", [workflow]
     # Lexical fallback: only when signals are silent or near-tied, never over an
@@ -584,8 +639,9 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
         and next((p for p in rules["abstain"] if matches(p, signal_text)), None)
     )
     if use_lexical and not explicit and kind in ("no_skill", "ambiguous") and len(set(steps)) <= 1 and not abstained:
-        pool = list(candidates) if kind == "ambiguous" else [sid for sid in active if sid not in blocked]
-        ranked = lexical_scores(signal_text, active, pool, rules)
+        pool = list(candidates) if kind == "ambiguous" else [
+            sid for sid in active if sid not in blocked and sid not in demoted]
+        ranked = lexical_scores(live_text, active, pool, rules)
         order = sorted(ranked, key=lambda sid: (-ranked[sid]["score"], sid))
         # Only skills backed by enough distinct concepts compete; a single strong
         # phrase ("tear down", "quality loop") neither wins nor blocks a winner.
@@ -620,13 +676,15 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
             lexical_result["contributions"] = {sid: ranked[sid]["contributions"] for sid in order[:3]}
     if explain and rules is not None and lexical_result is None:
         # Shown for diagnosis only: what the ranker would have said, had it been asked.
-        ranked = lexical_scores(signal_text, active, [sid for sid in active if sid not in blocked], rules)
+        ranked = lexical_scores(live_text, active, [sid for sid in active if sid not in blocked and sid not in demoted], rules)
         order = sorted(ranked, key=lambda sid: (-ranked[sid]["score"], sid))
         lexical_result = {"pool": "not_consulted", "accepted": False,
                           "ranked": [{"skill": sid, "score": ranked[sid]["score"],
                                       "matched_terms": ranked[sid]["matched_terms"]} for sid in order[:5]],
                           "contributions": {sid: ranked[sid]["contributions"] for sid in order[:3]}}
     result = {"status": kind, "primary_skill": primary, "candidates": candidates, "scores": scores, "blocked": blocked, "override_suspected": bool(overridden), "mode": "deterministic_proxy", "runtime_acceptance": "not_assessed"}
+    if demoted:
+        result["demoted"] = demoted
     if len(set(steps)) > 1:
         result["sequence"] = steps
     if lexical_result is not None and (lexical_result["accepted"] or explain):
@@ -643,6 +701,7 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
                 for sid in sorted(scores)
             },
             "negated_spans": negated_spans(text, policy),
+            "dismissed_spans": dismissed,
             "lexical_enabled": use_lexical,
             "lexical_abstained_on": abstained or None,
         }

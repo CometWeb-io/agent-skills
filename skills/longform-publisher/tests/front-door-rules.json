@@ -71,6 +71,66 @@
       "id": "rule-08",
       "text": "critical placeholders/gaps do not leak into release-ready output;",
       "where": "SKILL.md"
+    },
+    {
+      "id": "state-earliest-stage",
+      "text": "Use the earliest defensible stage.",
+      "where": "references/state-model.md"
+    },
+    {
+      "id": "state-side-state-keeps-history",
+      "text": "A side state does not erase historical stage evidence.",
+      "where": "references/state-model.md"
+    },
+    {
+      "id": "source-bound-no-silent-browse",
+      "text": "Do not silently browse or pull adjacent files.",
+      "where": "references/source-policy.md"
+    },
+    {
+      "id": "source-discovery-not-evidence",
+      "text": "Search snippets, bibliography entries, AI answers, and citations without inspected source content are discovery pointers, not automatically admitted evidence.",
+      "where": "references/source-policy.md"
+    },
+    {
+      "id": "claim-attribution",
+      "text": "Attribution must follow the actual source claim; do not turn reported opinion into fact.",
+      "where": "references/claim-use.md"
+    },
+    {
+      "id": "claim-no-fake-citations",
+      "text": "`AUTHOR_ASSERTION` and `OPINION` do not require fake citations, but must not impersonate external evidence.",
+      "where": "references/claim-use.md"
+    },
+    {
+      "id": "fidelity-promote-after-pass",
+      "text": "promote to `MASTER_LOCKED` only after `fidelity.passed=true` with a check timestamp/evidence.",
+      "where": "references/fidelity-gate.md"
+    },
+    {
+      "id": "lineage-master-hash",
+      "text": "`master_sha256` must equal the current canonical master hash.",
+      "where": "references/format-lineage.md"
+    },
+    {
+      "id": "lineage-direct-edit-not-canonical",
+      "text": "A direct material edit to a derived DOCX/PDF/HTML is not a canonical change.",
+      "where": "references/format-lineage.md"
+    },
+    {
+      "id": "report-stage-not-past-gates",
+      "text": "Declared `current_stage` cannot exceed the stage inferred from gates.",
+      "where": "references/report-contract.md"
+    },
+    {
+      "id": "report-published-needs-evidence",
+      "text": "`PUBLISHED` requires publication evidence.",
+      "where": "references/report-contract.md"
+    },
+    {
+      "id": "output-brief-not-publication",
+      "text": "A control brief must not replace the publication.",
+      "where": "references/output-contract.md"
     }
   ]
 }

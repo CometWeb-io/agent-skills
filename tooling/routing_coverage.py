@@ -28,7 +28,8 @@ Optionally (`--trigger-evals`) it replays skill-local `evals/trigger-evals.json`
 files through the same router. That is a deterministic-proxy discovery estimate:
 those files were written for model-based triggering. Skills listed in
 `TRIGGER_EVAL_FLOORS` are held to it by `--check` anyway, so routing-signal
-work that lifted their proxy recall cannot quietly erode.
+work that lifted their proxy recall cannot quietly erode, and a floor may sit at
+most `TRIGGER_EVAL_MAX_SLACK` under what the signals alone measure.
 
 Read-only, offline, standard library only. Not a model evaluation.
 """
@@ -66,10 +67,13 @@ GAPS_SCHEMA = "cometweb.routing-known-gaps/v1"
 # (should-not-trigger cases kept away from it) and near_miss (near-miss cases
 # routed to the skill they name). Raise them when routing improves.
 TRIGGER_EVAL_FLOORS: dict[str, dict[str, int]] = {
-    "content-roaster": {"recall": 16, "rejected": 18, "near_miss": 9},
+    "content-roaster": {"recall": 17, "rejected": 18, "near_miss": 9},
     "repo-roaster": {"recall": 17, "rejected": 18, "near_miss": 7},
     "science-roaster": {"recall": 17, "rejected": 18, "near_miss": 5},
 }
+# A floor may sit at most this far under what the routing signals alone measure
+# (lexical ranker off), so an improvement has to be ratcheted into the floor.
+TRIGGER_EVAL_MAX_SLACK = 1
 
 sys.path.insert(0, str(ROOT / "tooling"))
 from route_skill import normalize, route  # noqa: E402
@@ -296,6 +300,25 @@ def trigger_eval_floor_problems(rows: list[dict],
     return problems
 
 
+def trigger_eval_slack_problems(rows: list[dict],
+                                floors: dict[str, dict[str, int]] = TRIGGER_EVAL_FLOORS,
+                                max_slack: int = TRIGGER_EVAL_MAX_SLACK) -> list[str]:
+    """Floors that sit more than ``max_slack`` under the measured value."""
+    by_id = {row["id"]: row for row in rows}
+    fields = {"recall": "recall", "rejected": "rejected", "near_miss": "near_miss_routed"}
+    problems = []
+    for sid, floor in sorted(floors.items()):
+        row = by_id.get(sid)
+        if row is None:
+            continue
+        for name, minimum in sorted(floor.items()):
+            got = row[fields[name]]
+            if got - minimum > max_slack:
+                problems.append(f"trigger-evals {sid}: {name} floor {minimum} sits {got - minimum} under the "
+                                f"measured {got}; raise it to at least {got - max_slack}")
+    return problems
+
+
 def _load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -306,6 +329,10 @@ def report(*, with_trigger_evals: bool = False) -> dict:
     gaps = _load(GAPS) if GAPS.is_file() else {"schema": GAPS_SCHEMA, "cases": []}
     rows = coverage(cases, registry)
     proxy = trigger_eval_proxy(registry, policy)
+    signals_only = json.loads(json.dumps(policy))
+    if isinstance(signals_only.get("lexical"), dict):
+        signals_only["lexical"]["enabled"] = False
+    slack = trigger_eval_slack_problems(trigger_eval_proxy(registry, signals_only))
     out = {
         "schema": "cometweb.routing-coverage/v1",
         "mode": "deterministic_proxy",
@@ -320,7 +347,7 @@ def report(*, with_trigger_evals: bool = False) -> dict:
         "problems": (structural_problems(cases, registry) + floor_problems(rows)
                      + language_floor_problems(rows)
                      + gap_problems(gaps, cases, registry, policy)
-                     + trigger_eval_floor_problems(proxy)),
+                     + trigger_eval_floor_problems(proxy) + slack),
     }
     if with_trigger_evals:
         out["trigger_eval_proxy"] = proxy

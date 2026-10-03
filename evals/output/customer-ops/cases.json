@@ -23,6 +23,56 @@
    "expect": []
   },
   {
+   "id": "good-queue",
+   "file": "good-queue.md",
+   "expect": []
+  },
+  {
+   "id": "good-incident",
+   "file": "good-incident.md",
+   "expect": []
+  },
+  {
+   "id": "good-cluster",
+   "file": "good-cluster.md",
+   "expect": []
+  },
+  {
+   "id": "good-retention",
+   "file": "good-retention.md",
+   "expect": []
+  },
+  {
+   "id": "good-commitments",
+   "file": "good-commitments.md",
+   "expect": []
+  },
+  {
+   "id": "good-handoffs",
+   "file": "good-handoffs.md",
+   "expect": []
+  },
+  {
+   "id": "good-github-proposal",
+   "file": "good-github-proposal.md",
+   "expect": []
+  },
+  {
+   "id": "good-account-360",
+   "file": "good-account-360.md",
+   "expect": []
+  },
+  {
+   "id": "good-ops-brief",
+   "file": "good-ops-brief.md",
+   "expect": []
+  },
+  {
+   "id": "good-closure-verification",
+   "file": "good-closure-verification.md",
+   "expect": []
+  },
+  {
    "id": "broken-no-closure-state",
    "base": "good-open-case.md",
    "mutations": [
@@ -291,6 +341,679 @@
    ],
    "expect": [
     "INJECTION_UNFLAGGED:quoted-instruction"
+   ]
+  },
+  {
+   "id": "broken-queue-row-without-owner",
+   "base": "good-queue.md",
+   "mutations": [
+    {
+     "replace": "| support lead | confirm scope",
+     "with": "| - | confirm scope"
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:queue-owner"
+   ]
+  },
+  {
+   "id": "broken-queue-row-without-next-action",
+   "base": "good-queue.md",
+   "mutations": [
+    {
+     "replace": "| assign to the support queue owner |",
+     "with": "| TBD |"
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:queue-next-action"
+   ]
+  },
+  {
+   "id": "broken-queue-row-without-priority",
+   "base": "good-queue.md",
+   "mutations": [
+    {
+     "replace": "| P3 |",
+     "with": "| low |"
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:queue-priority"
+   ]
+  },
+  {
+   "id": "broken-queue-cluster-counts-cases-as-customers",
+   "base": "good-queue.md",
+   "mutations": [
+    {
+     "replace": "— 4 accounts / 6 cases —",
+     "with": "— 6 customers —"
+    }
+   ],
+   "expect": [
+    "CONTRACT_VIOLATION:cluster-accounts-and-cases"
+   ]
+  },
+  {
+   "id": "broken-incident-without-state",
+   "base": "good-incident.md",
+   "mutations": [
+    {
+     "replace": "**State:** MONITORING\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "VERDICT_MISSING:verdict"
+   ]
+  },
+  {
+   "id": "broken-incident-closed-with-recovery-pending",
+   "base": "good-incident.md",
+   "note": "acct-2001's recovery is still pending in the exposure table.",
+   "mutations": [
+    {
+     "replace": "**State:** MONITORING",
+     "with": "**State:** CLOSED"
+    }
+   ],
+   "expect": [
+    "VERDICT_WITH_BLOCKERS:unverified-recovery"
+   ]
+  },
+  {
+   "id": "broken-incident-without-severity",
+   "base": "good-incident.md",
+   "mutations": [
+    {
+     "replace": "**Customer-impact severity:** SEV2",
+     "with": "**Customer-impact severity:** moderate"
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:incident-severity"
+   ]
+  },
+  {
+   "id": "broken-incident-without-commander",
+   "base": "good-incident.md",
+   "mutations": [
+    {
+     "replace": "**Commander:** platform on-call\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:incident-commander"
+   ]
+  },
+  {
+   "id": "broken-incident-without-specialist-gates",
+   "base": "good-incident.md",
+   "mutations": [
+    {
+     "replace": "**Specialist gates:** none\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:specialist-gates"
+   ]
+  },
+  {
+   "id": "broken-incident-fact-without-provenance",
+   "base": "good-incident.md",
+   "mutations": [
+    {
+     "replace": "- [Status page | incident 31 | 2026-10-01T08:05Z] incident opened",
+     "with": "- The status page says the incident opened"
+    }
+   ],
+   "expect": [
+    "EVIDENCE_MISSING:incident-fact-provenance"
+   ]
+  },
+  {
+   "id": "broken-incident-hypothesis-without-test",
+   "base": "good-incident.md",
+   "mutations": [
+    {
+     "replace": "| diff the worker config between releases |",
+     "with": "| - |"
+    }
+   ],
+   "expect": [
+    "CONTRACT_VIOLATION:hypothesis-next-test"
+   ]
+  },
+  {
+   "id": "broken-incident-timeline-without-source",
+   "base": "good-incident.md",
+   "mutations": [
+    {
+     "replace": "| helpdesk CASE-2241 |",
+     "with": "| |"
+    }
+   ],
+   "expect": [
+    "EVIDENCE_MISSING:timeline-source"
+   ]
+  },
+  {
+   "id": "broken-cluster-without-state",
+   "base": "good-cluster.md",
+   "mutations": [
+    {
+     "replace": "**State:** CONFIRMED",
+     "with": "**State:** strong"
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:cluster-state"
+   ]
+  },
+  {
+   "id": "broken-cluster-without-account-count",
+   "base": "good-cluster.md",
+   "mutations": [
+    {
+     "replace": "**Accounts:** 9\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:cluster-counts"
+   ]
+  },
+  {
+   "id": "broken-cluster-cases-as-customers",
+   "base": "good-cluster.md",
+   "mutations": [
+    {
+     "replace": "- 14 cases and about 3 hours",
+     "with": "- 14 cases, which means 14 customers affected, and about 3 hours"
+    }
+   ],
+   "expect": [
+    "FORBIDDEN_PHRASE:cases-as-customers"
+   ]
+  },
+  {
+   "id": "broken-cluster-evidence-without-provenance",
+   "base": "good-cluster.md",
+   "mutations": [
+    {
+     "replace": "- [Helpdesk | ticket 2102 | 2026-09-03T07:40Z] asks",
+     "with": "- A ticket asks"
+    }
+   ],
+   "expect": [
+    "EVIDENCE_MISSING:cluster-evidence-provenance"
+   ]
+  },
+  {
+   "id": "broken-cluster-handoff-without-decision",
+   "base": "good-cluster.md",
+   "mutations": [
+    {
+     "replace": "- feedback-integrator: decide whether scheduled exports enter discovery this quarter, with the 9 accounts as interview candidates.",
+     "with": "- feedback-integrator: the 9 accounts as interview candidates for scheduled exports."
+    }
+   ],
+   "expect": [
+    "CONTRACT_VIOLATION:handoff-decision"
+   ]
+  },
+  {
+   "id": "broken-retention-method-unstated",
+   "base": "good-retention.md",
+   "mutations": [
+    {
+     "replace": "**Method:** operational heuristic over cases",
+     "with": "**Method:** weighted signals over cases"
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:retention-method"
+   ]
+  },
+  {
+   "id": "broken-retention-row-without-risk",
+   "base": "good-retention.md",
+   "mutations": [
+    {
+     "replace": "| acct-1543 | LOW |",
+     "with": "| acct-1543 | fine |"
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:retention-risk-level"
+   ]
+  },
+  {
+   "id": "broken-retention-row-without-evidence",
+   "base": "good-retention.md",
+   "mutations": [
+    {
+     "replace": "| CASE-2207 VAT invoice bug |",
+     "with": "| - |"
+    }
+   ],
+   "expect": [
+    "EVIDENCE_MISSING:retention-evidence"
+   ]
+  },
+  {
+   "id": "broken-retention-row-without-owner",
+   "base": "good-retention.md",
+   "mutations": [
+    {
+     "replace": "| unassigned | no action |",
+     "with": "| | no action |"
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:retention-owner"
+   ]
+  },
+  {
+   "id": "broken-retention-pseudo-precise-risk",
+   "base": "good-retention.md",
+   "mutations": [
+    {
+     "replace": "| 33-hour export outage |",
+     "with": "| 33-hour export outage (73% churn likelihood) |"
+    }
+   ],
+   "expect": [
+    "FORBIDDEN_PHRASE:pseudo-precise-risk"
+   ]
+  },
+  {
+   "id": "broken-commitment-overdue-without-owner",
+   "base": "good-commitments.md",
+   "mutations": [
+    {
+     "replace": "| CASE-2188 / acct-1610 | support |",
+     "with": "| CASE-2188 / acct-1610 | - |"
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:overdue-owner"
+   ]
+  },
+  {
+   "id": "broken-commitment-overdue-without-source",
+   "base": "good-commitments.md",
+   "mutations": [
+    {
+     "replace": "| helpdesk reply 2026-09-29 |",
+     "with": "| n/a |"
+    }
+   ],
+   "expect": [
+    "EVIDENCE_MISSING:overdue-source"
+   ]
+  },
+  {
+   "id": "broken-commitment-fulfilled-without-evidence",
+   "base": "good-commitments.md",
+   "mutations": [
+    {
+     "replace": "workaround sent [Helpdesk | ticket 2150 reply | 2026-09-30T14:02Z].",
+     "with": "workaround sent."
+    }
+   ],
+   "expect": [
+    "EVIDENCE_MISSING:fulfilled-evidence"
+   ]
+  },
+  {
+   "id": "broken-handoff-without-next-action",
+   "base": "good-handoffs.md",
+   "mutations": [
+    {
+     "replace": "| support lead asks the product owner to accept or reject |",
+     "with": "| |"
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:handoff-next-action"
+   ]
+  },
+  {
+   "id": "broken-handoff-unverified-without-next-step",
+   "base": "good-handoffs.md",
+   "mutations": [
+    {
+     "replace": " Next: support asks the customer to retry the import.",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "CONTRACT_VIOLATION:unverified-next-step"
+   ]
+  },
+  {
+   "id": "broken-handoff-done-as-closure",
+   "base": "good-handoffs.md",
+   "mutations": [
+    {
+     "replace": "support asks the customer to retry the import.",
+     "with": "support asks the customer to retry the import.\n- HO-8 on CASE-2133: engineering marked DONE, so the case is closed. Next: none."
+    }
+   ],
+   "expect": [
+    "CONTRACT_VIOLATION:done-as-closure"
+   ]
+  },
+  {
+   "id": "broken-proposal-without-dedupe",
+   "base": "good-github-proposal.md",
+   "mutations": [
+    {
+     "replace": "Dedupe search: done\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:dedupe-search"
+   ]
+  },
+  {
+   "id": "broken-proposal-without-readiness",
+   "base": "good-github-proposal.md",
+   "mutations": [
+    {
+     "replace": "Engineering readiness: PASS\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:engineering-readiness"
+   ]
+  },
+  {
+   "id": "broken-proposal-without-privacy-preflight",
+   "base": "good-github-proposal.md",
+   "mutations": [
+    {
+     "replace": "Privacy preflight: findings-redacted\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:privacy-preflight"
+   ]
+  },
+  {
+   "id": "broken-proposal-without-write-status",
+   "base": "good-github-proposal.md",
+   "mutations": [
+    {
+     "replace": "Write status: draft\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:write-status"
+   ]
+  },
+  {
+   "id": "broken-proposal-created-without-readback",
+   "base": "good-github-proposal.md",
+   "mutations": [
+    {
+     "replace": "Write status: draft",
+     "with": "Write status: created"
+    }
+   ],
+   "expect": [
+    "CONTRACT_VIOLATION:written-without-readback"
+   ]
+  },
+  {
+   "id": "broken-proposal-created-past-a-block",
+   "base": "good-github-proposal.md",
+   "mutations": [
+    {
+     "replace": "Engineering readiness: PASS",
+     "with": "Engineering readiness: BLOCK"
+    },
+    {
+     "replace": "Write status: draft",
+     "with": "Write status: created"
+    },
+    {
+     "append": "Performed: created example-org/billing#420\nRead-back verified: yes"
+    }
+   ],
+   "expect": [
+    "VERDICT_WITH_BLOCKERS:written-past-a-block"
+   ]
+  },
+  {
+   "id": "broken-account-without-question",
+   "base": "good-account-360.md",
+   "mutations": [
+    {
+     "replace": "**Operational question:** is anything blocking the 2026-11-01 renewal?\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:operational-question"
+   ]
+  },
+  {
+   "id": "broken-account-commercial-without-provenance",
+   "base": "good-account-360.md",
+   "mutations": [
+    {
+     "replace": " [CRM | contract C-1190 | 2026-10-02T10:41Z]",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "EVIDENCE_MISSING:commercial-provenance"
+   ]
+  },
+  {
+   "id": "broken-account-action-without-owner",
+   "base": "good-account-360.md",
+   "mutations": [
+    {
+     "replace": "2026-10-09. Owner: account manager.",
+     "with": "2026-10-09."
+    }
+   ],
+   "expect": [
+    "CONTRACT_VIOLATION:action-owner"
+   ]
+  },
+  {
+   "id": "broken-brief-metric-without-denominator",
+   "base": "good-ops-brief.md",
+   "mutations": [
+    {
+     "replace": ", denominator 58 new tickets",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "CONTRACT_VIOLATION:metric-definition"
+   ]
+  },
+  {
+   "id": "broken-brief-verified-fix-without-evidence",
+   "base": "good-ops-brief.md",
+   "mutations": [
+    {
+     "replace": " [Helpdesk | ticket 2150 | 2026-10-02T09:30Z]",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "EVIDENCE_MISSING:verified-fix-evidence"
+   ]
+  },
+  {
+   "id": "broken-brief-vague-approval",
+   "base": "good-ops-brief.md",
+   "mutations": [
+    {
+     "replace": "- Send the CM-1 status update to acct-1190 (draft ready).",
+     "with": "- Approve the plan for acct-1190."
+    }
+   ],
+   "expect": [
+    "CONTRACT_VIOLATION:approval-exact"
+   ]
+  },
+  {
+   "id": "broken-closure-without-state",
+   "base": "good-closure-verification.md",
+   "mutations": [
+    {
+     "replace": "**Resulting case state:** CLOSED\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "VERDICT_MISSING:verdict"
+   ]
+  },
+  {
+   "id": "broken-closure-without-gate",
+   "base": "good-closure-verification.md",
+   "mutations": [
+    {
+     "replace": "**Closure gate:** PASS\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:closure-gate"
+   ]
+  },
+  {
+   "id": "broken-closure-retest-unstated",
+   "base": "good-closure-verification.md",
+   "mutations": [
+    {
+     "replace": "**Original symptom re-tested:** yes\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "FIELD_MISSING:symptom-retest-stated"
+   ]
+  },
+  {
+   "id": "broken-closure-without-evidence",
+   "base": "good-closure-verification.md",
+   "mutations": [
+    {
+     "replace": " [Helpdesk | ticket 2150 | 2026-10-02T09:30Z]",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "EVIDENCE_MISSING:closure-evidence"
+   ]
+  },
+  {
+   "id": "broken-closure-closed-on-block",
+   "base": "good-closure-verification.md",
+   "mutations": [
+    {
+     "replace": "**Closure gate:** PASS",
+     "with": "**Closure gate:** BLOCK"
+    }
+   ],
+   "expect": [
+    "VERDICT_WITH_BLOCKERS:closed-on-block"
+   ]
+  },
+  {
+   "id": "broken-closure-closed-without-retest",
+   "base": "good-closure-verification.md",
+   "mutations": [
+    {
+     "replace": "re-tested:** yes",
+     "with": "re-tested:** no"
+    }
+   ],
+   "expect": [
+    "VERDICT_WITH_BLOCKERS:closed-without-retest"
+   ]
+  },
+  {
+   "id": "broken-closure-closed-with-open-commitment",
+   "base": "good-closure-verification.md",
+   "mutations": [
+    {
+     "replace": "**Open commitments:** none",
+     "with": "**Open commitments:** CM-5 follow-up call"
+    }
+   ],
+   "expect": [
+    "VERDICT_WITH_BLOCKERS:closed-with-open-commitments"
+   ]
+  },
+  {
+   "id": "broken-record-value-outside-closed-set",
+   "base": "good-closure-verification.md",
+   "mutations": [
+    {
+     "replace": "\"operational_priority\": \"P2\"",
+     "with": "\"operational_priority\": \"urgent\""
+    }
+   ],
+   "expect": [
+    "SIDECAR_INVALID:machine-record"
+   ]
+  },
+  {
+   "id": "broken-record-missing-key",
+   "base": "good-closure-verification.md",
+   "note": "The contract asks for null or UNKNOWN when a field is not sourced; leaving the key out hides the gap.",
+   "mutations": [
+    {
+     "replace": "  \"open_handoffs\": [],\n",
+     "with": ""
+    }
+   ],
+   "expect": [
+    "SIDECAR_INVALID:machine-record"
+   ]
+  },
+  {
+   "id": "broken-record-as-of-without-timezone",
+   "base": "good-closure-verification.md",
+   "mutations": [
+    {
+     "replace": "\"as_of\": \"2026-10-02T10:00:00+02:00\"",
+     "with": "\"as_of\": \"2026-10-02 10:00\""
+    }
+   ],
+   "expect": [
+    "SIDECAR_INVALID:machine-record"
+   ]
+  },
+  {
+   "id": "broken-no-known-format",
+   "base": "good-open-case.md",
+   "note": "A title from no format in the contract: only the shared rules can grade it, and the format itself is the finding.",
+   "mutations": [
+    {
+     "replace": "# Case: CASE-2207 / invoices show the wrong VAT rate after plan change",
+     "with": "# Notes on CASE-2207"
+    }
+   ],
+   "expect": [
+    "CONTRACT_VIOLATION:format"
    ]
   }
  ]

@@ -33,8 +33,7 @@ Nie commituj tych plików i nie wpisuj realnych ścieżek do wersji śledzonych.
 z założenia niepublikowany i nie jest zgłaszany. Przed wydaniem uruchom też
 `python3 tooling/public_safety.py --history`.
 
-Publikacja przechodzi przez `tooling/publish_public_dry_run.py` i wymaga jawnej zgody per skill;
-nie ma opcji pominięcia skanu bezpieczeństwa.
+Publikacją jest przejrzany pull request do tego repozytorium; nie ma osobnego narzędzia eksportu ani lustra.
 
 Odróżniaj lokalny wynik testów od GitHub Actions, obiekt drzewa od commita oraz commit od
 aktualizacji gałęzi. Przy blokadzie narzędzia podaj dokładny stan; nie ogłaszaj powodzenia bez

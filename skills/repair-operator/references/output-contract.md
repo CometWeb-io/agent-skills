@@ -59,7 +59,8 @@ for an item whose fresh candidate-bound verification did not run.
 To check a ledger, save it as JSON and run `python3 scripts/kernel.py ledger.json`
 (or pipe it on stdin). It prints `{status: VALID|INVALID, errors[], closed,
 open, strict_closure, portfolio_mode, effort_units}` and exits non-zero when the
-ledger is invalid. A `mode` other than `STANDARD` or `DEEP` is an error
+ledger is invalid. Every result carries all seven keys, including a ledger that
+is not an object (`payload:not-object`) or has no `items` list (`items:not-list`). A `mode` other than `STANDARD` or `DEEP` is an error
 (`mode:invalid`), not a silent fallback to standard closure.
 
 The field list above is also declared in `references/contract.json`, which

@@ -8,6 +8,7 @@ from .constants import (
     DECISION_VALIDITY_STATUSES,
     DOMAIN_KEYWORDS,
     DOMAIN_ORDER,
+    ENVELOPE_VERDICTS,
     FRAMEWORKS,
     FRESHNESS_POLICIES,
     GATE_STATUSES,
@@ -74,7 +75,7 @@ from .deliberation import (
     should_run_counterfactual,
     value_of_information,
 )
-from .risk_gates import build_human_handoff_packet, gate_verdict, tool_authority_assessment
+from .risk_gates import build_human_handoff_packet, envelope_verdict, gate_verdict, tool_authority_assessment
 from .routing import (
     detect_missing_perspectives,
     dynamic_specialists,
@@ -93,6 +94,7 @@ __all__ = [
     "DECISION_VALIDITY_STATUSES",
     "DOMAIN_KEYWORDS",
     "DOMAIN_ORDER",
+    "ENVELOPE_VERDICTS",
     "FRAMEWORKS",
     "FRESHNESS_POLICIES",
     "GATE_STATUSES",
@@ -135,6 +137,7 @@ __all__ = [
     "framework_usefulness",
     "framework_usefulness_report",
     "freshness_gate",
+    "envelope_verdict",
     "gate_verdict",
     "independence_grade",
     "independence_grade_report",

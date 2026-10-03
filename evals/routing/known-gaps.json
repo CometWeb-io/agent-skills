@@ -23,6 +23,32 @@
       "reason": "Multi-step request whose later step names its target only by pronoun or by \"roadmap\" as a verb; no single specialist scores at least min_step_score there, so the sequence rule cannot see two steps.",
       "observed_primary_skill": "evidence-researcher",
       "observed_status": "single_skill"
+    },
+    {
+      "id": "r6-repair-operator-back-reference",
+      "prompt": "Fix the issues from yesterday's repo roast.",
+      "lang": "en",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "The roast is named as the source of the findings, not as a request; a back-reference is not a dismissed clause and repair-operator has no signal for \"issues from <review>\".",
+      "observed_primary_skill": "repo-roaster",
+      "observed_status": "single_skill"
+    },
+    {
+      "id": "r6-repair-operator-answered-no",
+      "prompt": "Roast of the codebase? No. Fix the accepted findings.",
+      "lang": "en",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "The refusal is a separate one-word sentence after a question; neither negation nor dismissed cues look backwards across a sentence.",
+      "observed_primary_skill": "repo-roaster",
+      "observed_status": "single_skill"
     }
   ]
 }

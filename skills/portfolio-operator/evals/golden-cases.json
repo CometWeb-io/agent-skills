@@ -1695,5 +1695,20 @@
       "delegate[0].delegate_to is required",
       "delegate[0] violates delegate reality gate: external person/agent/system requires delegate_evidence_ref or user_defined=true; otherwise use delegate_candidate or pause"
     ]
+  },
+  {
+    "name": "a report that is not an object is invalid, not a crash",
+    "kind": "validation",
+    "report": [],
+    "expected_valid": false,
+    "expected_errors": [
+      "report must be a JSON object"
+    ]
+  },
+  {
+    "name": "a report that is not an object is not rendered",
+    "kind": "render",
+    "report": [],
+    "expected_error": "report must be a JSON object"
   }
 ]

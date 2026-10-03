@@ -170,6 +170,8 @@ def _event_key(competitor_id: str, category: str, path: str, before: Any, after:
 
 
 def diff_snapshots(old: dict[str, Any], new: dict[str, Any], extra_ignore_patterns: Iterable[str] | None = None) -> dict[str, Any]:
+    if not isinstance(old, dict) or not isinstance(new, dict):
+        raise ValueError("diff needs two snapshots that are JSON objects")
     competitor_id = str(new.get("competitor_id") or old.get("competitor_id") or "unknown")
     changes: list[dict[str, Any]] = []
 

@@ -26,7 +26,8 @@ def main() -> int:
                 func, arg = {'ranking': (rank_items, 'items'),
                              'lane': (classify_lane, 'item'),
                              'delegation': (route_delegation, 'item'),
-                             'conflict': (detect_capacity_conflicts, 'items')}[kind]
+                             'conflict': (detect_capacity_conflicts, 'items'),
+                             'render': (render_human_brief, 'report')}[kind]
                 try:
                     func(case[arg])
                 except ValueError as exc:

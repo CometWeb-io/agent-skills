@@ -236,6 +236,61 @@ def test_every_sast_rule_has_positive_and_negative_cases(rules: str, cases: str)
     assert set(sast.RULE_FILES) == {"python.yml", "shell.yml"}
 
 
+def _sast_tree(root: Path) -> None:
+    for name in ("tooling/sast/python.yml", "tooling/sast/tests/python.py", "uv.lock", "tooling/sast.py", "a.py"):
+        (root / name).parent.mkdir(parents=True, exist_ok=True)
+        (root / name).write_text(f"{name}\n", encoding="utf-8")
+
+
+@pytest.mark.parametrize("changed", ["a.py", "tooling/sast/python.yml", "tooling/sast/tests/python.py",
+                                     "uv.lock", "tooling/sast.py"])
+def test_sast_cache_key_covers_every_input(tmp_path: Path, changed: str) -> None:
+    _sast_tree(tmp_path)
+    before = sast.inputs_key(["a.py"], tmp_path)
+    assert sast.inputs_key(["a.py"], tmp_path) == before
+    (tmp_path / changed).write_text("edited\n", encoding="utf-8")
+    assert sast.inputs_key(["a.py"], tmp_path) != before
+
+
+def test_sast_cache_key_covers_the_scan_scope(tmp_path: Path) -> None:
+    """A newly tracked file changes the key even before anyone edits it."""
+    _sast_tree(tmp_path)
+    (tmp_path / "b.py").write_text("x = 1\n", encoding="utf-8")
+    assert sast.inputs_key(["a.py"], tmp_path) != sast.inputs_key(["a.py", "b.py"], tmp_path)
+
+
+def test_sast_reuses_only_a_clean_result_and_never_under_no_cache(tmp_path: Path, monkeypatch, capsys) -> None:
+    runs: list[str] = []
+    codes = {"--test": 0, "scan": 1}
+
+    def fake_run(argv, env):
+        step = "--test" if "--test" in argv else "scan"
+        runs.append(step)
+        return codes[step]
+
+    monkeypatch.setattr(sast, "CACHE", tmp_path / "cache")
+    monkeypatch.setattr(sast, "run", fake_run)
+    monkeypatch.setattr(sast, "tracked_targets", lambda: ["tooling/sast.py"])
+    # A finding is never recorded, so the next run scans again.
+    assert sast.main([]) == 1
+    assert sast.main([]) == 1
+    assert runs.count("scan") == 2
+    codes["scan"] = 0
+    assert sast.main([]) == 0
+    runs.clear()
+    assert sast.main([]) == 0
+    assert runs == [] and "inputs unchanged" in capsys.readouterr().out
+    assert sast.main(["--no-cache"]) == 0
+    assert runs == ["--test", "scan"]
+
+
+def test_ci_never_reuses_a_recorded_sast_result() -> None:
+    check_all = load("check_all")
+    gate = next(g for g in check_all.GATES if g.id == "sast")
+    assert "--no-cache" in check_all.gate_argv(gate, ci=True)
+    assert "--no-cache" not in check_all.gate_argv(gate, ci=False)
+
+
 def test_sast_skips_a_tracked_file_deleted_in_the_working_tree(tmp_path: Path) -> None:
     """semgrep exits 2 on a path that does not exist, which read as "findings"
     while a contributor had merely deleted a file and not yet committed."""

@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 EXPECTED = {
     "founder-led-sales-operator": ("1.1.2", "FROZEN"),
     "research-program-operator": ("1.3.1", "FROZEN"),
-    "portfolio-operator": ("1.2.3", "ACTIVE"),
+    "portfolio-operator": ("1.2.4", "ACTIVE"),
     # 1.1.0 moved a frozen baseline. The freeze rationale in
     # docs/acceptance/longform-publisher-1.0.0.md allows a contract change, and
     # validate_report declares "-> list[str]" yet raised TypeError on a list or
@@ -28,7 +28,10 @@ EXPECTED = {
     # 1.1.2 exception, which also covers the untrusted-content rules added to
     # its front door in the same unreleased version. 1.1.3 rejects lower-case
     # claim and gap enums that skipped the support checks; see the 1.1.3 exception.
-    "longform-publisher": ("1.1.3", "FROZEN"),
+    # 1.1.4 fits the description, whole boundary included, in the shortest
+    # observed host cut and gives each reference a load trigger; see the 1.1.4
+    # exception.
+    "longform-publisher": ("1.1.4", "FROZEN"),
     "product-operator": ("2.4.2", "ACTIVE"),
 }
 

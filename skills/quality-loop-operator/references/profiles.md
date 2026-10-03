@@ -29,7 +29,7 @@ This does not replace `research-program-operator`, ethics/governance approval, o
 1. repo-roaster
 2. repair-operator when mutation is authorized
 3. re-audit affected journeys/surfaces
-4. hand off a specific candidate to `release-readiness` for GO/NO-GO/DEFER
+4. hand off a specific candidate to `release-readiness` for GO/GO_WITH_CONTROLS/NO_GO/DEFER
 
 `artifact-acceptance` may gate the audit report itself but never substitutes for software release readiness.
 

@@ -1,6 +1,10 @@
 # Changelog
 
 
+## [6.1.3] - 2026-10-03
+
+- The shared `scripts/validate_evals.py` died with an `AttributeError` traceback when `evals/evals.json` held a list or a string; it now fails with `evals/evals.json must be an object`.
+
 ## [6.1.2] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

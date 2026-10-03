@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.0] - 2026-10-03
+
+- `window_days` without `as_of` was silently ignored, so a run asked for a bounded learning window counted every observation. It is now refused with `window_days:requires-as_of`, as `references/output-contract.md` documented ("needs as_of").
+- Champion/challenger promotion returned no `reason` for INVALID although `references/champion-challenger.md` documents `{status, errors[], reason}`; it now returns `reason: invalid-payload`, also for a payload that is not an object.
+- `kernel.integrate` results carry `errors[]`: the run-level refusal (`records:not-list`, `as_of:invalid`, `min_count:invalid`, `window_days:invalid`, `window_days:requires-as_of`) or one `records[i]:<reason>` per invalid record, next to the unchanged `invalid[]`.
+- A case input that is not an object is refused as `payload:not-object` instead of being reported as `records:not-list`.
+- The cross-skill check `tooling/kernel_error_envelope.py` now holds this kernel to the shared error envelope (see CONTRIBUTING.md).
+
 ## [1.7.3] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -373,3 +374,214 @@ def test_plain_canary_file_gives_soft_canaries(tmp_path: Path) -> None:
     bad = tmp_path / "bad.json"
     bad.write_text(json.dumps({"schema": go.CANARY_SCHEMA}), encoding="utf-8")
     assert run_cli("repo-roaster", "-", "--canary-file", str(bad), stdin=good).returncode == 2
+
+
+# --- rubric defaults and JSON references ---------------------------------------------
+
+PROBE_SECTIONS = [{"id": "items", "title": "Items", "aliases": ["items"]}]
+
+
+@pytest.mark.parametrize("check_type,pattern,expected", [
+    ("items_require", "Evidence:", "CONTRACT_VIOLATION:probe-items"),
+    ("items_forbid", "TODO", "CONTRACT_VIOLATION:probe-items"),
+])
+def test_item_checks_without_a_code_use_a_default(check_type: str, pattern: str, expected: str) -> None:
+    rubric = {"skill": "probe", "sections": PROBE_SECTIONS,
+              "checks": [{"type": check_type, "rule": "probe-items", "section": "items", "pattern": pattern,
+                          "message": "m"}]}
+    issues = go.Grader("probe", rubric).grade("## Items\n\n- TODO: first item\n")
+    assert [issue.key() for issue in issues] == [expected]
+    assert expected in go.rubric_rules(rubric)
+
+
+def test_table_and_count_checks_without_a_code_use_a_default() -> None:
+    rubric = {"skill": "probe", "sections": PROBE_SECTIONS, "checks": [
+        {"type": "table_column_nonempty", "rule": "probe-cell", "section": "items", "column": ["owner"],
+         "message": "m"},
+        {"type": "section_count", "rule": "probe-count", "section": "items", "pattern": "^- ", "min": 2,
+         "message": "m"}]}
+    text = "## Items\n\n| Item | Owner |\n|---|---|\n| one | - |\n\n- only one\n"
+    keys = sorted(issue.key() for issue in go.Grader("probe", rubric).grade(text))
+    assert keys == ["COUNT_MISMATCH:probe-count", "FIELD_MISSING:probe-cell"]
+    assert {"COUNT_MISMATCH:probe-count", "FIELD_MISSING:probe-cell"} <= go.rubric_rules(rubric)
+
+
+def test_a_json_null_reference_is_not_the_id_none() -> None:
+    rubric = {"skill": "probe", "sections": PROBE_SECTIONS, "ids": [
+        {"rule": "probe-ids", "pattern": "\\bX-\\d+\\b", "defined_in": [{"section": "items", "as": "list_lead"}],
+         "refs_json": ["refs[*]", "primary"], "defined_by": "not listed"}]}
+    text = '## Items\n\n- X-1 first\n\n```json\n{"primary": null, "refs": [null, "X-1"]}\n```\n'
+    assert go.Grader("probe", rubric).grade(text) == []
+    broken = text.replace('"X-1"]', '"X-9"]')
+    assert [i.key() for i in go.Grader("probe", rubric).grade(broken)] == ["UNDEFINED_ID:probe-ids"]
+
+
+def test_a_json_null_definition_defines_nothing() -> None:
+    rubric = {"skill": "probe", "ids": [
+        {"rule": "probe-ids", "pattern": "\\bX-\\d+\\b", "defined_in": [{"json": "items[*].id"}],
+         "refs_json": ["refs[*]"], "defined_by": "not in items"}]}
+    text = '```json\n{"items": [{"id": null}], "refs": ["None"]}\n```\n'
+    issues = go.Grader("probe", rubric).grade(text)
+    assert [i.key() for i in issues] == ["UNDEFINED_ID:probe-ids"] and "None" in issues[0].message
+
+
+# --- output formats ------------------------------------------------------------------
+
+FORMAT_SKILLS = sorted(skill for skill in go.skills_with_rubrics() if go.load_rubric(skill).get("formats"))
+
+
+def test_multi_format_skills_grade_every_contract_format() -> None:
+    assert {"competitive-intelligence", "customer-ops"} <= set(FORMAT_SKILLS)
+    assert len(go.load_rubric("competitive-intelligence")["formats"]) >= 7
+    assert len(go.load_rubric("customer-ops")["formats"]) >= 11
+
+
+@pytest.mark.parametrize("skill", FORMAT_SKILLS)
+def test_every_format_has_its_own_passing_golden(skill: str) -> None:
+    rubric = go.load_rubric(skill)
+    detected = {}
+    for case in go.load_cases(skill):
+        if not case["expect"] and not case.get("mutations"):
+            fmt = go.detect_format(rubric, go.materialize(skill, case))
+            assert fmt is not None, f"{case['id']} matches no format"
+            detected.setdefault(fmt["id"], case["id"])
+    assert set(detected) == {fmt["id"] for fmt in rubric["formats"]}
+
+
+def test_an_unknown_format_is_a_finding_and_shared_rules_still_apply() -> None:
+    text = "# Competitor notes\n\nThe new pricing proves a strategy change at acme.\n"
+    keys = sorted(i.key() for i in go.grade("competitive-intelligence", text))
+    assert keys == ["CONTRACT_VIOLATION:format", "FIELD_MISSING:as-of", "FORBIDDEN_PHRASE:implication-as-fact"]
+
+
+def test_shared_entries_respect_format_filters() -> None:
+    rubric = go.load_rubric("customer-ops")
+    proposal = go.effective_rubric(rubric, next(f for f in rubric["formats"] if f["id"] == "github-proposal"))
+    assert "as-of" not in {check["rule"] for check in proposal["checks"]}
+    unfiltered = copy.deepcopy(rubric)
+    for check in unfiltered["checks"]:
+        check.pop("not_formats", None)
+        check.pop("formats", None)
+    text = (ROOT / "evals/output/customer-ops/good-github-proposal.md").read_text(encoding="utf-8")
+    assert go.Grader("customer-ops", rubric).grade(text) == []
+    keys = {i.key() for i in go.Grader("customer-ops", unfiltered).grade(text)}
+    assert {"FIELD_MISSING:as-of", "FIELD_MISSING:coverage-status"} <= keys
+
+
+def test_format_rules_are_pinned_per_format_and_shared_rules_once() -> None:
+    shared, per_format = go.rules_by_format(go.load_rubric("competitive-intelligence"))
+    assert {"FIELD_MISSING:as-of", "CONTRACT_VIOLATION:format"} <= shared
+    with_ids = {fmt for fmt, rules in per_format.items() if "UNDEFINED_ID:evidence-ids" in rules}
+    assert with_ids == {"delta-brief", "change-report", "digest", "claim-check"}
+    assert "VERDICT_MISSING:verdict" in per_format["claim-check"] and "VERDICT_MISSING:verdict" not in shared
+
+
+def test_self_test_fails_when_a_format_rule_is_only_pinned_elsewhere(monkeypatch: pytest.MonkeyPatch) -> None:
+    real = go.load_cases
+    dropped = "broken-digest-invented-evidence-id"
+    monkeypatch.setattr(go, "load_cases", lambda skill: [c for c in real(skill) if c["id"] != dropped])
+    assert go.self_test(only=["competitive-intelligence"]) == 1
+
+
+def test_rubric_format_typos_are_refused() -> None:
+    rubric = copy.deepcopy(go.load_rubric("competitive-intelligence"))
+    rubric["formats"].append({"id": "alert", "title": "dup", "detect": "("})
+    rubric["formats"][0]["sectoins"] = []
+    rubric["checks"][0]["not_formats"] = ["alerts"]
+    problems = "\n".join(go.validate_rubric("competitive-intelligence", rubric))
+    for needle in ("duplicate format id", "bad detect pattern", "unknown key 'sectoins'",
+                   "not_formats names unknown format(s) ['alerts']"):
+        assert needle in problems
+    flat = copy.deepcopy(go.load_rubric("release-readiness"))
+    flat["checks"][0]["formats"] = ["x"]
+    assert "formats without declared formats" in "\n".join(go.validate_rubric("release-readiness", flat))
+
+
+# --- kernel cross-checks and records ---------------------------------------------------
+
+
+def test_cross_check_compares_the_stated_hash_with_the_kernel() -> None:
+    text = good_text("benchmark-curator")
+    assert go.grade("benchmark-curator", text) == []
+    [issue] = go.grade("benchmark-curator", text.replace("3c6c4b4`", "3c6c4b5`"))
+    assert issue.key() == "KERNEL_MISMATCH:benchmark-hash-stated" and issue.excerpt.startswith("- benchmark_hash")
+
+
+def test_cross_checks_are_validated() -> None:
+    rubric = copy.deepcopy(go.load_rubric("repair-operator"))
+    checks = rubric["sidecars"][0]["cross_checks"]
+    checks.append({"rule": "no-group", "result": "closed", "pattern": "closed \\d+"})
+    checks.append({"rule": "both", "result": "closed", "pattern": "(x)", "count": "items"})
+    checks.append({"rule": "bad-count", "result": "closed", "count": "rows"})
+    checks.append({"rule": "typo", "result": "closed", "count": "items", "sectoin": "closures"})
+    problems = "\n".join(go.validate_rubric("repair-operator", rubric))
+    for needle in ("needs a group", "exactly one of 'pattern' or 'count'", "count must be 'items' or 'table_rows'",
+                   "unknown key 'sectoin'"):
+        assert needle in problems
+
+
+def test_record_allows_null_but_not_values_outside_the_closed_set() -> None:
+    record = go.load_rubric("customer-ops")["records"][0]
+    data = {key: None for key in record["required"]}
+    assert go.record_errors(record, data) == []
+    data["retention_risk"] = "SEVERE"
+    assert [message for message, _ in go.record_errors(record, data)] == [
+        "retention_risk='SEVERE' is not one of LOW | MEDIUM | HIGH | CRITICAL | UNKNOWN"]
+
+
+# --- explain --------------------------------------------------------------------------
+
+
+def _all_rule_keys(skill: str) -> list[tuple[str | None, str]]:
+    rubric = go.load_rubric(skill)
+    shared, per_format = go.rules_by_format(rubric)
+    keys = [(None, rule) for rule in sorted(shared)]
+    return keys + [(fmt, rule) for fmt, rules in sorted(per_format.items()) for rule in sorted(rules)]
+
+
+@pytest.mark.parametrize("skill", sorted(TARGET_SKILLS))
+def test_every_rubric_rule_has_an_explainable_source(skill: str) -> None:
+    rubric = go.load_rubric(skill)
+    for format_id, key in _all_rule_keys(skill):
+        code, rule = key.split(":", 1)
+        source = go.rule_source(skill, rubric, format_id, go.Issue(code, rule, "m"))
+        assert "no entry names" not in source, f"{key}: {source}"
+        assert re.match(r"(?:evals/output/[\w-]+/rubric\.json|tooling/grade_output\.py):\d+  ", source), source
+        if source.startswith("evals/"):
+            path, line = source.split("  ")[0].split(":")
+            text = (ROOT / path).read_text(encoding="utf-8").splitlines()[int(line) - 1]
+            name = '"primary"' if key in {"VERDICT_MISSING:verdict", "VERDICT_INVALID:verdict"} else f'"{rule.removesuffix("-recomputed")}"'
+            assert name in text, f"{key} points at line {line}: {text}"
+
+
+def test_explain_prints_the_rule_source_and_the_excerpt() -> None:
+    case = next(c for c in go.load_cases("customer-ops") if c["id"] == "broken-closure-closed-on-block")
+    text = go.materialize("customer-ops", case)
+    proc = run_cli("customer-ops", "-", "--explain", stdin=text)
+    assert proc.returncode == 1
+    line = next(n for n, row in enumerate(text.splitlines(), 1) if row.startswith("**Closure gate:**"))
+    rubric_line = go._rubric_line(ROOT / "evals/output/customer-ops/rubric.json", "closed-on-block")
+    assert f"rule:    evals/output/customer-ops/rubric.json:{rubric_line}  formats[closure-verification]" \
+           f".checks[closed-on-block]" in proc.stdout
+    assert f"excerpt (line {line}): **Closure gate:** BLOCK" in proc.stdout
+    assert "(format: Closure verification)" in proc.stdout
+
+
+def test_explain_json_adds_source_and_excerpt_only_when_asked() -> None:
+    case = next(c for c in go.load_cases("product-teardown") if c["id"] == "broken-card-verdict-differs-from-ledger")
+    text = go.materialize("product-teardown", case)
+    [plain] = json.loads(run_cli("product-teardown", "-", "--json", stdin=text).stdout)["errors"]
+    assert set(plain) == {"code", "rule", "message", "where", "severity", "fix"}
+    [explained] = json.loads(run_cli("product-teardown", "-", "--json", "--explain", stdin=text).stdout)["errors"]
+    assert explained["source"].startswith("tooling/grade_output.py:") and "hook teardown_ledger" in explained["source"]
+    assert explained["excerpt"] == "Verdict: BACKLOG"
+    assert text.splitlines()[explained["excerpt_line"] - 1].endswith("Verdict: BACKLOG")
+
+
+def test_explain_names_built_in_rules_and_absences() -> None:
+    case = next(c for c in go.load_cases("rubric-designer") if c["id"] == "broken-injection-unflagged")
+    proc = run_cli("rubric-designer", "-", "--explain", stdin=go.materialize("rubric-designer", case))
+    assert "built-in rule quoted-instruction (INJECTION_IMPERATIVE)" in proc.stdout
+    case = next(c for c in go.load_cases("competitive-intelligence") if c["id"] == "broken-no-as-of")
+    proc = run_cli("competitive-intelligence", "-", "--explain", stdin=go.materialize("competitive-intelligence", case))
+    assert "excerpt: none, the rule fired on something absent from the output" in proc.stdout

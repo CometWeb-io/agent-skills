@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.4] - 2026-10-04
+
+### Fixed
+
+- The Council writes `NO-GO`; the CW-AIP v2 `DecisionEnvelope` schema accepts only `NO_GO`, so a Council verdict copied into a v2 envelope failed validation. The kernel now maps one onto the other: `envelope_verdict()` (constant `ENVELOPE_VERDICTS`) returns the schema spelling and refuses anything that is not a Council verdict, and `gate` prints `envelope_verdict` beside `verdict`. `references/output-contract.md` and `references/kernel-admission.md` state the rule. Tests: `tests/test_envelope_verdict.py`, behaviour case `envelope-verdict-refuses-the-wire-spelling-as-input`, and the CW-AIP v2 conformance cases `valid/decision-council-no-go.json` and `invalid/decision-council-hyphen-verdict.json`.
+- Kernel version 5.0.4.
+
 ## [5.2.3] - 2026-10-03
 
 - Forecast and Decision Memory rows both carry `outcome` with different values. `references/contract.json` declares the two row sets as lists and qualifies the field by each: `forecasts.outcome` is `0` or `1`, bound to the new `FORECAST_OUTCOMES` constant that `forecast-score` checks; `memory.outcome` is `Pending`, `Success`, `Failure` or `Mixed`. `references/kernel-admission.md` documents the forecast values and the string aliases `forecast-score` normalises. No behaviour change.

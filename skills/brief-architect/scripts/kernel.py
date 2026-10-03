@@ -135,9 +135,9 @@ def readiness(brief):
         return {'status':'INVALID','missing':[],'errors':['brief:not-object'],'open_material_decisions':0,'material_assumptions':0,'mode':'STANDARD'}
     missing=[]; errors=[]
     mode=brief.get('mode','STANDARD')
-    if mode not in VALID_MODES: errors.append('mode:invalid')
+    if not isinstance(mode,str) or mode not in VALID_MODES: errors.append('mode:invalid')
     risk=brief.get('risk_level','LOW')
-    if risk not in VALID_RISK: errors.append('risk_level:invalid')
+    if not isinstance(risk,str) or risk not in VALID_RISK: errors.append('risk_level:invalid')
     for key in REQUIRED_TEXT:
         if not _text(brief.get(key)): missing.append(key)
     ok, errs=_deliverables(brief.get('deliverables'))
@@ -150,7 +150,7 @@ def readiness(brief):
         errors.extend(e for e in errs if e!='acceptance_criteria:missing')
     policy=brief.get('evidence_policy')
     if policy is None or policy=='': missing.append('evidence_policy')
-    elif policy not in VALID_POLICIES: errors.append('evidence_policy:invalid')
+    elif not isinstance(policy,str) or policy not in VALID_POLICIES: errors.append('evidence_policy:invalid')
     decisions, dec_errors=_open_decisions(brief.get('decision_needed'))
     assumptions, asm_errors=_material_assumptions(brief.get('assumptions'))
     invariants, inv_errors=_invariants(brief.get('protected_invariants'))
@@ -158,9 +158,9 @@ def readiness(brief):
     if mode=='DEEP':
         if not _text(brief.get('use_moment')): missing.append('use_moment')
         if not _text(brief.get('scope')): missing.append('scope')
-        if risk in {'HIGH','CRITICAL'} and not invariants: missing.append('protected_invariants')
+        if isinstance(risk,str) and risk in {'HIGH','CRITICAL'} and not invariants: missing.append('protected_invariants')
     if errors:
-        return {'status':'INVALID','missing':sorted(set(missing)),'errors':errors,'open_material_decisions':len(decisions),'material_assumptions':len(assumptions),'mode':mode if mode in VALID_MODES else 'STANDARD'}
+        return {'status':'INVALID','missing':sorted(set(missing)),'errors':errors,'open_material_decisions':len(decisions),'material_assumptions':len(assumptions),'mode':mode if isinstance(mode,str) and mode in VALID_MODES else 'STANDARD'}
     if missing:
         return {'status':'BLOCKED','missing':sorted(set(missing)),'errors':[],'open_material_decisions':len(decisions),'material_assumptions':len(assumptions),'mode':mode}
     if decisions or assumptions:

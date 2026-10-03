@@ -180,3 +180,45 @@ def test_coverage_counts_cases_per_skill(tree) -> None:
 def test_every_skill_with_scripts_has_offline_behavior_cases() -> None:
     missing = [skill for skill, count in runner.coverage() if count < runner.MIN_COMMAND_CASES]
     assert not missing, f"skills that ship scripts without a behavior suite: {missing}"
+
+
+def test_parallel_suites_report_every_failure_in_skill_order(monkeypatch, capsys) -> None:
+    """Suites run side by side; a failure in any of them still fails the run, listed in skill order."""
+    skills = ["alpha", "beta", "gamma"]
+    monkeypatch.setattr(runner, "skills_with_scripts", lambda: skills)
+    monkeypatch.setattr(runner, "run_assertion_suite", lambda: 0)
+    monkeypatch.setattr(runner, "run_command_suite",
+                        lambda skill, skipped=None, require_runtime=False:
+                        (1, [] if skill == "beta" else [f"{skill}: broken"]))
+    assert runner.main([]) == 1
+    err = capsys.readouterr().err
+    assert err.index("alpha: broken") < err.index("gamma: broken")
+    assert "beta" not in err
+
+
+# A script that needs a package the skill declares in RUNTIME.json. The package
+# name is reserved for this test and never installed.
+NEEDS_PACKAGE = '''import json, sys
+import cometweb_absent_runtime_dependency  # noqa: F401
+print(json.dumps({"status": "VALID", "errors": []}))
+'''
+
+
+def test_a_case_needing_an_absent_declared_dependency_is_skipped_not_failed(tree, tmp_path) -> None:
+    scripts = tmp_path / "skills" / "demo" / "scripts"
+    (scripts / "needs.py").write_text(NEEDS_PACKAGE, encoding="utf-8")
+    (tmp_path / "skills" / "demo" / "RUNTIME.json").write_text(json.dumps({
+        "schema": "cometweb.skill-runtime/v1", "python": ">=3.10",
+        "dependencies": {"validate": ["cometweb_absent_runtime_dependency>=1"]},
+    }), encoding="utf-8")
+    cases = good_cases() + [case("needs-package", run=["scripts/needs.py"], input=None)]
+    # The stdlib cases still run; only the case whose script imports the
+    # missing package is held back, and the runner says why.
+    assert tree(cases) == (3, [])
+    skipped: list[str] = []
+    assert runner.run_command_suite("demo", skipped=skipped) == (3, [])
+    assert skipped == ["demo#needs-package: needs cometweb_absent_runtime_dependency, declared in "
+                       "RUNTIME.json and not installed in this interpreter"]
+    # Under --require-runtime (what check_all passes under --ci) a skip fails.
+    count, problems = runner.run_command_suite("demo", require_runtime=True)
+    assert count == 3 and problems == [skipped[0]]

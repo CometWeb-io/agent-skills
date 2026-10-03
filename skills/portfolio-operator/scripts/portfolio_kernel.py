@@ -282,6 +282,8 @@ def _is_real_delegate(item: dict[str, Any]) -> bool:
 
 
 def validate_report(report: dict[str, Any]) -> list[str]:
+    if not isinstance(report, dict):
+        return ['report must be a JSON object']
     errors: list[str] = []
     capacity = report.get('capacity', {}) or {}
     if capacity.get('source') == 'unknown' and capacity.get('hours') is not None:
@@ -369,6 +371,8 @@ def _render_action(item: dict[str, Any]) -> str:
 
 
 def render_human_brief(report: dict[str, Any]) -> str:
+    if not isinstance(report, dict):
+        raise ValueError('report must be a JSON object')
     readiness = report.get('readiness', {}) or {}
     status = readiness.get('status', 'PROVISIONAL')
     reason = str(readiness.get('reason') or '').strip()
@@ -443,7 +447,12 @@ def main() -> None:
         raise SystemExit(0 if not errors else 1)
 
     if args.command == 'render':
-        sys.stdout.write(render_human_brief(report))
+        try:
+            brief = render_human_brief(report)
+        except ValueError as exc:
+            print(json.dumps({'error': str(exc)}, ensure_ascii=False), file=sys.stderr)
+            raise SystemExit(2) from None
+        sys.stdout.write(brief)
         return
 
 

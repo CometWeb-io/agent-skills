@@ -23,8 +23,8 @@
       "unexercised": []
     },
     {
-      "guards": 43,
-      "held": 43,
+      "guards": 42,
+      "held": 42,
       "id": "content-reviewer",
       "strength": 1.0,
       "unexercised": []
@@ -37,8 +37,8 @@
       "unexercised": []
     },
     {
-      "guards": 34,
-      "held": 33,
+      "guards": 35,
+      "held": 34,
       "id": "feedback-integrator",
       "strength": 0.971,
       "unexercised": []
@@ -51,10 +51,10 @@
       "unexercised": []
     },
     {
-      "guards": 65,
-      "held": 62,
+      "guards": 67,
+      "held": 64,
       "id": "portfolio-operator",
-      "strength": 0.954,
+      "strength": 0.955,
       "unexercised": []
     },
     {

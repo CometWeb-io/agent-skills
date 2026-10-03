@@ -2,72 +2,9 @@
   "skill": "competitive-intelligence",
   "contract": "skills/competitive-intelligence/references/output-contract.md",
   "ordered_sections": true,
-  "sections": [
-    {"id": "executive-signal", "title": "Executive signal", "aliases": ["executive signal"]},
-    {"id": "material-events", "title": "Material events", "aliases": ["material events"]},
-    {"id": "patterns", "title": "Patterns", "aliases": ["patterns"]},
-    {"id": "recommended-moves", "title": "Recommended moves", "aliases": ["recommended moves"]},
-    {"id": "watch-next", "title": "Watch next", "aliases": ["watch next"]},
-    {"id": "coverage", "title": "Coverage and blind spots", "aliases": ["coverage"]},
-    {"id": "what-changed", "title": "What changed", "aliases": ["what changed"]},
-    {"id": "not-changed", "title": "What did not materially change", "aliases": ["what did not"]},
-    {"id": "implications", "title": "Strategic implications", "aliases": ["strategic implications"], "required_when_verdict": ["IGNORE", "WATCH", "VERIFY", "TEST", "RESPOND", "ESCALATE"]},
-    {"id": "evidence-uncertainty", "title": "Evidence and uncertainty", "aliases": ["evidence and uncertainty"], "required_when_verdict": ["IGNORE", "WATCH", "VERIFY", "TEST", "RESPOND", "ESCALATE"]},
-    {"id": "posture", "title": "Response posture", "aliases": ["response posture"]}
-  ],
-  "required_any": [
-    {"id": "events", "sections": ["material-events", "what-changed"],
-     "message": "no event section: a delta brief needs 'Material events' (it may say there are none) and a change report needs 'What changed'"},
-    {"id": "coverage-disclosure", "sections": ["coverage", "evidence-uncertainty"],
-     "message": "no coverage disclosure: every current intelligence output states what was covered, stale or not checked"},
-    {"id": "action", "sections": ["recommended-moves", "posture"],
-     "message": "no action section: a delta brief needs 'Recommended moves' (an explicit no-action counts) and a change report needs 'Response posture'"}
-  ],
-  "verdict": {
-    "tokens": ["IGNORE", "WATCH", "VERIFY", "TEST", "RESPOND", "ESCALATE"],
-    "authorizing": ["RESPOND", "ESCALATE"],
-    "required": false,
-    "primary": {"section": "posture"}
-  },
-  "blockers": [
-    {"rule": "unresolved-contradiction", "type": "items_matching", "section": "evidence-uncertainty",
-     "pattern": "\\bunresolved\\b"}
-  ],
   "checks": [
-    {"type": "doc_require", "rule": "as-of", "pattern": "\\bAs of\\b\\W{0,6}\\d{4}-\\d{2}-\\d{2}",
+    {"type": "doc_require", "rule": "as-of", "not_formats": ["alert"], "pattern": "\\bAs of\\b\\W{0,6}\\d{4}-\\d{2}-\\d{2}",
      "message": "every current intelligence output states its 'As of' timestamp"},
-    {"type": "doc_require", "rule": "previous-snapshot",
-     "when_verdict": ["IGNORE", "WATCH", "VERIFY", "TEST", "RESPOND", "ESCALATE"],
-     "pattern": "Previous accepted snapshot\\W*\\s*\\S",
-     "message": "a change report names the previous accepted snapshot (timestamp/hash)"},
-    {"type": "doc_require", "rule": "current-snapshot",
-     "when_verdict": ["IGNORE", "WATCH", "VERIFY", "TEST", "RESPOND", "ESCALATE"],
-     "pattern": "Current snapshot\\W*\\s*\\S",
-     "message": "a change report names the current snapshot (timestamp/hash)"},
-    {"type": "section_count", "rule": "event-row-evidence", "section": "material-events", "min": 0, "max": 0,
-     "pattern": "^\\|(?!\\s*(?:Severity|:?-{2,}))(?![^\\n]*\\bEV-\\d)[^\\n]*\\|\\s*$", "code": "EVIDENCE_MISSING",
-     "message": "a material event row maps to no evidence item (EV-NN)"},
-    {"type": "section_count", "rule": "event-row-verified-at", "section": "material-events", "min": 0, "max": 0,
-     "pattern": "^\\|(?!\\s*(?:Severity|:?-{2,}))(?![^\\n]*\\d{4}-\\d{2}-\\d{2})[^\\n]*\\|\\s*$", "code": "FIELD_MISSING",
-     "message": "a material event row has no verification timestamp"},
-    {"type": "section_count", "rule": "event-row-contradiction", "section": "material-events", "min": 0, "max": 0,
-     "pattern": "^\\|\\s*\\**(?:HIGH|CRITICAL)\\b(?![^\\n]*contradiction)[^\\n]*\\|\\s*$", "code": "CONTRACT_VIOLATION",
-     "message": "a HIGH/CRITICAL event row records no contradiction check"},
-    {"type": "section_count", "rule": "noise-row", "section": "material-events", "min": 0, "max": 0,
-     "pattern": "^\\|\\s*\\**NOISE\\b", "code": "CONTRACT_VIOLATION",
-     "message": "NOISE is never promoted to an event"},
-    {"type": "items_require", "rule": "event-item-evidence", "section": "what-changed", "none_pattern": "^no material",
-     "pattern": "\\bEV-\\d+\\b", "code": "EVIDENCE_MISSING",
-     "message": "an event maps to no evidence item (EV-NN)"},
-    {"type": "items_require", "rule": "event-item-verified-at", "section": "what-changed", "none_pattern": "^no material",
-     "pattern": "verified[^\\n]*\\d{4}-\\d{2}-\\d{2}", "code": "FIELD_MISSING",
-     "message": "an event has no verification timestamp"},
-    {"type": "items_require", "rule": "event-item-contradiction", "section": "what-changed",
-     "when_item": "Severity:\\W*(?:HIGH|CRITICAL)\\b", "pattern": "Contradiction check:\\s*\\S", "code": "CONTRACT_VIOLATION",
-     "message": "a HIGH/CRITICAL event records no contradiction check"},
-    {"type": "items_forbid", "rule": "noise-item", "section": "what-changed",
-     "pattern": "Severity:\\W*NOISE\\b", "code": "CONTRACT_VIOLATION",
-     "message": "NOISE is never promoted to an event"},
     {"type": "doc_forbid", "rule": "confirmed-from-weak-source",
      "pattern": "\\bCONFIRMED\\b[^|\\n]{0,80}\\b(?:Reddit|forum|community|social post|SEO estimate|traffic estimate|class [CD])\\b",
      "code": "CONTRACT_VIOLATION",
@@ -76,9 +13,203 @@
      "pattern": "\\b(?:confirms?|proves?)\\b[^.\\n]{0,40}\\b(?:roadmap|strategy|market share|revenue|churn|customer count)\\b",
      "message": "an implication is stated as a fact; label it a hypothesis and give the evidence that would confirm it"}
   ],
-  "ids": [
-    {"rule": "evidence-ids", "pattern": "\\bEV-\\d+\\b",
-     "defined_in": [{"section": "coverage", "as": "list_lead"}, {"section": "evidence-uncertainty", "as": "list_lead"}],
-     "defined_by": "no 'EV-NN — source' entry defines it in Coverage and blind spots or Evidence and uncertainty"}
+  "formats": [
+    {"id": "delta-brief", "title": "Material delta brief", "contract_section": "2",
+     "detect": "^#\\s*Competitive Intelligence Delta\\b",
+     "sections": [
+       {"id": "executive-signal", "title": "Executive signal", "aliases": ["executive signal"], "required": true},
+       {"id": "material-events", "title": "Material events", "aliases": ["material events"], "required": true},
+       {"id": "patterns", "title": "Patterns", "aliases": ["patterns"], "required": true},
+       {"id": "recommended-moves", "title": "Recommended moves", "aliases": ["recommended moves"], "required": true},
+       {"id": "watch-next", "title": "Watch next", "aliases": ["watch next"], "required": true},
+       {"id": "coverage", "title": "Coverage and blind spots", "aliases": ["coverage"], "required": true}
+     ],
+     "checks": [
+       {"type": "section_count", "rule": "event-row-evidence", "section": "material-events", "min": 0, "max": 0,
+        "pattern": "^\\|(?!\\s*(?:Severity|:?-{2,}))(?![^\\n]*\\bEV-\\d)[^\\n]*\\|\\s*$", "code": "EVIDENCE_MISSING",
+        "message": "a material event row maps to no evidence item (EV-NN)"},
+       {"type": "section_count", "rule": "event-row-verified-at", "section": "material-events", "min": 0, "max": 0,
+        "pattern": "^\\|(?!\\s*(?:Severity|:?-{2,}))(?![^\\n]*\\d{4}-\\d{2}-\\d{2})[^\\n]*\\|\\s*$", "code": "FIELD_MISSING",
+        "message": "a material event row has no verification timestamp"},
+       {"type": "section_count", "rule": "event-row-contradiction", "section": "material-events", "min": 0, "max": 0,
+        "pattern": "^\\|\\s*\\**(?:HIGH|CRITICAL)\\b(?![^\\n]*contradiction)[^\\n]*\\|\\s*$", "code": "CONTRACT_VIOLATION",
+        "message": "a HIGH/CRITICAL event row records no contradiction check"},
+       {"type": "section_count", "rule": "noise-row", "section": "material-events", "min": 0, "max": 0,
+        "pattern": "^\\|\\s*\\**NOISE\\b", "code": "CONTRACT_VIOLATION",
+        "message": "NOISE is never promoted to an event"}
+     ],
+     "ids": [
+       {"rule": "evidence-ids", "pattern": "\\bEV-\\d+\\b",
+        "defined_in": [{"section": "coverage", "as": "list_lead"}],
+        "defined_by": "no 'EV-NN — source' entry defines it in Coverage and blind spots"}
+     ]},
+    {"id": "change-report", "title": "Competitor change report", "contract_section": "3",
+     "detect": "^#\\s*.+\\bChange Report\\b",
+     "sections": [
+       {"id": "what-changed", "title": "What changed", "aliases": ["what changed"], "required": true},
+       {"id": "not-changed", "title": "What did not materially change", "aliases": ["what did not"]},
+       {"id": "implications", "title": "Strategic implications", "aliases": ["strategic implications"], "required": true},
+       {"id": "evidence-uncertainty", "title": "Evidence and uncertainty", "aliases": ["evidence and uncertainty"], "required": true},
+       {"id": "posture", "title": "Response posture", "aliases": ["response posture"], "required": true}
+     ],
+     "verdict": {
+       "tokens": ["IGNORE", "WATCH", "VERIFY", "TEST", "RESPOND", "ESCALATE"],
+       "authorizing": ["RESPOND", "ESCALATE"],
+       "primary": {"section": "posture"}
+     },
+     "blockers": [
+       {"rule": "unresolved-contradiction", "type": "items_matching", "section": "evidence-uncertainty",
+        "pattern": "\\bunresolved\\b"}
+     ],
+     "checks": [
+       {"type": "doc_require", "rule": "previous-snapshot", "pattern": "Previous accepted snapshot\\W*\\s*\\S",
+        "message": "a change report names the previous accepted snapshot (timestamp/hash)"},
+       {"type": "doc_require", "rule": "current-snapshot", "pattern": "Current snapshot\\W*\\s*\\S",
+        "message": "a change report names the current snapshot (timestamp/hash)"},
+       {"type": "items_require", "rule": "event-item-evidence", "section": "what-changed", "none_pattern": "^no material",
+        "pattern": "\\bEV-\\d+\\b", "code": "EVIDENCE_MISSING",
+        "message": "an event maps to no evidence item (EV-NN)"},
+       {"type": "items_require", "rule": "event-item-verified-at", "section": "what-changed", "none_pattern": "^no material",
+        "pattern": "verified[^\\n]*\\d{4}-\\d{2}-\\d{2}", "code": "FIELD_MISSING",
+        "message": "an event has no verification timestamp"},
+       {"type": "items_require", "rule": "event-item-contradiction", "section": "what-changed",
+        "when_item": "Severity:\\W*(?:HIGH|CRITICAL)\\b", "pattern": "Contradiction check:\\s*\\S", "code": "CONTRACT_VIOLATION",
+        "message": "a HIGH/CRITICAL event records no contradiction check"},
+       {"type": "items_forbid", "rule": "noise-item", "section": "what-changed",
+        "pattern": "Severity:\\W*NOISE\\b", "code": "CONTRACT_VIOLATION",
+        "message": "NOISE is never promoted to an event"}
+     ],
+     "ids": [
+       {"rule": "evidence-ids", "pattern": "\\bEV-\\d+\\b",
+        "defined_in": [{"section": "evidence-uncertainty", "as": "list_lead"}],
+        "defined_by": "no 'EV-NN — source' entry defines it in Evidence and uncertainty"}
+     ]},
+    {"id": "digest", "title": "Periodic digest", "contract_section": "4",
+     "detect": "^#\\s*.*\\bDigest\\b",
+     "sections": [
+       {"id": "material-moves", "title": "Material moves", "aliases": ["material moves", "top moves"], "required": true},
+       {"id": "emerging-patterns", "title": "Emerging patterns", "aliases": ["emerging patterns", "new patterns"], "required": true},
+       {"id": "confirmed-retracted", "title": "Confirmed and retracted since the last digest", "aliases": ["confirmed and retracted", "confirmed / retracted"], "required": true},
+       {"id": "decisions", "title": "Decisions and actions", "aliases": ["decisions and actions", "decisions"], "required": true},
+       {"id": "digest-coverage", "title": "Coverage, stale and missing", "aliases": ["coverage"], "required": true}
+     ],
+     "checks": [
+       {"type": "items_require", "rule": "move-evidence", "section": "material-moves", "none_pattern": "^nothing material",
+        "pattern": "\\bEV-\\d+\\b", "code": "EVIDENCE_MISSING",
+        "message": "a material move maps to no evidence item (EV-NN)"},
+       {"type": "max_items", "rule": "move-limit", "section": "material-moves", "max": 7},
+       {"type": "doc_forbid", "rule": "severity-first", "section": "material-moves", "code": "CONTRACT_VIOLATION",
+        "pattern": "(?s)^\\s*(?:[-*]|\\d+[.)])\\s*\\**LOW\\b.*^\\s*(?:[-*]|\\d+[.)])\\s*\\**(?:MEDIUM|HIGH|CRITICAL)\\b|^\\s*(?:[-*]|\\d+[.)])\\s*\\**MEDIUM\\b.*^\\s*(?:[-*]|\\d+[.)])\\s*\\**(?:HIGH|CRITICAL)\\b|^\\s*(?:[-*]|\\d+[.)])\\s*\\**HIGH\\b.*^\\s*(?:[-*]|\\d+[.)])\\s*\\**CRITICAL\\b",
+        "message": "a digest is organised by severity first; a lower-severity move is listed above a higher one"}
+     ],
+     "ids": [
+       {"rule": "evidence-ids", "pattern": "\\bEV-\\d+\\b",
+        "defined_in": [{"section": "digest-coverage", "as": "list_lead"}],
+        "defined_by": "no 'EV-NN — source' entry defines it in the coverage section"}
+     ]},
+    {"id": "landscape", "title": "Landscape report", "contract_section": "5",
+     "detect": "^#\\s*Competitive Landscape Movement\\b",
+     "sections": [
+       {"id": "market-direction", "title": "Market direction", "aliases": ["market direction"], "required": true},
+       {"id": "convergence", "title": "Convergence", "aliases": ["convergence"], "required": true},
+       {"id": "divergence", "title": "Divergence", "aliases": ["divergence"], "required": true},
+       {"id": "white-space", "title": "White-space implications", "aliases": ["white-space", "white space"], "required": true},
+       {"id": "threats", "title": "Threats to our assumptions", "aliases": ["threats to our assumptions", "threats"], "required": true},
+       {"id": "evidence-strength", "title": "Evidence strength", "aliases": ["evidence strength"], "required": true}
+     ],
+     "checks": [
+       {"type": "items_require", "rule": "strength-counts", "section": "evidence-strength",
+        "pattern": "\\b\\d+\\s+competitors?\\b[^\\n]*\\b\\d+\\s+(?:time points|snapshots)\\b", "code": "EVIDENCE_MISSING",
+        "message": "each pattern states how many competitors and time points support it"},
+       {"type": "items_require", "rule": "strength-source-classes", "section": "evidence-strength",
+        "pattern": "\\bclass(?:es)?\\s+[A-D]\\b", "code": "EVIDENCE_MISSING",
+        "message": "each pattern states the source classes behind it"},
+       {"type": "items_forbid", "rule": "single-competitor-direction", "section": "evidence-strength",
+        "pattern": "\\b(?:1|one) competitor\\b", "code": "CONTRACT_VIOLATION",
+        "message": "a move by one competitor is an event, not a market direction; drop it from the landscape or find a second competitor"}
+     ]},
+    {"id": "claim-check", "title": "Claim-check memo", "contract_section": "6",
+     "detect": "^#\\s*Claim Check\\b",
+     "sections": [
+       {"id": "direct-evidence", "title": "Direct evidence", "aliases": ["direct evidence"], "required": true},
+       {"id": "contradictory-evidence", "title": "Contradictory or limiting evidence", "aliases": ["contradictory"], "required": true},
+       {"id": "scope-qualifiers", "title": "Scope qualifiers", "aliases": ["scope qualifiers"], "required": true},
+       {"id": "conclusion", "title": "Conclusion", "aliases": ["conclusion"], "required": true},
+       {"id": "would-change", "title": "What would change the verdict", "aliases": ["what would change"], "required": true}
+     ],
+     "verdict": {
+       "tokens": ["CONFIRMED", "LIKELY", "UNVERIFIED", "DISPUTED", "RETRACTED"],
+       "authorizing": ["CONFIRMED"],
+       "primary": {"line": "^\\s*[-*]?\\s*\\**Verdict\\**\\s*:"},
+       "also": [{"section": "conclusion", "rule": "conclusion-verdict", "describe": "the Conclusion section"}]
+     },
+     "blockers": [
+       {"rule": "open-contradiction", "type": "items_matching", "section": "contradictory-evidence",
+        "pattern": "\\bunresolved\\b"}
+     ],
+     "checks": [
+       {"type": "items_require", "rule": "direct-evidence-ids", "section": "direct-evidence",
+        "pattern": "\\bEV-\\d+\\b", "code": "EVIDENCE_MISSING",
+        "message": "a direct evidence item has no evidence ID (EV-NN)"},
+       {"type": "doc_require", "rule": "confirmed-first-party", "section": "direct-evidence", "when_verdict": ["CONFIRMED"],
+        "pattern": "\\b(?:first-party|class A)\\b", "code": "EVIDENCE_MISSING",
+        "message": "CONFIRMED needs at least one first-party (class A) source in the direct evidence"}
+     ],
+     "ids": [
+       {"rule": "evidence-ids", "pattern": "\\bEV-\\d+\\b",
+        "defined_in": [{"section": "direct-evidence", "as": "list_lead"}, {"section": "contradictory-evidence", "as": "list_lead"}],
+        "defined_by": "no 'EV-NN — source' entry defines it under Direct evidence or Contradictory or limiting evidence"}
+     ]},
+    {"id": "exec-brief", "title": "Executive brief", "contract_section": "7",
+     "detect": "^#\\s*.*\\bExecutive Brief\\b",
+     "sections": [
+       {"id": "exec-what-changed", "title": "What changed", "aliases": ["what changed"], "required": true},
+       {"id": "impact", "title": "Business impact mechanism", "aliases": ["business impact"], "required": true},
+       {"id": "confidence", "title": "Confidence", "aliases": ["confidence"], "required": true},
+       {"id": "response", "title": "Recommended response", "aliases": ["recommended response"], "required": true},
+       {"id": "cost-of-inaction", "title": "Cost of no action", "aliases": ["cost of no action", "cost of inaction"], "required": true},
+       {"id": "next-check", "title": "Next check", "aliases": ["next check"], "required": true}
+     ],
+     "verdict": {
+       "tokens": ["IGNORE", "WATCH", "VERIFY", "TEST", "RESPOND", "ESCALATE"],
+       "authorizing": ["RESPOND", "ESCALATE"],
+       "primary": {"section": "response"}
+     },
+     "blockers": [
+       {"rule": "low-confidence-response", "type": "items_matching", "section": "confidence",
+        "pattern": "(?-i:\\bLOW\\b)"}
+     ],
+     "checks": [
+       {"type": "doc_require", "rule": "next-check-date", "section": "next-check", "pattern": "\\d{4}-\\d{2}-\\d{2}",
+        "message": "the executive brief gives no date for the next check or decision"},
+       {"type": "doc_forbid", "rule": "low-severity-in-brief", "code": "CONTRACT_VIOLATION",
+        "pattern": "\\bseverity\\W{0,4}LOW\\b|\\bLOW[- ]severity\\b",
+        "message": "an executive brief leaves low-severity changes out"},
+       {"type": "doc_forbid", "rule": "raw-log-in-brief", "code": "CONTRACT_VIOLATION",
+        "pattern": "\\b(?:GET|HEAD|POST)\\s+/\\S*\\s+(?:HTTP/\\d(?:\\.\\d)?|\\d{3})\\b",
+        "message": "an executive brief carries no raw crawl logs"}
+     ]},
+    {"id": "alert", "title": "Alert", "contract_section": "8",
+     "detect": "^\\[(?:NOISE|LOW|MEDIUM|HIGH|CRITICAL)\\]\\s",
+     "checks": [
+       {"type": "doc_forbid", "rule": "alert-below-threshold", "code": "CONTRACT_VIOLATION",
+        "pattern": "\\A\\s*\\[(?:NOISE|LOW)\\]",
+        "message": "an alert is emitted only for an event above the configured severity threshold"},
+       {"type": "doc_require", "rule": "alert-change", "pattern": "^Change:\\s*\\S",
+        "message": "the alert has no 'Change:' line"},
+       {"type": "doc_require", "rule": "alert-verification",
+        "pattern": "^Verification:\\s*(?:CONFIRMED|LIKELY|UNVERIFIED|DISPUTED|RETRACTED)\\b[^\\n]*\\d{4}-\\d{2}-\\d{2}",
+        "message": "the alert's 'Verification:' line needs a verification state and the date it was checked"},
+       {"type": "doc_require", "rule": "alert-why", "pattern": "^Why it matters:\\s*\\S",
+        "message": "the alert has no 'Why it matters:' line"},
+       {"type": "doc_require", "rule": "alert-action",
+        "pattern": "^Action:\\s*(?:IGNORE|WATCH|VERIFY|TEST|RESPOND|ESCALATE)\\b",
+        "message": "the alert's 'Action:' line needs a posture token (IGNORE | WATCH | VERIFY | TEST | RESPOND | ESCALATE)"},
+       {"type": "doc_require", "rule": "alert-event-key", "pattern": "^Event key:\\s*sha256:[0-9a-f]{8,}",
+        "message": "the alert has no event key, so repeats of the same event cannot be suppressed"},
+       {"type": "doc_forbid", "rule": "alert-unverified-response", "code": "CONTRACT_VIOLATION",
+        "pattern": "(?s)^Verification:\\s*(?:UNVERIFIED|DISPUTED|RETRACTED)\\b.*^Action:\\s*(?:RESPOND|ESCALATE)\\b",
+        "message": "RESPOND or ESCALATE on an unverified, disputed or retracted change is not proportional to the evidence"}
+     ]}
   ]
 }
