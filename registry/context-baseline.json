@@ -1,19 +1,19 @@
 {
   "schema": "cometweb.context-budget/v1",
   "unit": "bytes; token counts are estimates at 4 bytes/token",
-  "skill_count": 32,
-  "total_front_door_tokens_estimated": 70349,
-  "median_front_door_tokens_estimated": 2475,
+  "skill_count": 34,
+  "total_front_door_tokens_estimated": 71469,
+  "median_front_door_tokens_estimated": 2403,
   "max_front_door_tokens_estimated": 2999,
   "skills": [
     {
       "id": "ai-council",
       "front_door_bytes": 9902,
       "front_door_tokens_estimated": 2475,
-      "depth_bytes": 51186,
-      "depth_tokens_estimated": 12796,
+      "depth_bytes": 52107,
+      "depth_tokens_estimated": 13026,
       "reference_files": 27,
-      "deferred_ratio": 0.8379
+      "deferred_ratio": 0.8403
     },
     {
       "id": "ai-humanize",
@@ -35,12 +35,12 @@
     },
     {
       "id": "benchmark-curator",
-      "front_door_bytes": 4014,
-      "front_door_tokens_estimated": 1003,
-      "depth_bytes": 6454,
-      "depth_tokens_estimated": 1613,
+      "front_door_bytes": 3803,
+      "front_door_tokens_estimated": 950,
+      "depth_bytes": 6594,
+      "depth_tokens_estimated": 1648,
       "reference_files": 7,
-      "deferred_ratio": 0.6165
+      "deferred_ratio": 0.6342
     },
     {
       "id": "brief-architect",
@@ -70,40 +70,49 @@
       "deferred_ratio": 0.8066
     },
     {
+      "id": "competitor-profiling",
+      "front_door_bytes": 2994,
+      "front_door_tokens_estimated": 748,
+      "depth_bytes": 1266,
+      "depth_tokens_estimated": 316,
+      "reference_files": 1,
+      "deferred_ratio": 0.2972
+    },
+    {
       "id": "content-reviewer",
       "front_door_bytes": 5200,
       "front_door_tokens_estimated": 1300,
-      "depth_bytes": 6991,
-      "depth_tokens_estimated": 1747,
+      "depth_bytes": 7246,
+      "depth_tokens_estimated": 1811,
       "reference_files": 7,
-      "deferred_ratio": 0.5735
+      "deferred_ratio": 0.5822
     },
     {
       "id": "content-roaster",
-      "front_door_bytes": 11844,
-      "front_door_tokens_estimated": 2961,
+      "front_door_bytes": 11485,
+      "front_door_tokens_estimated": 2871,
       "depth_bytes": 69060,
       "depth_tokens_estimated": 17265,
       "reference_files": 20,
-      "deferred_ratio": 0.8536
+      "deferred_ratio": 0.8574
     },
     {
       "id": "content-writer",
-      "front_door_bytes": 6255,
-      "front_door_tokens_estimated": 1563,
-      "depth_bytes": 8227,
-      "depth_tokens_estimated": 2056,
+      "front_door_bytes": 6038,
+      "front_door_tokens_estimated": 1509,
+      "depth_bytes": 8508,
+      "depth_tokens_estimated": 2127,
       "reference_files": 6,
-      "deferred_ratio": 0.5681
+      "deferred_ratio": 0.5849
     },
     {
       "id": "customer-ops",
       "front_door_bytes": 11843,
       "front_door_tokens_estimated": 2960,
-      "depth_bytes": 131214,
-      "depth_tokens_estimated": 32803,
+      "depth_bytes": 131361,
+      "depth_tokens_estimated": 32840,
       "reference_files": 18,
-      "deferred_ratio": 0.9172
+      "deferred_ratio": 0.9173
     },
     {
       "id": "design-partner-finder",
@@ -136,19 +145,19 @@
       "id": "feedback-integrator",
       "front_door_bytes": 5869,
       "front_door_tokens_estimated": 1467,
-      "depth_bytes": 9074,
-      "depth_tokens_estimated": 2268,
+      "depth_bytes": 10195,
+      "depth_tokens_estimated": 2548,
       "reference_files": 7,
-      "deferred_ratio": 0.6072
+      "deferred_ratio": 0.6346
     },
     {
       "id": "longform-publisher",
-      "front_door_bytes": 10510,
-      "front_door_tokens_estimated": 2627,
-      "depth_bytes": 14510,
-      "depth_tokens_estimated": 3627,
+      "front_door_bytes": 10755,
+      "front_door_tokens_estimated": 2688,
+      "depth_bytes": 15022,
+      "depth_tokens_estimated": 3755,
       "reference_files": 9,
-      "deferred_ratio": 0.5799
+      "deferred_ratio": 0.5828
     },
     {
       "id": "portfolio-operator",
@@ -170,39 +179,39 @@
     },
     {
       "id": "product-teardown",
-      "front_door_bytes": 10362,
-      "front_door_tokens_estimated": 2590,
-      "depth_bytes": 59407,
-      "depth_tokens_estimated": 14851,
-      "reference_files": 10,
-      "deferred_ratio": 0.8515
+      "front_door_bytes": 10335,
+      "front_door_tokens_estimated": 2583,
+      "depth_bytes": 62277,
+      "depth_tokens_estimated": 15569,
+      "reference_files": 11,
+      "deferred_ratio": 0.8577
     },
     {
       "id": "quality-loop-operator",
-      "front_door_bytes": 9062,
-      "front_door_tokens_estimated": 2265,
-      "depth_bytes": 15031,
-      "depth_tokens_estimated": 3757,
+      "front_door_bytes": 8721,
+      "front_door_tokens_estimated": 2180,
+      "depth_bytes": 15137,
+      "depth_tokens_estimated": 3784,
       "reference_files": 14,
-      "deferred_ratio": 0.6239
+      "deferred_ratio": 0.6345
     },
     {
       "id": "release-readiness",
-      "front_door_bytes": 11747,
-      "front_door_tokens_estimated": 2936,
+      "front_door_bytes": 11298,
+      "front_door_tokens_estimated": 2824,
       "depth_bytes": 70475,
       "depth_tokens_estimated": 17618,
       "reference_files": 11,
-      "deferred_ratio": 0.8571
+      "deferred_ratio": 0.8618
     },
     {
       "id": "repair-operator",
       "front_door_bytes": 6141,
       "front_door_tokens_estimated": 1535,
-      "depth_bytes": 8195,
-      "depth_tokens_estimated": 2048,
+      "depth_bytes": 8347,
+      "depth_tokens_estimated": 2086,
       "reference_files": 6,
-      "deferred_ratio": 0.5716
+      "deferred_ratio": 0.5761
     },
     {
       "id": "repo-roaster",
@@ -223,13 +232,22 @@
       "deferred_ratio": 0.8374
     },
     {
+      "id": "research-program-operator",
+      "front_door_bytes": 2903,
+      "front_door_tokens_estimated": 725,
+      "depth_bytes": 1310,
+      "depth_tokens_estimated": 327,
+      "reference_files": 1,
+      "deferred_ratio": 0.3109
+    },
+    {
       "id": "rubric-designer",
       "front_door_bytes": 4144,
       "front_door_tokens_estimated": 1036,
-      "depth_bytes": 2976,
-      "depth_tokens_estimated": 744,
+      "depth_bytes": 3180,
+      "depth_tokens_estimated": 795,
       "reference_files": 5,
-      "deferred_ratio": 0.418
+      "deferred_ratio": 0.4342
     },
     {
       "id": "science-roaster",
@@ -244,19 +262,19 @@
       "id": "seo-geo-aeo-maxxing",
       "front_door_bytes": 11894,
       "front_door_tokens_estimated": 2973,
-      "depth_bytes": 75210,
-      "depth_tokens_estimated": 18802,
+      "depth_bytes": 75883,
+      "depth_tokens_estimated": 18970,
       "reference_files": 19,
-      "deferred_ratio": 0.8635
+      "deferred_ratio": 0.8645
     },
     {
       "id": "skill-auditor",
-      "front_door_bytes": 5947,
-      "front_door_tokens_estimated": 1486,
-      "depth_bytes": 8776,
-      "depth_tokens_estimated": 2194,
+      "front_door_bytes": 5892,
+      "front_door_tokens_estimated": 1473,
+      "depth_bytes": 9209,
+      "depth_tokens_estimated": 2302,
       "reference_files": 8,
-      "deferred_ratio": 0.5961
+      "deferred_ratio": 0.6098
     },
     {
       "id": "skill-evaluator",
@@ -280,10 +298,10 @@
       "id": "skill-orchestrator-multiagent",
       "front_door_bytes": 1629,
       "front_door_tokens_estimated": 407,
-      "depth_bytes": 12706,
-      "depth_tokens_estimated": 3176,
+      "depth_bytes": 12753,
+      "depth_tokens_estimated": 3188,
       "reference_files": 4,
-      "deferred_ratio": 0.8864
+      "deferred_ratio": 0.8867
     },
     {
       "id": "web-app-auditor",

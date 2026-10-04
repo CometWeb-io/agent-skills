@@ -1,0 +1,96 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md"
+  ],
+  "scripts": {
+    "scripts/output_contract.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "STATUSES": "status",
+        "STAGES": "stage",
+        "GATE_STATUSES": "gates.status"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "summary": {},
+    "status": {
+      "enum": [
+        "complete",
+        "partial",
+        "blocked"
+      ]
+    },
+    "not_verified": {},
+    "program": {},
+    "question": {},
+    "as_of": {},
+    "stage": {
+      "enum": [
+        "question",
+        "protocol",
+        "execution",
+        "analysis",
+        "manuscript",
+        "closed"
+      ]
+    },
+    "studies": {},
+    "studies.status": {
+      "enforced": false,
+      "enum": [
+        "planned",
+        "reported",
+        "executed",
+        "failed"
+      ]
+    },
+    "hypotheses": {},
+    "gates": {},
+    "next_studies": {},
+    "governance": {},
+    "unknowns": {},
+    "id": {},
+    "name": {},
+    "estimand": {},
+    "research_handoff": {},
+    "target": {},
+    "gates.status": {
+      "enum": [
+        "READY",
+        "BLOCKED",
+        "UNKNOWN",
+        "NOT_REPORTED"
+      ]
+    },
+    "research_handoff.status": {
+      "enforced": false,
+      "enum": [
+        "READY",
+        "BLOCKED",
+        "UNKNOWN",
+        "NOT_REPORTED"
+      ]
+    }
+  },
+  "outputs": {},
+  "internal": {},
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "errors": "expected_errors",
+      "pass": [
+        "pass"
+      ]
+    }
+  ]
+}

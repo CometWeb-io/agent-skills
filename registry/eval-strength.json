@@ -23,6 +23,13 @@
       "unexercised": []
     },
     {
+      "guards": 25,
+      "held": 25,
+      "id": "competitor-profiling",
+      "strength": 1.0,
+      "unexercised": []
+    },
+    {
       "guards": 45,
       "held": 44,
       "id": "content-reviewer",
@@ -58,10 +65,10 @@
       "unexercised": []
     },
     {
-      "guards": 193,
+      "guards": 192,
       "held": 180,
       "id": "product-operator",
-      "strength": 0.933,
+      "strength": 0.938,
       "unexercised": []
     },
     {
@@ -76,6 +83,13 @@
       "held": 54,
       "id": "repair-operator",
       "strength": 0.982,
+      "unexercised": []
+    },
+    {
+      "guards": 19,
+      "held": 19,
+      "id": "research-program-operator",
+      "strength": 1.0,
       "unexercised": []
     },
     {

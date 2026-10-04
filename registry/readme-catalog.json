@@ -113,6 +113,14 @@
         {
           "id": "artifact-acceptance",
           "summary": "Final evidence-backed acceptance gates for knowledge artifacts."
+        },
+        {
+          "id": "competitor-profiling",
+          "summary": "Initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence."
+        },
+        {
+          "id": "research-program-operator",
+          "summary": "Research-program stage gates, next-study planning, and manuscript-readiness handoffs."
         }
       ]
     },

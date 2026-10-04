@@ -746,6 +746,70 @@
       ]
     },
     {
+      "id": "competitor-profiling",
+      "version": "0.1.0",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Build an evidence-backed initial competitor profile from public and supplied sources, covering company, ICP, positioning, product surface, pricing, proof, discovery channels, uncertainties, contradictions, and a normalized handoff to Competitive Intelligence. Use for a first deep baseline or dossier. Do not use for recurring competitor monitoring, transferable product mechanism teardown, comparison-page copy, pricing decisions, or unsupported claims.",
+      "explicit_only": false,
+      "owns": [
+        "initial competitor baseline",
+        "evidence-backed competitor dossier",
+        "competitive-intelligence bootstrap handoff"
+      ],
+      "does_not_own": [
+        "recurring competitor monitoring",
+        "transferable product mechanism teardown",
+        "pricing or strategy decisions"
+      ],
+      "trigger_examples": [
+        "Build the first deep competitor dossier from public sources",
+        "Create the first deep competitor dossier from public sources"
+      ],
+      "negative_trigger_examples": [
+        "What changed since the last competitor snapshot?",
+        "What can we adapt from this competitor's onboarding?",
+        "What price should we charge?"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "cursor",
+        "claude-code",
+        "openai-codex",
+        "chatgpt"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          10,
+          "(?:initial|first|one.time).*(?:competitor|konkurent).*(?:profile|dossier|baseline|profil)"
+        ],
+        [
+          20,
+          "one-time deep profile|first deep competitor dossier"
+        ],
+        [
+          15,
+          "(?:competitor|konkurent).*(?:profile|dossier|profil).*(?:from scratch|first|initial|od zera|pierwszy)"
+        ],
+        [
+          20,
+          "(?:pierwsz|wst[eę]pn|pocz[aą]tkow)\\w* profil\\w* konkurent\\w*|dossier\\w* konkurent\\w* od zera"
+        ]
+      ]
+    },
+    {
       "id": "content-reviewer",
       "version": "1.7.4",
       "lifecycle": "active",
@@ -2586,6 +2650,90 @@
           12,
           "\\broadmap\\b.{0,80}\\b(?:before|until|up to|all the way to)\\b.{0,30}\\b(?:production|prod|launch|ga)\\b|\\b(?:before|until)\\b.{0,40}\\b(?:production|prod|launch)\\b.{0,80}\\broadmap\\b"
         ]
+      ]
+    },
+    {
+      "id": "research-program-operator",
+      "version": "1.3.1",
+      "lifecycle": "active",
+      "visibility": "public_canonical",
+      "tier": "domain",
+      "alias_of": null,
+      "description": "Plan and govern research programs from methodology through study execution, analysis, manuscript readiness, and next-study decisions. Use for research stage gates, follow-up studies, estimands, hypotheses, falsifiers, stop or continue criteria, dependencies, evidence requirements, and unresolved governance. Do not use for one-off claim verification, adversarial manuscript review, final publication formatting, portfolio allocation, or consequential decisions.",
+      "explicit_only": false,
+      "owns": [
+        "research-program stage gates",
+        "next-study planning",
+        "research-to-manuscript readiness"
+      ],
+      "does_not_own": [
+        "one-off claim verification",
+        "adversarial manuscript review",
+        "final publication formatting",
+        "portfolio allocation"
+      ],
+      "trigger_examples": [
+        "Plan the next study after this failed experiment",
+        "Define research program stage gates and next-study criteria"
+      ],
+      "negative_trigger_examples": [
+        "Verify this single factual claim",
+        "Reviewer-2 this manuscript",
+        "Format the finished paper as PDF"
+      ],
+      "inputs": [
+        "user goal"
+      ],
+      "outputs": [
+        "skill-specific artifact"
+      ],
+      "dependencies": [],
+      "compatible_hosts": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "execution_capabilities": [
+        "standard"
+      ],
+      "eval_suite": null,
+      "routing_signals": [
+        [
+          15,
+          "research program|program badawcz|research stage gate|research-to-manuscript"
+        ],
+        [
+          12,
+          "(plan|sequence|choose|zaplanuj|zaprojektuj).*(next|follow.up|kolejn).*(study|experiment|badani)"
+        ],
+        [
+          10,
+          "estimand.*stop criteria.*(study|experiment|badani)"
+        ]
+      ],
+      "release_status": "FROZEN",
+      "host_targets": [
+        "chatgpt",
+        "openai-codex",
+        "claude-code",
+        "cursor",
+        "qwen-code",
+        "qoder",
+        "lingma",
+        "alibaba-skills-portal"
+      ],
+      "required_capabilities": [],
+      "optional_capabilities": [
+        "filesystem",
+        "code_execution",
+        "web",
+        "files",
+        "connectors"
       ]
     },
     {

@@ -128,8 +128,8 @@
     {
       "id": "one-time-profile",
       "prompt": "one-time deep profile of Example pricing",
-      "expected_status": "no_skill",
-      "expected_primary_skill": null,
+      "expected_status": "single_skill",
+      "expected_primary_skill": "competitor-profiling",
       "must_not_trigger": [
         "competitive-intelligence"
       ]

@@ -13,6 +13,7 @@ Cells are **declared host-profile support** (`format` + `declared_runtime`), not
 | `brief-architect` | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED |
 | `cometweb-context` | FULL | FULL | FULL | FULL | — | — | — | — |
 | `competitive-intelligence` | FULL | FULL | FULL | FULL | — | — | — | — |
+| `competitor-profiling` | FULL | FULL | FULL | FULL | — | — | — | — |
 | `content-reviewer` | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED |
 | `content-roaster` | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED |
 | `content-writer` | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED |
@@ -30,6 +31,7 @@ Cells are **declared host-profile support** (`format` + `declared_runtime`), not
 | `repair-operator` | DEGRADED | FULL | FULL | FULL | FULL | FULL | FULL | DEGRADED |
 | `repo-roaster` | DEGRADED | FULL | FULL | FULL | FULL | FULL | FULL | DEGRADED |
 | `repo-to-roadmap` | FULL | FULL | FULL | FULL | — | — | — | — |
+| `research-program-operator` | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED |
 | `rubric-designer` | DEGRADED | FULL | FULL | FULL | FULL | FULL | FULL | DEGRADED |
 | `science-roaster` | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED |
 | `seo-geo-aeo-maxxing` | FULL | FULL | FULL | FULL | — | — | — | — |

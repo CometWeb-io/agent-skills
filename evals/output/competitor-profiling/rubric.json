@@ -1,0 +1,36 @@
+{
+  "skill": "competitor-profiling",
+  "contract": "skills/competitor-profiling/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "status", "title": "Profile status", "aliases": ["profile status", "status"], "required": true},
+    {"id": "scope", "title": "Scope and as_of", "aliases": ["scope and as_of", "scope"], "required": true},
+    {"id": "sources", "title": "Source manifest", "aliases": ["source manifest", "sources"], "required": true},
+    {"id": "claims", "title": "Claim ledger", "aliases": ["claim ledger", "claims"], "required": true},
+    {"id": "profile", "title": "Competitor profile", "aliases": ["competitor profile", "profile"]},
+    {"id": "gaps", "title": "Contradictions and gaps", "aliases": ["contradictions and gaps", "gaps"], "required": true},
+    {"id": "handoff", "title": "Competitive Intelligence handoff", "aliases": ["competitive intelligence handoff", "handoff"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["COMPLETE", "PARTIAL", "BLOCKED"],
+    "authorizing": ["COMPLETE"],
+    "primary": {"line": "^\\s*[-*]?\\s*\\**Status\\**\\s*:"}
+  },
+  "blockers": [
+    {"rule": "open-gap", "type": "items_matching", "section": "gaps", "pattern": "\\bBLOCKER\\b"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "as-of", "section": "scope", "pattern": "as[_ ]of\\W+\\d{4}-\\d{2}-\\d{2}", "message": "profile must state as_of"},
+    {"type": "doc_require", "rule": "source-manifest", "section": "sources", "pattern": "(?s)(?=.*\\bS1\\b)(?=.*(?:locator|observed_at))", "message": "source manifest must include IDs, locators and observed dates"},
+    {"type": "doc_require", "rule": "claim-state", "section": "claims", "pattern": "\\b(?:OBSERVED|INFERRED|HYPOTHESIS|UNKNOWN)\\b", "message": "claims must state epistemic status"},
+    {"type": "doc_require", "rule": "claim-id", "section": "claims", "pattern": "\\bC\\d+\\b", "message": "claims must have stable IDs"},
+    {"type": "doc_require", "rule": "handoff-status", "section": "handoff", "pattern": "\\b(?:BOOTSTRAP|PARTIAL|READY)\\b", "message": "handoff must state source profile status"},
+    {"type": "doc_require", "rule": "profile", "section": "profile", "code": "SECTION_MISSING", "pattern": "Company\\s*:", "message": "profile must include its section fields"},
+    {"type": "table_column_nonempty", "rule": "claim-support", "section": "claims", "column": ["source IDs"], "when": {"column": ["state"], "pattern": "^OBSERVED$"}, "code": "EVIDENCE_MISSING", "message": "an observed claim must cite source IDs"},
+    {"type": "doc_forbid", "rule": "invented-delta", "section": "handoff", "code": "CONTRACT_VIOLATION", "pattern": "\\b(?:latest|new|changed|increased|decreased)\\b.{0,30}\\b(?:delta|snapshot)\\b", "message": "a first profile cannot invent a delta without a prior snapshot"}
+  ],
+  "ids": [
+    {"rule": "source-ids", "pattern": "\\bS\\d+\\b", "defined_in": [{"section": "sources", "as": "table_first_column"}], "defined_by": "the source manifest defines no matching source ID"},
+    {"rule": "claim-ids", "pattern": "\\bC\\d+\\b", "defined_in": [{"section": "claims", "as": "table_first_column"}], "defined_by": "the claim ledger defines no matching claim ID"}
+  ]
+}

@@ -1,0 +1,13 @@
+interface:
+  display_name: "Competitor Profiling"
+  short_description: "initial competitor baseline; evidence-backed competitor dossier"
+  default_prompt: "Use $competitor-profiling for initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+policy:
+  products:
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
+  allow_implicit_invocation: true

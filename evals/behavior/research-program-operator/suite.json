@@ -1,0 +1,147 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "research-program-operator",
+  "description": "Scaffold placeholder from tooling/new_skill.py; replace with a real case",
+  "cases": [
+    {
+      "id": "complete-result-passes",
+      "kind": "accept",
+      "behavior": "A complete result with nothing unverified passes.",
+      "run": [
+        "scripts/output_contract.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "summary": "Checked the request.",
+          "status": "complete",
+          "not_verified": [],
+          "program": {
+            "question": "What should the program do next?",
+            "as_of": "2026-10-05",
+            "stage": "analysis",
+            "studies": [
+              {
+                "id": "S1",
+                "name": "Pilot",
+                "status": "reported",
+                "estimand": "activation effect"
+              }
+            ],
+            "hypotheses": [
+              "The intervention improves activation."
+            ],
+            "gates": [
+              {
+                "id": "G1",
+                "status": "UNKNOWN"
+              }
+            ],
+            "next_studies": [
+              "Run follow-up."
+            ],
+            "governance": [
+              "Ethics status unknown."
+            ],
+            "unknowns": [
+              "Long-term effect unknown."
+            ]
+          },
+          "research_handoff": {
+            "status": "UNKNOWN",
+            "target": "longform-publisher"
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": []
+        }
+      }
+    },
+    {
+      "id": "complete-with-unverified-is-refused",
+      "kind": "refuse",
+      "behavior": "A result cannot claim complete while listing what it did not verify.",
+      "run": [
+        "scripts/output_contract.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "summary": "Done.",
+          "status": "complete",
+          "not_verified": [
+            "pricing page"
+          ],
+          "program": {
+            "question": "What should the program do next?",
+            "as_of": "2026-10-05",
+            "stage": "analysis",
+            "studies": [
+              {
+                "id": "S1",
+                "name": "Pilot",
+                "status": "reported",
+                "estimand": "activation effect"
+              }
+            ],
+            "hypotheses": [
+              "The intervention improves activation."
+            ],
+            "gates": [
+              {
+                "id": "G1",
+                "status": "UNKNOWN"
+              }
+            ],
+            "next_studies": [
+              "Run follow-up."
+            ],
+            "governance": [
+              "Ethics status unknown."
+            ],
+            "unknowns": [
+              "Long-term effect unknown."
+            ]
+          },
+          "research_handoff": {
+            "status": "UNKNOWN",
+            "target": "longform-publisher"
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": [
+            "status: complete contradicts a non-empty not_verified"
+          ]
+        }
+      }
+    },
+    {
+      "id": "result-that-is-not-an-object",
+      "kind": "boundary",
+      "behavior": "A result that is not an object is refused.",
+      "run": [
+        "scripts/output_contract.py"
+      ],
+      "call": "validate",
+      "args": [
+        [
+          "summary"
+        ]
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": [
+            "result: must be an object"
+          ]
+        }
+      }
+    }
+  ]
+}

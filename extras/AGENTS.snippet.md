@@ -9,7 +9,7 @@ markers.
 <!-- BEGIN cometweb-agent-skills routing -->
 ## CometWeb Agent Skills
 
-32 skills are installed from CometWeb-io/agent-skills.
+34 skills are installed from CometWeb-io/agent-skills.
 
 Prefer **one primary skill** per turn. For a multi-step workflow use
 `skill-orchestrator` (single thread) or `skill-orchestrator-multiagent` (one
@@ -28,6 +28,7 @@ run its deterministic scripts in `scripts/` when it ships them.
 | artifact brief and execution contract | `brief-architect` |
 | context snapshot; provenance; conflicts/gaps; ContextEnvelope | `cometweb-context` |
 | competitor watchlist; delta digest; normalized competitor state | `competitive-intelligence` |
+| initial competitor baseline; evidence-backed competitor dossier | `competitor-profiling` |
 | constructive content review; evidence-backed editorial findings | `content-reviewer` |
 | adversarial content review | `content-roaster` |
 | evidence-aware content production; claim-discipline ledger | `content-writer` |
@@ -45,6 +46,7 @@ run its deterministic scripts in `scripts/` when it ships them.
 | finding-to-repair planning; authorized bounded repairs | `repair-operator` |
 | adversarial repository review | `repo-roaster` |
 | whole-project baseline; gap inventory | `repo-to-roadmap` |
+| research-program stage gates; next-study planning (frozen) | `research-program-operator` |
 | evaluation rubric design; observable pass/fail evidence floors | `rubric-designer` |
 | adversarial scientific peer review | `science-roaster` |
 | SEO/GEO/AEO visibility audit; live-verified scoring | `seo-geo-aeo-maxxing` |

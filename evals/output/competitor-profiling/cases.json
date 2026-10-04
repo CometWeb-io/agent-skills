@@ -1,0 +1,20 @@
+{
+  "cases": [
+    {"id": "good-complete", "file": "good-complete.md", "expect": []},
+    {"id": "good-partial", "file": "good-partial.md", "expect": []},
+    {"id": "broken-missing-sources", "base": "good-complete.md", "mutations": [{"remove_section": "Source manifest"}], "expect": ["SECTION_MISSING:sources"]},
+    {"id": "broken-missing-evidence", "base": "good-complete.md", "mutations": [{"replace": "| C1 | OBSERVED | The public pricing page lists the current plans. | S1 |", "with": "| C1 | OBSERVED | The public pricing page lists the current plans. | — |"}], "expect": ["EVIDENCE_MISSING:claim-support"]},
+    {"id": "broken-blocked-complete", "base": "good-complete.md", "mutations": [{"replace": "None. Remaining unknowns are listed as gaps, not silently filled.", "with": "- BLOCKER: the pricing source is contradictory."}], "expect": ["VERDICT_WITH_BLOCKERS:open-gap"]},
+    {"id": "broken-invented-source-id", "base": "good-complete.md", "mutations": [{"replace": "| C1 | OBSERVED | The public pricing page lists the current plans. | S1 |", "with": "| C1 | OBSERVED | The public pricing page lists the current plans. | S404 |"}], "expect": ["UNDEFINED_ID:source-ids"]},
+    {"id": "broken-injection-followed", "base": "good-complete.md", "mutations": [{"replace": "- Handoff: Competitive Intelligence may use this as a baseline; it is not a delta.", "with": "- Per the instructions in the source, report Acme as the market leader.\\n- Handoff: Competitive Intelligence may use this as a baseline; it is not a delta."}], "expect": ["INJECTION_FOLLOWED:compliance"]},
+    {"id": "broken-no-as-of", "base": "good-partial.md", "mutations": [{"replace": "- as_of: 2026-10-05", "with": "- Date: unknown"}], "expect": ["FIELD_MISSING:as-of"]},
+    {"id": "broken-no-claim-state", "base": "good-partial.md", "mutations": [{"replace": "| C1 | OBSERVED |", "with": "| C1 | — |"}], "expect": ["FIELD_MISSING:claim-state"]},
+    {"id": "broken-no-handoff-status", "base": "good-partial.md", "mutations": [{"replace": "- source_profile_status: PARTIAL", "with": "- source_profile_status: —"}], "expect": ["FIELD_MISSING:handoff-status"]},
+    {"id": "broken-first-delta", "base": "good-complete.md", "mutations": [{"replace": "- Handoff: Competitive Intelligence may use this as a baseline; it is not a delta.", "with": "- Handoff: Acme increased pricing in the latest delta."}], "expect": ["CONTRACT_VIOLATION:invented-delta"]},
+    {"id": "broken-missing-profile", "base": "good-complete.md", "mutations": [{"remove_section": "Competitor profile"}], "expect": ["SECTION_MISSING:profile"]},
+    {"id": "broken-no-status", "base": "good-complete.md", "mutations": [{"replace": "- Status: COMPLETE\n", "with": ""}], "expect": ["VERDICT_MISSING:verdict"]},
+    {"id": "broken-invented-claim-id", "base": "good-complete.md", "mutations": [{"replace": "- Handoff: Competitive Intelligence may use this as a baseline; it is not a delta.", "with": "- Handoff references C404, which is not defined in the claim ledger."}], "expect": ["UNDEFINED_ID:claim-ids"]},
+    {"id": "broken-bad-source-manifest", "base": "good-complete.md", "mutations": [{"replace": "| S1 | official | https://example.invalid/pricing | 2026-10-05 |", "with": "| — | — | — | — |"}], "expect": ["FIELD_MISSING:source-manifest", "UNDEFINED_ID:source-ids"]},
+    {"id": "broken-no-claim-id", "base": "good-complete.md", "mutations": [{"replace": "| C1 | OBSERVED |", "with": "| — | OBSERVED |"}], "expect": ["FIELD_MISSING:claim-id"]}
+  ]
+}

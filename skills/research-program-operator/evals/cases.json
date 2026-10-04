@@ -1,0 +1,1055 @@
+[
+  {
+    "id": "valid-partial",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": []
+  },
+  {
+    "id": "valid-complete",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": []
+  },
+  {
+    "id": "not-object",
+    "input": [],
+    "expected_errors": [
+      "result: must be an object"
+    ]
+  },
+  {
+    "id": "missing-summary",
+    "input": {
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "summary: required non-empty string"
+    ]
+  },
+  {
+    "id": "bad-status",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "done",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "status: must be complete, partial or blocked"
+    ]
+  },
+  {
+    "id": "missing-program",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program: required object"
+    ]
+  },
+  {
+    "id": "bad-stage",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "bad",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.stage: invalid"
+    ]
+  },
+  {
+    "id": "missing-studies",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.studies: required non-empty list"
+    ]
+  },
+  {
+    "id": "bad-gate",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "PASS"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.gates[0].status: invalid"
+    ]
+  },
+  {
+    "id": "bad-handoff",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "PASS",
+        "target": "x"
+      }
+    },
+    "expected_errors": [
+      "handoff.status: invalid"
+    ]
+  },
+  {
+    "id": "not-verified-not-list",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": "none",
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "not_verified: required list"
+    ]
+  },
+  {
+    "id": "complete-with-unverified",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [
+        "missing evidence"
+      ],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "status: complete contradicts a non-empty not_verified"
+    ]
+  },
+  {
+    "id": "missing-question",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.question: required non-empty string"
+    ]
+  },
+  {
+    "id": "missing-as-of",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.as_of: required non-empty string"
+    ]
+  },
+  {
+    "id": "study-not-object",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          null
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.studies[0]: must be object"
+    ]
+  },
+  {
+    "id": "study-id-required",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.studies[0].id: required"
+    ]
+  },
+  {
+    "id": "duplicate-study-id",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          },
+          {
+            "id": "S1",
+            "name": "Replication",
+            "status": "planned",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.studies[1].id: duplicate"
+    ]
+  },
+  {
+    "id": "study-name-required",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.studies[0].name: required"
+    ]
+  },
+  {
+    "id": "study-status-required",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.studies[0].status: required"
+    ]
+  },
+  {
+    "id": "study-estimand-required",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": ""
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.studies[0].estimand: required"
+    ]
+  },
+  {
+    "id": "program-lists-required",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": "not a list",
+        "gates": "not a list",
+        "next_studies": "not a list",
+        "governance": "not a list",
+        "unknowns": "not a list"
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.hypotheses: required list",
+      "program.gates: required list",
+      "program.next_studies: required list",
+      "program.governance: required list",
+      "program.unknowns: required list"
+    ]
+  },
+  {
+    "id": "gate-not-object",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          null
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.gates[0]: must be object"
+    ]
+  },
+  {
+    "id": "handoff-not-object",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": []
+    },
+    "expected_errors": [
+      "research_handoff: required object"
+    ]
+  },
+  {
+    "id": "handoff-status-required",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "handoff.status: required",
+      "handoff.status: invalid"
+    ]
+  },
+  {
+    "id": "handoff-target-required",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "Run a powered follow-up with the same estimand."
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN"
+      }
+    },
+    "expected_errors": [
+      "handoff.target: required"
+    ]
+  }
+]

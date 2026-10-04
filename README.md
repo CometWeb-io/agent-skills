@@ -6,9 +6,9 @@ Tested Agent Skills for research, product decisions, QA and release gates, insta
 
 [![Validate](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml)
 [![MIT](https://img.shields.io/badge/license-MIT-034C32)](LICENSE)
-![Skills](https://img.shields.io/badge/skills-32-informational.svg)
+![Skills](https://img.shields.io/badge/skills-34-informational.svg)
 
-This repository contains 32 reusable skill packages. Each one is a `SKILL.md`
+This repository contains 34 reusable skill packages. Each one is a `SKILL.md`
 entry point plus the references, scripts and eval cases it needs, and every
 package is covered by the test suite. Skills supply instructions and output
 contracts. They do not supply a model, connector accounts or permission to act:
@@ -36,7 +36,7 @@ cd agent-skills
                               # install-qwen.sh, install-qoder.sh, install-lingma.sh
 ```
 
-A successful run ends with a line such as `OK: 32 Claude Code skills installed in /home/you/.claude/skills`.
+A successful run ends with a line such as `OK: 34 Claude Code skills installed in /home/you/.claude/skills`.
 Installers are safe to rerun, stop before changing anything when a target path
 is already taken, and accept `--dry-run` and `--uninstall`.
 [INSTALL.md](INSTALL.md) lists each host's target directory and override
@@ -74,7 +74,7 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 <!-- BEGIN GENERATED: skill catalog (tooling/generate_adapters.py) -->
 <!-- Edit registry/readme-catalog.json or registry/skills.json, then run generate_adapters.py. -->
 
-**32 skills.** Versions come from each package's `VERSION`; the [compatibility matrix](docs/generated-compatibility-matrix.md) lists host support.
+**34 skills.** Versions come from each package's `VERSION`; the [compatibility matrix](docs/generated-compatibility-matrix.md) lists host support.
 
 ### Foundation and orchestration
 
@@ -111,6 +111,8 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. | 6.1.3 |
 | [`repair-operator`](skills/repair-operator/) | Minimal dependency-aware repairs and fresh verification of closed findings. | 1.7.4 |
 | [`artifact-acceptance`](skills/artifact-acceptance/) | Final evidence-backed acceptance gates for knowledge artifacts. | 1.7.4 |
+| [`competitor-profiling`](skills/competitor-profiling/) | Initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence. | 0.1.0 |
+| [`research-program-operator`](skills/research-program-operator/) | Research-program stage gates, next-study planning, and manuscript-readiness handoffs. *(frozen)* | 1.3.1 |
 
 ### Publication, operations, QA, and release
 

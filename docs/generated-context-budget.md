@@ -42,6 +42,8 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `content-reviewer` | 5,200 B | 1,300 | 7,246 B | 1,811 | 7 | 0.58 |
 | `rubric-designer` | 4,144 B | 1,036 | 3,180 B | 795 | 5 | 0.43 |
 | `benchmark-curator` | 3,803 B | 950 | 6,594 B | 1,648 | 7 | 0.63 |
+| `competitor-profiling` | 2,994 B | 748 | 1,266 B | 316 | 1 | 0.30 |
+| `research-program-operator` | 2,903 B | 725 | 1,310 B | 327 | 1 | 0.31 |
 | `skill-orchestrator-multiagent` | 1,629 B | 407 | 12,753 B | 3,188 | 4 | 0.89 |
 
-**32 skills.** Loading every front door costs roughly 69,996 tokens before any work begins; the median skill costs ~2,475 and the largest ~2,999.
+**34 skills.** Loading every front door costs roughly 71,469 tokens before any work begins; the median skill costs ~2,403 and the largest ~2,999.

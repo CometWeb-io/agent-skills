@@ -11,6 +11,7 @@
 | `brief-architect` | 1.7.4 | domain | active | ACTIVE | 549 | False |
 | `cometweb-context` | 1.5.2 | foundation | active | ACTIVE | 826 | False |
 | `competitive-intelligence` | 1.1.2 | domain | active | ACTIVE | 978 | False |
+| `competitor-profiling` | 0.1.0 | domain | active | ACTIVE | 454 | False |
 | `content-reviewer` | 1.7.4 | domain | active | ACTIVE | 553 | False |
 | `content-roaster` | 6.1.3 | domain | active | ACTIVE | 531 | False |
 | `content-writer` | 1.7.4 | domain | active | ACTIVE | 535 | False |
@@ -28,6 +29,7 @@
 | `repair-operator` | 1.7.4 | domain | active | ACTIVE | 587 | False |
 | `repo-roaster` | 6.1.3 | domain | active | ACTIVE | 825 | False |
 | `repo-to-roadmap` | 1.1.1 | domain | active | ACTIVE | 1005 | False |
+| `research-program-operator` | 1.3.1 | domain | active | FROZEN | 462 | False |
 | `rubric-designer` | 1.7.4 | foundation | active | ACTIVE | 672 | False |
 | `science-roaster` | 6.1.3 | domain | active | ACTIVE | 739 | False |
 | `seo-geo-aeo-maxxing` | 1.3.4 | domain | active | ACTIVE | 659 | False |
