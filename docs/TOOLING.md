@@ -87,6 +87,7 @@ iterating, `--ci` before a pull request); `--list` prints them.
 | `review_skill_evals.py` | Compares reviewed, matched runs and reports per-case deltas; no averages until every run is reviewed. | — | a `cometweb.skill-comparison/v1` file → a comparison on stdout |
 | `audit_contracts.py` | Checks declared UI, API, auth and storage paths against the evidence records supplied for them. | — | a contract trace and artifacts root → a report on stdout |
 | `real_host_eval.py` | Plans tasks from the repository's own eval cases (never the frozen holdout), runs them through a host CLI in headless mode with the plugin staged or absent, grades routing and output from the transcripts and reports pass rates with Wilson intervals. `run` is a dry run that prints commands and an estimated cost unless `--execute` is given with task and spend caps; see [REAL-HOST-EVALS.md](REAL-HOST-EVALS.md). | — | eval suites and rubrics, host CLI on PATH (only with `--execute`) → a plan JSON, a runs directory, grades and a Markdown scorecard |
+| `real_host_adapters.py` | Loads the runtime-host capability registry and fails closed for unsupported hosts or missing credentials before a model process starts. | — | `registry/runtime-hosts.json`, environment and optional binary override → READY/NOT_RUN capability result |
 
 ## Protocol (CW-AIP) and knowledge freshness
 

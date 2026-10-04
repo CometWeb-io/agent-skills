@@ -33,8 +33,8 @@
     "seo-geo-aeo-maxxing": "1.3.4",
     "skill-auditor": "1.7.5",
     "skill-evaluator": "1.7.3",
-    "skill-orchestrator": "1.1.5",
+    "skill-orchestrator": "1.2.0",
     "skill-orchestrator-multiagent": "1.1.6",
-    "web-app-auditor": "1.4.2"
+    "web-app-auditor": "1.5.0"
   }
 }

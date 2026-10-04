@@ -51,6 +51,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tooling"))
+from real_host_adapters import preflight as runtime_preflight  # noqa: E402
 
 PLAN_SCHEMA = "cometweb.real-host-eval-plan/v1"
 RUN_SCHEMA = "cometweb.real-host-eval-run/v1"
@@ -95,6 +96,8 @@ HOSTS = {
                    overhead_tokens=18000, native_budget=True, tools="Read,Glob,Grep,Skill"),
     "codex": Host("codex", "CODEX_HOME", ("OPENAI_API_KEY", "CODEX_API_KEY"),
                   overhead_tokens=9000, native_budget=False),
+    "cursor": Host("cursor", "CURSOR_CONFIG_DIR", (), overhead_tokens=12000, native_budget=False),
+    "chatgpt": Host("chatgpt", "CHATGPT_CONFIG_DIR", (), overhead_tokens=16000, native_budget=False),
 }
 
 
@@ -390,6 +393,8 @@ def build_env(host: Host, base: Path) -> dict[str, str]:
 
 def build_commands(opts: RunOptions, condition: str, stage: Path, out_file: Path) -> tuple[list[list[str]], list[str]]:
     """(setup argvs that never reach a model, the run argv). The prompt goes on stdin."""
+    if opts.host not in {"claude", "codex"}:
+        return [], [opts.host, "NOT_RUN", "runtime adapter unavailable"]
     if opts.host == "claude":
         argv = [opts.bin, "-p", "--output-format", "stream-json", "--verbose", "--no-session-persistence",
                 "--strict-mcp-config", "--tools", HOSTS["claude"].tools, "--allowedTools", HOSTS["claude"].tools,
@@ -416,6 +421,54 @@ def payload_digest(stage: Path) -> str:
     for path in sorted(p for p in stage.rglob("*") if p.is_file()):
         h.update(path.relative_to(stage).as_posix().encode() + b"\0" + path.read_bytes() + b"\0")
     return h.hexdigest()
+
+
+def materialize_not_run(plan: dict[str, Any], opts: RunOptions, out: Path,
+                        reason: str) -> dict[str, Any]:
+    """Record every planned job without invoking an unsupported/unauthed host."""
+    jobs = schedule(plan, opts)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "runs").mkdir()
+    write_json(out / "plan.json", plan)
+    manifest = {
+        "schema": RUN_SCHEMA,
+        "execution_status": "NOT_RUN",
+        "not_run_reason": reason,
+        "plan_sha256": plan["plan_sha256"],
+        "host": opts.host,
+        "model_requested": opts.model,
+        "conditions": list(opts.conditions),
+        "repeat": opts.repeat,
+        "planned_jobs": len(jobs),
+    }
+    write_json(out / "manifest.json", manifest)
+    for job in jobs:
+        run_dir = out / "runs" / job["run_id"]
+        run_dir.mkdir(parents=True)
+        write_json(run_dir / "record.json", {
+            "schema": RECORD_SCHEMA,
+            "run_id": job["run_id"],
+            "task_id": job["task"]["id"],
+            "skill": job["task"]["skill"],
+            "condition": job["condition"],
+            "repeat": job["repeat"],
+            "status": "not_run",
+            "execution_status": "NOT_RUN",
+            "not_run_reason": reason,
+            "activated_skills": [],
+        })
+    summary = {
+        **manifest,
+        "completed_jobs": 0,
+        "error_jobs": 0,
+        "not_run_jobs": len(jobs),
+        "not_started_jobs": 0,
+        "stop_reason": reason,
+        "spent_usd": 0.0,
+        "spent_tokens": 0,
+    }
+    write_json(out / "manifest.json", summary)
+    return summary
 
 
 def dry_run(plan: dict[str, Any], opts: RunOptions, out: Path | None, stream: Any = None) -> dict[str, Any]:
@@ -546,10 +599,21 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
     stream = stream or sys.stdout
 
     host = HOSTS[opts.host]
-    if opts.max_total_usd is not None and not host.native_budget and opts.price_in is None:
-        raise ValueError(f"{opts.host} reports no cost; --max-total-usd needs --price-in/--price-out to be enforced")
     if out.exists() and any(out.iterdir()):
         raise ValueError(f"{out} is not empty; give each run a new directory")
+    binary_override = None if opts.bin == opts.host else opts.bin
+    capability = runtime_preflight(opts.host, environment=os.environ, root=root,
+                                   binary_override=binary_override)
+    if capability["status"] != "READY":
+        summary = materialize_not_run(plan, opts, out, capability["reason"])
+        print(
+            f"NOT_RUN: {summary['not_run_jobs']} job(s) on {opts.host}; "
+            f"reason={summary['not_run_reason']}",
+            file=stream,
+        )
+        return summary
+    if opts.max_total_usd is not None and not host.native_budget and opts.price_in is None:
+        raise ValueError(f"{opts.host} reports no cost; --max-total-usd needs --price-in/--price-out to be enforced")
     if shutil.which(opts.bin) is None and not Path(opts.bin).is_file():
         raise ValueError(f"host binary {opts.bin!r} not found")
     jobs = schedule(plan, opts)
@@ -957,7 +1021,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{summary['completed_jobs']} completed, {summary['error_jobs']} failed, "
                   f"{summary['not_started_jobs']} not started; spent ~${summary['spent_usd']:.4f}"
                   + (f"; stopped: {summary['stop_reason']}" if summary["stop_reason"] else ""))
-            return 0 if summary["error_jobs"] == 0 and not summary["stop_reason"] else 1
+            return 0 if summary.get("execution_status") == "NOT_RUN" or (
+                summary["error_jobs"] == 0 and not summary["stop_reason"]
+            ) else 1
         if args.command == "grade":
             grades = grade_run(args.run_dir)
             if args.json:

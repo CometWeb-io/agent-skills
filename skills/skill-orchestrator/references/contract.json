@@ -1,7 +1,8 @@
 {
   "schema": "cometweb.skill-contract/v1",
   "docs": [
-    "references/workflow-archetypes.md"
+    "references/workflow-archetypes.md",
+    "references/run-ledger-contract.md"
   ],
   "scripts": {
     "scripts/orchestrate_kernel.py": {
@@ -11,9 +12,35 @@
         "ARCHETYPES": "archetype",
         "ENVELOPE_TYPES": "envelope_out"
       }
+    },
+    "scripts/workflow_ledger.py": {
+      "input": "args",
+      "role": "kernel",
+      "enums": {
+        "RUN_STATES": "status"
+      }
     }
   },
-  "fields": {},
+  "fields": {
+    "status": {
+      "enum": [
+        "PENDING",
+        "RUNNING",
+        "BLOCKED",
+        "FAILED",
+        "CANCELLED",
+        "COMPLETED",
+        "STALE_PLAN"
+      ]
+    },
+    "run_id": {},
+    "step_id": {},
+    "event_type": {},
+    "event_hash": {},
+    "plan_hash": {},
+    "envelope_id": {},
+    "envelope_hash": {}
+  },
   "outputs": {
     "archetype": {
       "enum": [
@@ -44,7 +71,12 @@
     "single_skill_alternative": {}
   },
   "internal": {
-    "orchestrated_goal": "intent label the router assigns from its own patterns"
+    "orchestrated_goal": "intent label the router assigns from its own patterns",
+    "schema": "ledger envelope discriminator",
+    "data": "event payload stored in the local ledger",
+    "execution_mode": "run manifest execution mode",
+    "previous_event_hash": "hash-chain predecessor",
+    "seq": "append-only event sequence"
   },
   "doc_terms": [],
   "evals": []

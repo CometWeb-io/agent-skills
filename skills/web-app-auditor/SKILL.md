@@ -42,6 +42,7 @@ Then load only relevant modules:
 | Need | Read |
 |---|---|
 | click-through / page / area / crawl | `references/click-through.md` |
+| cross-layer UI/API/auth/job/durable-state trace | `references/contract-tracing.md` |
 | totals, money, counts, dates, labels | `references/data-integrity.md` |
 | hierarchy, IA, copy, affordances | `references/ui-ux.md` |
 | forms, validation, loading/error/empty | `references/forms-and-states.md` |
@@ -98,6 +99,9 @@ STOP:         when IN is exhausted, policy blocks the next step, or a blocker ma
 ```
 
 Pick the tightest mode that matches the ask. Default depth is `standard`.
+Use `contract-trace` only for one explicitly named journey with retry, tenant,
+null/partial, or rollback concerns; it never turns browser evidence into full
+E2E proof.
 Use `forensic` only when the user asks for exhaustive/deep/every-control work.
 See `modes.md` for the sampling contract.
 

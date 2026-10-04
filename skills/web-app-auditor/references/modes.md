@@ -90,6 +90,13 @@ Requires baseline evidence: previous report, screenshots, or explicit old
 behavior. Re-run prior findings as `fixed | still-open | regressed`; then run a
 thin standard pass on the same scope for collateral damage.
 
+## `contract-trace`
+
+One explicitly named journey across UI, API, authorization, service, job/data
+and durable UI state. Require the five scenario kinds in
+`references/contract-tracing.md`; browser-only evidence leaves backend edges
+`unknown`, and an unresolved scenario makes the result incomplete.
+
 ## `a11y`
 
 Accessibility-first. Test supported keyboard/semantics/contrast/zoom patterns.

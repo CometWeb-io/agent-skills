@@ -25,6 +25,13 @@ uv run python tooling/real_host_eval.py report runs/claude-ab --out scorecard.md
 `plan`, `grade` and `report` make no network calls and cost nothing. Only step 3
 does.
 
+Runtime capabilities are declared in `registry/runtime-hosts.json`. The current
+executable adapters are Claude Code and Codex. Cursor, ChatGPT, Qwen Code,
+Qoder, Lingma, and Alibaba Skills Portal are explicit `NOT_RUN` profiles until
+their headless/plugin adapters exist. Missing credentials and unsupported hosts
+materialize terminal records with a reason; they never become passes or
+silently invoke a host.
+
 ## 1. Plan
 
 `plan` selects tasks per skill from cases the repository already holds:

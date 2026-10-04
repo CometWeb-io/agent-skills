@@ -17,6 +17,9 @@ collapsing research into decisions or skipping skill boundaries.
 | `single_thread` | Parent loads each `SKILL.md` and executes steps sequentially in this thread. |
 | `isolated_subagents` | One subagent per step; parent only plans, launches, validates envelopes, and merges. |
 
+For resumable workflows, read `references/run-ledger-contract.md` and checkpoint
+validated envelopes before claiming the next step.
+
 `skill-orchestrator-multiagent` is a **thin alias** for `execution_mode=isolated_subagents`.
 Do not maintain a divergent planning model there.
 
@@ -110,6 +113,11 @@ Emit **Workflow result**:
 - accepted vs gap claims (if research ran),
 - Council verdict if Council ran (otherwise explicitly `not run`),
 - recommended next single skill if work continues.
+
+For resumable execution, use `scripts/workflow_ledger.py` as a local
+append-only sidecar. Checkpoint a validated envelope before claiming the next
+step; a changed plan, tampered chain, or conflicting duplicate completion must
+block resume. The ledger never changes a specialist verdict.
 
 ## Archetype quick reference
 

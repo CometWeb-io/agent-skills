@@ -12,7 +12,7 @@
   "properties": {
     "schemaVersion": {"const": "1.1"},
     "target": {"type": "string", "minLength": 1},
-    "mode": {"enum": ["page", "area", "crawl", "flow", "data", "visual", "regression", "a11y"]},
+    "mode": {"enum": ["page", "area", "crawl", "flow", "data", "visual", "regression", "a11y", "contract-trace"]},
     "depth": {"enum": ["recon", "standard", "forensic"]},
     "confidence": {"enum": ["high", "medium", "low"]},
     "verdict": {"enum": ["do_not_ship", "ship_with_fixes", "ship", "incomplete"]},

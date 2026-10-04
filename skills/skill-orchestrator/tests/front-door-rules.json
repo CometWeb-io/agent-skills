@@ -46,6 +46,16 @@
       "id": "rule-03",
       "text": "Never fold Evidence Researcher synthesis into a Council GO/NO-GO in the same step.",
       "where": "SKILL.md"
+    },
+    {
+      "id": "rule-04",
+      "text": "Checkpoint a validated envelope before claiming the next step",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "rule-05",
+      "text": "The ledger never changes a specialist verdict.",
+      "where": "SKILL.md"
     }
   ]
 }

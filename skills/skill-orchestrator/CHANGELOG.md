@@ -1,5 +1,13 @@
 # Changelog — skill-orchestrator
 
+## [1.2.0] - 2026-10-05
+
+### Added
+
+- Local append-only workflow ledger with hash-chain verification, idempotent
+  step completion, tamper detection, symlink/path safety, and resumable run
+  state without changing CW-AIP envelopes.
+
 ## [1.1.5] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

@@ -26,7 +26,7 @@ MISSING_DEPENDENCY = "jsonschema>=4.18 is required for schema validation (see RU
 FINDING_ID = re.compile(r"^F-[0-9]{3}$")
 EVIDENCE_ID = re.compile(r"^E-[0-9]{3}$")
 
-MODES = {"page", "area", "crawl", "flow", "data", "visual", "regression", "a11y"}
+MODES = {"page", "area", "crawl", "flow", "data", "visual", "regression", "a11y", "contract-trace"}
 DEPTHS = {"recon", "standard", "forensic"}
 VALIDATOR_STATUSES = {"passed", "warnings", "not run"}
 PROFILES = {"hybrid", "browser", "screenshot", "source", "fetch-only"}
