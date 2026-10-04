@@ -1,6 +1,6 @@
 # Content Writer
 
-Version **1.3.0**.
+Version **1.7.4**.
 
 Create evidence-aware informational or editorial prose such as articles, guides, reports, documentation, research-backed explainers, and other bounded knowledge content from an explicit brief or sufficiently clear request. Use when the user wants the actual written artifact and factual integrity, reader utility, structure, and claim discipline matter. Do not use primarily for persuasion-first landing-page copy, ads, lifecycle or cold email, generic copy-editing, humanization-only rewrites, long-form publication/release orchestration, hostile critique, or primary research collection; route those to the relevant copy, email, ai-humanize, longform-publisher, evidence-researcher, content-reviewer, or content-roaster specialist when available.
 

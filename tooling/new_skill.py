@@ -23,10 +23,12 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import datetime as dt
+import os
 import re
-import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -281,6 +283,52 @@ CONTRACT = {
 PLACEHOLDER = "Scaffold placeholder from tooling/new_skill.py; replace with a real case"
 
 
+def _assert_no_symlink_components(root: Path, path: Path) -> None:
+    root_path = root.absolute().resolve()
+    candidate = path.absolute()
+    try:
+        relative = candidate.relative_to(root_path)
+    except ValueError as exc:
+        raise ValueError(f"scaffold path escapes its root: {path}") from exc
+    current = root_path
+    for component in relative.parts:
+        current /= component
+        if current.is_symlink():
+            raise ValueError(f"scaffold path must not contain symlinks: {path}")
+
+
+def _ensure_directory(path: Path) -> None:
+    if path.is_symlink():
+        raise ValueError(f"scaffold directory must not be a symlink: {path}")
+    path.mkdir(parents=True, exist_ok=True)
+    if path.is_symlink():
+        raise ValueError(f"scaffold directory must not be a symlink: {path}")
+
+
+def _atomic_write(path: Path, data: bytes) -> None:
+    """Write generated files without following a symlink at the destination."""
+    if path.is_symlink():
+        raise ValueError(f"scaffold output must not be a symlink: {path}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    except BaseException:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
+
+
+def _write_text(path: Path, text: str) -> None:
+    _atomic_write(path, text.encode("utf-8"))
+
+
 def behavior_suite(skill_id: str) -> dict:
     """Placeholder offline behavior suite; tooling/run_behavior_evals.py requires one per skill with scripts."""
     def case(cid: str, kind: str, behavior: str, payload: object, errors: list[str]) -> dict:
@@ -357,34 +405,36 @@ def create(skill_id: str, description: str, force: bool, root: Path = ROOT) -> P
     """Write the package only. register() makes it part of the catalog."""
     validate_input(skill_id, description)
     target = root / "skills" / skill_id
+    if target.is_symlink():
+        raise SystemExit(f"{target.relative_to(root)} must not be a symlink")
+    _assert_no_symlink_components(root, target)
     if target.exists() and not force:
         raise SystemExit(f"{target.relative_to(root)} already exists; pass --force to overwrite")
-    import datetime as dt
     today = dt.datetime.now(dt.timezone.utc).date().isoformat()
 
     for sub in ("references", "scripts", "evals", "assets", "tests"):
-        (target / sub).mkdir(parents=True, exist_ok=True)
+        _ensure_directory(target / sub)
 
-    (target / "SKILL.md").write_text(
+    _write_text(
+        target / "SKILL.md",
         SKILL_MD.format(skill_id=skill_id, description=description.strip(), title=title_from(skill_id),
                         untrusted=UNTRUSTED_CONTENT),
-        encoding="utf-8")
-    (target / "tests" / "front-door-rules.json").write_text(
-        json.dumps(front_door_rules(skill_id), indent=2) + "\n", encoding="utf-8")
-    (target / "VERSION").write_text("0.1.0\n", encoding="utf-8")
-    (target / "CHANGELOG.md").write_text(CHANGELOG.format(today=today), encoding="utf-8")
-    (target / "references" / "output-contract.md").write_text(OUTPUT_CONTRACT, encoding="utf-8")
-    (target / "evals" / "cases.json").write_text(json.dumps(CASES, indent=2) + "\n", encoding="utf-8")
-    (target / "references" / "contract.json").write_text(json.dumps(CONTRACT, indent=2) + "\n", encoding="utf-8")
-    (target / "scripts" / "output_contract.py").write_text(KERNEL.format(skill_id=skill_id), encoding="utf-8")
+    )
+    _write_text(target / "tests" / "front-door-rules.json", json.dumps(front_door_rules(skill_id), indent=2) + "\n")
+    _write_text(target / "VERSION", "0.1.0\n")
+    _write_text(target / "CHANGELOG.md", CHANGELOG.format(today=today))
+    _write_text(target / "references" / "output-contract.md", OUTPUT_CONTRACT)
+    _write_text(target / "evals" / "cases.json", json.dumps(CASES, indent=2) + "\n")
+    _write_text(target / "references" / "contract.json", json.dumps(CONTRACT, indent=2) + "\n")
+    _write_text(target / "scripts" / "output_contract.py", KERNEL.format(skill_id=skill_id))
     harness = target / "scripts" / "run_evals.py"
-    harness.write_text(RUN_EVALS.format(skill_id=skill_id), encoding="utf-8")
+    _write_text(harness, RUN_EVALS.format(skill_id=skill_id))
     harness.chmod(0o755)
 
     # Every other skill carries these two; copying beats generating a licence.
     # They come from this checkout even when the skill is written elsewhere.
-    shutil.copy2(ROOT / "skills" / "ai-council" / "LICENSE", target / "LICENSE")
-    shutil.copy2(ROOT / "skills" / "ai-council" / "assets" / "icon.svg", target / "assets" / "icon.svg")
+    _atomic_write(target / "LICENSE", (ROOT / "skills" / "ai-council" / "LICENSE").read_bytes())
+    _atomic_write(target / "assets" / "icon.svg", (ROOT / "skills" / "ai-council" / "assets" / "icon.svg").read_bytes())
     return target
 
 
@@ -443,7 +493,7 @@ def registry_entry(skill_id: str, description: str, plan: dict) -> dict:
 
 
 def write_json(path: Path, data: object, **options) -> None:
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2, **options) + "\n", encoding="utf-8")
+    _write_text(path, json.dumps(data, ensure_ascii=False, indent=2, **options) + "\n")
 
 
 def load_tool(root: Path, name: str):
@@ -468,7 +518,7 @@ def record_baselines(skill_id: str, root: Path) -> None:
                     max_front_door_tokens_estimated=max(front))
     write_json(budget.BASELINE, baseline)
     table = root / "docs" / "generated-context-budget.md"
-    table.write_text(budget.render_table(budget.measure()), encoding="utf-8")
+    _write_text(table, budget.render_table(budget.measure()))
 
     strength = load_tool(root, "eval_strength")
     if not (root / "skills" / skill_id / strength.HARNESS).is_file():
@@ -479,8 +529,8 @@ def record_baselines(skill_id: str, root: Path) -> None:
     rows.append({k: v for k, v in measured.items() if k not in {"unheld", "modules"}})
     rows.sort(key=lambda r: r["id"])
     recorded["skills"] = rows
-    strength.BASELINE.write_text(json.dumps(recorded, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    (root / "docs" / "generated-eval-strength.md").write_text(strength.table(rows), encoding="utf-8")
+    _write_text(strength.BASELINE, json.dumps(recorded, indent=2, sort_keys=True) + "\n")
+    _write_text(root / "docs" / "generated-eval-strength.md", strength.table(rows))
 
 
 def register(skill_id: str, description: str, group: str | None, summary: str, root: Path = ROOT) -> None:
@@ -492,7 +542,7 @@ def register(skill_id: str, description: str, group: str | None, summary: str, r
             raise SystemExit(f"cannot register: {path.relative_to(root)} is missing (use --no-register)")
     plan = routing(skill_id)
     behavior_path = root / "evals" / "behavior" / skill_id / "suite.json"
-    behavior_path.parent.mkdir(parents=True, exist_ok=True)
+    _ensure_directory(behavior_path.parent)
     write_json(behavior_path, behavior_suite(skill_id))
 
     registry = json.loads(registry_path.read_text(encoding="utf-8"))

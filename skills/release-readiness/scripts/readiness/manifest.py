@@ -381,5 +381,13 @@ def _load(path: Path) -> Dict[str, Any]:
         if not isinstance(data, dict):
             raise ManifestError("input must be a JSON object")
         return data
-    except (OSError, UnicodeError, json.JSONDecodeError, RecursionError) as exc:
-        raise ManifestError("cannot read valid input JSON") from exc
+    except FileNotFoundError as exc:
+        raise ManifestError("input file not found") from exc
+    except UnicodeError as exc:
+        raise ManifestError("input is not valid UTF-8") from exc
+    except json.JSONDecodeError as exc:
+        raise ManifestError("invalid JSON") from exc
+    except OSError as exc:
+        raise ManifestError("cannot read input file") from exc
+    except RecursionError as exc:
+        raise ManifestError("input JSON is too deeply nested") from exc

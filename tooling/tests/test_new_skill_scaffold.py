@@ -127,6 +127,26 @@ def test_register_refuses_a_tree_without_a_registry(tmp_path: Path) -> None:
     assert "--no-register" in proc.stdout + proc.stderr
 
 
+def test_force_refuses_a_symlinked_skill_directory(tmp_path: Path) -> None:
+    skills = tmp_path / "skills"
+    skills.mkdir()
+    victim = tmp_path / "victim"
+    victim.mkdir()
+    (victim / "KEEP").write_text("KEEP\n", encoding="utf-8")
+    (skills / "symlinked-skill").symlink_to(victim, target_is_directory=True)
+
+    proc = subprocess.run(
+        [sys.executable, str(TOOL), "symlinked-skill", "--description", DESCRIPTION,
+         "--root", str(tmp_path), "--no-register", "--force"],
+        cwd=ROOT, capture_output=True, text=True, timeout=120,
+    )
+
+    assert proc.returncode != 0
+    assert "must not be a symlink" in proc.stdout + proc.stderr
+    assert [path.name for path in victim.iterdir()] == ["KEEP"]
+    assert (victim / "KEEP").read_text(encoding="utf-8") == "KEEP\n"
+
+
 def git(root: Path, *args: str) -> str:
     return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=True,
                           timeout=120).stdout

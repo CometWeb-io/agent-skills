@@ -90,6 +90,18 @@ class LayerATests(unittest.TestCase):
             self.assertEqual(proc.returncode, 1)
             self.assertEqual(path.read_text(encoding="utf-8"), "A\u200bB")
 
+    def test_output_symlink_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            outside = Path(tmp) / "outside.txt"
+            outside.write_text("KEEP", encoding="utf-8")
+            output = Path(tmp) / "cleaned.txt"
+            output.symlink_to(outside)
+
+            with self.assertRaisesRegex(ValueError, "output must not be a symlink"):
+                MOD._atomic_write(output, "AB")
+
+            self.assertEqual(outside.read_text(encoding="utf-8"), "KEEP")
+
 
 if __name__ == "__main__":
     unittest.main()

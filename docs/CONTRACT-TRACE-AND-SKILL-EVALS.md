@@ -188,10 +188,10 @@ uv run python tooling/run_model_evals.py --suite evals/model/suite.json --execut
 
 Use `evals/model/continuation-cases.json` as the historical operator task inventory.
 Its executable, uniquely identified counterpart is now
-`evals/model/continuation-suite.json`; see `INTEGRATION-PREVIEW-AND-REVIEWER-DELIVERY.md`. It is
-not a substitute for a configured host runner, a full workflow execution, or the
-schema required by a separate harness. Every case states the failure it is intended
-to expose. Preserve unsuccessful outputs, not just the best sample.
+`evals/model/continuation-suite.json`. It is not a substitute for a configured
+host runner, a full workflow execution, or the schema required by a separate
+harness. Every case states the failure it is intended to expose. Preserve
+unsuccessful outputs, not just the best sample.
 
 Particularly important: Polish epistemic qualifiers during humanization; null scores
 and partial results; a source-only audit presented as tested UI; an old build's test

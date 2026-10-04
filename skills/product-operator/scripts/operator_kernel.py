@@ -22,9 +22,9 @@ import copy
 import hashlib
 import json
 import math
-import os
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 PROTOCOL_VERSION = "2.2"
@@ -57,11 +57,11 @@ class InputError(ValueError):
 
 
 def load_json_arg(value: str) -> Any:
-    if value.startswith("@"):
-        with open(value[1:], "r", encoding="utf-8") as handle:
-            return json.load(handle)
-    if os.path.isfile(value):
-        with open(value, "r", encoding="utf-8") as handle:
+    path_value = value[1:] if value.startswith("@") else value
+    path = Path(path_value)
+    is_file_input = value.startswith("@") or path.is_file() or path.suffix.lower() == ".json" or "/" in value
+    if is_file_input:
+        with path.open("r", encoding="utf-8") as handle:
             return json.load(handle)
     return json.loads(value)
 
@@ -1071,7 +1071,16 @@ def main() -> int:
             result = validate_report(payload)
             print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
             return 1 if result["status"] == "FAIL" else 0
-    except (OSError, json.JSONDecodeError, ValueError) as exc:
+    except FileNotFoundError:
+        print(json.dumps({"status": "FAIL", "error": "input file not found"}, ensure_ascii=False, indent=2), file=sys.stderr)
+        return 2
+    except UnicodeError:
+        print(json.dumps({"status": "FAIL", "error": "input is not valid UTF-8"}, ensure_ascii=False, indent=2), file=sys.stderr)
+        return 2
+    except json.JSONDecodeError:
+        print(json.dumps({"status": "FAIL", "error": "invalid JSON"}, ensure_ascii=False, indent=2), file=sys.stderr)
+        return 2
+    except (OSError, ValueError) as exc:
         print(json.dumps({"status": "FAIL", "error": str(exc)}, ensure_ascii=False, indent=2), file=sys.stderr)
         return 2
 

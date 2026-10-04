@@ -7,7 +7,7 @@ The v2.4.1 integration candidate separates three kinds of evaluation instead of 
 Run:
 
 ```bash
-python -m unittest discover -s tests -v
+python3 -m unittest discover -s tests -v
 ```
 
 This covers Unicode hygiene, Markdown/code preservation, CLI check mode, hard rewrite invariants, and semantic-risk warnings.
@@ -17,7 +17,7 @@ This covers Unicode hygiene, Markdown/code preservation, CLI check mode, hard re
 Run:
 
 ```bash
-python scripts/release_check.py
+python3 scripts/release_check.py
 ```
 
 This validates the ChatGPT-facing frontmatter shape, local file references, few-shot examples, hard invariant preservation in examples, red-team manifest structure, and the unit suite.
@@ -27,7 +27,7 @@ This validates the ChatGPT-facing frontmatter shape, local file references, few-
 Read `redteam-protocol.md` and use `redteam-cases.json` against an actual model/runtime using the skill. Saved outputs can be checked with:
 
 ```bash
-python scripts/redteam_score.py evaluation/outputs
+python3 scripts/redteam_score.py evaluation/outputs
 ```
 
 The scorer checks hard tokens and flags potentially unsupported certification strings. Flags can also match legitimate quotations or negated statements; they require review, not an automatic accusation. Manual review is still required for causality, attribution, scope, role binding, voice fit, and source-instruction boundaries.

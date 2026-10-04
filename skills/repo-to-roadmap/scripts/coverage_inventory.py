@@ -359,9 +359,16 @@ def main(argv: list[str] | None = None) -> int:
             acceptable = {"INSPECTION_RECORDS_COMPLETE"} if args.require_inspected else {"INSPECTION_RECORDS_COMPLETE", "ACCOUNTED_WITH_EXCLUSIONS"}
             return 0 if result["result"] in acceptable else 1
         return 0
+    except FileNotFoundError:
+        print('{"status":"invalid","coverage":"not_assessed","error":"input file not found"}', file=sys.stderr)
+        return 2
+    except InventoryError as exc:
+        error = "invalid JSON" if str(exc) == "invalid JSON" else "invalid inventory input"
+        print(json.dumps({"status": "invalid", "coverage": "not_assessed", "error": error}), file=sys.stderr)
+        return 2
     except (OSError, ValueError, TypeError, KeyError, RecursionError):
         # Never echo arbitrary input, filenames or embedded secrets into error logs.
-        print('{"status":"invalid","coverage":"not_assessed"}', file=sys.stderr)
+        print('{"status":"invalid","coverage":"not_assessed","error":"input could not be read"}', file=sys.stderr)
         return 2
 
 

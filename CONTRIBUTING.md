@@ -249,12 +249,17 @@ artifact. Nothing is published to a registry.
 
 1. Merge the pull request that bumped the plugin version (see
    [Plugin version](#plugin-version)) and passed every gate.
-2. Rehearse the packaging locally on a clean checkout of that commit. These are
-   the workflow's own build steps; they write only under `dist/`, which is
-   ignored:
+2. Rehearse the release locally on a clean checkout of that commit. These
+   commands mirror `attest-packages.yml`: the validation report is written
+   outside the checkout, while package artifacts are written under ignored
+   `dist/`:
 
    ```bash
-   uv run python tooling/check_all.py --ci        # every gate; the tag workflow reruns them
+   uv run python tooling/validate_local.py --trusted-checkout \
+     --output ../agent-skills-release-validation --timeout 900
+   uv run python tooling/public_safety.py --root .
+   uv run python tooling/public_safety.py --root . --history
+   uv run python tooling/installation_acceptance.py --all --run-helpers --trusted-checkout
    for skill in skills/*/SKILL.md; do
      uv run python tooling/package_skill.py "$(basename "$(dirname "$skill")")"
    done

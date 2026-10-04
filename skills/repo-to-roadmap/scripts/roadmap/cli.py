@@ -71,6 +71,15 @@ def main() -> int:
             result = delta_report(parse_json_arg(args.before_json), parse_json_arg(args.after_json))
         else:
             raise ValueError("unknown command")
+    except FileNotFoundError:
+        print(json.dumps({"status": "error", "error": "input file not found"}))
+        return 2
+    except UnicodeError:
+        print(json.dumps({"status": "error", "error": "input is not valid UTF-8"}))
+        return 2
+    except json.JSONDecodeError:
+        print(json.dumps({"status": "error", "error": "invalid JSON"}))
+        return 2
     except (ValueError, TypeError, OSError, KeyError, AttributeError, RecursionError):
         print(json.dumps({"status": "error", "error": "invalid input or unreadable file"}))
         return 2

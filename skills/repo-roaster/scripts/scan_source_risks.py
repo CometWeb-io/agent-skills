@@ -7,6 +7,8 @@ import json
 import os
 import re
 import stat
+import sys
+import tempfile
 from pathlib import Path
 
 IGNORE={'.git','node_modules','vendor','dist','build','.venv','venv','__pycache__','.pytest_cache'}
@@ -80,11 +82,37 @@ def scan(path:Path,max_files:int=5000,max_bytes:int=2_000_000)->dict:
     return {'schema':'cometweb.roaster-source-risk-scan/v1','root':str(path),'files_scanned':scanned,'files_skipped':skipped,'flags':flags,
             'note':'Flags indicate review hazards or credential-like text. They do not establish exploitability, intent, or a defect.'}
 
+def _atomic_write(path: Path, text: str) -> None:
+    """Write output without following a planted output symlink."""
+    if path.is_symlink():
+        raise ValueError("output must not be a symlink")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    except BaseException:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
+
 def main()->int:
     ap=argparse.ArgumentParser(description=__doc__); ap.add_argument('path',type=Path); ap.add_argument('--max-files',type=int,default=5000); ap.add_argument('--max-bytes',type=int,default=2_000_000); ap.add_argument('--output',type=Path); a=ap.parse_args()
     if not a.path.exists(): raise SystemExit(f'path not found: {a.path}')
     out=scan(a.path,a.max_files,a.max_bytes); text=json.dumps(out,indent=2,ensure_ascii=False)+'\n'
-    if a.output: a.output.write_text(text,encoding='utf-8'); print(f'OK: wrote {a.output}')
-    else: print(text,end='')
+    if a.output:
+        try:
+            _atomic_write(a.output, text)
+        except (OSError, ValueError) as exc:
+            print(f'error: {exc}', file=sys.stderr)
+            return 2
+        print(f'OK: wrote {a.output}')
+    else:
+        print(text,end='')
     return 0
 if __name__=='__main__': raise SystemExit(main())

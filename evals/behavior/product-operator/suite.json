@@ -158,8 +158,38 @@
         "scripts/operator_kernel.py",
         "rank",
         "--candidates-json",
-        "[{\"id\": \"a\", \"action\": \"verify billing route\", \"why_now\": \"blocks goal\", \"done_when\": \"route verified\", \"confidence\": 0.8, \"evidence\": [], \"impact\": 5, \"goal_alignment\": 5, \"urgency\": 5, \"dependency_leverage\": 5, \"risk_reduction\": 5, \"learning_value\": 5, \"effort\": 1, \"evidence_strength\": 1}, {\"id\": \"b\", \"action\": \"rewrite landing page\", \"why_now\": \"none\", \"done_when\": \"n/a\", \"confidence\": 0.8, \"evidence\": [], \"stop\": true, \"impact\": 5}]"
+        "{tmp}/candidates.json"
       ],
+      "files": {
+        "candidates.json": [
+          {
+            "id": "a",
+            "action": "verify billing route",
+            "why_now": "blocks goal",
+            "done_when": "route verified",
+            "confidence": 0.8,
+            "evidence": [],
+            "impact": 5,
+            "goal_alignment": 5,
+            "urgency": 5,
+            "dependency_leverage": 5,
+            "risk_reduction": 5,
+            "learning_value": 5,
+            "effort": 1,
+            "evidence_strength": 1
+          },
+          {
+            "id": "b",
+            "action": "rewrite landing page",
+            "why_now": "none",
+            "done_when": "n/a",
+            "confidence": 0.8,
+            "evidence": [],
+            "stop": true,
+            "impact": 5
+          }
+        ]
+      },
       "expect": {
         "exit_code": 0,
         "json": {

@@ -197,6 +197,32 @@ def _kernel_cli(payload: dict[str, Any]) -> dict[str, Any]:
         return {"exit": code, "error": error, "stdout_status": stdout.get("status") if isinstance(stdout, dict) else None}
 
 
+def _kernel_cli_guard(payload: dict[str, Any]) -> dict[str, Any]:
+    """Pin a CLI type guard without its lower-level duplicate masking it."""
+    if payload.get("guard") != "plan_input_object":
+        raise ValueError("unknown CLI guard probe")
+    with tempfile.TemporaryDirectory() as tmp:
+        argv = [arg.replace("{tmp}", tmp) for arg in payload["argv"]]
+        out, err = io.StringIO(), io.StringIO()
+        old_argv, old_cwd = sys.argv, os.getcwd()
+        original_build_plan = kernel.build_plan
+        kernel.build_plan = lambda _payload: {"status": "guard_probe"}
+        try:
+            sys.argv = ["operator_kernel.py", *argv]
+            os.chdir(tmp)
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                code = kernel.main()
+        finally:
+            kernel.build_plan = original_build_plan
+            sys.argv = old_argv
+            os.chdir(old_cwd)
+        error = None
+        if err.getvalue().strip():
+            error = json.loads(err.getvalue()).get("error")
+        stdout = json.loads(out.getvalue()) if out.getvalue().strip() else None
+        return {"exit": code, "error": error, "stdout_status": stdout.get("status") if isinstance(stdout, dict) else None}
+
+
 def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
     kind = case["kind"]
     payload = case["input"]
@@ -328,6 +354,10 @@ def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
         return actual == expected, actual
     if kind == "kernel_cli":
         actual = _kernel_cli(payload)
+        actual = {key: actual.get(key) for key in expected}
+        return bool(expected) and actual == expected, actual
+    if kind == "kernel_cli_guard":
+        actual = _kernel_cli_guard(payload)
         actual = {key: actual.get(key) for key in expected}
         return bool(expected) and actual == expected, actual
     raise ValueError(f"unknown case kind: {kind}")

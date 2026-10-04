@@ -357,8 +357,14 @@ def main() -> int:
 
     try:
         report = json.loads(args.report.read_text(encoding="utf-8"), object_pairs_hook=_unique_pairs, parse_constant=_reject_nonfinite)
-    except (OSError, UnicodeError):
-        print("ERROR: report cannot be read as UTF-8", file=sys.stderr)
+    except FileNotFoundError:
+        print("ERROR: report file not found", file=sys.stderr)
+        return 2
+    except UnicodeError:
+        print("ERROR: report is not valid UTF-8", file=sys.stderr)
+        return 2
+    except OSError:
+        print("ERROR: report cannot be read", file=sys.stderr)
         return 2
     except ValueError as exc:
         print(f"ERROR: invalid JSON: {exc}", file=sys.stderr)

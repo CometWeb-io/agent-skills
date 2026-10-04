@@ -151,6 +151,43 @@ class ValidateReportTests(unittest.TestCase):
         )
         self.assertNotEqual(proc.returncode, 0)
 
+    def test_cli_missing_report_is_not_reported_as_encoding_error(self) -> None:
+        import subprocess
+
+        proc = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts" / "validate_report.py"),
+                str(FIXTURES / "does-not-exist.json"),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("file not found", proc.stderr)
+        self.assertNotIn("UTF-8", proc.stderr)
+
+    def test_cli_invalid_utf8_report_has_encoding_error(self) -> None:
+        import subprocess
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "invalid.json"
+            path.write_bytes(b"\xff")
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "validate_report.py"),
+                    str(path),
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("UTF-8", proc.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

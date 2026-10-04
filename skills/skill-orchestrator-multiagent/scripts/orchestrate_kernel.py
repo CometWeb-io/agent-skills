@@ -60,8 +60,9 @@ ARCHETYPE_RULES: list[tuple[str, str]] = [
     (r"evidence.*(then|→|->|potem).*(operator|weekly|sprint)", "research_then_operator"),
     (r"competitor.*(then|→|->|potem).*(council|rad[ęe]|decision)", "competitive_then_council"),
     (r"orchestrat|sequence.*skill|multi.?step|full workflow|ca[łl][yąa] workflow", "orchestrated_goal"),
-    (r"zr[oó]b wszystko|od researchu do (decyzji|rady)|end.to.end", "orchestrated_goal"),
-    (r"which skill|help me pick|not sure what I need|nie wiem kt[oó]ry skill", "disambiguate_only"),
+    (r"zr[oó]b wszystko|end.to.end", "orchestrated_goal"),
+    (r"od researchu do (decyzji|rady)", "research_then_council"),
+    (r"which skill|help me pick|not sure what I need|(?:nie wiem )?kt[oó]ry skill", "disambiguate_only"),
 ]
 
 SINGLE_SKILL_HINTS: list[tuple[str, str]] = [
@@ -147,7 +148,7 @@ def _match_first(text: str, rules: list[tuple[str, str]]) -> str | None:
 def _goal_implies_council(text: str) -> bool:
     return bool(
         re.search(
-            r"council|rad[ęe]|go.?no.?go|decision|decyzj|strategic|material options|pricing decision",
+            r"council|rad(?:a|ę|y|ą)|go.?no.?go|decision|decyzj|strategic|material options|pricing decision",
             text,
             re.IGNORECASE,
         )
