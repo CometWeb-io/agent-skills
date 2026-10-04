@@ -542,6 +542,7 @@ def register(skill_id: str, description: str, group: str | None, summary: str, r
             raise SystemExit(f"cannot register: {path.relative_to(root)} is missing (use --no-register)")
     plan = routing(skill_id)
     behavior_path = root / "evals" / "behavior" / skill_id / "suite.json"
+    _assert_no_symlink_components(root, behavior_path)
     _ensure_directory(behavior_path.parent)
     write_json(behavior_path, behavior_suite(skill_id))
 

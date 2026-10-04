@@ -172,6 +172,28 @@ def checkout_copy(tmp_path: Path) -> Path:
     return copy
 
 
+def test_register_refuses_a_symlinked_behavior_component(checkout_copy: Path, tmp_path: Path) -> None:
+    behavior_root = checkout_copy / "evals" / "behavior"
+    original_behavior_root = checkout_copy / "evals" / "behavior-real"
+    behavior_root.rename(original_behavior_root)
+    victim = tmp_path / "victim"
+    victim.mkdir()
+    keep = victim / "KEEP"
+    keep.write_text("KEEP\n", encoding="utf-8")
+    behavior_root.symlink_to(victim, target_is_directory=True)
+
+    proc = subprocess.run(
+        [sys.executable, "-B", "tooling/new_skill.py", "symlink-probe", "--description", DESCRIPTION],
+        cwd=checkout_copy, capture_output=True, text=True, timeout=300,
+    )
+
+    assert proc.returncode != 0
+    assert "must not contain symlinks" in proc.stdout + proc.stderr
+    assert not (victim / "symlink-probe" / "suite.json").exists()
+    assert original_behavior_root.is_dir()
+    assert keep.read_text(encoding="utf-8") == "KEEP\n"
+
+
 def test_new_skill_passes_every_fast_gate_out_of_the_box(checkout_copy: Path) -> None:
     proc = subprocess.run(
         [sys.executable, "-B", "tooling/new_skill.py", "scaffold-probe", "--description", DESCRIPTION],

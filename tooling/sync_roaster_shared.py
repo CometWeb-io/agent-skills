@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import argparse
+import errno
+import os
+import stat
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +29,38 @@ TARGETS = (
     ROOT / "skills" / "content-roaster",
     ROOT / "skills" / "science-roaster",
 )
+
+
+def _read_regular_file(path: Path) -> bytes | None:
+    """Read a regular file without following a leaf symlink."""
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        fd = os.open(path, flags)
+    except OSError as exc:
+        if exc.errno in (errno.ELOOP, errno.ENOENT, errno.ENOTDIR):
+            return None
+        raise
+    with os.fdopen(fd, "rb") as handle:
+        if not stat.S_ISREG(os.fstat(handle.fileno()).st_mode):
+            return None
+        return handle.read()
+
+
+def _atomic_write(path: Path, data: bytes) -> None:
+    """Replace a shared file atomically without following a leaf symlink."""
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    except BaseException:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
 
 
 def verify() -> list[str]:
@@ -51,8 +87,8 @@ def sync() -> list[str]:
         expected = (CANONICAL / filename).read_bytes()
         for target in TARGETS:
             candidate = target / filename
-            if not candidate.is_file() or candidate.read_bytes() != expected:
-                candidate.write_bytes(expected)
+            if _read_regular_file(candidate) != expected:
+                _atomic_write(candidate, expected)
                 written.append(candidate.relative_to(ROOT).as_posix())
     return written
 
