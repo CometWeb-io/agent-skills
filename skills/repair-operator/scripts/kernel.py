@@ -85,6 +85,7 @@ def validate(payload):
     if payload.get('mode') is not None and not (isinstance(payload.get('mode'),str) and payload.get('mode') in MODES): errors.append('mode:invalid')
     if candidate_id is not None and not _text(candidate_id): errors.append('candidate_id:invalid')
     errors.extend(_dependency_cycles(items))
+    repair_ids={x.get('repair_id') for x in items if isinstance(x,dict) and _text(x.get('repair_id'))}
     for i,item in enumerate(items):
         if not isinstance(item,dict): errors.append(f'{i}:not-object'); continue
         rid=item.get('repair_id')
@@ -110,7 +111,12 @@ def validate(payload):
                 else: finding_to_repair[fid]=rid
         if patch_risk in {'HIGH','CRITICAL'} and not _text(item.get('rollback_plan')): errors.append(f'{i}:high-risk-without-rollback')
         if status in {'OPEN','PLANNED','IN_PROGRESS','UNVERIFIED','DEFERRED','REOPENED'}: open_count+=1
-        if status=='REOPENED' and not _text(item.get('reopen_of')): errors.append(f'{i}:reopened-without-origin')
+        if status=='REOPENED':
+            reopen_of=item.get('reopen_of')
+            if not _text(reopen_of):
+                errors.append(f'{i}:reopened-without-origin')
+            elif reopen_of not in repair_ids:
+                errors.append(f'{i}:reopened-with-missing-origin:{reopen_of}')
         if status=='CLOSED':
             if repair_class in {'VERIFY_FIRST','WONT_FIX'}: errors.append(f'{i}:closed-invalid-repair-class')
             if not _text(item.get('root_cause')) or not _text(item.get('done_when')): errors.append(f'{i}:closed-without-root-cause-done-when')

@@ -16,7 +16,7 @@
     "depth": {"enum": ["recon", "standard", "forensic"]},
     "confidence": {"enum": ["high", "medium", "low"]},
     "verdict": {"enum": ["do_not_ship", "ship_with_fixes", "ship", "incomplete"]},
-    "validator": {"type": "string"},
+    "validator": {"enum": ["passed", "warnings", "not run"]},
     "capabilities": {
       "type": "object",
       "additionalProperties": false,

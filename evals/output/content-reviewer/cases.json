@@ -45,6 +45,12 @@
     {"id": "broken-major-without-evidence", "base": "good-changes-required.md",
      "mutations": [{"replace": "- Evidence: OBSERVATION — draft r3, section 2 paragraph 3; OBSERVATION — brief v2, Evidence policy line.", "with": "- Evidence: see the draft."}],
      "expect": ["EVIDENCE_MISSING:material-evidence"]},
+    {"id": "broken-major-evidence-without-source-locator-no-sidecar", "base": "good-changes-required.md",
+     "mutations": [
+       {"replace": "\n```json\n", "with": "\n```text\n"},
+       {"replace": "- Evidence: OBSERVATION — draft r3, section 2 paragraph 3; OBSERVATION — brief v2, Evidence policy line.", "with": "- Evidence: OBSERVATION — draft r3."}
+     ],
+     "expect": ["EVIDENCE_MISSING:material-evidence-source-locator"]},
     {"id": "broken-major-without-locator", "base": "good-changes-required.md",
      "mutations": [{"replace": "- Locator: section 2, paragraph 3 (\"most teams restore in under 15 minutes\")\n", "with": ""}],
      "expect": ["EVIDENCE_MISSING:material-locator"]},

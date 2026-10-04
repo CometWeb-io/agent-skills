@@ -11,6 +11,7 @@ written by a tool and fail CI when edited by hand.
 | [`../README.md`](../README.md) | What the skills are, the quickstart and the skill catalog. |
 | [`TARGET.md`](TARGET.md) | What this repository is, and what it is not. |
 | [`media/README.md`](media/README.md) | The overview diagram used by the README. |
+| [`../THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) | Attribution and provenance for adapted third-party patterns. |
 
 ## Using skills per host
 

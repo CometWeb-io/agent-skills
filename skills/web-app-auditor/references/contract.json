@@ -12,6 +12,7 @@
       "enums": {
         "MODES": "mode",
         "DEPTHS": "depth",
+        "VALIDATOR_STATUSES": "validator",
         "CONFIDENCE": "confidence",
         "VERDICTS": "verdict",
         "PROFILES": "capabilities.profile",

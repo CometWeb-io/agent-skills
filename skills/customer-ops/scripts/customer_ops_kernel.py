@@ -41,6 +41,8 @@ RETENTION_DIMENSIONS = (
     "competitive_pressure",
 )
 
+DEDUPE_FIELDS = ("symptom", "component", "environment", "trigger", "error_signature")
+
 TERMINAL_COMMITMENT_STATES = {"FULFILLED", "RENEGOTIATED", "CANCELLED"}
 
 CASE_GATE_STAGES = ("TRIAGED", "GITHUB_READY", "RESOLVED", "VERIFIED", "CLOSED", "CUSTOMER_SEND")
@@ -59,15 +61,15 @@ CASE_TRANSITIONS = {
     "RESOLVED": {"VERIFIED", "IN_PROGRESS"},
     "VERIFIED": {"CLOSED", "IN_PROGRESS"},
     "CLOSED": {"IN_PROGRESS"},
-    "NOT_REPRODUCED": {"IN_PROGRESS", "RESOLVED", "CLOSED"},
-    "WONT_FIX": {"RESOLVED", "CLOSED", "IN_PROGRESS"},
+    "NOT_REPRODUCED": {"IN_PROGRESS", "RESOLVED"},
+    "WONT_FIX": {"RESOLVED", "IN_PROGRESS"},
     "DUPLICATE": {"TRIAGED"},
     "MERGED": {"TRIAGED"},
     "CANCELLED": {"TRIAGED"},
 }
 
 INCIDENT_TRANSITIONS = {
-    "DETECTED": {"INVESTIGATING", "CLOSED"},
+    "DETECTED": {"INVESTIGATING"},
     "INVESTIGATING": {"IDENTIFIED", "MITIGATING", "RECOVERED", "CLOSED"},
     "IDENTIFIED": {"MITIGATING", "MONITORING", "RECOVERED"},
     "MITIGATING": {"IDENTIFIED", "MONITORING", "RECOVERED"},
@@ -602,11 +604,8 @@ def deadline_status(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def dedupe_key(data: Dict[str, Any]) -> Dict[str, Any]:
-    fields = ["symptom", "component", "environment", "trigger", "error_signature"]
-    normalized = {key: _norm_text(data.get(key, "")) for key in fields}
-    if not any(normalized.values()):
-        raise ValueError("at least one dedupe field must be non-empty")
-    canonical = "|".join(f"{key}={normalized[key]}" for key in fields)
+    normalized = _normalize_dedupe_record(data, "dedupe record")
+    canonical = "|".join(f"{key}={normalized[key]}" for key in DEDUPE_FIELDS)
     digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:24]
     return {
         "kernel_version": VERSION,
@@ -628,11 +627,23 @@ def _token_jaccard(a: str, b: str) -> float:
     return len(aa & bb) / len(aa | bb)
 
 
+def _normalize_dedupe_record(value: Any, label: str) -> Dict[str, str]:
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be an object")
+    normalized = {key: _norm_text(value.get(key, "")) for key in DEDUPE_FIELDS}
+    populated = [key for key, field_value in normalized.items() if field_value]
+    if len(populated) < 2:
+        raise ValueError(
+            f"{label} must contain at least two non-empty dedupe fields"
+        )
+    return normalized
+
+
 def dedupe_pair(data: Dict[str, Any]) -> Dict[str, Any]:
     left = data.get("left")
     right = data.get("right")
-    if not isinstance(left, dict) or not isinstance(right, dict):
-        raise ValueError("left and right must be objects")
+    left_normalized = _normalize_dedupe_record(left, "left dedupe record")
+    right_normalized = _normalize_dedupe_record(right, "right dedupe record")
 
     weights = {
         "symptom": 0.35,
@@ -643,8 +654,8 @@ def dedupe_pair(data: Dict[str, Any]) -> Dict[str, Any]:
     }
     sims: Dict[str, float] = {}
     for field in weights:
-        lv = _norm_text(left.get(field, ""))
-        rv = _norm_text(right.get(field, ""))
+        lv = left_normalized[field]
+        rv = right_normalized[field]
         if field in {"symptom", "trigger"}:
             sim = _token_jaccard(lv, rv)
         else:

@@ -16,7 +16,9 @@ safety_regression?: true|false      # true is HOLD
 evaluation_scope                    # the evaluated host/model scope
 ```
 
-It returns `{status: PROMOTE|HOLD|INVALID, errors[], reason}`. `reason` is
+If `safety_regression` is present, it must be a boolean; a malformed value is
+`INVALID` rather than a promotion or hold decision. It returns
+`{status: PROMOTE|HOLD|INVALID, errors[], reason}`. `reason` is
 `repeatable-improvement-no-regression` (PROMOTE), `regression` or
 `no-repeatable-improvement` (HOLD), or `invalid-payload` (INVALID, with the
 problems in `errors`; a payload that is not an object is `promotion:not-object`).

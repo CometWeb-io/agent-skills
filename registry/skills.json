@@ -1940,12 +1940,12 @@
     },
     {
       "id": "product-teardown",
-      "version": "1.2.1",
+      "version": "1.3.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Analyze external products, websites, apps, APIs, documentation, and source repositories to extract evidence-backed, transferable, implementable product and engineering patterns rather than generic competitor summaries. Do not use for ongoing competitor monitoring/delta analysis (competitive-intelligence), broad competitor dossiers, external-facing comparison pages, or a roadmap of the user's own repo with no external reference target (repo-to-roadmap). Use when the user asks to teardown, reverse-engineer at a product/architecture level, benchmark, study, or learn from another product/repo; asks what workflows, UX mechanics, architecture, onboarding, monetization, developer experience, operations, reliability, or implementation ideas are worth adapting; asks \"what can we borrow/learn/implement from X\" or Polish equivalents such as \"przeanalizuj produkt/repo\", \"wyciagnij wzorce\", or \"co warto wdrozyc\". Also use for multi-product pattern synthesis and source-to-target adaptation.",
+      "description": "Analyze external products, websites, apps, APIs, documentation, and source repositories to extract evidence-backed, transferable, implementable product and engineering patterns. Do not use for ongoing competitor monitoring/delta analysis, broad competitor dossiers, external-facing comparison pages, or a roadmap of the user's own repo. Use for teardown, product/architecture reverse-engineering, benchmarking, clean-room reconstruction maps, evidence-linked feature parity, multi-product synthesis, and source-to-target adaptation; including Polish requests such as \"przeanalizuj produkt/repo\", \"wyciagnij wzorce\", and \"co warto wdrozyc\".",
       "explicit_only": false,
       "owns": [
         "external product patterns",
@@ -2897,7 +2897,7 @@
     },
     {
       "id": "skill-auditor",
-      "version": "1.7.4",
+      "version": "1.7.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",

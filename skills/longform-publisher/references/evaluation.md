@@ -4,6 +4,8 @@ Golden cases must cover both valid and invalid publication states. Keep syntheti
 
 Required failure classes include:
 
+- `SOURCE_REQUIRED_FIELD_MISSING:<field>`
+- `PUBLICATION_EVIDENCE_REQUIRED_FIELD_MISSING:<field>`
 - `SOURCE_BOUND_UNAUTHORIZED_SOURCE`
 - `MATERIAL_CLAIM_UNSUPPORTED`
 - `EVIDENCE_REF_UNRESOLVED`

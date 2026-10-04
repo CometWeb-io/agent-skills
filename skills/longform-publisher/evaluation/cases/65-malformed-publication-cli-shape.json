@@ -1,0 +1,20 @@
+{
+  "scenario": "malformed_publication_not_object",
+  "expect": {
+    "validation": [
+      "FIELD_TYPE_INVALID:publication"
+    ],
+    "manuscript": [
+      "FIELD_TYPE_INVALID:publication"
+    ],
+    "derived": [
+      "FIELD_TYPE_INVALID:publication"
+    ],
+    "stage": "RELEASE_READY"
+  },
+  "cli": {
+    "command": "render-manifest",
+    "returncode": 1,
+    "output": "FIELD_TYPE_INVALID:publication"
+  }
+}

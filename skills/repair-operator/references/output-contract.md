@@ -31,7 +31,7 @@ items[]:
                             candidate_id, observed_at}   # timezone-aware ISO time
   regression_detected: true|false   # true blocks CLOSED
   status: OPEN|PLANNED|IN_PROGRESS|UNVERIFIED|CLOSED|DEFERRED|WONT_FIX|REOPENED
-  reopen_of                         # required for REOPENED: the repair_id re-opened
+  reopen_of                         # required for REOPENED: an existing repair_id re-opened
   defer_reason                      # required for DEFERRED
   decision_source: {owner, rationale, decided_at, expires_at}
                                     # required for WONT_FIX; expires_at only when strict

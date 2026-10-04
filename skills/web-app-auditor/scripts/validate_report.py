@@ -28,6 +28,7 @@ EVIDENCE_ID = re.compile(r"^E-[0-9]{3}$")
 
 MODES = {"page", "area", "crawl", "flow", "data", "visual", "regression", "a11y"}
 DEPTHS = {"recon", "standard", "forensic"}
+VALIDATOR_STATUSES = {"passed", "warnings", "not run"}
 PROFILES = {"hybrid", "browser", "screenshot", "source", "fetch-only"}
 ENVIRONMENTS = {"production", "staging", "test", "local", "unknown"}
 MUTATION_POLICIES = {"read-only", "safe-test-only"}

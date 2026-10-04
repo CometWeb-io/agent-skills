@@ -48,6 +48,30 @@ def test_report_schema_enums_match_the_validator():
 
 def test_valid_report_passes(): assert v.validate(valid_report()) == []
 
+
+def _set_path(report, path, value):
+    current = report
+    for key in path[:-1]:
+        current = current[key]
+    current[path[-1]] = value
+
+
+@pytest.mark.parametrize("malformed", [[], {}, None], ids=["list", "dict", "null"])
+@pytest.mark.parametrize(
+    ("path", "error_fragment"),
+    [
+        (("mode",), "mode is invalid"),
+        (("source_manifest", 0, "kind"), "source_manifest[0].kind is invalid"),
+        (("findings", 0, "severity"), "findings[0].severity is invalid"),
+        (("first_attack_id",), "first_attack_id must reference an existing finding"),
+    ],
+)
+def test_malformed_enum_and_set_values_return_structured_errors(path, error_fragment, malformed):
+    report = valid_report()
+    _set_path(report, path, malformed)
+    errors = v.validate(report)
+    assert any(error_fragment in error for error in errors)
+
 def test_no_findings_outcome_passes():
     r=valid_report(); r["findings"]=[]; r["outcome_basis"]["surviving_finding_ids"]=[]; r["outcome_basis"]["reason"]="No material candidate survived review."; r["first_attack_id"]=None; r["review_outcome"]="NO_MATERIAL_FINDINGS"; r["no_material_findings"]=True; r["core_fix"]="No material scientific repair identified in reviewed scope."
     assert v.validate(r)==[]

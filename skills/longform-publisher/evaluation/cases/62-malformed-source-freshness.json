@@ -1,0 +1,11 @@
+{
+  "scenario": "malformed_source_freshness",
+  "expect": {
+    "validation": [
+      "FIELD_VALUE_INVALID:sources.freshness"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

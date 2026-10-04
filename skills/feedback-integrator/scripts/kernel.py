@@ -31,6 +31,11 @@ def _proposal_ready(row):
     return _text(proposal.get('change')) and _text(proposal.get('expected_effect')) and _text(proposal.get('evaluation_plan'))
 
 
+def _has_systemic_evidence(row):
+    evidence=row.get('evidence')
+    return isinstance(evidence,list) and bool(evidence)
+
+
 def _refuse(reason):
     return {'status':'INVALID','proposal_count':0,'watch_count':0,'retired_count':0,'invalid_count':1,'proposals':[],'watch':[],'retired':[],'invalid':[{'reason':reason}],'errors':[reason]}
 
@@ -42,6 +47,7 @@ def integrate(records,min_count=2,as_of=None,window_days=None,strict=False):
     if not isinstance(min_count,int) or isinstance(min_count,bool) or min_count<=0: return _refuse('min_count:invalid')
     if window_days is not None and (not isinstance(window_days,int) or isinstance(window_days,bool) or window_days<=0): return _refuse('window_days:invalid')
     if window_days is not None and now is None: return _refuse('window_days:requires-as_of')
+    if not isinstance(strict,bool): return _refuse('strict:invalid')
     groups=defaultdict(list); invalid=[]; retired=[]
     for i,row in enumerate(records):
         if not isinstance(row,dict): invalid.append({'index':i,'reason':'record:not-object'}); continue
@@ -67,7 +73,7 @@ def integrate(records,min_count=2,as_of=None,window_days=None,strict=False):
         runs={r.get('run_id') for r in confirmed if _text(r.get('run_id'))}
         severity=max((r.get('severity','NOTE') for r in confirmed), key=lambda v:SEVERITY[v], default='NOTE')
         layers={r.get('root_layer') for r in confirmed if r.get('root_layer')}
-        severe=any(r.get('severity')=='BLOCKER' and r.get('systemic') is True and r.get('evidence') for r in confirmed)
+        severe=any(r.get('severity')=='BLOCKER' and r.get('systemic') is True and _has_systemic_evidence(r) for r in confirmed)
         regression_ready=any(_regression_ready(r) for r in confirmed)
         proposal_ready=any(_proposal_ready(r) for r in confirmed)
         independent=len(contexts)
@@ -103,6 +109,7 @@ def promotion(payload):
     if not isinstance(improvements,int) or isinstance(improvements,bool) or improvements<0: errors.append('improvements')
     if not isinstance(regressions,int) or isinstance(regressions,bool) or regressions<0: errors.append('regressions')
     if not _text(payload.get('evaluation_scope')): errors.append('evaluation-scope')
+    if 'safety_regression' in payload and not isinstance(payload['safety_regression'],bool): errors.append('safety-regression')
     if errors: return {'status':'INVALID','errors':errors,'reason':'invalid-payload'}
     if payload.get('safety_regression') is True or regressions>0: return {'status':'HOLD','errors':[],'reason':'regression'}
     if improvements<1: return {'status':'HOLD','errors':[],'reason':'no-repeatable-improvement'}

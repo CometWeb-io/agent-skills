@@ -64,6 +64,9 @@ Audit semantic-version correctness, public handoff/schema compatibility, depreca
 ## Definition of done
 
 Return a bounded Skill Audit Brief with package identity, coverage, findings, unresolved unknowns, unsupported claims, portability gaps, eval gaps, and the next owner. Mark the audit `PASS` only when required material checks are supported; use `DEFER` when required evidence is unknown, `CHANGES_REQUIRED` for verified material defects, and `INVALID` when the structured audit itself breaks the contract. Check states are `PASS`, `FAIL`, `UNKNOWN`, or `N_A`; severities are `BLOCKER`, `MAJOR`, `MINOR`, `NOTE`.
+An audit must include at least one substantive check row. An empty `checks`
+list cannot return `PASS`; report the missing check surface or an explicit
+deferred/invalid state instead.
 
 ## References — when to read
 

@@ -1646,5 +1646,81 @@
       ],
       "mode": "STANDARD"
     }
+  },
+  {
+    "id": "delta-rejects-malformed-criteria-and-invariants-collections",
+    "operation": "delta",
+    "old": {
+      "acceptance_criteria": null,
+      "protected_invariants": null
+    },
+    "new": {},
+    "expect": {
+      "status": "INVALID",
+      "material_changes": [],
+      "requires_downstream_revalidation": true,
+      "errors": [
+        "old.acceptance_criteria:not-list",
+        "old.protected_invariants:not-list"
+      ]
+    }
+  },
+  {
+    "id": "delta-reports-malformed-criteria-items",
+    "operation": "delta",
+    "old": {
+      "acceptance_criteria": [
+        "not an object",
+        {
+          "id": [],
+          "priority": "MUST"
+        },
+        {
+          "id": "criterion-1",
+          "priority": []
+        },
+        {
+          "id": "criterion-1",
+          "priority": "MUST"
+        }
+      ]
+    },
+    "new": {},
+    "expect": {
+      "status": "INVALID",
+      "material_changes": [],
+      "requires_downstream_revalidation": true,
+      "errors": [
+        "old.acceptance_criteria[0]:not-object",
+        "old.acceptance_criteria[1]:id",
+        "old.acceptance_criteria[2]:priority",
+        "old.acceptance_criteria[3]:duplicate-id"
+      ]
+    }
+  },
+  {
+    "id": "delta-reports-malformed-invariant-items",
+    "operation": "delta",
+    "old": {
+      "protected_invariants": [
+        {
+          "id": "invariant-1",
+          "rule": "Prices stay published"
+        },
+        {},
+        "invariant-2",
+        "invariant-2"
+      ]
+    },
+    "new": {},
+    "expect": {
+      "status": "INVALID",
+      "material_changes": [],
+      "requires_downstream_revalidation": true,
+      "errors": [
+        "old.protected_invariants[1]:invalid",
+        "old.protected_invariants[3]:duplicate-id"
+      ]
+    }
   }
 ]

@@ -1,6 +1,8 @@
 from __future__ import annotations
 import hashlib,json,re
 MODES={'LIGHT','STANDARD','DEEP'}; FLOORS={'A','B','C','D'}; MATERIAL={'critical','material','supporting'}
+TOP_LEVEL_FIELDS={'rubric_id','revision','purpose','target_type','mode','candidate_blind','frozen_before_review','required_dimensions','criteria','anti_gaming'}
+CRITERION_FIELDS={'id','dimension','description','observable','pass_condition','fail_condition','evidence_floor','materiality','blocker','weight'}
 HEX64=re.compile(r'^[0-9a-f]{64}$')
 def _member(v,allowed): return isinstance(v,str) and v in allowed
 def _text(v): return isinstance(v,str) and bool(v.strip())
@@ -8,7 +10,7 @@ def _canon(x): return json.dumps(x,sort_keys=True,separators=(',',':'),ensure_as
 def _hash(x): return hashlib.sha256(_canon(x).encode()).hexdigest()
 def validate(x):
     if not isinstance(x,dict): return {'status':'INVALID','errors':['payload:not-object'],'missing_dimensions':[]}
-    e=[]; mode=x.get('mode','STANDARD')
+    e=[f'payload:unknown-field:{key}' for key in sorted(set(x)-TOP_LEVEL_FIELDS)]; mode=x.get('mode','STANDARD')
     if not _member(mode,MODES):e.append('mode:invalid')
     for k in ('rubric_id','revision','purpose','target_type'):
         if not _text(x.get(k)):e.append(f'{k}:required')
@@ -25,6 +27,7 @@ def validate(x):
     for i,c in enumerate(criteria):
         p=f'criteria[{i}]'
         if not isinstance(c,dict):e.append(p+':not-object');continue
+        e.extend(f'{p}:unknown-field:{key}' for key in sorted(set(c)-CRITERION_FIELDS))
         cid=c.get('id'); dim=c.get('dimension'); ids.append(cid)
         if not _text(cid):e.append(p+':id')
         if not _text(dim):e.append(p+':dimension')

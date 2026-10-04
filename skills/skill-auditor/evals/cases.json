@@ -40,7 +40,16 @@
     },
     "id": "pass-to-evaluator",
     "input": {
-      "checks": [],
+      "checks": [
+        {
+          "evidence": [
+            "surface:registry"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
       "empirical_eval_required": true,
       "mode": "STANDARD",
       "package": {
@@ -959,7 +968,16 @@
     },
     "id": "deep-pass",
     "input": {
-      "checks": [],
+      "checks": [
+        {
+          "evidence": [
+            "surface:deep-inventory"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
       "deep_checks": {
         "dependency_graph": true,
         "executable_coverage": true,
@@ -1118,7 +1136,16 @@
     },
     "id": "minor-compatible-pass",
     "input": {
-      "checks": [],
+      "checks": [
+        {
+          "evidence": [
+            "surface:contract"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
       "contract_compatibility": "BACKWARD_COMPATIBLE",
       "mode": "STANDARD",
       "package": {
@@ -1225,7 +1252,16 @@
     },
     "id": "major-breaking-pass",
     "input": {
-      "checks": [],
+      "checks": [
+        {
+          "evidence": [
+            "surface:migration"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
       "contract_compatibility": "BREAKING",
       "migration_guide_present": true,
       "migration_plan": {
@@ -1263,7 +1299,16 @@
     },
     "id": "patch-compatible-pass",
     "input": {
-      "checks": [],
+      "checks": [
+        {
+          "evidence": [
+            "surface:contract"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
       "contract_compatibility": "BACKWARD_COMPATIBLE",
       "mode": "STANDARD",
       "package": {
@@ -1342,7 +1387,16 @@
     },
     "id": "real-host-runtime-claim-pass",
     "input": {
-      "checks": [],
+      "checks": [
+        {
+          "evidence": [
+            "surface:runtime"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
       "mode": "STANDARD",
       "package": {
         "behavior_eval_cases": 20,
@@ -1788,6 +1842,401 @@
       "issues": [],
       "unknown_material": 0,
       "next_skill": null
+    }
+  },
+  {
+    "id": "empty-checks-cannot-pass",
+    "input": {
+      "mode": "STANDARD",
+      "skill_id": "s",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "checks": [],
+      "version": "1.7.5"
+    },
+    "expect": {
+      "status": "CHANGES_REQUIRED",
+      "errors": [],
+      "issues": [
+        "checks:required"
+      ],
+      "unknown_material": 0,
+      "next_skill": "skill-creator"
+    }
+  },
+  {
+    "id": "empty-checks-explicit-defer",
+    "input": {
+      "mode": "STANDARD",
+      "skill_id": "s",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "checks": [],
+      "contract_compatibility": "UNKNOWN",
+      "version": "1.7.5"
+    },
+    "expect": {
+      "status": "DEFER",
+      "errors": [],
+      "issues": [],
+      "unknown_material": 1,
+      "next_skill": null
+    }
+  },
+  {
+    "id": "substantive-check-pass-is-explicit",
+    "input": {
+      "mode": "STANDARD",
+      "skill_id": "s",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "checks": [
+        {
+          "evidence": [
+            "surface:registry"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
+      "version": "1.7.5"
+    },
+    "expect": {
+      "status": "PASS",
+      "errors": [],
+      "issues": [],
+      "unknown_material": 0,
+      "next_skill": null,
+      "empirical_effectiveness_proven": false,
+      "version_bump": null,
+      "migration_required": false
+    }
+  },
+  {
+    "id": "positive-package-defect-is-named",
+    "input": {
+      "mode": "STANDARD",
+      "skill_id": "s",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 1,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "checks": [
+        {
+          "evidence": [
+            "surface:registry"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
+      "version": "1.7.5"
+    },
+    "expect": {
+      "status": "CHANGES_REQUIRED",
+      "errors": [],
+      "issues": [
+        "references:broken"
+      ],
+      "unknown_material": 0,
+      "next_skill": "skill-creator"
+    }
+  },
+  {
+    "id": "zero-behavior-evals-is-named",
+    "input": {
+      "mode": "STANDARD",
+      "skill_id": "s",
+      "package": {
+        "behavior_eval_cases": 0,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "checks": [
+        {
+          "evidence": [
+            "surface:registry"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
+      "version": "1.7.5"
+    },
+    "expect": {
+      "status": "CHANGES_REQUIRED",
+      "errors": [],
+      "issues": [
+        "evals:none"
+      ],
+      "unknown_material": 0,
+      "next_skill": "skill-creator"
+    }
+  },
+  {
+    "id": "zero-negative-routing-is-named",
+    "input": {
+      "mode": "STANDARD",
+      "skill_id": "s",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 0,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "checks": [
+        {
+          "evidence": [
+            "surface:registry"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
+      "version": "1.7.5"
+    },
+    "expect": {
+      "status": "CHANGES_REQUIRED",
+      "errors": [],
+      "issues": [
+        "routing:no-negative-cases"
+      ],
+      "unknown_material": 0,
+      "next_skill": "skill-creator"
+    }
+  },
+  {
+    "id": "unverified-runtime-claim-is-named",
+    "input": {
+      "mode": "STANDARD",
+      "skill_id": "s",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [
+          "codex"
+        ],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "checks": [
+        {
+          "evidence": [
+            "surface:registry"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
+      "version": "1.7.5"
+    },
+    "expect": {
+      "status": "CHANGES_REQUIRED",
+      "errors": [],
+      "issues": [
+        "hosts:unverified-runtime-claim"
+      ],
+      "unknown_material": 0,
+      "next_skill": "skill-creator"
+    }
+  },
+  {
+    "id": "low-branch-coverage-is-named",
+    "input": {
+      "mode": "STANDARD",
+      "skill_id": "s",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.94,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "checks": [
+        {
+          "evidence": [
+            "surface:registry"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
+      "version": "1.7.5"
+    },
+    "expect": {
+      "status": "CHANGES_REQUIRED",
+      "errors": [],
+      "issues": [
+        "evals:branch-coverage-below-95"
+      ],
+      "unknown_material": 0,
+      "next_skill": "skill-creator"
+    }
+  },
+  {
+    "id": "low-mutation-score-is-named",
+    "input": {
+      "mode": "STANDARD",
+      "skill_id": "s",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 0.79,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "checks": [
+        {
+          "evidence": [
+            "surface:registry"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
+      "version": "1.7.5"
+    },
+    "expect": {
+      "status": "CHANGES_REQUIRED",
+      "errors": [],
+      "issues": [
+        "evals:mutation-score-below-80"
+      ],
+      "unknown_material": 0,
+      "next_skill": "skill-creator"
+    }
+  },
+  {
+    "id": "breaking-migration-actions-are-named",
+    "input": {
+      "mode": "STANDARD",
+      "skill_id": "s",
+      "package": {
+        "behavior_eval_cases": 20,
+        "branch_coverage": 0.98,
+        "broken_references": 0,
+        "forbidden_artifacts": 0,
+        "mutation_score": 1.0,
+        "negative_routing_cases": 3,
+        "runtime_host_claims": [],
+        "runtime_verified_hosts": [],
+        "skill_md_lines": 120,
+        "symlinks": 0,
+        "unresolved_dependencies": 0
+      },
+      "checks": [
+        {
+          "evidence": [
+            "surface:migration"
+          ],
+          "material": true,
+          "severity": "MAJOR",
+          "status": "PASS"
+        }
+      ],
+      "contract_compatibility": "BREAKING",
+      "migration_guide_present": true,
+      "migration_plan": {
+        "consumer_actions": [],
+        "rollback_ref": "release:1.7.5",
+        "verification_cases": [
+          "compat:1"
+        ]
+      },
+      "previous_version": "1.7.5",
+      "skill_id": "s",
+      "version": "2.0.0"
+    },
+    "expect": {
+      "status": "CHANGES_REQUIRED",
+      "errors": [],
+      "issues": [
+        "migration:consumer-actions"
+      ],
+      "unknown_material": 0,
+      "next_skill": "skill-creator"
     }
   },
   {

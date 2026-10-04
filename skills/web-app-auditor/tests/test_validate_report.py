@@ -106,6 +106,21 @@ class ValidateReportTests(unittest.TestCase):
         result = validate(report)
         self.assertTrue(any("schemaVersion" in e for e in result.errors))
 
+    def test_documented_validator_statuses_pass(self) -> None:
+        for status in ("passed", "warnings", "not run"):
+            with self.subTest(status=status):
+                report = copy.deepcopy(_load("report-valid.json"))
+                report["validator"] = status
+                self.assertEqual(validate(report).errors, [])
+
+    def test_undocumented_validator_statuses_fail(self) -> None:
+        for status in ("pending", "bogus"):
+            with self.subTest(status=status):
+                report = copy.deepcopy(_load("report-valid.json"))
+                report["validator"] = status
+                result = validate(report)
+                self.assertTrue(any("validator" in error for error in result.errors))
+
     def test_cli_valid_fixture_exits_zero(self) -> None:
         import subprocess
 

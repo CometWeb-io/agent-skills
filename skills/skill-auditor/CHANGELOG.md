@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.5] - 2026-10-04
+
+- Empty `checks` arrays now fail closed with `checks:required` instead of
+  returning `PASS`; explicit deferred and invalid outcomes remain available.
+- Added a regression case for the empty-check false-green path and synchronized
+  the direct README version with `VERSION`.
+
 ## [1.7.4] - 2026-10-03
 
 - A payload that is not an object returned no `issues` or `unknown_material`, which every other refusal carries; it now returns them empty.

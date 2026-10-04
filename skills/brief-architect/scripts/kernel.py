@@ -31,7 +31,7 @@ def _criteria(value):
         if not _text(item.get('check')): errors.append(f'acceptance_criteria[{i}]:check')
         if item.get('observable') is not True: errors.append(f'acceptance_criteria[{i}]:not-observable')
         priority=item.get('priority','MUST')
-        if priority not in VALID_PRIORITY: errors.append(f'acceptance_criteria[{i}]:priority')
+        if not isinstance(priority,str) or priority not in VALID_PRIORITY: errors.append(f'acceptance_criteria[{i}]:priority')
         if priority=='MUST' and item.get('evidence_required') is True and not _text(item.get('verification_method')):
             errors.append(f'acceptance_criteria[{i}]:must-evidence-without-method')
     return not errors, errors
@@ -105,6 +105,45 @@ def _invariants(value):
     return out, errors
 
 
+_MISSING=object()
+
+
+def _delta_criteria(brief, side):
+    value=brief.get('acceptance_criteria',_MISSING)
+    if value is _MISSING: return {}, []
+    if not isinstance(value,list): return {}, [f'{side}.acceptance_criteria:not-list']
+    errors=[]; out={}; seen=set()
+    for i,item in enumerate(value):
+        if not isinstance(item,dict):
+            errors.append(f'{side}.acceptance_criteria[{i}]:not-object'); continue
+        cid=item.get('id')
+        if not _text(cid):
+            errors.append(f'{side}.acceptance_criteria[{i}]:id'); continue
+        priority=item.get('priority','MUST')
+        if not isinstance(priority,str) or priority not in VALID_PRIORITY:
+            errors.append(f'{side}.acceptance_criteria[{i}]:priority')
+        if cid in seen: errors.append(f'{side}.acceptance_criteria[{i}]:duplicate-id')
+        else: seen.add(cid); out[cid]=item
+    return out, errors
+
+
+def _delta_invariants(brief, side):
+    value=brief.get('protected_invariants',_MISSING)
+    if value is _MISSING: return set(), []
+    if not isinstance(value,list): return set(), [f'{side}.protected_invariants:not-list']
+    errors=[]; out=set()
+    for i,item in enumerate(value):
+        if isinstance(item,str) and item.strip():
+            iid=item.strip()
+        elif isinstance(item,dict) and _text(item.get('id')) and _text(item.get('rule') or item.get('description')):
+            iid=item['id']
+        else:
+            errors.append(f'{side}.protected_invariants[{i}]:invalid'); continue
+        if iid in out: errors.append(f'{side}.protected_invariants[{i}]:duplicate-id')
+        else: out.add(iid)
+    return out, errors
+
+
 def _rubric_lock_errors(brief):
     lock=brief.get('rubric_lock')
     if lock is None: return []
@@ -175,13 +214,16 @@ def delta(old,new):
     changes=[]
     for field in fields:
         if old.get(field)!=new.get(field): changes.append(field)
-    old_criteria={x.get('id'):x for x in old.get('acceptance_criteria',[]) if isinstance(x,dict) and _text(x.get('id'))}
-    new_criteria={x.get('id'):x for x in new.get('acceptance_criteria',[]) if isinstance(x,dict) and _text(x.get('id'))}
+    old_criteria, old_criteria_errors=_delta_criteria(old,'old')
+    new_criteria, new_criteria_errors=_delta_criteria(new,'new')
     if old_criteria!=new_criteria: changes.append('acceptance_criteria')
-    old_inv={x if isinstance(x,str) else x.get('id') for x in old.get('protected_invariants',[]) if isinstance(x,(str,dict))}
-    new_inv={x if isinstance(x,str) else x.get('id') for x in new.get('protected_invariants',[]) if isinstance(x,(str,dict))}
+    old_inv, old_inv_errors=_delta_invariants(old,'old')
+    new_inv, new_inv_errors=_delta_invariants(new,'new')
     if old_inv!=new_inv: changes.append('protected_invariants')
     if old.get('rubric_lock')!=new.get('rubric_lock'): changes.append('rubric_lock')
+    errors=old_criteria_errors+new_criteria_errors+old_inv_errors+new_inv_errors
+    if errors:
+        return {'status':'INVALID','material_changes':[],'requires_downstream_revalidation':True,'errors':errors}
     return {'status':'CHANGED' if changes else 'UNCHANGED','material_changes':changes,'requires_downstream_revalidation':bool(changes),'errors':[]}
 
 

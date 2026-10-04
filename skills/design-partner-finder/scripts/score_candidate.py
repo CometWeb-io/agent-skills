@@ -49,6 +49,8 @@ ENGAGEMENT_MODES = {
     "LIGHTHOUSE",
 }
 
+_MISSING = object()
+
 
 def _rating(value: Any, name: str) -> float:
     try:
@@ -61,7 +63,7 @@ def _rating(value: Any, name: str) -> float:
 
 
 def _strict_bool(value: Any, name: str, default: bool = False) -> bool:
-    if value is None:
+    if value is _MISSING:
         return default
     if isinstance(value, bool):
         return value
@@ -138,8 +140,8 @@ def score_research(payload: dict[str, Any]) -> dict[str, Any]:
     contradiction_risk = _rating(payload.get("contradiction_risk", 0), "contradiction_risk")
     customization_risk = _rating(payload.get("customization_risk", 0), "customization_risk")
     conflict_risk = _rating(payload.get("conflict_risk", 0), "conflict_risk")
-    contact_path = _strict_bool(payload.get("professional_contact_path"), "professional_contact_path", False)
-    exploration_mode = _strict_bool(payload.get("exploration_mode"), "exploration_mode", False)
+    contact_path = _strict_bool(payload.get("professional_contact_path", _MISSING), "professional_contact_path", False)
+    exploration_mode = _strict_bool(payload.get("exploration_mode", _MISSING), "exploration_mode", False)
 
     state: dict[str, Any] = {"score": base_score, "caps": [], "hard_reasons": [], "hold_reasons": []}
 
@@ -244,9 +246,9 @@ def score_live(payload: dict[str, Any]) -> dict[str, Any]:
     ratings, contributions, base_score = _score_dimensions(payload.get("ratings") or {}, LIVE_WEIGHTS)
     confidence_map = _confidence_map(payload, LIVE_WEIGHTS)
     mode = _engagement_mode(payload)
-    direct_evidence = _strict_bool(payload.get("live_evidence_confirmed"), "live_evidence_confirmed", False)
-    security_privacy_blocker = _strict_bool(payload.get("security_privacy_blocker"), "security_privacy_blocker", False)
-    legal_contract_blocker = _strict_bool(payload.get("legal_contract_blocker"), "legal_contract_blocker", False)
+    direct_evidence = _strict_bool(payload.get("live_evidence_confirmed", _MISSING), "live_evidence_confirmed", False)
+    security_privacy_blocker = _strict_bool(payload.get("security_privacy_blocker", _MISSING), "security_privacy_blocker", False)
+    legal_contract_blocker = _strict_bool(payload.get("legal_contract_blocker", _MISSING), "legal_contract_blocker", False)
     customization_risk = _rating(payload.get("customization_risk", 0), "customization_risk")
     conflict_risk = _rating(payload.get("conflict_risk", 0), "conflict_risk")
     commercial_commitment = _rating(payload.get("commercial_commitment", 0), "commercial_commitment")

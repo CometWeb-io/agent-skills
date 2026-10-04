@@ -1,0 +1,50 @@
+name: Platform matrix
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-matrix-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  portable-tooling:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.12", "3.13"]
+    name: ${{ matrix.os }} / py${{ matrix.python }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python }}
+
+      - name: Sync locked dependencies
+        run: uv sync --frozen --group dev
+
+      - name: Run portable tooling contracts
+        run: >-
+          uv run pytest -q
+          tooling/tests/test_routing_lexical.py
+          tooling/tests/test_routing_coverage.py
+          tooling/tests/test_routing_holdout.py
+          tooling/tests/test_grade_output.py
+          tooling/tests/test_behavior_suites.py
+          tooling/tests/test_supply_chain.py
+          tooling/tests/test_hashing_is_reproducible.py

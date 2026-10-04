@@ -4,7 +4,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
+import tempfile
 from copy import deepcopy
 from pathlib import Path
 
@@ -100,6 +102,9 @@ def build_scenario(name: str) -> tuple[dict, str]:
     elif name == "stale_current_claim":
         r["claim_uses"][0]["volatile_current"] = True
         r["sources"][1]["freshness"] = "STALE"
+    elif name == "stale_current_claim_unknown":
+        r["claim_uses"][0]["volatile_current"] = True
+        r["sources"][1]["freshness"] = "UNKNOWN"
     elif name == "scientific_without_readiness":
         r["publication"]["type"] = "SCIENTIFIC_MANUSCRIPT"
     elif name == "scientific_with_readiness":
@@ -185,6 +190,16 @@ def build_scenario(name: str) -> tuple[dict, str]:
         r["actions"]["now"] = "Ship it"
     elif name == "malformed_readiness_ref":
         r["scientific_readiness"] = {"status": "PASS", "evidence_ref": ["src-user"]}
+    elif name == "malformed_lifecycle_boolean":
+        r["lifecycle"]["brief_complete"] = "yes"
+    elif name == "malformed_source_authorized":
+        r["sources"][0]["authorized"] = "yes"
+    elif name == "malformed_source_freshness":
+        r["sources"][0]["freshness"] = "OLD"
+    elif name == "malformed_publication_evidence":
+        r["publication_evidence"] = [{"type": "", "locator": "https://example.com/guide"}]
+    elif name == "malformed_prior_publication_evidence":
+        r["prior_publication_evidence"] = [{"type": "URL", "locator": ""}]
     elif name == "claim_materiality_lowercase":
         r["claim_uses"][0]["materiality"] = "material"; r["claim_uses"][0]["evidence_refs"] = []
     elif name == "claim_kind_lowercase":
@@ -245,6 +260,24 @@ def run_case(path: Path) -> tuple[bool, str]:
         present = [line for line in case.get("manifest_excludes", []) if line in lines]
         if absent or present:
             return False, f"manifest missing={absent} unexpected={present}\n{manifest}"
+    cli = case.get("cli")
+    if cli:
+        with tempfile.TemporaryDirectory() as tmp:
+            report_path = Path(tmp) / "report.json"
+            report_path.write_text(json.dumps(report), encoding="utf-8")
+            command = [sys.executable, str(HERE / "publication_kernel.py"), cli["command"],
+                       "--report-json", str(report_path)]
+            if cli["command"] == "render-manifest":
+                command.extend(["--output", str(Path(tmp) / "manifest.md")])
+            result = subprocess.run(command, capture_output=True, text=True, check=False)
+        expected_output = cli.get("output")
+        if result.returncode != cli["returncode"] or (
+            expected_output and expected_output not in result.stdout
+        ):
+            return False, (
+                f"CLI expected returncode={cli['returncode']} output={expected_output!r}; "
+                f"actual returncode={result.returncode} stdout={result.stdout!r} stderr={result.stderr!r}"
+            )
     return True, ""
 
 

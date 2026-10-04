@@ -3,7 +3,8 @@
   "docs": [
     "references/output-contract.md",
     "references/evidence-model.md",
-    "references/pattern-transfer.md"
+    "references/pattern-transfer.md",
+    "references/clean-room-reconstruction.md"
   ],
   "scripts": {
     "scripts/validate_pattern_ledger.py": {
@@ -26,6 +27,18 @@
       "role": "kernel",
       "enums": {
         "VALID_GATES": "security_privacy"
+      }
+    },
+    "scripts/validate_recon_map.py": {
+      "input": "json",
+      "role": "validator"
+    },
+    "scripts/feature_matrix.py": {
+      "input": "json",
+      "role": "kernel",
+      "enums": {
+        "PRIORITY_WEIGHTS": "priority",
+        "STATUSES": "status"
       }
     }
   },
@@ -51,6 +64,20 @@
     "decision_reason": {},
     "evidence_ids": {},
     "target_evidence_ids": {},
+    "source_evidence_ids": {},
+    "boundaries": {},
+    "allowed": {},
+    "prohibited": {},
+    "default_transfer_mode": {},
+    "screens": {},
+    "states": {},
+    "flows": {},
+    "features": {},
+    "steps": {},
+    "priority": {},
+    "status": {},
+    "scope_reason": {},
+    "unknowns": {},
     "transfer": {},
     "problem_fit": {},
     "mechanism_fit": {},
@@ -149,6 +176,21 @@
         "INFERRED",
         "HYPOTHESIS",
         "UNKNOWN"
+      ]
+    },
+    "priority": {
+      "enum": [
+        "must",
+        "should",
+        "could"
+      ]
+    },
+    "status": {
+      "enum": [
+        "done",
+        "partial",
+        "missing",
+        "skip"
       ]
     },
     "category": {
