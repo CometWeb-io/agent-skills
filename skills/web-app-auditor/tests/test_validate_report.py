@@ -32,6 +32,51 @@ def _load(name: str) -> dict:
     return json.loads((FIXTURES / name).read_text(encoding="utf-8"))
 
 
+def _contract_trace() -> dict:
+    return {
+        "schema": "cometweb.contract-trace/v1",
+        "revision": "a" * 40,
+        "build": "build-1",
+        "environment": "staging",
+        "journey_id": "save",
+        "claim": "bounded",
+        "nodes": [
+            {"id": "ui", "kind": "ui"},
+            {"id": "api", "kind": "api"},
+            {"id": "job", "kind": "job"},
+            {"id": "durable", "kind": "durable"},
+        ],
+        "evidence": [
+            {"id": "E1", "channel": "browser", "locator": "browser-run-1"},
+            {"id": "E2", "channel": "joined", "locator": "joined-run-1"},
+        ],
+        "edges": [
+            {"id": "ui-api", "from": "ui", "to": "api", "kind": "request", "state": "pass", "evidence_ids": ["E1"]},
+            {"id": "api-job", "from": "api", "to": "job", "kind": "job", "state": "pass", "evidence_ids": ["E2"]},
+            {"id": "job-durable", "from": "job", "to": "durable", "kind": "durable", "state": "pass", "evidence_ids": ["E2"]},
+        ],
+        "scenarios": [
+            {"id": "happy", "kind": "happy", "status": "pass", "evidence_ids": ["E2"]},
+            {"id": "null", "kind": "null_partial", "status": "pass", "evidence_ids": ["E2"]},
+            {"id": "retry", "kind": "retry_duplicate", "status": "pass", "evidence_ids": ["E2"]},
+            {"id": "tenant", "kind": "wrong_tenant", "status": "pass", "evidence_ids": ["E2"]},
+            {"id": "rollback", "kind": "rollback", "status": "pass", "evidence_ids": ["E2"]},
+        ],
+    }
+
+
+def _contract_report() -> dict:
+    report = copy.deepcopy(_load("report-valid.json"))
+    trace = _contract_trace()
+    report["mode"] = "contract-trace"
+    report["verdict"] = "incomplete"
+    report["contractTrace"] = {
+        "trace": trace,
+        "result": validate_report.contract_trace_kernel.result(trace),
+    }
+    return report
+
+
 class ValidateReportTests(unittest.TestCase):
     def test_valid_fixture_passes(self) -> None:
         result = validate(_load("report-valid.json"))
@@ -105,6 +150,55 @@ class ValidateReportTests(unittest.TestCase):
         report["schemaVersion"] = "1.0"
         result = validate(report)
         self.assertTrue(any("schemaVersion" in e for e in result.errors))
+
+    def test_contract_trace_report_requires_a_bound_kernel_result(self) -> None:
+        report = _contract_report()
+        self.assertEqual(validate(report).errors, [])
+
+        report["contractTrace"]["result"]["result"] = "incomplete"
+        result = validate(report)
+        self.assertTrue(any("does not match" in error for error in result.errors))
+
+    def test_incomplete_contract_trace_cannot_authorize_shipping(self) -> None:
+        report = _contract_report()
+        report["contractTrace"]["trace"]["claim"] = "incomplete"
+        report["contractTrace"]["result"] = validate_report.contract_trace_kernel.result(
+            report["contractTrace"]["trace"]
+        )
+        report["verdict"] = "ship"
+        report["counts"] = {key: 0 for key in report["counts"]}
+        report["findings"] = []
+        report["coverage"] = {
+            "totalInScope": 5,
+            "tested": 5,
+            "sampled": 0,
+            "policyBlocked": 0,
+            "environmentBlocked": 0,
+            "unreachable": 0,
+        }
+        result = validate(report)
+        self.assertTrue(any("incomplete contract trace" in error for error in result.errors))
+
+    def test_browser_only_backend_proof_invalidates_contract_report(self) -> None:
+        report = _contract_report()
+        report["contractTrace"]["trace"]["edges"][1]["evidence_ids"] = ["E1"]
+        report["contractTrace"]["result"] = validate_report.contract_trace_kernel.result(
+            report["contractTrace"]["trace"]
+        )
+        result = validate(report)
+        self.assertTrue(any("browser-evidence" in error for error in result.errors))
+
+    def test_malformed_contract_trace_fails_closed(self) -> None:
+        report = _contract_report()
+        report["contractTrace"]["trace"]["nodes"] = None
+        report["contractTrace"]["result"] = {
+            "schema": "cometweb.contract-trace-result/v1",
+            "status": "INVALID",
+            "result": "incomplete",
+            "errors": ["nodes:required-non-empty-list"],
+        }
+        result = validate(report)
+        self.assertTrue(result.errors)
 
     def test_documented_validator_statuses_pass(self) -> None:
         for status in ("passed", "warnings", "not run"):

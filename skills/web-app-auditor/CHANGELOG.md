@@ -4,6 +4,9 @@
 
 - Added bounded `contract-trace` mode with scenario accounting, evidence
   channels, and explicit browser-only limits.
+- Contract-trace report sidecars now bind to the kernel result; incomplete,
+  browser-only backend claims, malformed traces, and mismatched results fail
+  closed in report validation and output grading.
 
 ## 1.4.2 — 2026-10-03
 

@@ -15,7 +15,7 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `science-roaster` | 11,967 B | 2,991 | 74,408 B | 18,602 | 21 | 0.86 |
 | `repo-to-roadmap` | 11,946 B | 2,986 | 61,545 B | 15,386 | 12 | 0.84 |
 | `portfolio-operator` | 11,910 B | 2,977 | 19,888 B | 4,972 | 6 | 0.63 |
-| `web-app-auditor` | 11,908 B | 2,977 | 56,233 B | 14,058 | 16 | 0.83 |
+| `web-app-auditor` | 11,908 B | 2,977 | 57,526 B | 14,381 | 16 | 0.83 |
 | `seo-geo-aeo-maxxing` | 11,894 B | 2,973 | 75,883 B | 18,970 | 19 | 0.86 |
 | `repo-roaster` | 11,863 B | 2,965 | 76,873 B | 19,218 | 20 | 0.87 |
 | `customer-ops` | 11,843 B | 2,960 | 131,361 B | 32,840 | 18 | 0.92 |
@@ -30,7 +30,7 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `product-operator` | 9,900 B | 2,475 | 43,181 B | 10,795 | 12 | 0.81 |
 | `competitive-intelligence` | 9,329 B | 2,332 | 38,900 B | 9,725 | 7 | 0.81 |
 | `quality-loop-operator` | 8,721 B | 2,180 | 15,137 B | 3,784 | 14 | 0.63 |
-| `skill-orchestrator` | 6,775 B | 1,693 | 12,523 B | 3,130 | 5 | 0.65 |
+| `skill-orchestrator` | 6,775 B | 1,693 | 14,359 B | 3,589 | 5 | 0.68 |
 | `brief-architect` | 6,689 B | 1,672 | 7,335 B | 1,833 | 5 | 0.52 |
 | `repair-operator` | 6,141 B | 1,535 | 8,347 B | 2,086 | 6 | 0.58 |
 | `content-writer` | 6,038 B | 1,509 | 8,508 B | 2,127 | 6 | 0.58 |
@@ -44,6 +44,6 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `benchmark-curator` | 3,803 B | 950 | 6,594 B | 1,648 | 7 | 0.63 |
 | `competitor-profiling` | 2,994 B | 748 | 1,266 B | 316 | 1 | 0.30 |
 | `research-program-operator` | 2,903 B | 725 | 1,310 B | 327 | 1 | 0.31 |
-| `skill-orchestrator-multiagent` | 1,629 B | 407 | 12,753 B | 3,188 | 4 | 0.89 |
+| `skill-orchestrator-multiagent` | 1,887 B | 471 | 15,731 B | 3,932 | 5 | 0.89 |
 
-**34 skills.** Loading every front door costs roughly 71,638 tokens before any work begins; the median skill costs ~2,403 and the largest ~2,999.
+**34 skills.** Loading every front door costs roughly 71,702 tokens before any work begins; the median skill costs ~2,403 and the largest ~2,999.

@@ -58,6 +58,21 @@ RUN_SCHEMA = "cometweb.real-host-eval-run/v1"
 RECORD_SCHEMA = "cometweb.real-host-eval-record/v1"
 GRADES_SCHEMA = "cometweb.real-host-eval-grades/v1"
 REPORT_SCHEMA = "cometweb.real-host-eval-report/v1"
+PLAN_SCHEMA_V1 = PLAN_SCHEMA
+RUN_SCHEMA_V1 = RUN_SCHEMA
+RECORD_SCHEMA_V1 = RECORD_SCHEMA
+GRADES_SCHEMA_V1 = GRADES_SCHEMA
+REPORT_SCHEMA_V1 = REPORT_SCHEMA
+PLAN_SCHEMA_V2 = "cometweb.real-host-eval-plan/v2"
+RUN_SCHEMA_V2 = "cometweb.real-host-eval-run/v2"
+RECORD_SCHEMA_V2 = "cometweb.real-host-eval-record/v2"
+GRADES_SCHEMA_V2 = "cometweb.real-host-eval-grades/v2"
+REPORT_SCHEMA_V2 = "cometweb.real-host-eval-report/v2"
+PLAN_SCHEMA = PLAN_SCHEMA_V2
+RUN_SCHEMA = RUN_SCHEMA_V2
+RECORD_SCHEMA = RECORD_SCHEMA_V2
+GRADES_SCHEMA = GRADES_SCHEMA_V2
+REPORT_SCHEMA = REPORT_SCHEMA_V2
 
 PLUGIN = "cometweb-agent-skills"
 ROUTING_SOURCES = ("evals/routing/suite.json", "evals/routing/adversarial-suite.json")
@@ -110,6 +125,79 @@ def canonical(data: Any) -> bytes:
 
 def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def inventory_digest(root: Path, paths: list[Path]) -> tuple[str, dict[str, str]]:
+    """Hash an ordered file inventory, including paths to prevent substitution."""
+    files: dict[str, str] = {}
+    for path in sorted(paths):
+        if not path.is_file():
+            raise ValueError(f"missing fingerprint input: {path}")
+        files[path.relative_to(root).as_posix()] = sha256(path.read_bytes())
+    return sha256(canonical(files)), files
+
+
+def acceptance_fingerprints(root: Path = ROOT) -> dict[str, Any]:
+    """Return the inputs frozen by a v2 plan and copied into every run manifest."""
+    candidate_paths = [
+        root / "VERSION",
+        root / ".claude-plugin" / "plugin.json",
+        root / ".cursor-plugin" / "plugin.json",
+        root / "plugin.json",
+        root / "registry" / "plugin-release.json",
+        root / "registry" / "skills.json",
+    ]
+    benchmark_paths = [root / rel for rel in (*ROUTING_SOURCES, *MODEL_SOURCES)]
+    rubric_paths = sorted((root / "evals" / "output").glob("*/rubric.json"))
+    candidate_sha256, candidate_sources = inventory_digest(root, candidate_paths)
+    benchmark_sha256, benchmark_sources = inventory_digest(root, benchmark_paths)
+    rubric_sha256, rubric_sources = inventory_digest(root, rubric_paths)
+    host_config = root / "registry" / "runtime-hosts.json"
+    if not host_config.is_file():
+        raise ValueError(f"missing fingerprint input: {host_config}")
+    host_config_sha256 = sha256(host_config.read_bytes())
+    with tempfile.TemporaryDirectory(prefix="cw-real-host-payload-") as tmp:
+        from host_smoke import stage_payload
+
+        payload_sha256 = payload_digest(stage_payload(Path(tmp) / "stage", root))
+    return {
+        "candidate_sha256": candidate_sha256,
+        "payload_sha256": payload_sha256,
+        "benchmark_sha256": benchmark_sha256,
+        "rubric_sha256": rubric_sha256,
+        "host_config_sha256": host_config_sha256,
+        "candidate_sources": candidate_sources,
+        "benchmark_sources": benchmark_sources,
+        "rubric_sources": rubric_sources,
+    }
+
+
+def frozen_hashes(plan_or_manifest: dict[str, Any]) -> dict[str, str]:
+    """Read v2 hashes while tolerating v1 artifacts that have none."""
+    hashes = plan_or_manifest.get("frozen_hashes")
+    if isinstance(hashes, dict):
+        return {name: value for name, value in hashes.items() if isinstance(value, str)}
+    return {
+        name: plan_or_manifest[name]
+        for name in ("candidate_sha256", "payload_sha256", "benchmark_sha256",
+                     "rubric_sha256", "host_config_sha256")
+        if isinstance(plan_or_manifest.get(name), str)
+    }
+
+
+def assert_fingerprints_current(plan: dict[str, Any], root: Path = ROOT) -> None:
+    """Refuse a v2 plan whose frozen inputs changed after planning."""
+    expected = frozen_hashes(plan)
+    if not expected:
+        return
+    actual = acceptance_fingerprints(root)
+    mismatches = [
+        name for name in ("candidate_sha256", "payload_sha256", "benchmark_sha256",
+                          "rubric_sha256", "host_config_sha256")
+        if expected.get(name) and expected[name] != actual[name]
+    ]
+    if mismatches:
+        raise ValueError("frozen acceptance inputs changed: " + ", ".join(mismatches))
 
 
 def estimate_tokens(text: str) -> int:
@@ -236,6 +324,7 @@ def build_plan(root: Path = ROOT, *, skills: list[str] | None = None, per_skill:
     sources = {rel: sha256((root / rel).read_bytes()) for rel in (*ROUTING_SOURCES, *MODEL_SOURCES)}
     plan = {
         "schema": PLAN_SCHEMA,
+        "acceptance_version": 2,
         "repo_version": (root / "VERSION").read_text(encoding="utf-8").strip(),
         "sources": sources,
         "excluded_sources": list(FORBIDDEN_SOURCES),
@@ -245,6 +334,15 @@ def build_plan(root: Path = ROOT, *, skills: list[str] | None = None, per_skill:
         "tasks": tasks,
         "skipped": skipped,
     }
+    hashes = acceptance_fingerprints(root)
+    plan["frozen_hashes"] = {name: hashes[name] for name in (
+        "candidate_sha256", "payload_sha256", "benchmark_sha256",
+        "rubric_sha256", "host_config_sha256"
+    )}
+    plan["fingerprint_sources"] = {
+        name: hashes[name] for name in ("candidate_sources", "benchmark_sources", "rubric_sources")
+    }
+    plan.update(plan["frozen_hashes"])
     plan["plan_sha256"] = plan_digest(plan)
     return plan
 
@@ -259,12 +357,14 @@ def plan_digest(plan: dict[str, Any]) -> str:
 
 def load_plan(path: Path) -> dict[str, Any]:
     plan = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(plan, dict) or plan.get("schema") != PLAN_SCHEMA:
-        raise ValueError(f"{path} is not a {PLAN_SCHEMA} plan")
+    if not isinstance(plan, dict) or plan.get("schema") not in {PLAN_SCHEMA_V1, PLAN_SCHEMA_V2}:
+        raise ValueError(f"{path} is not a supported real-host eval plan")
     if plan.get("plan_sha256") != plan_digest(plan):
         raise ValueError(f"{path} was edited after it was planned (plan_sha256 does not match); re-run plan")
     if not isinstance(plan.get("tasks"), list) or not plan["tasks"]:
         raise ValueError("plan has no tasks")
+    if plan.get("acceptance_version") == 2:
+        assert_fingerprints_current(plan)
     return plan
 
 
@@ -424,14 +524,17 @@ def payload_digest(stage: Path) -> str:
 
 
 def materialize_not_run(plan: dict[str, Any], opts: RunOptions, out: Path,
-                        reason: str) -> dict[str, Any]:
+                        reason: str, root: Path = ROOT) -> dict[str, Any]:
     """Record every planned job without invoking an unsupported/unauthed host."""
     jobs = schedule(plan, opts)
+    if plan.get("acceptance_version") == 2:
+        assert_fingerprints_current(plan, root)
     out.mkdir(parents=True, exist_ok=True)
     (out / "runs").mkdir()
     write_json(out / "plan.json", plan)
     manifest = {
         "schema": RUN_SCHEMA,
+        "acceptance_version": plan.get("acceptance_version", 1),
         "execution_status": "NOT_RUN",
         "not_run_reason": reason,
         "plan_sha256": plan["plan_sha256"],
@@ -441,6 +544,9 @@ def materialize_not_run(plan: dict[str, Any], opts: RunOptions, out: Path,
         "repeat": opts.repeat,
         "planned_jobs": len(jobs),
     }
+    manifest.update(frozen_hashes(plan))
+    if "frozen_hashes" in plan:
+        manifest["frozen_hashes"] = dict(plan["frozen_hashes"])
     write_json(out / "manifest.json", manifest)
     for job in jobs:
         run_dir = out / "runs" / job["run_id"]
@@ -456,6 +562,7 @@ def materialize_not_run(plan: dict[str, Any], opts: RunOptions, out: Path,
             "execution_status": "NOT_RUN",
             "not_run_reason": reason,
             "activated_skills": [],
+            **({"frozen_hashes": dict(plan["frozen_hashes"])} if "frozen_hashes" in plan else {}),
         })
     summary = {
         **manifest,
@@ -592,6 +699,26 @@ def _run_capped(argv: list[str], env: dict[str, str], cwd: Path, stdin: str, tim
     return code, timed_out
 
 
+RETRYABLE_EXIT_CODES = {75, 408, 429, 502, 503, 504}
+RETRYABLE_ERROR_MARKERS = (
+    "rate limit", "too many requests", "temporarily unavailable", "try again",
+    "connection reset", "service unavailable", "overloaded",
+)
+
+
+def retry_metadata(status: str, exit_code: int | None, stderr: str) -> dict[str, Any]:
+    """Return retry fields only for failures with an explicit transient signal."""
+    if status == "timeout":
+        classification = "timeout"
+    elif exit_code in RETRYABLE_EXIT_CODES:
+        classification = f"exit_code_{exit_code}"
+    elif any(marker in stderr.lower() for marker in RETRYABLE_ERROR_MARKERS):
+        classification = "transient_host_error"
+    else:
+        return {}
+    return {"retryable": True, "retry_classification": classification, "attempt": 1}
+
+
 def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT,
             stream: Any = None) -> dict[str, Any]:
     from host_smoke import stage_payload
@@ -605,7 +732,7 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
     capability = runtime_preflight(opts.host, environment=os.environ, root=root,
                                    binary_override=binary_override)
     if capability["status"] != "READY":
-        summary = materialize_not_run(plan, opts, out, capability["reason"])
+        summary = materialize_not_run(plan, opts, out, capability["reason"], root)
         print(
             f"NOT_RUN: {summary['not_run_jobs']} job(s) on {opts.host}; "
             f"reason={summary['not_run_reason']}",
@@ -628,7 +755,8 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
         probe = subprocess.run([opts.bin, "--version"], env=build_env(host, version_base),  # nosec B603
                                cwd=version_base, capture_output=True, text=True, timeout=60, check=False)
         manifest = {
-            "schema": RUN_SCHEMA, "plan_sha256": plan["plan_sha256"], "repo_version": plan["repo_version"],
+            "schema": RUN_SCHEMA, "acceptance_version": plan.get("acceptance_version", 1),
+            "plan_sha256": plan["plan_sha256"], "repo_version": plan["repo_version"],
             "host": opts.host, "host_version": (probe.stdout or probe.stderr).strip()[:200],
             "model_requested": opts.model, "conditions": list(opts.conditions), "repeat": opts.repeat,
             "payload_sha256": payload_digest(stage),
@@ -638,6 +766,13 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
             "prices_per_mtok": {"input": opts.price_in, "output": opts.price_out},
             "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "planned_jobs": len(jobs),
         }
+        planned_hashes = frozen_hashes(plan)
+        if planned_hashes.get("payload_sha256") and manifest["payload_sha256"] != planned_hashes["payload_sha256"]:
+            raise ValueError("staged plugin payload differs from the plan fingerprint")
+        manifest.update({name: value for name, value in planned_hashes.items()
+                         if name != "payload_sha256"})
+        if "frozen_hashes" in plan:
+            manifest["frozen_hashes"] = dict(plan["frozen_hashes"])
         write_json(out / "manifest.json", manifest)
         spent_usd = 0.0
         spent_tokens = 0
@@ -668,7 +803,8 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
                   file=stream)
     summary = {**manifest, "finished_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                "completed_jobs": sum(r["status"] == "executed" for r in records),
-               "error_jobs": sum(r["status"] != "executed" for r in records),
+               "error_jobs": sum(r["status"] not in {"executed", "not_run"} for r in records),
+               "not_run_jobs": sum(r["status"] == "not_run" for r in records),
                "not_started_jobs": len(jobs) - len(records), "stop_reason": stop_reason,
                "spent_usd": round(spent_usd, 6), "spent_tokens": spent_tokens,
                "models_reported": sorted({r["model"] for r in records if r.get("model")})}
@@ -689,9 +825,11 @@ def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out:
     setup, argv = build_commands(opts, job["condition"], stage, out_file)
     prompt = render_prompt(task)
     record: dict[str, Any] = {
-        "schema": RECORD_SCHEMA, "run_id": job["run_id"], "task_id": task["id"], "skill": task["skill"],
+        "schema": RECORD_SCHEMA, "acceptance_version": 2, "run_id": job["run_id"],
+        "task_id": task["id"], "skill": task["skill"],
         "condition": job["condition"], "repeat": job["repeat"], "argv": argv, "setup": setup,
-        "env_keys": sorted(env), "prompt_sha256": sha256(prompt.encode("utf-8")), "status": "executed",
+        "env_keys": sorted(env), "prompt_sha256": sha256(prompt.encode("utf-8")),
+        "status": "executed", "execution_status": "EXECUTED",
         "exit_code": None, "elapsed_seconds": None, "cost_usd": None, "input_tokens": None, "output_tokens": None,
         "model": None, "num_turns": None, "activated_skills": [],
     }
@@ -700,8 +838,11 @@ def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out:
         proc = subprocess.run(cmd, env=env, cwd=cwd, capture_output=True, text=True,  # nosec B603
                               timeout=120, check=False)
         if proc.returncode != 0:
-            record.update(status="setup_error", exit_code=proc.returncode)
+            record.update(status="setup_error", execution_status="ERROR", exit_code=proc.returncode)
             (run_dir / f"setup-{index}.stderr.txt").write_text(proc.stderr[-4000:], encoding="utf-8")
+            retry = retry_metadata("error", proc.returncode, proc.stderr)
+            if retry:
+                record.update(retry)
             write_json(run_dir / "record.json", record)
             shutil.rmtree(base, ignore_errors=True)
             return record
@@ -724,6 +865,12 @@ def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out:
         record["status"] = "timeout"
     elif code != 0 or parsed["is_error"] or not output:
         record["status"] = "error"
+    if record["status"] != "executed":
+        record["execution_status"] = "ERROR"
+        retry = retry_metadata(record["status"], code, (run_dir / "stderr.txt").read_text(
+            encoding="utf-8", errors="replace"))
+        if retry:
+            record.update(retry)
     if output is not None:
         out_file.write_text(output, encoding="utf-8")
     write_json(run_dir / "record.json", record)
@@ -789,7 +936,14 @@ def grade_run(run_dir: Path, root: Path = ROOT) -> dict[str, Any]:
         executed = record["status"] == "executed"
         for check in task["checks"]:
             if not executed:
-                checks[check] = {"status": "not_run", "reason": record["status"]}
+                checks[check] = {
+                    "status": "not_run",
+                    "reason": record.get("not_run_reason", record["status"]),
+                    "execution_status": record.get(
+                        "execution_status",
+                        "NOT_RUN" if record["status"] == "not_run" else "ERROR",
+                    ),
+                }
             elif check == "routing":
                 checks[check] = (routing_check(task, record["activated_skills"]) if record["condition"] == "plugin"
                                  else {"status": "n/a", "reason": "baseline has no skills to load"})
@@ -799,10 +953,22 @@ def grade_run(run_dir: Path, root: Path = ROOT) -> dict[str, Any]:
         results.append({"run_id": record["run_id"], "task_id": record["task_id"], "skill": record["skill"],
                         "role": task["role"], "condition": record["condition"], "repeat": record["repeat"],
                         "run_status": record["status"], "model": record.get("model"), "checks": checks})
-    grades = {"schema": GRADES_SCHEMA, "plan_sha256": manifest["plan_sha256"], "host": manifest["host"],
+    counts = {
+        "completed": sum(r["run_status"] == "executed" for r in results),
+        "errors": sum(r["run_status"] not in {"executed", "not_run"} for r in results),
+        "not_run": sum(r["run_status"] == "not_run" for r in results),
+    }
+    grades = {"schema": GRADES_SCHEMA, "acceptance_version": manifest.get("acceptance_version", 1),
+              "plan_sha256": manifest["plan_sha256"], "host": manifest["host"],
               "host_version": manifest.get("host_version"), "model_requested": manifest.get("model_requested"),
               "models_reported": manifest.get("models_reported", []), "payload_sha256": manifest.get("payload_sha256"),
-              "results": results}
+              "candidate_sha256": manifest.get("candidate_sha256"),
+              "benchmark_sha256": manifest.get("benchmark_sha256"),
+              "rubric_sha256": manifest.get("rubric_sha256"),
+              "host_config_sha256": manifest.get("host_config_sha256"),
+              "frozen_hashes": frozen_hashes(manifest), "counts": counts,
+              "completed_jobs": counts["completed"], "error_jobs": counts["errors"],
+              "not_run_jobs": counts["not_run"], "results": results}
     write_json(run_dir / "grades.json", grades)
     return grades
 
@@ -829,13 +995,15 @@ def sign_test(b: int, c: int) -> float:
     return min(1.0, 2 * tail)
 
 
-def _rate(rows: list[str]) -> dict[str, Any]:
+def _rate(rows: list[str], run_statuses: list[str] | None = None) -> dict[str, Any]:
     n = sum(1 for r in rows if r in ("pass", "fail"))
     passes = sum(1 for r in rows if r == "pass")
     ci = wilson(passes, n)
+    run_statuses = run_statuses or rows
     return {"n": n, "pass": passes, "rate": round(passes / n, 4) if n else None,
             "ci95": [round(ci[0], 4), round(ci[1], 4)] if ci else None,
-            "not_run": sum(1 for r in rows if r == "not_run")}
+            "not_run": sum(1 for status in run_statuses if status == "not_run"),
+            "errors": sum(1 for status in run_statuses if status not in {"executed", "not_run"})}
 
 
 def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
@@ -856,6 +1024,9 @@ def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
         warnings.append("more than one model answered: " + ", ".join(models))
     if len({g.get("payload_sha256") for g in grade_sets}) > 1:
         warnings.append("the plugin payload differs between runs")
+    frozen = {json.dumps(frozen_hashes(g), sort_keys=True) for g in grade_sets}
+    if len(frozen) > 1:
+        warnings.append("grades carry different frozen acceptance hashes")
 
     per: dict[str, Any] = {}
     for cond in conditions:
@@ -863,15 +1034,24 @@ def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
         for check in ("routing", "output"):
             cells = {}
             for skill in sorted({r["skill"] for r in rows}):
-                vals = [r["checks"][check]["status"] for r in rows
-                        if r["condition"] == cond and r["skill"] == skill and check in r["checks"]
+                selected = [r for r in rows
+                            if r["condition"] == cond and r["skill"] == skill and check in r["checks"]
+                            and r["checks"][check]["status"] != "n/a"]
+                if selected:
+                    cells[skill] = _rate(
+                        [r["checks"][check]["status"] for r in selected],
+                        [r["run_status"] for r in selected],
+                    )
+            selected = [r for r in rows if r["condition"] == cond and check in r["checks"]
                         and r["checks"][check]["status"] != "n/a"]
-                if vals:
-                    cells[skill] = _rate(vals)
-            all_vals = [r["checks"][check]["status"] for r in rows if r["condition"] == cond and check in r["checks"]
-                        and r["checks"][check]["status"] != "n/a"]
-            if all_vals:
-                per[cond][check] = {"overall": _rate(all_vals), "skills": cells}
+            if selected:
+                per[cond][check] = {
+                    "overall": _rate(
+                        [r["checks"][check]["status"] for r in selected],
+                        [r["run_status"] for r in selected],
+                    ),
+                    "skills": cells,
+                }
 
     paired = None
     if set(conditions) == set(CONDITIONS):
@@ -888,9 +1068,14 @@ def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
                   "both_fail": sum(1 for v in pairs if v["plugin"] == v["baseline"] == "fail"),
                   "exact_p_two_sided": round(sign_test(b, c), 6),
                   "comparable": not warnings}
-    return {"schema": REPORT_SCHEMA, "plans": sorted(plans), "hosts": [f"{h} {v}".strip() for h, v in sorted(hosts)],
+    run_errors = sum(1 for r in rows if r["run_status"] not in {"executed", "not_run"})
+    run_not_run = sum(1 for r in rows if r["run_status"] == "not_run")
+    return {"schema": REPORT_SCHEMA, "acceptance_version": 2,
+            "plans": sorted(plans), "hosts": [f"{h} {v}".strip() for h, v in sorted(hosts)],
             "models": models, "conditions": conditions, "runs": len(rows),
-            "run_errors": sum(1 for r in rows if r["run_status"] != "executed"),
+            "run_errors": run_errors, "run_not_run": run_not_run,
+            "error_jobs": run_errors, "not_run_jobs": run_not_run,
+            "frozen_hashes": [frozen_hashes(g) for g in grade_sets],
             "warnings": warnings, "results": per, "paired": paired}
 
 
@@ -906,16 +1091,18 @@ def render_markdown(report: dict[str, Any]) -> str:
              f"- Hosts: {', '.join(report['hosts'])}",
              f"- Models reported: {', '.join(report['models']) or 'none reported'}",
              f"- Plan: {', '.join(p[:12] for p in report['plans'])}",
-             f"- Runs: {report['runs']} ({report['run_errors']} did not complete and are not in any rate)", ""]
+             f"- Runs: {report['runs']} ({report['run_errors']} errors, {report['run_not_run']} not run; "
+             "neither is in any rate)", ""]
     if report["warnings"]:
         lines += ["## Warnings", ""] + [f"- {w}" for w in report["warnings"]] + [""]
     for cond, checks in report["results"].items():
         for check, block in checks.items():
             lines += [f"## {check.title()} - {cond}", "",
                       f"Overall: {_pct(block['overall'])}. Cells are pass/n (rate, Wilson 95% interval).", "",
-                      "| Skill | Pass/n (rate, 95% CI) | Not run |", "| --- | --- | --- |"]
+                      "| Skill | Pass/n (rate, 95% CI) | Not run | Errors |",
+                      "| --- | --- | --- | --- |"]
             for skill, cell in block["skills"].items():
-                lines.append(f"| `{skill}` | {_pct(cell)} | {cell['not_run']} |")
+                lines.append(f"| `{skill}` | {_pct(cell)} | {cell['not_run']} | {cell['errors']} |")
             lines.append("")
     paired = report.get("paired")
     if paired:

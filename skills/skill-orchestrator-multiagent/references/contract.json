@@ -26,6 +26,10 @@
     "scripts/validate_envelope.py": {
       "input": "json",
       "role": "validator"
+    },
+    "scripts/workflow_ledger.py": {
+      "input": "args",
+      "role": "helper"
     }
   },
   "fields": {

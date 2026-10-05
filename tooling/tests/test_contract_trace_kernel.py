@@ -59,6 +59,22 @@ def test_browser_evidence_cannot_prove_backend_edge():
     assert any("browser-evidence" in error for error in contract_trace_kernel.validate(payload))
 
 
+def test_browser_evidence_cannot_prove_service_edge():
+    payload = trace()
+    payload["nodes"].append({"id": "service", "kind": "service"})
+    payload["edges"].append(
+        {
+            "id": "api-service",
+            "from": "api",
+            "to": "service",
+            "kind": "request",
+            "state": "pass",
+            "evidence_ids": ["E1"],
+        }
+    )
+    assert any("browser-evidence" in error for error in contract_trace_kernel.validate(payload))
+
+
 @pytest.mark.parametrize("mutation", [
     lambda payload: payload["scenarios"].pop(),
     lambda payload: payload["scenarios"][0].update(status="unknown"),
@@ -76,3 +92,32 @@ def test_cli_returns_json_error(tmp_path: Path):
     proc = subprocess.run([sys.executable, str(SCRIPT), str(path)], capture_output=True, text=True)
     assert proc.returncode == 1
     assert json.loads(proc.stdout)["status"] == "INVALID"
+
+
+@pytest.mark.parametrize(
+    "path,bad_value",
+    [
+        (("claim",), []),
+        (("nodes", 0, "id"), []),
+        (("evidence", 0, "channel"), []),
+        (("edges", 0, "state"), []),
+        (("scenarios", 0, "kind"), []),
+    ],
+)
+def test_malformed_nested_values_fail_closed(path: tuple[object, ...], bad_value: object):
+    payload = trace()
+    target = payload
+    for key in path[:-1]:
+        target = target[key]  # type: ignore[index]
+    target[path[-1]] = bad_value  # type: ignore[index]
+    errors = contract_trace_kernel.validate(payload)
+    assert errors
+    assert all(isinstance(error, str) for error in errors)
+
+
+def test_duplicate_scenario_kind_is_invalid():
+    payload = trace()
+    payload["scenarios"].append(
+        {"id": "happy-2", "kind": "happy", "status": "pass", "evidence_ids": ["E2"]}
+    )
+    assert any("kind:duplicate" in error for error in contract_trace_kernel.validate(payload))

@@ -195,7 +195,7 @@ Every field, as `assets/audit-report.schema.json` and
 ```text
 schemaVersion: "1.1"
 target
-mode: page|area|crawl|flow|data|visual|regression|a11y
+mode: page|area|crawl|flow|data|visual|regression|a11y|contract-trace
 depth: recon|standard|forensic
 confidence: high|medium|low
 verdict: do_not_ship|ship_with_fixes|ship|incomplete
@@ -214,6 +214,7 @@ evidence[]: {id: E-NNN, type: screenshot|dom|text|arithmetic|console|network|sou
   location, supports[]: F-NNN, redacted: yes|no|n/a}
 coverage: {totalInScope, tested, sampled, policyBlocked, environmentBlocked,
   unreachable, samplingRule?}
+contractTrace?: {trace: bounded trace sidecar, result: exact kernel result}
 contradictionMatrix[]?
 recommendedNextAudit?
 outOfScope[]?
@@ -223,6 +224,14 @@ outOfScope[]?
 prints `{ok, errors[], warnings[]}`. These names are also declared in
 `references/contract.json`, which `tooling/skill_contracts.py` checks against
 the validator, the schemas and this section.
+
+For `mode: "contract-trace"`, `contractTrace` is required. Its `trace` is the
+sidecar accepted by `scripts/contract_trace_kernel.py`; its `result` must be
+the exact `schema`, `status`, `result`, and `errors` object computed from that
+trace. A valid trace with `result: "incomplete"` may be reported only as
+`incomplete` or `do_not_ship`; it cannot authorize `ship` or
+`ship_with_fixes`. An invalid trace invalidates the report even when the prose
+says do not ship.
 
 ## 11. Tone
 

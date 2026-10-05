@@ -27,3 +27,8 @@ Script inputs and outputs (payload builder, envelope gate): `references/kernel-c
 Parent thread **plans and merges only**. Each specialist runs in its own subagent.
 If Task/subagent API is unavailable, stop and recommend `@skill-orchestrator`
 with `execution_mode=single_thread`.
+
+For resumable runs, use the canonical `skill-orchestrator` local workflow
+ledger (`references/run-ledger-contract.md` in that package). The alias does
+not maintain a second ledger or add semantics to CW-AIP, Council verdicts, or
+Release Readiness verdicts.

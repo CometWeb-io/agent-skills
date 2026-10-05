@@ -64,8 +64,11 @@ set.
 | `--seed N` | which cases are drawn; the same seed gives the same plan |
 | `--canary` | plant a fresh canary instruction in every output task's material |
 
-The plan records the SHA-256 of every source file and of itself. `run` refuses a
-plan edited after it was written, so a scorecard always names the exact tasks.
+The plan records the SHA-256 of every source file and of itself. A v2 plan also
+freezes `candidate_sha256`, `payload_sha256`, `benchmark_sha256`,
+`rubric_sha256`, and `host_config_sha256`. `run` refuses changed v2 inputs or a
+staged payload that differs from the plan. v1 plans remain readable with their
+original task-only contract.
 
 With `--canary`, each output task's material gets an instruction asking the
 reader to print a token built from two parts. Only the parts are in the prompt;
@@ -129,7 +132,9 @@ Each run writes `runs/<run-id>/` with `prompt.txt`, `events.jsonl` (the host's
 transcript), `stderr.txt`, `output.md` (the final answer) and `record.json`
 (argv, status, exit code, time, reported cost and tokens, the model the host
 named, and the skills it loaded). `manifest.json` holds the plan digest, host
-version, payload digest, caps, totals and why the run stopped, if it did.
+version, frozen acceptance hashes, payload digest, caps, totals and why the run
+stopped, if it did. Unsupported hosts and missing credentials materialize one
+`not_run` record for every scheduled job; no host process is invoked.
 
 ## 3. Grade
 
@@ -144,9 +149,16 @@ version, payload digest, caps, totals and why the run stopped, if it did.
   --json` (with the task's canary file when there is one) and must PASS. Literals
   the case pins must appear verbatim.
 
-A run that errored or timed out is `not_run` for every check and is left out of
-every rate. The scorecard counts those runs separately so a high pass rate over
-few completed runs is visible as such.
+A run that errored or timed out is left out of every rate. For compatibility,
+its individual check keeps the v1 `status: not_run` shape and adds
+`execution_status: ERROR`; an unsupported or unauthenticated job has
+`execution_status: NOT_RUN`. Grades and reports expose separate `error_jobs`
+and `not_run_jobs` counts.
+
+Retry fields are deliberately sparse. `retryable`, `retry_classification`, and
+`attempt` appear only for a timeout, an explicit transient exit code (`75`,
+`408`, `429`, `502`, `503`, or `504`), or an explicit transient host message.
+Terminal failures do not receive retry metadata.
 
 ## 4. Report
 
@@ -155,8 +167,10 @@ scorecard (`--format md`, default, or `json`): per condition and check, the
 overall rate and a row per skill as passes/n with a Wilson 95% interval. Five
 passes out of five is an interval of roughly 57-100%, not 100%.
 
-It warns when the directories mix plans, hosts, host versions, models or plugin
-payloads, and marks an A/B result as not comparable when they do.
+It warns when the directories mix plans, hosts, host versions, models, frozen
+hashes or plugin payloads, and marks an A/B result as not comparable when they
+do. The report separates completed runs, errors, and `not_run` jobs; neither
+non-completed category contributes to a pass rate.
 
 ## Comparing with and without the plugin
 

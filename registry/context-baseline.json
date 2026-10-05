@@ -2,7 +2,7 @@
   "schema": "cometweb.context-budget/v1",
   "unit": "bytes; token counts are estimates at 4 bytes/token",
   "skill_count": 34,
-  "total_front_door_tokens_estimated": 71469,
+  "total_front_door_tokens_estimated": 71702,
   "median_front_door_tokens_estimated": 2403,
   "max_front_door_tokens_estimated": 2999,
   "skills": [
@@ -287,30 +287,30 @@
     },
     {
       "id": "skill-orchestrator",
-      "front_door_bytes": 6354,
-      "front_door_tokens_estimated": 1588,
-      "depth_bytes": 11381,
-      "depth_tokens_estimated": 2845,
-      "reference_files": 4,
-      "deferred_ratio": 0.6417
+      "front_door_bytes": 6775,
+      "front_door_tokens_estimated": 1693,
+      "depth_bytes": 14359,
+      "depth_tokens_estimated": 3589,
+      "reference_files": 5,
+      "deferred_ratio": 0.6794
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "front_door_bytes": 1629,
-      "front_door_tokens_estimated": 407,
-      "depth_bytes": 12753,
-      "depth_tokens_estimated": 3188,
-      "reference_files": 4,
-      "deferred_ratio": 0.8867
+      "front_door_bytes": 1887,
+      "front_door_tokens_estimated": 471,
+      "depth_bytes": 15731,
+      "depth_tokens_estimated": 3932,
+      "reference_files": 5,
+      "deferred_ratio": 0.8929
     },
     {
       "id": "web-app-auditor",
-      "front_door_bytes": 11653,
-      "front_door_tokens_estimated": 2913,
-      "depth_bytes": 54613,
-      "depth_tokens_estimated": 13653,
-      "reference_files": 15,
-      "deferred_ratio": 0.8241
+      "front_door_bytes": 11908,
+      "front_door_tokens_estimated": 2977,
+      "depth_bytes": 57526,
+      "depth_tokens_estimated": 14381,
+      "reference_files": 16,
+      "deferred_ratio": 0.8285
     }
   ]
 }

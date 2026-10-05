@@ -39,7 +39,12 @@
     "event_hash": {},
     "plan_hash": {},
     "envelope_id": {},
-    "envelope_hash": {}
+    "envelope_hash": {},
+    "attempt_id": {},
+    "attempt_number": {},
+    "reason": {},
+    "current_plan_hash": {},
+    "worker_id": {}
   },
   "outputs": {
     "archetype": {
@@ -76,8 +81,13 @@
     "data": "event payload stored in the local ledger",
     "execution_mode": "run manifest execution mode",
     "previous_event_hash": "hash-chain predecessor",
-    "seq": "append-only event sequence"
+    "seq": "append-only event sequence",
+    "cancel_reason": "replayed cancellation reason kept outside the event payload contract",
+    "id": "optional input-plan alias for step_id",
+    "manifest_plan_hash": "manifest hash copied into a stale-plan event"
   },
-  "doc_terms": [],
+  "doc_terms": [
+    "plan_stale_detected"
+  ],
   "evals": []
 }

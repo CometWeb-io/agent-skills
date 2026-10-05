@@ -120,6 +120,12 @@ def test_plan_is_deterministic_and_never_reads_the_holdout():
     first = rhe.build_plan(per_skill=2, negatives_per_skill=1, seed=7)
     second = rhe.build_plan(per_skill=2, negatives_per_skill=1, seed=7)
     assert first == second
+    assert first["acceptance_version"] == 2
+    assert set(first["frozen_hashes"]) == {
+        "candidate_sha256", "payload_sha256", "benchmark_sha256",
+        "rubric_sha256", "host_config_sha256",
+    }
+    assert all(len(value) == 64 for value in first["frozen_hashes"].values())
     assert not any("holdout" in source for source in first["sources"])
     assert {t["source"] for t in first["tasks"]} <= set(rhe.ROUTING_SOURCES) | set(rhe.MODEL_SOURCES)
     with pytest.raises(ValueError, match="frozen holdout"):
@@ -162,6 +168,25 @@ def test_edited_plan_is_refused(tmp_path):
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError, match="edited after"):
         rhe.load_plan(path)
+
+
+def test_v1_plan_remains_readable(tmp_path):
+    path = make_plan(tmp_path, [task("t1", "PROMPT-A")])
+    data = json.loads(path.read_text())
+    data["schema"] = rhe.PLAN_SCHEMA_V1
+    data.pop("acceptance_version", None)
+    data["plan_sha256"] = rhe.plan_digest(data)
+    path.write_text(json.dumps(data))
+    assert rhe.load_plan(path)["schema"] == rhe.PLAN_SCHEMA_V1
+
+
+def test_v2_fingerprint_drift_is_rejected(monkeypatch):
+    plan = rhe.build_plan(skills=["release-readiness"], per_skill=1, negatives_per_skill=0)
+    actual = dict(plan["frozen_hashes"])
+    actual["benchmark_sha256"] = "0" * 64
+    monkeypatch.setattr(rhe, "acceptance_fingerprints", lambda root=rhe.ROOT: actual)
+    with pytest.raises(ValueError, match="benchmark_sha256"):
+        rhe.assert_fingerprints_current(plan)
 
 
 def test_canary_is_planted_as_parts_only():
@@ -279,7 +304,32 @@ def test_timeouts_count_as_errors_and_stop_after_two_in_a_row(tmp_path, monkeypa
     # an unreported cost counts as the per-run cap, never as zero
     assert summary["spent_usd"] == pytest.approx(1.0)
     grades = rhe.grade_run(tmp_path / "out")
+    assert grades["counts"] == {"completed": 0, "errors": 2, "not_run": 0}
     assert all(r["checks"]["output"]["status"] == "not_run" for r in grades["results"])
+
+
+def test_not_run_materializes_every_scheduled_job_and_keeps_counts_separate(tmp_path):
+    plan = rhe.load_plan(make_plan(tmp_path, [task("a", "PROMPT-A"), task("b", "PROMPT-B")]))
+    opts = rhe.RunOptions(host="cursor", bin="cursor", conditions=rhe.CONDITIONS, max_tasks=4)
+    summary = rhe.execute(plan, opts, tmp_path / "out", stream=io.StringIO())
+    assert summary["completed_jobs"] == 0
+    assert summary["error_jobs"] == 0
+    assert summary["not_run_jobs"] == summary["planned_jobs"] == 4
+    records = list((tmp_path / "out" / "runs").glob("*/record.json"))
+    assert len(records) == 4
+    assert all(json.loads(path.read_text())["status"] == "not_run" for path in records)
+    grades = rhe.grade_run(tmp_path / "out")
+    assert grades["counts"] == {"completed": 0, "errors": 0, "not_run": 4}
+    report = rhe.build_report([grades])
+    assert report["run_errors"] == 0 and report["run_not_run"] == 4
+
+
+def test_retry_metadata_is_only_emitted_for_explicit_transient_failures():
+    assert rhe.retry_metadata("timeout", None, "") == {
+        "retryable": True, "retry_classification": "timeout", "attempt": 1,
+    }
+    assert rhe.retry_metadata("error", 503, "")["retry_classification"] == "exit_code_503"
+    assert rhe.retry_metadata("error", 1, "invalid request") == {}
 
 
 def test_codex_adapter_installs_the_plugin_and_reads_usage(tmp_path, monkeypatch):
