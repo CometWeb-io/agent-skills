@@ -1,0 +1,3 @@
+# Byte-pinned evals and packages must survive core.autocrlf on every host.
+# Git's text detection leaves binary resources unchanged.
+* text=auto eol=lf

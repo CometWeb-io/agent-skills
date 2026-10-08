@@ -48,3 +48,4 @@ jobs:
           tooling/tests/test_behavior_suites.py
           tooling/tests/test_supply_chain.py
           tooling/tests/test_hashing_is_reproducible.py
+          tooling/tests/test_windows_portability.py

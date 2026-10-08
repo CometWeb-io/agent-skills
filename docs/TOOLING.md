@@ -18,6 +18,14 @@ iterating, `--ci` before a pull request); `--list` prints them.
 | `check_all.py` | The one list of gates. CI runs `check_all.py --ci`; `--fast` drops the slow and networked gates; `--fix` runs the generators first. Gates run in parallel, longest first, and the run fails if any gate changes the working tree. | — | `GATES` in the script → a pass/fail table on stdout |
 | `validate_local.py` | A recorded, report-producing run of a subset of the gates without GitHub Actions; the release workflow runs it before attesting packages. | — | checkout → a report directory given by `--output` |
 
+The output grader's CLI reads and writes UTF-8 regardless of the host locale.
+The behavior runner also uses UTF-8 for both parent transport and child streams;
+scratch path comparisons accept native, POSIX and escaped spellings of the same
+expected path. `.gitattributes` keeps text checkout bytes at LF even with
+`core.autocrlf=true`, preserving frozen hashes and package reproducibility.
+The frontmatter parser accepts LF and CRLF without rewriting archived bytes.
+The platform matrix includes the portability regressions on Linux, macOS and Windows.
+
 ## Supply chain and static analysis
 
 | Tool | What it does | Gate | Reads → writes |

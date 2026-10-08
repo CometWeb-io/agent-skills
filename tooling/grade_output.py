@@ -1951,4 +1951,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    # The CLI consumes UTF-8 documents and emits UTF-8, independent of locale.
+    # In-process callers keep ownership of their streams.
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        stream.reconfigure(encoding="utf-8")
     raise SystemExit(main())

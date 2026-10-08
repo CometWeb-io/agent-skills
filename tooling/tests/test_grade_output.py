@@ -39,12 +39,22 @@ def errors_of(skill: str, case: dict) -> list[str]:
 
 def run_cli(*args: str, stdin: str | None = None) -> subprocess.CompletedProcess[str]:
     return subprocess.run([sys.executable, str(SCRIPT), *args], cwd=ROOT, input=stdin,
-                          capture_output=True, text=True, timeout=120)
+                          capture_output=True, encoding="utf-8", timeout=120)
 
 
 def good_text(skill: str) -> str:
     case = next(c for c in go.load_cases(skill) if not c["expect"] and not c.get("mutations"))
     return go.materialize(skill, case)
+
+
+def test_cli_transport_preserves_unicode_with_a_cp1252_parent(monkeypatch) -> None:
+    # The CLI's codec cannot repair stdin that its caller failed to encode.
+    monkeypatch.setattr(subprocess, "_text_encoding", lambda: "cp1252")
+    token = "Zażółć → \u200b"
+    proc = run_cli("repo-roaster", "-", "--json", "--canary", token,
+                   stdin=good_text("repo-roaster") + "\n" + token + "\n")
+    assert proc.returncode == 1, proc.stdout + proc.stderr
+    assert json.loads(proc.stdout)["errors"]
 
 
 @pytest.mark.parametrize("skill,case", all_cases(), ids=lambda v: v["id"] if isinstance(v, dict) else v)
