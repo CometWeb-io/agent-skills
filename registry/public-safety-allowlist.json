@@ -21,6 +21,20 @@
       "rule": "database-credentials",
       "blob_sha256": "73ff28a1b549ca3064acb7bd5bc5949c435f4ed69bb55a8cd6e0ca88f4feef5e",
       "reason": "historical synthetic mongodb:// fixture; live tree assembles from fragments"
+    },
+    {
+      "commit": "92ecb7cab5f5165a872a1e53e4d2e54c286abab0",
+      "path": "tooling/tests/test_installation_acceptance.py",
+      "rule": "personal-email",
+      "blob_sha256": "e026b44c4c00debadd7006b36056afcb051a6a98df86473b12953000f411b729",
+      "reason": "Historical synthetic Python source string: escaped newline immediately before pytest decorator matches the mailbox regex; no mailbox or credential."
+    },
+    {
+      "commit": "445d84ff7e42513efe1c1aba96ef7782f644fe44",
+      "path": "tooling/tests/test_external_dependencies.py",
+      "rule": "personal-email",
+      "blob_sha256": "c603aea02e9478e5ddd2ce45794405334fc8bcaf13ca0ab1c6f2bfdd24ac62e0",
+      "reason": "Historical negative URL validation fixture with synthetic user:secret login on a public provider host; not a personal mailbox or live credential."
     }
   ]
 }
