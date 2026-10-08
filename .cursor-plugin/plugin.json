@@ -1,7 +1,7 @@
 {
   "name": "cometweb-agent-skills",
   "description": "CometWeb Labs specialist skills (34 packages): AI Council, AI Humanize, Artifact Acceptance, Benchmark Curator, Brief Architect, CometWeb Context, Competitive Intelligence, Competitor Profiling, Content Reviewer, Content Roaster, Content Writer, Customer Ops, Design Partner Finder, Ebook Publisher, Evidence Researcher, Feedback Integrator, Longform Publisher, Portfolio Operator, Product Operator, Product Teardown, Quality Loop Operator, Release Readiness, Repair Operator, Repo Roaster, Repo to Roadmap, Research Program Operator, Rubric Designer, Science Roaster, SEO GEO AEO Maxxing, Skill Auditor, Skill Evaluator, Skill Orchestrator, Skill Orchestrator Multiagent, Web App Auditor.",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "author": {
     "name": "CometWeb Labs"
   },

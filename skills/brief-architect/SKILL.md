@@ -1,7 +1,7 @@
 ---
 name: brief-architect
 description: >-
-  Turn an ambiguous request for a content, research, sales, documentation, or knowledge artifact into
+  Turn an ambiguous request for a content, product requirements (PRD), research, sales, documentation, or knowledge artifact into
   an explicit execution contract with audience, objective, evidence policy, constraints, acceptance
   criteria, risks, and handoff fields. Do not use to write the final artifact, run broad product
   discovery, make a consequential decision, or replace product-operator, evidence-researcher,
@@ -16,6 +16,17 @@ Own the **artifact contract** that makes downstream work testable. Convert fuzzy
 ## 0. Choose process depth
 
 Use `LIGHT` for a small reversible artifact, `STANDARD` by default, and `DEEP` when rework is expensive, multiple specialists depend on the brief, or evidence/compliance constraints are material. Reuse current conversation context before asking questions. If the user explicitly wants execution without questions, proceed with labelled assumptions rather than pretending the missing information is known.
+
+## Experimental opt-in PRD profile
+
+Use only when the user explicitly requests a product requirements document / PRD.
+This experimental profile has deterministic contract tests; host compatibility and
+output quality remain unqualified. Read
+`references/prd-profile.md` and extend ArtifactBrief with `artifact_profile: PRD`.
+Keep generic briefs unchanged. The profile supplies requirements-to-acceptance
+traceability and delivery slices, not a default architecture or strategic decision.
+For JSON PRDs, enforce `references/prd-output.schema.json` in the host's structured
+output mechanism, then check readiness with the kernel as specified in the profile.
 
 ## 1. Establish the job
 

@@ -26,12 +26,12 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `release-readiness` | 11,298 B | 2,824 | 70,475 B | 17,618 | 11 | 0.86 |
 | `longform-publisher` | 10,755 B | 2,688 | 15,022 B | 3,755 | 9 | 0.58 |
 | `product-teardown` | 10,335 B | 2,583 | 62,277 B | 15,569 | 11 | 0.86 |
-| `ai-council` | 9,902 B | 2,475 | 52,107 B | 13,026 | 27 | 0.84 |
+| `ai-council` | 9,990 B | 2,497 | 54,169 B | 13,542 | 28 | 0.84 |
 | `product-operator` | 9,900 B | 2,475 | 43,181 B | 10,795 | 12 | 0.81 |
 | `competitive-intelligence` | 9,329 B | 2,332 | 38,900 B | 9,725 | 7 | 0.81 |
 | `quality-loop-operator` | 8,721 B | 2,180 | 15,137 B | 3,784 | 14 | 0.63 |
-| `skill-orchestrator` | 6,775 B | 1,693 | 14,359 B | 3,589 | 5 | 0.68 |
-| `brief-architect` | 6,689 B | 1,672 | 7,335 B | 1,833 | 5 | 0.52 |
+| `skill-orchestrator` | 7,386 B | 1,846 | 36,560 B | 9,140 | 9 | 0.83 |
+| `brief-architect` | 7,373 B | 1,843 | 13,013 B | 3,253 | 6 | 0.64 |
 | `repair-operator` | 6,141 B | 1,535 | 8,347 B | 2,086 | 6 | 0.58 |
 | `content-writer` | 6,038 B | 1,509 | 8,508 B | 2,127 | 6 | 0.58 |
 | `skill-evaluator` | 5,894 B | 1,473 | 11,019 B | 2,754 | 10 | 0.65 |
@@ -44,6 +44,6 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `benchmark-curator` | 3,803 B | 950 | 6,594 B | 1,648 | 7 | 0.63 |
 | `competitor-profiling` | 2,994 B | 748 | 1,266 B | 316 | 1 | 0.30 |
 | `research-program-operator` | 2,903 B | 725 | 1,310 B | 327 | 1 | 0.31 |
-| `skill-orchestrator-multiagent` | 1,887 B | 471 | 15,731 B | 3,932 | 5 | 0.89 |
+| `skill-orchestrator-multiagent` | 2,063 B | 515 | 35,141 B | 8,785 | 8 | 0.94 |
 
-**34 skills.** Loading every front door costs roughly 71,702 tokens before any work begins; the median skill costs ~2,403 and the largest ~2,999.
+**34 skills.** Loading every front door costs roughly 72,092 tokens before any work begins; the median skill costs ~2,403 and the largest ~2,999.

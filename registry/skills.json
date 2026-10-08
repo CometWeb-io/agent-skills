@@ -7,7 +7,7 @@
   "skills": [
     {
       "id": "ai-council",
-      "version": "5.2.4",
+      "version": "5.3.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -419,12 +419,12 @@
     },
     {
       "id": "brief-architect",
-      "version": "1.7.4",
+      "version": "1.8.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Turn an ambiguous request for a content, research, sales, documentation, or knowledge artifact into an explicit execution contract with audience, objective, evidence policy, constraints, acceptance criteria, risks, and handoff fields. Do not use to write the final artifact, run broad product discovery, make a consequential decision, or replace product-operator, evidence-researcher, content-writer, or ai-council. Use when the task is underspecified, expensive to redo, spans multiple specialists, or needs a durable brief before writing/research.",
+      "description": "Turn an ambiguous request for a content, product requirements (PRD), research, sales, documentation, or knowledge artifact into an explicit execution contract with audience, objective, evidence policy, constraints, acceptance criteria, risks, and handoff fields. Do not use to write the final artifact, run broad product discovery, make a consequential decision, or replace product-operator, evidence-researcher, content-writer, or ai-council. Use when the task is underspecified, expensive to redo, spans multiple specialists, or needs a durable brief before writing/research.",
       "explicit_only": false,
       "owns": [
         "artifact brief and execution contract",
@@ -3149,7 +3149,7 @@
     },
     {
       "id": "skill-evaluator",
-      "version": "1.7.3",
+      "version": "1.7.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3253,7 +3253,7 @@
     },
     {
       "id": "skill-orchestrator",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3375,7 +3375,7 @@
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.1.6",
+      "version": "1.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",

@@ -1,0 +1,47 @@
+{
+  "schema": "cometweb.specialist-profile-output/v2",
+  "profile_id": "sop-documentation",
+  "owner_skill": "content-writer",
+  "status": "DRAFT",
+  "execution_authorized": false,
+  "evidence": [
+    {
+      "id": "S1",
+      "kind": "USER_INPUT",
+      "reference": "fictional test fixture supplied inline",
+      "summary": "Only the demo process/field metadata was supplied."
+    }
+  ],
+  "unknowns": [
+    "Product outcomes, measurement or ownership remain unverified"
+  ],
+  "result": {
+    "process": "Export a demo CSV locally",
+    "version": "draft-1",
+    "owner": null,
+    "prerequisites": [
+      "Demo dataset supplied"
+    ],
+    "steps": [
+      {
+        "id": "P1",
+        "action": "Use the confirmed local export command",
+        "expected_result": "A CSV in the configured temporary output directory",
+        "verification": "Compare header and fixture row count",
+        "source_ids": [
+          "S1"
+        ],
+        "risk": "LOCAL_REVERSIBLE",
+        "approval_requirement": null,
+        "basis": "CONFIRMED"
+      }
+    ],
+    "exception_handling": [
+      "Stop if the configured output directory is missing"
+    ],
+    "quality_checks": [
+      "Header and row count match the supplied fixture"
+    ],
+    "framework_source_ids": []
+  }
+}

@@ -4,11 +4,11 @@
 
 | id | version | tier | lifecycle | release_status | desc_len | explicit_only |
 | --- | ---: | --- | --- | --- | ---: | --- |
-| `ai-council` | 5.2.4 | foundation | active | ACTIVE | 893 | True |
+| `ai-council` | 5.3.0 | foundation | active | ACTIVE | 893 | True |
 | `ai-humanize` | 2.6.1 | domain | active | ACTIVE | 708 | False |
 | `artifact-acceptance` | 1.7.4 | domain | active | ACTIVE | 626 | False |
 | `benchmark-curator` | 1.7.4 | foundation | active | ACTIVE | 534 | False |
-| `brief-architect` | 1.7.4 | domain | active | ACTIVE | 549 | False |
+| `brief-architect` | 1.8.0 | domain | active | ACTIVE | 577 | False |
 | `cometweb-context` | 1.5.2 | foundation | active | ACTIVE | 826 | False |
 | `competitive-intelligence` | 1.1.2 | domain | active | ACTIVE | 978 | False |
 | `competitor-profiling` | 0.1.0 | domain | active | ACTIVE | 454 | False |
@@ -34,7 +34,7 @@
 | `science-roaster` | 6.1.3 | domain | active | ACTIVE | 739 | False |
 | `seo-geo-aeo-maxxing` | 1.3.4 | domain | active | ACTIVE | 659 | False |
 | `skill-auditor` | 1.7.5 | foundation | active | ACTIVE | 517 | False |
-| `skill-evaluator` | 1.7.3 | foundation | active | ACTIVE | 742 | False |
-| `skill-orchestrator` | 1.2.0 | foundation | active | ACTIVE | 728 | False |
-| `skill-orchestrator-multiagent` | 1.1.6 | foundation | active | ACTIVE | 467 | False |
+| `skill-evaluator` | 1.7.4 | foundation | active | ACTIVE | 742 | False |
+| `skill-orchestrator` | 1.3.0 | foundation | active | ACTIVE | 728 | False |
+| `skill-orchestrator-multiagent` | 1.2.0 | foundation | active | ACTIVE | 467 | False |
 | `web-app-auditor` | 1.5.0 | domain | active | ACTIVE | 762 | False |

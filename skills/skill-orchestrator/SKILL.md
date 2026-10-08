@@ -72,6 +72,15 @@ Workflow plan (research_then_council) · execution_mode=auto→isolated_subagent
   2. ai-council — DecisionHandoff
 ```
 
+### Experimental opt-in profiles
+
+Profiles and capability packs are disabled in default plans. Their contract tests
+do not establish live host compatibility or improved model output. Use only the
+explicit options below; never activate them from matching keywords alone.
+
+For `--with-capability-packs`, read `references/capability-pack-contract.md`.
+For `--with-prd-handoff`, read `references/prd-handoff.md` before execution.
+
 ### 2. Confirm scope (lightweight)
 
 If the plan includes **ai-council** and the user did not mention a decision, ask once:
@@ -138,6 +147,10 @@ block resume. The ledger never changes a specialist verdict.
 4. **CW-AIP handoff block** — JSON or structured list of envelope metadata when useful
 
 Never fold Evidence Researcher synthesis into a Council GO/NO-GO in the same step.
+
+Local profile task/sidecar previews: `references/specialist-profile-contract.md`.
+
+Read [compiled-worker.md](references/compiled-worker.md) before trusted local profile/PRD dispatch.
 
 ## Untrusted content
 

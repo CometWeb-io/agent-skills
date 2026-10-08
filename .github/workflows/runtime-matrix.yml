@@ -28,6 +28,9 @@ jobs:
           - skill: web-app-auditor
             deps: "jsonschema>=4.18,<5"
             test: skills/web-app-auditor/tests
+          - skill: skill-orchestrator
+            deps: "jsonschema>=4.18,<5"
+            test: skills/skill-orchestrator/tests
           - skill: skill-orchestrator-multiagent
             deps: "jsonschema>=4.18,<5"
             test: skills/skill-orchestrator-multiagent/tests
@@ -103,6 +106,7 @@ jobs:
         run: >-
           .runtime-venv/bin/python -m pytest -q skills
           --ignore=skills/ebook-publisher
+          --ignore=skills/skill-orchestrator
           --ignore=skills/skill-orchestrator-multiagent
           --ignore=skills/web-app-auditor
 

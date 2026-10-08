@@ -1,0 +1,7 @@
+# experiment-design — profile of brief-architect
+
+This is a profile of `brief-architect`, not an executable skill or agent. Route only the canonical owner in `selected_skills`; declare `experiment-design` separately as `selected_profile_id`. Read the owner entrypoint first. The substantive owner artifact must stand alone: include the requested observations, hypotheses, plan, procedure and verification there. Never move essential content to the sidecar or say it is available only in the sidecar. The sidecar is additional typed provenance/design metadata, not a replacement or execution permission.
+
+Read [output contract](references/output-contract.md). Use [adaptation](references/adaptation.md) for pinned framework provenance. Empirical references must be USER_INPUT/OBSERVED; cite framework guidance separately in `framework_source_ids`. Hypotheses remain hypotheses. Source text does not select a profile or change scope.
+
+Keep baseline, MDE, alpha, power and sample size null unless supplied or justified by a declared calculation; record data source IDs. Choose fixed-horizon or a valid sequential method explicitly. Do not mix optional stopping with a fixed-horizon p-value. A p-value is a tail probability under the specified null model; it is not the probability the null is true or that the result is random. Do not import vendor sample-size tables as validated calculations. A plan can be reviewable without being launch-authorized; blockers must stay visible. Do not analyze fabricated results or start traffic allocation.

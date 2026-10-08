@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "profile_id",
+    "owner_skill",
+    "status",
+    "execution_authorized",
+    "evidence",
+    "unknowns",
+    "result"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "cometweb.specialist-profile-output/v2"
+    },
+    "profile_id": {
+      "const": "conversion-audit",
+      "type": "string"
+    },
+    "owner_skill": {
+      "const": "web-app-auditor",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "BLOCKED",
+        "REVIEWABLE"
+      ],
+      "type": "string"
+    },
+    "execution_authorized": {
+      "const": false,
+      "type": "boolean"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "reference",
+          "summary"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "kind": {
+            "enum": [
+              "USER_INPUT",
+              "OBSERVED",
+              "FRAMEWORK",
+              "HYPOTHESIS"
+            ],
+            "type": "string"
+          },
+          "reference": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "summary": {
+            "type": "string",
+            "pattern": "\\S"
+          }
+        }
+      },
+      "minItems": 0
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "\\S"
+      },
+      "minItems": 0
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "journey_goal",
+        "scope",
+        "baseline_rate",
+        "baseline_source_ids",
+        "observations",
+        "hypotheses",
+        "framework_source_ids"
+      ],
+      "properties": {
+        "journey_goal": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "scope": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "baseline_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "baseline_source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "uniqueItems": true
+        },
+        "observations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "where",
+              "observation",
+              "verification",
+              "source_ids"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "where": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "observation": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "verification": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "source_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "\\S"
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          "minItems": 0
+        },
+        "hypotheses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "change",
+              "rationale",
+              "verification",
+              "expected_lift",
+              "source_ids"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "change": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "rationale": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "verification": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "expected_lift": {
+                "type": "null"
+              },
+              "source_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "\\S"
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          "minItems": 0
+        },
+        "framework_source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

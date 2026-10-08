@@ -1722,5 +1722,2264 @@
         "old.protected_invariants[3]:duplicate-id"
       ]
     }
+  },
+  {
+    "id": "prd-ready",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "READY",
+      "errors": [],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-wrong-profile",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "OTHER",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "artifact_profile:invalid"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-missing-object",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD"
+    },
+    "expect": {
+      "status": "BLOCKED",
+      "errors": [],
+      "missing": [
+        "prd"
+      ]
+    }
+  },
+  {
+    "id": "prd-nonobject",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": []
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd:not-object"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-missing-requirements",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": null,
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "BLOCKED",
+      "errors": [],
+      "missing": [
+        "prd.requirements"
+      ]
+    }
+  },
+  {
+    "id": "prd-nonlist-requirements",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": {},
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements:not-list"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-missing-delivery_slices",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": null,
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "BLOCKED",
+      "errors": [],
+      "missing": [
+        "prd.delivery_slices"
+      ]
+    }
+  },
+  {
+    "id": "prd-nonlist-delivery_slices",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": {},
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices:not-list"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-nonlist-implementation_constraints",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": {},
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.implementation_constraints:not-list"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-nonlist-data_contracts",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": {},
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.data_contracts:not-list"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-nonlist-interface_contracts",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": {},
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.interface_contracts:not-list"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-nonlist-non_goals",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": {}
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.non_goals:not-list"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-requirement-nonobject",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          42
+        ],
+        "delivery_slices": [],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements[0]:not-object"
+      ],
+      "missing": [
+        "prd.delivery_slices"
+      ]
+    }
+  },
+  {
+    "id": "prd-requirement-id",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          }
+        ],
+        "delivery_slices": [],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements[0]:id"
+      ],
+      "missing": [
+        "prd.delivery_slices"
+      ]
+    }
+  },
+  {
+    "id": "prd-duplicate-requirement-id",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements[1]:duplicate-id"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-requirement-description",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements[0]:description"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-requirement-priority",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "URGENT",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements[0]:priority"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-requirement-criteria-refs",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements[0]:criteria-refs"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-requirement-unknown-or-duplicate-criterion",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "UNKNOWN"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements[0]:unknown-or-duplicate-criterion"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-requirement-dependency-refs",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": null
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements[0]:dependency-refs"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-duplicate-dependency",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1",
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements[1]:duplicate-dependency"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-unknown-dependency",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "MISSING"
+            ]
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements:unknown-dependency",
+        "prd.requirements:cycle-or-unresolved-dependency"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-dependency-cycle",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R2"
+            ]
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.requirements:cycle-or-unresolved-dependency",
+        "prd.delivery_slices:dependency-order"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-slice-nonobject",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [],
+        "delivery_slices": [
+          42
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices[0]:not-object"
+      ],
+      "missing": [
+        "prd.requirements"
+      ]
+    }
+  },
+  {
+    "id": "prd-slice-id",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices[0]:id"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-duplicate-slice-id",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices[1]:duplicate-id"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-verification-bool",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": true
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices[0]:verification"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-verification-object",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": {}
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices[0]:verification"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-verification-empty",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": ""
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices[0]:verification"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-verification-blank",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "   "
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices[0]:verification"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-slice-empty-refs",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices[0]:requirement-refs",
+        "prd.delivery_slices:incomplete-coverage"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-slice-unknown-ref",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "MISSING"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices[0]:unknown-requirement",
+        "prd.delivery_slices:incomplete-coverage"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-slice-duplicate-ref",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R1",
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices[1]:duplicate-requirement"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-slice-missing-coverage",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices:incomplete-coverage"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-slice-dependency-order",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P1",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          },
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "prd.delivery_slices:dependency-order"
+      ],
+      "missing": []
+    }
+  },
+  {
+    "id": "prd-ready-p2",
+    "input": {
+      "objective": "Specify a bounded import",
+      "audience": "Implementer",
+      "deliverables": [
+        "PRD"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC1",
+          "check": "Reject duplicate identifiers",
+          "observable": true
+        }
+      ],
+      "evidence_policy": "SOURCE_BOUND",
+      "artifact_profile": "PRD",
+      "prd": {
+        "requirements": [
+          {
+            "id": "R1",
+            "description": "Parse identifiers",
+            "priority": "P0",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": []
+          },
+          {
+            "id": "R2",
+            "description": "Reject duplicates",
+            "priority": "P2",
+            "acceptance_criteria_ids": [
+              "AC1"
+            ],
+            "depends_on": [
+              "R1"
+            ]
+          }
+        ],
+        "delivery_slices": [
+          {
+            "id": "S1",
+            "requirement_ids": [
+              "R1"
+            ],
+            "verification": "Check AC1 parsing"
+          },
+          {
+            "id": "S2",
+            "requirement_ids": [
+              "R2"
+            ],
+            "verification": "Check AC1 duplicates"
+          }
+        ],
+        "implementation_constraints": [],
+        "data_contracts": [],
+        "interface_contracts": [],
+        "non_goals": []
+      }
+    },
+    "expect": {
+      "status": "READY",
+      "errors": [],
+      "missing": []
+    }
   }
 ]

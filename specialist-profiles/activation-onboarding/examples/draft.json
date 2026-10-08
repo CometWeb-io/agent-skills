@@ -1,0 +1,37 @@
+{
+  "schema": "cometweb.specialist-profile-output/v2",
+  "profile_id": "activation-onboarding",
+  "owner_skill": "product-operator",
+  "status": "DRAFT",
+  "execution_authorized": false,
+  "evidence": [
+    {
+      "id": "S1",
+      "kind": "USER_INPUT",
+      "reference": "fictional test fixture supplied inline",
+      "summary": "Only the demo process/field metadata was supplied."
+    }
+  ],
+  "unknowns": [
+    "Product outcomes, measurement or ownership remain unverified"
+  ],
+  "result": {
+    "activation_definition": null,
+    "cohort": null,
+    "activation_rate": null,
+    "activation_source_ids": [],
+    "retention_link": "HYPOTHESIS",
+    "retention_source_ids": [],
+    "steps": [
+      {
+        "id": "A1",
+        "action": "Verify first successful report event",
+        "expected_result": "An event definition with denominator and window",
+        "verification": "Inspect the supplied event contract before ranking implementation",
+        "basis": "HYPOTHESIS",
+        "source_ids": []
+      }
+    ],
+    "framework_source_ids": []
+  }
+}

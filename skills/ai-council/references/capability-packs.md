@@ -17,3 +17,9 @@ Planner wybiera tylko relewantne capability packs. Nie ładuj wszystkich skilli 
 Preferuj ustrukturyzowane syntezy w Drive nad surowym ładowaniem całych książek. Retrieval ma dostarczać wąskie zasady relewantne do decyzji, z provenance wewnętrznym.
 
 Doctrine może generować pytanie, założenie lub test. Nie może ustanawiać current fact bez evidence.
+
+## Local pilot
+
+When an opted-in orchestrator plan attaches a Corey pack, read
+[corey-pilot.md](corey-pilot.md) before loading it. Generic role selection alone
+does not opt in; packs are doctrine rather than extra independent votes.

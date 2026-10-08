@@ -48,3 +48,10 @@ compares two briefs and returns `{status: CHANGED|UNCHANGED, material_changes[],
 requires_downstream_revalidation, errors[]}`; the compared fields are
 `objective`, `audience`, `evidence_policy`, `scope`, `use_moment`,
 `risk_level`, `acceptance_criteria`, `protected_invariants` and `rubric_lock`.
+
+## Optional PRD extension (local pilot)
+
+`artifact_profile: PRD` and `prd` are optional for generic briefs. When enabled,
+the kernel validates the requirements, dependency DAG and delivery-slice trace
+defined in [prd-profile.md](prd-profile.md). Any change to `artifact_profile` or
+`prd` is material and requires downstream revalidation.

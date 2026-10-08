@@ -56,6 +56,16 @@
       "id": "rule-05",
       "text": "The ledger never changes a specialist verdict.",
       "where": "SKILL.md"
+    },
+    {
+      "id": "experimental-evidence-boundary",
+      "text": "Their contract tests do not establish live host compatibility or improved model output.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "experimental-explicit-opt-in",
+      "text": "Use only the explicit options below; never activate them from matching keywords alone.",
+      "where": "SKILL.md"
     }
   ]
 }

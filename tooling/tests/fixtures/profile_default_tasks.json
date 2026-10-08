@@ -1,0 +1,268 @@
+{
+  "baseline_source_commit": "2fa7a3baa27cd3eed1745d26a9a2c434677dd83c",
+  "reference_snapshot": "round-5/review-candidate",
+  "cases": {
+    "evidence then council": {
+      "execution_mode": "isolated_subagents",
+      "parent_role": "orchestrator_only",
+      "plan": {
+        "archetype": "research_then_council",
+        "goal_summary": "evidence then council",
+        "steps": [
+          {
+            "skill": "evidence-researcher",
+            "purpose": "Build Evidence Pack for material claims",
+            "envelope_out": "EvidenceEnvelope",
+            "read_skill": true
+          },
+          {
+            "skill": "ai-council",
+            "purpose": "Deliberate on decision question using accepted evidence",
+            "envelope_out": "DecisionHandoff",
+            "read_skill": true
+          }
+        ],
+        "boundaries": [
+          "Evidence Researcher stops at Evidence Pack \u2014 no GO/NO-GO.",
+          "AI Council re-verifies decision-specific evidence; verified_for_research \u2260 verified_for_decision.",
+          "Load each step's SKILL.md fully before executing that step."
+        ],
+        "single_skill_alternative": null
+      },
+      "subagent_tasks": [
+        {
+          "step_index": 1,
+          "step_total": 2,
+          "skill": "evidence-researcher",
+          "subagent_type": "generalPurpose",
+          "description": "CW step 1/2: evidence-researcher",
+          "prompt": "You are an **isolated subagent** for CometWeb skill `evidence-researcher` only.\n\n## Hard rules\n- Execute **only** `evidence-researcher`. Do not run other skills or their workflows.\n- Do NOT issue GO/NO-GO, product priorities, or Council verdicts.\n- Read and follow the full skill entrypoint before acting.\n- Required CW-AIP output: `EvidenceEnvelope`.\n\n## Skill locations (read SKILL.md from the first path that exists)\n- `~/.cursor/skills/evidence-researcher`\n- `~/.claude/skills/evidence-researcher`\n- `platforms/agent-skills/skills/evidence-researcher`\n\n## Workflow context\n- Workspace root: <host workspace root>\n- Overall user goal: evidence then council\n- Step 1/2: Build Evidence Pack for material claims\n- Prior CW-AIP envelopes (inputs): []\n\n## Return format (mandatory)\n1. **Step status** \u2014 completed | blocked | partial\n2. **CW-AIP envelope** \u2014 valid JSON for `EvidenceEnvelope`\n3. **Gaps/blockers** \u2014 bullet list\n4. **Do not** include downstream skill work or verdicts outside this skill's remit\n",
+          "envelope_out": "EvidenceEnvelope",
+          "run_in_background": false
+        },
+        {
+          "step_index": 2,
+          "step_total": 2,
+          "skill": "ai-council",
+          "subagent_type": "generalPurpose",
+          "description": "CW step 2/2: ai-council",
+          "prompt": "You are an **isolated subagent** for CometWeb skill `ai-council` only.\n\n## Hard rules\n- Execute **only** `ai-council`. Do not run other skills or their workflows.\n- Do NOT skip decision-specific re-verification. Do NOT run Evidence Researcher work inline.\n- Read and follow the full skill entrypoint before acting.\n- Required CW-AIP output: `DecisionHandoff`.\n\n## Skill locations (read SKILL.md from the first path that exists)\n- `~/.cursor/skills/ai-council`\n- `~/.claude/skills/ai-council`\n- `platforms/agent-skills/skills/ai-council`\n\n## Workflow context\n- Workspace root: <host workspace root>\n- Overall user goal: evidence then council\n- Step 2/2: Deliberate on decision question using accepted evidence\n- Prior CW-AIP envelopes (inputs): []\n\n## Return format (mandatory)\n1. **Step status** \u2014 completed | blocked | partial\n2. **CW-AIP envelope** \u2014 valid JSON for `DecisionHandoff`\n3. **Gaps/blockers** \u2014 bullet list\n4. **Do not** include downstream skill work or verdicts outside this skill's remit\n",
+          "envelope_out": "DecisionHandoff",
+          "run_in_background": false
+        }
+      ],
+      "parent_must_not": [
+        "Execute domain skill workflows in the parent thread.",
+        "Collapse multiple steps into one model pass.",
+        "Issue Council or Release verdicts without a dedicated ai-council/release-readiness subagent run."
+      ]
+    },
+    "weekly": {
+      "execution_mode": "isolated_subagents",
+      "parent_role": "orchestrator_only",
+      "plan": {
+        "archetype": "single_skill",
+        "goal_summary": "weekly",
+        "steps": [
+          {
+            "skill": "product-operator",
+            "purpose": "User requested a single specialist skill",
+            "envelope_out": null,
+            "read_skill": true
+          }
+        ],
+        "boundaries": [
+          "Single-skill mode \u2014 load only the target SKILL.md.",
+          "Re-run orchestrator when the user wants a multi-step workflow."
+        ],
+        "single_skill_alternative": "product-operator"
+      },
+      "subagent_tasks": [
+        {
+          "step_index": 1,
+          "step_total": 1,
+          "skill": "product-operator",
+          "subagent_type": "generalPurpose",
+          "description": "CW step 1/1: product-operator",
+          "prompt": "You are an **isolated subagent** for CometWeb skill `product-operator` only.\n\n## Hard rules\n- Execute **only** `product-operator`. Do not run other skills or their workflows.\n- Do NOT replace Release Readiness for pinned RC gates.\n- Read and follow the full skill entrypoint before acting.\n- Emit the skill's standard output contract.\n\n## Skill locations (read SKILL.md from the first path that exists)\n- `~/.cursor/skills/product-operator`\n- `~/.claude/skills/product-operator`\n- `platforms/agent-skills/skills/product-operator`\n\n## Workflow context\n- Workspace root: <host workspace root>\n- Overall user goal: weekly\n- Step 1/1: User requested a single specialist skill\n- Prior CW-AIP envelopes (inputs): []\n\n## Return format (mandatory)\n1. **Step status** \u2014 completed | blocked | partial\n2. **CW-AIP envelope** \u2014 valid JSON for `ArtifactEnvelope`\n3. **Gaps/blockers** \u2014 bullet list\n4. **Do not** include downstream skill work or verdicts outside this skill's remit\n",
+          "envelope_out": null,
+          "run_in_background": false
+        }
+      ],
+      "parent_must_not": [
+        "Execute domain skill workflows in the parent thread.",
+        "Collapse multiple steps into one model pass.",
+        "Issue Council or Release verdicts without a dedicated ai-council/release-readiness subagent run."
+      ]
+    },
+    "web app audit": {
+      "execution_mode": "isolated_subagents",
+      "parent_role": "orchestrator_only",
+      "plan": {
+        "archetype": "single_skill",
+        "goal_summary": "web app audit",
+        "steps": [
+          {
+            "skill": "web-app-auditor",
+            "purpose": "User requested a single specialist skill",
+            "envelope_out": null,
+            "read_skill": true
+          }
+        ],
+        "boundaries": [
+          "Single-skill mode \u2014 load only the target SKILL.md.",
+          "Re-run orchestrator when the user wants a multi-step workflow."
+        ],
+        "single_skill_alternative": "web-app-auditor"
+      },
+      "subagent_tasks": [
+        {
+          "step_index": 1,
+          "step_total": 1,
+          "skill": "web-app-auditor",
+          "subagent_type": "generalPurpose",
+          "description": "CW step 1/1: web-app-auditor",
+          "prompt": "You are an **isolated subagent** for CometWeb skill `web-app-auditor` only.\n\n## Hard rules\n- Execute **only** `web-app-auditor`. Do not run other skills or their workflows.\n- Do NOT issue ship/release verdicts \u2014 findings only.\n- Read and follow the full skill entrypoint before acting.\n- Emit the skill's standard output contract.\n\n## Skill locations (read SKILL.md from the first path that exists)\n- `~/.cursor/skills/web-app-auditor`\n- `~/.claude/skills/web-app-auditor`\n- `platforms/agent-skills/skills/web-app-auditor`\n\n## Workflow context\n- Workspace root: <host workspace root>\n- Overall user goal: web app audit\n- Step 1/1: User requested a single specialist skill\n- Prior CW-AIP envelopes (inputs): []\n\n## Return format (mandatory)\n1. **Step status** \u2014 completed | blocked | partial\n2. **CW-AIP envelope** \u2014 valid JSON for `ArtifactEnvelope`\n3. **Gaps/blockers** \u2014 bullet list\n4. **Do not** include downstream skill work or verdicts outside this skill's remit\n",
+          "envelope_out": null,
+          "run_in_background": false
+        }
+      ],
+      "parent_must_not": [
+        "Execute domain skill workflows in the parent thread.",
+        "Collapse multiple steps into one model pass.",
+        "Issue Council or Release verdicts without a dedicated ai-council/release-readiness subagent run."
+      ]
+    },
+    "audit then release": {
+      "execution_mode": "isolated_subagents",
+      "parent_role": "orchestrator_only",
+      "plan": {
+        "archetype": "audit_then_release",
+        "goal_summary": "audit then release",
+        "steps": [
+          {
+            "skill": "web-app-auditor",
+            "purpose": "Produce findings with evidence",
+            "envelope_out": "FindingEnvelope",
+            "read_skill": true
+          },
+          {
+            "skill": "release-readiness",
+            "purpose": "Gate pinned RC/build with audit findings",
+            "envelope_out": "DecisionHandoff",
+            "read_skill": true
+          }
+        ],
+        "boundaries": [
+          "Release Readiness requires pinned RC/build + environment.",
+          "Audit findings feed gates; score cannot override hard gates."
+        ],
+        "single_skill_alternative": null
+      },
+      "subagent_tasks": [
+        {
+          "step_index": 1,
+          "step_total": 2,
+          "skill": "web-app-auditor",
+          "subagent_type": "generalPurpose",
+          "description": "CW step 1/2: web-app-auditor",
+          "prompt": "You are an **isolated subagent** for CometWeb skill `web-app-auditor` only.\n\n## Hard rules\n- Execute **only** `web-app-auditor`. Do not run other skills or their workflows.\n- Do NOT issue ship/release verdicts \u2014 findings only.\n- Read and follow the full skill entrypoint before acting.\n- Required CW-AIP output: `FindingEnvelope`.\n\n## Skill locations (read SKILL.md from the first path that exists)\n- `~/.cursor/skills/web-app-auditor`\n- `~/.claude/skills/web-app-auditor`\n- `platforms/agent-skills/skills/web-app-auditor`\n\n## Workflow context\n- Workspace root: <host workspace root>\n- Overall user goal: audit then release\n- Step 1/2: Produce findings with evidence\n- Prior CW-AIP envelopes (inputs): []\n\n## Return format (mandatory)\n1. **Step status** \u2014 completed | blocked | partial\n2. **CW-AIP envelope** \u2014 valid JSON for `FindingEnvelope`\n3. **Gaps/blockers** \u2014 bullet list\n4. **Do not** include downstream skill work or verdicts outside this skill's remit\n",
+          "envelope_out": "FindingEnvelope",
+          "run_in_background": false
+        },
+        {
+          "step_index": 2,
+          "step_total": 2,
+          "skill": "release-readiness",
+          "subagent_type": "generalPurpose",
+          "description": "CW step 2/2: release-readiness",
+          "prompt": "You are an **isolated subagent** for CometWeb skill `release-readiness` only.\n\n## Hard rules\n- Execute **only** `release-readiness`. Do not run other skills or their workflows.\n- Do NOT run without pinned RC/build + environment in the prompt context.\n- Read and follow the full skill entrypoint before acting.\n- Required CW-AIP output: `DecisionHandoff`.\n\n## Skill locations (read SKILL.md from the first path that exists)\n- `~/.cursor/skills/release-readiness`\n- `~/.claude/skills/release-readiness`\n- `platforms/agent-skills/skills/release-readiness`\n\n## Workflow context\n- Workspace root: <host workspace root>\n- Overall user goal: audit then release\n- Step 2/2: Gate pinned RC/build with audit findings\n- Prior CW-AIP envelopes (inputs): []\n\n## Return format (mandatory)\n1. **Step status** \u2014 completed | blocked | partial\n2. **CW-AIP envelope** \u2014 valid JSON for `DecisionHandoff`\n3. **Gaps/blockers** \u2014 bullet list\n4. **Do not** include downstream skill work or verdicts outside this skill's remit\n",
+          "envelope_out": "DecisionHandoff",
+          "run_in_background": false
+        }
+      ],
+      "parent_must_not": [
+        "Execute domain skill workflows in the parent thread.",
+        "Collapse multiple steps into one model pass.",
+        "Issue Council or Release verdicts without a dedicated ai-council/release-readiness subagent run."
+      ]
+    },
+    "only research": {
+      "execution_mode": "isolated_subagents",
+      "parent_role": "orchestrator_only",
+      "plan": {
+        "archetype": "single_skill",
+        "goal_summary": "only research",
+        "steps": [
+          {
+            "skill": "evidence-researcher",
+            "purpose": "User requested a single specialist skill",
+            "envelope_out": null,
+            "read_skill": true
+          }
+        ],
+        "boundaries": [
+          "Single-skill mode \u2014 load only the target SKILL.md.",
+          "Re-run orchestrator when the user wants a multi-step workflow."
+        ],
+        "single_skill_alternative": "evidence-researcher"
+      },
+      "subagent_tasks": [
+        {
+          "step_index": 1,
+          "step_total": 1,
+          "skill": "evidence-researcher",
+          "subagent_type": "generalPurpose",
+          "description": "CW step 1/1: evidence-researcher",
+          "prompt": "You are an **isolated subagent** for CometWeb skill `evidence-researcher` only.\n\n## Hard rules\n- Execute **only** `evidence-researcher`. Do not run other skills or their workflows.\n- Do NOT issue GO/NO-GO, product priorities, or Council verdicts.\n- Read and follow the full skill entrypoint before acting.\n- Emit the skill's standard output contract.\n\n## Skill locations (read SKILL.md from the first path that exists)\n- `~/.cursor/skills/evidence-researcher`\n- `~/.claude/skills/evidence-researcher`\n- `platforms/agent-skills/skills/evidence-researcher`\n\n## Workflow context\n- Workspace root: <host workspace root>\n- Overall user goal: only research\n- Step 1/1: User requested a single specialist skill\n- Prior CW-AIP envelopes (inputs): []\n\n## Return format (mandatory)\n1. **Step status** \u2014 completed | blocked | partial\n2. **CW-AIP envelope** \u2014 valid JSON for `ArtifactEnvelope`\n3. **Gaps/blockers** \u2014 bullet list\n4. **Do not** include downstream skill work or verdicts outside this skill's remit\n",
+          "envelope_out": null,
+          "run_in_background": false
+        }
+      ],
+      "parent_must_not": [
+        "Execute domain skill workflows in the parent thread.",
+        "Collapse multiple steps into one model pass.",
+        "Issue Council or Release verdicts without a dedicated ai-council/release-readiness subagent run."
+      ]
+    },
+    "two plus two": {
+      "execution_mode": "isolated_subagents",
+      "parent_role": "orchestrator_only",
+      "plan": {
+        "archetype": "orchestrated_goal",
+        "goal_summary": "two plus two",
+        "steps": [
+          {
+            "skill": "evidence-researcher",
+            "purpose": "Verify material factual claims first",
+            "envelope_out": "EvidenceEnvelope",
+            "read_skill": true
+          }
+        ],
+        "boundaries": [
+          "Skip steps that do not apply \u2014 kernel plan is a default, not mandatory depth.",
+          "Never collapse Evidence Pack into Council verdict in one pass.",
+          "Council step runs only when the goal implies a material decision."
+        ],
+        "single_skill_alternative": null
+      },
+      "subagent_tasks": [
+        {
+          "step_index": 1,
+          "step_total": 1,
+          "skill": "evidence-researcher",
+          "subagent_type": "generalPurpose",
+          "description": "CW step 1/1: evidence-researcher",
+          "prompt": "You are an **isolated subagent** for CometWeb skill `evidence-researcher` only.\n\n## Hard rules\n- Execute **only** `evidence-researcher`. Do not run other skills or their workflows.\n- Do NOT issue GO/NO-GO, product priorities, or Council verdicts.\n- Read and follow the full skill entrypoint before acting.\n- Required CW-AIP output: `EvidenceEnvelope`.\n\n## Skill locations (read SKILL.md from the first path that exists)\n- `~/.cursor/skills/evidence-researcher`\n- `~/.claude/skills/evidence-researcher`\n- `platforms/agent-skills/skills/evidence-researcher`\n\n## Workflow context\n- Workspace root: <host workspace root>\n- Overall user goal: two plus two\n- Step 1/1: Verify material factual claims first\n- Prior CW-AIP envelopes (inputs): []\n\n## Return format (mandatory)\n1. **Step status** \u2014 completed | blocked | partial\n2. **CW-AIP envelope** \u2014 valid JSON for `EvidenceEnvelope`\n3. **Gaps/blockers** \u2014 bullet list\n4. **Do not** include downstream skill work or verdicts outside this skill's remit\n",
+          "envelope_out": "EvidenceEnvelope",
+          "run_in_background": false
+        }
+      ],
+      "parent_must_not": [
+        "Execute domain skill workflows in the parent thread.",
+        "Collapse multiple steps into one model pass.",
+        "Issue Council or Release verdicts without a dedicated ai-council/release-readiness subagent run."
+      ]
+    }
+  }
+}

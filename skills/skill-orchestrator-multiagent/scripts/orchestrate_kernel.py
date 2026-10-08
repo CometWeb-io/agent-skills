@@ -105,7 +105,7 @@ ARCHETYPE_STEPS: dict[str, list[tuple[str, str, str | None]]] = {
 ARCHETYPES: tuple[str, ...] = (*ARCHETYPE_STEPS, "single_skill")
 ENVELOPE_TYPES: frozenset[str] = frozenset(
     envelope for steps in ARCHETYPE_STEPS.values() for _, _, envelope in steps if envelope
-)
+) | {"ArtifactEnvelope"}
 
 BOUNDARIES: dict[str, list[str]] = {
     "research_then_council": [
@@ -238,10 +238,22 @@ def plan_workflow(goal: str) -> WorkflowPlan:
     )
 
 
+def _pilot_helper(name: str):
+    import importlib.util
+    from pathlib import Path
+    path = Path(__file__).resolve().parents[2] / "skill-orchestrator" / "scripts" / (name + ".py")
+    spec = importlib.util.spec_from_file_location("planner_" + name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Plan a CometWeb multi-skill workflow")
     parser.add_argument("goal", nargs="?", help="User goal in plain language")
     parser.add_argument("--json", action="store_true", help="Emit JSON")
+    parser.add_argument("--with-capability-packs", action="store_true", help="Opt into locked local-pilot doctrine packs")
+    parser.add_argument("--with-prd-handoff", action="store_true", help="Prepend locked local PRD schema/kernel handoff")
     args = parser.parse_args()
 
     if not args.goal or not args.goal.strip():
@@ -249,17 +261,31 @@ def main() -> None:
 
     plan = plan_workflow(args.goal)
     payload = plan.to_dict()
+    if args.with_capability_packs:
+        from pathlib import Path
+        try:
+            payload["capability_packs"] = _pilot_helper("capability_packs").select(Path(__file__).resolve().parents[3], args.goal)
+        except (ValueError, OSError) as exc:
+            parser.error(str(exc))
+
+    if args.with_prd_handoff:
+        try:
+            payload = _pilot_helper("prd_handoff").attach(payload)
+        except (ValueError, OSError) as exc:
+            parser.error(str(exc))
 
     if args.json:
         json.dump(payload, sys.stdout, indent=2, ensure_ascii=False)
         sys.stdout.write("\n")
         return
 
+    for pack in payload.get("capability_packs", []):
+        print(f"capability_pack: {pack['id']} -> {pack['role_id']} ({pack['source_commit']})")
     print(f"archetype: {plan.archetype}")
-    for i, step in enumerate(plan.steps, 1):
-        out = f" → {step.envelope_out}" if step.envelope_out else ""
-        print(f"  {i}. {step.skill}: {step.purpose}{out}")
-    for line in plan.boundaries:
+    for i, step in enumerate(payload["steps"], 1):
+        out = f" → {step['envelope_out']}" if step["envelope_out"] else ""
+        print(f"  {i}. {step['skill']}: {step['purpose']}{out}")
+    for line in payload["boundaries"]:
         print(f"boundary: {line}")
 
 

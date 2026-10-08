@@ -59,3 +59,11 @@ partial JSON record is a truncated log and is rejected.
 The ledger stores hashes and references, not raw prompts, credentials,
 transcripts, or arbitrary tool output. `COMPLETED` means workflow execution
 finished; it is not a Council or Release Readiness authorization.
+
+## PRD prerequisite
+
+For steps declared with the optional PRD gate, read `references/prd-handoff.md`.
+Completion revalidates the full envelope against the pinned schema/kernel and
+requires READY before writing the completion. Rejected input leaves the attempt
+active and cannot unlock the next step. New run-created events bind manifest steps;
+legacy non-PRD ledgers remain readable.

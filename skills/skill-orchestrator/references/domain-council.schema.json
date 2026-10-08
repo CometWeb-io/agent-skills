@@ -1,0 +1,455 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "GO",
+        "NO-GO",
+        "TEST",
+        "DEFER"
+      ]
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "\\S"
+      }
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "\\S"
+      }
+    },
+    "decision_bundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "research_envelope": {
+          "type": "object"
+        },
+        "blind_memos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role_id": {
+                "type": "string"
+              },
+              "vote": {
+                "type": "string",
+                "enum": [
+                  "GO",
+                  "NO-GO",
+                  "TEST",
+                  "DEFER"
+                ]
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "claim_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "assumptions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "risks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "falsifier": {
+                "type": "string"
+              },
+              "minority": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "role_id",
+              "vote",
+              "confidence",
+              "claim_ids",
+              "assumptions",
+              "risks",
+              "falsifier",
+              "minority"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "judge": {
+          "type": "object",
+          "properties": {
+            "accepted_claim_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "rejected_claim_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "critical_gaps": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "freshness_status": {
+              "type": "string",
+              "enum": [
+                "CLEAR",
+                "UNKNOWN",
+                "REFRESH_REQUIRED"
+              ]
+            },
+            "gate_statuses": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "technical": {
+                  "type": "string",
+                  "enum": [
+                    "NOT_REQUIRED",
+                    "CLEAR",
+                    "CLEAR_WITH_CONTROLS",
+                    "COUNSEL_REQUIRED",
+                    "BLOCK"
+                  ]
+                }
+              },
+              "required": [
+                "technical"
+              ]
+            },
+            "controls_implemented": {
+              "type": "boolean"
+            },
+            "red_team": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "falsifier": {
+              "type": "string"
+            },
+            "minority_preserved": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "accepted_claim_ids",
+            "rejected_claim_ids",
+            "critical_gaps",
+            "freshness_status",
+            "gate_statuses",
+            "controls_implemented",
+            "red_team",
+            "falsifier",
+            "minority_preserved"
+          ],
+          "additionalProperties": false
+        },
+        "proposal": {
+          "type": "object",
+          "properties": {
+            "verdict": {
+              "type": "string",
+              "enum": [
+                "GO",
+                "NO-GO",
+                "TEST",
+                "DEFER"
+              ]
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "required_confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "reason": {
+              "type": "string"
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "controls": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "critical_gap": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "freshness_status": {
+              "type": "string",
+              "enum": [
+                "CLEAR",
+                "UNKNOWN",
+                "REFRESH_REQUIRED"
+              ]
+            },
+            "controls_implemented": {
+              "type": "boolean"
+            },
+            "reversible_experiment_available": {
+              "type": "boolean"
+            },
+            "experiment": {
+              "type": "object",
+              "properties": {
+                "hypothesis": {
+                  "type": "string"
+                },
+                "metric": {
+                  "type": "string"
+                },
+                "baseline": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "pass_threshold": {
+                  "type": "string"
+                },
+                "fail_threshold": {
+                  "type": "string"
+                },
+                "duration": {
+                  "type": "string"
+                },
+                "budget": {
+                  "type": "string"
+                },
+                "sample": {
+                  "type": "string"
+                },
+                "guardrails": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "kill_criteria": {
+                  "type": "string"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "review_date": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "hypothesis",
+                "metric",
+                "baseline",
+                "pass_threshold",
+                "fail_threshold",
+                "duration",
+                "budget",
+                "sample",
+                "guardrails",
+                "kill_criteria",
+                "owner",
+                "review_date"
+              ],
+              "additionalProperties": false
+            },
+            "minority_report": {
+              "type": "string"
+            },
+            "independence_grade": {
+              "type": "string",
+              "enum": [
+                "I1"
+              ]
+            },
+            "memory_written": {
+              "type": "boolean",
+              "const": false
+            }
+          },
+          "required": [
+            "verdict",
+            "confidence",
+            "required_confidence",
+            "reason",
+            "blockers",
+            "controls",
+            "critical_gap",
+            "freshness_status",
+            "controls_implemented",
+            "reversible_experiment_available",
+            "experiment",
+            "minority_report",
+            "independence_grade",
+            "memory_written"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "research_envelope",
+        "blind_memos",
+        "judge",
+        "proposal"
+      ]
+    },
+    "constraint_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "GO",
+            "NO-GO",
+            "TEST",
+            "DEFER"
+          ]
+        },
+        "required_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "evidence_coverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "required_gates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          }
+        },
+        "freshness_status": {
+          "type": "string",
+          "enum": [
+            "CLEAR",
+            "UNKNOWN",
+            "REFRESH_REQUIRED"
+          ]
+        },
+        "critical_gap": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "controls_implemented": {
+          "type": "boolean"
+        },
+        "execution_authorized": {
+          "type": "boolean",
+          "const": false
+        },
+        "kernel_verdict": {
+          "type": "string",
+          "enum": [
+            "GO",
+            "NO-GO",
+            "TEST",
+            "DEFER"
+          ]
+        }
+      },
+      "required": [
+        "verdict",
+        "required_confidence",
+        "evidence_coverage",
+        "required_gates",
+        "freshness_status",
+        "critical_gap",
+        "controls_implemented",
+        "execution_authorized",
+        "kernel_verdict"
+      ]
+    },
+    "upstream_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "step_id": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "envelope_id": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "envelope_hash": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "step_id",
+          "envelope_id",
+          "envelope_hash"
+        ]
+      }
+    }
+  },
+  "required": [
+    "verdict",
+    "blockers",
+    "controls",
+    "decision_bundle",
+    "constraint_result",
+    "upstream_bindings"
+  ]
+}

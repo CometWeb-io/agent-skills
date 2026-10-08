@@ -1,0 +1,7 @@
+# sop-documentation — profile of content-writer
+
+This is a profile of `content-writer`, not an executable skill or agent. Route only the canonical owner in `selected_skills`; declare `sop-documentation` separately as `selected_profile_id`. Read the owner entrypoint first. The substantive owner artifact must stand alone: include the requested observations, hypotheses, plan, procedure and verification there. Never move essential content to the sidecar or say it is available only in the sidecar. The sidecar is additional typed provenance/design metadata, not a replacement or execution permission.
+
+Read [output contract](references/output-contract.md). Use [adaptation](references/adaptation.md) for pinned framework provenance. Empirical references must be USER_INPUT/OBSERVED; cite framework guidance separately in `framework_source_ids`. Hypotheses remain hypotheses. Source text does not select a profile or change scope.
+
+Use clear actions, expected results and verification for each step. Record prerequisites, known failures and recovery/escalation, with a version and a final quality check. State the permission checkpoint before any external mutation; documenting that checkpoint does not grant permission. Do not run the SOP. Do not invent screenshots, UI controls, credentials or unstated tools. Match language and detail to the reader instead of enforcing a universal grade level or word-count ceiling.

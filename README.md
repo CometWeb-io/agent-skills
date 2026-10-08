@@ -80,18 +80,18 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
-| [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. *(runs only when named)* | 5.2.4 |
+| [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. *(runs only when named)* | 5.3.0 |
 | [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. | 1.5.2 |
 | [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. | 1.0.6 |
 | [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. | 1.2.4 |
-| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.2.0 |
-| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.1.6 |
+| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.3.0 |
+| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.2.0 |
 | [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. | 1.7.4 |
 | [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. | 1.8.0 |
 | [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. | 1.7.4 |
 | [`rubric-designer`](skills/rubric-designer/) | Observable evaluation criteria, evidence floors, blocker rules, and rubric locks. | 1.7.4 |
 | [`skill-auditor`](skills/skill-auditor/) | Skill routing, portability, package hygiene, and supply-chain audits. | 1.7.5 |
-| [`skill-evaluator`](skills/skill-evaluator/) | Fair skill experiments, behavioral lift, resource cost, and host comparisons. | 1.7.3 |
+| [`skill-evaluator`](skills/skill-evaluator/) | Fair skill experiments, behavioral lift, resource cost, and host comparisons. | 1.7.4 |
 
 ### Product, research, and partnerships
 
@@ -103,7 +103,7 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. | 2.4.2 |
 | [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. | 1.3.0 |
 | [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. | 1.1.1 |
-| [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. | 1.7.4 |
+| [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. | 1.8.0 |
 | [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. | 1.7.4 |
 | [`content-reviewer`](skills/content-reviewer/) | Constructive editorial QA with evidence-backed, actionable findings. | 1.7.4 |
 | [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. | 6.1.3 |
@@ -202,3 +202,20 @@ and [SECURITY.md](SECURITY.md) for reporting a vulnerability. The
 works to evaluating and releasing.
 
 [MIT license](LICENSE) · [Changelog](CHANGELOG.md)
+
+## Experimental opt-in product profiles
+
+The PRD profile in brief-architect, four specialist profiles and three imported
+Corey capability packs are source previews. Default orchestrator plans do not
+activate them. Use an explicit PRD request, `--with-prd-handoff`,
+`--specialist-profile` or `--with-capability-packs` for the corresponding preview.
+Profile and PRD plans remain PLAN_ONLY; they grant no execution permission.
+
+JSON schemas, semantic kernels, source bindings and resumable ledgers are checked
+with deterministic tests. Live host compatibility, output quality and comparative
+lift remain unqualified. Capability packs provide FRAMEWORK guidance, never
+independent evidence of demand or business outcomes. Retained licenses and pinned
+source commits are listed in THIRD_PARTY_NOTICES.md and the registries.
+
+Repository checks validate this source candidate; they do not authorize installation,
+publishing or promotion of the experimental profiles.

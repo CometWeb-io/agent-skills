@@ -71,3 +71,31 @@ DecisionHandoff (v1), DecisionEnvelope and ReleaseEnvelope (v2) payload:
 
 `GO_WITH_CONTROLS` authorizes only on a `ReleaseEnvelope`; for a v2 decision only `GO`
 does. Everything else in a payload belongs to the producing skill.
+
+## Shared local pilot planner
+
+The shared orchestrate_kernel CLI supports optional capability packs and the PRD
+prerequisite. `capability_packs` stores locked pointers with `role_id` and
+`source_commit`. Helpers are loaded from the canonical skill-orchestrator package;
+the full local skill tree is required. The isolated builder accepts
+`--with-prd-handoff` and `--with-capability-packs`. PRD mode exposes one briefing
+preview and `dispatch_status: PLAN_ONLY`, plus `deferred_step_ids`. For execution,
+`--run-dir PATH --plan-json FILE --prior-envelopes-json FILE` validates the exact
+completed envelope prefix, then returns at most one claimed task. It adds `step_id`,
+`attempt_id`, `handoff_gate`, `gate_lock`, `prior_envelope_ids`, and optional
+`artifact_profile`. Statuses are CLAIMED, COMPLETED, CANCELLED, STALE_PLAN. Invalid
+or active input fails with exit 1 and no new claim. JSON output on resumed/terminal
+runs includes `plan`, `dispatch_status`, `subagent_tasks`; planning-only parent metadata
+is not repeated. Follow `references/prd-handoff.md` for canonical completion/retry.
+
+Council task prompts include selected `capability_packs` as locked role-scoped FRAMEWORK
+pointers. Dispatch rechecks registry file integrity and exact selected pointers.
+
+The builder reads `event_type` and `plan_hash` from canonical ledger state/claim;
+`envelope_id`, `envelope_hash` and `accepted` bind supplied content to checkpoints.
+
+## Local specialist profile preview
+
+`--specialist-profile <id>` emits one pinned canonical-owner task plus a separate schema-bound profile sidecar requirement. Read [specialist-profiles.md](specialist-profiles.md) for identifiers and limits. It cannot be combined with the PRD ledger or Council pack flags. It does not execute a model.
+
+The plan/task field `specialist_profile` contains the full locked profile record. The task field `profile_output_schema` points to its local closed sidecar schema. Both are optional and only emitted for the explicit profile preview.

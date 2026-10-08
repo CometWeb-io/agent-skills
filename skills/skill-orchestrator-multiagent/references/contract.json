@@ -2,7 +2,10 @@
   "schema": "cometweb.skill-contract/v1",
   "docs": [
     "references/kernel-contract.md",
-    "references/workflow-archetypes.md"
+    "references/workflow-archetypes.md",
+    "references/prd-handoff.md",
+    "references/specialist-profiles.md",
+    "references/compiled-worker.md"
   ],
   "json_schemas": [
     "references/envelope.core.schema.json",
@@ -37,7 +40,265 @@
     "blockers": {},
     "gates": {},
     "gate_id": {},
-    "human_approval": {}
+    "human_approval": {},
+    "capability_packs": {},
+    "role_id": {},
+    "source_commit": {},
+    "accepted": {},
+    "envelope_hash": {},
+    "envelope_id": {},
+    "plan_hash": {},
+    "event_type": {},
+    "brief_hash": {
+      "unread": true
+    },
+    "brief_status": {
+      "unread": true
+    },
+    "gate_lock_hash": {
+      "unread": true
+    },
+    "handoff_validation": {
+      "unread": true
+    },
+    "schema_errors": {
+      "unread": true
+    },
+    "status_matches": {
+      "unread": true
+    },
+    "steps_hash": {
+      "unread": true
+    },
+    "wrapper_errors": {
+      "unread": true
+    },
+    "payload_hash": {},
+    "expected_type": {
+      "unread": true
+    },
+    "specialist_profile": {},
+    "profile_output_schema": {
+      "unread": true
+    },
+    "domain_context": {},
+    "status": {
+      "unread": true
+    },
+    "step_id": {
+      "unread": true
+    },
+    "attempt_id": {
+      "unread": true
+    },
+    "attempt_number": {
+      "unread": true
+    },
+    "schema": {
+      "unread": true
+    },
+    "packs": {
+      "unread": true
+    },
+    "id": {
+      "unread": true
+    },
+    "files": {
+      "unread": true
+    },
+    "artifact_profile": {
+      "unread": true
+    },
+    "handoff_gate": {
+      "unread": true
+    },
+    "gate_lock": {
+      "unread": true
+    },
+    "kernel": {
+      "unread": true
+    },
+    "payload": {
+      "unread": true
+    },
+    "producer": {
+      "unread": true
+    },
+    "evidence": {
+      "unread": true
+    },
+    "kind": {
+      "unread": true
+    },
+    "result": {
+      "unread": true
+    },
+    "accepted_claim_ids": {
+      "unread": true
+    },
+    "args": {
+      "unread": true
+    },
+    "blind_memos": {
+      "unread": true
+    },
+    "claim_id": {
+      "unread": true
+    },
+    "claim_ids": {
+      "unread": true
+    },
+    "claim_text": {
+      "unread": true
+    },
+    "claims": {
+      "unread": true
+    },
+    "confidence": {
+      "unread": true
+    },
+    "context": {
+      "unread": true
+    },
+    "contradictions": {
+      "unread": true
+    },
+    "controls": {
+      "unread": true
+    },
+    "controls_implemented": {
+      "unread": true
+    },
+    "coverage": {
+      "unread": true
+    },
+    "critical_gap": {
+      "unread": true
+    },
+    "critical_gaps": {
+      "unread": true
+    },
+    "decision_bundle": {
+      "unread": true
+    },
+    "decision_value": {
+      "unread": true
+    },
+    "dependencies": {
+      "unread": true
+    },
+    "description": {
+      "unread": true
+    },
+    "domain_accepted": {
+      "unread": true
+    },
+    "domain_hash": {
+      "unread": true
+    },
+    "domain_status": {
+      "unread": true
+    },
+    "domain_validation": {
+      "unread": true
+    },
+    "epistemic_kind": {
+      "unread": true
+    },
+    "evidence_graph": {
+      "unread": true
+    },
+    "explanation": {
+      "unread": true
+    },
+    "freshness_status": {
+      "unread": true
+    },
+    "function": {
+      "unread": true
+    },
+    "gaps": {
+      "unread": true
+    },
+    "gate_statuses": {
+      "unread": true
+    },
+    "gatekeepers": {
+      "unread": true
+    },
+    "judge": {
+      "unread": true
+    },
+    "kwargs": {
+      "unread": true
+    },
+    "material_claim_count": {
+      "unread": true
+    },
+    "max_attempts": {
+      "unread": true
+    },
+    "mode": {
+      "unread": true
+    },
+    "pack_hash": {
+      "unread": true
+    },
+    "proposal": {
+      "unread": true
+    },
+    "question": {
+      "unread": true
+    },
+    "ready": {
+      "unread": true
+    },
+    "rejected_claim_ids": {
+      "unread": true
+    },
+    "required_confidence": {
+      "unread": true
+    },
+    "research_contract": {
+      "unread": true
+    },
+    "research_envelope": {
+      "unread": true
+    },
+    "research_status": {
+      "unread": true
+    },
+    "retry_limit": {
+      "unread": true
+    },
+    "reversible_experiment_available": {
+      "unread": true
+    },
+    "roles": {
+      "unread": true
+    },
+    "type": {
+      "unread": true
+    },
+    "upstream_bindings": {
+      "unread": true
+    },
+    "valid": {
+      "unread": true
+    },
+    "validation": {
+      "unread": true
+    },
+    "materiality": {
+      "unread": true
+    },
+    "compiled_dispatch": {},
+    "original_brief": {},
+    "profile_lock": {},
+    "trusted_context": {},
+    "owner_output_json": {
+      "unread": true
+    }
   },
   "outputs": {
     "execution_mode": {
@@ -69,7 +330,8 @@
         "DecisionHandoff",
         "FindingEnvelope",
         "SpecialistHandoff",
-        "SnapshotMetadata"
+        "SnapshotMetadata",
+        "ArtifactEnvelope"
       ]
     },
     "run_in_background": {},
@@ -90,10 +352,19 @@
     "purpose": {},
     "read_skill": {},
     "boundaries": {},
-    "single_skill_alternative": {}
+    "single_skill_alternative": {},
+    "step_id": {},
+    "attempt_id": {},
+    "handoff_gate": {},
+    "gate_lock": {},
+    "prior_envelope_ids": {},
+    "artifact_profile": {},
+    "deferred_step_ids": {},
+    "dispatch_status": {}
   },
   "internal": {
-    "orchestrated_goal": "intent label the router assigns from its own patterns"
+    "orchestrated_goal": "intent label the router assigns from its own patterns",
+    "data": "canonical ledger event data"
   },
   "doc_terms": [],
   "evals": []

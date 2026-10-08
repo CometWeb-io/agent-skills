@@ -1,0 +1,90 @@
+{
+  "schema": "cometweb.capability-packs/pilot-v1",
+  "status": "LOCAL_PILOT",
+  "max_packs_per_role": 1,
+  "packs": [
+    {
+      "id": "corey-customer-research",
+      "role_id": "product_customer",
+      "match_any": [
+        "\\bcustomer research\\b",
+        "\\bwywiad\\w*\\b",
+        "\\bjtbd\\b",
+        "\\bbadani\\w* klient\\w*\\b"
+      ],
+      "entrypoint": "capability-packs/corey/customer-research/SKILL.md",
+      "license_file": "capability-packs/corey/LICENSE",
+      "source_repository": "https://github.com/coreyhaines31/marketingskills",
+      "source_commit": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "source_path": "skills/customer-research",
+      "license": "MIT",
+      "files": {
+        "capability-packs/corey/customer-research/SKILL.md": "905e65e67268448d88b3b96cf045c6b3615cdd87c1060e129b148a31aa627669",
+        "capability-packs/corey/customer-research/evals/evals.json": "fc8a15d12e582b55fa52ad27925594ab796ebd6a8ea13fed13722f97e4c51f01",
+        "capability-packs/corey/customer-research/references/interviews-and-surveys.md": "56adecdc40af1242464937100349fc1a161627394909551720494bc5ee537076",
+        "capability-packs/corey/customer-research/references/source-guides.md": "7490a8d04f209d4c8c987530e79d0883a6b42027b86a920fc751cf8ea9904892",
+        "capability-packs/corey/LICENSE": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591"
+      },
+      "claim_class": "FRAMEWORK",
+      "side_effects": "none; instructions and references only"
+    },
+    {
+      "id": "corey-pricing",
+      "role_id": "offer_pricing",
+      "match_any": [
+        "\\bpricing\\b",
+        "\\bcen[ay\u0119]\\b",
+        "\\bcennik\\w*\\b",
+        "\\bpakiet\\w*\\b"
+      ],
+      "entrypoint": "capability-packs/corey/pricing/SKILL.md",
+      "license_file": "capability-packs/corey/LICENSE",
+      "source_repository": "https://github.com/coreyhaines31/marketingskills",
+      "source_commit": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "source_path": "skills/pricing",
+      "license": "MIT",
+      "files": {
+        "capability-packs/corey/pricing/SKILL.md": "ffb5ef03a65cdc67cc35b83b89f3820ddafde0265dd7a7af303c5886c5c71977",
+        "capability-packs/corey/pricing/evals/evals.json": "b0c88f299db5223ca2a9f27a9f61800bc63ee21fd845a53f5c92bb5695d0995f",
+        "capability-packs/corey/pricing/references/pricing-models.md": "2cdb900b74f56a796c0331725e73eff4ecd84f8021b42efbb0a5b4903d1d9b16",
+        "capability-packs/corey/pricing/references/pricing-page-teardown.md": "b58a3bffa58ae7c3a475aba33887daaa98e0dc0de57ea948314256b08aa306ad",
+        "capability-packs/corey/pricing/references/research-methods.md": "b6aab09860dbab2f11d69cc9c179cc7f6e1a100ede28e5c49b59070a2caaeb15",
+        "capability-packs/corey/pricing/references/tier-structure.md": "b59910d37cceb74484f28b065963daa60f5c4fb1ffc36a0584d0f3cad11f3e30",
+        "capability-packs/corey/LICENSE": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591"
+      },
+      "claim_class": "FRAMEWORK",
+      "side_effects": "none; instructions and references only"
+    },
+    {
+      "id": "corey-offers",
+      "role_id": "sales",
+      "match_any": [
+        "\\boffer\\w*\\b",
+        "\\bofert\\w*\\b",
+        "\\bguarantee\\b",
+        "\\bgwarancj\\w*\\b"
+      ],
+      "entrypoint": "capability-packs/corey/offers/SKILL.md",
+      "license_file": "capability-packs/corey/LICENSE",
+      "source_repository": "https://github.com/coreyhaines31/marketingskills",
+      "source_commit": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "source_path": "skills/offers",
+      "license": "MIT",
+      "files": {
+        "capability-packs/corey/offers/SKILL.md": "f27239be82e5d4ad42daa944fad7d0a640b80ca82697ba7399843437a001e5aa",
+        "capability-packs/corey/offers/evals/evals.json": "b87e20bf1f392e216fea6f586befe632dd9d45895998108864a705fc8a4bc607",
+        "capability-packs/corey/offers/references/bonus-stacking.md": "872abbfd14501fd0b097f5ae62b9931571152d43b6690b57df5e65ab48aedfbd",
+        "capability-packs/corey/offers/references/examples.md": "f1033e181845effe8c659800aaf68523686be6bdcb1c5e256c87008e8ea638af",
+        "capability-packs/corey/offers/references/guarantee-design.md": "daa421558b664fe5a335c6cb764d47755799662c79606551a848bba864255c29",
+        "capability-packs/corey/offers/references/offer-anatomy.md": "0810080788bedc9b40dc0aba53109991aa816397f4b45e813289985eb8a64cad",
+        "capability-packs/corey/offers/references/offer-formats.md": "667d87198dcd3b5892151d33a917919141bc718822a2a4add3e9c100891755bb",
+        "capability-packs/corey/offers/references/saas-offers.md": "1b21638f0fd2e623f638c13f4b82e2d8c8ecb79d1324f0183f8322db5f5ceea3",
+        "capability-packs/corey/offers/references/scarcity-urgency.md": "4abe51a54188e6c93feb6cface92abc5c8e03212b8ade5bd9366ed159ad3f8f8",
+        "capability-packs/corey/offers/references/value-equation.md": "4610ff358be2be643e7783884e628f01e1e0c56915a7924e5ccb92c096121eff",
+        "capability-packs/corey/LICENSE": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591"
+      },
+      "claim_class": "FRAMEWORK",
+      "side_effects": "none; instructions and references only"
+    }
+  ]
+}

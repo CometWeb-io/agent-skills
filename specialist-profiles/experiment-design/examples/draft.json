@@ -1,0 +1,43 @@
+{
+  "schema": "cometweb.specialist-profile-output/v2",
+  "profile_id": "experiment-design",
+  "owner_skill": "brief-architect",
+  "status": "DRAFT",
+  "execution_authorized": false,
+  "evidence": [
+    {
+      "id": "S1",
+      "kind": "USER_INPUT",
+      "reference": "fictional test fixture supplied inline",
+      "summary": "Only the demo process/field metadata was supplied."
+    }
+  ],
+  "unknowns": [
+    "Product outcomes, measurement or ownership remain unverified"
+  ],
+  "result": {
+    "hypothesis": "Optional company field may reduce abandonment",
+    "primary_metric": "Completed forms / eligible exposed visitors",
+    "denominator_and_window": "Unique eligible visitors, declared window pending",
+    "baseline_rate": null,
+    "sample_size_per_variant": null,
+    "mde_absolute": null,
+    "alpha": null,
+    "power": null,
+    "method": "UNKNOWN",
+    "randomization_unit": null,
+    "stopping_rule": null,
+    "guardrails": [
+      "Validation error rate"
+    ],
+    "instrumentation": "UNVERIFIED",
+    "framework_source_ids": [],
+    "parameter_source_ids": {
+      "baseline_rate": [],
+      "sample_size_per_variant": [],
+      "mde_absolute": [],
+      "alpha": [],
+      "power": []
+    }
+  }
+}

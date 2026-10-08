@@ -2,18 +2,18 @@
   "schema": "cometweb.context-budget/v1",
   "unit": "bytes; token counts are estimates at 4 bytes/token",
   "skill_count": 34,
-  "total_front_door_tokens_estimated": 71702,
+  "total_front_door_tokens_estimated": 72092,
   "median_front_door_tokens_estimated": 2403,
   "max_front_door_tokens_estimated": 2999,
   "skills": [
     {
       "id": "ai-council",
-      "front_door_bytes": 9902,
-      "front_door_tokens_estimated": 2475,
-      "depth_bytes": 52107,
-      "depth_tokens_estimated": 13026,
-      "reference_files": 27,
-      "deferred_ratio": 0.8403
+      "front_door_bytes": 9990,
+      "front_door_tokens_estimated": 2497,
+      "depth_bytes": 54169,
+      "depth_tokens_estimated": 13542,
+      "reference_files": 28,
+      "deferred_ratio": 0.8443
     },
     {
       "id": "ai-humanize",
@@ -44,12 +44,12 @@
     },
     {
       "id": "brief-architect",
-      "front_door_bytes": 6689,
-      "front_door_tokens_estimated": 1672,
-      "depth_bytes": 7335,
-      "depth_tokens_estimated": 1833,
-      "reference_files": 5,
-      "deferred_ratio": 0.523
+      "front_door_bytes": 7373,
+      "front_door_tokens_estimated": 1843,
+      "depth_bytes": 13013,
+      "depth_tokens_estimated": 3253,
+      "reference_files": 6,
+      "deferred_ratio": 0.6383
     },
     {
       "id": "cometweb-context",
@@ -287,21 +287,21 @@
     },
     {
       "id": "skill-orchestrator",
-      "front_door_bytes": 6775,
-      "front_door_tokens_estimated": 1693,
-      "depth_bytes": 14359,
-      "depth_tokens_estimated": 3589,
-      "reference_files": 5,
-      "deferred_ratio": 0.6794
+      "front_door_bytes": 7386,
+      "front_door_tokens_estimated": 1846,
+      "depth_bytes": 36560,
+      "depth_tokens_estimated": 9140,
+      "reference_files": 9,
+      "deferred_ratio": 0.8319
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "front_door_bytes": 1887,
-      "front_door_tokens_estimated": 471,
-      "depth_bytes": 15731,
-      "depth_tokens_estimated": 3932,
-      "reference_files": 5,
-      "deferred_ratio": 0.8929
+      "front_door_bytes": 2063,
+      "front_door_tokens_estimated": 515,
+      "depth_bytes": 35141,
+      "depth_tokens_estimated": 8785,
+      "reference_files": 8,
+      "deferred_ratio": 0.9445
     },
     {
       "id": "web-app-auditor",

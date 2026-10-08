@@ -1,12 +1,12 @@
 {
   "schema": "cometweb.plugin-release/v1",
-  "plugin_version": "2.5.0",
+  "plugin_version": "2.6.0",
   "skills": {
-    "ai-council": "5.2.4",
+    "ai-council": "5.3.0",
     "ai-humanize": "2.6.1",
     "artifact-acceptance": "1.7.4",
     "benchmark-curator": "1.7.4",
-    "brief-architect": "1.7.4",
+    "brief-architect": "1.8.0",
     "cometweb-context": "1.5.2",
     "competitive-intelligence": "1.1.2",
     "competitor-profiling": "0.1.0",
@@ -32,9 +32,9 @@
     "science-roaster": "6.1.3",
     "seo-geo-aeo-maxxing": "1.3.4",
     "skill-auditor": "1.7.5",
-    "skill-evaluator": "1.7.3",
-    "skill-orchestrator": "1.2.0",
-    "skill-orchestrator-multiagent": "1.1.6",
+    "skill-evaluator": "1.7.4",
+    "skill-orchestrator": "1.3.0",
+    "skill-orchestrator-multiagent": "1.2.0",
     "web-app-auditor": "1.5.0"
   }
 }

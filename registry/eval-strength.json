@@ -16,8 +16,8 @@
       "unexercised": []
     },
     {
-      "guards": 79,
-      "held": 79,
+      "guards": 108,
+      "held": 108,
       "id": "brief-architect",
       "strength": 1.0,
       "unexercised": []
@@ -107,8 +107,8 @@
       "unexercised": []
     },
     {
-      "guards": 54,
-      "held": 54,
+      "guards": 57,
+      "held": 57,
       "id": "skill-evaluator",
       "strength": 1.0,
       "unexercised": []

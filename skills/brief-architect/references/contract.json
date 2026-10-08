@@ -3,7 +3,8 @@
   "docs": [
     "references/output-contract.md",
     "references/modes-and-versioning.md",
-    "references/rubric-lock.md"
+    "references/rubric-lock.md",
+    "references/prd-profile.md"
   ],
   "scripts": {
     "scripts/kernel.py": {
@@ -13,7 +14,8 @@
         "VALID_MODES": "mode",
         "VALID_RISK": "risk_level",
         "VALID_POLICIES": "evidence_policy",
-        "VALID_PRIORITY": "priority"
+        "VALID_PRIORITY": "priority",
+        "VALID_PRD_PRIORITY": "requirements.priority"
       }
     },
     "scripts/run_evals.py": {
@@ -98,6 +100,28 @@
     "resolved": {},
     "recommended_next_skill": {
       "unread": true
+    },
+    "artifact_profile": {},
+    "prd": {},
+    "requirements": {},
+    "acceptance_criteria_ids": {},
+    "depends_on": {},
+    "delivery_slices": {},
+    "requirement_ids": {},
+    "verification": {},
+    "implementation_constraints": {},
+    "data_contracts": {},
+    "interface_contracts": {},
+    "non_goals": {},
+    "entry_conditions": {
+      "unread": true
+    },
+    "requirements.priority": {
+      "enum": [
+        "P0",
+        "P1",
+        "P2"
+      ]
     }
   },
   "outputs": {

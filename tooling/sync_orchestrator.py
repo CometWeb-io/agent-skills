@@ -21,6 +21,7 @@ SHARED_REFS = (
     "multiagent-execution.md",
     "subagent-prompt-template.md",
     "run-ledger-contract.md",
+    "prd-handoff.md",
 )
 # Bundled reference name -> canonical protocol schema.
 PROTOCOL_COPIES = {

@@ -1,0 +1,212 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": [
+        "cometweb.local-writer-report/v1"
+      ]
+    },
+    "brief_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "DRAFT"
+      ]
+    },
+    "evidence_policy": {
+      "type": "string",
+      "enum": [
+        "SOURCE_BOUND"
+      ]
+    },
+    "approved_sources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "minItems": 1,
+      "maxItems": 16
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "claim_id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "claim": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SUPPORTED",
+              "INFERRED",
+              "OPINION",
+              "EXAMPLE",
+              "UNRESOLVED",
+              "UNSUPPORTED"
+            ]
+          },
+          "material": {
+            "type": "boolean"
+          },
+          "presented_as_fact": {
+            "type": "boolean"
+          },
+          "high_risk": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "freshness_required": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "authority": {
+                  "type": "string",
+                  "enum": [
+                    "USER_INPUT",
+                    "OBSERVED",
+                    "FRAMEWORK",
+                    "HYPOTHESIS"
+                  ]
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "authority"
+              ]
+            },
+            "minItems": 0,
+            "maxItems": 16
+          },
+          "basis_claim_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "claim_id",
+          "claim",
+          "status",
+          "material",
+          "presented_as_fact",
+          "high_risk",
+          "freshness_required",
+          "evidence",
+          "basis_claim_ids"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 16
+    },
+    "protected_invariants": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "minItems": 0,
+      "maxItems": 16
+    },
+    "invariant_checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "state"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 16
+    },
+    "release_eligible": {
+      "type": "boolean",
+      "enum": [
+        false
+      ]
+    },
+    "recommended_next_skill": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    }
+  },
+  "required": [
+    "schema",
+    "brief_id",
+    "candidate_id",
+    "mode",
+    "evidence_policy",
+    "approved_sources",
+    "claims",
+    "protected_invariants",
+    "invariant_checks",
+    "release_eligible",
+    "recommended_next_skill"
+  ]
+}

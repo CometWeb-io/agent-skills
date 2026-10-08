@@ -21,7 +21,7 @@ RUN_SCHEMA = "cometweb.workflow-run/v1"
 EVENT_SCHEMA = "cometweb.workflow-event/v1"
 RUN_STATES = {"PENDING", "RUNNING", "BLOCKED", "FAILED", "CANCELLED", "COMPLETED", "STALE_PLAN"}
 TERMINAL_STATES = {"CANCELLED", "COMPLETED", "STALE_PLAN"}
-STEP_EVENT_TYPES = {"step_claimed", "step_completed", "step_failed", "step_blocked"}
+STEP_EVENT_TYPES = {"step_claimed", "step_completed", "step_failed", "step_blocked", "step_retry_exhausted"}
 
 
 def canonical(value: Any) -> bytes:
@@ -184,6 +184,14 @@ def append_event(run_dir: Path, event_type: str, data: dict[str, Any]) -> dict[s
         return event
 
 
+def _prd_gate():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("workflow_prd_gate", Path(__file__).with_name("prd_handoff.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def create_run(root: Path, run_id: str, plan: dict[str, Any]) -> Path:
     if not isinstance(plan, dict):
         raise ValueError("workflow plan must be an object")
@@ -203,7 +211,8 @@ def create_run(root: Path, run_id: str, plan: dict[str, Any]) -> Path:
     manifest_path = _manifest_path(run_dir)
     manifest_path.write_bytes(canonical(manifest) + b"\n")
     os.chmod(manifest_path, 0o600)
-    append_event(run_dir, "run_created", {"plan_hash": manifest["plan_hash"]})
+    append_event(run_dir, "run_created", {"plan_hash": manifest["plan_hash"],
+                                            "steps_hash": sha256(canonical(steps))})
     return run_dir
 
 
@@ -214,6 +223,14 @@ def replay(run_dir: Path) -> dict[str, Any]:
         raise ValueError("workflow event log must start with run_created")
     if events[0]["data"].get("plan_hash") != manifest["plan_hash"]:
         raise ValueError("workflow creation plan hash mismatch")
+    steps_hash = events[0]["data"].get("steps_hash")
+    if steps_hash is not None and steps_hash != sha256(canonical(manifest["steps"])):
+        raise ValueError("workflow manifest steps changed")
+    gate = _prd_gate()
+    for step in manifest["steps"]:
+        if gate.protected(step):
+            if not steps_hash: raise ValueError("PRD workflow lacks a pinned steps hash")
+            gate.validate_step(step)
     step_definitions = {step["step_id"]: step for step in manifest["steps"]}
     if len(step_definitions) != len(manifest["steps"]):
         raise ValueError("workflow manifest contains duplicate step ids")
@@ -249,13 +266,39 @@ def replay(run_dir: Path) -> dict[str, Any]:
         elif event_type == "step_completed":
             previous = state["steps"].get(data["step_id"])
             _require_active_attempt(previous, data)
-            state["steps"][data["step_id"]] = {"status": "COMPLETED", **data}
+            definition = step_definitions[data["step_id"]]
+            if gate.protected(definition):
+                proof = data.get("handoff_validation")
+                if not isinstance(proof, dict) or proof.get("gate_lock_hash") != sha256(canonical(definition["gate_lock"])):
+                    raise ValueError("completion lacks pinned validation proof")
+                if definition["handoff_gate"] == gate.GATE:
+                    if proof.get("brief_status") != "READY" or not isinstance(proof.get("brief_hash"),str) or not proof["brief_hash"].startswith("sha256:"):
+                        raise ValueError("PRD completion lacks validation proof")
+                elif (proof.get("expected_type") != definition["envelope_out"] or proof.get("producer") != definition["skill"]
+                      or not isinstance(proof.get("payload_hash"),str) or not proof["payload_hash"].startswith("sha256:")):
+                    raise ValueError("final-envelope completion lacks validation proof")
+            if definition.get("handoff_gate") == gate.PROFILE_GATE:
+                if proof.get("profile_accepted") is not True:
+                    raise ValueError("completion lacks profile response proof")
+            if definition.get("handoff_gate") == gate.DOMAIN_GATE:
+                if proof.get("domain_accepted") is not True or proof.get("domain_hash") != proof.get("payload_hash"):
+                    raise ValueError("completion lacks domain kernel proof")
+            state["steps"][data["step_id"]] = {"status": "COMPLETED", "attempt_number": previous["attempt_number"], **data}
+        elif event_type == "step_retry_exhausted":
+            previous = state["steps"].get(data["step_id"])
+            definition = step_definitions[data["step_id"]]
+            limit = definition.get("retry_limit", definition.get("domain_context", {}).get("max_attempts"))
+            if (not previous or previous["status"] != "FAILED" or limit is None or previous["attempt_number"] < limit
+                    or data.get("attempt_id") != previous["attempt_id"] or data.get("retry_limit") != limit):
+                raise ValueError("invalid retry exhaustion event")
+            state["status"] = "BLOCKED"
+            state["steps"][data["step_id"]] = {"status": "BLOCKED", "attempt_number": previous["attempt_number"], **data}
         elif event_type in {"step_failed", "step_blocked"}:
             previous = state["steps"].get(data["step_id"])
             _require_active_attempt(previous, data)
             step_status = "FAILED" if event_type == "step_failed" else "BLOCKED"
             state["status"] = step_status
-            state["steps"][data["step_id"]] = {"status": step_status, **data}
+            state["steps"][data["step_id"]] = {"status": step_status, "attempt_number": previous["attempt_number"], **data}
         elif event_type == "run_cancelled":
             if not data.get("reason") or data.get("plan_hash") != manifest["plan_hash"]:
                 raise ValueError("invalid cancellation event")
@@ -293,6 +336,7 @@ def _normalise_steps(plan: dict[str, Any]) -> list[dict[str, Any]]:
             raise ValueError("workflow plan contains duplicate step ids")
         seen.add(step_id)
         step["step_id"] = step_id
+        _prd_gate().validate_step(step)
         steps.append(step)
     return steps
 
@@ -343,6 +387,11 @@ def claim_next(run_dir: Path, current_plan: dict[str, Any] | None = None,
             continue
         if status == "BLOCKED":
             raise ValueError("workflow is blocked")
+        limit = step.get("retry_limit", step.get("domain_context", {}).get("max_attempts"))
+        if limit is not None and previous and previous["attempt_number"] >= limit:
+            append_event(run_dir, "step_retry_exhausted", {"step_id":step["step_id"],"attempt_id":previous["attempt_id"],
+                         "retry_limit":limit,"reason":"bounded domain retry budget exhausted","plan_hash":state["plan_hash"]})
+            return replay(run_dir)
         attempt_id = uuid4().hex
         data = {
             "step_id": step["step_id"],
@@ -358,8 +407,54 @@ def claim_next(run_dir: Path, current_plan: dict[str, Any] | None = None,
 
 
 def complete_step(run_dir: Path, step_id: str, envelope_id: str, envelope_hash: str,
-                  attempt_id: str | None = None) -> dict[str, Any]:
+                  attempt_id: str | None = None, *, envelope: dict[str, Any] | None = None) -> dict[str, Any]:
     state = replay(run_dir)
+    definition = next((s for s in _read_manifest(run_dir)["steps"] if s["step_id"] == step_id), None)
+    if definition is None:
+        raise ValueError("unknown workflow step")
+    proof = None
+    gate = _prd_gate()
+    if gate.protected(definition):
+        if envelope is None:
+            raise ValueError("PRD completion requires full envelope JSON, not only id/hash")
+        is_prd = definition["handoff_gate"] == gate.GATE
+        if definition["handoff_gate"] == gate.PROFILE_GATE:
+            result=gate._module(gate.PROFILE_PATH,"ledger_profile_gate").validate_envelope(envelope,definition)
+        else:
+            result = gate.validate(envelope, definition["gate_lock"], expected_type=definition["envelope_out"],
+                                   expected_producer=definition["skill"], prd_required=is_prd,
+                                   domain_required=definition["handoff_gate"]==gate.DOMAIN_GATE, domain_context=definition.get("domain_context"), expected_report_as_of=definition.get("report_as_of"))
+        if not result["accepted"]:
+            raise ValueError("PRD handoff rejected: " + json.dumps(result, ensure_ascii=False))
+        if result["envelope_id"] != envelope_id or result["envelope_hash"] != envelope_hash:
+            raise ValueError("PRD envelope id/hash does not match validated content")
+        proof = {"gate_lock_hash": result["gate_lock_hash"]}
+        if is_prd:
+            proof.update(brief_hash=result["brief_hash"], brief_status="READY")
+        else:
+            if definition["handoff_gate"] == gate.PROFILE_GATE: proof["profile_accepted"] = result["profile_accepted"]
+            proof.update(payload_hash=result["payload_hash"], expected_type=result["expected_type"], producer=result["producer"])
+    elif isinstance(envelope, dict) and isinstance(envelope.get("payload"), dict) and envelope["payload"].get("artifact_profile") == "PRD":
+        raise ValueError("PRD envelope requires an explicitly gated PRD plan")
+    definitions = _read_manifest(run_dir)["steps"]
+    position = next(i for i, v in enumerate(definitions) if v["step_id"] == step_id)
+    # Protected combined workflows bind even the PRD to the exact completed prefix.
+    if gate.protected(definition) and any("trusted_context" in s for s in definitions):
+        earlier = definitions[:position]
+        if any(state["steps"].get(s["step_id"], {}).get("status") != "COMPLETED" for s in earlier):
+            raise ValueError("upstream prefix is incomplete")
+        ids = [state["steps"][s["step_id"]]["envelope_id"] for s in earlier]
+        if envelope.get("dependencies") != ids:
+            raise ValueError("protected dependencies must match exact completed prefix")
+    if definition.get("handoff_gate") == gate.DOMAIN_GATE:
+        domain = gate._module(gate.DOMAIN_PATH, "ledger_domain_bindings")
+        prefix = [{"step_id":s["step_id"], "envelope_id":state["steps"][s["step_id"]]["envelope_id"],
+                   "envelope_hash":state["steps"][s["step_id"]]["envelope_hash"]}
+                  for s in _read_manifest(run_dir)["steps"][:next(i for i,v in enumerate(_read_manifest(run_dir)["steps"]) if v["step_id"] == step_id)]
+                  if state["steps"].get(s["step_id"],{}).get("status")=="COMPLETED"]
+        research = next((s["step_id"] for s in definitions[:position] if s["skill"] == "evidence-researcher"), "step-2")
+        domain.check_bindings(envelope, prefix, research_step_id=research)
+        proof.update(domain_accepted=True, domain_status=result["domain_validation"]["domain_status"], domain_hash=result["domain_validation"]["domain_hash"])
     previous = state["steps"].get(step_id)
     if previous and previous.get("status") == "COMPLETED":
         if previous.get("envelope_id") != envelope_id or previous.get("envelope_hash") != envelope_hash:
@@ -376,10 +471,12 @@ def complete_step(run_dir: Path, step_id: str, envelope_id: str, envelope_hash: 
             raise ValueError("orphan step attempt")
     else:
         raise ValueError("orphan step completion")
-    event = append_event(run_dir, "step_completed", {
+    completion = {
         "step_id": step_id, "attempt_id": attempt_id, "plan_hash": state["plan_hash"],
         "envelope_id": envelope_id, "envelope_hash": envelope_hash,
-    })
+    }
+    if proof is not None: completion["handoff_validation"] = proof
+    event = append_event(run_dir, "step_completed", completion)
     if all(step.get("status") == "COMPLETED" for step in replay(run_dir)["steps"].values()) and \
             len(replay(run_dir)["steps"]) == len(_read_manifest(run_dir)["steps"]):
         append_event(run_dir, "run_completed", {"plan_hash": state["plan_hash"]})
@@ -464,6 +561,7 @@ def main(argv: list[str] | None = None) -> int:
     complete.add_argument("--envelope-id", required=True)
     complete.add_argument("--envelope-hash", required=True)
     complete.add_argument("--attempt-id", required=True)
+    complete.add_argument("--envelope-json", type=Path, help="Full CW-AIP envelope; mandatory for gated PRD steps")
     fail = sub.add_parser("fail-step")
     fail.add_argument("run_dir", type=Path)
     fail.add_argument("--step-id", required=True)
@@ -489,7 +587,8 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(claim_next(args.run_dir, current_plan, args.worker_id)))
         elif args.command == "complete-step":
             print(json.dumps(complete_step(args.run_dir, args.step_id, args.envelope_id,
-                                            args.envelope_hash, args.attempt_id)))
+                                            args.envelope_hash, args.attempt_id,
+                                            envelope=json.loads(args.envelope_json.read_text()) if args.envelope_json else None)))
         elif args.command == "fail-step":
             print(json.dumps(fail_step(args.run_dir, args.step_id, args.reason, args.attempt_id)))
         elif args.command == "block-step":

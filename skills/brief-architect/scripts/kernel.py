@@ -5,6 +5,7 @@ VALID_POLICIES={'SOURCE_BOUND','EVIDENCE_REQUIRED','CONTEXTUAL_DRAFT','CREATIVE'
 VALID_MODES={'LIGHT','STANDARD','DEEP'}
 VALID_RISK={'LOW','MEDIUM','HIGH','CRITICAL'}
 VALID_PRIORITY={'MUST','SHOULD','MAY'}
+VALID_PRD_PRIORITY={'P0','P1','P2'}
 REQUIRED_TEXT=('objective','audience')
 HEX64=re.compile(r'^[0-9a-f]{64}$')
 
@@ -169,6 +170,75 @@ def _version_errors(brief):
     return errors
 
 
+def _prd_profile(brief):
+    profile=brief.get('artifact_profile')
+    if profile is None:
+        return ([], ['prd:profile-required']) if 'prd' in brief else ([], [])
+    if profile!='PRD': return [], ['artifact_profile:invalid']
+    prd=brief.get('prd')
+    if prd is None: return ['prd'], []
+    if not isinstance(prd,dict): return [], ['prd:not-object']
+    missing=[]; errors=[]
+    reqs=prd.get('requirements'); slices=prd.get('delivery_slices')
+    for key in ('requirements','delivery_slices'):
+        value=prd.get(key)
+        if value is None or value==[]: missing.append('prd.'+key)
+        elif not isinstance(value,list): errors.append('prd.'+key+':not-list')
+    for key in ('implementation_constraints','data_contracts','interface_contracts','non_goals'):
+        if not isinstance(prd.get(key),list): errors.append('prd.'+key+':not-list')
+    if not isinstance(reqs,list) or not isinstance(slices,list): return missing,errors
+    ac=brief.get('acceptance_criteria')
+    ac_ids={x['id'] for x in ac if isinstance(x,dict) and _text(x.get('id'))} if isinstance(ac,list) else set()
+    ids=set(); deps={}
+    for i,row in enumerate(reqs):
+        prefix=f'prd.requirements[{i}]'
+        if not isinstance(row,dict): errors.append(prefix+':not-object'); continue
+        rid=row.get('id')
+        if not _text(rid): errors.append(prefix+':id'); continue
+        if rid in ids: errors.append(prefix+':duplicate-id')
+        ids.add(rid)
+        if not _text(row.get('description')): errors.append(prefix+':description')
+        if not isinstance(row.get('priority'),str) or row['priority'] not in VALID_PRD_PRIORITY: errors.append(prefix+':priority')
+        refs=row.get('acceptance_criteria_ids')
+        if not isinstance(refs,list) or not refs or any(not _text(x) for x in refs): errors.append(prefix+':criteria-refs')
+        elif len(set(refs))!=len(refs) or any(x not in ac_ids for x in refs): errors.append(prefix+':unknown-or-duplicate-criterion')
+        refs=row.get('depends_on')
+        if not isinstance(refs,list) or any(not _text(x) for x in refs): errors.append(prefix+':dependency-refs')
+        elif len(set(refs))!=len(refs): errors.append(prefix+':duplicate-dependency')
+        else: deps[rid]=refs
+    for _rid, refs in deps.items():
+        if any(x not in ids for x in refs): errors.append('prd.requirements:unknown-dependency')
+    # Iterative topological removal avoids recursion limits on malformed/deep DAGs.
+    pending=set(ids); resolved=set()
+    # Each pass resolves at least one requirement; bound malformed graphs even
+    # when the diagnostic branch is damaged or changed independently.
+    for _ in range(len(ids)):
+        if not pending: break
+        ready={rid for rid in pending if all(x in resolved for x in deps.get(rid,[]))}
+        if not ready: errors.append('prd.requirements:cycle-or-unresolved-dependency'); break
+        pending-=ready; resolved|=ready
+    scheduled={}; slice_ids=set()
+    for i,row in enumerate(slices):
+        prefix=f'prd.delivery_slices[{i}]'
+        if not isinstance(row,dict): errors.append(prefix+':not-object'); continue
+        sid=row.get('id')
+        if not _text(sid): errors.append(prefix+':id')
+        elif sid in slice_ids: errors.append(prefix+':duplicate-id')
+        else: slice_ids.add(sid)
+        if not _text(row.get('verification')): errors.append(prefix+':verification')
+        refs=row.get('requirement_ids')
+        if not isinstance(refs,list) or not refs or any(not _text(x) for x in refs): errors.append(prefix+':requirement-refs'); continue
+        for rid in refs:
+            if rid not in ids: errors.append(prefix+':unknown-requirement')
+            if rid in scheduled: errors.append(prefix+':duplicate-requirement')
+            else: scheduled[rid]=i
+    if set(scheduled)!=ids: errors.append('prd.delivery_slices:incomplete-coverage')
+    for rid,refs in deps.items():
+        if rid in scheduled and any(x in scheduled and scheduled[x]>=scheduled[rid] for x in refs):
+            errors.append('prd.delivery_slices:dependency-order')
+    return missing,errors
+
+
 def readiness(brief):
     if not isinstance(brief,dict):
         return {'status':'INVALID','missing':[],'errors':['brief:not-object'],'open_material_decisions':0,'material_assumptions':0,'mode':'STANDARD'}
@@ -198,6 +268,8 @@ def readiness(brief):
         if not _text(brief.get('use_moment')): missing.append('use_moment')
         if not _text(brief.get('scope')): missing.append('scope')
         if isinstance(risk,str) and risk in {'HIGH','CRITICAL'} and not invariants: missing.append('protected_invariants')
+    prd_missing, prd_errors=_prd_profile(brief)
+    missing.extend(prd_missing); errors.extend(prd_errors)
     if errors:
         return {'status':'INVALID','missing':sorted(set(missing)),'errors':errors,'open_material_decisions':len(decisions),'material_assumptions':len(assumptions),'mode':mode if isinstance(mode,str) and mode in VALID_MODES else 'STANDARD'}
     if missing:
@@ -210,7 +282,7 @@ def readiness(brief):
 def delta(old,new):
     if not isinstance(old,dict) or not isinstance(new,dict):
         return {'status':'INVALID','material_changes':[],'requires_downstream_revalidation':True,'errors':['brief-delta:not-object']}
-    fields=('objective','audience','evidence_policy','scope','use_moment','risk_level')
+    fields=('objective','audience','evidence_policy','scope','use_moment','risk_level','artifact_profile','prd')
     changes=[]
     for field in fields:
         if old.get(field)!=new.get(field): changes.append(field)

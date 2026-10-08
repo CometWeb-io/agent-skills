@@ -156,8 +156,8 @@ next step, `DEFER` means decide later with named evidence, and
 
 | Owner | Field | Values | Why it differs |
 | --- | --- | --- | --- |
-| `skill-orchestrator` | `output:envelope_out` | `EvidenceEnvelope` `DecisionHandoff` `FindingEnvelope` `SpecialistHandoff` `SnapshotMetadata` | Planned per step; the v1 kinds the archetypes use. |
-| `skill-orchestrator-multiagent` | `output:envelope_out` | `EvidenceEnvelope` `DecisionHandoff` `FindingEnvelope` `SpecialistHandoff` `SnapshotMetadata` | Same planner. |
+| `skill-orchestrator` | `output:envelope_out` | `ArtifactEnvelope` `EvidenceEnvelope` `DecisionHandoff` `FindingEnvelope` `SpecialistHandoff` `SnapshotMetadata` | Planned per step; the v1 kinds the archetypes use. |
+| `skill-orchestrator-multiagent` | `output:envelope_out` | `ArtifactEnvelope` `EvidenceEnvelope` `DecisionHandoff` `FindingEnvelope` `SpecialistHandoff` `SnapshotMetadata` | Same planner. |
 | `cw-aip-v1/schemas/envelope.core.schema.json` | `type` | `ArtifactEnvelope` `EvidenceEnvelope` `FindingEnvelope` `DecisionHandoff` `SpecialistHandoff` `SnapshotMetadata` | v1 kinds. |
 | `cw-aip-v2/core.schema.json` | `type` | `ContextEnvelope` `EvidenceEnvelope` `FindingEnvelope` `DecisionEnvelope` `RoadmapEnvelope` `ReleaseEnvelope` `SpecialistHandoff` `ArtifactEnvelope` `SnapshotMetadata` | v2 splits `DecisionHandoff` into `DecisionEnvelope` (Council) and `ReleaseEnvelope` (Release Readiness), and adds context and roadmap kinds. |
 

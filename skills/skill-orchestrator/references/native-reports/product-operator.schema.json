@@ -1,0 +1,1105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "protocol_version": {
+      "type": "string",
+      "enum": [
+        "2.2"
+      ]
+    },
+    "as_of": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "STANDARD"
+      ]
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "horizon": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "mutations": {
+      "type": "string",
+      "enum": [
+        "read-only"
+      ]
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "github": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "partial",
+            "unavailable",
+            "not-required"
+          ]
+        },
+        "notion": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "partial",
+            "unavailable",
+            "not-required"
+          ]
+        },
+        "product_context": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "partial",
+            "unavailable",
+            "not-required"
+          ]
+        },
+        "outcome_data": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "partial",
+            "unavailable",
+            "not-required"
+          ]
+        }
+      },
+      "required": [
+        "github",
+        "notion",
+        "product_context",
+        "outcome_data"
+      ]
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "READY",
+            "PROVISIONAL",
+            "BLOCKED"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "minItems": 0,
+          "maxItems": 16
+        }
+      },
+      "required": [
+        "status",
+        "reasons"
+      ]
+    },
+    "decision": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "condition": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "blocks_current_goal": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "blocked_item": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "why_blocking": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim_type": {
+                  "type": "string",
+                  "enum": [
+                    "USER_INPUT",
+                    "OBSERVED",
+                    "FRAMEWORK",
+                    "HYPOTHESIS"
+                  ]
+                },
+                "freshness_status": {
+                  "type": "string",
+                  "enum": [
+                    "CURRENT",
+                    "NEAR_EXPIRY",
+                    "STALE",
+                    "SUPERSEDED",
+                    "UNKNOWN",
+                    "NOT_REQUIRED"
+                  ]
+                },
+                "required_current": {
+                  "type": "boolean",
+                  "enum": [
+                    false
+                  ]
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "claim",
+                "claim_type",
+                "freshness_status",
+                "required_current"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "id",
+          "condition",
+          "blocks_current_goal",
+          "blocked_item",
+          "why_blocking",
+          "evidence"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 3
+    },
+    "verify_now": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "why_now": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "done_when": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim_type": {
+                  "type": "string",
+                  "enum": [
+                    "USER_INPUT",
+                    "OBSERVED",
+                    "FRAMEWORK",
+                    "HYPOTHESIS"
+                  ]
+                },
+                "freshness_status": {
+                  "type": "string",
+                  "enum": [
+                    "CURRENT",
+                    "NEAR_EXPIRY",
+                    "STALE",
+                    "SUPERSEDED",
+                    "UNKNOWN",
+                    "NOT_REQUIRED"
+                  ]
+                },
+                "required_current": {
+                  "type": "boolean",
+                  "enum": [
+                    false
+                  ]
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "claim",
+                "claim_type",
+                "freshness_status",
+                "required_current"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 16
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "why_now",
+          "done_when",
+          "confidence",
+          "evidence",
+          "depends_on"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 3
+    },
+    "decision_now": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "decision_domain": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "why_now": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 2,
+            "maxItems": 16
+          },
+          "delegated_to": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "done_when": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim_type": {
+                  "type": "string",
+                  "enum": [
+                    "USER_INPUT",
+                    "OBSERVED",
+                    "FRAMEWORK",
+                    "HYPOTHESIS"
+                  ]
+                },
+                "freshness_status": {
+                  "type": "string",
+                  "enum": [
+                    "CURRENT",
+                    "NEAR_EXPIRY",
+                    "STALE",
+                    "SUPERSEDED",
+                    "UNKNOWN",
+                    "NOT_REQUIRED"
+                  ]
+                },
+                "required_current": {
+                  "type": "boolean",
+                  "enum": [
+                    false
+                  ]
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "claim",
+                "claim_type",
+                "freshness_status",
+                "required_current"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "id",
+          "question",
+          "decision_domain",
+          "why_now",
+          "options",
+          "delegated_to",
+          "done_when",
+          "evidence"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 3
+    },
+    "now": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "why_now": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "done_when": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim_type": {
+                  "type": "string",
+                  "enum": [
+                    "USER_INPUT",
+                    "OBSERVED",
+                    "FRAMEWORK",
+                    "HYPOTHESIS"
+                  ]
+                },
+                "freshness_status": {
+                  "type": "string",
+                  "enum": [
+                    "CURRENT",
+                    "NEAR_EXPIRY",
+                    "STALE",
+                    "SUPERSEDED",
+                    "UNKNOWN",
+                    "NOT_REQUIRED"
+                  ]
+                },
+                "required_current": {
+                  "type": "boolean",
+                  "enum": [
+                    false
+                  ]
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "claim",
+                "claim_type",
+                "freshness_status",
+                "required_current"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 16
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "why_now",
+          "done_when",
+          "confidence",
+          "evidence",
+          "depends_on"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 3
+    },
+    "next": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "why_now": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "done_when": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim_type": {
+                  "type": "string",
+                  "enum": [
+                    "USER_INPUT",
+                    "OBSERVED",
+                    "FRAMEWORK",
+                    "HYPOTHESIS"
+                  ]
+                },
+                "freshness_status": {
+                  "type": "string",
+                  "enum": [
+                    "CURRENT",
+                    "NEAR_EXPIRY",
+                    "STALE",
+                    "SUPERSEDED",
+                    "UNKNOWN",
+                    "NOT_REQUIRED"
+                  ]
+                },
+                "required_current": {
+                  "type": "boolean",
+                  "enum": [
+                    false
+                  ]
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "claim",
+                "claim_type",
+                "freshness_status",
+                "required_current"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 16
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "why_now",
+          "done_when",
+          "confidence",
+          "evidence",
+          "depends_on"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 5
+    },
+    "later": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "why_now": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "done_when": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim_type": {
+                  "type": "string",
+                  "enum": [
+                    "USER_INPUT",
+                    "OBSERVED",
+                    "FRAMEWORK",
+                    "HYPOTHESIS"
+                  ]
+                },
+                "freshness_status": {
+                  "type": "string",
+                  "enum": [
+                    "CURRENT",
+                    "NEAR_EXPIRY",
+                    "STALE",
+                    "SUPERSEDED",
+                    "UNKNOWN",
+                    "NOT_REQUIRED"
+                  ]
+                },
+                "required_current": {
+                  "type": "boolean",
+                  "enum": [
+                    false
+                  ]
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "claim",
+                "claim_type",
+                "freshness_status",
+                "required_current"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 16
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "why_now",
+          "done_when",
+          "confidence",
+          "evidence",
+          "depends_on"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 16
+    },
+    "watch": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "why_now": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "done_when": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim_type": {
+                  "type": "string",
+                  "enum": [
+                    "USER_INPUT",
+                    "OBSERVED",
+                    "FRAMEWORK",
+                    "HYPOTHESIS"
+                  ]
+                },
+                "freshness_status": {
+                  "type": "string",
+                  "enum": [
+                    "CURRENT",
+                    "NEAR_EXPIRY",
+                    "STALE",
+                    "SUPERSEDED",
+                    "UNKNOWN",
+                    "NOT_REQUIRED"
+                  ]
+                },
+                "required_current": {
+                  "type": "boolean",
+                  "enum": [
+                    false
+                  ]
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "claim",
+                "claim_type",
+                "freshness_status",
+                "required_current"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 16
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "why_now",
+          "done_when",
+          "confidence",
+          "evidence",
+          "depends_on"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 16
+    },
+    "stop": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "why_now": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "done_when": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "locator": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim": {
+                  "type": "string",
+                  "minLength": 1,
+                  "pattern": "\\S"
+                },
+                "claim_type": {
+                  "type": "string",
+                  "enum": [
+                    "USER_INPUT",
+                    "OBSERVED",
+                    "FRAMEWORK",
+                    "HYPOTHESIS"
+                  ]
+                },
+                "freshness_status": {
+                  "type": "string",
+                  "enum": [
+                    "CURRENT",
+                    "NEAR_EXPIRY",
+                    "STALE",
+                    "SUPERSEDED",
+                    "UNKNOWN",
+                    "NOT_REQUIRED"
+                  ]
+                },
+                "required_current": {
+                  "type": "boolean",
+                  "enum": [
+                    false
+                  ]
+                }
+              },
+              "required": [
+                "source",
+                "locator",
+                "claim",
+                "claim_type",
+                "freshness_status",
+                "required_current"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 16
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "minItems": 0,
+            "maxItems": 16
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "why_now",
+          "done_when",
+          "confidence",
+          "evidence",
+          "depends_on"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 16
+    },
+    "drift": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "minItems": 0,
+      "maxItems": 16
+    },
+    "delegations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "minItems": 0,
+      "maxItems": 16
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "minItems": 0,
+      "maxItems": 3
+    },
+    "state_items": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": "\\S"
+      },
+      "minItems": 0,
+      "maxItems": 0
+    }
+  },
+  "required": [
+    "protocol_version",
+    "as_of",
+    "mode",
+    "target",
+    "goal",
+    "horizon",
+    "mutations",
+    "coverage",
+    "readiness",
+    "decision",
+    "blockers",
+    "verify_now",
+    "decision_now",
+    "now",
+    "next",
+    "later",
+    "watch",
+    "stop",
+    "drift",
+    "delegations",
+    "unknowns",
+    "state_items"
+  ]
+}

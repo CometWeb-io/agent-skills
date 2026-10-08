@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 QUALITY_SKILLS = {
     "artifact-acceptance": "1.7.4",
     "benchmark-curator": "1.7.4",
-    "brief-architect": "1.7.4",
+    "brief-architect": "1.8.0",
     "content-reviewer": "1.7.4",
     "content-writer": "1.7.4",
     "feedback-integrator": "1.8.0",
@@ -19,7 +19,7 @@ QUALITY_SKILLS = {
     "repair-operator": "1.7.4",
     "rubric-designer": "1.7.4",
     "skill-auditor": "1.7.5",
-    "skill-evaluator": "1.7.3",
+    "skill-evaluator": "1.7.4",
 }
 
 

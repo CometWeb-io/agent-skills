@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "accepted_claim_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rejected_claim_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "critical_gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "freshness_status": {
+      "type": "string",
+      "enum": [
+        "CLEAR",
+        "UNKNOWN",
+        "REFRESH_REQUIRED"
+      ]
+    },
+    "gate_statuses": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "technical": {
+          "type": "string",
+          "enum": [
+            "NOT_REQUIRED",
+            "CLEAR",
+            "CLEAR_WITH_CONTROLS",
+            "COUNSEL_REQUIRED",
+            "BLOCK"
+          ]
+        }
+      },
+      "required": [
+        "technical"
+      ]
+    },
+    "controls_implemented": {
+      "type": "boolean"
+    },
+    "red_team": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "falsifier": {
+      "type": "string"
+    },
+    "minority_preserved": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "accepted_claim_ids",
+    "rejected_claim_ids",
+    "critical_gaps",
+    "freshness_status",
+    "gate_statuses",
+    "controls_implemented",
+    "red_team",
+    "falsifier",
+    "minority_preserved"
+  ],
+  "additionalProperties": false
+}

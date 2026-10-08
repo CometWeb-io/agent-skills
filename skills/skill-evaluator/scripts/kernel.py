@@ -1,5 +1,6 @@
 from __future__ import annotations
 import re
+import math
 
 MODES={'STANDARD','DEEP'}
 EXECUTION={'SPEC_ONLY','LOCAL_DETERMINISTIC','REAL_HOST'}
@@ -92,8 +93,21 @@ def validate(x):
     if regress>0 or delta<0: return {'status':'REGRESSION','promotion_eligible':False,**metrics,**common}
     if precision<precision_floor or recall<recall_floor: return {'status':'TRADEOFF','promotion_eligible':False,'tradeoff':'TRIGGER_QUALITY',**metrics,**common}
     ct=cand.get('tokens'); bt=base.get('tokens'); cd=cand.get('duration_s'); bd=base.get('duration_s')
-    token_ratio=(ct/bt) if isinstance(ct,(int,float)) and isinstance(bt,(int,float)) and not isinstance(ct,bool) and not isinstance(bt,bool) and bt>0 else 1.0
-    duration_ratio=(cd/bd) if isinstance(cd,(int,float)) and isinstance(bd,(int,float)) and not isinstance(cd,bool) and not isinstance(bd,bool) and bd>0 else 1.0
+    def resource(v, baseline=False):
+        if isinstance(v, bool) or not isinstance(v, (int, float)):
+            return False
+        try:
+            return math.isfinite(v) and (v > 0 if baseline else v >= 0)
+        except (OverflowError, TypeError):
+            return False
+    if not all((resource(ct), resource(bt, True), resource(cd), resource(bd, True))):
+        return {'status':'INSUFFICIENT_EVIDENCE','promotion_eligible':False,'resource_reason':'MISSING_OR_INVALID_MEASUREMENTS',**metrics,**common}
+    try:
+        token_ratio, duration_ratio = ct / bt, cd / bd
+    except (OverflowError, ZeroDivisionError):
+        return {'status':'INSUFFICIENT_EVIDENCE','promotion_eligible':False,'resource_reason':'UNREPRESENTABLE_RATIO',**metrics,**common}
+    if not math.isfinite(token_ratio) or not math.isfinite(duration_ratio):
+        return {'status':'INSUFFICIENT_EVIDENCE','promotion_eligible':False,'resource_reason':'UNREPRESENTABLE_RATIO',**metrics,**common}
     metrics.update({'token_ratio':round(token_ratio,3),'duration_ratio':round(duration_ratio,3)})
     if token_ratio>max_token_ratio or duration_ratio>max_duration_ratio: return {'status':'TRADEOFF','promotion_eligible':False,'tradeoff':'RESOURCE_BUDGET',**metrics,**common}
     if mode=='DEEP' and execution=='REAL_HOST' and paired_status=='INCONCLUSIVE': return {'status':'INSUFFICIENT_EVIDENCE','promotion_eligible':False,**metrics,**common}
