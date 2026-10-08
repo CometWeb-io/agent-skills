@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.4] - 2026-10-08
+
+- Validate reported resource usage and admission bounds without converting missing or malformed accounting into measured zero.
+
 ## [1.7.3] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

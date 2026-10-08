@@ -1,5 +1,9 @@
 # Changelog — skill-orchestrator-multiagent
 
+## [1.2.0] - 2026-10-08
+
+- Add protected PRD/domain/profile handoffs, source-bound compiled workers and typed owner admission; preserve bounded attempts, retry/resume and explicit opt-in.
+
 ## [1.1.6] - 2026-10-03
 
 - `references/kernel-contract.md` listed `epistemic_kind` under an EvidenceEnvelope claim without marking it required, while the bundled kind schema the gate validates against requires it; a claim without it was refused with no warning in the reference. The reference now lists it as required, and a test compares that list with the schema.

@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.4.3] - 2026-10-08
+
+- Parse inline object/array JSON before path heuristics, including URL/path values; report file/UTF-8/JSON errors distinctly.
+
 ## [2.4.2] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

@@ -1,5 +1,9 @@
 # Changelog
 
+## [6.1.4] - 2026-10-08
+
+- Use bounded atomic scan output and refuse symlinked output destinations.
+
 
 ## [6.1.3] - 2026-10-03
 

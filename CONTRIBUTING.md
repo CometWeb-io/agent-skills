@@ -25,7 +25,7 @@ and exits non-zero if any gate fails or if a gate modified the checkout.
 
 | Option | Effect |
 | --- | --- |
-| `--fast` | Leave out the full pytest suite (its per-skill slice still runs), eval strength, the plugin-version record, package builds, the history leak scan, semgrep (`sast`) and `pip-audit` |
+| `--fast` | Leave out the full pytest suite (its per-skill slice still runs), eval strength, plugin/package change-history gates, package builds, the history leak scan, semgrep (`sast`) and `pip-audit` |
 | `--fix` | Run the selected gates' generators first: registry sync, adapters and README catalog, shared copies, context table, `uv lock` |
 | `--only ids` / `--skip ids` | Comma-separated gate ids; `--list` shows them all |
 | `--verbose` | Print the output of passing gates too |
@@ -40,6 +40,12 @@ To run the fast gates on every commit, install the optional hook:
 
 `uv.lock` is committed. Change dependencies in `pyproject.toml`, then run
 `uv lock` (or `check_all.py --fix --only uv_lock`) and commit both files.
+
+Changes to a skill's instructions or bundled scripts need a newer package
+`VERSION` and an updated `CHANGELOG.md` entry for that version. The full
+`skill_change_history` gate compares with the merge base; test-only and
+documentation-only changes outside the instructions/scripts do not require
+a package bump. Regenerate registry versions and adapters from their sources.
 
 ## What belongs here
 

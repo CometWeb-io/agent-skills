@@ -320,6 +320,11 @@ def pending_packages() -> list[str]:
 def desired_registry(current: dict) -> dict:
     result = deepcopy(current)
     by_id = {entry["id"]: entry for entry in result["skills"]}
+    # VERSION is package-owned for every registered skill, including packages
+    # with no curated routing override. Leave their routing metadata alone.
+    for skill_id, entry in by_id.items():
+        if (SKILLS / skill_id / "SKILL.md").is_file():
+            entry["version"] = (SKILLS / skill_id / "VERSION").read_text().strip()
     pending = set(pending_packages())
     for skill_id, spec in OVERRIDES.items():
         if skill_id in pending:

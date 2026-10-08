@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.5] - 2026-10-08
+
+- Reject undeclared top-level and criterion fields in the closed rubric contract.
+
 ## [1.7.4] - 2026-10-03
 
 - A payload that is not an object returned no `missing_dimensions`, which `references/output-contract.md` documents on every result; it is now an empty list.

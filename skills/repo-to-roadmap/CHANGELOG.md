@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.2] - 2026-10-08
+
+- Use atomic inventory output and explicit JSON file errors without following symlink output targets.
+
 ## [1.1.1] - 2026-10-03
 
 ### Changed

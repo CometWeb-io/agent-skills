@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.2] - 2026-10-08
+
+- Replace output atomically and refuse symlinked output targets instead of redirecting cleaned text.
+
 ## [2.6.1] - 2026-10-03
 
 ### Fixed

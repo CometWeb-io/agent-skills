@@ -32,13 +32,14 @@ iterating, `--ci` before a pull request); `--list` prints them.
 
 | Tool | What it does | Gate | Reads → writes |
 | --- | --- | --- | --- |
-| `sync_skill_registry.py` | Applies the registry fields owned by its `OVERRIDES` table to `registry/skills.json`. | `registry_sync` | `registry/skills.json` → the same file (`--apply`) |
+| `sync_skill_registry.py` | Syncs every registered package VERSION and the routing fields owned by its `OVERRIDES` table. | `registry_sync` | package VERSION files and `registry/skills.json` → the same registry (`--apply`) |
 | `sync_orchestrator.py` | Keeps the multiagent orchestrator's planner and bundled CW-AIP schemas byte-identical to their canonical copies. | `orchestrator_sync` | `skills/skill-orchestrator/`, `protocol/` → `skills/skill-orchestrator-multiagent/` |
 | `sync_roaster_shared.py` | Keeps the scripts and references the three roaster skills share byte-identical. | `roaster_shared` | one roaster package → the other two (`--sync`) |
 | `generate_adapters.py` | Generates host adapters, routing rules, compatibility tables and the README catalog from the registry. | `adapters` | `registry/` → `docs/generated-*`, `extras/`, `rules/`, `skills/*/agents/openai.yaml`, `README.md`, plugin manifests |
 | `adapter_metadata.py` | Lossless merge of host metadata: registry-owned fields win, unknown extensions survive. Imported by `generate_adapters.py`. | — | library |
 | `context_budget.py` | Measures each skill's front-door and reference cost in context against a recorded baseline; `--update` accepts a deliberate change. | `context_budget` | `skills/*/SKILL.md`, `registry/context-baseline.json` → `docs/generated-context-budget.md` |
 | `plugin_release.py` | Refuses a change to the shipped skill set without a plugin version bump; `--bump` bumps and records in one step. | `plugin_release` | `skills/*/VERSION`, `VERSION`, the merge base → plugin version fields and `registry/plugin-release.json` (`--record`, `--bump`) |
+| `skill_change_history.py` | Requires changed skill instructions/scripts to have a newer package VERSION and matching updated CHANGELOG. | `skill_change_history` | merge base and package sources → errors on stdout; no writes |
 | `new_skill.py` | Scaffolds and registers a skill package that passes every fast gate on day one. | — | a skill id and description → `skills/<id>/`, registry, routing cases, baselines |
 
 ## Package validation and packaging

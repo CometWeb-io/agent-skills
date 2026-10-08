@@ -9,10 +9,13 @@
 ## Checks
 
 ```
-python3 tooling/validate_local.py --trusted-checkout --output .validation --timeout 900
+uv run python tooling/check_all.py --ci
+# A new report directory outside the checkout; nothing is overwritten.
+uv run python tooling/validate_local.py --trusted-checkout --output ../agent-skills-pr-validation --timeout 900
 ```
 
-- [ ] `report.json` says `passed` (every check green, nothing skipped)
+- [ ] Canonical CI gates pass with zero failed or skipped gates
+- [ ] External validation `report.json` says `passed` (no skipped test cases)
 - [ ] `./tooling/public-safety-check.sh` reports no findings
 - [ ] Registry and packages agree — generated files regenerated, not hand-edited
 

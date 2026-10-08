@@ -1,5 +1,9 @@
 # Changelog
 
+## [6.1.4] - 2026-10-08
+
+- Reject malformed review fields without type/arithmetic crashes and protect scan output paths.
+
 
 ## [6.1.3] - 2026-10-03
 

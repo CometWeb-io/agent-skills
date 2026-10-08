@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.5] - 2026-10-08
+
+- Validate required-axis types and reject an empty DELTA coverage report.
+
 ## [1.7.4] - 2026-10-03
 
 - A payload that is not an object returned no `mode`; every result now carries it, with an invalid or missing mode reported as `STANDARD`.

@@ -57,6 +57,10 @@ class InputError(ValueError):
 
 
 def load_json_arg(value: str) -> Any:
+    # Inline objects/arrays may contain URLs, paths or more than NAME_MAX bytes.
+    # Parse them before treating the argument as a filesystem path.
+    if value.lstrip().startswith(("{", "[")):
+        return json.loads(value)
     path_value = value[1:] if value.startswith("@") else value
     path = Path(path_value)
     is_file_input = value.startswith("@") or path.is_file() or path.suffix.lower() == ".json" or "/" in value

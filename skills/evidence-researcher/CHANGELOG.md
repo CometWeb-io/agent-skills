@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.7] - 2026-10-08
+
+- Report missing JSON files as file errors, support explicit @ paths, and avoid symlinked output writes.
+
 ## [1.0.6] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

@@ -9,15 +9,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 QUALITY_SKILLS = {
-    "artifact-acceptance": "1.7.4",
+    "artifact-acceptance": "1.7.5",
     "benchmark-curator": "1.7.4",
     "brief-architect": "1.8.0",
-    "content-reviewer": "1.7.4",
+    "content-reviewer": "1.7.5",
     "content-writer": "1.7.4",
-    "feedback-integrator": "1.8.0",
+    "feedback-integrator": "1.8.1",
     "quality-loop-operator": "1.7.4",
-    "repair-operator": "1.7.4",
-    "rubric-designer": "1.7.4",
+    "repair-operator": "1.7.5",
+    "rubric-designer": "1.7.5",
     "skill-auditor": "1.7.5",
     "skill-evaluator": "1.7.4",
 }
@@ -38,7 +38,7 @@ def test_quality_integration_docs_match_shipped_versions() -> None:
         assert f"`{version}`" in document
     for skill in ("content-roaster", "science-roaster", "repo-roaster"):
         assert f"`{skill}`" in document
-    assert "`6.1.3`" in document
+    assert "`6.1.4`" in document
 
 
 def test_release_rehearsal_matches_attestation_workflow() -> None:
@@ -84,6 +84,24 @@ def test_documentation_index_links_affected_topics() -> None:
         "SIGNED-COMMITS.md",
     ):
         assert f"]({document})" in index
+
+
+def test_pr_template_uses_canonical_gates_and_external_report_directory() -> None:
+    template = (ROOT / ".github/PULL_REQUEST_TEMPLATE.md").read_text()
+    assert "uv run python tooling/check_all.py --ci" in template
+    assert "--output ../agent-skills-pr-validation" in template
+    assert "--output .validation" not in template
+    assert "no skipped test cases" in template
+
+
+def test_third_party_notices_preserve_all_retained_adaptations() -> None:
+    notice = (ROOT / "THIRD_PARTY_NOTICES.md").read_text()
+    for source, revision in (
+        ("Jakeschincariol/replica-skill", "77c9436fb3d18c3d58169efb8caf4fe906b0dc51"),
+        ("Corey Haines", "dda3841f0b294e01e93b1541486beefbfab0915e"),
+        ("ognjengt/founder-skills", "a45931cad934dc6243a68f905485467935a4ad9a"),
+    ):
+        assert source in notice and revision in notice
 
 
 def test_starter_examples_use_explicit_python3() -> None:

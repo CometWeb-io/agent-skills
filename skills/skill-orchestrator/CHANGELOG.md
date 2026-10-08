@@ -1,5 +1,9 @@
 # Changelog — skill-orchestrator
 
+## [1.3.0] - 2026-10-08
+
+- Add experimental opt-in PRD/profile/domain gates, source-bound worker compilation, native owner admission and bounded retry/resume without automatic profile activation.
+
 ## [1.2.0] - 2026-10-05
 
 ### Added

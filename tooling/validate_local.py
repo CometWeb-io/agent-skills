@@ -29,6 +29,7 @@ CHECKS = (
     ("compatibility", "tooling/compatibility.py", ()),
     ("adapters", "tooling/generate_adapters.py", ("--check",)),
     ("plugin_release", "tooling/plugin_release.py", ("--check",)),
+    ("skill_change_history", "tooling/skill_change_history.py", ("--check",)),
     ("routing", "tooling/run_routing_evals.py", ()),
     ("routing_adversarial", "tooling/run_policy_evals.py", ("--suite", "evals/routing/adversarial-suite.json")),
     ("context_fixtures", "tooling/run_behavior_evals.py", ()),
@@ -108,20 +109,39 @@ def inventory(root: Path) -> dict:
     disk = {p.name for p in (root / "skills").iterdir() if p.is_dir() and not p.name.startswith(".")}
     if disk != set(names):
         raise ValueError("registry and skill directories differ")
-    test_dirs, no_tests = ["tooling/tests"], []
+    test_dirs, no_tests, fixture_only = ["tooling/tests"], [], []
     for name in sorted(names):
         for filename in ("SKILL.md", "VERSION", "LICENSE"):
             safe_file(root, f"skills/{name}/{filename}")
         directory = root / "skills" / name / "tests"
-        if directory.is_dir():
-            test_dirs.append(f"skills/{name}/tests")
-        else:
+        if directory.is_symlink():
+            raise ValueError(f"symlink test directory: skills/{name}/tests")
+        if not directory.exists():
             no_tests.append(name)
+            continue
+        if not directory.is_dir():
+            raise ValueError(f"test directory is not a directory: skills/{name}/tests")
+        files = []
+        for path in directory.rglob("*"):
+            if path.is_symlink():
+                raise ValueError(f"symlink test source: {path.relative_to(root)}")
+            if path.is_file() and not {"__pycache__", ".pytest_cache"}.intersection(path.relative_to(directory).parts):
+                files.append(path)
+        if any(path.name.startswith("test_") and path.suffix == ".py" for path in files):
+            test_dirs.append(f"skills/{name}/tests")
+        elif files and all(path.suffix == ".json" for path in files):
+            # Front-door JSON rules are exercised by tooling/tests. Do not ask
+            # pytest to collect this fixture-only directory as Python tests.
+            fixture_only.append(f"skills/{name}/tests")
+            no_tests.append(name)
+        else:
+            raise ValueError(f"empty test directory or missing Python tests: skills/{name}/tests")
     for directory in test_dirs:
         path = root / directory
         if path.is_symlink() or not any(path.rglob("test_*.py")):
             raise ValueError(f"missing tests: {directory}")
-    return {"skills": sorted(names), "test_directories": test_dirs, "skills_without_tests": no_tests}
+    return {"skills": sorted(names), "test_directories": test_dirs, "skills_without_tests": no_tests,
+            "fixture_only_test_directories": fixture_only}
 
 
 def git(root: Path, *args: str) -> bytes:
@@ -193,6 +213,9 @@ def run_step(root: Path, command: list[str], log: Path, timeout: int) -> dict:
     # Trusted checkout only: do not inherit host credentials into repo-owned code.
     environment = build_runner_env(set())
     environment.update(PYTHONDONTWRITEBYTECODE="1", PYTEST_ADDOPTS="", PATH=os.environ.get("PATH", ""))
+    # Sanitizing credentials also drops caller cache overrides. Keep child uv
+    # operations in this external report directory, never the user's cache.
+    environment["UV_CACHE_DIR"] = str(log.parent / "uv-cache")
     if "VIRTUAL_ENV" in os.environ:
         environment["VIRTUAL_ENV"] = os.environ["VIRTUAL_ENV"]
     # Keep test selection in the command visible; do not inherit PYTEST_ADDOPTS.

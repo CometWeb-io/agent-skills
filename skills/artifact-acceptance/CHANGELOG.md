@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.5] - 2026-10-08
+
+- Reject malformed gate/control flags and require declared profile gates to be marked required.
+
 ## [1.7.4] - 2026-10-03
 
 - A `mode`, `profile` or `minimum_gate_evidence_grade` that is a list or an object raised `TypeError`; each now defers with its `:invalid` error.

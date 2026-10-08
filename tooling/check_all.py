@@ -118,6 +118,8 @@ GATES: tuple[Gate, ...] = (
          "plugin version covers shipped skill changes", fast=False, ci_args=("--require-base",),
          hint="bump and record in one step: uv run python tooling/plugin_release.py --bump patch "
               "(minor for a new skill or behaviour)"),
+    Gate("skill_change_history", _python("tooling/skill_change_history.py", "--check"),
+         "changed instructions/scripts have package versions and changelogs", fast=False, ci_args=("--require-base",)),
     Gate("context_budget", _python("tooling/context_budget.py", "--check",
                                    "--verify-table", "docs/generated-context-budget.md"),
          "SKILL.md front-door cost against the baseline",

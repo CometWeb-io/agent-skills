@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.5] - 2026-10-08
+
+- Reject REOPENED repairs whose reopen_of does not reference an existing repair in the ledger.
+
 ## [1.7.4] - 2026-10-03
 
 - A ledger that is not an object, or has no `items` list, returned only `{status, closed, open, errors}` and dropped the documented `strict_closure`, `portfolio_mode` and `effort_units`; every result now carries all seven keys.
