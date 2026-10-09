@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.1.5
+
+- Read eval corpora as UTF-8 and scan Windows directories with checked file handles, rejecting reparse points and paths outside the target before reading.
+
 ## [6.1.4] - 2026-10-08
 
 - Use bounded atomic scan output and refuse symlinked output destinations.

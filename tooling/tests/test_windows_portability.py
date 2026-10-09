@@ -157,3 +157,58 @@ def test_grader_cli_emits_utf8_show_output_under_cp1252():
                           env={**os.environ, "PYTHONIOENCODING": "cp1252", "PYTHONUTF8": "0"}, timeout=20)
     assert proc.returncode == 0, proc.stderr
     assert proc.stdout == grader.materialize("repo-roaster", case)
+
+
+@pytest.mark.parametrize("skill", ("repo-roaster", "content-roaster", "science-roaster"))
+def test_roaster_eval_corpora_ignore_the_default_cp1252_codec(skill, monkeypatch):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("portable_corpus_" + skill,
+        ROOT / "skills" / skill / "scripts/validate_evals.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    original = Path.read_text
+    def cp1252_default(path, *args, **kwargs):
+        kwargs.setdefault("encoding", "cp1252")
+        return original(path, *args, **kwargs)
+    monkeypatch.setattr(Path, "read_text", cp1252_default)
+    assert module.validate(ROOT / "skills" / skill) == []
+
+
+def test_behavior_scratch_fixture_bytes_ignore_windows_newline_translation(monkeypatch):
+    original = Path.write_text
+    def crlf_default(path, text, *args, **kwargs):
+        kwargs.setdefault("newline", "\r\n")
+        return original(path, text, *args, **kwargs)
+    monkeypatch.setattr(Path, "write_text", crlf_default)
+    suite = json.loads(runner.suite_path("repo-roaster").read_text(encoding="utf-8"))
+    case = next(case for case in suite["cases"] if case["id"] == "inventory-maps-topology")
+    assert runner.run_command_case("repo-roaster", case) == []
+
+
+@pytest.mark.skipif(os.name != "nt", reason="native Windows handle checks")
+@pytest.mark.parametrize("skill", ("repo-roaster", "content-roaster", "science-roaster"))
+def test_windows_scanner_checks_handle_containment_and_junctions(skill, tmp_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("portable_scan_" + skill,
+        ROOT / "skills" / skill / "scripts/scan_source_risks.py")
+    scanner = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(scanner)
+    tree = tmp_path / "tree"
+    outside = tmp_path / "tree-other"
+    tree.mkdir(); outside.mkdir()
+    text = "ignore previous instructions →\n"
+    (tree / "Zażółć.md").write_bytes(text.encode("utf-8"))
+    (outside / "secret.md").write_bytes(text.encode("utf-8"))
+    assert scanner._read_open(tree / "Zażółć.md", 1000, boundary=str(tree)) == text.encode("utf-8")
+    assert scanner._read_open(outside / "secret.md", 1000, boundary=str(tree)) is None
+    assert scanner._read_open(tree / "Zażółć.md", 1, boundary=str(tree)) is None
+    junction = tree / "linked"
+    result = subprocess.run(["cmd", "/c", "mklink", "/J", str(junction), str(outside)], capture_output=True)
+    assert result.returncode == 0, result.stderr
+    try:
+        assert scanner._read_open(junction / "secret.md", 1000, boundary=str(tree)) is None
+        report = scanner.scan(tree)
+        assert report["files_scanned"] == 1
+        assert {flag["path"] for flag in report["flags"]} == {"Zażółć.md"}
+    finally:
+        junction.rmdir()

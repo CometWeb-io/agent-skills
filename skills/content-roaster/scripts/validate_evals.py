@@ -7,7 +7,7 @@ from pathlib import Path
 def _text(v): return isinstance(v,str) and bool(v.strip())
 def validate(root:Path)->list[str]:
  e=[]; sid=root.name; d=root/'evals'
- try: behavior=json.loads((d/'evals.json').read_text())
+ try: behavior=json.loads((d/'evals.json').read_text(encoding='utf-8'))
  except Exception as x:return [f'evals/evals.json unreadable: {x}']
  if not isinstance(behavior,dict):return ['evals/evals.json must be an object']
  if behavior.get('skill_name')!=sid:e.append('evals.json skill_name mismatch')
@@ -27,7 +27,7 @@ def validate(root:Path)->list[str]:
   if not isinstance(a,list) or len(a)<2 or not all(_text(x) for x in a):e.append(f'{p}.assertions requires >=2 strings')
   tags=row.get('tags')
   if not isinstance(tags,list) or not tags or not all(_text(x) for x in tags):e.append(f'{p}.tags requires a non-empty string list')
- try: tr=json.loads((d/'trigger-evals.json').read_text())
+ try: tr=json.loads((d/'trigger-evals.json').read_text(encoding='utf-8'))
  except Exception as x:e.append(f'trigger-evals unreadable: {x}');tr=[]
  if not isinstance(tr,list) or len(tr)<36:e.append('trigger-evals requires at least 36 rows');tr=tr if isinstance(tr,list) else []
  pos=neg=0
@@ -35,7 +35,7 @@ def validate(root:Path)->list[str]:
   if not isinstance(row,dict) or not _text(row.get('query')) or not isinstance(row.get('should_trigger'),bool):e.append(f'trigger-evals[{i}] invalid');continue
   pos+=row['should_trigger'];neg+=not row['should_trigger']
  if pos<8 or neg<8:e.append('trigger-evals requires >=8 positive and >=8 negative near-misses')
- try: meta=json.loads((d/'metamorphic-evals.json').read_text())
+ try: meta=json.loads((d/'metamorphic-evals.json').read_text(encoding='utf-8'))
  except Exception as x:e.append(f'metamorphic-evals unreadable: {x}');meta={}
  if isinstance(meta,dict): mr=meta.get('relations')
  else: mr=None

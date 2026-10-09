@@ -28,15 +28,54 @@ SECRET=[
 _OPEN_FLAGS=os.O_RDONLY|getattr(os,'O_NONBLOCK',0)|getattr(os,'O_CLOEXEC',0)
 _NOFOLLOW=getattr(os,'O_NOFOLLOW',0)
 
-def _read_open(name,max_bytes:int,dir_fd=None,follow:bool=False):
+def _windows_fd(name,follow:bool,boundary=None):
+    """Check the opened Windows handle before reading, including junction escapes."""
+    import ctypes
+    from ctypes import wintypes
+    import msvcrt
+
+    api=ctypes.WinDLL('kernel32',use_last_error=True)
+    api.CreateFileW.argtypes=(wintypes.LPCWSTR,wintypes.DWORD,wintypes.DWORD,ctypes.c_void_p,wintypes.DWORD,wintypes.DWORD,wintypes.HANDLE)
+    api.CreateFileW.restype=wintypes.HANDLE
+    api.GetFileInformationByHandleEx.argtypes=(wintypes.HANDLE,ctypes.c_int,ctypes.c_void_p,wintypes.DWORD)
+    api.GetFileInformationByHandleEx.restype=wintypes.BOOL
+    api.GetFinalPathNameByHandleW.argtypes=(wintypes.HANDLE,wintypes.LPWSTR,wintypes.DWORD,wintypes.DWORD)
+    api.GetFinalPathNameByHandleW.restype=wintypes.DWORD
+    api.CloseHandle.argtypes=(wintypes.HANDLE,)
+    api.CloseHandle.restype=wintypes.BOOL
+    handle=api.CreateFileW(str(name),0x80000000,7,None,3,0x02000000|(0 if follow else 0x00200000),None)
+    if handle==wintypes.HANDLE(-1).value: return None
+    try:
+        attributes=(wintypes.DWORD*2)()
+        if not api.GetFileInformationByHandleEx(handle,9,attributes,ctypes.sizeof(attributes)): return None
+        if attributes[0]&0x10 or (not follow and attributes[0]&0x400): return None
+        if boundary is not None:
+            buffer=ctypes.create_unicode_buffer(32768)
+            size=api.GetFinalPathNameByHandleW(handle,buffer,len(buffer),0)
+            if not size or size>=len(buffer): return None
+            final=buffer.value
+            if final.startswith('\\\\?\\UNC\\'): final='\\\\'+final[8:]
+            elif final.startswith('\\\\?\\'): final=final[4:]
+            final=os.path.normcase(final); boundary=os.path.normcase(str(boundary))
+            if os.path.commonpath((final,boundary))!=boundary: return None
+        fd=msvcrt.open_osfhandle(handle,os.O_RDONLY|os.O_BINARY)
+        handle=None
+        return fd
+    except (OSError,ValueError): return None
+    finally:
+        if handle is not None: api.CloseHandle(handle)
+
+
+def _read_open(name,max_bytes:int,dir_fd=None,follow:bool=False,boundary=None):
     """Open, then check what was opened: fstat on the descriptor, not a stat of the path.
 
     Returns bytes, or None when the file is not a regular file, is over max_bytes, or
     cannot be read. O_NOFOLLOW refuses a symlink swapped in after the walk listed the
     name; O_NONBLOCK keeps a FIFO swapped in from blocking the scan.
     """
-    try: fd=os.open(name,_OPEN_FLAGS|(0 if follow else _NOFOLLOW),dir_fd=dir_fd)
+    try: fd=_windows_fd(name,follow,boundary) if os.name=='nt' else os.open(name,_OPEN_FLAGS|(0 if follow else _NOFOLLOW),dir_fd=dir_fd)
     except OSError: return None
+    if fd is None: return None
     try:
         st=os.fstat(fd)
         if not stat.S_ISREG(st.st_mode) or st.st_size>max_bytes: return None
@@ -53,11 +92,27 @@ def files(root:Path,max_files:int,max_bytes:int):
     """Yield (path, bytes-or-None) for regular files; symlinks and special files are not listed.
 
     The walk holds a descriptor for each directory (os.fwalk) and opens names relative
-    to it, so a directory replaced by a symlink mid-scan cannot redirect the read.
+    to it; Windows checks the final handle path before reading any content.
     """
     if root.is_file(): yield root,_read_open(root,max_bytes,follow=True); return
     n=0
     top=os.path.realpath(root)
+    if os.name=='nt':
+        for base,dirs,names in os.walk(top):
+            kept=[]
+            for directory in sorted(dirs):
+                try: st=os.lstat(os.path.join(base,directory))
+                except OSError: continue
+                if directory not in IGNORE and not st.st_file_attributes&0x400: kept.append(directory)
+            dirs[:]=kept
+            for name in sorted(names):
+                path=Path(base)/name
+                try: st=path.lstat()
+                except OSError: continue
+                if not stat.S_ISREG(st.st_mode) or st.st_file_attributes&0x400: continue
+                yield root/path.relative_to(top),_read_open(path,max_bytes,boundary=top); n+=1
+                if n>=max_files: return
+        return
     for base,dirs,names,dir_fd in os.fwalk(top):
         dirs[:]=[d for d in sorted(dirs) if d not in IGNORE]
         for name in sorted(names):

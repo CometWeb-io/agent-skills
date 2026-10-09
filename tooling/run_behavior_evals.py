@@ -644,7 +644,7 @@ def run_command_case(skill: str, case: dict) -> list[str]:
                 return [f"{label}: file {name!r} escapes the scratch directory"]
             target.parent.mkdir(parents=True, exist_ok=True)
             text = content if isinstance(content, str) else json.dumps(content, ensure_ascii=False)
-            target.write_text(text, encoding="utf-8")
+            target.write_bytes(text.encode("utf-8"))
         stdin = case.get("stdin")
         if stdin is not None and not isinstance(stdin, str):
             stdin = json.dumps(stdin, ensure_ascii=False)

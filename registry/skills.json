@@ -932,7 +932,7 @@
     },
     {
       "id": "content-roaster",
-      "version": "6.1.4",
+      "version": "6.1.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2406,7 +2406,7 @@
     },
     {
       "id": "repo-roaster",
-      "version": "6.1.4",
+      "version": "6.1.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2845,7 +2845,7 @@
     },
     {
       "id": "science-roaster",
-      "version": "6.1.4",
+      "version": "6.1.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
