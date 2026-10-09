@@ -48,6 +48,9 @@ def root(tmp_path):
     import subprocess
 
     subprocess.run(["git", "init"], cwd=tmp_path, check=True, capture_output=True)
+    # Snapshot tests include .git; background maintenance must not change it.
+    subprocess.run(["git", "config", "maintenance.auto", "false"], cwd=tmp_path, check=True, capture_output=True)
+    subprocess.run(["git", "config", "gc.auto", "0"], cwd=tmp_path, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.email", "fixture@example.invalid"], cwd=tmp_path, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Fixture"], cwd=tmp_path, check=True, capture_output=True)
     subprocess.run(["git", "add", "-A"], cwd=tmp_path, check=True, capture_output=True)
