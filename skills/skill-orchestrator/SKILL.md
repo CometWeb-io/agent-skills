@@ -17,6 +17,9 @@ collapsing research into decisions or skipping skill boundaries.
 | `single_thread` | Parent loads each `SKILL.md` and executes steps sequentially in this thread. |
 | `isolated_subagents` | One subagent per step; parent only plans, launches, validates envelopes, and merges. |
 
+For resumable workflows, read `references/run-ledger-contract.md` and checkpoint
+validated envelopes before claiming the next step.
+
 `skill-orchestrator-multiagent` is a **thin alias** for `execution_mode=isolated_subagents`.
 Do not maintain a divergent planning model there.
 
@@ -69,6 +72,15 @@ Workflow plan (research_then_council) · execution_mode=auto→isolated_subagent
   2. ai-council — DecisionHandoff
 ```
 
+### Experimental opt-in profiles
+
+Profiles and capability packs are disabled in default plans. Their contract tests
+do not establish live host compatibility or improved model output. Use only the
+explicit options below; never activate them from matching keywords alone.
+
+For `--with-capability-packs`, read `references/capability-pack-contract.md`.
+For `--with-prd-handoff`, read `references/prd-handoff.md` before execution.
+
 ### 2. Confirm scope (lightweight)
 
 If the plan includes **ai-council** and the user did not mention a decision, ask once:
@@ -111,6 +123,11 @@ Emit **Workflow result**:
 - Council verdict if Council ran (otherwise explicitly `not run`),
 - recommended next single skill if work continues.
 
+For resumable execution, use `scripts/workflow_ledger.py` as a local
+append-only sidecar. Checkpoint a validated envelope before claiming the next
+step; a changed plan, tampered chain, or conflicting duplicate completion must
+block resume. The ledger never changes a specialist verdict.
+
 ## Archetype quick reference
 
 | User intent | Steps |
@@ -130,6 +147,10 @@ Emit **Workflow result**:
 4. **CW-AIP handoff block** — JSON or structured list of envelope metadata when useful
 
 Never fold Evidence Researcher synthesis into a Council GO/NO-GO in the same step.
+
+Local profile task/sidecar previews: `references/specialist-profile-contract.md`.
+
+Read [compiled-worker.md](references/compiled-worker.md) before trusted local profile/PRD dispatch.
 
 ## Untrusted content
 

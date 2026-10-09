@@ -43,6 +43,16 @@ class OrchestrateKernelTests(unittest.TestCase):
         self.assertEqual(plan.archetype, "disambiguate_only")
         self.assertEqual(plan.steps, [])
 
+    def test_documented_polish_council_phrase_routes_to_research_then_council(self) -> None:
+        plan = plan_workflow("Od researchu do Rady")
+        self.assertEqual(plan.archetype, "research_then_council")
+        self.assertEqual([step.skill for step in plan.steps], ["evidence-researcher", "ai-council"])
+
+    def test_documented_polish_skill_question_disambiguates(self) -> None:
+        plan = plan_workflow("Który skill?")
+        self.assertEqual(plan.archetype, "disambiguate_only")
+        self.assertEqual(plan.steps, [])
+
     def test_plan_json_stays_inside_documented_vocabulary(self) -> None:
         # references/contract.json binds ARCHETYPES and ENVELOPE_TYPES to the
         # documented output enums; every plan the kernel emits must stay inside them.

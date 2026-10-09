@@ -1,0 +1,48 @@
+{
+  "schema": "cometweb.specialist-profile-output/v2",
+  "profile_id": "conversion-audit",
+  "owner_skill": "web-app-auditor",
+  "status": "DRAFT",
+  "execution_authorized": false,
+  "evidence": [
+    {
+      "id": "S1",
+      "kind": "USER_INPUT",
+      "reference": "fictional test fixture supplied inline",
+      "summary": "Only the demo process/field metadata was supplied."
+    }
+  ],
+  "unknowns": [
+    "Product outcomes, measurement or ownership remain unverified"
+  ],
+  "result": {
+    "journey_goal": "Complete a local demo form",
+    "scope": "Demo form only",
+    "baseline_rate": null,
+    "baseline_source_ids": [],
+    "observations": [
+      {
+        "id": "O1",
+        "where": "demo form",
+        "observation": "Fixture has a required optional-company field",
+        "verification": "Read the supplied fixture field metadata",
+        "source_ids": [
+          "S1"
+        ]
+      }
+    ],
+    "hypotheses": [
+      {
+        "id": "H1",
+        "change": "Make company optional",
+        "rationale": "Reduce input burden in the named journey",
+        "verification": "Compare completion through a qualified experiment",
+        "expected_lift": null,
+        "source_ids": [
+          "S1"
+        ]
+      }
+    ],
+    "framework_source_ids": []
+  }
+}

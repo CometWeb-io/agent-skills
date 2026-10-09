@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "profile_id",
+    "owner_skill",
+    "status",
+    "execution_authorized",
+    "evidence",
+    "unknowns",
+    "result"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "cometweb.specialist-profile-output/v2"
+    },
+    "profile_id": {
+      "const": "experiment-design",
+      "type": "string"
+    },
+    "owner_skill": {
+      "const": "brief-architect",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "BLOCKED",
+        "REVIEWABLE"
+      ],
+      "type": "string"
+    },
+    "execution_authorized": {
+      "const": false,
+      "type": "boolean"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "reference",
+          "summary"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "kind": {
+            "enum": [
+              "USER_INPUT",
+              "OBSERVED",
+              "FRAMEWORK",
+              "HYPOTHESIS"
+            ],
+            "type": "string"
+          },
+          "reference": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "summary": {
+            "type": "string",
+            "pattern": "\\S"
+          }
+        }
+      },
+      "minItems": 0
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "\\S"
+      },
+      "minItems": 0
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hypothesis",
+        "primary_metric",
+        "denominator_and_window",
+        "baseline_rate",
+        "sample_size_per_variant",
+        "mde_absolute",
+        "alpha",
+        "power",
+        "method",
+        "randomization_unit",
+        "stopping_rule",
+        "guardrails",
+        "instrumentation",
+        "framework_source_ids",
+        "parameter_source_ids"
+      ],
+      "properties": {
+        "hypothesis": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "primary_metric": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "denominator_and_window": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "baseline_rate": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "sample_size_per_variant": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "mde_absolute": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "alpha": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "power": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "method": {
+          "enum": [
+            "FIXED_HORIZON",
+            "SEQUENTIAL",
+            "UNKNOWN"
+          ],
+          "type": "string"
+        },
+        "randomization_unit": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stopping_rule": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "guardrails": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "minItems": 1
+        },
+        "instrumentation": {
+          "enum": [
+            "VERIFIED",
+            "UNVERIFIED"
+          ],
+          "type": "string"
+        },
+        "framework_source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "uniqueItems": true
+        },
+        "parameter_source_ids": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "baseline_rate": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "uniqueItems": true
+            },
+            "sample_size_per_variant": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "uniqueItems": true
+            },
+            "mde_absolute": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "uniqueItems": true
+            },
+            "alpha": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "uniqueItems": true
+            },
+            "power": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "baseline_rate",
+            "sample_size_per_variant",
+            "mde_absolute",
+            "alpha",
+            "power"
+          ]
+        }
+      }
+    }
+  }
+}

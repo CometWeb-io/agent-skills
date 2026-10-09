@@ -1,0 +1,69 @@
+{
+  "schema": "cometweb.runtime-hosts/v1",
+  "hosts": {
+    "claude": {
+      "runtime_mode": "executable",
+      "binary": "claude",
+      "config_env": "CLAUDE_CONFIG_DIR",
+      "credential_env": [
+        "ANTHROPIC_API_KEY",
+        "CLAUDE_CODE_OAUTH_TOKEN"
+      ],
+      "adapter": "claude-stream",
+      "native_budget": true
+    },
+    "codex": {
+      "runtime_mode": "executable",
+      "binary": "codex",
+      "config_env": "CODEX_HOME",
+      "credential_env": [
+        "OPENAI_API_KEY",
+        "CODEX_API_KEY"
+      ],
+      "adapter": "codex-json",
+      "native_budget": false
+    },
+    "cursor": {
+      "runtime_mode": "not_run",
+      "credential_env": [],
+      "adapter": null,
+      "native_budget": false,
+      "not_run_reason": "CURSOR_RUNTIME_ADAPTER_UNAVAILABLE"
+    },
+    "chatgpt": {
+      "runtime_mode": "not_run",
+      "credential_env": [],
+      "adapter": null,
+      "native_budget": false,
+      "not_run_reason": "CHATGPT_RUNTIME_ADAPTER_UNAVAILABLE"
+    },
+    "qwen-code": {
+      "runtime_mode": "not_run",
+      "credential_env": [],
+      "adapter": null,
+      "native_budget": false,
+      "not_run_reason": "HEADLESS_RUNTIME_ADAPTER_UNAVAILABLE"
+    },
+    "qoder": {
+      "runtime_mode": "not_run",
+      "credential_env": [],
+      "adapter": null,
+      "native_budget": false,
+      "not_run_reason": "HEADLESS_RUNTIME_ADAPTER_UNAVAILABLE"
+    },
+    "lingma": {
+      "runtime_mode": "not_run",
+      "credential_env": [],
+      "adapter": null,
+      "native_budget": false,
+      "not_run_reason": "HEADLESS_RUNTIME_ADAPTER_UNAVAILABLE"
+    },
+    "alibaba-skills-portal": {
+      "runtime_mode": "not_run",
+      "credential_env": [],
+      "adapter": null,
+      "native_budget": false,
+      "not_run_reason": "MANAGED_HOST_RUNTIME_ADAPTER_UNAVAILABLE"
+    }
+  }
+}

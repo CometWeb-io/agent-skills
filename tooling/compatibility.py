@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "registry" / "skills.json"
 HOSTS = ROOT / "registry" / "hosts.json"
 SKILLS = ROOT / "skills"
-FRONTMATTER_RE = re.compile(r"^---\s*\n(.*?)\n---", re.DOTALL)
+FRONTMATTER_RE = re.compile(r"\A---[ \t]*\r?\n(.*?)^---[ \t]*\r?$", re.DOTALL | re.MULTILINE)
 
 
 def _reject_duplicate_keys(node) -> None:
@@ -85,6 +85,7 @@ def parse_frontmatter(path: Path) -> dict:
         raise ValueError("skill name must match its directory")
     if not isinstance(desc, str) or not 1 <= len(desc.strip()) <= 1024:
         raise ValueError("description must contain 1-1024 characters")
+    data["description"] = desc.strip()
     if "compatibility" in data and (
         not isinstance(data["compatibility"], str)
         or not 1 <= len(data["compatibility"]) <= 500

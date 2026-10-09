@@ -209,6 +209,16 @@ VERSION_FILES = (
 LEVELS = ("patch", "minor", "major")
 
 
+def content_errors(root: Path) -> list[str]:
+    """Scaffolds may pass fast gates, but cannot become a release candidate."""
+    markers = ("Replace these rules with the skill's real contract",
+               "Scaffold placeholder from tooling/new_skill.py; replace with a real case")
+    paths = list((root / "skills").rglob("*.py")) + list((root / "skills").rglob("*.md"))
+    paths += list((root / "evals").rglob("*.json"))
+    return [f"{path.relative_to(root)}: unreplaced scaffold content" for path in sorted(paths)
+            if any(marker in path.read_text(encoding="utf-8") for marker in markers)]
+
+
 def next_version(version: str, level: str) -> str:
     major, minor, patch = parse_version(version)
     return {"major": f"{major + 1}.0.0", "minor": f"{major}.{minor + 1}.0",
@@ -272,7 +282,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.bump:
             print("OK: " + bump(root, args.base, args.bump))
             return 0
-        errors = check_record(root)
+        errors = check_record(root) + content_errors(root)
         base_errors, note = check_base(root, args.base, require=args.require_base)
         errors += base_errors
     except ReleaseError as exc:

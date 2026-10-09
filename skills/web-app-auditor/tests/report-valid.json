@@ -5,7 +5,7 @@
   "depth": "standard",
   "confidence": "high",
   "verdict": "ship_with_fixes",
-  "validator": "pending",
+  "validator": "passed",
   "capabilities": {
     "profile": "hybrid",
     "browser": true,

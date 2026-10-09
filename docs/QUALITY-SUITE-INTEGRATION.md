@@ -8,8 +8,12 @@ treated as package sources, not as a second repository architecture.
 
 | Canonical skill IDs | Source | Version choice |
 | --- | --- | --- |
-| `content-roaster`, `science-roaster`, `repo-roaster` | CometWeb Roaster Suite | `6.0.0` |
-| `artifact-acceptance`, `benchmark-curator`, `brief-architect`, `content-reviewer`, `content-writer`, `feedback-integrator`, `quality-loop-operator`, `repair-operator`, `rubric-designer`, `skill-auditor`, `skill-evaluator` | CometWeb Quality Skills | `1.7.0` |
+| `content-roaster`, `science-roaster`, `repo-roaster` | CometWeb Roaster Suite | `6.1.4` |
+| `artifact-acceptance`, `benchmark-curator`, `content-reviewer`, `content-writer`, `quality-loop-operator`, `repair-operator`, `rubric-designer` | CometWeb Quality Skills | `1.7.5` |
+| `brief-architect` | CometWeb Quality Skills with experimental PRD profile | `1.8.0` |
+| `feedback-integrator` | CometWeb Quality Skills | `1.8.1` |
+| `skill-auditor` | CometWeb Quality Skills | `1.7.5` |
+| `skill-evaluator` | CometWeb Quality Skills | `1.7.4` |
 
 The three roaster IDs also exist in the quality bundle. They are not copied a
 second time: the dedicated Roaster Suite packages are the canonical source for

@@ -27,13 +27,31 @@ def normalize(text: str) -> str:
 # Quoted, fenced or blockquoted text is someone else's words, not an invocation.
 _QUOTED = re.compile(
     r"```.*?(?:```|\Z)"
-    r'|"[^"\n]{0,2000}"'
-    r"|\u201c[^\u201d]{0,2000}\u201d"
-    r"|\u201e[^\u201c\u201d]{0,2000}[\u201c\u201d]"
-    r"|\u00ab[^\u00bb]{0,2000}\u00bb"
+    r'|"[^"\n]*"'
+    r"|\u201c[^\u201d]*\u201d"
+    r"|\u201e[^\u201c\u201d]*[\u201c\u201d]"
+    r"|\u00ab[^\u00bb]*\u00bb"
+    r"|^(?: {4}|\t)[^\n]*$"
     r"|^[ \t]{0,3}>.*$",
     re.DOTALL | re.MULTILINE,
 )
+
+
+def fenced_spans(text: str) -> list[tuple[int, int]]:
+    spans = []
+    opened = None
+    offset = 0
+    for line in text.splitlines(keepends=True):
+        fence = re.match(r"^ {0,3}(`{3,}|~{3,})([^\n]*)", line)
+        if opened is None and fence:
+            opened = (offset, fence[1][0], len(fence[1]))
+        elif opened is not None and fence and fence[1][0] == opened[1] and len(fence[1]) >= opened[2] and not fence[2].strip():
+            spans.append((opened[0], offset + len(line)))
+            opened = None
+        offset += len(line)
+    if opened is not None:
+        spans.append((opened[0], len(text)))
+    return spans
 
 
 @lru_cache(maxsize=1024)
@@ -198,7 +216,7 @@ def untrusted_spans(text: str, policy: dict) -> tuple[list[tuple[int, int]], lis
     of the prompt: whatever follows such a phrase reads as pasted content trying
     to steer the agent, not as the user's own request.
     """
-    quoted = [(m.start(), m.end()) for m in _QUOTED.finditer(text)]
+    quoted = fenced_spans(text) + [(m.start(), m.end()) for m in _QUOTED.finditer(text)]
     starts = [
         m.start()
         for cue in _override_cues(policy)

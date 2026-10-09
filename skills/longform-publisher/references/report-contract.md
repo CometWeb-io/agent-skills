@@ -45,11 +45,16 @@ actions: {blockers[], verify_now[], decision_now[], now[], next_milestone[],
           delegate[], waiting[], stop[]}
 ```
 
-Each `lifecycle` flag is a boolean that records one finished step, in the
-order of `references/state-model.md`. The kernel infers the stage from the
+Each `lifecycle` flag is a strict JSON boolean that records one finished step,
+in the order of `references/state-model.md`. The kernel infers the stage from the
 first flag that is not `true` (plus fidelity and derived-format readiness), so a
 later flag set while an earlier one is false does not advance the stage, and a
 declared `current_stage` past the inferred one is `STAGE_INFLATION`.
+
+Every source record must include non-empty string values for `id`, `system`,
+`locator`, `freshness`, and `observed_at`, plus a strict boolean `authorized`.
+Publication evidence records must include non-empty string `type` and `locator`;
+an empty object is not evidence and cannot establish `PUBLISHED`.
 
 An `unresolved_gaps[]` entry with `materiality: CRITICAL` blocks
 `RELEASE_READY` until its `status` is `CLOSED`, `RESOLVED` or `SCOPED_OUT`; any
@@ -68,8 +73,10 @@ evidence `type`/`locator` are carried for the reader; the kernel prints
 ## Admission rules
 
 - SOURCE_BOUND may reference only authorized sources.
+- Source records with missing required fields are rejected.
 - Material FACT claims cannot claim reconciliation without support. Every `evidence_ref` must resolve to a registered source; otherwise return `EVIDENCE_REF_UNRESOLVED`.
-- Volatile current claims cannot rely only on stale/unknown evidence.
+- Volatile current FACT claims cannot rely only on stale/unknown evidence,
+  including `SUPPORTING` claims.
 - Declared `current_stage` cannot exceed the stage inferred from gates.
 - Critical open gaps block RELEASE_READY.
 - `PUBLISHED` requires publication evidence.

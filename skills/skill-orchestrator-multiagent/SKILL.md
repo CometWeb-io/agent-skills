@@ -18,7 +18,7 @@ execution_mode: isolated_subagents
 
 Shared references (do not fork):
 
-- `skill-orchestrator` sequencing rules from its installed package; the archetype table is copied here as `references/workflow-archetypes.md` — read it before choosing an archetype
+- `references/workflow-archetypes.md` — read before choosing; sequencing stays in `skill-orchestrator`.
 - `references/multiagent-execution.md` — read before launching the first subagent
 - `references/subagent-prompt-template.md` — build every subagent prompt from it
 
@@ -27,3 +27,15 @@ Script inputs and outputs (payload builder, envelope gate): `references/kernel-c
 Parent thread **plans and merges only**. Each specialist runs in its own subagent.
 If Task/subagent API is unavailable, stop and recommend `@skill-orchestrator`
 with `execution_mode=single_thread`.
+
+For resumable runs, use the canonical `skill-orchestrator` local workflow
+ledger (`references/run-ledger-contract.md` in that package). The alias does
+not maintain a second ledger or add semantics to CW-AIP, Council verdicts, or
+Release Readiness verdicts.
+
+For `--with-prd-handoff`, read `references/prd-handoff.md` before dispatch.
+
+Local profiles: `references/specialist-profiles.md`; sidecars do not replace owner gates.
+
+
+Read [compiled-worker.md](references/compiled-worker.md) before compiled dispatch.

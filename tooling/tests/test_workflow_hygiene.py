@@ -61,6 +61,9 @@ def test_write_rights_are_job_scoped_and_used(path):
 def test_jobs_are_bounded_and_do_not_keep_the_token(path):
     data = load(path)
     for job_id, job in data["jobs"].items():
+        if "uses" in job:
+            assert job["uses"].startswith("./.github/workflows/"), f"{path.name}/{job_id}: unpinned reusable workflow"
+            continue  # Reusable jobs inherit timeouts from the called workflow.
         assert isinstance(job.get("timeout-minutes"), int), f"{path.name}/{job_id}: no timeout"
     for job_id, step in steps(data):
         if step.get("uses", "").startswith("actions/checkout@"):

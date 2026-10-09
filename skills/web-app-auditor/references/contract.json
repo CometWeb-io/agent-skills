@@ -1,6 +1,6 @@
 {
   "schema": "cometweb.skill-contract/v1",
-  "docs": ["references/evidence-and-report.md", "assets/report-template.md"],
+  "docs": ["references/evidence-and-report.md", "assets/report-template.md", "references/contract-tracing.md"],
   "json_schemas": [
     "assets/audit-report.schema.json",
     {"path": "assets/finding.schema.json", "under": "findings"}
@@ -12,6 +12,7 @@
       "enums": {
         "MODES": "mode",
         "DEPTHS": "depth",
+        "VALIDATOR_STATUSES": "validator",
         "CONFIDENCE": "confidence",
         "VERDICTS": "verdict",
         "PROFILES": "capabilities.profile",
@@ -22,9 +23,52 @@
         "EXPECTED_BASES": "findings.expectedBasis",
         "EVIDENCE_TYPES": "evidence.type"
       }
+    },
+    "scripts/contract_trace_kernel.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "SCENARIO_KINDS": "scenarios.kind",
+        "SCENARIO_STATUSES": "scenarios.status",
+        "EDGE_STATES": "edges.state",
+        "EVIDENCE_CHANNELS": "evidence.channel"
+      }
     }
   },
-  "fields": {},
+  "fields": {
+    "schema": {},
+    "revision": {},
+    "build": {},
+    "environment": {},
+    "journey_id": {},
+    "claim": {},
+    "nodes": {},
+    "edges": {},
+    "evidence": {},
+    "scenarios": {},
+    "contractTrace": {},
+    "trace": {},
+    "result": {},
+    "id": {},
+    "locator": {},
+    "from": {},
+    "to": {},
+    "kind": {},
+    "status": {},
+    "evidence_ids": {},
+    "scenarios.kind": {
+      "enum": ["happy", "null_partial", "retry_duplicate", "wrong_tenant", "rollback"]
+    },
+    "scenarios.status": {
+      "enum": ["pass", "fail", "unknown", "blocked"]
+    },
+    "edges.state": {
+      "enum": ["pass", "fail", "unknown", "blocked"]
+    },
+    "evidence.channel": {
+      "enum": ["browser", "backend", "joined"]
+    }
+  },
   "outputs": {"ok": {}, "errors": {}, "warnings": {}},
   "internal": {"properties": "JSON Schema keyword the validator uses to mount the finding schema"},
   "doc_terms": [],

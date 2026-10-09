@@ -53,6 +53,37 @@ def test_inventory_declares_actual_test_directories(checkout):
     assert result["skills_without_tests"] == []
 
 
+def test_fixture_only_directory_is_declared_without_python_test_collection(checkout):
+    (checkout / "skills/example/tests/test_fixture.py").unlink()
+    put(checkout, "skills/example/tests/front-door-rules.json", '{"rules": []}')
+    result = local.inventory(checkout)
+    assert result["test_directories"] == ["tooling/tests"]
+    assert result["skills_without_tests"] == ["example"]
+    assert result["fixture_only_test_directories"] == ["skills/example/tests"]
+
+
+def test_empty_test_directory_is_not_a_fixture_only_directory(checkout):
+    (checkout / "skills/example/tests/test_fixture.py").unlink()
+    with pytest.raises(ValueError, match="empty test directory"):
+        local.inventory(checkout)
+
+
+def test_symlink_test_directory_is_rejected(checkout):
+    directory = checkout / "skills/example/tests"
+    directory.rename(checkout / "actual-tests")
+    directory.symlink_to(checkout / "actual-tests", target_is_directory=True)
+    with pytest.raises(ValueError, match="symlink"):
+        local.inventory(checkout)
+
+
+def test_symlinked_fixture_is_rejected(checkout):
+    (checkout / "skills/example/tests/test_fixture.py").unlink()
+    fixture = put(checkout, "outside.json", '{}')
+    (checkout / "skills/example/tests/front-door-rules.json").symlink_to(fixture)
+    with pytest.raises(ValueError, match="symlink"):
+        local.inventory(checkout)
+
+
 @pytest.mark.parametrize("name", ["registry/hosts.json", "tooling/generate_adapters.py", "skills/example/LICENSE",
                                   "skills/example/VERSION", "skills/example/SKILL.md"])
 def test_incomplete_checkout_rejected_before_output(checkout, name):
@@ -225,6 +256,17 @@ def stat_mode(path):
 def test_real_timeout_is_explicit(checkout):
     result = local.run_step(checkout, [sys.executable, "-c", "import time; time.sleep(10)"], checkout.parent / "timeout.log", 1)
     assert result["status"] == "timeout" and result["returncode"] is None
+
+
+def test_child_cache_is_report_local_and_credentials_stay_filtered(checkout, monkeypatch):
+    monkeypatch.setenv("UV_CACHE_DIR", str(checkout.parent / "global-cache"))
+    monkeypatch.setenv("OPENAI_API_KEY", "synthetic-test-value")
+    log = checkout.parent / "cache-env.log"
+    command = [sys.executable, "-c", "import json, os; print(json.dumps({'cache': os.environ['UV_CACHE_DIR'], 'credential_present': 'OPENAI_API_KEY' in os.environ}))"]
+    result = local.run_step(checkout, command, log, 10)
+    assert result["status"] == "passed"
+    assert json.loads(log.read_text()) == {"cache": str(log.parent / "uv-cache"), "credential_present": False}
+    assert not (checkout.parent / "global-cache").exists()
 
 
 def test_error_exit_codes_are_nonzero(checkout, capsys):

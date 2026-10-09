@@ -51,12 +51,20 @@ def review(payload):
     candidate_id=payload.get('candidate_id')
     if candidate_id is not None and not _text(candidate_id): errors.append('candidate_id:invalid')
     enforce_grade=payload.get('enforce_evidence_floor') is True
-    required_axes=set(payload.get('required_axes',[])) if isinstance(payload.get('required_axes',[]),list) else set()
-    if any(axis not in REQUIRED_AXES for axis in required_axes): errors.append('required_axes:invalid')
+    raw_required_axes=payload.get('required_axes',[])
+    required_axes=set()
+    if not isinstance(raw_required_axes,list):
+        if 'required_axes' in payload: errors.append('required_axes:invalid')
+    else:
+        valid_required_axes=[axis for axis in raw_required_axes if isinstance(axis,str) and axis in REQUIRED_AXES]
+        if len(valid_required_axes)!=len(raw_required_axes): errors.append('required_axes:invalid')
+        required_axes=set(valid_required_axes)
     if mode=='DEEP' and not required_axes: required_axes=set(AXES)
     if isinstance(mode,str) and mode in {'DEEP','DELTA'} or payload.get('coverage') is not None:
         ok,cov_errors,covered_axes=_coverage(payload.get('coverage'),required_axes)
         errors.extend(cov_errors); coverage_complete=ok
+        if mode=='DELTA' and not cov_errors and covered_axes==0:
+            errors.append('coverage:empty'); coverage_complete=False
     for i,finding in enumerate(findings):
         if not isinstance(finding,dict): errors.append(f'{i}:not-object'); continue
         fid=finding.get('finding_id')

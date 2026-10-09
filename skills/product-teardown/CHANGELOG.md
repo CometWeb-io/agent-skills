@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0] - 2026-10-04
+
+### Added
+
+- Clean-room reconstruction guidance with explicit source/destination evidence,
+  prohibited-material boundaries, and destination-native transfer modes.
+- Strict reconstruction-map and must/should/could feature-matrix validators with
+  evidence-linked parity scoring and deliberate-scope-cut handling.
+- Regression coverage for malformed maps, unsupported evidence references, and
+  optimistic parity defaults.
+
 ## [1.2.1] - 2026-10-03
 
 ### Fixed

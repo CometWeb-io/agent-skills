@@ -16,7 +16,13 @@ SRC = ROOT / "skills" / "skill-orchestrator" / "scripts" / "orchestrate_kernel.p
 DST = ROOT / "skills" / "skill-orchestrator-multiagent" / "scripts" / "orchestrate_kernel.py"
 REF_SRC = ROOT / "skills" / "skill-orchestrator" / "references"
 REF_DST = ROOT / "skills" / "skill-orchestrator-multiagent" / "references"
-SHARED_REFS = ("workflow-archetypes.md", "multiagent-execution.md", "subagent-prompt-template.md")
+SHARED_REFS = (
+    "workflow-archetypes.md",
+    "multiagent-execution.md",
+    "subagent-prompt-template.md",
+    "run-ledger-contract.md",
+    "prd-handoff.md",
+)
 # Bundled reference name -> canonical protocol schema.
 PROTOCOL_COPIES = {
     "envelope.core.schema.json": ROOT / "protocol" / "cw-aip-v1" / "schemas" / "envelope.core.schema.json",

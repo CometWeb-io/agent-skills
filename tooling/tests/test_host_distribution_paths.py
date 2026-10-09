@@ -98,10 +98,14 @@ def test_cursor_installer_uses_the_rule_files_named_in_hosts_json() -> None:
 
 
 @pytest.mark.parametrize("skill", skill_ids())
-def test_extras_named_in_a_skill_install_guide_exist(skill: str) -> None:
+def test_extras_in_optional_install_guide_or_explicit_guide_absence(skill: str) -> None:
     guide = SKILLS / skill / "INSTALL.md"
     if not guide.is_file():
-        pytest.skip("package has no INSTALL.md")
+        # INSTALL.md is optional. Execute an absence check for these packages
+        # rather than reporting a skipped test of a nonexistent document.
+        assert not guide.exists() and not guide.is_symlink(), f"{skill}: invalid optional INSTALL.md"
+        assert all("INSTALL.md" not in profile.get("required_files", []) for profile in hosts().values())
+        return
     for relative in re.findall(r"`(extras/[^`\s]+)`", guide.read_text(encoding="utf-8")):
         assert (SKILLS / skill / relative).is_file(), f"{skill}/INSTALL.md names missing {relative}"
 

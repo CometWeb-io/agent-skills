@@ -1,0 +1,79 @@
+{
+  "schema": "cometweb.skill-contract/v1",
+  "docs": [
+    "references/output-contract.md"
+  ],
+  "scripts": {
+    "scripts/output_contract.py": {
+      "input": "json",
+      "role": "validator",
+      "enums": {
+        "STATUSES": "status"
+      }
+    },
+    "scripts/run_evals.py": {
+      "input": "none",
+      "role": "eval-harness"
+    }
+  },
+  "fields": {
+    "summary": {},
+    "status": {
+      "enum": [
+        "complete",
+        "partial",
+        "blocked"
+      ]
+    },
+    "not_verified": {},
+    "profile": {},
+    "subject": {},
+    "as_of": {},
+    "scope": {},
+    "sources": {},
+    "id": {},
+    "kind": {},
+    "locator": {},
+    "observed_at": {},
+    "claims": {},
+    "text": {},
+    "state": {},
+    "source_ids": {},
+    "sections": {},
+    "company": {},
+    "icp": {},
+    "positioning": {},
+    "product": {},
+    "pricing": {},
+    "proof": {},
+    "discovery": {},
+    "contradictions": {},
+    "gaps": {},
+    "competitive_intelligence_handoff": {},
+    "baseline_id": {},
+    "source_profile_status": {
+      "enforced": false,
+      "enum": [
+        "BOOTSTRAP",
+        "PARTIAL",
+        "READY"
+      ]
+    },
+    "claim_ids": {},
+    "profile_sha256": {}
+  },
+  "outputs": {},
+  "internal": {},
+  "doc_terms": [],
+  "evals": [
+    {
+      "path": "evals/cases.json",
+      "cases": "",
+      "input": "input",
+      "errors": "expected_errors",
+      "pass": [
+        "pass"
+      ]
+    }
+  ]
+}

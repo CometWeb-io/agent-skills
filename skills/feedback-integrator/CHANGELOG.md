@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.1] - 2026-10-08
+
+- Require boolean strict/safety flags and list-shaped systemic evidence before promotion.
+
 ## [1.8.0] - 2026-10-03
 
 - `window_days` without `as_of` was silently ignored, so a run asked for a bounded learning window counted every observation. It is now refused with `window_days:requires-as_of`, as `references/output-contract.md` documented ("needs as_of").

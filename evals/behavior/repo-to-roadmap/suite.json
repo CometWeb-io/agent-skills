@@ -472,7 +472,7 @@
       "expect": {
         "exit_code": 2,
         "stderr_contains": [
-          "{\"status\":\"invalid\",\"coverage\":\"not_assessed\"}"
+          "{\"status\": \"invalid\", \"coverage\": \"not_assessed\", \"error\": \"invalid inventory input\"}"
         ]
       }
     },

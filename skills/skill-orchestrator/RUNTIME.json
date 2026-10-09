@@ -1,0 +1,10 @@
+{
+  "schema": "cometweb.skill-runtime/v1",
+  "python": ">=3.10",
+  "dependencies": {
+    "validate": [
+      "jsonschema>=4.18,<5"
+    ]
+  },
+  "notes": "Optional PRD handoff requires jsonschema and sibling brief-architect/multiagent packages; no automatic installation."
+}

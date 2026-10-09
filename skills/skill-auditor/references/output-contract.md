@@ -54,6 +54,9 @@ checks[]:
   material: true|false              # material PASS/FAIL needs evidence; material UNKNOWN defers
   evidence[]                        # a FAIL at BLOCKER or MAJOR always needs it
   rationale                         # required for N_A
+  # At least one check is required for a completed audit. An empty list is
+  # never PASS; use a material UNKNOWN check or contract_compatibility UNKNOWN
+  # when the audit is explicitly deferred.
 deep_checks:                        # DEEP only; every key must be true
   topology_inventory
   trigger_overlap

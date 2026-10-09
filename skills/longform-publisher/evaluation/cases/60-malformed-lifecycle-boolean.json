@@ -1,0 +1,15 @@
+{
+  "scenario": "malformed_lifecycle_boolean",
+  "expect": {
+    "validation": [
+      "FIELD_TYPE_INVALID:lifecycle.brief_complete"
+    ],
+    "manuscript": [
+      "FIELD_TYPE_INVALID:lifecycle.brief_complete"
+    ],
+    "derived": [
+      "FIELD_TYPE_INVALID:lifecycle.brief_complete"
+    ],
+    "stage": "BRIEFED"
+  }
+}

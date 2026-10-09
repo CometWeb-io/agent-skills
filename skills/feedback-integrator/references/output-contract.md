@@ -42,8 +42,10 @@ errors[]                            # one string per invalid[] entry; empty othe
 
 A run that cannot start is refused with one `invalid[]` entry and the same
 string in `errors`: `payload:not-object` (the case input is not an object),
-`records:not-list`, `as_of:invalid`, `min_count:invalid`, `window_days:invalid`
-or `window_days:requires-as_of` (a window with no `as_of` to count back from).
+`records:not-list`, `as_of:invalid`, `min_count:invalid`, `window_days:invalid`,
+`window_days:requires-as_of` (a window with no `as_of` to count back from), or
+`strict:invalid`. A systemic blocker earns the one-context exception only when
+`evidence` is a non-empty list; other evidence shapes do not satisfy the gate.
 A malformed record keeps its index: `{index: 1, reason: "pattern"}` in
 `invalid[]` is `records[1]:pattern` in `errors`, and a record that is not an
 object is `records[1]:not-object`.

@@ -18,6 +18,14 @@ iterating, `--ci` before a pull request); `--list` prints them.
 | `check_all.py` | The one list of gates. CI runs `check_all.py --ci`; `--fast` drops the slow and networked gates; `--fix` runs the generators first. Gates run in parallel, longest first, and the run fails if any gate changes the working tree. | — | `GATES` in the script → a pass/fail table on stdout |
 | `validate_local.py` | A recorded, report-producing run of a subset of the gates without GitHub Actions; the release workflow runs it before attesting packages. | — | checkout → a report directory given by `--output` |
 
+The output grader's CLI reads and writes UTF-8 regardless of the host locale.
+The behavior runner also uses UTF-8 for both parent transport and child streams;
+scratch path comparisons accept native, POSIX and escaped spellings of the same
+expected path. `.gitattributes` keeps text checkout bytes at LF even with
+`core.autocrlf=true`, preserving frozen hashes and package reproducibility.
+The frontmatter parser accepts LF and CRLF without rewriting archived bytes.
+The platform matrix includes the portability regressions on Linux, macOS and Windows.
+
 ## Supply chain and static analysis
 
 | Tool | What it does | Gate | Reads → writes |
@@ -32,13 +40,14 @@ iterating, `--ci` before a pull request); `--list` prints them.
 
 | Tool | What it does | Gate | Reads → writes |
 | --- | --- | --- | --- |
-| `sync_skill_registry.py` | Applies the registry fields owned by its `OVERRIDES` table to `registry/skills.json`. | `registry_sync` | `registry/skills.json` → the same file (`--apply`) |
+| `sync_skill_registry.py` | Syncs every registered package VERSION and the routing fields owned by its `OVERRIDES` table. | `registry_sync` | package VERSION files and `registry/skills.json` → the same registry (`--apply`) |
 | `sync_orchestrator.py` | Keeps the multiagent orchestrator's planner and bundled CW-AIP schemas byte-identical to their canonical copies. | `orchestrator_sync` | `skills/skill-orchestrator/`, `protocol/` → `skills/skill-orchestrator-multiagent/` |
 | `sync_roaster_shared.py` | Keeps the scripts and references the three roaster skills share byte-identical. | `roaster_shared` | one roaster package → the other two (`--sync`) |
 | `generate_adapters.py` | Generates host adapters, routing rules, compatibility tables and the README catalog from the registry. | `adapters` | `registry/` → `docs/generated-*`, `extras/`, `rules/`, `skills/*/agents/openai.yaml`, `README.md`, plugin manifests |
 | `adapter_metadata.py` | Lossless merge of host metadata: registry-owned fields win, unknown extensions survive. Imported by `generate_adapters.py`. | — | library |
 | `context_budget.py` | Measures each skill's front-door and reference cost in context against a recorded baseline; `--update` accepts a deliberate change. | `context_budget` | `skills/*/SKILL.md`, `registry/context-baseline.json` → `docs/generated-context-budget.md` |
 | `plugin_release.py` | Refuses a change to the shipped skill set without a plugin version bump; `--bump` bumps and records in one step. | `plugin_release` | `skills/*/VERSION`, `VERSION`, the merge base → plugin version fields and `registry/plugin-release.json` (`--record`, `--bump`) |
+| `skill_change_history.py` | Requires changed skill instructions/scripts to have a newer package VERSION and matching updated CHANGELOG. | `skill_change_history` | merge base and package sources → errors on stdout; no writes |
 | `new_skill.py` | Scaffolds and registers a skill package that passes every fast gate on day one. | — | a skill id and description → `skills/<id>/`, registry, routing cases, baselines |
 
 ## Package validation and packaging
@@ -86,7 +95,8 @@ iterating, `--ci` before a pull request); `--list` prints them.
 | `reviewer_bundle.py` | Exports only reviewer-facing fields, never the unblinding map. Imported by `build_review_packets.py`. | — | library |
 | `review_skill_evals.py` | Compares reviewed, matched runs and reports per-case deltas; no averages until every run is reviewed. | — | a `cometweb.skill-comparison/v1` file → a comparison on stdout |
 | `audit_contracts.py` | Checks declared UI, API, auth and storage paths against the evidence records supplied for them. | — | a contract trace and artifacts root → a report on stdout |
-| `real_host_eval.py` | Plans tasks from the repository's own eval cases (never the frozen holdout), runs them through a host CLI in headless mode with the plugin staged or absent, grades routing and output from the transcripts and reports pass rates with Wilson intervals. `run` is a dry run that prints commands and an estimated cost unless `--execute` is given with task and spend caps; see [REAL-HOST-EVALS.md](REAL-HOST-EVALS.md). | — | eval suites and rubrics, host CLI on PATH (only with `--execute`) → a plan JSON, a runs directory, grades and a Markdown scorecard |
+| `real_host_eval.py` | Plans tasks from the repository's own eval cases (never the frozen holdout), freezes candidate/payload/benchmark/rubric/host identities in v2 plans, runs them through a host CLI in headless mode with the plugin staged or absent, grades routing and output from the transcripts, and reports pass rates with Wilson intervals while separating errors from `not_run`. `run` is a dry run that prints commands and an estimated cost unless `--execute` is given with task and spend caps; see [REAL-HOST-EVALS.md](REAL-HOST-EVALS.md). | — | eval suites and rubrics, host CLI on PATH (only with `--execute`) → a plan JSON, a runs directory, grades and a Markdown scorecard |
+| `real_host_adapters.py` | Loads the runtime-host capability registry and fails closed for unsupported hosts or missing credentials before a model process starts. | — | `registry/runtime-hosts.json`, environment and optional binary override → READY/NOT_RUN capability result |
 
 ## Protocol (CW-AIP) and knowledge freshness
 

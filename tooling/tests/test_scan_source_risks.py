@@ -119,3 +119,14 @@ def test_explicit_file_and_symlinked_root_are_still_scanned(package: str, tmp_pa
     report = module.scan(alias)
     assert report["files_scanned"] == 1
     assert {flag["path"] for flag in report["flags"]} == {"secret.txt"}
+
+
+@pytest.mark.parametrize("package", PACKAGES)
+def test_output_symlink_is_rejected(package: str, tmp_path: Path, outside: Path) -> None:
+    output = tmp_path / "report.json"
+    output.symlink_to(outside)
+
+    with pytest.raises(ValueError, match="output must not be a symlink"):
+        load(package)._atomic_write(output, "{}\n")
+
+    assert outside.read_text(encoding="utf-8") == HOSTILE

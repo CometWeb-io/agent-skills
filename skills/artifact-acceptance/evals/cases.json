@@ -2469,5 +2469,134 @@
         "profile:invalid"
       ]
     }
+  },
+  {
+    "id": "required-flag-of-the-wrong-type-is-deferred",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "required": null,
+          "state": "N/A"
+        }
+      ]
+    },
+    "expect": {
+      "verdict": "DEFER",
+      "errors": [
+        "gate[0]:required"
+      ]
+    }
+  },
+  {
+    "id": "na-allowed-flag-of-the-wrong-type-is-deferred",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "gates": [
+        {
+          "gate_id": "g1",
+          "na_allowed": null,
+          "na_rationale": "not applicable",
+          "required": true,
+          "state": "N/A"
+        }
+      ]
+    },
+    "expect": {
+      "verdict": "DEFER",
+      "errors": [
+        "gate[0]:na-allowed"
+      ]
+    }
+  },
+  {
+    "id": "control-flag-of-the-wrong-type-is-rejected",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "controls": [
+        {
+          "issue": "x",
+          "owner": "o",
+          "required_gate_bypass": null,
+          "revisit_condition": "r",
+          "severity": "MINOR"
+        }
+      ],
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "verdict": "NOT_READY",
+      "errors": [
+        "control[0]:required_gate_bypass"
+      ]
+    }
+  },
+  {
+    "id": "finding-open-flag-of-the-wrong-type-is-deferred",
+    "input": {
+      "candidate": {
+        "id": "cand-1"
+      },
+      "contract": {
+        "id": "brief-1"
+      },
+      "findings": [
+        {
+          "open": null,
+          "severity": "MAJOR"
+        }
+      ],
+      "gates": [
+        {
+          "evidence": [
+            {
+              "candidate_id": "cand-1",
+              "locator": "page-1",
+              "observed_at": "2026-09-21T12:00:00+02:00",
+              "source": "render-check"
+            }
+          ],
+          "gate_id": "g1",
+          "required": true,
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "verdict": "DEFER",
+      "errors": [
+        "finding[0]:open"
+      ]
+    }
   }
 ]

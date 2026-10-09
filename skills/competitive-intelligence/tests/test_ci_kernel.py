@@ -214,3 +214,63 @@ class AtomicWriteTests(unittest.TestCase):
             with self.assertRaises(TypeError):
                 K._atomic_write_json(pathlib.Path(tmp) / "x.json", {"bad": object()})
             self.assertEqual(list(pathlib.Path(tmp).iterdir()), [])
+
+
+class SymlinkWorkspaceTests(unittest.TestCase):
+    EVENT = {
+        "competitor_id": "acme",
+        "category": "PRICING_PACKAGING",
+        "field_path": "state.price",
+        "before": 1,
+        "after": 2,
+        "first_observed_at": "2026-01-02T00:00:00Z",
+    }
+
+    def test_accept_snapshot_rejects_symlinked_directory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp) / "ws"
+            K.init_workspace(root)
+            external = pathlib.Path(tmp) / "external"
+            external.mkdir()
+            (root / "competitors" / "acme").symlink_to(external, target_is_directory=True)
+
+            with self.assertRaisesRegex(ValueError, "must not contain symlinks"):
+                K.accept_snapshot(root, ROOT / "tests" / "fixtures" / "acme-old.json")
+
+    def test_accept_snapshot_rejects_symlinked_current_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp) / "ws"
+            K.init_workspace(root)
+            competitor = root / "competitors" / "acme"
+            competitor.mkdir()
+            external = pathlib.Path(tmp) / "outside.json"
+            external.write_text('{"keep": true}\n', encoding="utf-8")
+            (competitor / "current.json").symlink_to(external)
+
+            with self.assertRaisesRegex(ValueError, "must not contain symlinks"):
+                K.accept_snapshot(root, ROOT / "tests" / "fixtures" / "acme-old.json")
+            self.assertEqual(external.read_text(encoding="utf-8"), '{"keep": true}\n')
+
+    def test_append_event_rejects_symlinked_events_directory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp) / "ws"
+            root.mkdir()
+            external = pathlib.Path(tmp) / "events"
+            external.mkdir()
+            (root / "events").symlink_to(external, target_is_directory=True)
+
+            with self.assertRaisesRegex(ValueError, "must not contain symlinks"):
+                K.append_event(root, self.EVENT)
+            self.assertEqual(list(external.iterdir()), [])
+
+    def test_append_event_rejects_symlinked_event_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = pathlib.Path(tmp) / "ws"
+            K.init_workspace(root)
+            external = pathlib.Path(tmp) / "outside.jsonl"
+            external.write_text("KEEP\n", encoding="utf-8")
+            (root / "events" / "2026-01.jsonl").symlink_to(external)
+
+            with self.assertRaisesRegex(ValueError, "must not contain symlinks"):
+                K.append_event(root, self.EVENT)
+            self.assertEqual(external.read_text(encoding="utf-8"), "KEEP\n")

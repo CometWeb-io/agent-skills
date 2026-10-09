@@ -16,6 +16,7 @@ def registry():
         {"id":"ai-humanize", "lifecycle":"active", "routing_signals":[[10,"humanize"],[5,"fix typos"]]},
         {"id":"evidence-researcher", "lifecycle":"active", "routing_signals":[[10,"evidence pack"]]},
         {"id":"competitive-intelligence", "lifecycle":"active", "routing_signals":[[10,"one-time deep profile of .* pricing|competitor watchlist"],[7,"competitor delta"]]},
+        {"id":"competitor-profiling", "lifecycle":"active", "routing_signals":[[20,"one-time deep profile|first deep competitor dossier"]]},
         {"id":"skill-orchestrator", "lifecycle":"active", "routing_signals":[[16,"zorkiestruj"]]},
         {"id":"skill-orchestrator-multiagent", "lifecycle":"active", "alias_of":"skill-orchestrator", "routing_signals":[[20,"one subagent per skill"]]},
         {"id":"cometweb-context", "lifecycle":"active", "routing_signals":[[12,"odswiez.*kontekst"]]},

@@ -1,0 +1,172 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "research-program-operator",
+  "description": "Deterministic canonical output admission, including explicit readiness contradictions; not model behavior.",
+  "cases": [
+    {
+      "id": "complete-result-passes",
+      "kind": "accept",
+      "behavior": "A complete result with nothing unverified passes.",
+      "run": [
+        "scripts/output_contract.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "summary": "Reconciled the research program and bounded the next study.",
+          "status": "complete",
+          "not_verified": [],
+          "program": {
+            "question": "What should the program do after the pilot?",
+            "as_of": "2026-10-05",
+            "stage": "analysis",
+            "studies": [
+              {
+                "id": "S1",
+                "name": "Pilot",
+                "status": "reported",
+                "estimand": "activation effect",
+                "evidence": [
+                  "fixture:pilot-results"
+                ]
+              }
+            ],
+            "hypotheses": [
+              "The intervention improves activation."
+            ],
+            "gates": [
+              {
+                "id": "G1",
+                "status": "READY",
+                "evidence": [
+                  "fixture:protocol-review"
+                ]
+              }
+            ],
+            "next_studies": [
+              {
+                "id": "S2",
+                "estimand": "activation effect",
+                "falsifier": "effect is nonpositive",
+                "dependencies": [
+                  "S1"
+                ],
+                "evidence_requirement": "powered follow-up observations",
+                "stop_rule": "stop at preregistered sample size",
+                "continue_rule": "continue after ethics approval"
+              }
+            ],
+            "governance": [],
+            "unknowns": []
+          },
+          "research_handoff": {
+            "status": "READY",
+            "target": "longform-publisher"
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": []
+        }
+      }
+    },
+    {
+      "id": "complete-with-unverified-is-refused",
+      "kind": "refuse",
+      "behavior": "A result cannot claim complete while listing what it did not verify.",
+      "run": [
+        "scripts/output_contract.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "summary": "Reconciled the research program and bounded the next study.",
+          "status": "complete",
+          "not_verified": [
+            "not checked"
+          ],
+          "program": {
+            "question": "What should the program do after the pilot?",
+            "as_of": "2026-10-05",
+            "stage": "analysis",
+            "studies": [
+              {
+                "id": "S1",
+                "name": "Pilot",
+                "status": "reported",
+                "estimand": "activation effect",
+                "evidence": [
+                  "fixture:pilot-results"
+                ]
+              }
+            ],
+            "hypotheses": [
+              "The intervention improves activation."
+            ],
+            "gates": [
+              {
+                "id": "G1",
+                "status": "READY",
+                "evidence": [
+                  "fixture:protocol-review"
+                ]
+              }
+            ],
+            "next_studies": [
+              {
+                "id": "S2",
+                "estimand": "activation effect",
+                "falsifier": "effect is nonpositive",
+                "dependencies": [
+                  "S1"
+                ],
+                "evidence_requirement": "powered follow-up observations",
+                "stop_rule": "stop at preregistered sample size",
+                "continue_rule": "continue after ethics approval"
+              }
+            ],
+            "governance": [],
+            "unknowns": []
+          },
+          "research_handoff": {
+            "status": "READY",
+            "target": "longform-publisher"
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": [
+            "status: complete contradicts a non-empty not_verified",
+            "handoff.status: READY requires a valid complete program; not publication authorization"
+          ]
+        }
+      }
+    },
+    {
+      "id": "result-that-is-not-an-object",
+      "kind": "boundary",
+      "behavior": "A result that is not an object is refused.",
+      "run": [
+        "scripts/output_contract.py"
+      ],
+      "call": "validate",
+      "args": [
+        [
+          "summary"
+        ]
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": [
+            "result: must be an object"
+          ]
+        }
+      }
+    }
+  ]
+}

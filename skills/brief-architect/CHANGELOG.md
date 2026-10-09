@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.0] - 2026-10-08
+
+- Add the opt-in PRD profile with closed JSON output, requirement/slice verification and schema plus readiness-kernel admission; reject malformed brief deltas.
+
 ## [1.7.4] - 2026-10-03
 
 - An `evidence_policy`, `mode` or `risk_level` that is a list or an object raised `TypeError`; each is now its `:invalid` error.

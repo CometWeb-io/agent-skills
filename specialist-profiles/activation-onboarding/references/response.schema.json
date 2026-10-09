@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "selected_skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "selected_profile_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "artifact": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "sidecar": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "profile_id",
+        "owner_skill",
+        "status",
+        "execution_authorized",
+        "evidence",
+        "unknowns",
+        "result"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string",
+          "const": "cometweb.specialist-profile-output/v2"
+        },
+        "profile_id": {
+          "const": "activation-onboarding",
+          "type": "string"
+        },
+        "owner_skill": {
+          "const": "product-operator",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "DRAFT",
+            "BLOCKED",
+            "REVIEWABLE"
+          ],
+          "type": "string"
+        },
+        "execution_authorized": {
+          "const": false,
+          "type": "boolean"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "kind",
+              "reference",
+              "summary"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "kind": {
+                "enum": [
+                  "USER_INPUT",
+                  "OBSERVED",
+                  "FRAMEWORK",
+                  "HYPOTHESIS"
+                ],
+                "type": "string"
+              },
+              "reference": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "summary": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            }
+          },
+          "minItems": 0
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "minItems": 0
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "activation_definition",
+            "cohort",
+            "activation_rate",
+            "activation_source_ids",
+            "retention_link",
+            "retention_source_ids",
+            "steps",
+            "framework_source_ids"
+          ],
+          "properties": {
+            "activation_definition": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "\\S"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cohort": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "\\S"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "activation_rate": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "activation_source_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "uniqueItems": true
+            },
+            "retention_link": {
+              "enum": [
+                "HYPOTHESIS",
+                "MEASURED",
+                "UNKNOWN"
+              ],
+              "type": "string"
+            },
+            "retention_source_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "uniqueItems": true
+            },
+            "steps": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "action",
+                  "expected_result",
+                  "verification",
+                  "basis",
+                  "source_ids"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "\\S"
+                  },
+                  "action": {
+                    "type": "string",
+                    "pattern": "\\S"
+                  },
+                  "expected_result": {
+                    "type": "string",
+                    "pattern": "\\S"
+                  },
+                  "verification": {
+                    "type": "string",
+                    "pattern": "\\S"
+                  },
+                  "basis": {
+                    "enum": [
+                      "OBSERVED",
+                      "HYPOTHESIS"
+                    ],
+                    "type": "string"
+                  },
+                  "source_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "\\S"
+                    },
+                    "uniqueItems": true
+                  }
+                }
+              },
+              "minItems": 1
+            },
+            "framework_source_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "uniqueItems": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "selected_skills",
+    "selected_profile_id",
+    "artifact",
+    "sidecar"
+  ]
+}

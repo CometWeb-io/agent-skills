@@ -25,12 +25,12 @@ them:
 | Qoder | `install-qoder.sh` | `~/.qoder/skills` | `QODER_SKILLS_DIR` |
 | Lingma | `install-lingma.sh` | `~/.lingma/skills` | `LINGMA_SKILLS_DIR` |
 
-Cursor also links `docs/generated-cursor-routing.mdc` as the routing rule
+Cursor links the compact `rules/cometweb-agent-skills.mdc` routing rule
 (`~/.cursor/rules/cometweb-agent-skills.mdc`, override with `CURSOR_RULES_DIR`).
-`extras/cursor-routing.mdc` is a compact fallback for checkouts without the
-full rule; a link an older install made to it is re-pointed to the full rule on
-the next run. Both are generated from `registry/skills.json` by
-`tooling/generate_adapters.py`, so neither lists a different skill set.
+Older managed links to the full catalog or `extras/cursor-routing.mdc` are
+re-pointed to the compact rule. The full generated catalog stays available
+in `docs/generated-cursor-routing.mdc` for deliberate reference loading.
+All three are generated from `registry/skills.json`.
 
 Codex documents `~/.agents/skills` as the user skills directory
 ([Codex skills](https://developers.openai.com/codex/skills)). Earlier versions of
@@ -164,3 +164,19 @@ in it, because git does not delete ignored files. The installer skips such a
 folder with a `WARN: skipping` line that tells you to delete it. A folder
 without `SKILL.md` that holds anything else still stops the run.
 `tooling/tests/test_installer_upgrade_path.py` covers this with a real clone.
+
+## Pinning and rollback
+
+For reviewed versions, use a dedicated checkout in detached HEAD at the exact
+approved commit. Run the existing installers from that checkout and keep it
+at the same path. Do not update it with `git pull`: the symlinks follow its bytes.
+Preview every host with `--dry-run` before changing the active installation.
+
+To upgrade or roll back, first review the exact target commit and its gates.
+Before rollback, run the current checkout's installers with `--uninstall` so
+packages added by the newer version do not remain active. Then run the
+installers from the selected checkout with `SKILLS_REPLACE_CONFLICTS=1`
+when replacing managed links from another checkout. The shared installer backs
+up conflicting paths and removes only links it owns during uninstall. Keep the
+previous checkout for rollback; local package or discovery PASS is not a signed
+release or model qualification. A global install is a separate promotion action.

@@ -46,27 +46,39 @@ def _derived_ready(report: dict[str, Any]) -> bool:
     return True
 
 
+LIFECYCLE_FLAGS = (
+    "brief_complete",
+    "sources_admitted",
+    "outline_locked",
+    "draft_complete",
+    "claims_reconciled",
+    "edited_complete",
+    "master_locked",
+    "release_ready",
+)
+
+
 def infer_stage(report: dict[str, Any]) -> str:
     lifecycle = report.get("lifecycle") or {}
-    if not lifecycle.get("brief_complete"):
+    if lifecycle.get("brief_complete") is not True:
         return "BRIEFED"
     stage = "BRIEFED"
-    if not lifecycle.get("sources_admitted"):
+    if lifecycle.get("sources_admitted") is not True:
         return stage
     stage = "SOURCE_READY"
-    if not lifecycle.get("outline_locked"):
+    if lifecycle.get("outline_locked") is not True:
         return stage
     stage = "OUTLINE_LOCKED"
-    if not lifecycle.get("draft_complete"):
+    if lifecycle.get("draft_complete") is not True:
         return stage
     stage = "DRAFTED"
-    if not lifecycle.get("claims_reconciled"):
+    if lifecycle.get("claims_reconciled") is not True:
         return stage
     stage = "CLAIMS_RECONCILED"
-    if not lifecycle.get("edited_complete"):
+    if lifecycle.get("edited_complete") is not True:
         return stage
     stage = "EDITED"
-    if not lifecycle.get("master_locked"):
+    if lifecycle.get("master_locked") is not True:
         return stage
 
     fidelity = report.get("fidelity") or {}
@@ -77,10 +89,10 @@ def infer_stage(report: dict[str, Any]) -> str:
     if not _derived_ready(report):
         return stage
     stage = "FORMAT_READY"
-    if not lifecycle.get("release_ready"):
+    if lifecycle.get("release_ready") is not True:
         return stage
     stage = "RELEASE_READY"
-    if not report.get("publication_evidence"):
+    if not _has_publication_evidence(report):
         return stage
     return "PUBLISHED"
 
@@ -117,7 +129,8 @@ def in_set(value, allowed) -> bool:
 _OBJECT_FIELDS = ("publication", "source_policy", "lifecycle", "canonical_master", "fidelity",
                   "scientific_readiness", "actions")
 _OBJECT_LIST_FIELDS = ("sources", "claim_uses", "unresolved_gaps", "derived_artifacts",
-                       "edit_history", "protected_facts")
+                       "edit_history", "protected_facts", "publication_evidence",
+                       "prior_publication_evidence")
 
 
 def _is_scalar(value: Any) -> bool:
@@ -145,7 +158,8 @@ def shape_errors(report: Any) -> list[str]:
         if value is not None and (not isinstance(value, list) or any(not isinstance(x, dict) for x in value)):
             errors.append(f"FIELD_TYPE_INVALID:{key}")
     if "FIELD_TYPE_INVALID:sources" not in errors and any(
-            not _is_scalar(s.get("id")) for s in report.get("sources") or []):
+            s.get("id") is not None and not isinstance(s.get("id"), str)
+            for s in report.get("sources") or []):
         errors.append("FIELD_TYPE_INVALID:sources.id")
     if "FIELD_TYPE_INVALID:claim_uses" not in errors and any(
             not _is_scalar_list(c.get("evidence_refs")) for c in report.get("claim_uses") or []):
@@ -160,7 +174,38 @@ def shape_errors(report: Any) -> list[str]:
     readiness = report.get("scientific_readiness")
     if isinstance(readiness, dict) and not _is_scalar(readiness.get("evidence_ref")):
         errors.append("FIELD_TYPE_INVALID:scientific_readiness.evidence_ref")
+    lifecycle = report.get("lifecycle")
+    if isinstance(lifecycle, dict):
+        for flag in LIFECYCLE_FLAGS:
+            if flag in lifecycle and not isinstance(lifecycle[flag], bool):
+                errors.append(f"FIELD_TYPE_INVALID:lifecycle.{flag}")
     return errors
+
+
+FRESHNESS_STATES = ("CURRENT", "NEAR_EXPIRY", "STALE", "SUPERSEDED", "UNKNOWN", "NOT_REQUIRED")
+SOURCE_REQUIRED_FIELDS = ("id", "system", "locator", "authorized", "freshness", "observed_at")
+PUBLICATION_EVIDENCE_REQUIRED_FIELDS = ("type", "locator")
+
+
+def _is_non_empty_string(value: Any) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _record_has_required_fields(record: dict[str, Any], fields: tuple[str, ...]) -> bool:
+    return all(_is_non_empty_string(record.get(field)) for field in fields)
+
+
+def _has_publication_evidence(report: dict[str, Any]) -> bool:
+    evidence = report.get("publication_evidence")
+    return (
+        isinstance(evidence, list)
+        and bool(evidence)
+        and all(
+            isinstance(item, dict)
+            and _record_has_required_fields(item, PUBLICATION_EVIDENCE_REQUIRED_FIELDS)
+            for item in evidence
+        )
+    )
 
 
 def validate_report(report: dict[str, Any]) -> list[str]:
@@ -180,6 +225,16 @@ def validate_report(report: dict[str, Any]) -> list[str]:
     sources = report.get("sources") or []
     source_by_id = {s.get("id"): s for s in sources if s.get("id")}
     policy = report.get("source_policy") or {}
+    for source in sources:
+        for field in SOURCE_REQUIRED_FIELDS:
+            if field not in source or source.get(field) is None or (
+                field != "authorized" and not _is_non_empty_string(source.get(field))
+            ):
+                errors.append(f"SOURCE_REQUIRED_FIELD_MISSING:{field}")
+        if "authorized" in source and not isinstance(source.get("authorized"), bool):
+            errors.append("FIELD_TYPE_INVALID:sources.authorized")
+        if "freshness" in source and not in_set(source.get("freshness"), FRESHNESS_STATES):
+            errors.append("FIELD_VALUE_INVALID:sources.freshness")
     if mode == "SOURCE_BOUND" or policy.get("mode") == "SOURCE_BOUND":
         allowed = set(policy.get("authorized_source_ids") or [])
         if any(s.get("id") not in allowed or s.get("authorized") is not True for s in sources):
@@ -197,10 +252,10 @@ def validate_report(report: dict[str, Any]) -> list[str]:
             refs = claim.get("evidence_refs") or []
             if claim.get("support_status") != "SUPPORTED" or not refs:
                 errors.append("MATERIAL_CLAIM_UNSUPPORTED")
-            if claim.get("volatile_current") is True and refs:
-                freshness = [source_by_id.get(ref, {}).get("freshness") for ref in refs]
-                if not any(in_set(x, {"CURRENT", "NEAR_EXPIRY"}) for x in freshness):
-                    errors.append("VOLATILE_CLAIM_STALE_EVIDENCE")
+        if claim.get("volatile_current") is True and claim.get("claim_kind") == "FACT" and refs:
+            freshness = [source_by_id.get(ref, {}).get("freshness") for ref in refs]
+            if not any(in_set(x, {"CURRENT", "NEAR_EXPIRY"}) for x in freshness):
+                errors.append("VOLATILE_CLAIM_STALE_EVIDENCE")
 
     for gap in report.get("unresolved_gaps") or []:
         if gap.get("materiality") is not None and not in_set(gap.get("materiality"), MATERIALITY):
@@ -208,10 +263,10 @@ def validate_report(report: dict[str, Any]) -> list[str]:
 
     lifecycle = report.get("lifecycle") or {}
     master = report.get("canonical_master") or {}
-    if lifecycle.get("draft_complete") and (not master.get("path") or not master.get("sha256")):
+    if lifecycle.get("draft_complete") is True and (not master.get("path") or not master.get("sha256")):
         errors.append("CANONICAL_MASTER_REQUIRED")
 
-    if lifecycle.get("release_ready"):
+    if lifecycle.get("release_ready") is True:
         for gap in report.get("unresolved_gaps") or []:
             if gap.get("materiality") == "CRITICAL" and not in_set(gap.get("status"), {"CLOSED", "RESOLVED", "SCOPED_OUT"}):
                 errors.append("CRITICAL_GAP_OPEN")
@@ -224,7 +279,15 @@ def validate_report(report: dict[str, Any]) -> list[str]:
     elif _stage_index(declared) > _stage_index(inferred):
         errors.append("STAGE_INFLATION")
 
-    if declared == "PUBLISHED" and not report.get("publication_evidence"):
+    for evidence in report.get("publication_evidence") or []:
+        for field in PUBLICATION_EVIDENCE_REQUIRED_FIELDS:
+            if not _is_non_empty_string(evidence.get(field)):
+                errors.append(f"PUBLICATION_EVIDENCE_REQUIRED_FIELD_MISSING:{field}")
+    for evidence in report.get("prior_publication_evidence") or []:
+        for field in PUBLICATION_EVIDENCE_REQUIRED_FIELDS:
+            if not _is_non_empty_string(evidence.get(field)):
+                errors.append(f"PRIOR_PUBLICATION_EVIDENCE_REQUIRED_FIELD_MISSING:{field}")
+    if declared == "PUBLISHED" and not _has_publication_evidence(report):
         errors.append("PUBLISHED_WITHOUT_EVIDENCE")
 
     publication_type = str((report.get("publication") or {}).get("type") or "").upper()
@@ -262,7 +325,11 @@ def check_manuscript(report: dict[str, Any], manuscript_text: str) -> list[str]:
         errors.append("MASTER_HASH_MISMATCH")
 
     lifecycle = report.get("lifecycle") or {}
-    if lifecycle.get("master_locked") or lifecycle.get("release_ready") or in_set(report.get("current_stage"), {"MASTER_LOCKED", "FORMAT_READY", "RELEASE_READY", "PUBLISHED"}):
+    if (
+        lifecycle.get("master_locked") is True
+        or lifecycle.get("release_ready") is True
+        or in_set(report.get("current_stage"), {"MASTER_LOCKED", "FORMAT_READY", "RELEASE_READY", "PUBLISHED"})
+    ):
         if any(pattern.search(manuscript_text) for pattern in _PLACEHOLDER_PATTERNS):
             errors.append("UNRESOLVED_PLACEHOLDER")
 

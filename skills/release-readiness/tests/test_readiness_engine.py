@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 import copy
 import importlib.util
+import json
+import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -113,6 +117,19 @@ class ReadinessEngineV2Tests(unittest.TestCase):
         self.assertEqual(result["risk_tier"], "R1")
         self.assertEqual(result["evidence_coverage"], 100.0)
         self.assertFalse(result["missing_required_gates"])
+
+    def test_valid_input_works_without_optional_previous_manifest(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "readiness.json"
+            path.write_text(json.dumps(green_manifest()), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(ENGINE), "--input", str(path)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["verdict"], "GO")
 
     def test_missing_required_gate_defers(self):
         manifest = green_manifest()

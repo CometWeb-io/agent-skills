@@ -10,7 +10,11 @@ permissions:
   contents: read
 
 jobs:
+  platforms:
+    uses: ./.github/workflows/platform-matrix.yml
+
   attest:
+    needs: platforms
     runs-on: ubuntu-latest
     timeout-minutes: 30
     # Signing rights belong to this job alone, not to every job added later.
@@ -52,11 +56,7 @@ jobs:
           fi
 
       - name: Validate release candidate before attestation
-        run: |
-          uv run python tooling/validate_local.py --trusted-checkout --output "$RUNNER_TEMP/agent-skills-release-validation" --timeout 900
-          uv run python tooling/public_safety.py --root .
-          uv run python tooling/public_safety.py --root . --history
-          uv run python tooling/installation_acceptance.py --all --run-helpers --trusted-checkout
+        run: uv run python tooling/check_all.py --ci
 
       - name: Build skill packages
         run: |

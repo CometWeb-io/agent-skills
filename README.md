@@ -6,9 +6,9 @@ Tested Agent Skills for research, product decisions, QA and release gates, insta
 
 [![Validate](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml)
 [![MIT](https://img.shields.io/badge/license-MIT-034C32)](LICENSE)
-![Skills](https://img.shields.io/badge/skills-32-informational.svg)
+![Skills](https://img.shields.io/badge/skills-34-informational.svg)
 
-This repository contains 32 reusable skill packages. Each one is a `SKILL.md`
+This repository contains 34 reusable skill packages. Each one is a `SKILL.md`
 entry point plus the references, scripts and eval cases it needs, and every
 package is covered by the test suite. Skills supply instructions and output
 contracts. They do not supply a model, connector accounts or permission to act:
@@ -36,7 +36,7 @@ cd agent-skills
                               # install-qwen.sh, install-qoder.sh, install-lingma.sh
 ```
 
-A successful run ends with a line such as `OK: 32 Claude Code skills installed in /home/you/.claude/skills`.
+A successful run ends with a line such as `OK: 34 Claude Code skills installed in /home/you/.claude/skills`.
 Installers are safe to rerun, stop before changing anything when a target path
 is already taken, and accept `--dry-run` and `--uninstall`.
 [INSTALL.md](INSTALL.md) lists each host's target directory and override
@@ -74,54 +74,56 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 <!-- BEGIN GENERATED: skill catalog (tooling/generate_adapters.py) -->
 <!-- Edit registry/readme-catalog.json or registry/skills.json, then run generate_adapters.py. -->
 
-**32 skills.** Versions come from each package's `VERSION`; the [compatibility matrix](docs/generated-compatibility-matrix.md) lists host support.
+**34 skills.** Versions come from each package's `VERSION`; the [compatibility matrix](docs/generated-compatibility-matrix.md) lists host support.
 
 ### Foundation and orchestration
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
-| [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. *(runs only when named)* | 5.2.4 |
+| [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. *(runs only when named)* | 5.3.0 |
 | [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. | 1.5.2 |
-| [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. | 1.0.6 |
+| [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. | 1.0.7 |
 | [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. | 1.2.4 |
-| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.1.5 |
-| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.1.6 |
+| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.3.1 |
+| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.2.1 |
 | [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. | 1.7.4 |
-| [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. | 1.8.0 |
+| [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. | 1.8.1 |
 | [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. | 1.7.4 |
-| [`rubric-designer`](skills/rubric-designer/) | Observable evaluation criteria, evidence floors, blocker rules, and rubric locks. | 1.7.4 |
-| [`skill-auditor`](skills/skill-auditor/) | Skill routing, portability, package hygiene, and supply-chain audits. | 1.7.4 |
-| [`skill-evaluator`](skills/skill-evaluator/) | Fair skill experiments, behavioral lift, resource cost, and host comparisons. | 1.7.3 |
+| [`rubric-designer`](skills/rubric-designer/) | Observable evaluation criteria, evidence floors, blocker rules, and rubric locks. | 1.7.5 |
+| [`skill-auditor`](skills/skill-auditor/) | Skill routing, portability, package hygiene, and supply-chain audits. | 1.7.5 |
+| [`skill-evaluator`](skills/skill-evaluator/) | Fair skill experiments, behavioral lift, resource cost, and host comparisons. | 1.7.4 |
 
 ### Product, research, and partnerships
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
-| [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. | 2.6.1 |
-| [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. | 1.1.2 |
-| [`design-partner-finder`](skills/design-partner-finder/) | Finding, qualifying, and managing design partners and early adopters. | 1.2.3 |
-| [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. | 2.4.2 |
-| [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. | 1.2.1 |
-| [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. | 1.1.1 |
-| [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. | 1.7.4 |
+| [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. | 2.6.2 |
+| [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. | 1.1.3 |
+| [`design-partner-finder`](skills/design-partner-finder/) | Finding, qualifying, and managing design partners and early adopters. | 1.2.4 |
+| [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. | 2.4.3 |
+| [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. | 1.3.0 |
+| [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. | 1.1.2 |
+| [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. | 1.8.0 |
 | [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. | 1.7.4 |
-| [`content-reviewer`](skills/content-reviewer/) | Constructive editorial QA with evidence-backed, actionable findings. | 1.7.4 |
-| [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. | 6.1.3 |
-| [`science-roaster`](skills/science-roaster/) | Reviewer #2-style critique of methods, inference, validity, and reproducibility. | 6.1.3 |
-| [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. | 6.1.3 |
-| [`repair-operator`](skills/repair-operator/) | Minimal dependency-aware repairs and fresh verification of closed findings. | 1.7.4 |
-| [`artifact-acceptance`](skills/artifact-acceptance/) | Final evidence-backed acceptance gates for knowledge artifacts. | 1.7.4 |
+| [`content-reviewer`](skills/content-reviewer/) | Constructive editorial QA with evidence-backed, actionable findings. | 1.7.5 |
+| [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. | 6.1.5 |
+| [`science-roaster`](skills/science-roaster/) | Reviewer #2-style critique of methods, inference, validity, and reproducibility. | 6.1.5 |
+| [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. | 6.1.5 |
+| [`repair-operator`](skills/repair-operator/) | Minimal dependency-aware repairs and fresh verification of closed findings. | 1.7.5 |
+| [`artifact-acceptance`](skills/artifact-acceptance/) | Final evidence-backed acceptance gates for knowledge artifacts. | 1.7.5 |
+| [`competitor-profiling`](skills/competitor-profiling/) | Initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence. | 0.1.1 |
+| [`research-program-operator`](skills/research-program-operator/) | Research-program stage gates, next-study planning, and manuscript-readiness handoffs. *(frozen)* | 1.3.2 |
 
 ### Publication, operations, QA, and release
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
-| [`customer-ops`](skills/customer-ops/) | Support triage, incidents, account risk, commitments, and engineering handoffs. | 2.2.1 |
+| [`customer-ops`](skills/customer-ops/) | Support triage, incidents, account risk, commitments, and engineering handoffs. | 2.2.2 |
 | [`ebook-publisher`](skills/ebook-publisher/) | Research-backed ebooks, white papers, workbooks, and publication QA. | 1.0.3 |
-| [`longform-publisher`](skills/longform-publisher/) | Canonical long-form manuscripts and release-ready derived documents. *(frozen)* | 1.1.4 |
-| [`release-readiness`](skills/release-readiness/) | Candidate-bound production gates and GO / GO_WITH_CONTROLS / NO_GO / DEFER verdicts. | 1.3.2 |
+| [`longform-publisher`](skills/longform-publisher/) | Canonical long-form manuscripts and release-ready derived documents. *(frozen)* | 1.1.5 |
+| [`release-readiness`](skills/release-readiness/) | Candidate-bound production gates and GO / GO_WITH_CONTROLS / NO_GO / DEFER verdicts. | 1.3.3 |
 | [`seo-geo-aeo-maxxing`](skills/seo-geo-aeo-maxxing/) | Multi-pillar SEO / GEO / AEO visibility audits. | 1.3.4 |
-| [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. | 1.4.2 |
+| [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. | 1.5.0 |
 
 <!-- END GENERATED: skill catalog -->
 
@@ -200,3 +202,32 @@ and [SECURITY.md](SECURITY.md) for reporting a vulnerability. The
 works to evaluating and releasing.
 
 [MIT license](LICENSE) · [Changelog](CHANGELOG.md)
+
+## Experimental opt-in product profiles
+
+The PRD profile in brief-architect, four specialist profiles and three imported
+Corey capability packs are source previews. Default orchestrator plans do not
+activate them. Use an explicit PRD request, `--with-prd-handoff`,
+`--specialist-profile` or `--with-capability-packs` for the corresponding preview.
+Profile and PRD plans remain PLAN_ONLY; they grant no execution permission.
+
+JSON schemas, semantic kernels, source bindings and resumable ledgers are checked
+with deterministic tests. Live host compatibility, output quality and comparative
+lift remain unqualified. Capability packs provide FRAMEWORK guidance, never
+independent evidence of demand or business outcomes. Retained licenses and pinned
+source commits are listed in THIRD_PARTY_NOTICES.md and the registries.
+
+Repository checks validate this source candidate; they do not authorize installation,
+publishing or promotion of the experimental profiles.
+
+### Candidate quality boundaries
+
+`competitor-profiling` and `research-program-operator` are experimental runtime
+candidates: their deterministic output contracts are tested, while real-model
+behavior and task-success lift remain not assessed. Catalog presence and
+format support are not host/model qualification. A READY handoff is bounded
+readiness for its named next step, never publication or external-write authority.
+
+Discovery metadata, activated instructions and optional reference resources
+have separate estimates in [the context budget](docs/generated-context-budget.md).
+Actual prompt/cache tokens and runtime costs require recorded host runs.

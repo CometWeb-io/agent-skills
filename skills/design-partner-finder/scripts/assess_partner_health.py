@@ -24,6 +24,8 @@ WEIGHTS = {
     "value_signal": 10.0,
 }
 
+_MISSING = object()
+
 
 def _rating(value: Any, name: str) -> float:
     try:
@@ -36,7 +38,7 @@ def _rating(value: Any, name: str) -> float:
 
 
 def _strict_bool(value: Any, name: str, default: bool = False) -> bool:
-    if value is None:
+    if value is _MISSING:
         return default
     if isinstance(value, bool):
         return value
@@ -53,8 +55,8 @@ def assess(payload: dict[str, Any]) -> dict[str, Any]:
     support_burden = _rating(payload.get("support_burden", 0), "support_burden")
     blocker_persistence = _rating(payload.get("blocker_persistence", 0), "blocker_persistence")
     willingness_to_buy = _rating(payload.get("willingness_to_buy", 0), "willingness_to_buy")
-    product_ready = _strict_bool(payload.get("product_ready_for_conversion"), "product_ready_for_conversion", False)
-    timing_capacity_blocker = _strict_bool(payload.get("timing_capacity_blocker"), "timing_capacity_blocker", False)
+    product_ready = _strict_bool(payload.get("product_ready_for_conversion", _MISSING), "product_ready_for_conversion", False)
+    timing_capacity_blocker = _strict_bool(payload.get("timing_capacity_blocker", _MISSING), "timing_capacity_blocker", False)
 
     contributions = {k: round((ratings[k] / 5.0) * w, 3) for k, w in WEIGHTS.items()}
     base_score = sum(contributions.values())

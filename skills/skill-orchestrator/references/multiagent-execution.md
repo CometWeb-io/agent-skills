@@ -21,7 +21,10 @@ equivalent):
    - Launch subagent with `subagent_type`, `description`, `prompt` from payload.
    - Set `run_in_background: false` unless the user explicitly asked for parallel work.
    - **Wait** for completion before the next step.
-   - Parse returned CW-AIP envelope; append to `prior_envelopes` for the next task.
+   - Parse and validate the full returned CW-AIP envelope BEFORE appending it to `prior_envelopes`.
+   - For the optional PRD pilot, checkpoint through the canonical ledger and use
+     the builder `--run-dir` mode to obtain the next task; see `references/prd-handoff.md`.
+     PLAN_ONLY previews are not claimed attempts. Do not prelaunch deferred steps.
 3. Parent merges envelopes into **Workflow result** — no domain execution in parent.
 
 ## Parent thread: allowed vs forbidden

@@ -1808,5 +1808,56 @@
       "portfolio_mode": true,
       "effort_units": 0
     }
+  },
+  {
+    "id": "reopened-origin-must-exist",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "reopen_of": "ghost",
+          "status": "REOPENED"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "0:reopened-with-missing-origin:ghost"
+      ]
+    }
+  },
+  {
+    "id": "reopened-origin-existing-is-valid",
+    "input": {
+      "items": [
+        {
+          "finding_ids": [
+            "f1"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r1",
+          "status": "OPEN"
+        },
+        {
+          "finding_ids": [
+            "f2"
+          ],
+          "repair_class": "PATCH",
+          "repair_id": "r2",
+          "reopen_of": "r1",
+          "status": "REOPENED"
+        }
+      ]
+    },
+    "expect": {
+      "status": "VALID",
+      "open": 2,
+      "errors": []
+    }
   }
 ]

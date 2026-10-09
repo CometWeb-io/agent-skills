@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.0 — 2026-10-05
+
+- Added bounded `contract-trace` mode with scenario accounting, evidence
+  channels, and explicit browser-only limits.
+- Contract-trace report sidecars now bind to the kernel result; incomplete,
+  browser-only backend claims, malformed traces, and mismatched results fail
+  closed in report validation and output grading.
+
 ## 1.4.2 — 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

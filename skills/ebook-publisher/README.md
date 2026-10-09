@@ -21,9 +21,9 @@ narzędzia PDF dostępnego w danym środowisku — patrz `references/pdf-product
 ## Szybka kontrola lokalna
 
 ```bash
-python -m unittest discover -s tests -v
-python scripts/ebook_check.py init ../nowy-ebook
-python scripts/ebook_check.py validate ../nowy-ebook/publication.json --stage research
+python3 -m unittest discover -s tests -v
+python3 scripts/ebook_check.py init ../nowy-ebook
+python3 scripts/ebook_check.py validate ../nowy-ebook/publication.json --stage research
 ```
 
 Nowy szablon celowo NIE przechodzi walidacji. Trzeba go wypełnić wynikami rzeczywistej

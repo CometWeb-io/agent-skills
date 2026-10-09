@@ -1,0 +1,94 @@
+{
+  "schema_version": "2.0",
+  "research_id": "res_policy",
+  "research_contract": {
+    "question": "Does the vendor policy currently state X?",
+    "objective": "Verify current policy wording",
+    "scope": {
+      "jurisdiction": null,
+      "geography": null,
+      "population": null,
+      "product": "Example",
+      "version": null,
+      "time_window": null
+    },
+    "as_of": "2026-08-25T21:44:00+02:00",
+    "mode": "STANDARD",
+    "consumers": [
+      "ai-council"
+    ],
+    "constraints": [],
+    "known_facts": [],
+    "known_unknowns": [],
+    "privacy_lane": "PUBLIC"
+  },
+  "claims": [
+    {
+      "claim_id": "clm_policy",
+      "claim_text": "The vendor policy currently states X.",
+      "claim_type": "vendor_policy",
+      "materiality": "critical",
+      "epistemic_kind": "FACT",
+      "temporal_sensitivity": "high",
+      "depends_on_claim_ids": [],
+      "contradiction_tested": true,
+      "status": "VERIFIED",
+      "confidence": "high",
+      "notes": null
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "src_policy",
+      "title": "Official policy",
+      "canonical_ref": "https://example.com/policy",
+      "source_class": "LIVE_WEB",
+      "source_role": "OFFICIAL",
+      "provenance_lane": "PUBLIC",
+      "independence_group": "example-vendor",
+      "independence_confidence": "high",
+      "source_state": "final",
+      "last_verified_at": "2026-08-25T21:30:00+02:00",
+      "requires_live_verification": false,
+      "verified_for_research": true,
+      "freshness_ttl_days": null,
+      "notes": null
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "ev_policy_support",
+      "claim_id": "clm_policy",
+      "source_id": "src_policy",
+      "direction": "SUPPORT",
+      "locator": "Policy section 2",
+      "evidence_form": "paraphrase",
+      "summary": "Policy states X.",
+      "authority_fit": "high",
+      "directness": "high",
+      "scope_fit": "high",
+      "measurement_quality": "not_applicable",
+      "admission": "ACCEPTED"
+    }
+  ],
+  "contradictions": [],
+  "searches": [
+    {
+      "search_id": "srch_policy_falsifier",
+      "claim_id": "clm_policy",
+      "purpose": "FALSIFIER",
+      "source_lane": "PUBLIC",
+      "query_summary": "Checked current policy, supersession and contrary vendor notices",
+      "completed": true,
+      "completed_at": "2026-08-25T21:35:00+02:00",
+      "result_source_ids": [
+        "src_policy"
+      ],
+      "sanitized_for_external": true,
+      "notes": null
+    }
+  ],
+  "gaps": [],
+  "research_status": "READY",
+  "stop_reason": null
+}

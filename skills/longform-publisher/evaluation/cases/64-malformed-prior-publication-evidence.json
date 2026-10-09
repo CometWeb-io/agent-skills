@@ -1,0 +1,11 @@
+{
+  "scenario": "malformed_prior_publication_evidence",
+  "expect": {
+    "validation": [
+      "PRIOR_PUBLICATION_EVIDENCE_REQUIRED_FIELD_MISSING:locator"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

@@ -344,6 +344,40 @@
   },
   {
     "expect": {
+      "coverage_complete": false,
+      "covered_axes": 0,
+      "errors": [
+        "coverage:empty"
+      ],
+      "status": "INVALID"
+    },
+    "id": "delta-zero-coverage-is-invalid",
+    "input": {
+      "coverage": [],
+      "findings": [],
+      "mode": "DELTA"
+    }
+  },
+  {
+    "expect": {
+      "coverage_complete": false,
+      "covered_axes": 0,
+      "errors": [
+        "required_axes:invalid",
+        "coverage:empty"
+      ],
+      "status": "INVALID"
+    },
+    "id": "delta-invalid-required-axes-is-invalid",
+    "input": {
+      "coverage": [],
+      "findings": [],
+      "mode": "DELTA",
+      "required_axes": "claim-integrity"
+    }
+  },
+  {
+    "expect": {
       "status": "INVALID"
     },
     "expect_paths": {

@@ -54,7 +54,8 @@ def safe_path(root: Path, relative: str) -> Path:
 
 
 def validate_frontmatter(blob: bytes, skill: str) -> None:
-    match = re.match(r"\A---\s*\n(.*?)\n---(?:\n|\Z)", blob.decode("utf-8"), re.S)
+    # Accept CRLF at the parser boundary; hashes still bind the original bytes.
+    match = re.match(r"\A---[ \t]*\r?\n(.*?)\r?\n---(?:\r?\n|\Z)", blob.decode("utf-8"), re.S)
     if not match:
         raise ValueError("SKILL.md is missing YAML frontmatter")
     from compatibility import safe_load_unique

@@ -1,5 +1,21 @@
 # Changelog — skill-orchestrator
 
+## [1.3.1] - 2026-10-09
+
+- Serialize ledger mutations across replay, validation and append on POSIX and Windows. Reject insecure existing roots without changing their permissions; preserve the sequential executor and external-effect limits.
+
+## [1.3.0] - 2026-10-08
+
+- Add experimental opt-in PRD/profile/domain gates, source-bound worker compilation, native owner admission and bounded retry/resume without automatic profile activation.
+
+## [1.2.0] - 2026-10-05
+
+### Added
+
+- Local append-only workflow ledger with hash-chain verification, idempotent
+  step completion, tamper detection, symlink/path safety, and resumable run
+  state without changing CW-AIP envelopes.
+
 ## [1.1.5] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

@@ -16,6 +16,11 @@
       "id": "rule-03",
       "text": "Shared references (do not fork):",
       "where": "SKILL.md"
+    },
+    {
+      "id": "rule-local-profile-sidecar",
+      "text": "Local profiles: `references/specialist-profiles.md`; sidecars do not replace owner gates.",
+      "where": "SKILL.md"
     }
   ]
 }

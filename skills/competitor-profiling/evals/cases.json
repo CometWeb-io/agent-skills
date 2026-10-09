@@ -1,0 +1,2433 @@
+[
+  {
+    "id": "valid-complete",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": []
+  },
+  {
+    "id": "valid-partial",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "partial",
+      "not_verified": [
+        "live pricing verification"
+      ],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": []
+  },
+  {
+    "id": "not-an-object",
+    "input": [
+      "summary"
+    ],
+    "expected_errors": [
+      "result: must be an object"
+    ]
+  },
+  {
+    "id": "missing-summary",
+    "input": {
+      "status": "partial",
+      "not_verified": [
+        "live data"
+      ],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "summary: required non-empty string"
+    ]
+  },
+  {
+    "id": "unknown-status",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "done",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "status: must be complete, partial or blocked"
+    ]
+  },
+  {
+    "id": "missing-not-verified",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "not_verified: required list",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "complete-but-unverified",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [
+        "pricing page"
+      ],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "status: complete contradicts a non-empty not_verified",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "missing-profile",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY"
+      }
+    },
+    "expected_errors": [
+      "profile: required object"
+    ]
+  },
+  {
+    "id": "missing-source-manifest",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:ec0e18ad956d8dd8a32ed497b28de71b69de2477afc83b7558e49a375ce1fe7a"
+      }
+    },
+    "expected_errors": [
+      "profile.sources: required non-empty list",
+      "profile.claims[0].source_ids: unknown source",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "missing-claims",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:6605605bdb3c8cb6280776a271d178261a5352a4d518f6f41e5919dd35304cd0"
+      }
+    },
+    "expected_errors": [
+      "profile.claims: required non-empty list",
+      "profile.sections.company.claim_ids: required non-empty references to profile claims",
+      "profile.sections.discovery.claim_ids: required non-empty references to profile claims",
+      "profile.sections.icp.claim_ids: required non-empty references to profile claims",
+      "profile.sections.positioning.claim_ids: required non-empty references to profile claims",
+      "profile.sections.pricing.claim_ids: required non-empty references to profile claims",
+      "profile.sections.product.claim_ids: required non-empty references to profile claims",
+      "profile.sections.proof.claim_ids: required non-empty references to profile claims",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "incomplete-sections",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:82f1c01bb34e7d7b38d51de21200fce2d1e7fc8c0e2a7d3838eab876efe42de5"
+      }
+    },
+    "expected_errors": [
+      "profile.sections: must contain exactly company/icp/positioning/product/pricing/proof/discovery",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "unknown-source-reference",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S404"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:c5fd3b624f589b320249f43f40bd5b36124d8bf3c8cd52b35f5b47a64833d6b5"
+      }
+    },
+    "expected_errors": [
+      "profile.claims[0].source_ids: unknown source",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "invalid-handoff-status",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "DELTA"
+      }
+    },
+    "expected_errors": [
+      "handoff.source_profile_status: invalid"
+    ]
+  },
+  {
+    "id": "malformed-not-verified",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": {},
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "not_verified: required list"
+    ]
+  },
+  {
+    "id": "malformed-profile-fields",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "",
+        "as_of": 17,
+        "scope": null,
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.subject: required non-empty string",
+      "profile.as_of: required non-empty string",
+      "profile.scope: required non-empty string",
+      "profile.as_of: must be ISO date or timezone-aware timestamp"
+    ]
+  },
+  {
+    "id": "malformed-source-manifest",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": {},
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.sources: required non-empty list",
+      "profile.claims[0].source_ids: unknown source"
+    ]
+  },
+  {
+    "id": "source-row-not-object",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          null
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.sources[0]: must be object",
+      "profile.claims[0].source_ids: unknown source"
+    ]
+  },
+  {
+    "id": "source-id-required",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": 7,
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": []
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.sources[0].id: required",
+      "profile.claims[0].source_ids: required non-empty list"
+    ]
+  },
+  {
+    "id": "duplicate-source-id",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/one",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/two",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.sources[1].id: duplicate"
+    ]
+  },
+  {
+    "id": "source-fields-required",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.sources[0].kind: required",
+      "profile.sources[0].locator: required",
+      "profile.sources[0].observed_at: required",
+      "profile.sources[0].observed_at: must be ISO date or timezone-aware timestamp"
+    ]
+  },
+  {
+    "id": "source-fields-malformed",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": 1,
+            "locator": [],
+            "observed_at": null
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.sources[0].kind: required",
+      "profile.sources[0].locator: required",
+      "profile.sources[0].observed_at: required",
+      "profile.sources[0].observed_at: must be ISO date or timezone-aware timestamp"
+    ]
+  },
+  {
+    "id": "malformed-claims",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": {},
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.claims: required non-empty list",
+      "profile.sections.company.claim_ids: required non-empty references to profile claims",
+      "profile.sections.discovery.claim_ids: required non-empty references to profile claims",
+      "profile.sections.icp.claim_ids: required non-empty references to profile claims",
+      "profile.sections.positioning.claim_ids: required non-empty references to profile claims",
+      "profile.sections.pricing.claim_ids: required non-empty references to profile claims",
+      "profile.sections.product.claim_ids: required non-empty references to profile claims",
+      "profile.sections.proof.claim_ids: required non-empty references to profile claims"
+    ]
+  },
+  {
+    "id": "claim-row-not-object",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          null
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.claims[0]: must be object",
+      "profile.sections.company.claim_ids: required non-empty references to profile claims",
+      "profile.sections.discovery.claim_ids: required non-empty references to profile claims",
+      "profile.sections.icp.claim_ids: required non-empty references to profile claims",
+      "profile.sections.positioning.claim_ids: required non-empty references to profile claims",
+      "profile.sections.pricing.claim_ids: required non-empty references to profile claims",
+      "profile.sections.product.claim_ids: required non-empty references to profile claims",
+      "profile.sections.proof.claim_ids: required non-empty references to profile claims"
+    ]
+  },
+  {
+    "id": "claim-id-required",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": 7,
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.claims[0].id: required",
+      "profile.sections.company.claim_ids: required non-empty references to profile claims",
+      "profile.sections.discovery.claim_ids: required non-empty references to profile claims",
+      "profile.sections.icp.claim_ids: required non-empty references to profile claims",
+      "profile.sections.positioning.claim_ids: required non-empty references to profile claims",
+      "profile.sections.pricing.claim_ids: required non-empty references to profile claims",
+      "profile.sections.product.claim_ids: required non-empty references to profile claims",
+      "profile.sections.proof.claim_ids: required non-empty references to profile claims"
+    ]
+  },
+  {
+    "id": "duplicate-claim-id",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "First claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          },
+          {
+            "id": "C1",
+            "text": "Second claim.",
+            "state": "INFERRED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.claims[1].id: duplicate"
+    ]
+  },
+  {
+    "id": "claim-text-required",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": null,
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.claims[0].text: required"
+    ]
+  },
+  {
+    "id": "claim-state-invalid",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": null,
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.claims[0].state: invalid"
+    ]
+  },
+  {
+    "id": "malformed-evidence-reference-list",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "UNKNOWN",
+            "source_ids": "S1"
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.claims[0].source_ids: required non-empty list"
+    ]
+  },
+  {
+    "id": "sections-not-object",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": [],
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.sections: must contain exactly company/icp/positioning/product/pricing/proof/discovery"
+    ]
+  },
+  {
+    "id": "contradictions-and-gaps-not-lists",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": "none",
+        "gaps": {}
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "x",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.contradictions: required list",
+      "profile.gaps: required list"
+    ]
+  },
+  {
+    "id": "handoff-not-object",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": []
+    },
+    "expected_errors": [
+      "competitive_intelligence_handoff: required object"
+    ]
+  },
+  {
+    "id": "handoff-fields-required",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {}
+    },
+    "expected_errors": [
+      "handoff.baseline_id: required",
+      "handoff.source_profile_status: required",
+      "handoff.source_profile_status: invalid"
+    ]
+  },
+  {
+    "id": "malformed-handoff-fields",
+    "input": {
+      "summary": "Built a baseline.",
+      "status": "partial",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme",
+        "as_of": "2026-10-05",
+        "scope": "baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "A claim.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": 7,
+        "source_profile_status": null
+      }
+    },
+    "expected_errors": [
+      "handoff.baseline_id: required",
+      "handoff.source_profile_status: required",
+      "handoff.source_profile_status: invalid"
+    ]
+  },
+  {
+    "id": "audit-empty-company",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": null,
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.company: required object with summary and claim_ids",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-empty-discovery",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": null
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.discovery: required object with summary and claim_ids",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-empty-icp",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": null,
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.icp: required object with summary and claim_ids",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-empty-positioning",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": null,
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.positioning: required object with summary and claim_ids",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-empty-pricing",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": null,
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.pricing: required object with summary and claim_ids",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-empty-product",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": null,
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.product: required object with summary and claim_ids",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-empty-proof",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": null,
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.proof: required object with summary and claim_ids",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-claim-UNKNOWN",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "UNKNOWN",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.claims[0].state: complete requires supported claims",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-claim-HYPOTHESIS",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "HYPOTHESIS",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.claims[0].state: complete requires supported claims",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-invalid-date",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "not-a-date",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.as_of: must be ISO date or timezone-aware timestamp",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-future-source",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2099-01-01"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.sources[0].observed_at: after profile.as_of",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-fingerprint-mismatch",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:wrong"
+      }
+    },
+    "expected_errors": [
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-empty-coverage",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {
+            "summary": "covered",
+            "claim_ids": []
+          },
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.company.claim_ids: required non-empty references to profile claims",
+      "handoff.profile_sha256: READY requires the exact profile fingerprint",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-empty-not-verified-entry",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "partial",
+      "not_verified": [
+        null
+      ],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "not_verified: entries must be non-empty strings"
+    ]
+  },
+  {
+    "id": "audit-empty-summary",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "partial",
+      "not_verified": [
+        "live pricing verification"
+      ],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "PARTIAL"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.company.summary: required non-empty string"
+    ]
+  },
+  {
+    "id": "audit-complete-gaps",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [],
+        "gaps": [
+          "unresolved"
+        ]
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:c7b08560511c2b03726700306bad8b9ee7efbee6832a285ba1708bf30208cf45"
+      }
+    },
+    "expected_errors": [
+      "profile.gaps: complete requires no unresolved items",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-complete-contradictions",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S1",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C1",
+            "text": "The source describes the product and pricing page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S1"
+            ]
+          }
+        ],
+        "sections": {
+          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+        },
+        "contradictions": [
+          "unresolved"
+        ],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:4ddde125db1cdf27f48d607de80db6c650cfad85f2be0f3a5e6b4ea78b7ca37c"
+      }
+    },
+    "expected_errors": [
+      "profile.contradictions: complete requires no unresolved items",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  }
+]

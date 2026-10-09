@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.2] - 2026-10-08
+
+- Hash canonical JSON dedupe fields and remove premature case/incident closure transitions.
+
 ## [2.2.1] - 2026-10-03
 
 ### Fixed

@@ -20,7 +20,7 @@ gh auth refresh -h github.com -s admin:ssh_signing_key
 gh ssh-key add ~/.ssh/id_ed25519.pub --type signing -t "cometweb-signing"
 
 # 3. Configure Git locally for this clone
-cd platforms/agent-skills
+cd /path/to/agent-skills
 git config gpg.format ssh
 git config user.signingkey ~/.ssh/id_ed25519.pub
 git config commit.gpgsign true

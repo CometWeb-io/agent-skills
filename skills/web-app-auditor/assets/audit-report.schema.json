@@ -12,11 +12,46 @@
   "properties": {
     "schemaVersion": {"const": "1.1"},
     "target": {"type": "string", "minLength": 1},
-    "mode": {"enum": ["page", "area", "crawl", "flow", "data", "visual", "regression", "a11y"]},
+    "mode": {"enum": ["page", "area", "crawl", "flow", "data", "visual", "regression", "a11y", "contract-trace"]},
     "depth": {"enum": ["recon", "standard", "forensic"]},
     "confidence": {"enum": ["high", "medium", "low"]},
     "verdict": {"enum": ["do_not_ship", "ship_with_fixes", "ship", "incomplete"]},
-    "validator": {"type": "string"},
+    "validator": {"enum": ["passed", "warnings", "not run"]},
+    "contractTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trace", "result"],
+      "properties": {
+        "trace": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["schema", "revision", "build", "environment", "journey_id", "claim", "nodes", "evidence", "edges", "scenarios"],
+          "properties": {
+            "schema": {"const": "cometweb.contract-trace/v1"},
+            "revision": {"type": "string", "minLength": 1},
+            "build": {"type": "string", "minLength": 1},
+            "environment": {"type": "string", "minLength": 1},
+            "journey_id": {"type": "string", "minLength": 1},
+            "claim": {"enum": ["bounded", "incomplete"]},
+            "nodes": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["id", "kind"], "properties": {"id": {"type": "string", "minLength": 1}, "kind": {"type": "string", "minLength": 1}}}},
+            "evidence": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "channel", "locator"], "properties": {"id": {"type": "string", "minLength": 1}, "channel": {"enum": ["browser", "backend", "joined"]}, "locator": {"type": "string", "minLength": 1}}}},
+            "edges": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["id", "from", "to", "kind", "state", "evidence_ids"], "properties": {"id": {"type": "string", "minLength": 1}, "from": {"type": "string", "minLength": 1}, "to": {"type": "string", "minLength": 1}, "kind": {"type": "string", "minLength": 1}, "state": {"enum": ["pass", "fail", "unknown", "blocked"]}, "evidence_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}}}},
+            "scenarios": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["kind", "status", "evidence_ids"], "properties": {"id": {"type": "string", "minLength": 1}, "kind": {"enum": ["happy", "null_partial", "retry_duplicate", "wrong_tenant", "rollback"]}, "status": {"enum": ["pass", "fail", "unknown", "blocked"]}, "evidence_ids": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}}}}
+          }
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["schema", "status", "result", "errors"],
+          "properties": {
+            "schema": {"const": "cometweb.contract-trace-result/v1"},
+            "status": {"enum": ["VALID", "INVALID"]},
+            "result": {"enum": ["complete", "incomplete"]},
+            "errors": {"type": "array", "items": {"type": "string"}}
+          }
+        }
+      }
+    },
     "capabilities": {
       "type": "object",
       "additionalProperties": false,
@@ -101,5 +136,9 @@
     "contradictionMatrix": {"type": "array"},
     "outOfScope": {"type": "array", "maxItems": 3, "items": {"type": "string"}},
     "recommendedNextAudit": {"type": "string"}
-  }
+  },
+  "allOf": [
+    {"if": {"properties": {"mode": {"const": "contract-trace"}}, "required": ["mode"]}, "then": {"required": ["contractTrace"]}},
+    {"if": {"required": ["contractTrace"]}, "then": {"properties": {"mode": {"const": "contract-trace"}}}}
+  ]
 }

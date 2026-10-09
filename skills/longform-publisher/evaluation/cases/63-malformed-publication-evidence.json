@@ -1,0 +1,11 @@
+{
+  "scenario": "malformed_publication_evidence",
+  "expect": {
+    "validation": [
+      "PUBLICATION_EVIDENCE_REQUIRED_FIELD_MISSING:type"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  }
+}

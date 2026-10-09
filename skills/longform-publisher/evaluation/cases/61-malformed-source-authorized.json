@@ -1,0 +1,16 @@
+{
+  "scenario": "malformed_source_authorized",
+  "expect": {
+    "validation": [
+      "FIELD_TYPE_INVALID:sources.authorized"
+    ],
+    "manuscript": [],
+    "derived": [],
+    "stage": "RELEASE_READY"
+  },
+  "cli": {
+    "command": "validate",
+    "returncode": 1,
+    "output": "FIELD_TYPE_INVALID:sources.authorized"
+  }
+}

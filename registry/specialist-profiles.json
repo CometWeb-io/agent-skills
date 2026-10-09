@@ -1,0 +1,123 @@
+{
+  "schema": "cometweb.specialist-profiles/local-v2",
+  "status": "LOCAL_PILOT_NOT_QUALIFIED",
+  "profiles": [
+    {
+      "id": "conversion-audit",
+      "owner_skill": "web-app-auditor",
+      "match_any": [
+        "\\bcro\\b",
+        "conversion (?:audit|rate|optimization)",
+        "konwersj\\w*",
+        "porzuc\\w* formularz\\w*"
+      ],
+      "entrypoint": "specialist-profiles/conversion-audit/PROFILE.md",
+      "output_schema": "specialist-profiles/conversion-audit/references/output.schema.json",
+      "source_repository": "https://github.com/coreyhaines31/marketingskills",
+      "source_commit": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "source_path": "skills/cro/SKILL.md",
+      "source_sha256": "199016bec3b44bc6a7507b111b6028f6550cc852cd54c7d0df789f15d6f814c4",
+      "license": "MIT",
+      "license_file": "specialist-profiles/licenses/corey.txt",
+      "claim_class": "FRAMEWORK",
+      "files": {
+        "specialist-profiles/conversion-audit/PROFILE.md": "4abd2a7ee387ddb8e9ce778a0bfb50504c56202cce3de355ab8f566e69c30ac3",
+        "specialist-profiles/conversion-audit/examples/draft.json": "fdf8f3d0d729cd3c617e2e792eb39ba57011f424d38a6fa2692389551c8d1997",
+        "specialist-profiles/conversion-audit/references/adaptation.md": "be6dc27df240bebc6d3cc6023e5b0adf5c2432971ce6c2203497ac1ce091255b",
+        "specialist-profiles/conversion-audit/references/output-contract.md": "6cc46a2fe52aa5a0b84debab0ad266f0fe17273021b2daa0a638874603f04c6c",
+        "specialist-profiles/conversion-audit/references/output.schema.json": "b109d6e09d6367b337eb21b4389c6eeb429776c4817f8a4f4d88e76af5aef025",
+        "specialist-profiles/conversion-audit/references/response.schema.json": "fc58608412997fc8ec07157344522c5a9dbd2e6c91d3769bc2d8090479748b28",
+        "specialist-profiles/licenses/corey.txt": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591"
+      },
+      "response_schema": "specialist-profiles/conversion-audit/references/response.schema.json"
+    },
+    {
+      "id": "experiment-design",
+      "owner_skill": "brief-architect",
+      "match_any": [
+        "\\ba/b\\b",
+        "\\bab test\\w*\\b",
+        "split test",
+        "eksperyment\\w* (?:produkt\\w*|konwersj\\w*)"
+      ],
+      "entrypoint": "specialist-profiles/experiment-design/PROFILE.md",
+      "output_schema": "specialist-profiles/experiment-design/references/output.schema.json",
+      "source_repository": "https://github.com/coreyhaines31/marketingskills",
+      "source_commit": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "source_path": "skills/ab-testing/SKILL.md",
+      "source_sha256": "1fd229160f6014f3f2d7c92cc7d2f991fbf8dc9ed68aac9793c71b408a6d1144",
+      "license": "MIT",
+      "license_file": "specialist-profiles/licenses/corey.txt",
+      "claim_class": "FRAMEWORK",
+      "files": {
+        "specialist-profiles/experiment-design/PROFILE.md": "2241c87410c1eee2c0ce64eea50dfc7129a278b2b3ced9960a319fe20db044c9",
+        "specialist-profiles/experiment-design/examples/draft.json": "ace13a1956c9f0136aa8c48d645cc7aa4e14466ae5b45f036fb77a8add3407ff",
+        "specialist-profiles/experiment-design/references/adaptation.md": "875945b290ebedd6fbb467d533a543966d7f8172ec0687558c9ef024f40e6423",
+        "specialist-profiles/experiment-design/references/output-contract.md": "6cc46a2fe52aa5a0b84debab0ad266f0fe17273021b2daa0a638874603f04c6c",
+        "specialist-profiles/experiment-design/references/output.schema.json": "634e93fd59593833c025df812eb538ace6abc20767e7d41712df893bbce0c7d5",
+        "specialist-profiles/experiment-design/references/response.schema.json": "25f91de332c0f06483a233e4d89b88026189b77141e9f0f257201094689c6cf2",
+        "specialist-profiles/licenses/corey.txt": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591"
+      },
+      "response_schema": "specialist-profiles/experiment-design/references/response.schema.json"
+    },
+    {
+      "id": "activation-onboarding",
+      "owner_skill": "product-operator",
+      "match_any": [
+        "onboarding (?:produkt\\w*|product|flow|uzytkownik\\w*|użytkownik\\w*)",
+        "user activation",
+        "post-signup",
+        "first.run",
+        "time.to.value",
+        "aktywacj\\w* u[żz]ytkownik\\w*"
+      ],
+      "entrypoint": "specialist-profiles/activation-onboarding/PROFILE.md",
+      "output_schema": "specialist-profiles/activation-onboarding/references/output.schema.json",
+      "source_repository": "https://github.com/coreyhaines31/marketingskills",
+      "source_commit": "dda3841f0b294e01e93b1541486beefbfab0915e",
+      "source_path": "skills/onboarding/SKILL.md",
+      "source_sha256": "ca219e0ba8f931888e2a634624ab927206f8ef26aeca2250399c3c48da0341e0",
+      "license": "MIT",
+      "license_file": "specialist-profiles/licenses/corey.txt",
+      "claim_class": "FRAMEWORK",
+      "files": {
+        "specialist-profiles/activation-onboarding/PROFILE.md": "8aab0412b372b91e7b729f82b088d8af1d6065052cd2755e79c2b1da2993c7e4",
+        "specialist-profiles/activation-onboarding/examples/draft.json": "0b0ad02c1a2e5fa6184c5dd4f1c1477b288187d3344c07976b93605c8f287a5f",
+        "specialist-profiles/activation-onboarding/references/adaptation.md": "0ae572758b0501439f3af0da973dff46ac7eec22a83e5346ef8bc997d47ae119",
+        "specialist-profiles/activation-onboarding/references/output-contract.md": "6cc46a2fe52aa5a0b84debab0ad266f0fe17273021b2daa0a638874603f04c6c",
+        "specialist-profiles/activation-onboarding/references/output.schema.json": "777b81c8dbca755c731166390366801c874171bec4d1fa636b282928abd26962",
+        "specialist-profiles/activation-onboarding/references/response.schema.json": "2b9e4babed0050395351165372225730dc7da75fb93d26163f6f312a4e0ebf31",
+        "specialist-profiles/licenses/corey.txt": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591"
+      },
+      "response_schema": "specialist-profiles/activation-onboarding/references/response.schema.json"
+    },
+    {
+      "id": "sop-documentation",
+      "owner_skill": "content-writer",
+      "match_any": [
+        "\\bsop\\b",
+        "standard operating procedure",
+        "procedur\\w* (?:operacyj\\w*|powtarzal\\w*)"
+      ],
+      "entrypoint": "specialist-profiles/sop-documentation/PROFILE.md",
+      "output_schema": "specialist-profiles/sop-documentation/references/output.schema.json",
+      "source_repository": "https://github.com/ognjengt/founder-skills",
+      "source_commit": "a45931cad934dc6243a68f905485467935a4ad9a",
+      "source_path": "skills/sop-creator/SKILL.md",
+      "source_sha256": "b81b345419db1835a2e64ab2480b1921c939210e4b7bef8df49c27bcf65b5f36",
+      "license": "MIT",
+      "license_file": "specialist-profiles/licenses/founder.txt",
+      "claim_class": "FRAMEWORK",
+      "files": {
+        "specialist-profiles/sop-documentation/PROFILE.md": "a88aa0efc31b8d80d2764d7f0fb2bb84602e74764855e0c6ac019d2411144db0",
+        "specialist-profiles/sop-documentation/examples/draft.json": "43813f612f5f6b99514c8f31f7fd94459a07537ad96903a6a48b1c53140b7ca4",
+        "specialist-profiles/sop-documentation/references/adaptation.md": "922095d977ad76315d80912226ace095e42abc6a2d9c454592807c1923a5fde2",
+        "specialist-profiles/sop-documentation/references/output-contract.md": "6cc46a2fe52aa5a0b84debab0ad266f0fe17273021b2daa0a638874603f04c6c",
+        "specialist-profiles/sop-documentation/references/output.schema.json": "c6720e5eae25cd6bc7f3ebce8c91290dab20d06446995d2dc8d880e6965fc652",
+        "specialist-profiles/sop-documentation/references/response.schema.json": "1cbd849343897b306aaecd883594f1f9289560e3a7072b5ae84076e11e35f90a",
+        "specialist-profiles/licenses/founder.txt": "1b52399c913f9c98cd64bcb0e73e3564e3de5afba0568ebf162739adde08d375"
+      },
+      "response_schema": "specialist-profiles/sop-documentation/references/response.schema.json"
+    }
+  ]
+}

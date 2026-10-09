@@ -19,6 +19,7 @@ PROFILE_GATES={
 
 
 def _text(value): return isinstance(value,str) and bool(value.strip())
+def _member(value, allowed): return isinstance(value,str) and value in allowed
 
 
 def _dt(value):
@@ -34,7 +35,7 @@ def _evidence_ok(ev,candidate_id,contract_id=None):
     if not _text(ev.get('source')) or not _text(ev.get('locator')): return False
     if _dt(ev.get('observed_at')) is None: return False
     if ev.get('candidate_id')!=candidate_id: return False
-    if contract_id and ev.get('contract_id') not in {None,contract_id}: return False
+    if contract_id and ev.get('contract_id') is not None and ev.get('contract_id')!=contract_id: return False
     return True
 
 
@@ -74,8 +75,8 @@ def _traceability(payload,gate_ids,mode):
         if not isinstance(row,dict): errors.append(f'traceability[{i}]:not-object'); continue
         cid=row.get('criterion_id'); gid=row.get('gate_id')
         if cid not in criteria: errors.append(f'traceability[{i}]:criterion')
-        if gid not in gate_ids: errors.append(f'traceability[{i}]:gate')
-        if cid in criteria and gid in gate_ids: mapped.add(cid)
+        if not _member(gid,gate_ids): errors.append(f'traceability[{i}]:gate')
+        if cid in criteria and _member(gid,gate_ids): mapped.add(cid)
     for cid in criteria:
         if cid not in mapped: errors.append(f'traceability:missing:{cid}')
     return errors
@@ -84,10 +85,12 @@ def _traceability(payload,gate_ids,mode):
 def _control_ok(control,i,candidate_id,mode,as_of):
     if not isinstance(control,dict): return [f'control[{i}]:not-object']
     errors=[]
-    if control.get('severity') not in CONTROL_SEVERITY: errors.append(f'control[{i}]:severity')
+    if not _member(control.get('severity'),CONTROL_SEVERITY): errors.append(f'control[{i}]:severity')
+    for field in ('required_gate_bypass','waiver'):
+        if field in control and not isinstance(control[field],bool): errors.append(f'control[{i}]:{field}')
     if control.get('required_gate_bypass') is True: errors.append(f'control[{i}]:required-gate-bypass')
     if not _text(control.get('issue')) or not _text(control.get('owner')) or not _text(control.get('revisit_condition')): errors.append(f'control[{i}]:incomplete')
-    if control.get('candidate_id') not in {None,candidate_id}: errors.append(f'control[{i}]:candidate-mismatch')
+    if control.get('candidate_id') is not None and control.get('candidate_id')!=candidate_id: errors.append(f'control[{i}]:candidate-mismatch')
     waiver=control.get('waiver') is True
     if waiver or mode=='DEEP':
         approved=_dt(control.get('approved_at')); expires=_dt(control.get('expires_at'))
@@ -102,8 +105,8 @@ def decide(payload):
     candidate_id=_candidate_id(payload); contract_id=_contract_id(payload)
     if candidate_id is None or contract_id is None: return {'verdict':'DEFER','errors':['candidate-or-contract-unbound']}
     mode=payload.get('mode','STANDARD'); profile=payload.get('profile','CUSTOM')
-    if not isinstance(mode,str) or mode not in MODES: return {'verdict':'DEFER','errors':['mode:invalid']}
-    if not isinstance(profile,str) or profile not in PROFILES: return {'verdict':'DEFER','errors':['profile:invalid']}
+    if not _member(mode,MODES): return {'verdict':'DEFER','errors':['mode:invalid']}
+    if not _member(profile,PROFILES): return {'verdict':'DEFER','errors':['profile:invalid']}
     as_of=_dt(payload.get('as_of')) if payload.get('as_of') is not None else None
     if payload.get('as_of') is not None and as_of is None: return {'verdict':'DEFER','errors':['as_of:invalid']}
     lock_errors=_policy_lock_errors(payload)
@@ -120,20 +123,26 @@ def decide(payload):
         elif gid in seen: gate_errors.append(f'gate[{i}]:duplicate-id')
         else: seen.add(gid); by_id[gid]=gate
         state=gate.get('state')
-        if state not in VALID_STATES: gate_errors.append(f'gate[{i}]:state'); continue
-        if gate.get('required') is True:
+        if not _member(state,VALID_STATES): gate_errors.append(f'gate[{i}]:state'); continue
+        required_value=gate.get('required')
+        if not isinstance(required_value,bool):
+            gate_errors.append(f'gate[{i}]:required')
+            continue
+        if 'na_allowed' in gate and not isinstance(gate['na_allowed'],bool):
+            gate_errors.append(f'gate[{i}]:na-allowed')
+        if required_value is True:
             required.append(gate)
             if state=='PASS':
                 evidence=gate.get('evidence')
                 if not isinstance(evidence,list) or not evidence or not all(_evidence_ok(ev,candidate_id,contract_id) for ev in evidence): gate_errors.append(f'gate[{i}]:pass-without-candidate-evidence')
                 if minimum_grade:
                     grade=gate.get('evidence_grade')
-                    if grade not in GATE_GRADES: gate_errors.append(f'gate[{i}]:evidence-grade-required')
+                    if not _member(grade,GATE_GRADES): gate_errors.append(f'gate[{i}]:evidence-grade-required')
                     elif GRADE[grade]<GRADE[minimum_grade]: gate_errors.append(f'gate[{i}]:evidence-grade-below-floor')
             if state=='N/A':
-                if gate.get('na_allowed') is not True: gate_errors.append(f'gate[{i}]:required-na-not-allowed')
+                if gate.get('na_allowed') is not True and not ('na_allowed' in gate and not isinstance(gate['na_allowed'],bool)): gate_errors.append(f'gate[{i}]:required-na-not-allowed')
                 if not _text(gate.get('na_rationale')): gate_errors.append(f'gate[{i}]:na-without-rationale')
-    missing_profile=sorted(PROFILE_GATES[profile]-set(by_id))
+    missing_profile=sorted(gid for gid in PROFILE_GATES[profile] if gid not in by_id or by_id[gid].get('required') is not True)
     if missing_profile: gate_errors.extend(f'profile-missing-gate:{gid}' for gid in missing_profile)
     gate_errors.extend(_traceability(payload,set(by_id),mode))
     if gate_errors: return {'verdict':'DEFER','errors':gate_errors}
@@ -144,7 +153,9 @@ def decide(payload):
     if not isinstance(findings,list): return {'verdict':'DEFER','errors':['findings:not-list']}
     for i,finding in enumerate(findings):
         if not isinstance(finding,dict): return {'verdict':'DEFER','errors':[f'finding[{i}]:not-object']}
-        if finding.get('severity') not in FINDING_SEVERITY: return {'verdict':'DEFER','errors':[f'finding[{i}]:severity']}
+        if not _member(finding.get('severity'),FINDING_SEVERITY): return {'verdict':'DEFER','errors':[f'finding[{i}]:severity']}
+        for field in ('open','blocks_acceptance'):
+            if field in finding and not isinstance(finding[field],bool): return {'verdict':'DEFER','errors':[f'finding[{i}]:{field}']}
         if finding.get('severity') in {'BLOCKER','MAJOR'} and finding.get('open',True) and finding.get('blocks_acceptance',True): return {'verdict':'NOT_READY','errors':[]}
     controls=payload.get('controls',[])
     if not isinstance(controls,list): return {'verdict':'DEFER','errors':['controls:not-list']}

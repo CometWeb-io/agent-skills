@@ -450,6 +450,25 @@ def test_require_inspected_rejects_exclusions_cli(inv, tmp_path):
     assert subprocess.run(args + ["--require-inspected"], capture_output=True).returncode == 1
 
 
+def test_missing_json_input_is_distinct_from_invalid_json(tmp_path):
+    missing = tmp_path / "missing.json"
+    args = [sys.executable, "-S", str(SCRIPT), "template", "--inventory", str(missing)]
+    result = subprocess.run(args, capture_output=True, text=True)
+    assert result.returncode == 2
+    assert '"error":"input file not found"' in result.stderr
+    assert "invalid JSON" not in result.stderr
+
+
+def test_invalid_json_input_is_named_as_invalid_json(tmp_path):
+    invalid = tmp_path / "invalid.json"
+    invalid.write_text("{")
+    args = [sys.executable, "-S", str(SCRIPT), "template", "--inventory", str(invalid)]
+    result = subprocess.run(args, capture_output=True, text=True)
+    assert result.returncode == 2
+    assert '"error": "invalid JSON"' in result.stderr
+    assert "file not found" not in result.stderr
+
+
 def test_input_is_not_mutated_by_apis(inv):
     ledger = reviewed(inv)
     saved = copy.deepcopy((inv, ledger))

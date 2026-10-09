@@ -354,14 +354,35 @@ def freshness(last_verified_at: str | None, ttl_days: int, as_of: str | None = N
 
 
 
-def _atomic_write_json(path: Path, value: Any) -> None:
+def _assert_no_symlink_components(root: Path, path: Path) -> None:
+    """Reject symlinked workspace components while allowing system ancestors."""
+    root_path = root.absolute().resolve()
+    candidate = path.absolute()
+    try:
+        relative = candidate.relative_to(root_path)
+    except ValueError as exc:
+        raise ValueError("workspace path escapes its root") from exc
+    current = root_path
+    for component in relative.parts:
+        current /= component
+        if current.is_symlink():
+            raise ValueError(f"workspace path must not contain symlinks: {path}")
+
+
+def _atomic_write_json(path: Path, value: Any, root: Path | None = None) -> None:
     """Write JSON through a fresh temporary file in the target directory, then rename.
 
     The temporary name is unpredictable and created with O_EXCL (``mkstemp``), so a
     file or symlink planted beside the target cannot redirect the write. The result
     is created with mode 0600: workspace files hold unpublished research.
     """
+    if root is not None:
+        _assert_no_symlink_components(root, path)
+    elif path.is_symlink():
+        raise ValueError(f"output must not be a symlink: {path}")
     path.parent.mkdir(parents=True, exist_ok=True)
+    if path.is_symlink():
+        raise ValueError(f"output must not be a symlink: {path}")
     text = json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
     fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
     try:
@@ -379,10 +400,13 @@ def _atomic_write_json(path: Path, value: Any) -> None:
 
 
 def init_workspace(root: str | Path, subject_product: str | None = None) -> dict[str, Any]:
-    root_path = Path(root)
+    root_path = Path(root).expanduser().absolute().resolve()
     root_path.mkdir(parents=True, exist_ok=True)
     for name in ("competitors", "snapshots", "events", "reports", "raw"):
-        (root_path / name).mkdir(parents=True, exist_ok=True)
+        directory = root_path / name
+        if directory.is_symlink():
+            raise ValueError(f"workspace path must not contain symlinks: {directory}")
+        directory.mkdir(parents=True, exist_ok=True)
 
     config_path = root_path / "config.json"
     created_config = False
@@ -402,7 +426,7 @@ def init_workspace(root: str | Path, subject_product: str | None = None) -> dict
                 "tech_trust": 30,
             },
         }
-        _atomic_write_json(config_path, config)
+        _atomic_write_json(config_path, config, root_path)
         created_config = True
 
     return {
@@ -418,7 +442,7 @@ def _safe_snapshot_timestamp(value: str) -> str:
 
 
 def accept_snapshot(root: str | Path, snapshot_path: str | Path) -> dict[str, Any]:
-    root_path = Path(root)
+    root_path = Path(root).expanduser().absolute().resolve()
     init_workspace(root_path)
     snapshot = _read_json(snapshot_path)
     validation = validate_snapshot(snapshot)
@@ -427,18 +451,20 @@ def accept_snapshot(root: str | Path, snapshot_path: str | Path) -> dict[str, An
 
     competitor_id = str(snapshot["competitor_id"])
     current_path = root_path / "competitors" / competitor_id / "current.json"
+    _assert_no_symlink_components(root_path, current_path)
     previous = _read_json(current_path) if current_path.exists() else None
 
     full_hash = snapshot_hash(snapshot)
     s_hash = state_hash(snapshot)
     timestamp = _safe_snapshot_timestamp(str(snapshot["captured_at"]))
     archive_path = root_path / "snapshots" / competitor_id / f"{timestamp}--{full_hash.split(':', 1)[1][:12]}.json"
+    _assert_no_symlink_components(root_path, archive_path)
     if not archive_path.exists():
-        _atomic_write_json(archive_path, snapshot)
+        _atomic_write_json(archive_path, snapshot, root_path)
 
     delta = diff_snapshots(previous, snapshot) if isinstance(previous, dict) else None
     previous_state_hash = state_hash(previous) if isinstance(previous, dict) else None
-    _atomic_write_json(current_path, snapshot)
+    _atomic_write_json(current_path, snapshot, root_path)
 
     return {
         "competitor_id": competitor_id,
@@ -457,8 +483,14 @@ def accept_snapshot(root: str | Path, snapshot_path: str | Path) -> dict[str, An
 def _iter_event_records(events_root: Path):
     if not events_root.exists():
         return
+    if events_root.is_symlink():
+        raise ValueError(f"workspace path must not contain symlinks: {events_root}")
     for path in sorted(events_root.glob("*.jsonl")):
-        with open(path, "r", encoding="utf-8") as f:
+        if path.is_symlink():
+            raise ValueError(f"workspace path must not contain symlinks: {path}")
+        flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+        fd = os.open(path, flags)
+        with os.fdopen(fd, "r", encoding="utf-8") as f:
             for line_number, line in enumerate(f, start=1):
                 line = line.strip()
                 if not line:
@@ -484,8 +516,9 @@ def _event_revision_signature(event: dict[str, Any]) -> str:
 
 
 def append_event(root: str | Path, event: dict[str, Any]) -> dict[str, Any]:
-    root_path = Path(root)
+    root_path = Path(root).expanduser().absolute().resolve()
     init_workspace(root_path)
+    _assert_no_symlink_components(root_path, root_path / "events")
     row = dict(event)
 
     for required in ("competitor_id", "category", "field_path"):
@@ -523,8 +556,11 @@ def append_event(root: str | Path, event: dict[str, Any]) -> dict[str, Any]:
         row.setdefault("revision_of", last_same.get("event_id"))
 
     event_path = root_path / "events" / f"{month}.jsonl"
+    _assert_no_symlink_components(root_path, event_path)
     event_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(event_path, "a", encoding="utf-8") as f:
+    flags = os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(event_path, flags, 0o600)
+    with os.fdopen(fd, "a", encoding="utf-8") as f:
         f.write(json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n")
 
     return {

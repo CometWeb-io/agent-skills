@@ -25,7 +25,7 @@ and exits non-zero if any gate fails or if a gate modified the checkout.
 
 | Option | Effect |
 | --- | --- |
-| `--fast` | Leave out the full pytest suite (its per-skill slice still runs), eval strength, the plugin-version record, package builds, the history leak scan, semgrep (`sast`) and `pip-audit` |
+| `--fast` | Leave out the full pytest suite (its per-skill slice still runs), eval strength, plugin/package change-history gates, package builds, the history leak scan, semgrep (`sast`) and `pip-audit` |
 | `--fix` | Run the selected gates' generators first: registry sync, adapters and README catalog, shared copies, context table, `uv lock` |
 | `--only ids` / `--skip ids` | Comma-separated gate ids; `--list` shows them all |
 | `--verbose` | Print the output of passing gates too |
@@ -40,6 +40,12 @@ To run the fast gates on every commit, install the optional hook:
 
 `uv.lock` is committed. Change dependencies in `pyproject.toml`, then run
 `uv lock` (or `check_all.py --fix --only uv_lock`) and commit both files.
+
+Changes to a skill's instructions or bundled scripts need a newer package
+`VERSION` and an updated `CHANGELOG.md` entry for that version. The full
+`skill_change_history` gate compares with the merge base; test-only and
+documentation-only changes outside the instructions/scripts do not require
+a package bump. Regenerate registry versions and adapters from their sources.
 
 ## What belongs here
 
@@ -242,19 +248,21 @@ different skill set under a version that was already recorded.
 
 A release is a `v*` tag on `main`. Pushing the tag runs
 [`attest-packages.yml`](.github/workflows/attest-packages.yml), which refuses a
-tag that does not equal `v` + `VERSION`, revalidates the tree, builds one
+tag that does not equal `v` + `VERSION`, requires the six OS/Python platform
+jobs and every `check_all.py --ci` gate on the same checkout, then builds one
 deterministic `skill.zip` per skill, writes a CycloneDX SBOM of the plugin,
 attests both with Sigstore build provenance and uploads them as a workflow
 artifact. Nothing is published to a registry.
 
 1. Merge the pull request that bumped the plugin version (see
    [Plugin version](#plugin-version)) and passed every gate.
-2. Rehearse the packaging locally on a clean checkout of that commit. These are
-   the workflow's own build steps; they write only under `dist/`, which is
-   ignored:
+2. Rehearse the release locally on a clean checkout of that commit. These
+   commands mirror `attest-packages.yml`: the validation report is written
+   outside the checkout, while package artifacts are written under ignored
+   `dist/`:
 
    ```bash
-   uv run python tooling/check_all.py --ci        # every gate; the tag workflow reruns them
+   uv run python tooling/check_all.py --ci
    for skill in skills/*/SKILL.md; do
      uv run python tooling/package_skill.py "$(basename "$(dirname "$skill")")"
    done

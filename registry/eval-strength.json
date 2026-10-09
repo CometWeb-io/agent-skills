@@ -2,8 +2,8 @@
   "note": "Recorded by tooling/eval_strength.py --update. Held counts may rise freely; a fall means a rule stopped being pinned.",
   "skills": [
     {
-      "guards": 64,
-      "held": 64,
+      "guards": 68,
+      "held": 68,
       "id": "artifact-acceptance",
       "strength": 1.0,
       "unexercised": []
@@ -16,17 +16,24 @@
       "unexercised": []
     },
     {
-      "guards": 67,
-      "held": 67,
+      "guards": 108,
+      "held": 108,
       "id": "brief-architect",
       "strength": 1.0,
       "unexercised": []
     },
     {
-      "guards": 42,
-      "held": 42,
-      "id": "content-reviewer",
+      "guards": 40,
+      "held": 40,
+      "id": "competitor-profiling",
       "strength": 1.0,
+      "unexercised": []
+    },
+    {
+      "guards": 45,
+      "held": 44,
+      "id": "content-reviewer",
+      "strength": 0.978,
       "unexercised": []
     },
     {
@@ -37,17 +44,17 @@
       "unexercised": []
     },
     {
-      "guards": 35,
-      "held": 34,
+      "guards": 37,
+      "held": 36,
       "id": "feedback-integrator",
-      "strength": 0.971,
+      "strength": 0.973,
       "unexercised": []
     },
     {
-      "guards": 70,
-      "held": 67,
+      "guards": 75,
+      "held": 74,
       "id": "longform-publisher",
-      "strength": 0.957,
+      "strength": 0.987,
       "unexercised": []
     },
     {
@@ -72,10 +79,17 @@
       "unexercised": []
     },
     {
-      "guards": 53,
-      "held": 52,
+      "guards": 55,
+      "held": 54,
       "id": "repair-operator",
-      "strength": 0.981,
+      "strength": 0.982,
+      "unexercised": []
+    },
+    {
+      "guards": 35,
+      "held": 35,
+      "id": "research-program-operator",
+      "strength": 1.0,
       "unexercised": []
     },
     {
@@ -86,15 +100,15 @@
       "unexercised": []
     },
     {
-      "guards": 54,
-      "held": 54,
+      "guards": 55,
+      "held": 55,
       "id": "skill-auditor",
       "strength": 1.0,
       "unexercised": []
     },
     {
-      "guards": 54,
-      "held": 54,
+      "guards": 57,
+      "held": 57,
       "id": "skill-evaluator",
       "strength": 1.0,
       "unexercised": []

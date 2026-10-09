@@ -12,3 +12,5 @@ Golden invariants:
 8. A skill over 500 SKILL.md lines is surfaced as a progressive-disclosure defect.
 9. DELTA requires a distinct baseline version.
 10. Static audit never claims model lift.
+11. An audit with no check rows cannot return PASS; it must report the required
+    check surface or an explicit deferred/invalid state.

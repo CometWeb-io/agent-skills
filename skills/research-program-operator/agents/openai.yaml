@@ -1,0 +1,13 @@
+interface:
+  display_name: "Research Program Operator"
+  short_description: "research-program stage gates; next-study planning"
+  default_prompt: "Use $research-program-operator for research-program stage gates, next-study planning, and manuscript-readiness handoffs."
+  icon_small: "./assets/icon.svg"
+  icon_large: "./assets/icon.svg"
+policy:
+  products:
+  - "chatgpt"
+  - "codex"
+  - "api"
+  - "atlas"
+  allow_implicit_invocation: true

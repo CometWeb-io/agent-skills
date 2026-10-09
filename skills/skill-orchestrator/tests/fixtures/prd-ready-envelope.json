@@ -1,0 +1,121 @@
+{
+  "id": "env-kitlog",
+  "type": "ArtifactEnvelope",
+  "producer": "brief-architect",
+  "protocol_version": "1.0",
+  "subject": "KitLog fixture",
+  "as_of": "2026-10-07",
+  "payload": {
+    "schema": "cometweb.artifact-brief/v1",
+    "brief_id": "fixture-kitlog",
+    "brief_version": 1,
+    "supersedes_brief_id": null,
+    "artifact_profile": "PRD",
+    "mode": "STANDARD",
+    "status": "READY",
+    "status_reasons": [
+      "Kompletny, syntetyczny zakres testowy."
+    ],
+    "objective": "Kontrakt lokalnego zapisu i eksportu sprzętu.",
+    "audience": "Jedna osoba prowadząca spis sprzętu.",
+    "use_moment": "Przed implementacją.",
+    "scope": "Zapis i eksport spisu do JSON.",
+    "risk_level": "LOW",
+    "exclusions": [
+      "Chmura, konta, synchronizacja."
+    ],
+    "evidence_policy": "SOURCE_BOUND",
+    "freshness_boundary": "Syntetyczna fixture regresji.",
+    "inputs": [
+      "Zatwierdzono lokalne CLI Python, SQLite oraz plik JSON w podanej przez użytkownika ścieżce."
+    ],
+    "deliverables": [
+      {
+        "id": "D1",
+        "type": "PRD"
+      }
+    ],
+    "acceptance_criteria": [
+      {
+        "id": "AC1",
+        "priority": "MUST",
+        "check": "Zapis i ponowny odczyt zachowują nazwę i numer seryjny; błąd zapisu nie jest sukcesem.",
+        "observable": true,
+        "evidence_required": true,
+        "verification_method": "Zapisz i odczytaj syntetyczny rekord; wywołaj błąd zapisu."
+      },
+      {
+        "id": "AC2",
+        "priority": "MUST",
+        "check": "Eksport JSON odpowiada zapisanym rekordom i zachowuje polskie znaki.",
+        "observable": true,
+        "evidence_required": true,
+        "verification_method": "Parsuj plik i porównaj z rekordami SQLite."
+      }
+    ],
+    "protected_invariants": [],
+    "rubric_lock": null,
+    "known": [
+      "Wszystkie dane i wybory w tej fixture są fikcyjne, testowe."
+    ],
+    "assumptions": [],
+    "decision_needed": [],
+    "prd": {
+      "requirements": [
+        {
+          "id": "R1",
+          "description": "Zapis przedmiotu.",
+          "priority": "P0",
+          "acceptance_criteria_ids": [
+            "AC1"
+          ],
+          "depends_on": []
+        },
+        {
+          "id": "R2",
+          "description": "Eksport spisu do JSON.",
+          "priority": "P1",
+          "acceptance_criteria_ids": [
+            "AC2"
+          ],
+          "depends_on": [
+            "R1"
+          ]
+        }
+      ],
+      "delivery_slices": [
+        {
+          "id": "S1",
+          "requirement_ids": [
+            "R1"
+          ],
+          "entry_conditions": [],
+          "verification": "Sprawdź AC1: odczyt zapisu i kontrolowany błąd."
+        },
+        {
+          "id": "S2",
+          "requirement_ids": [
+            "R2"
+          ],
+          "entry_conditions": [
+            "S1 zweryfikowano."
+          ],
+          "verification": "Sprawdź AC2: parsowanie i zgodność z zapisem."
+        }
+      ],
+      "implementation_constraints": [
+        "Lokalne CLI Python i SQLite."
+      ],
+      "data_contracts": [
+        "Przedmiot: nazwa i numer seryjny."
+      ],
+      "interface_contracts": [
+        "Lokalne polecenia CLI; eksport do wskazanego pliku JSON."
+      ],
+      "non_goals": [
+        "Chmura, konta, synchronizacja."
+      ]
+    },
+    "recommended_next_skill": "product-operator"
+  }
+}

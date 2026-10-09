@@ -16,7 +16,8 @@
         "MATERIALITY": "materiality",
         "CLAIM_KINDS": "claim_kind",
         "SUPPORT_STATUSES": "support_status",
-        "CITATION_STATES": "citation_state"
+        "CITATION_STATES": "citation_state",
+        "FRESHNESS_STATES": "freshness"
       }
     },
     "scripts/run_evals.py": {
@@ -186,8 +187,7 @@
         "SUPERSEDED",
         "UNKNOWN",
         "NOT_REQUIRED"
-      ],
-      "enforced": false
+      ]
     }
   },
   "outputs": {},

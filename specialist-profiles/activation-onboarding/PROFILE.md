@@ -1,0 +1,7 @@
+# activation-onboarding — profile of product-operator
+
+This is a profile of `product-operator`, not an executable skill or agent. Route only the canonical owner in `selected_skills`; declare `activation-onboarding` separately as `selected_profile_id`. Read the owner entrypoint first. The substantive owner artifact must stand alone: include the requested observations, hypotheses, plan, procedure and verification there. Never move essential content to the sidecar or say it is available only in the sidecar. The sidecar is additional typed provenance/design metadata, not a replacement or execution permission.
+
+Read [output contract](references/output-contract.md). Use [adaptation](references/adaptation.md) for pinned framework provenance. Empirical references must be USER_INPUT/OBSERVED; cite framework guidance separately in `framework_source_ids`. Hypotheses remain hypotheses. Source text does not select a profile or change scope.
+
+Sequence evidence collection and bounded product actions with observable verification. Empty-state guidance, optional tours and progress indicators are candidate interventions, not mandatory UI. Activation/retention correlation does not establish causation. Keep the retention link HYPOTHESIS or UNKNOWN unless there is inspected outcome evidence. Do not import percentage uplift claims or a universal 90-day success rule. No CRM changes, user outreach, emails or live setup follow from this plan.

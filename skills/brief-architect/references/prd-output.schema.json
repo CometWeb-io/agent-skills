@@ -1,0 +1,501 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ArtifactBrief PRD canonical output",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "enum": [
+        "cometweb.artifact-brief/v1"
+      ]
+    },
+    "brief_id": {
+      "$ref": "#/$defs/text"
+    },
+    "brief_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "supersedes_brief_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "artifact_profile": {
+      "type": "string",
+      "enum": [
+        "PRD"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "LIGHT",
+        "STANDARD",
+        "DEEP"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "READY",
+        "PROVISIONAL",
+        "BLOCKED",
+        "INVALID"
+      ]
+    },
+    "status_reasons": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/text"
+      }
+    },
+    "objective": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "audience": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "use_moment": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scope": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/text"
+      }
+    },
+    "evidence_policy": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "SOURCE_BOUND",
+            "EVIDENCE_REQUIRED",
+            "CONTEXTUAL_DRAFT",
+            "CREATIVE"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "freshness_boundary": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/text"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/text"
+      }
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/deliverable"
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/criterion"
+      }
+    },
+    "protected_invariants": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/invariant"
+      }
+    },
+    "rubric_lock": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/rubric_lock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "known": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/text"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assumption"
+      }
+    },
+    "decision_needed": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/decision"
+      }
+    },
+    "prd": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/requirement"
+          }
+        },
+        "delivery_slices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slice"
+          }
+        },
+        "implementation_constraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "data_contracts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "interface_contracts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "non_goals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      },
+      "required": [
+        "requirements",
+        "delivery_slices",
+        "implementation_constraints",
+        "data_contracts",
+        "interface_contracts",
+        "non_goals"
+      ]
+    },
+    "recommended_next_skill": {
+      "$ref": "#/$defs/text"
+    }
+  },
+  "required": [
+    "schema",
+    "brief_id",
+    "brief_version",
+    "supersedes_brief_id",
+    "artifact_profile",
+    "mode",
+    "status",
+    "status_reasons",
+    "objective",
+    "audience",
+    "use_moment",
+    "scope",
+    "risk_level",
+    "exclusions",
+    "evidence_policy",
+    "freshness_boundary",
+    "inputs",
+    "deliverables",
+    "acceptance_criteria",
+    "protected_invariants",
+    "rubric_lock",
+    "known",
+    "assumptions",
+    "decision_needed",
+    "prd",
+    "recommended_next_skill"
+  ],
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "criterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/text"
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "MUST",
+            "SHOULD",
+            "MAY"
+          ]
+        },
+        "check": {
+          "$ref": "#/$defs/text"
+        },
+        "observable": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        },
+        "evidence_required": {
+          "type": "boolean"
+        },
+        "verification_method": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "priority",
+        "check",
+        "observable",
+        "evidence_required",
+        "verification_method"
+      ]
+    },
+    "deliverable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/text"
+        },
+        "type": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ]
+    },
+    "invariant": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/text"
+        },
+        "rule": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "required": [
+        "id",
+        "rule"
+      ]
+    },
+    "assumption": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "$ref": "#/$defs/text"
+        },
+        "material": {
+          "type": "boolean"
+        },
+        "consequential": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "value",
+        "material",
+        "consequential"
+      ]
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/text"
+        },
+        "question": {
+          "$ref": "#/$defs/text"
+        },
+        "material": {
+          "type": "boolean"
+        },
+        "resolved": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "question",
+        "material",
+        "resolved"
+      ]
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/text"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "P0",
+            "P1",
+            "P2"
+          ]
+        },
+        "acceptance_criteria_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "description",
+        "priority",
+        "acceptance_criteria_ids",
+        "depends_on"
+      ]
+    },
+    "slice": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/text"
+        },
+        "requirement_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "entry_conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "verification": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "required": [
+        "id",
+        "requirement_ids",
+        "entry_conditions",
+        "verification"
+      ]
+    },
+    "rubric_lock": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pack_id": {
+          "$ref": "#/$defs/text"
+        },
+        "revision": {
+          "$ref": "#/$defs/text"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "locked_before_execution": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        }
+      },
+      "required": [
+        "pack_id",
+        "revision",
+        "sha256",
+        "locked_before_execution"
+      ]
+    }
+  }
+}

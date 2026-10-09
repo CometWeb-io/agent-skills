@@ -207,19 +207,6 @@
       "reason": "Business decision, not deploy gate"
     },
     {
-      "id": "council-not-implicit-pricing",
-      "prompt": "What price should we charge for the Growth plan?",
-      "expected_primary_skill": null,
-      "allowed_secondary_skills": [
-        "evidence-researcher",
-        "competitive-intelligence"
-      ],
-      "must_not_trigger": [
-        "ai-council"
-      ],
-      "reason": "Pricing question without explicit Council invocation; ai-council is explicit_only"
-    },
-    {
       "id": "humanize-prose",
       "prompt": "Humanize this LinkedIn post so it sounds less like AI.",
       "expected_primary_skill": "ai-humanize",
@@ -668,7 +655,7 @@
     {
       "id": "comp-intel-not-teardown",
       "prompt": "One-time deep profile of Notion's pricing page.",
-      "expected_primary_skill": null,
+      "expected_primary_skill": "competitor-profiling",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
         "competitive-intelligence"
@@ -2123,16 +2110,6 @@
         "seo-geo-aeo-maxxing"
       ],
       "reason": "Recurring delta against a prior snapshot is the temporal intelligence loop"
-    },
-    {
-      "id": "ci-one-time-profile-not-monitoring",
-      "prompt": "Do a one-time deep profile of competitor Acme's pricing",
-      "expected_primary_skill": null,
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "competitive-intelligence"
-      ],
-      "reason": "One-time profile with no monitoring intent is outside competitive-intelligence's declared scope"
     },
     {
       "id": "customer-ops-triage-inbox",
@@ -7473,6 +7450,192 @@
         "evidence-researcher"
       ],
       "reason": "Round-6 fresh prompt (tune half), written from skill descriptions before any signal or policy change"
+    },
+    {
+      "id": "competitor-profile-initial-baseline",
+      "prompt": "Build an initial competitor Acme profile and dossier from scratch using public sources",
+      "expected_primary_skill": "competitor-profiling",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence",
+        "product-teardown"
+      ],
+      "reason": "Initial dossier is not monitoring or mechanism teardown."
+    },
+    {
+      "id": "competitor-profile-initial-pl",
+      "prompt": "Przygotuj pierwszy profil i dossier konkurenta Acme od zera na podstawie źródeł publicznych",
+      "lang": "pl",
+      "expected_primary_skill": "competitor-profiling",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence",
+        "product-teardown"
+      ],
+      "reason": "Pierwszy profil konkurenta należy do competitor-profiling."
+    },
+    {
+      "id": "competitor-profile-negative-monitoring",
+      "prompt": "What changed on Acme pricing since last month’s snapshot?",
+      "expected_primary_skill": "competitive-intelligence",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitor-profiling"
+      ],
+      "reason": "Recurring delta belongs to competitive-intelligence."
+    },
+    {
+      "id": "competitor-profile-negative-teardown",
+      "prompt": "What can we learn from Acme's onboarding?",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitor-profiling"
+      ],
+      "reason": "Mechanism transfer belongs to product-teardown."
+    },
+    {
+      "id": "research-program-next-study",
+      "prompt": "Plan the next study after this failed experiment, including estimand and stop criteria",
+      "expected_primary_skill": "research-program-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster",
+        "evidence-researcher"
+      ],
+      "reason": "Next-study sequencing belongs to research-program-operator."
+    },
+    {
+      "id": "research-program-next-study-pl",
+      "prompt": "Zaplanuj program badawczy i kolejne badanie po nieudanym eksperymencie",
+      "lang": "pl",
+      "expected_primary_skill": "research-program-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster",
+        "evidence-researcher"
+      ],
+      "reason": "Plan programu badawczego należy do research-program-operator."
+    },
+    {
+      "id": "research-program-negative-claim",
+      "prompt": "Verify this single factual claim from one source.",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "research-program-operator"
+      ],
+      "reason": "Single claim verification belongs to evidence-researcher."
+    },
+    {
+      "id": "research-program-negative-peer-review",
+      "prompt": "Reviewer-2 this manuscript and challenge its methodology.",
+      "expected_primary_skill": "science-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "research-program-operator"
+      ],
+      "reason": "Adversarial manuscript review belongs to science-roaster."
+    },
+    {
+      "id": "research-program-negative-format",
+      "prompt": "Format the finished paper as a publication-ready PDF.",
+      "expected_primary_skill": "longform-publisher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "research-program-operator"
+      ],
+      "reason": "Final publication formatting belongs to longform-publisher."
+    },
+    {
+      "id": "council-not-implicit-pricing",
+      "prompt": "What price should we charge for the Growth plan?",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [
+        "evidence-researcher",
+        "competitive-intelligence"
+      ],
+      "must_not_trigger": [
+        "ai-council",
+        "competitor-profiling"
+      ],
+      "reason": "Pricing decision must not implicitly invoke Council or competitor profiling."
+    },
+    {
+      "id": "ci-one-time-profile-not-monitoring",
+      "prompt": "Do a one-time deep profile of competitor Acme’s pricing",
+      "expected_primary_skill": "competitor-profiling",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "One-time profile belongs to competitor-profiling."
+    },
+    {
+      "id": "competitor-profile-pricing-pl",
+      "prompt": "Pierwszy profil konkurenta od zera",
+      "lang": "pl",
+      "expected_primary_skill": "competitor-profiling",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Pierwszy profil cenowy należy do competitor-profiling."
+    },
+    {
+      "id": "competitor-profile-company-pl",
+      "prompt": "Pierwsze dossier konkurenta od zera",
+      "lang": "pl",
+      "expected_primary_skill": "competitor-profiling",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitive-intelligence"
+      ],
+      "reason": "Dossier od zera należy do competitor-profiling."
+    },
+    {
+      "id": "competitor-profile-boundary-pl",
+      "prompt": "Co warto wdrożyć z onboardingu konkurenta?",
+      "lang": "pl",
+      "expected_primary_skill": "product-teardown",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "competitor-profiling"
+      ],
+      "reason": "Transfer mechanizmu należy do product-teardown."
+    },
+    {
+      "id": "research-program-next-pl-2",
+      "prompt": "Zaplanuj program badawczy: następne badanie",
+      "lang": "pl",
+      "expected_primary_skill": "research-program-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster"
+      ],
+      "reason": "Następne badanie należy do research-program-operator."
+    },
+    {
+      "id": "research-program-gates-pl",
+      "prompt": "Program badawczy: ustal stage gates i kryteria kontynuacji",
+      "lang": "pl",
+      "expected_primary_skill": "research-program-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "science-roaster"
+      ],
+      "reason": "Stage gates programu należą do research-program-operator."
+    },
+    {
+      "id": "research-program-boundary-pl",
+      "prompt": "Zweryfikuj pojedynczy claim z jednego źródła",
+      "lang": "pl",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "research-program-operator"
+      ],
+      "reason": "Pojedynczy claim należy do evidence-researcher."
     }
   ]
 }

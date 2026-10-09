@@ -169,6 +169,28 @@ class DeadlineTests(unittest.TestCase):
 
 
 class DedupeTests(unittest.TestCase):
+    def test_dedupe_key_rejects_empty_record(self):
+        with self.assertRaisesRegex(ValueError, "at least two non-empty"):
+            mod.dedupe_key({})
+
+    def test_dedupe_key_rejects_insufficient_record(self):
+        with self.assertRaisesRegex(ValueError, "at least two non-empty"):
+            mod.dedupe_key({"symptom": "export fails"})
+
+    def test_pair_rejects_empty_record(self):
+        row = {
+            "symptom": "export returns empty csv", "component": "reports",
+        }
+        with self.assertRaisesRegex(ValueError, "right dedupe record"):
+            mod.dedupe_pair({"left": row, "right": {}})
+
+    def test_pair_rejects_insufficient_record(self):
+        row = {
+            "symptom": "export returns empty csv", "component": "reports",
+        }
+        with self.assertRaisesRegex(ValueError, "right dedupe record"):
+            mod.dedupe_pair({"left": row, "right": {"symptom": "export fails"}})
+
     def test_dedupe_key_is_stable(self):
         a = mod.dedupe_key({
             "symptom": " Export returns EMPTY CSV ", "component": "Reports",
@@ -253,6 +275,18 @@ class TransitionAndGateTests(unittest.TestCase):
     def test_case_verified_can_close(self):
         out = mod.transition_check({"entity": "case", "from_state": "VERIFIED", "to_state": "CLOSED"})
         self.assertTrue(out["allowed"])
+
+    def test_not_reproduced_cannot_close_directly(self):
+        out = mod.transition_check({"entity": "case", "from_state": "NOT_REPRODUCED", "to_state": "CLOSED"})
+        self.assertFalse(out["allowed"])
+
+    def test_wont_fix_cannot_close_directly(self):
+        out = mod.transition_check({"entity": "case", "from_state": "WONT_FIX", "to_state": "CLOSED"})
+        self.assertFalse(out["allowed"])
+
+    def test_detected_incident_cannot_close_directly(self):
+        out = mod.transition_check({"entity": "incident", "from_state": "DETECTED", "to_state": "CLOSED"})
+        self.assertFalse(out["allowed"])
 
     def test_github_gate_blocks_secret_publication(self):
         out = mod.case_gate({

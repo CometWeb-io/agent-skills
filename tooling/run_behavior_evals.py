@@ -37,7 +37,7 @@ import re
 import subprocess
 import sys
 import tempfile
-from pathlib import Path
+from pathlib import Path, PurePath
 from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -596,6 +596,40 @@ def _fill(value: str, slots: dict[str, str]) -> str:
     return value
 
 
+def normalize_scratch_paths(text: str, work: PurePath, expect: dict) -> str:
+    """Render only known scratch paths portably, keeping wrong paths distinct.
+
+    A CLI can print native paths, POSIX paths or repr/JSON-escaped paths. Match
+    the expected scratch filenames before replacing the root; never rewrite
+    arbitrary backslashes, filename differences or paths outside this case.
+    """
+    def strings(value):
+        if isinstance(value, str):
+            yield value
+        elif isinstance(value, dict):
+            for child in value.values():
+                yield from strings(child)
+        elif isinstance(value, list):
+            for child in value:
+                yield from strings(child)
+
+    suffixes = {""}
+    for value in strings(expect):
+        suffixes.update(re.findall(r"\{tmp\}((?:/[\w.-]+)*)", value))
+    replacements = {}
+    for suffix in suffixes:
+        path = work.joinpath(*suffix.lstrip("/").split("/")) if suffix else work
+        for spelling in {str(path), path.as_posix(), str(work) + suffix}:
+            for variant in {spelling, repr(spelling)[1:-1],
+                            json.dumps(spelling, ensure_ascii=False)[1:-1],
+                            json.dumps(spelling, ensure_ascii=True)[1:-1]}:
+                replacements[variant] = "{tmp}" + suffix
+    for spelling in sorted(replacements, key=len, reverse=True):
+        pattern = re.escape(spelling) + r"(?=$|[\\/\s'\"<>),;:])"
+        text = re.sub(pattern, lambda _, value=replacements[spelling]: value, text)
+    return text
+
+
 def run_command_case(skill: str, case: dict) -> list[str]:
     """Run one case in a scratch directory and compare what came back."""
     label = f"{skill}#{case['id']}"
@@ -610,7 +644,7 @@ def run_command_case(skill: str, case: dict) -> list[str]:
                 return [f"{label}: file {name!r} escapes the scratch directory"]
             target.parent.mkdir(parents=True, exist_ok=True)
             text = content if isinstance(content, str) else json.dumps(content, ensure_ascii=False)
-            target.write_text(text, encoding="utf-8")
+            target.write_bytes(text.encode("utf-8"))
         stdin = case.get("stdin")
         if stdin is not None and not isinstance(stdin, str):
             stdin = json.dumps(stdin, ensure_ascii=False)
@@ -624,11 +658,12 @@ def run_command_case(skill: str, case: dict) -> list[str]:
         env.update({k: _fill(str(v), slots) for k, v in (case.get("env") or {}).items()})
         try:
             proc = subprocess.run([*prefix, str(SKILLS / skill / script), *(_fill(a, slots) for a in args)],
-                                  input=stdin, capture_output=True, text=True, cwd=work, env=env,
+                                  input=stdin, capture_output=True, encoding="utf-8", cwd=work, env=env,
                                   timeout=CASE_TIMEOUT, check=False)
         except subprocess.TimeoutExpired:
             return [f"{label}: timed out after {CASE_TIMEOUT} s"]
-        stdout, stderr = proc.stdout.replace(str(work), "{tmp}"), proc.stderr.replace(str(work), "{tmp}")
+        stdout = normalize_scratch_paths(proc.stdout, work, case["expect"])
+        stderr = normalize_scratch_paths(proc.stderr, work, case["expect"])
     expect = case["expect"]
     problems = []
     if proc.returncode != expect["exit_code"]:
@@ -704,7 +739,7 @@ def run_command_suite(skill: str, skipped: list[str] | None = None,
     """
     path = suite_path(skill)
     if not path.is_file():
-        return 0, [f"{skill}: ships scripts but has no {path.relative_to(ROOT)}"]
+        return 0, [f"{skill}: ships scripts but has no {path.relative_to(ROOT).as_posix()}"]
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "role_id": {
+      "type": "string"
+    },
+    "vote": {
+      "type": "string",
+      "enum": [
+        "GO",
+        "NO-GO",
+        "TEST",
+        "DEFER"
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "claim_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "falsifier": {
+      "type": "string"
+    },
+    "minority": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "role_id",
+    "vote",
+    "confidence",
+    "claim_ids",
+    "assumptions",
+    "risks",
+    "falsifier",
+    "minority"
+  ],
+  "additionalProperties": false
+}

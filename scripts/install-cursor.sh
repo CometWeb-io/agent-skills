@@ -10,7 +10,8 @@ source "$ROOT/scripts/lib/skills.sh"
 # shellcheck source=lib/install.sh
 source "$ROOT/scripts/lib/install.sh"
 
-RULE_SRC="$ROOT/docs/generated-cursor-routing.mdc"
+RULE_SRC="$ROOT/rules/cometweb-agent-skills.mdc"
+FULL_RULE_SRC="$ROOT/docs/generated-cursor-routing.mdc"
 # Older checkouts linked the hand-written fallback; a link to it is still ours.
 LEGACY_RULE_SRC="$ROOT/extras/cursor-routing.mdc"
 if [[ ! -f "$RULE_SRC" ]]; then
@@ -33,7 +34,8 @@ host_preflight() {
 # so an upgrade can re-point it without asking for SKILLS_REPLACE_CONFLICTS.
 owns_legacy_rule_link() {
   [[ -L "$RULE_DEST" && "$RULE_SRC" != "$LEGACY_RULE_SRC" &&
-     "$(readlink "$RULE_DEST")" == "$LEGACY_RULE_SRC" ]]
+     ( "$(readlink "$RULE_DEST")" == "$LEGACY_RULE_SRC" ||
+       "$(readlink "$RULE_DEST")" == "$FULL_RULE_SRC" ) ]]
 }
 
 host_apply() {
@@ -85,7 +87,7 @@ host_uninstall() {
   local candidate
   resolved_install_path "$RULES_DIR" >/dev/null
   if [[ -L "$RULE_DEST" ]]; then
-    for candidate in "$ROOT/docs/generated-cursor-routing.mdc" "$LEGACY_RULE_SRC"; do
+    for candidate in "$RULE_SRC" "$FULL_RULE_SRC" "$LEGACY_RULE_SRC"; do
       if [[ "$(readlink "$RULE_DEST")" == "$candidate" ]]; then
         [[ "$INSTALL_DRY_RUN" == "1" ]] || rm -- "$RULE_DEST"
         echo "$(plan_verb unlink unlinked) routing rule $RULE_DEST"

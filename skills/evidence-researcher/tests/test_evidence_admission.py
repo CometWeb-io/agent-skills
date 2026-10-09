@@ -231,6 +231,41 @@ def test_inline_long_json_does_not_become_filename():
     assert kernel._load_json(raw)["data"] == "x" * 5000
 
 
+def test_cli_distinguishes_missing_file_from_invalid_json(tmp_path):
+    missing = tmp_path / "missing.json"
+    missing_result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "evidence_kernel.py"),
+            "validate",
+            "--ledger-json",
+            str(missing),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert missing_result.returncode == 2
+    assert "input file not found" in missing_result.stderr
+    assert "invalid JSON" not in missing_result.stderr
+
+    invalid = tmp_path / "invalid.json"
+    invalid.write_text("{")
+    invalid_result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "evidence_kernel.py"),
+            "validate",
+            "--ledger-json",
+            str(invalid),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert invalid_result.returncode == 2
+    assert "invalid JSON" in invalid_result.stderr
+    assert "input file not found" not in invalid_result.stderr
+
+
 def test_refresh_explains_affected_inference():
     data = ledger()
     inference(data)

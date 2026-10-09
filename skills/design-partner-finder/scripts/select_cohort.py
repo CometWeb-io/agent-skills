@@ -26,6 +26,8 @@ STATUS_BONUS = {
     "ALIGNMENT_REQUIRED": -8.0,
 }
 
+_MISSING = object()
+
 
 def _number(value: Any, name: str, lo: float | None = None, hi: float | None = None) -> float:
     try:
@@ -42,7 +44,7 @@ def _number(value: Any, name: str, lo: float | None = None, hi: float | None = N
 
 
 def _strict_bool(value: Any, name: str, default: bool = False) -> bool:
-    if value is None:
+    if value is _MISSING:
         return default
     if isinstance(value, bool):
         return value
@@ -64,7 +66,7 @@ def _questions(payload: dict[str, Any]) -> dict[str, dict[str, Any]]:
             out[qid] = {
                 "weight": _number(row.get("weight", 1), f"question:{qid}.weight", 0.0),
                 "desired_replications": int(_number(row.get("desired_replications", 1), f"question:{qid}.desired_replications", 1)),
-                "must_cover": _strict_bool(row.get("must_cover"), f"question:{qid}.must_cover", False),
+                "must_cover": _strict_bool(row.get("must_cover", _MISSING), f"question:{qid}.must_cover", False),
             }
     else:
         weights = payload.get("question_weights") or {}
@@ -106,7 +108,7 @@ def select(payload: dict[str, Any], selection_stage: str) -> dict[str, Any]:
     max_per_segment = int(_number(max_per_segment_raw, "max_per_segment", 1)) if max_per_segment_raw is not None else None
     max_per_duplicate_key = int(_number(payload.get("max_per_duplicate_key", 2), "max_per_duplicate_key", 1))
     replication_threshold = _number(payload.get("replication_threshold", 3), "replication_threshold", 0, 5)
-    include_alignment = _strict_bool(payload.get("include_alignment_required"), "include_alignment_required", False)
+    include_alignment = _strict_bool(payload.get("include_alignment_required", _MISSING), "include_alignment_required", False)
 
     questions = _questions(payload)
     question_ids = set(questions)

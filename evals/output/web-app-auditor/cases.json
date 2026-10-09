@@ -1,6 +1,26 @@
 {
   "cases": [
     {"id": "good-ship-with-fixes", "file": "good-ship-with-fixes.md", "expect": []},
+    {"id": "good-contract-trace", "file": "good-contract-trace.md", "expect": []},
+    {"id": "broken-contract-trace-authorizes-ship", "base": "good-contract-trace.md",
+     "mutations": [
+       {"replace": "- Verdict: incomplete", "with": "- Verdict: ship"},
+       {"replace": "Incomplete. The bounded", "with": "Ship. The bounded"},
+       {"replace": "\"verdict\":\"incomplete\"", "with": "\"verdict\":\"ship\""}
+     ],
+     "expect": ["SIDECAR_INVALID:audit-report"]},
+    {"id": "broken-contract-trace-browser-backend-proof", "base": "good-contract-trace.md",
+     "mutations": [
+       {"replace": "\"id\":\"api-job\",\"from\":\"api\",\"to\":\"job\",\"kind\":\"job\",\"state\":\"pass\",\"evidence_ids\":[\"E2\"]",
+        "with": "\"id\":\"api-job\",\"from\":\"api\",\"to\":\"job\",\"kind\":\"job\",\"state\":\"pass\",\"evidence_ids\":[\"E1\"]"}
+     ],
+     "expect": ["SIDECAR_INVALID:audit-report"]},
+    {"id": "broken-contract-trace-malformed", "base": "good-contract-trace.md",
+     "mutations": [{"replace": "\"claim\":\"incomplete\"", "with": "\"claim\":\"malformed\""}],
+     "expect": ["SIDECAR_INVALID:audit-report"]},
+    {"id": "broken-contract-trace-result-binding", "base": "good-contract-trace.md",
+     "mutations": [{"replace": "\"status\":\"VALID\"", "with": "\"status\":\"INVALID\""}],
+     "expect": ["SIDECAR_INVALID:audit-report"]},
     {"id": "good-without-sidecar", "base": "good-ship-with-fixes.md",
      "note": "recon depth may omit the JSON sidecar; the prose alone must still be coherent.",
      "mutations": [{"replace": "\n```json\n", "with": "\n```text\n"}],

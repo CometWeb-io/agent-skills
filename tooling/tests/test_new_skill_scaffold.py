@@ -127,6 +127,26 @@ def test_register_refuses_a_tree_without_a_registry(tmp_path: Path) -> None:
     assert "--no-register" in proc.stdout + proc.stderr
 
 
+def test_force_refuses_a_symlinked_skill_directory(tmp_path: Path) -> None:
+    skills = tmp_path / "skills"
+    skills.mkdir()
+    victim = tmp_path / "victim"
+    victim.mkdir()
+    (victim / "KEEP").write_text("KEEP\n", encoding="utf-8")
+    (skills / "symlinked-skill").symlink_to(victim, target_is_directory=True)
+
+    proc = subprocess.run(
+        [sys.executable, str(TOOL), "symlinked-skill", "--description", DESCRIPTION,
+         "--root", str(tmp_path), "--no-register", "--force"],
+        cwd=ROOT, capture_output=True, text=True, timeout=120,
+    )
+
+    assert proc.returncode != 0
+    assert "must not be a symlink" in proc.stdout + proc.stderr
+    assert [path.name for path in victim.iterdir()] == ["KEEP"]
+    assert (victim / "KEEP").read_text(encoding="utf-8") == "KEEP\n"
+
+
 def git(root: Path, *args: str) -> str:
     return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True, check=True,
                           timeout=120).stdout
@@ -150,6 +170,28 @@ def checkout_copy(tmp_path: Path) -> Path:
     git(copy, "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
         "-c", "core.hooksPath=/dev/null", "commit", "-qm", "baseline")
     return copy
+
+
+def test_register_refuses_a_symlinked_behavior_component(checkout_copy: Path, tmp_path: Path) -> None:
+    behavior_root = checkout_copy / "evals" / "behavior"
+    original_behavior_root = checkout_copy / "evals" / "behavior-real"
+    behavior_root.rename(original_behavior_root)
+    victim = tmp_path / "victim"
+    victim.mkdir()
+    keep = victim / "KEEP"
+    keep.write_text("KEEP\n", encoding="utf-8")
+    behavior_root.symlink_to(victim, target_is_directory=True)
+
+    proc = subprocess.run(
+        [sys.executable, "-B", "tooling/new_skill.py", "symlink-probe", "--description", DESCRIPTION],
+        cwd=checkout_copy, capture_output=True, text=True, timeout=300,
+    )
+
+    assert proc.returncode != 0
+    assert "must not contain symlinks" in proc.stdout + proc.stderr
+    assert not (victim / "symlink-probe" / "suite.json").exists()
+    assert original_behavior_root.is_dir()
+    assert keep.read_text(encoding="utf-8") == "KEEP\n"
 
 
 def test_new_skill_passes_every_fast_gate_out_of_the_box(checkout_copy: Path) -> None:

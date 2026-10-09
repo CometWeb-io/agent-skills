@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.5] - 2026-10-08
+
+- Require typed lifecycle/source/publication evidence and current support for volatile fact claims.
+
 ## [1.1.4] - 2026-10-03
 
 ### Fixed

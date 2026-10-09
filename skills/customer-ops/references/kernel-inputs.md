@@ -97,7 +97,9 @@ right                   dedupe-pair only: object with the five keys above
 ```
 
 Both return candidates only (`dedupe_key`; or `similarity` with LIKELY_SAME_CANDIDATE,
-REVIEW, DISTINCT_CANDIDATE); never auto-merge.
+REVIEW, DISTINCT_CANDIDATE); never auto-merge. Each dedupe record must contain at
+least two non-empty fields; empty or one-field records are rejected rather than
+scored as duplicate candidates.
 
 ## commitment-status
 

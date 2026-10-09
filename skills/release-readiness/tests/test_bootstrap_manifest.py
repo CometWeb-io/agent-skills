@@ -77,6 +77,12 @@ class BootstrapTests(unittest.TestCase):
             self.assertIn(f"scope.{key} is not accepted", message)
             self.assertIn(hint, message)
 
+    def test_missing_release_context_is_not_reported_as_malformed_json(self):
+        missing = ROOT / "tests" / "does-not-exist-release-context.json"
+        with self.assertRaises(bootstrap.engine.ManifestError) as caught:
+            bootstrap._load(missing)
+        self.assertEqual(str(caught.exception), "input file not found")
+
 
 if __name__ == "__main__":
     unittest.main()

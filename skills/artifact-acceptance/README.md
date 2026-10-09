@@ -1,6 +1,6 @@
 # Artifact Acceptance
 
-Version **1.3.0**.
+Version **1.7.5**.
 
 Run a final evidence-backed acceptance gate on a content, research, documentation, sales, or other knowledge artifact against an explicit brief, required evidence, unresolved findings, and format/QA criteria. Use when the user asks whether an artifact is actually ready, complete, publishable as a deliverable, or has passed its defined acceptance contract. Do not use as the final production-release gate for software, to choose among consequential strategic options, to perform the initial review, or to invent acceptance criteria after seeing the result; use release-readiness, ai-council, or the relevant reviewer instead.
 

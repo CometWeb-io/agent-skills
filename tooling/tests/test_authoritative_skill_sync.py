@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 # everywhere rather than half-registered.
 EXPECTED = {
     "founder-led-sales-operator": ("1.1.2", "FROZEN"),
-    "research-program-operator": ("1.3.1", "FROZEN"),
+    "research-program-operator": ("1.3.2", "FROZEN"),
     "portfolio-operator": ("1.2.4", "ACTIVE"),
     # 1.1.0 moved a frozen baseline. The freeze rationale in
     # docs/acceptance/longform-publisher-1.0.0.md allows a contract change, and
@@ -31,8 +31,8 @@ EXPECTED = {
     # 1.1.4 fits the description, whole boundary included, in the shortest
     # observed host cut and gives each reference a load trigger; see the 1.1.4
     # exception.
-    "longform-publisher": ("1.1.4", "FROZEN"),
-    "product-operator": ("2.4.2", "ACTIVE"),
+    "longform-publisher": ("1.1.5", "FROZEN"),
+    "product-operator": ("2.4.3", "ACTIVE"),
 }
 
 SUPPORTED_HOSTS = {
@@ -167,3 +167,15 @@ def test_parse_description_rejects_a_duplicate_description(tmp_path):
     skill_md.write_text("---\nname: x\ndescription: one\ndescription: two\n---\n", encoding="utf-8")
     with pytest.raises(ValueError):
         _sync_module().parse_description(skill_md)
+def test_version_sync_covers_packages_without_routing_overrides(tmp_path, monkeypatch):
+    module = _sync_module()
+    package = tmp_path / "sample"
+    package.mkdir()
+    (package / "SKILL.md").write_text("placeholder")
+    (package / "VERSION").write_text("1.0.1\n")
+    monkeypatch.setattr(module, "SKILLS", tmp_path)
+    monkeypatch.setattr(module, "OVERRIDES", {})
+    current = {"skills": [{"id": "sample", "version": "1.0.0", "description": "kept", "routing_signals": []}]}
+    result = module.desired_registry(current)
+    assert result["skills"][0] == {"id": "sample", "version": "1.0.1", "description": "kept", "routing_signals": []}
+    assert current["skills"][0]["version"] == "1.0.0"

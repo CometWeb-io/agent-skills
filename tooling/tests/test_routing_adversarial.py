@@ -54,6 +54,7 @@ def test_quote_attacks_fail_without_quote_masking(monkeypatch: pytest.MonkeyPatc
     import route_skill
 
     monkeypatch.setattr(route_skill, "_QUOTED", re.compile(r"(?!)"))
+    monkeypatch.setattr(route_skill, "fenced_spans", lambda text: [])
     failed = {r["id"] for r in evaluate(REGISTRY, POLICY, {"cases": ATTACKS})["results"] if not r["passed"]}
     assert {"adv-quoted-sigil", "adv-quoted-natural-invocation", "adv-code-fence-invocation",
             "adv-blockquote-invocation"} <= failed

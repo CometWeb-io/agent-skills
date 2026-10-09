@@ -19,8 +19,13 @@ def _load_json(value: str) -> Any:
     if value.lstrip().startswith(("{", "[")):
         text = value
     else:
-        path = Path(value)
-        if path.is_file():
+        path_value = value[1:] if value.startswith("@") else value
+        path = Path(path_value)
+        # Evidence commands document JSON paths without requiring `@`. Treat a
+        # missing JSON-looking path as a file error instead of trying to parse
+        # its filename as inline JSON.
+        is_file_input = value.startswith("@") or path.is_file() or path.suffix.lower() == ".json" or "/" in value
+        if is_file_input:
             with path.open("rb") as handle:
                 raw = handle.read(limit + 1)
             if len(raw) > limit:

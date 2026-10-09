@@ -108,6 +108,15 @@ def main() -> int:
             _json_dump(template(args.question, args.as_of, args.mode))
         else:
             parser.error("unsupported command")
+    except FileNotFoundError:
+        print(json.dumps({"error": "input file not found; research was not assessed"}), file=sys.stderr)
+        return 2
+    except UnicodeError:
+        print(json.dumps({"error": "input is not valid UTF-8; research was not assessed"}), file=sys.stderr)
+        return 2
+    except json.JSONDecodeError:
+        print(json.dumps({"error": "invalid JSON; research was not assessed"}), file=sys.stderr)
+        return 2
     except (OSError, ValueError, TypeError, KeyError, AttributeError, RecursionError):
         print(json.dumps({"error": "invalid input; research was not assessed"}), file=sys.stderr)
         return 2

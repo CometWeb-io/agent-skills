@@ -69,6 +69,13 @@ class ScoreResearchTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             score_candidate.score(p, "research")
 
+    def test_explicit_null_is_rejected_for_research_boolean_gates(self):
+        for field in ("professional_contact_path", "exploration_mode"):
+            p = self.good_payload()
+            p[field] = None
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, f"{field} must be boolean"):
+                score_candidate.score(p, "research")
+
 
 class ScoreLiveTests(unittest.TestCase):
     def good_payload(self):
@@ -138,6 +145,13 @@ class ScoreLiveTests(unittest.TestCase):
         self.assertNotEqual(result["status"], "PARTNER_READY")
         self.assertLessEqual(result["score"], 64)
 
+    def test_explicit_null_is_rejected_for_live_boolean_gates(self):
+        for field in ("live_evidence_confirmed", "security_privacy_blocker", "legal_contract_blocker"):
+            p = self.good_payload()
+            p[field] = None
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, f"{field} must be boolean"):
+                score_candidate.score(p, "live")
+
 
 class CohortTests(unittest.TestCase):
     def test_active_cohort_prefers_uncovered_must_answer_question(self):
@@ -184,6 +198,18 @@ class CohortTests(unittest.TestCase):
         result = select_cohort.select(payload, "outreach_slate")
         self.assertEqual(result["selected"][0]["company"], "A")
 
+    def test_explicit_null_is_rejected_for_cohort_boolean_gates(self):
+        with self.assertRaisesRegex(ValueError, "include_alignment_required must be boolean"):
+            select_cohort.select({"size": 1, "include_alignment_required": None}, "outreach_slate")
+
+        payload = {
+            "size": 1,
+            "questions": [{"id": "H1", "must_cover": None}],
+            "candidates": [],
+        }
+        with self.assertRaisesRegex(ValueError, "question:H1.must_cover must be boolean"):
+            select_cohort.select(payload, "outreach_slate")
+
 
 class PartnerHealthTests(unittest.TestCase):
     def base_payload(self):
@@ -223,6 +249,13 @@ class PartnerHealthTests(unittest.TestCase):
         p["willingness_to_buy"] = 4
         result = assess_partner_health.assess(p)
         self.assertEqual(result["status"], "CONVERSION_CANDIDATE")
+
+    def test_explicit_null_is_rejected_for_health_boolean_gates(self):
+        for field in ("product_ready_for_conversion", "timing_capacity_blocker"):
+            p = self.base_payload()
+            p[field] = None
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, f"{field} must be boolean"):
+                assess_partner_health.assess(p)
 
 
 if __name__ == "__main__":

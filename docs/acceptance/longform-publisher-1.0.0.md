@@ -165,3 +165,13 @@ whole boundary, one trigger line per reference) and by
 `tests/front-door-rules.json`, which now pins at least one rule in each of the
 seven references so that `tooling/tests/test_front_door_rules.py` fails if a
 reference loses its trigger.
+
+## Unreleased source correction — 1.1.5, 2026-10-08
+
+The source preview records the existing fail-closed corrections to lifecycle,
+source freshness and publication evidence under package version 1.1.5. Invalid
+boolean flags, malformed source records and empty publication evidence cannot
+advance a report to a later stage. Positive and negative publication-kernel
+cases cover these checks. The frozen workflow and `FROZEN` release status are
+retained; this metadata correction does not authorize publication, models or
+a promotion of the frozen runtime baseline.

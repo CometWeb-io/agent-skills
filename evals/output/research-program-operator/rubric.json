@@ -1,0 +1,36 @@
+{
+  "skill": "research-program-operator",
+  "contract": "skills/research-program-operator/references/output-contract.md",
+  "ordered_sections": true,
+  "sections": [
+    {"id": "status", "title": "Program status", "aliases": ["program status", "status"], "required": true},
+    {"id": "program", "title": "Program contract", "aliases": ["program contract"], "required": true},
+    {"id": "studies", "title": "Studies", "aliases": ["studies"], "required": true},
+    {"id": "gates", "title": "Stage gates", "aliases": ["stage gates", "gates"], "required": true},
+    {"id": "next", "title": "Next studies", "aliases": ["next studies", "next study"], "required": true},
+    {"id": "governance", "title": "Governance and unknowns", "aliases": ["governance and unknowns", "governance"], "required": true},
+    {"id": "handoff", "title": "Research handoff", "aliases": ["research handoff", "handoff"], "required": true}
+  ],
+  "verdict": {
+    "tokens": ["COMPLETE", "PARTIAL", "BLOCKED"],
+    "authorizing": ["COMPLETE"],
+    "primary": {"line": "^\\s*[-*]?\\s*\\**Status\\**\\s*:"}
+  },
+  "blockers": [
+    {"rule": "blocked-gate", "type": "items_matching", "section": "gates", "pattern": "\\bBLOCKED\\b"}
+  ],
+  "checks": [
+    {"type": "doc_require", "rule": "as-of", "section": "program", "pattern": "as[_ ]of", "message": "program must state as_of"},
+    {"type": "doc_require", "rule": "stage", "section": "program", "pattern": "Stage\\s*:", "message": "program must state a lifecycle stage"},
+    {"type": "doc_require", "rule": "study-estimand", "section": "studies", "pattern": "\\bS1\\b", "message": "studies must state estimands"},
+    {"type": "table_column_nonempty", "rule": "study-estimand-evidence", "section": "studies", "column": ["estimand"], "when": {"column": ["status"], "pattern": "^reported$"}, "code": "EVIDENCE_MISSING", "message": "a reported study must state its estimand"},
+    {"type": "doc_require", "rule": "gate-status", "section": "gates", "pattern": "\\b(?:READY|BLOCKED|UNKNOWN|NOT_REPORTED)\\b", "message": "gates must state status"},
+    {"type": "doc_require", "rule": "handoff-status", "section": "handoff", "pattern": "\\b(?:READY|BLOCKED|UNKNOWN|NOT_REPORTED)\\b", "message": "handoff must state status"},
+    {"type": "doc_forbid", "rule": "invented-approval", "section": "governance", "code": "CONTRACT_VIOLATION", "pattern": "\\b(?:ethics|IRB|preregistration|authorship)\\b.{0,30}\\b(?:approved|cleared|granted)\\b(?![^\\n]*reported)", "message": "unreported governance cannot be presented as approved"}
+  ],
+  "ids": [
+    {"rule": "study-ids", "pattern": "\\bS\\d+\\b", "defined_in": [{"section": "studies", "as": "table_first_column"}], "defined_by": "the Studies section defines no matching study ID"},
+    {"rule": "gate-ids", "pattern": "\\bG\\d+\\b", "defined_in": [{"section": "gates", "as": "list_lead"}], "defined_by": "the Stage gates section defines no matching gate ID"}
+  ],
+  "sidecars": [{"rule": "canonical-output", "detect": {"has_keys": ["program"]}, "required": true, "validator": "skills/research-program-operator/scripts/output_contract.py", "function": "assess", "status_key": "status", "recompute": {"result": "status", "stated": "status"}}]
+}

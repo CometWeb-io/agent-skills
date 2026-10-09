@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.3] - 2026-10-08
+
+- Distinguish missing files, invalid UTF-8, malformed JSON and excessive nesting in manifest input errors.
+
 ## [1.3.2] - 2026-10-03
 
 - The finding states are written `PASS_WITH_CONTROLS`, `N/A` and so on, but the manifest takes them in lower case and spells N/A as `na`: a check with `"status": "N/A"` lowercases to `n/a` and the engine stops with `invalid status`. The front door now says so, and mentions `applicable: false` with `na_reason`.

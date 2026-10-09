@@ -23,6 +23,7 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 | artifact brief and execution contract, observable acceptance criteria, evidence policy and handoff fields | `brief-architect` |
 | context snapshot, provenance, conflicts/gaps, ContextEnvelope, public claim gate | `cometweb-context` |
 | competitor watchlist, delta digest, normalized competitor state | `competitive-intelligence` |
+| initial competitor baseline, evidence-backed competitor dossier, competitive-intelligence bootstrap handoff | `competitor-profiling` |
 | constructive content review, evidence-backed editorial findings, review coverage and repair direction | `content-reviewer` |
 | adversarial content review, proof-debt and claim-pressure diagnosis, repair verification contracts | `content-roaster` |
 | evidence-aware content production, claim-discipline ledger, reader-facing informational artifacts | `content-writer` |
@@ -40,6 +41,7 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 | finding-to-repair planning, authorized bounded repairs, fresh repair verification | `repair-operator` |
 | adversarial repository review, critical-invariant and reachability analysis, executable engineering repair contracts | `repo-roaster` |
 | whole-project baseline, gap inventory, immutable roadmap snapshot | `repo-to-roadmap` |
+| research-program stage gates, next-study planning, research-to-manuscript readiness | `research-program-operator` |
 | evaluation rubric design, observable pass/fail evidence floors, rubric revision hashes | `rubric-designer` |
 | adversarial scientific peer review, claim/evidence and validity analysis, methodological repair verification | `science-roaster` |
 | SEO/GEO/AEO visibility audit, live-verified scoring | `seo-geo-aeo-maxxing` |
@@ -58,6 +60,7 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - **brief-architect** — does not own: final artifact production; broad product discovery; consequential strategic decisions.
 - **cometweb-context** — does not own: evidence packs; domain decisions; release gates; outbound copy.
 - **competitive-intelligence** — does not own: strategic GO/NO_GO; pricing decision.
+- **competitor-profiling** — does not own: recurring competitor monitoring; transferable product mechanism teardown; pricing or strategy decisions.
 - **content-reviewer** — does not own: adversarial roasting; full content rewrites; final publication acceptance.
 - **content-roaster** — does not own: scientific peer review; repository/code critique; rewrite-only editing.
 - **content-writer** — does not own: persuasion-first campaign copy; primary evidence research; publication release orchestration.
@@ -75,6 +78,7 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - **repair-operator** — does not own: initial broad audit; inventing new requirements; production release verdicts.
 - **repo-roaster** — does not own: whole-project roadmapping; runtime web QA; final production release verdicts.
 - **repo-to-roadmap** — does not own: weekly sprint ops; RC ship gate.
+- **research-program-operator** — does not own: one-off claim verification; adversarial manuscript review; final publication formatting; portfolio allocation.
 - **rubric-designer** — does not own: judging the candidate; writing the artifact; running empirical skill benchmarks.
 - **science-roaster** — does not own: generic content critique; repository/code review; research-program planning.
 - **seo-geo-aeo-maxxing** — does not own: Evidence Pack construction; click-through QA.
@@ -127,6 +131,13 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - trigger: Competitor digest since last month snapshot
 - trigger: What changed on competitor pricing pages?
 - do not trigger: Przepuść przez Council cenę Growth
+
+### `competitor-profiling`
+- trigger: Build the first deep competitor dossier from public sources
+- trigger: Create the first deep competitor dossier from public sources
+- do not trigger: What changed since the last competitor snapshot?
+- do not trigger: What can we adapt from this competitor's onboarding?
+- do not trigger: What price should we charge?
 
 ### `content-reviewer`
 - trigger: Review this draft against its brief
@@ -225,6 +236,13 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 ### `repo-to-roadmap`
 - trigger: Analyze the whole repo and create a roadmap to target state
 - do not trigger: What should we do this week?
+
+### `research-program-operator`
+- trigger: Plan the next study after this failed experiment
+- trigger: Define research program stage gates and next-study criteria
+- do not trigger: Verify this single factual claim
+- do not trigger: Reviewer-2 this manuscript
+- do not trigger: Format the finished paper as PDF
 
 ### `rubric-designer`
 - trigger: Design and freeze a review rubric before evaluation

@@ -231,6 +231,11 @@
       "id": "warnings-explained",
       "text": "`WARNING` is a judgment prompt; explain any warning you intentionally keep.",
       "where": "references/evidence-and-report.md"
+    },
+    {
+      "id": "bounded-contract-trace",
+      "text": "Use `contract-trace` only for one explicitly named journey",
+      "where": "SKILL.md"
     }
   ]
 }

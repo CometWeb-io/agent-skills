@@ -79,6 +79,14 @@ def _text(v: Any) -> bool:
     return isinstance(v, str) and bool(v.strip())
 
 
+def _contains(container: Any, value: Any) -> bool:
+    """Return membership safely for malformed JSON values."""
+    try:
+        return value in container
+    except TypeError:
+        return False
+
+
 def _list(v: Any) -> bool:
     return isinstance(v, list)
 
@@ -92,12 +100,12 @@ def _anchor(obj: Any, prefix: str, errors: list[str], source_ids: set[str]) -> s
         errors.append(f"{prefix} must be an object")
         return None
     at = obj.get("type")
-    if at not in ANCHORS:
+    if not _contains(ANCHORS, at):
         errors.append(f"{prefix}.type is invalid")
     if not _text(obj.get("value")):
         errors.append(f"{prefix}.value is required")
     source_id = obj.get("source_id")
-    if source_id not in source_ids:
+    if not _contains(source_ids, source_id):
         errors.append(f"{prefix}.source_id must reference source_manifest")
     return at
 
@@ -106,7 +114,7 @@ def _verification(obj: Any, prefix: str, errors: list[str]) -> None:
     if not isinstance(obj, dict):
         errors.append(f"{prefix} must be an object")
         return
-    if obj.get("type") not in VERIFY:
+    if not _contains(VERIFY, obj.get("type")):
         errors.append(f"{prefix}.type is invalid")
     for key in ("method", "success_condition", "failure_signal"):
         if not _text(obj.get(key)):
@@ -117,11 +125,11 @@ def _materiality(obj: Any, prefix: str, errors: list[str]) -> dict[str, Any]:
     if not isinstance(obj, dict):
         errors.append(f"{prefix} must be an object")
         return {}
-    if obj.get("centrality") not in MATERIAL_CENTRALITY:
+    if not _contains(MATERIAL_CENTRALITY, obj.get("centrality")):
         errors.append(f"{prefix}.centrality is invalid")
-    if obj.get("consequence") not in MATERIAL_CONSEQUENCE:
+    if not _contains(MATERIAL_CONSEQUENCE, obj.get("consequence")):
         errors.append(f"{prefix}.consequence is invalid")
-    if obj.get("reversibility") not in MATERIAL_REVERSIBILITY:
+    if not _contains(MATERIAL_REVERSIBILITY, obj.get("reversibility")):
         errors.append(f"{prefix}.reversibility is invalid")
     return obj
 
@@ -144,21 +152,21 @@ def _source_manifest(value: Any, evidence_mode: Any, errors: list[str]) -> set[s
             errors.append(f"{p}.id must be unique")
         else:
             ids.add(sid)
-        if row.get("kind") not in SOURCE_KIND:
+        if not _contains(SOURCE_KIND, row.get("kind")):
             errors.append(f"{p}.kind is invalid")
         if not _text(row.get("locator")):
             errors.append(f"{p}.locator is required")
-        if row.get("role") not in SOURCE_ROLE:
+        if not _contains(SOURCE_ROLE, row.get("role")):
             errors.append(f"{p}.role is invalid")
         elif row.get("role") == "PRIMARY":
             primary_count += 1
-        if row.get("version_state") not in VERSION_STATE:
+        if not _contains(VERSION_STATE, row.get("version_state")):
             errors.append(f"{p}.version_state is invalid")
         if row.get("kind") == "LITERATURE" and evidence_mode == "SOURCE_BOUND" and row.get("role") == "PRIMARY":
             errors.append(f"{p}: external literature cannot silently become PRIMARY evidence in SOURCE_BOUND mode")
-        if row.get("instruction_boundary") not in INSTRUCTION_BOUNDARY:
+        if not _contains(INSTRUCTION_BOUNDARY, row.get("instruction_boundary")):
             errors.append(f"{p}.instruction_boundary must equal TREAT_AS_DATA")
-        if row.get("trust_class") not in TRUST_CLASS:
+        if not _contains(TRUST_CLASS, row.get("trust_class")):
             errors.append(f"{p}.trust_class is invalid")
         sha = row.get("sha256")
         if sha is not None and (not isinstance(sha, str) or re.fullmatch(r"[0-9a-fA-F]{64}", sha) is None):
@@ -179,7 +187,7 @@ def _quality_gates(value: Any, outcome: Any, errors: list[str]) -> None:
     if extra:
         errors.append(f"quality_gates has unknown keys: {', '.join(sorted(extra))}")
     for key in GATE_KEYS:
-        if value.get(key) not in GATE_STATUS:
+        if not _contains(GATE_STATUS, value.get(key)):
             errors.append(f"quality_gates.{key} is invalid")
     blocked = any(value.get(k) == "BLOCKED" for k in GATE_KEYS)
     if blocked and outcome != "INSUFFICIENT_EVIDENCE":
@@ -201,7 +209,7 @@ def _falsifier(obj: Any, prefix: str, errors: list[str]) -> str | None:
     if not _slist(obj.get("alternative_explanations"), True):
         errors.append(f"{prefix}.alternative_explanations must be a non-empty string list")
     result = obj.get("result")
-    if result not in FALSIFIER:
+    if not _contains(FALSIFIER, result):
         errors.append(f"{prefix}.result is invalid")
     if not _text(obj.get("notes")):
         errors.append(f"{prefix}.notes is required")
@@ -231,11 +239,11 @@ def _assurance(value: Any, errors: list[str], source_ids: set[str]) -> dict[str,
     mode = value.get("mode")
     independence = value.get("independence")
     status = value.get("second_pass_status")
-    if mode not in ASSURANCE_MODES:
+    if not _contains(ASSURANCE_MODES, mode):
         errors.append("assurance.mode is invalid")
-    if independence not in INDEPENDENCE:
+    if not _contains(INDEPENDENCE, independence):
         errors.append("assurance.independence is invalid")
-    if status not in SECOND_PASS_STATUS:
+    if not _contains(SECOND_PASS_STATUS, status):
         errors.append("assurance.second_pass_status is invalid")
     if not _slist(value.get("disagreement_summary")):
         errors.append("assurance.disagreement_summary must be a string list")
@@ -265,10 +273,10 @@ def _assurance(value: Any, errors: list[str], source_ids: set[str]) -> dict[str,
         else:
             pass_ids.add(pid)
         role = row.get("role")
-        if role not in PASS_ROLES:
+        if not _contains(PASS_ROLES, role):
             errors.append(f"{p}.role is invalid")
         pstatus = row.get("status")
-        if pstatus not in PASS_STATUSES:
+        if not _contains(PASS_STATUSES, pstatus):
             errors.append(f"{p}.status is invalid")
         if not _text(row.get("context_ref")):
             errors.append(f"{p}.context_ref is required")
@@ -279,9 +287,9 @@ def _assurance(value: Any, errors: list[str], source_ids: set[str]) -> dict[str,
             errors.append(f"{p}.source_refs must be a non-empty string list")
             refs = []
         for ref in refs:
-            if ref not in source_ids:
+            if not _contains(source_ids, ref):
                 errors.append(f"{p}.source_refs contains unknown source id {ref!r}")
-        if pstatus == "COMPLETED" and role in {"PRIMARY", "SECONDARY"}:
+        if pstatus == "COMPLETED" and _contains({"PRIMARY", "SECONDARY"}, role):
             reviewer_contexts.append(str(row.get("context_ref", "")))
             blind_completed += int(row.get("blind_to_prior_findings") is True)
         if pstatus == "COMPLETED" and role == "PRIMARY":
@@ -297,12 +305,12 @@ def _assurance(value: Any, errors: list[str], source_ids: set[str]) -> dict[str,
         if completed_primary != 1 or completed_secondary != 0:
             errors.append("SINGLE_REVIEW requires exactly one completed PRIMARY pass and no completed SECONDARY pass")
     elif mode == "SECOND_PASS":
-        if status not in {"COMPLETED", "UNAVAILABLE"}:
+        if not _contains({"COMPLETED", "UNAVAILABLE"}, status):
             errors.append("SECOND_PASS requires COMPLETED or UNAVAILABLE second_pass_status")
         if completed_primary < 1:
             errors.append("SECOND_PASS requires a completed PRIMARY pass")
         if status == "COMPLETED":
-            if independence not in {"SAME_CONTEXT", "SEPARATE_CONTEXT"}:
+            if not _contains({"SAME_CONTEXT", "SEPARATE_CONTEXT"}, independence):
                 errors.append("completed SECOND_PASS requires SAME_CONTEXT or SEPARATE_CONTEXT independence")
             if completed_secondary < 1:
                 errors.append("completed SECOND_PASS requires a completed SECONDARY pass record")
@@ -345,9 +353,9 @@ def _outcome_basis(value: Any, outcome: Any, finding_ids: set[str], errors: list
         errors.append("outcome_basis.reason is required")
     if outcome == "MATERIAL_FINDINGS" and set(surviving) != finding_ids:
         errors.append("MATERIAL_FINDINGS requires outcome_basis.surviving_finding_ids to match findings")
-    if outcome in {"NO_MATERIAL_FINDINGS", "INSUFFICIENT_EVIDENCE"} and surviving:
+    if _contains({"NO_MATERIAL_FINDINGS", "INSUFFICIENT_EVIDENCE"}, outcome) and surviving:
         errors.append(f"{outcome} requires empty outcome_basis.surviving_finding_ids")
-    if outcome == "NO_MATERIAL_FINDINGS" and value.get("unresolved_candidate_count") not in {0, None}:
+    if outcome == "NO_MATERIAL_FINDINGS" and not _contains({0, None}, value.get("unresolved_candidate_count")):
         errors.append("NO_MATERIAL_FINDINGS requires unresolved_candidate_count=0")
 
 
@@ -368,15 +376,15 @@ def _evidence_register(value: Any, source_ids: set[str], errors: list[str]) -> d
             errors.append(f"{p}.id must be unique")
         else:
             rows[eid] = row
-        if row.get("source_id") not in source_ids:
+        if not _contains(source_ids, row.get("source_id")):
             errors.append(f"{p}.source_id must reference source_manifest")
-        if row.get("kind") not in EVIDENCE_KINDS:
+        if not _contains(EVIDENCE_KINDS, row.get("kind")):
             errors.append(f"{p}.kind is invalid")
         if not _text(row.get("locator")):
             errors.append(f"{p}.locator is required")
         if not _text(row.get("summary")):
             errors.append(f"{p}.summary is required")
-        if row.get("strength") not in REGISTER_STRENGTH:
+        if not _contains(REGISTER_STRENGTH, row.get("strength")):
             errors.append(f"{p}.strength is invalid")
         if not _slist(row.get("limitations")):
             errors.append(f"{p}.limitations must be a string list")
@@ -406,12 +414,12 @@ def _evidence_conflicts(value: Any, evidence_ids: set[str], errors: list[str]) -
             errors.append(f"{p}.evidence_refs must contain at least two evidence ids")
             refs = []
         for ref in refs:
-            if ref not in evidence_ids:
+            if not _contains(evidence_ids, ref):
                 errors.append(f"{p}.evidence_refs contains unknown evidence id {ref!r}")
         if not _text(row.get("conflict")):
             errors.append(f"{p}.conflict is required")
         disposition = row.get("disposition")
-        if disposition not in CONFLICT_DISPOSITION:
+        if not _contains(CONFLICT_DISPOSITION, disposition):
             errors.append(f"{p}.disposition is invalid")
         if disposition == "UNRESOLVED":
             unresolved = True
@@ -427,7 +435,7 @@ def _finding_evidence_refs(value: Any, prefix: str, evidence_rows: dict[str, dic
     for ref in value:
         if ref not in evidence_rows:
             errors.append(f"{prefix}.evidence_refs contains unknown evidence id {ref!r}")
-    if anchor_source in {row.get("source_id") for ref, row in evidence_rows.items() if ref in value}:
+    if any(anchor_source == row.get("source_id") for ref, row in evidence_rows.items() if _contains(value, ref)):
         pass
     else:
         errors.append(f"{prefix}.evidence_refs must include evidence from the anchor source")
@@ -442,13 +450,13 @@ def _confidence_basis(value: Any, prefix: str, report_assurance: dict[str, Any],
     scope_support = value.get("scope_support")
     counter = value.get("counterevidence_status")
     independence = value.get("independence")
-    if directness not in CONF_DIRECTNESS:
+    if not _contains(CONF_DIRECTNESS, directness):
         errors.append(f"{prefix}.confidence_basis.directness is invalid")
-    if scope_support not in CONF_SCOPE_SUPPORT:
+    if not _contains(CONF_SCOPE_SUPPORT, scope_support):
         errors.append(f"{prefix}.confidence_basis.scope_support is invalid")
-    if counter not in COUNTEREVIDENCE_STATUS:
+    if not _contains(COUNTEREVIDENCE_STATUS, counter):
         errors.append(f"{prefix}.confidence_basis.counterevidence_status is invalid")
-    if independence not in INDEPENDENCE:
+    if not _contains(INDEPENDENCE, independence):
         errors.append(f"{prefix}.confidence_basis.independence is invalid")
     if report_assurance and independence != report_assurance.get("independence"):
         errors.append(f"{prefix}.confidence_basis.independence must match report assurance")
@@ -462,7 +470,7 @@ def _residual_risk(value: Any, prefix: str, errors: list[str]) -> None:
     if not isinstance(value, dict):
         errors.append(f"{prefix}.residual_risk must be an object")
         return
-    if value.get("after_repair") not in RESIDUAL_RISK:
+    if not _contains(RESIDUAL_RISK, value.get("after_repair")):
         errors.append(f"{prefix}.residual_risk.after_repair is invalid")
     if not _text(value.get("closure_dependency")):
         errors.append(f"{prefix}.residual_risk.closure_dependency is required")
@@ -478,18 +486,18 @@ def _inferential_claim_ledger(value: Any, central_claim_ids: set[str], evidence_
         p = f"inferential_claim_ledger[{i}]"
         if not isinstance(row, dict): errors.append(f"{p} must be an object"); continue
         ref = row.get("claim_ref")
-        if ref not in central_claim_ids: errors.append(f"{p}.claim_ref must reference a central claim")
-        elif ref in seen: errors.append(f"{p}.claim_ref must be unique")
+        if not _contains(central_claim_ids, ref): errors.append(f"{p}.claim_ref must reference a central claim")
+        elif _contains(seen, ref): errors.append(f"{p}.claim_ref must be unique")
         else: seen.add(ref)
         for key in ("estimand", "independent_unit", "analysis_population", "uncertainty_basis"):
             if not _text(row.get(key)): errors.append(f"{p}.{key} is required; use NOT_REPORTED when unresolved")
-        if row.get("multiplicity_status") not in MULTIPLICITY_STATUS: errors.append(f"{p}.multiplicity_status is invalid")
-        if row.get("identification_status") not in IDENTIFICATION_STATUS: errors.append(f"{p}.identification_status is invalid")
-        if row.get("data_split_status") not in DATA_SPLIT_STATUS: errors.append(f"{p}.data_split_status is invalid")
+        if not _contains(MULTIPLICITY_STATUS, row.get("multiplicity_status")): errors.append(f"{p}.multiplicity_status is invalid")
+        if not _contains(IDENTIFICATION_STATUS, row.get("identification_status")): errors.append(f"{p}.identification_status is invalid")
+        if not _contains(DATA_SPLIT_STATUS, row.get("data_split_status")): errors.append(f"{p}.data_split_status is invalid")
         refs=row.get("evidence_refs")
         if not isinstance(refs,list) or not refs: errors.append(f"{p}.evidence_refs must be a non-empty list"); refs=[]
         for eid in refs:
-            if eid not in evidence_ids: errors.append(f"{p}.evidence_refs contains unknown evidence id {eid!r}")
+            if not _contains(evidence_ids, eid): errors.append(f"{p}.evidence_refs contains unknown evidence id {eid!r}")
     missing = central_claim_ids - seen
     if missing: errors.append(f"inferential_claim_ledger missing central claims: {', '.join(sorted(missing))}")
 
@@ -504,15 +512,15 @@ def validate(report: Any) -> list[str]:
     if not _text(report.get("artifact")):
         errors.append("artifact must be a non-empty string")
     outcome = report.get("review_outcome")
-    if outcome not in OUTCOMES:
+    if not _contains(OUTCOMES, outcome):
         errors.append("review_outcome is invalid")
     mode = report.get("mode")
     evidence_mode = report.get("evidence_mode")
-    if mode not in MODES:
+    if not _contains(MODES, mode):
         errors.append("mode is invalid")
-    if evidence_mode not in EVIDENCE_MODES:
+    if not _contains(EVIDENCE_MODES, evidence_mode):
         errors.append("evidence_mode is invalid")
-    if report.get("study_profile") not in PROFILES:
+    if not _contains(PROFILES, report.get("study_profile")):
         errors.append("study_profile is invalid")
     source_ids = _source_manifest(report.get("source_manifest"), evidence_mode, errors)
     _review_plan(report.get("review_plan"), errors)
@@ -540,18 +548,18 @@ def validate(report: Any) -> list[str]:
         for key in required_text:
             if not _text(contract.get(key)):
                 errors.append(f"study_contract.{key} is required; use 'NOT_REPORTED' when appropriate")
-        if contract.get("reference_status") not in REFERENCE_STATUS:
+        if not _contains(REFERENCE_STATUS, contract.get("reference_status")):
             errors.append("study_contract.reference_status is invalid")
 
     coverage = report.get("coverage")
     if not isinstance(coverage, dict):
         errors.append("coverage must be an object")
     else:
-        if coverage.get("level") not in COVERAGE:
+        if not _contains(COVERAGE, coverage.get("level")):
             errors.append("coverage.level is invalid")
-        if coverage.get("scope_basis") not in SCOPE:
+        if not _contains(SCOPE, coverage.get("scope_basis")):
             errors.append("coverage.scope_basis is invalid")
-        if coverage.get("coverage_confidence") not in COVERAGE_CONFIDENCE:
+        if not _contains(COVERAGE_CONFIDENCE, coverage.get("coverage_confidence")):
             errors.append("coverage.coverage_confidence is invalid")
         if not _text(coverage.get("sampling_strategy")):
             errors.append("coverage.sampling_strategy is required")
@@ -574,7 +582,7 @@ def validate(report: Any) -> list[str]:
         for key in ("construct", "operationalization", "reference", "transformation", "endpoint"):
             if not _text(measurement.get(key)):
                 errors.append(f"measurement_chain.{key} is required; use 'NOT_APPLICABLE' when appropriate")
-        if measurement.get("alignment_status") not in ALIGNMENT:
+        if not _contains(ALIGNMENT, measurement.get("alignment_status")):
             errors.append("measurement_chain.alignment_status is invalid")
 
     claims = report.get("claim_map")
@@ -591,7 +599,7 @@ def validate(report: Any) -> list[str]:
         cid = claim.get("id")
         if not _text(cid):
             errors.append(f"{p}.id is required")
-        elif cid in claim_ids:
+        elif _contains(claim_ids, cid):
             errors.append(f"{p}.id must be unique")
         else:
             claim_ids.add(cid)
@@ -601,15 +609,15 @@ def validate(report: Any) -> list[str]:
             errors.append(f"{p}.central must be boolean")
         if not _text(claim.get("claim")):
             errors.append(f"{p}.claim is required")
-        if claim.get("inferential_type") not in INFERENTIAL_TYPES:
+        if not _contains(INFERENTIAL_TYPES, claim.get("inferential_type")):
             errors.append(f"{p}.inferential_type is invalid")
-        if claim.get("evidence_role") not in EVIDENCE_ROLES:
+        if not _contains(EVIDENCE_ROLES, claim.get("evidence_role")):
             errors.append(f"{p}.evidence_role is invalid")
         for key in ("population_scope", "endpoint_scope", "analysis_set"):
             if not _text(claim.get(key)):
                 errors.append(f"{p}.{key} is required")
         _anchor(claim.get("anchor"), f"{p}.anchor", errors, source_ids)
-        if claim.get("support_status") not in SUPPORT_STATUS:
+        if not _contains(SUPPORT_STATUS, claim.get("support_status")):
             errors.append(f"{p}.support_status is invalid")
 
     if claims and not central_ids:
@@ -628,13 +636,13 @@ def validate(report: Any) -> list[str]:
             errors.append(f"{p} must be an object")
             continue
         domain = row.get("domain")
-        if domain not in LEDGER_VALIDITY_DOMAINS:
+        if not _contains(LEDGER_VALIDITY_DOMAINS, domain):
             errors.append(f"{p}.domain is invalid")
-        elif domain in seen_validity:
+        elif _contains(seen_validity, domain):
             errors.append(f"{p}.domain must be unique")
         else:
             seen_validity.add(domain)
-        if row.get("status") not in VALIDITY_STATUS:
+        if not _contains(VALIDITY_STATUS, row.get("status")):
             errors.append(f"{p}.status is invalid")
         if not _text(row.get("basis")):
             errors.append(f"{p}.basis is required")
@@ -648,9 +656,9 @@ def validate(report: Any) -> list[str]:
         if not isinstance(row, dict):
             errors.append(f"{p} must be an object")
             continue
-        if row.get("area") not in INTEGRITY_AREAS:
+        if not _contains(INTEGRITY_AREAS, row.get("area")):
             errors.append(f"{p}.area is invalid")
-        if row.get("status") not in INTEGRITY_STATUS:
+        if not _contains(INTEGRITY_STATUS, row.get("status")):
             errors.append(f"{p}.status is invalid")
         if not _text(row.get("basis")):
             errors.append(f"{p}.basis is required")
@@ -668,7 +676,7 @@ def validate(report: Any) -> list[str]:
         aid = row.get("id")
         if not _text(aid):
             errors.append(f"{p}.id is required")
-        elif aid in alt_ids:
+        elif _contains(alt_ids, aid):
             errors.append(f"{p}.id must be unique")
         else:
             alt_ids.add(aid)
@@ -677,13 +685,13 @@ def validate(report: Any) -> list[str]:
             errors.append(f"{p}.claim_refs must be a non-empty list")
         else:
             for ref in refs:
-                if ref not in claim_ids:
+                if not _contains(claim_ids, ref):
                     errors.append(f"{p}.claim_refs contains unknown claim id {ref!r}")
         if not _text(row.get("explanation")):
             errors.append(f"{p}.explanation is required")
         if not isinstance(row.get("addressed_by"), list):
             errors.append(f"{p}.addressed_by must be a list")
-        if row.get("status") not in ALT_STATUS:
+        if not _contains(ALT_STATUS, row.get("status")):
             errors.append(f"{p}.status is invalid")
 
     robustness = report.get("robustness_ledger")
@@ -695,11 +703,11 @@ def validate(report: Any) -> list[str]:
         if not isinstance(row, dict):
             errors.append(f"{p} must be an object")
             continue
-        if row.get("claim_ref") not in claim_ids:
+        if not _contains(claim_ids, row.get("claim_ref")):
             errors.append(f"{p}.claim_ref references unknown claim")
         if not _text(row.get("check")):
             errors.append(f"{p}.check is required")
-        if row.get("status") not in ROBUSTNESS_STATUS:
+        if not _contains(ROBUSTNESS_STATUS, row.get("status")):
             errors.append(f"{p}.status is invalid")
         if not _text(row.get("evidence")):
             errors.append(f"{p}.evidence is required")
@@ -717,7 +725,7 @@ def validate(report: Any) -> list[str]:
         rid = root.get("id")
         if not _text(rid):
             errors.append(f"{p}.id is required")
-        elif rid in root_ids:
+        elif _contains(root_ids, rid):
             errors.append(f"{p}.id must be unique")
         else:
             root_ids.add(rid)
@@ -729,7 +737,7 @@ def validate(report: Any) -> list[str]:
             errors.append(f"{p}.claim_refs must be a list")
         else:
             for ref in refs:
-                if ref not in claim_ids:
+                if not _contains(claim_ids, ref):
                     errors.append(f"{p}.claim_refs contains unknown claim id {ref!r}")
 
     no_material = report.get("no_material_findings")
@@ -752,13 +760,13 @@ def validate(report: Any) -> list[str]:
         key = finding.get("finding_key")
         if not _text(fid):
             errors.append(f"{p}.id is required")
-        elif fid in ids:
+        elif _contains(ids, fid):
             errors.append(f"{p}.id must be unique")
         else:
             ids.add(fid)
         if not _text(key):
             errors.append(f"{p}.finding_key is required")
-        elif key in keys:
+        elif _contains(keys, key):
             errors.append(f"{p}.finding_key must be unique")
         else:
             keys.add(key)
@@ -787,19 +795,19 @@ def validate(report: Any) -> list[str]:
         strength = finding.get("evidence_strength")
         scope_sensitivity = finding.get("scope_sensitivity")
         confidence = finding.get("confidence")
-        if severity not in SEVERITIES:
+        if not _contains(SEVERITIES, severity):
             errors.append(f"{p}.severity is invalid")
-        if finding.get("category") not in CATEGORIES:
+        if not _contains(CATEGORIES, finding.get("category")):
             errors.append(f"{p}.category is invalid")
-        if finding.get("validity_domain") not in VALIDITY_DOMAINS:
+        if not _contains(VALIDITY_DOMAINS, finding.get("validity_domain")):
             errors.append(f"{p}.validity_domain is invalid")
-        if state not in STATES:
+        if not _contains(STATES, state):
             errors.append(f"{p}.evidence_state is invalid")
-        if strength not in EVIDENCE_STRENGTH:
+        if not _contains(EVIDENCE_STRENGTH, strength):
             errors.append(f"{p}.evidence_strength is invalid")
-        if scope_sensitivity not in SCOPE_SENSITIVITY:
+        if not _contains(SCOPE_SENSITIVITY, scope_sensitivity):
             errors.append(f"{p}.scope_sensitivity is invalid")
-        if confidence not in CONF:
+        if not _contains(CONF, confidence):
             errors.append(f"{p}.confidence is invalid")
         if scope_sensitivity == "HIGH" and confidence == "high":
             errors.append(f"{p}: HIGH scope_sensitivity cannot have high confidence")
@@ -825,22 +833,22 @@ def validate(report: Any) -> list[str]:
             errors.append(f"{p}.claim_refs must be a list")
             refs = []
         for ref in refs:
-            if ref not in claim_ids:
+            if not _contains(claim_ids, ref):
                 errors.append(f"{p}.claim_refs contains unknown claim id {ref!r}")
         root_id = finding.get("root_cause_id")
-        if root_id is not None and root_id not in root_ids:
+        if root_id is not None and not _contains(root_ids, root_id):
             errors.append(f"{p}.root_cause_id references unknown root cause")
 
         materiality = _materiality(finding.get("materiality"), f"{p}.materiality", errors)
         for key_name in ("observation", "scientific_risk", "repair"):
             if not _text(finding.get(key_name)):
                 errors.append(f"{p}.{key_name} is required")
-        if finding.get("repair_level") not in REPAIR_LEVEL:
+        if not _contains(REPAIR_LEVEL, finding.get("repair_level")):
             errors.append(f"{p}.repair_level is invalid")
         _verification(finding.get("verification"), f"{p}.verification", errors)
 
         falsifier_obj = finding.get("falsifier_check")
-        if severity in {"FATAL", "MAJOR"} or falsifier_obj is not None:
+        if _contains({"FATAL", "MAJOR"}, severity) or falsifier_obj is not None:
             result = _falsifier(falsifier_obj, f"{p}.falsifier_check", errors)
             if result == "WITHDRAWN":
                 errors.append(f"{p}: withdrawn finding must not remain in findings")
@@ -848,11 +856,11 @@ def validate(report: Any) -> list[str]:
                 errors.append(f"{p}: unresolved falsifier cannot have high confidence")
             if result == "DOWNGRADED":
                 prior = finding.get("falsifier_check", {}).get("downgraded_from")
-                if prior not in SEVERITY_RANK or severity not in SEVERITY_RANK or SEVERITY_RANK[prior] <= SEVERITY_RANK[severity]:
+                if not _contains(SEVERITY_RANK, prior) or not _contains(SEVERITY_RANK, severity) or SEVERITY_RANK[prior] <= SEVERITY_RANK[severity]:
                     errors.append(f"{p}: DOWNGRADED requires falsifier_check.downgraded_from above final severity")
 
         if severity == "FATAL":
-            if not any(ref in central_ids for ref in refs):
+            if not any(_contains(central_ids, ref) for ref in refs):
                 errors.append(f"{p}: FATAL requires at least one central claim_ref")
             if not _text(finding.get("central_claim_impact")):
                 errors.append(f"{p}.central_claim_impact is required for FATAL")
@@ -878,12 +886,26 @@ def validate(report: Any) -> list[str]:
     _outcome_basis(report.get("outcome_basis"), outcome, ids, errors)
 
     first = report.get("first_attack_id")
-    ranks = [SEVERITY_RANK.get(f.get("severity"), 0) for f in findings if isinstance(f, dict)]
+    ranks = [
+        SEVERITY_RANK.get(f.get("severity"), 0)
+        if _contains(SEVERITY_RANK, f.get("severity"))
+        else 0
+        for f in findings
+        if isinstance(f, dict)
+    ]
     if ranks and ranks != sorted(ranks, reverse=True):
         errors.append("findings must be ordered by severity descending")
-    if findings and first in ids:
+    if findings and _contains(ids, first):
         first_row = next((f for f in findings if isinstance(f, dict) and f.get("id") == first), None)
-        if first_row is not None and SEVERITY_RANK.get(first_row.get("severity"), 0) < max(ranks or [0]):
+        if (
+            first_row is not None
+            and (
+                SEVERITY_RANK.get(first_row.get("severity"), 0)
+                if _contains(SEVERITY_RANK, first_row.get("severity"))
+                else 0
+            )
+            < max(ranks or [0])
+        ):
             errors.append("first_attack_id must reference a highest-severity finding")
     if not findings and roots:
         errors.append("root_causes must be empty when findings are empty")
@@ -892,7 +914,7 @@ def validate(report: Any) -> list[str]:
             errors.append("non-empty findings require review_outcome=MATERIAL_FINDINGS")
         if no_material is not False:
             errors.append("no_material_findings must be false when findings exist")
-        if first not in ids:
+        if not _contains(ids, first):
             errors.append("first_attack_id must reference an existing finding")
     else:
         if first is not None:
@@ -916,14 +938,14 @@ def validate(report: Any) -> list[str]:
         if not _text(row.get("finding_key")):
             errors.append(f"{p}.finding_key is required")
         status = row.get("status")
-        if status not in RESOLUTION:
+        if not _contains(RESOLUTION, status):
             errors.append(f"{p}.status is invalid")
         if not _text(row.get("evidence")):
             errors.append(f"{p}.evidence is required")
         verification_status = row.get("verification_status")
-        if verification_status not in RESOLUTION_VERIFICATION:
+        if not _contains(RESOLUTION_VERIFICATION, verification_status):
             errors.append(f"{p}.verification_status is invalid")
-        if row.get("change_basis") not in RESOLUTION_CHANGE_BASIS:
+        if not _contains(RESOLUTION_CHANGE_BASIS, row.get("change_basis")):
             errors.append(f"{p}.change_basis is invalid")
         if status == "RESOLVED" and verification_status != "PASSED":
             errors.append(f"{p}: RESOLVED requires verification_status=PASSED")
@@ -956,18 +978,18 @@ def validate(report: Any) -> list[str]:
             errors.append(f"{p} must be an object")
             continue
         ref = row.get("claim_ref")
-        if ref not in claim_ids:
+        if not _contains(claim_ids, ref):
             errors.append(f"{p}.claim_ref references unknown claim")
-        elif ref in seen_survival:
+        elif _contains(seen_survival, ref):
             errors.append(f"{p}.claim_ref must be unique")
         else:
             seen_survival.add(ref)
-        if row.get("status") not in CLAIM_SURVIVAL:
+        if not _contains(CLAIM_SURVIVAL, row.get("status")):
             errors.append(f"{p}.status is invalid")
         if not _text(row.get("reason")):
             errors.append(f"{p}.reason is required")
     for ref in central_ids:
-        if ref not in seen_survival:
+        if not _contains(seen_survival, ref):
             errors.append(f"claim_survival must include central claim {ref!r}")
 
     if not isinstance(report.get("survives"), list):

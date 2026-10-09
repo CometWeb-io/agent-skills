@@ -734,6 +734,10 @@ class Grader:
     # Embedded JSON ---------------------------------------------------------------
 
     def _json_blocks(self, doc: Document, issues: list[Issue], verdict: str | None = None) -> None:
+        for sidecar in self.rubric.get("sidecars", []):
+            if sidecar.get("required") and not any(isinstance(data, dict) and not error
+                    and _sidecar_matches(data, sidecar["detect"]) for _, data, error in doc.json_blocks):
+                issues.append(self._issue("SIDECAR_INVALID", sidecar["rule"], "required canonical payload is missing"))
         if self.rubric.get("forbid_embedded_json") and doc.embedded_json:
             issues.append(self._issue("CONTRACT_VIOLATION", "raw-sidecar-in-brief",
                                       "the human brief prints a raw JSON block; write the sidecar to its own file "
@@ -1475,7 +1479,7 @@ def load_cases(skill: str) -> list[dict[str, Any]]:
 
 
 SIDECAR_KEYS = frozenset({"rule", "detect", "validator", "function", "kwargs", "status_key", "error_statuses",
-                          "recompute", "cross_checks", *FORMAT_FILTERS})
+                          "recompute", "cross_checks", "required", *FORMAT_FILTERS})
 CROSS_CHECK_KEYS = frozenset({"rule", "result", "section", "pattern", "count", "none_pattern"})
 RECORD_KEYS = frozenset({"rule", "detect", "required", "enums", "patterns", *FORMAT_FILTERS})
 RUBRIC_KEYS = frozenset({"skill", "contract", "ordered_sections", "forbid_embedded_json", "sections", "required_any",
@@ -1951,4 +1955,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    # The CLI consumes UTF-8 documents and emits UTF-8, independent of locale.
+    # In-process callers keep ownership of their streams.
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        stream.reconfigure(encoding="utf-8")
     raise SystemExit(main())

@@ -74,18 +74,29 @@ def validate(x):
     if ms is not None and (not isinstance(ms,(int,float)) or isinstance(ms,bool) or not 0<=ms<=1):errors.append('package:mutation_score')
     elif isinstance(ms,(int,float)) and not isinstance(ms,bool) and ms<0.80:issues.append('evals:mutation-score-below-80')
     checks=x.get('checks',[])
-    if not isinstance(checks,list):errors.append('checks:not-list');checks=[]
-    for i,row in enumerate(checks):
-        if not isinstance(row,dict):errors.append(f'check[{i}]:not-object');continue
-        status=row.get('status');sev=row.get('severity','NOTE');material=row.get('material') is True
-        if not _member(status,CHECK_STATUSES):errors.append(f'check[{i}]:status');continue
-        if not _member(sev,SEVERITIES):errors.append(f'check[{i}]:severity');continue
-        if status=='N_A' and not _text(row.get('rationale')):errors.append(f'check[{i}]:na-without-rationale')
-        evidence=row.get('evidence',[])
-        if material and status in {'PASS','FAIL'} and (not isinstance(evidence,list) or not evidence):errors.append(f'check[{i}]:material-without-evidence')
-        if not material and status=='FAIL' and sev in {'BLOCKER','MAJOR'} and (not isinstance(evidence,list) or not evidence):errors.append(f'check[{i}]:severe-without-evidence')
-        if material and status=='UNKNOWN':unknown_material+=1
-        if status=='FAIL' and sev in {'BLOCKER','MAJOR'}:issues.append(f'check[{i}]:{sev.lower()}')
+    if not isinstance(checks,list):
+        errors.append('checks:not-list')
+        checks=[]
+    else:
+        for i,row in enumerate(checks):
+            if not isinstance(row,dict):
+                errors.append(f'check[{i}]:not-object')
+                continue
+            status=row.get('status');sev=row.get('severity','NOTE');material=row.get('material') is True
+            if not _member(status,CHECK_STATUSES):
+                errors.append(f'check[{i}]:status')
+                continue
+            if not _member(sev,SEVERITIES):
+                errors.append(f'check[{i}]:severity')
+                continue
+            if status=='N_A' and not _text(row.get('rationale')):errors.append(f'check[{i}]:na-without-rationale')
+            evidence=row.get('evidence',[])
+            if material and status in {'PASS','FAIL'} and (not isinstance(evidence,list) or not evidence):errors.append(f'check[{i}]:material-without-evidence')
+            if not material and status=='FAIL' and sev in {'BLOCKER','MAJOR'} and (not isinstance(evidence,list) or not evidence):errors.append(f'check[{i}]:severe-without-evidence')
+            if material and status=='UNKNOWN':unknown_material+=1
+            if status=='FAIL' and sev in {'BLOCKER','MAJOR'}:issues.append(f'check[{i}]:{sev.lower()}')
+        if not checks and not errors and not issues and compat != 'UNKNOWN':
+            issues.append('checks:required')
     if mode=='DEEP':
         deep=x.get('deep_checks')
         if not isinstance(deep,dict):errors.append('deep_checks:required')

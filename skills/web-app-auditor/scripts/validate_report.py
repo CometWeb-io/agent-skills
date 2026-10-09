@@ -9,6 +9,7 @@ proof that the underlying audit was performed.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 import sys
@@ -26,8 +27,9 @@ MISSING_DEPENDENCY = "jsonschema>=4.18 is required for schema validation (see RU
 FINDING_ID = re.compile(r"^F-[0-9]{3}$")
 EVIDENCE_ID = re.compile(r"^E-[0-9]{3}$")
 
-MODES = {"page", "area", "crawl", "flow", "data", "visual", "regression", "a11y"}
+MODES = {"page", "area", "crawl", "flow", "data", "visual", "regression", "a11y", "contract-trace"}
 DEPTHS = {"recon", "standard", "forensic"}
+VALIDATOR_STATUSES = {"passed", "warnings", "not run"}
 PROFILES = {"hybrid", "browser", "screenshot", "source", "fetch-only"}
 ENVIRONMENTS = {"production", "staging", "test", "local", "unknown"}
 MUTATION_POLICIES = {"read-only", "safe-test-only"}
@@ -48,6 +50,14 @@ EXPECTED_BASES = {
 }
 EVIDENCE_TYPES = {"screenshot", "dom", "text", "arithmetic", "console", "network", "source"}
 INTERACTION_HEAVY_MODES = {"page", "area", "crawl", "flow"}
+
+_KERNEL_PATH = Path(__file__).with_name("contract_trace_kernel.py")
+_KERNEL_SPEC = importlib.util.spec_from_file_location("web_app_auditor_contract_trace_kernel", _KERNEL_PATH)
+if _KERNEL_SPEC is None or _KERNEL_SPEC.loader is None:
+    contract_trace_kernel = None
+else:
+    contract_trace_kernel = importlib.util.module_from_spec(_KERNEL_SPEC)
+    _KERNEL_SPEC.loader.exec_module(contract_trace_kernel)
 
 
 class Result:
@@ -76,6 +86,31 @@ def _require_keys(result: Result, obj: dict[str, Any], keys: set[str], prefix: s
             result.error(f"{prefix}: missing required key '{key}'")
 
 
+def _validate_contract_trace(report: dict[str, Any], result: Result) -> None:
+    """Validate the bounded trace and bind the reported result to the same payload."""
+    if report.get("mode") != "contract-trace":
+        return
+    binding = report.get("contractTrace")
+    if not isinstance(binding, dict) or contract_trace_kernel is None:
+        return
+    trace = binding.get("trace")
+    reported = binding.get("result")
+    try:
+        expected = contract_trace_kernel.result(trace)
+    except Exception as exc:
+        result.error(f"contractTrace.trace validator raised {type(exc).__name__}: {exc}")
+        return
+    if expected["status"] == "INVALID":
+        details = "; ".join(expected["errors"][:3])
+        result.error(f"contractTrace.trace is invalid{': ' + details if details else ''}")
+    if not isinstance(reported, dict):
+        return
+    if any(reported.get(key) != expected[key] for key in ("schema", "status", "result", "errors")):
+        result.error("contractTrace.result does not match the kernel result for contractTrace.trace")
+    if expected["result"] == "incomplete" and report.get("verdict") in {"ship", "ship_with_fixes"}:
+        result.error("incomplete contract trace cannot authorize a shipping verdict")
+
+
 def validate(report: dict[str, Any]) -> Result:
     r = Result()
     # Inline the single local reference. Never let untrusted report data choose
@@ -94,6 +129,8 @@ def validate(report: dict[str, Any]) -> Result:
         r.error(f"{path}: {error.message}")
     if r.errors:
         return r  # malformed types must never reach arithmetic or enum checks
+
+    _validate_contract_trace(report, r)
 
     required_top = {
         "schemaVersion", "target", "mode", "depth", "confidence", "verdict",
@@ -356,8 +393,14 @@ def main() -> int:
 
     try:
         report = json.loads(args.report.read_text(encoding="utf-8"), object_pairs_hook=_unique_pairs, parse_constant=_reject_nonfinite)
-    except (OSError, UnicodeError):
-        print("ERROR: report cannot be read as UTF-8", file=sys.stderr)
+    except FileNotFoundError:
+        print("ERROR: report file not found", file=sys.stderr)
+        return 2
+    except UnicodeError:
+        print("ERROR: report is not valid UTF-8", file=sys.stderr)
+        return 2
+    except OSError:
+        print("ERROR: report cannot be read", file=sys.stderr)
         return 2
     except ValueError as exc:
         print(f"ERROR: invalid JSON: {exc}", file=sys.stderr)

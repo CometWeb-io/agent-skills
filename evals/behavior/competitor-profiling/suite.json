@@ -1,0 +1,226 @@
+{
+  "schema": "cometweb.behavior-suite/v1",
+  "skill": "competitor-profiling",
+  "description": "Deterministic canonical output admission, including explicit readiness contradictions; not model behavior.",
+  "cases": [
+    {
+      "id": "complete-result-passes",
+      "kind": "accept",
+      "behavior": "A complete result with nothing unverified passes.",
+      "run": [
+        "scripts/output_contract.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "summary": "Built an evidence-backed initial competitor baseline.",
+          "status": "complete",
+          "not_verified": [],
+          "profile": {
+            "subject": "Acme competitor",
+            "as_of": "2026-10-05",
+            "scope": "public first baseline",
+            "sources": [
+              {
+                "id": "S1",
+                "kind": "official",
+                "locator": "https://example.invalid/pricing",
+                "observed_at": "2026-10-05"
+              }
+            ],
+            "claims": [
+              {
+                "id": "C1",
+                "text": "The source describes the product and pricing page.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S1"
+                ]
+              }
+            ],
+            "sections": {
+              "company": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "icp": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "positioning": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "product": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "pricing": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "proof": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "discovery": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              }
+            },
+            "contradictions": [],
+            "gaps": []
+          },
+          "competitive_intelligence_handoff": {
+            "baseline_id": "competitor:acme:2026-10-05",
+            "source_profile_status": "READY",
+            "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": []
+        }
+      }
+    },
+    {
+      "id": "complete-with-unverified-is-refused",
+      "kind": "refuse",
+      "behavior": "A result cannot claim complete while listing what it did not verify.",
+      "run": [
+        "scripts/output_contract.py"
+      ],
+      "call": "validate",
+      "args": [
+        {
+          "summary": "Built an evidence-backed initial competitor baseline.",
+          "status": "complete",
+          "not_verified": [
+            "not checked"
+          ],
+          "profile": {
+            "subject": "Acme competitor",
+            "as_of": "2026-10-05",
+            "scope": "public first baseline",
+            "sources": [
+              {
+                "id": "S1",
+                "kind": "official",
+                "locator": "https://example.invalid/pricing",
+                "observed_at": "2026-10-05"
+              }
+            ],
+            "claims": [
+              {
+                "id": "C1",
+                "text": "The source describes the product and pricing page.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S1"
+                ]
+              }
+            ],
+            "sections": {
+              "company": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "icp": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "positioning": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "product": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "pricing": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "proof": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              },
+              "discovery": {
+                "summary": "covered",
+                "claim_ids": [
+                  "C1"
+                ]
+              }
+            },
+            "contradictions": [],
+            "gaps": []
+          },
+          "competitive_intelligence_handoff": {
+            "baseline_id": "competitor:acme:2026-10-05",
+            "source_profile_status": "READY",
+            "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+          }
+        }
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": [
+            "status: complete contradicts a non-empty not_verified",
+            "handoff.source_profile_status: READY requires a valid complete profile"
+          ]
+        }
+      }
+    },
+    {
+      "id": "result-that-is-not-an-object",
+      "kind": "boundary",
+      "behavior": "A result that is not an object is refused.",
+      "run": [
+        "scripts/output_contract.py"
+      ],
+      "call": "validate",
+      "args": [
+        [
+          "summary"
+        ]
+      ],
+      "expect": {
+        "exit_code": 0,
+        "json": {
+          "$": [
+            "result: must be an object"
+          ]
+        }
+      }
+    }
+  ]
+}

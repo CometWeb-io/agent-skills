@@ -13,8 +13,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
+import tempfile
 import unicodedata
 from collections import Counter
 from pathlib import Path
@@ -332,6 +334,25 @@ def _resolve_profile(requested: str, input_path: Path | None) -> str:
         return "markdown"
     return "prose"
 
+def _atomic_write(path: Path, text: str) -> None:
+    """Write output without following a planted output symlink."""
+    if path.is_symlink():
+        raise ValueError("output must not be a symlink")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    except BaseException:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(
@@ -394,10 +415,10 @@ def main() -> int:
     if not args.check:
         try:
             if args.output:
-                args.output.write_text(cleaned, encoding="utf-8")
+                _atomic_write(args.output, cleaned)
             else:
                 sys.stdout.write(cleaned)
-        except OSError as exc:
+        except (OSError, ValueError) as exc:
             print(f"error: {exc}", file=sys.stderr)
             return 2
 
