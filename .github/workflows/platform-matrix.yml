@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -49,3 +50,8 @@ jobs:
           tooling/tests/test_supply_chain.py
           tooling/tests/test_hashing_is_reproducible.py
           tooling/tests/test_windows_portability.py
+          tooling/tests/test_audit_readiness.py
+          tooling/tests/test_frontmatter_host_matrix.py
+          tooling/tests/test_context_budget.py
+          skills/skill-orchestrator/tests/test_workflow_ledger.py
+          tooling/tests/test_ledger_concurrency.py

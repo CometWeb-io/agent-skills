@@ -1,27 +1,37 @@
 # Output contract
 
-A result is a research-program state and next-study handoff. The validator and
-`evals/cases.json` pin the fields below.
+A bounded program state, not publication authorization. The validator checks
+reported evidence references; it cannot grant ethics, sponsor or author approval.
 
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `summary` | non-empty string | What was done, in one or two sentences |
-| `status` | `complete`, `partial` or `blocked` | How far the work got |
-| `not_verified` | list of strings | What was not checked; empty only when nothing was left |
+Required root fields: non-empty `summary`, `status` (`complete`, `partial`,
+`blocked`), `not_verified` (non-empty string entries), `program`, and
+`research_handoff`. A complete result cannot contain `not_verified` items.
 
-A `complete` result with a non-empty `not_verified` is contradictory and is
-rejected.
+`program` requires non-empty `question`, ISO `as_of` (date or timezone-aware
+timestamp), `stage`, non-empty `studies`, and lists `hypotheses`, `gates`,
+`next_studies`, `governance`, `unknowns`. Stages: `question`, `protocol`,
+`execution`, `analysis`, `manuscript`, `closed`.
 
-`program` is required and contains `question`, `as_of`, `stage`, `studies`,
-`hypotheses`, `gates`, `next_studies`, `governance`, and `unknowns`. Stages are
-`question`, `protocol`, `execution`, `analysis`, `manuscript`, and `closed`.
-Each study has `id`, `name`, `status`, and `estimand`; each gate has status
-`planned`, `reported`, `executed`, or `failed`. Gate statuses are `READY`,
-`BLOCKED`, `UNKNOWN`, or `NOT_REPORTED`.
+Each study has unique `id`, non-empty `name`, `status`, `estimand`.
+`studies.status` is `planned`, `reported`, `executed`, or `failed`.
+An estimand cannot be the sentinel unknown, not reported, or TBD.
+Complete programs require reported/executed studies with non-empty `evidence`
+locators. Negative results remain valid evidence; failures and incomplete
+inference stay partial or blocked.
 
-`research_handoff` is required and contains a `status` from that same gate
-vocabulary and a `target`. A complete result cannot hide unknowns, governance
-requirements, unreported results, or missing evidence.
+`hypotheses`, `governance`, and `unknowns` contain non-empty strings.
+Each `next_studies` object contains non-empty `id`, `estimand`, `falsifier`,
+`evidence_requirement`, `stop_rule`, `continue_rule`, and a `dependencies` list
+referencing existing studies. Empty objects or prose-only next studies fail.
 
-The output does **not** assert anything beyond what was checked. A consumer that
-mistakes a heuristic for a verdict is the failure mode worth preventing here.
+Each gate has `id` and `gates.status`: `READY`, `BLOCKED`, `UNKNOWN`,
+`NOT_REPORTED`. READY gates require non-empty `evidence` locators.
+Complete programs require non-empty READY gates and empty `governance` and
+`unknowns`; unresolved requirements cannot be hidden by a summary status.
+
+`research_handoff` requires `status` from the gate vocabulary and `target`:
+`next-study`, `science-roaster`, or `longform-publisher`. Its
+`research_handoff.status` can be READY only for a valid complete program.
+READY means prepared for that bounded next step. It never means authorized to
+acquire data, submit, publish, contact participants, or approve a manuscript.
+Those actions require external authorization and their own acceptance gates.

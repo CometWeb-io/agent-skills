@@ -163,7 +163,8 @@ def test_directory_with_real_content_but_no_skill_md_still_fails(tmp_path: Path)
 def test_cursor_relinks_a_rule_left_by_the_legacy_fallback(tmp_path: Path) -> None:
     checkout = make_checkout(tmp_path, ["kept"])
     (checkout / "docs").mkdir()
-    (checkout / "docs" / "generated-cursor-routing.mdc").write_text("generated", encoding="utf-8")
+    (checkout / "rules").mkdir()
+    (checkout / "rules" / "cometweb-agent-skills.mdc").write_text("generated", encoding="utf-8")
     (checkout / "extras").mkdir()
     legacy = checkout / "extras" / "cursor-routing.mdc"
     legacy.write_text("legacy", encoding="utf-8")
@@ -178,7 +179,7 @@ def test_cursor_relinks_a_rule_left_by_the_legacy_fallback(tmp_path: Path) -> No
 
     result = run(checkout, "cursor", tmp_path)
     assert result.returncode == 0, result.stderr
-    assert Path(os.readlink(rule)) == checkout / "docs" / "generated-cursor-routing.mdc"
+    assert Path(os.readlink(rule)) == checkout / "rules" / "cometweb-agent-skills.mdc"
     assert not (tmp_path / "backups").exists()
 
     assert run(checkout, "cursor", tmp_path, "--uninstall").returncode == 0

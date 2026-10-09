@@ -1,5 +1,9 @@
 # Changelog — skill-orchestrator-multiagent
 
+## [1.2.1] - 2026-10-09
+
+- Align the shared run-ledger contract with atomic local mutation and unchanged sequential/external-effect limits.
+
 ## [1.2.0] - 2026-10-08
 
 - Add protected PRD/domain/profile handoffs, source-bound compiled workers and typed owner admission; preserve bounded attempts, retry/resume and explicit opt-in.

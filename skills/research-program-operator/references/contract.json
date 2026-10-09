@@ -10,7 +10,8 @@
       "enums": {
         "STATUSES": "status",
         "STAGES": "stage",
-        "GATE_STATUSES": "gates.status"
+        "GATE_STATUSES": "gates.status",
+        "STUDY_STATUSES": "studies.status"
       }
     },
     "scripts/run_evals.py": {
@@ -43,7 +44,6 @@
     },
     "studies": {},
     "studies.status": {
-      "enforced": false,
       "enum": [
         "planned",
         "reported",
@@ -77,7 +77,13 @@
         "UNKNOWN",
         "NOT_REPORTED"
       ]
-    }
+    },
+    "evidence": {},
+    "falsifier": {},
+    "evidence_requirement": {},
+    "stop_rule": {},
+    "continue_rule": {},
+    "dependencies": {}
   },
   "outputs": {},
   "internal": {},

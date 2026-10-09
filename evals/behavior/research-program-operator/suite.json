@@ -1,7 +1,7 @@
 {
   "schema": "cometweb.behavior-suite/v1",
   "skill": "research-program-operator",
-  "description": "Scaffold placeholder from tooling/new_skill.py; replace with a real case",
+  "description": "Deterministic canonical output admission, including explicit readiness contradictions; not model behavior.",
   "cases": [
     {
       "id": "complete-result-passes",
@@ -13,11 +13,11 @@
       "call": "validate",
       "args": [
         {
-          "summary": "Checked the request.",
+          "summary": "Reconciled the research program and bounded the next study.",
           "status": "complete",
           "not_verified": [],
           "program": {
-            "question": "What should the program do next?",
+            "question": "What should the program do after the pilot?",
             "as_of": "2026-10-05",
             "stage": "analysis",
             "studies": [
@@ -25,7 +25,10 @@
                 "id": "S1",
                 "name": "Pilot",
                 "status": "reported",
-                "estimand": "activation effect"
+                "estimand": "activation effect",
+                "evidence": [
+                  "fixture:pilot-results"
+                ]
               }
             ],
             "hypotheses": [
@@ -34,21 +37,30 @@
             "gates": [
               {
                 "id": "G1",
-                "status": "UNKNOWN"
+                "status": "READY",
+                "evidence": [
+                  "fixture:protocol-review"
+                ]
               }
             ],
             "next_studies": [
-              "Run follow-up."
+              {
+                "id": "S2",
+                "estimand": "activation effect",
+                "falsifier": "effect is nonpositive",
+                "dependencies": [
+                  "S1"
+                ],
+                "evidence_requirement": "powered follow-up observations",
+                "stop_rule": "stop at preregistered sample size",
+                "continue_rule": "continue after ethics approval"
+              }
             ],
-            "governance": [
-              "Ethics status unknown."
-            ],
-            "unknowns": [
-              "Long-term effect unknown."
-            ]
+            "governance": [],
+            "unknowns": []
           },
           "research_handoff": {
-            "status": "UNKNOWN",
+            "status": "READY",
             "target": "longform-publisher"
           }
         }
@@ -70,13 +82,13 @@
       "call": "validate",
       "args": [
         {
-          "summary": "Done.",
+          "summary": "Reconciled the research program and bounded the next study.",
           "status": "complete",
           "not_verified": [
-            "pricing page"
+            "not checked"
           ],
           "program": {
-            "question": "What should the program do next?",
+            "question": "What should the program do after the pilot?",
             "as_of": "2026-10-05",
             "stage": "analysis",
             "studies": [
@@ -84,7 +96,10 @@
                 "id": "S1",
                 "name": "Pilot",
                 "status": "reported",
-                "estimand": "activation effect"
+                "estimand": "activation effect",
+                "evidence": [
+                  "fixture:pilot-results"
+                ]
               }
             ],
             "hypotheses": [
@@ -93,21 +108,30 @@
             "gates": [
               {
                 "id": "G1",
-                "status": "UNKNOWN"
+                "status": "READY",
+                "evidence": [
+                  "fixture:protocol-review"
+                ]
               }
             ],
             "next_studies": [
-              "Run follow-up."
+              {
+                "id": "S2",
+                "estimand": "activation effect",
+                "falsifier": "effect is nonpositive",
+                "dependencies": [
+                  "S1"
+                ],
+                "evidence_requirement": "powered follow-up observations",
+                "stop_rule": "stop at preregistered sample size",
+                "continue_rule": "continue after ethics approval"
+              }
             ],
-            "governance": [
-              "Ethics status unknown."
-            ],
-            "unknowns": [
-              "Long-term effect unknown."
-            ]
+            "governance": [],
+            "unknowns": []
           },
           "research_handoff": {
-            "status": "UNKNOWN",
+            "status": "READY",
             "target": "longform-publisher"
           }
         }
@@ -116,7 +140,8 @@
         "exit_code": 0,
         "json": {
           "$": [
-            "status: complete contradicts a non-empty not_verified"
+            "status: complete contradicts a non-empty not_verified",
+            "handoff.status: READY requires a valid complete program; not publication authorization"
           ]
         }
       }

@@ -463,7 +463,7 @@ def test_generated_rule_update_leaves_planted_temp_names_alone(tmp_path: Path) -
     planted.symlink_to(victim)
     result = run_installer("cursor", tmp_path / "skills", tmp_path)
     assert result.returncode == 0, result.stderr
-    source = ROOT / "docs" / "generated-cursor-routing.mdc"
+    source = ROOT / "rules" / "cometweb-agent-skills.mdc"
     assert not rule.is_symlink()
     assert rule.read_bytes() == source.read_bytes()
     assert rule.stat().st_mode & 0o777 == 0o644

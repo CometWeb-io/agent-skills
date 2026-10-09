@@ -21,6 +21,13 @@ sys.path.insert(0, str(ROOT / "tooling"))
 
 import real_host_eval as rhe  # noqa: E402
 
+@pytest.fixture(autouse=True)
+def fake_adapter_credentials(monkeypatch):
+    # These fake processes test the harness; credentials remain synthetic.
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "fake-harness-token")
+    monkeypatch.setenv("OPENAI_API_KEY", "fake-harness-token")
+
+
 GOLDEN = (ROOT / "evals/output/release-readiness/good-go-with-controls.md").read_text(encoding="utf-8")
 BROKEN = GOLDEN.replace("## Verdict", "## Summary", 1)
 

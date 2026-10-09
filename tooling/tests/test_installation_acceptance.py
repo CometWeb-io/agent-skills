@@ -82,7 +82,7 @@ def test_real_zip_executes_helpers_and_keeps_host_unassessed(tmp_path):
 @pytest.mark.parametrize("workflow", ["validate.yml", "attest-packages.yml"])
 def test_ci_runs_all_package_helpers_not_only_runtime_manifests(workflow):
     data = yaml.safe_load((mod.ROOT / ".github/workflows" / workflow).read_text())
-    commands = [step.get("run", "") for job in data["jobs"].values() for step in job["steps"]]
+    commands = [step.get("run", "") for job in data["jobs"].values() for step in job.get("steps", [])]
     if any("tooling/check_all.py --ci" in cmd for cmd in commands):
         # validate.yml runs every gate through check_all.py; read the gate it runs.
         spec = importlib.util.spec_from_file_location("cw_check_all", mod.ROOT / "tooling" / "check_all.py")
@@ -96,10 +96,10 @@ def test_ci_runs_all_package_helpers_not_only_runtime_manifests(workflow):
 def test_attestation_cannot_precede_release_checks():
     data = yaml.safe_load((mod.ROOT / ".github/workflows/attest-packages.yml").read_text())
     steps = data["jobs"]["attest"]["steps"]
-    gate = next(i for i, step in enumerate(steps) if "validate_local.py" in step.get("run", ""))
+    gate = next(i for i, step in enumerate(steps) if "tooling/check_all.py --ci" in step.get("run", ""))
     attest = next(i for i, step in enumerate(steps) if step.get("uses", "").startswith("actions/attest@"))
     assert gate < attest
-    assert "public_safety.py --root . --history" in steps[gate]["run"]
+    assert data["jobs"]["attest"]["needs"] == "platforms"
 
 
 def test_multiagent_helper_smoke_passes_on_repository_package():

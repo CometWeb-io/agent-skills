@@ -9,7 +9,7 @@
     "brief-architect": "1.8.0",
     "cometweb-context": "1.5.2",
     "competitive-intelligence": "1.1.3",
-    "competitor-profiling": "0.1.0",
+    "competitor-profiling": "0.1.1",
     "content-reviewer": "1.7.5",
     "content-roaster": "6.1.4",
     "content-writer": "1.7.4",
@@ -27,14 +27,14 @@
     "repair-operator": "1.7.5",
     "repo-roaster": "6.1.4",
     "repo-to-roadmap": "1.1.2",
-    "research-program-operator": "1.3.1",
+    "research-program-operator": "1.3.2",
     "rubric-designer": "1.7.5",
     "science-roaster": "6.1.4",
     "seo-geo-aeo-maxxing": "1.3.4",
     "skill-auditor": "1.7.5",
     "skill-evaluator": "1.7.4",
-    "skill-orchestrator": "1.3.0",
-    "skill-orchestrator-multiagent": "1.2.0",
+    "skill-orchestrator": "1.3.1",
+    "skill-orchestrator-multiagent": "1.2.1",
     "web-app-auditor": "1.5.0"
   }
 }

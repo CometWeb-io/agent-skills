@@ -27,7 +27,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -58,7 +68,10 @@
             "id": "S1",
             "name": "Pilot",
             "status": "reported",
-            "estimand": "activation effect"
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
           }
         ],
         "hypotheses": [
@@ -67,21 +80,30 @@
         "gates": [
           {
             "id": "G1",
-            "status": "UNKNOWN"
+            "status": "READY",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
-        "governance": [
-          "Ethics review is not reported."
-        ],
-        "unknowns": [
-          "Long-term effect is unknown."
-        ]
+        "governance": [],
+        "unknowns": []
       },
       "research_handoff": {
-        "status": "UNKNOWN",
+        "status": "READY",
         "target": "longform-publisher"
       }
     },
@@ -121,7 +143,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -167,7 +199,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -228,7 +270,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -267,7 +319,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -282,7 +344,8 @@
       }
     },
     "expected_errors": [
-      "program.studies: required non-empty list"
+      "program.studies: required non-empty list",
+      "program.next_studies[0].dependencies: must reference existing studies"
     ]
   },
   {
@@ -313,7 +376,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -359,7 +432,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -374,7 +457,8 @@
       }
     },
     "expected_errors": [
-      "handoff.status: invalid"
+      "handoff.status: invalid",
+      "handoff.target: must be next-study, science-roaster or longform-publisher; never publication"
     ]
   },
   {
@@ -405,7 +489,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -440,7 +534,10 @@
             "id": "S1",
             "name": "Pilot",
             "status": "reported",
-            "estimand": "activation effect"
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
           }
         ],
         "hypotheses": [
@@ -449,26 +546,36 @@
         "gates": [
           {
             "id": "G1",
-            "status": "UNKNOWN"
+            "status": "READY",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
-        "governance": [
-          "Ethics review is not reported."
-        ],
-        "unknowns": [
-          "Long-term effect is unknown."
-        ]
+        "governance": [],
+        "unknowns": []
       },
       "research_handoff": {
-        "status": "UNKNOWN",
+        "status": "READY",
         "target": "longform-publisher"
       }
     },
     "expected_errors": [
-      "status: complete contradicts a non-empty not_verified"
+      "status: complete contradicts a non-empty not_verified",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
     ]
   },
   {
@@ -498,7 +605,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -543,7 +660,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -558,7 +685,8 @@
       }
     },
     "expected_errors": [
-      "program.as_of: required non-empty string"
+      "program.as_of: required non-empty string",
+      "program.as_of: must be ISO date or timezone-aware timestamp"
     ]
   },
   {
@@ -584,7 +712,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -599,7 +737,8 @@
       }
     },
     "expected_errors": [
-      "program.studies[0]: must be object"
+      "program.studies[0]: must be object",
+      "program.next_studies[0].dependencies: must reference existing studies"
     ]
   },
   {
@@ -630,7 +769,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -645,7 +794,8 @@
       }
     },
     "expected_errors": [
-      "program.studies[0].id: required"
+      "program.studies[0].id: required",
+      "program.next_studies[0].dependencies: must reference existing studies"
     ]
   },
   {
@@ -682,7 +832,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -728,7 +888,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -774,7 +944,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -789,7 +969,8 @@
       }
     },
     "expected_errors": [
-      "program.studies[0].status: required"
+      "program.studies[0].status: required",
+      "program.studies[0].status: invalid"
     ]
   },
   {
@@ -820,7 +1001,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -900,7 +1091,17 @@
           null
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -946,7 +1147,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -989,7 +1200,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -1035,7 +1256,17 @@
           }
         ],
         "next_studies": [
-          "Run a powered follow-up with the same estimand."
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
         ],
         "governance": [
           "Ethics review is not reported."
@@ -1049,7 +1280,871 @@
       }
     },
     "expected_errors": [
-      "handoff.target: required"
+      "handoff.target: required",
+      "handoff.target: must be next-study, science-roaster or longform-publisher; never publication"
+    ]
+  },
+  {
+    "id": "audit-governance",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "READY",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [
+          "unresolved"
+        ],
+        "unknowns": []
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.governance: complete requires no unresolved items",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-unknowns",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "READY",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [],
+        "unknowns": [
+          "unresolved"
+        ]
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.unknowns: complete requires no unresolved items",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-gate-BLOCKED",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "BLOCKED",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [],
+        "unknowns": []
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.gates: complete requires non-empty READY gates",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-gate-UNKNOWN",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [],
+        "unknowns": []
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.gates: complete requires non-empty READY gates",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-gate-NOT_REPORTED",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "NOT_REPORTED",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [],
+        "unknowns": []
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.gates: complete requires non-empty READY gates",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-invalid-date",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "not-a-date",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "READY",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [],
+        "unknowns": []
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.as_of: must be ISO date or timezone-aware timestamp",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-unknown-estimand",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "unknown",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "READY",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [],
+        "unknowns": []
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.studies[0].estimand: must define the quantity being estimated",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-invalid-study-state",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "whatever",
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "READY",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [],
+        "unknowns": []
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.studies[0].status: invalid",
+      "program.studies[0]: complete requires reported/executed study with evidence locators",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-empty-next-study",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "READY",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
+          }
+        ],
+        "next_studies": [
+          {}
+        ],
+        "governance": [],
+        "unknowns": []
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.next_studies[0].id: required",
+      "program.next_studies[0].estimand: required",
+      "program.next_studies[0].falsifier: required",
+      "program.next_studies[0].evidence_requirement: required",
+      "program.next_studies[0].stop_rule: required",
+      "program.next_studies[0].continue_rule: required",
+      "program.next_studies[0].dependencies: must reference existing studies",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-missing-gate-evidence",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "READY",
+            "evidence": []
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [],
+        "unknowns": []
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.gates[0].evidence: READY requires evidence locators",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-publish-not-authorized",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "complete",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect",
+            "evidence": [
+              "fixture:pilot-results"
+            ]
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "READY",
+            "evidence": [
+              "fixture:protocol-review"
+            ]
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [],
+        "unknowns": []
+      },
+      "research_handoff": {
+        "status": "READY",
+        "target": "publish"
+      }
+    },
+    "expected_errors": [
+      "handoff.target: must be next-study, science-roaster or longform-publisher; never publication",
+      "handoff.status: READY requires a valid complete program; not publication authorization"
+    ]
+  },
+  {
+    "id": "audit-empty-not-verified-entry",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [
+        null
+      ],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "not_verified: entries must be non-empty strings"
+    ]
+  },
+  {
+    "id": "audit-missing-gate-id",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.gates[0].id: required"
+    ]
+  },
+  {
+    "id": "audit-empty-governance-entry",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          {
+            "id": "S2",
+            "estimand": "activation effect",
+            "falsifier": "effect is nonpositive",
+            "dependencies": [
+              "S1"
+            ],
+            "evidence_requirement": "powered follow-up observations",
+            "stop_rule": "stop at preregistered sample size",
+            "continue_rule": "continue after ethics approval"
+          }
+        ],
+        "governance": [
+          null
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.governance: entries must be non-empty strings"
+    ]
+  },
+  {
+    "id": "audit-prose-next-study",
+    "input": {
+      "summary": "Reconciled the research program and bounded the next study.",
+      "status": "partial",
+      "not_verified": [],
+      "program": {
+        "question": "What should the program do after the pilot?",
+        "as_of": "2026-10-05",
+        "stage": "analysis",
+        "studies": [
+          {
+            "id": "S1",
+            "name": "Pilot",
+            "status": "reported",
+            "estimand": "activation effect"
+          }
+        ],
+        "hypotheses": [
+          "The intervention improves activation."
+        ],
+        "gates": [
+          {
+            "id": "G1",
+            "status": "UNKNOWN"
+          }
+        ],
+        "next_studies": [
+          "not a structured study"
+        ],
+        "governance": [
+          "Ethics review is not reported."
+        ],
+        "unknowns": [
+          "Long-term effect is unknown."
+        ]
+      },
+      "research_handoff": {
+        "status": "UNKNOWN",
+        "target": "longform-publisher"
+      }
+    },
+    "expected_errors": [
+      "program.next_studies[0]: must be object"
     ]
   }
 ]

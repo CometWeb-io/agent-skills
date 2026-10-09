@@ -84,8 +84,8 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. | 1.5.2 |
 | [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. | 1.0.7 |
 | [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. | 1.2.4 |
-| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.3.0 |
-| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.2.0 |
+| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.3.1 |
+| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.2.1 |
 | [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. | 1.7.4 |
 | [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. | 1.8.1 |
 | [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. | 1.7.4 |
@@ -111,8 +111,8 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. | 6.1.4 |
 | [`repair-operator`](skills/repair-operator/) | Minimal dependency-aware repairs and fresh verification of closed findings. | 1.7.5 |
 | [`artifact-acceptance`](skills/artifact-acceptance/) | Final evidence-backed acceptance gates for knowledge artifacts. | 1.7.5 |
-| [`competitor-profiling`](skills/competitor-profiling/) | Initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence. | 0.1.0 |
-| [`research-program-operator`](skills/research-program-operator/) | Research-program stage gates, next-study planning, and manuscript-readiness handoffs. *(frozen)* | 1.3.1 |
+| [`competitor-profiling`](skills/competitor-profiling/) | Initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence. | 0.1.1 |
+| [`research-program-operator`](skills/research-program-operator/) | Research-program stage gates, next-study planning, and manuscript-readiness handoffs. *(frozen)* | 1.3.2 |
 
 ### Publication, operations, QA, and release
 
@@ -219,3 +219,15 @@ source commits are listed in THIRD_PARTY_NOTICES.md and the registries.
 
 Repository checks validate this source candidate; they do not authorize installation,
 publishing or promotion of the experimental profiles.
+
+### Candidate quality boundaries
+
+`competitor-profiling` and `research-program-operator` are experimental runtime
+candidates: their deterministic output contracts are tested, while real-model
+behavior and task-success lift remain not assessed. Catalog presence and
+format support are not host/model qualification. A READY handoff is bounded
+readiness for its named next step, never publication or external-write authority.
+
+Discovery metadata, activated instructions and optional reference resources
+have separate estimates in [the context budget](docs/generated-context-budget.md).
+Actual prompt/cache tokens and runtime costs require recorded host runs.

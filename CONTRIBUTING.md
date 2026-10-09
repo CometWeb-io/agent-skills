@@ -248,7 +248,8 @@ different skill set under a version that was already recorded.
 
 A release is a `v*` tag on `main`. Pushing the tag runs
 [`attest-packages.yml`](.github/workflows/attest-packages.yml), which refuses a
-tag that does not equal `v` + `VERSION`, revalidates the tree, builds one
+tag that does not equal `v` + `VERSION`, requires the six OS/Python platform
+jobs and every `check_all.py --ci` gate on the same checkout, then builds one
 deterministic `skill.zip` per skill, writes a CycloneDX SBOM of the plugin,
 attests both with Sigstore build provenance and uploads them as a workflow
 artifact. Nothing is published to a registry.
@@ -261,11 +262,7 @@ artifact. Nothing is published to a registry.
    `dist/`:
 
    ```bash
-   uv run python tooling/validate_local.py --trusted-checkout \
-     --output ../agent-skills-release-validation --timeout 900
-   uv run python tooling/public_safety.py --root .
-   uv run python tooling/public_safety.py --root . --history
-   uv run python tooling/installation_acceptance.py --all --run-helpers --trusted-checkout
+   uv run python tooling/check_all.py --ci
    for skill in skills/*/SKILL.md; do
      uv run python tooling/package_skill.py "$(basename "$(dirname "$skill")")"
    done

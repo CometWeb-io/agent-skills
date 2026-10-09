@@ -11,7 +11,7 @@
 | `brief-architect` | 1.8.0 | domain | active | ACTIVE | 577 | False |
 | `cometweb-context` | 1.5.2 | foundation | active | ACTIVE | 826 | False |
 | `competitive-intelligence` | 1.1.3 | domain | active | ACTIVE | 978 | False |
-| `competitor-profiling` | 0.1.0 | domain | active | ACTIVE | 454 | False |
+| `competitor-profiling` | 0.1.1 | domain | active | ACTIVE | 454 | False |
 | `content-reviewer` | 1.7.5 | domain | active | ACTIVE | 553 | False |
 | `content-roaster` | 6.1.4 | domain | active | ACTIVE | 531 | False |
 | `content-writer` | 1.7.4 | domain | active | ACTIVE | 535 | False |
@@ -29,12 +29,12 @@
 | `repair-operator` | 1.7.5 | domain | active | ACTIVE | 587 | False |
 | `repo-roaster` | 6.1.4 | domain | active | ACTIVE | 825 | False |
 | `repo-to-roadmap` | 1.1.2 | domain | active | ACTIVE | 1005 | False |
-| `research-program-operator` | 1.3.1 | domain | active | FROZEN | 462 | False |
+| `research-program-operator` | 1.3.2 | domain | active | FROZEN | 462 | False |
 | `rubric-designer` | 1.7.5 | foundation | active | ACTIVE | 672 | False |
 | `science-roaster` | 6.1.4 | domain | active | ACTIVE | 739 | False |
 | `seo-geo-aeo-maxxing` | 1.3.4 | domain | active | ACTIVE | 659 | False |
 | `skill-auditor` | 1.7.5 | foundation | active | ACTIVE | 517 | False |
 | `skill-evaluator` | 1.7.4 | foundation | active | ACTIVE | 742 | False |
-| `skill-orchestrator` | 1.3.0 | foundation | active | ACTIVE | 728 | False |
-| `skill-orchestrator-multiagent` | 1.2.0 | foundation | active | ACTIVE | 467 | False |
+| `skill-orchestrator` | 1.3.1 | foundation | active | ACTIVE | 728 | False |
+| `skill-orchestrator-multiagent` | 1.2.1 | foundation | active | ACTIVE | 467 | False |
 | `web-app-auditor` | 1.5.0 | domain | active | ACTIVE | 762 | False |

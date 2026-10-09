@@ -58,7 +58,9 @@
         "PARTIAL",
         "READY"
       ]
-    }
+    },
+    "claim_ids": {},
+    "profile_sha256": {}
   },
   "outputs": {},
   "internal": {},

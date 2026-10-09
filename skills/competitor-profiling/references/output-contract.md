@@ -1,27 +1,34 @@
 # Output contract
 
-A result is an evidence-backed baseline object. `scripts/output_contract.py`
-enforces it and `evals/cases.json` pins each rule.
+A source-backed initial baseline, not a finding of factual truth. The validator
+checks structure, temporal consistency and readiness; it does not fetch sources.
 
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `summary` | non-empty string | What was done, in one or two sentences |
-| `status` | `complete`, `partial` or `blocked` | How far the work got |
+Required root fields: `summary` (non-empty text), `status` (`complete`, `partial`,
+`blocked`), `not_verified` (list of non-empty strings), `profile`, and
+`competitive_intelligence_handoff`.
 
-The result also requires `profile` and `competitive_intelligence_handoff`.
-The profile requires `subject`, `as_of`, `scope`, non-empty `sources` and
-`claims`, exact sections `company`, `icp`, `positioning`, `product`, `pricing`,
-`proof`, and `discovery`, plus `contradictions` and `gaps`.
-| `not_verified` | list of strings | What was not checked; empty only when nothing was left |
+`profile` requires `subject`, `scope`, `as_of`, non-empty `sources` and `claims`,
+`sections`, `contradictions` and `gaps`. ISO dates mean UTC midnight; timestamps
+must include a timezone. Every `observed_at` must be at or before `as_of`.
 
-A `complete` result with a non-empty `not_verified` is contradictory and is
-rejected.
+Sources have unique `id`, non-empty `kind`, `locator`, and `observed_at`.
+Claims have unique `id`, non-empty `text`, `state` (`OBSERVED`, `INFERRED`,
+`HYPOTHESIS`, `UNKNOWN`), and non-empty `source_ids` referencing existing sources.
 
-The output does **not** assert anything beyond what was checked. A consumer that
-mistakes a heuristic for a verdict is the failure mode worth preventing here.
+`sections` has exactly `company`, `icp`, `positioning`, `product`, `pricing`,
+`proof`, and `discovery`. Each is an object with non-empty `summary` and
+non-empty `claim_ids` referencing profile claims. A section name or "covered"
+label alone cannot establish coverage. A partial dossier can record unknowns
+with a supporting source locator and describe its gaps without inventing facts.
 
-Source and claim rows use `id`; source rows also use `kind`, `locator`, and
-`observed_at`, while claim rows use `text`, `state`, and `source_ids`. The
-handoff uses
-`baseline_id` and `source_profile_status`, whose values are `BOOTSTRAP`,
-`PARTIAL`, or `READY`; it never invents a prior delta.
+`complete` requires empty `not_verified`, `contradictions`, and `gaps`, and no
+`UNKNOWN` or `HYPOTHESIS` claims. It describes completion of the declared scope,
+not independent factual verification or authority for a side effect.
+
+The handoff contains non-empty `baseline_id` and `source_profile_status`
+(`BOOTSTRAP`, `PARTIAL`, `READY`). `READY` requires a valid complete profile and
+`profile_sha256` equal to `scripts/output_contract.py:profile_hash(profile)`:
+SHA-256 of canonical UTF-8 JSON (sorted keys, compact separators, no NaN), with
+`sha256:` prefix. The digest binds the snapshot, not the truth of its contents.
+A first baseline never invents a prior delta; consumers must validate their
+own monitoring snapshot before acceptance.

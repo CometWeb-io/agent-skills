@@ -31,5 +31,6 @@
   "ids": [
     {"rule": "study-ids", "pattern": "\\bS\\d+\\b", "defined_in": [{"section": "studies", "as": "table_first_column"}], "defined_by": "the Studies section defines no matching study ID"},
     {"rule": "gate-ids", "pattern": "\\bG\\d+\\b", "defined_in": [{"section": "gates", "as": "list_lead"}], "defined_by": "the Stage gates section defines no matching gate ID"}
-  ]
+  ],
+  "sidecars": [{"rule": "canonical-output", "detect": {"has_keys": ["program"]}, "required": true, "validator": "skills/research-program-operator/scripts/output_contract.py", "function": "assess", "status_key": "status", "recompute": {"result": "status", "stated": "status"}}]
 }

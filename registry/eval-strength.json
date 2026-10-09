@@ -23,8 +23,8 @@
       "unexercised": []
     },
     {
-      "guards": 25,
-      "held": 25,
+      "guards": 40,
+      "held": 40,
       "id": "competitor-profiling",
       "strength": 1.0,
       "unexercised": []
@@ -65,10 +65,10 @@
       "unexercised": []
     },
     {
-      "guards": 192,
+      "guards": 193,
       "held": 180,
       "id": "product-operator",
-      "strength": 0.938,
+      "strength": 0.933,
       "unexercised": []
     },
     {
@@ -86,8 +86,8 @@
       "unexercised": []
     },
     {
-      "guards": 19,
-      "held": 19,
+      "guards": 35,
+      "held": 35,
       "id": "research-program-operator",
       "strength": 1.0,
       "unexercised": []

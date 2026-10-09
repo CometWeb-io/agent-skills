@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+from contextvars import ContextVar
+from functools import wraps
 import hashlib
 import json
 import os
@@ -14,8 +16,11 @@ from uuid import uuid4
 
 try:
     import fcntl
-except ImportError:  # pragma: no cover - Windows uses single-writer fixtures.
+except ImportError:  # pragma: no cover - exercised by the native Windows matrix.
     fcntl = None
+    import msvcrt
+
+_TRANSACTIONS = ContextVar("workflow_transactions", default=())
 
 RUN_SCHEMA = "cometweb.workflow-run/v1"
 EVENT_SCHEMA = "cometweb.workflow-event/v1"
@@ -45,7 +50,8 @@ def plan_hash(plan: dict[str, Any]) -> str:
 def _private(path: Path, label: str) -> None:
     if path.is_symlink():
         raise ValueError(f"{label} must not be a symlink")
-    if stat.S_IMODE(path.stat().st_mode) & 0o077:
+    # Windows mode bits do not describe ACL privacy.
+    if os.name != "nt" and stat.S_IMODE(path.stat().st_mode) & 0o077:
         raise ValueError(f"{label} has insecure permissions")
 
 
@@ -54,8 +60,8 @@ def _run_dir(root: Path, run_id: str) -> Path:
     root = root.expanduser()
     if root.is_symlink():
         raise ValueError("workflow root must not be a symlink")
-    root.mkdir(parents=True, exist_ok=True)
-    os.chmod(root, 0o700)
+    root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    _private(root, "workflow root")
     path = root / run_id
     if path.is_symlink():
         raise ValueError("workflow run directory must not be a symlink")
@@ -123,6 +129,42 @@ def _locked(path: Path):
     return Lock()
 
 
+def _serialized(function):
+    """Hold the OS lock across state read, validation and append; nested calls reuse it."""
+    @wraps(function)
+    def transaction(run_dir: Path, *args, **kwargs):
+        key = str(run_dir.absolute())
+        active = _TRANSACTIONS.get()
+        if key in active:
+            return function(run_dir, *args, **kwargs)
+        _read_manifest(run_dir)
+        path = run_dir / "transaction.lock"
+        if path.is_symlink():
+            raise ValueError("workflow transaction lock must not be a symlink")
+        descriptor = os.open(path, os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0), 0o600)
+        with os.fdopen(descriptor, "r+b") as handle:
+            _private(path, "workflow transaction lock")
+            if fcntl is not None:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            else:  # pragma: no cover - native Windows
+                if path.stat().st_size == 0:
+                    handle.write(b"\0")
+                    handle.flush()
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_LOCK, 1)
+            token = _TRANSACTIONS.set((*active, key))
+            try:
+                return function(run_dir, *args, **kwargs)
+            finally:
+                _TRANSACTIONS.reset(token)
+                if fcntl is not None:
+                    fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+                else:  # pragma: no cover - native Windows
+                    handle.seek(0)
+                    msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+    return transaction
+
+
 def _read_events(run_dir: Path) -> list[dict[str, Any]]:
     path = _events_path(run_dir)
     if not path.is_file():
@@ -161,6 +203,7 @@ def _read_events(run_dir: Path) -> list[dict[str, Any]]:
     return events
 
 
+@_serialized
 def append_event(run_dir: Path, event_type: str, data: dict[str, Any]) -> dict[str, Any]:
     path = _events_path(run_dir)
     with _locked(path) as handle:
@@ -216,6 +259,7 @@ def create_run(root: Path, run_id: str, plan: dict[str, Any]) -> Path:
     return run_dir
 
 
+@_serialized
 def replay(run_dir: Path) -> dict[str, Any]:
     manifest = _read_manifest(run_dir)
     events = _read_events(run_dir)
@@ -366,6 +410,7 @@ def _check_current_plan(run_dir: Path, state: dict[str, Any], current_plan: dict
     return state
 
 
+@_serialized
 def claim_next(run_dir: Path, current_plan: dict[str, Any] | None = None,
                worker_id: str | None = None) -> dict[str, Any]:
     state = _check_current_plan(run_dir, replay(run_dir), current_plan)
@@ -406,6 +451,7 @@ def claim_next(run_dir: Path, current_plan: dict[str, Any] | None = None,
     return replay(run_dir)
 
 
+@_serialized
 def complete_step(run_dir: Path, step_id: str, envelope_id: str, envelope_hash: str,
                   attempt_id: str | None = None, *, envelope: dict[str, Any] | None = None) -> dict[str, Any]:
     state = replay(run_dir)
@@ -483,6 +529,7 @@ def complete_step(run_dir: Path, step_id: str, envelope_id: str, envelope_hash: 
     return event
 
 
+@_serialized
 def _transition_step(run_dir: Path, step_id: str, event_type: str, reason: str,
                      attempt_id: str | None) -> dict[str, Any]:
     if not reason or not attempt_id:
@@ -516,6 +563,7 @@ def block_step(run_dir: Path, step_id: str, reason: str, attempt_id: str | None 
     return _transition_step(run_dir, step_id, "step_blocked", reason, attempt_id)
 
 
+@_serialized
 def cancel_run(run_dir: Path, reason: str = "cancelled by operator") -> dict[str, Any]:
     if not reason:
         raise ValueError("cancel needs a reason")

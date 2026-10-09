@@ -64,7 +64,7 @@ def preflight(host: str, environment: dict[str, str] | None = None,
         }
     environment = os.environ if environment is None else environment
     binary = binary_override or profile["binary"]
-    if binary_override is None and not any(environment.get(name) for name in profile["credential_env"]):
+    if not any(environment.get(name) for name in profile["credential_env"]):
         return {"status": "NOT_RUN", "host": host, "reason": "MISSING_CREDENTIAL",
                 "credential_names": list(profile["credential_env"])}
     if shutil.which(binary) is None and not Path(binary).is_file():
@@ -72,6 +72,9 @@ def preflight(host: str, environment: dict[str, str] | None = None,
                 "binary": binary, "credential_names": list(profile["credential_env"])}
     return {
         "status": "READY",
+        "readiness_scope": "binary_and_credential_presence_only",
+        "authenticated": "not_assessed",
+        "runtime_acceptance": "not_assessed",
         "host": host,
         "adapter": profile["adapter"],
         "binary": binary,

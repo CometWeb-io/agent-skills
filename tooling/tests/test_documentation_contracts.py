@@ -47,16 +47,14 @@ def test_release_rehearsal_matches_attestation_workflow() -> None:
     workflow = (ROOT / ".github" / "workflows" / "attest-packages.yml").read_text(encoding="utf-8")
 
     expected = (
-        "tooling/validate_local.py",
-        "tooling/public_safety.py --root .",
-        "tooling/installation_acceptance.py --all --run-helpers --trusted-checkout",
+        "tooling/check_all.py --ci",
         "tooling/package_skill.py",
         "tooling/sbom.py --dist dist",
     )
     for command in expected:
         assert command in release_section
-    assert "tooling/validate_local.py" in workflow
-    assert "tooling/check_all.py --ci" not in release_section
+    assert "tooling/check_all.py --ci" in workflow
+    assert "platform-matrix.yml" in workflow
 
 
 def test_documented_operator_paths_exist() -> None:

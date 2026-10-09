@@ -5,7 +5,8 @@ orchestrator runs. It is not part of CW-AIP and never interprets, upgrades, or
 overrides Council or Release Readiness verdicts.
 
 The source of truth is an append-only, hash-chained `events.jsonl` under a
-0700 run directory. The manifest and event log are 0600; existing ledger
+0700 run directory. Existing roots are checked, never chmodded. New roots
+are created with mode 0700. The manifest and event log are 0600; existing ledger
 artifacts with group or world permissions are rejected. Symlinked roots, run
 directories, manifests, and logs are rejected, and run and step identifiers
 cannot contain path separators or traversal components.
@@ -67,3 +68,17 @@ Completion revalidates the full envelope against the pinned schema/kernel and
 requires READY before writing the completion. Rejected input leaves the attempt
 active and cannot unlock the next step. New run-created events bind manifest steps;
 legacy non-PRD ledgers remain readable.
+
+## Concurrent callers and crash boundary
+
+Every mutation holds a run-local OS lock across replay, eligibility checks and
+append: POSIX flock or Windows byte-range locking. Contending callers serialize;
+only one active attempt is allowed. Windows mode bits do not validate ACLs:
+use a private user-owned directory with appropriate ACLs on that host.
+Locks release when the process exits. An interrupted record still fails closed
+as a truncated log; an orphaned attempt requires explicit resolution.
+
+The hash chain detects accidental changes, not an attacker who can rewrite the
+entire local directory. This is a sequential local executor, not a distributed
+runtime. External effects require API idempotency and read-back; the ledger
+cannot make an external write and local append atomic or promise exactly once.

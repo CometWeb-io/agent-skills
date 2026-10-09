@@ -11,9 +11,11 @@
     {"id": "broken-no-stage", "base": "good-partial.md", "mutations": [{"replace": "- Stage: protocol", "with": "- Phase: unknown"}], "expect": ["FIELD_MISSING:stage"]},
     {"id": "broken-no-gate-status", "base": "good-partial.md", "mutations": [{"replace": "- G1 — UNKNOWN:", "with": "- G1 — pending:"}], "expect": ["FIELD_MISSING:gate-status"]},
     {"id": "broken-no-handoff-status", "base": "good-partial.md", "mutations": [{"replace": "- Status: BLOCKED", "with": "- Status: pending"}], "expect": ["FIELD_MISSING:handoff-status"]},
-    {"id": "broken-invented-approval", "base": "good-complete.md", "mutations": [{"replace": "- Ethics: approval status not reported.", "with": "- Ethics approval granted."}], "expect": ["CONTRACT_VIOLATION:invented-approval"]},
+    {"id": "broken-invented-approval", "base": "good-complete.md", "mutations": [{"replace": "- Ethics: no ethics gate applies to this synthetic fixture; no real participants.", "with": "- Ethics approval granted."}], "expect": ["CONTRACT_VIOLATION:invented-approval"]},
     {"id": "broken-no-estimand", "base": "good-complete.md", "mutations": [{"replace": "| S1 | Pilot | reported | activation effect |", "with": "| S1 | Pilot | reported | — |"}], "expect": ["EVIDENCE_MISSING:study-estimand-evidence"]},
     {"id": "broken-invented-gate-id", "base": "good-complete.md", "mutations": [{"replace": "- Handoff: manuscript readiness", "with": "- Handoff references G404; manuscript readiness"}], "expect": ["UNDEFINED_ID:gate-ids"]},
-    {"id": "broken-no-verdict", "base": "good-complete.md", "mutations": [{"replace": "- Status: COMPLETE\n", "with": ""}, {"replace": "- Status: UNKNOWN\n", "with": ""}], "expect": ["FIELD_MISSING:handoff-status", "VERDICT_MISSING:verdict"]}
+    {"id": "broken-no-verdict", "base": "good-complete.md", "mutations": [{"replace": "- Status: COMPLETE\n", "with": ""}, {"replace": "- Status: READY\n", "with": ""}], "expect": ["FIELD_MISSING:handoff-status", "VERDICT_MISSING:verdict"]},
+    {"id": "audit-missing-payload", "base": "good-complete.md", "mutations": [{"replace": "```json", "with": "```text"}], "expect": ["SIDECAR_INVALID:canonical-output"]},
+    {"id": "audit-false-complete", "base": "good-complete.md", "mutations": [{"replace": "\"status\": \"complete\"", "with": "\"status\": \"partial\""}], "expect": ["SIDECAR_INVALID:canonical-output", "VERDICT_WITH_BLOCKERS:canonical-output-recomputed"]}
   ]
 }

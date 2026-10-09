@@ -32,5 +32,6 @@
   "ids": [
     {"rule": "source-ids", "pattern": "\\bS\\d+\\b", "defined_in": [{"section": "sources", "as": "table_first_column"}], "defined_by": "the source manifest defines no matching source ID"},
     {"rule": "claim-ids", "pattern": "\\bC\\d+\\b", "defined_in": [{"section": "claims", "as": "table_first_column"}], "defined_by": "the claim ledger defines no matching claim ID"}
-  ]
+  ],
+  "sidecars": [{"rule": "canonical-output", "detect": {"has_keys": ["profile"]}, "required": true, "validator": "skills/competitor-profiling/scripts/output_contract.py", "function": "assess", "status_key": "status", "recompute": {"result": "status", "stated": "status"}}]
 }

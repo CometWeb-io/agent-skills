@@ -45,6 +45,7 @@ def test_not_run_profile_is_explicit_and_never_executes(tmp_path: Path) -> None:
 def test_missing_credentials_is_not_run(tmp_path: Path) -> None:
     root = registry(tmp_path, {"fake": executable_profile()})
     assert adapters.preflight("fake", environment={}, root=root)["reason"] == "MISSING_CREDENTIAL"
+    assert adapters.preflight("fake", environment={}, root=root, binary_override="/bin/sh")["reason"] == "MISSING_CREDENTIAL"
 
 
 def test_ready_profile_requires_binary_and_credentials(tmp_path: Path) -> None:
@@ -54,6 +55,7 @@ def test_ready_profile_requires_binary_and_credentials(tmp_path: Path) -> None:
     )
     assert result["status"] == "READY"
     assert result["adapter"] == "fake-json"
+    assert result["authenticated"] == "not_assessed"
 
 
 @pytest.mark.parametrize("mutation", [

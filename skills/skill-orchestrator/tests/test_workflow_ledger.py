@@ -111,7 +111,7 @@ def test_symlink_run_directory_is_rejected(tmp_path: Path) -> None:
     outside = tmp_path / "outside"
     outside.mkdir()
     root = tmp_path / "runs"
-    root.mkdir()
+    root.mkdir(mode=0o700)
     (root / "run-1").symlink_to(outside, target_is_directory=True)
     with pytest.raises(ValueError, match="symlink"):
         ledger.create_run(root, "run-1", plan())
@@ -124,14 +124,16 @@ def test_path_traversal_and_permissions_are_rejected(tmp_path: Path) -> None:
     assert not (tmp_path / "escape").exists()
 
     run_dir = ledger.create_run(root, "run-1", plan())
-    assert os.stat(root).st_mode & 0o777 == 0o700
-    assert os.stat(run_dir).st_mode & 0o777 == 0o700
-    assert os.stat(run_dir / "manifest.json").st_mode & 0o777 == 0o600
-    assert os.stat(run_dir / "events.jsonl").st_mode & 0o777 == 0o600
+    if os.name != "nt":  # POSIX mode assertions cannot validate Windows ACLs.
+        assert os.stat(root).st_mode & 0o777 == 0o700
+        assert os.stat(run_dir).st_mode & 0o777 == 0o700
+        assert os.stat(run_dir / "manifest.json").st_mode & 0o777 == 0o600
+        assert os.stat(run_dir / "events.jsonl").st_mode & 0o777 == 0o600
 
-    os.chmod(run_dir / "manifest.json", 0o644)
-    with pytest.raises(ValueError, match="permissions"):
-        ledger.replay(run_dir)
+        os.chmod(run_dir / "manifest.json", 0o644)
+        with pytest.raises(ValueError, match="permissions"):
+            ledger.replay(run_dir)
+
 
 
 def test_truncated_event_log_is_rejected(tmp_path: Path) -> None:
