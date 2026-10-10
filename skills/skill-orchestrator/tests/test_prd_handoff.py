@@ -176,6 +176,7 @@ def test_schema_valid_provisional_is_report_not_executable_handoff():
 
 def test_non_prd_legacy_plan_still_completes_from_id_hash(tmp_path):
     p=planner.plan_workflow('evidence then council').to_dict()
+    for step in p['steps']: step.pop('envelope_out', None)
     run=ledger.create_run(tmp_path,'legacy',p); attempt=ledger.claim_next(run,p)['data']['attempt_id']
     ledger.complete_step(run,'step-1','old','sha256:old',attempt)
     assert ledger.claim_next(run,p)['data']['step_id']=='step-2'
@@ -216,7 +217,9 @@ def test_malformed_v2_wrapper_type_rejected_without_traceback():
 
 
 def test_legacy_ledger_without_steps_hash_still_replays(tmp_path):
-    p=planner.plan_workflow('evidence then council').to_dict(); run=ledger.create_run(tmp_path,'legacy',p)
+    p=planner.plan_workflow('evidence then council').to_dict()
+    for step in p['steps']: step.pop('envelope_out', None)
+    run=ledger.create_run(tmp_path,'legacy',p)
     path=run/'events.jsonl'; event=json.loads(path.read_text()); del event['data']['steps_hash']; del event['event_hash']
     event['event_hash']=ledger.sha256(ledger.canonical(event)); path.write_text(json.dumps(event)+'\n')
     attempt=ledger.claim_next(run,p)['data']['attempt_id']; ledger.complete_step(run,'step-1','old','sha256:old',attempt)

@@ -9,16 +9,20 @@ INSTALL_BACKUP_DIR=""
 # Set by parse_install_args: "install" or "uninstall", and 1 for a no-write preview.
 INSTALL_MODE="install"
 INSTALL_DRY_RUN=0
+INSTALL_SKILLS=()
+INSTALL_REF=""
 
 install_usage() {
   cat <<USAGE
-Usage: $(basename "$0") [--dry-run] [--uninstall] [--help]
+Usage: $(basename "$0") [--skill ID ...] [--ref SHA] [--dry-run] [--uninstall] [--help]
 
 Links every skills/*/SKILL.md package of this checkout into the host's skills
 directory. Reruns are no-ops; conflicting paths stop the run before any change.
 
   -n, --dry-run   run every check and print the planned changes without writing
   --uninstall     remove only links that point into this checkout's skills/
+  --skill ID      limit to a named package (repeatable; default: all packages)
+  --ref SHA       require this exact 40-character commit and a clean checkout
   -h, --help      show this help
 
 Environment:
@@ -29,10 +33,17 @@ USAGE
 
 parse_install_args() {
   local arg
-  for arg in "$@"; do
+  while [[ "$#" -gt 0 ]]; do
+    arg="$1"; shift
     case "$arg" in
       -n|--dry-run) INSTALL_DRY_RUN=1 ;;
       --uninstall) INSTALL_MODE="uninstall" ;;
+      --skill)
+        [[ "$#" -gt 0 && "$1" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || { echo "FAIL: --skill needs a skill ID" >&2; return 2; }
+        INSTALL_SKILLS+=("$1"); shift ;;
+      --ref)
+        [[ "$#" -gt 0 && "$1" =~ ^[0-9a-f]{40}$ ]] || { echo "FAIL: --ref needs a full commit SHA" >&2; return 2; }
+        INSTALL_REF="$1"; shift ;;
       -h|--help) install_usage; exit 0 ;;
       *)
         echo "FAIL: unknown argument: $arg" >&2
@@ -41,6 +52,15 @@ parse_install_args() {
         ;;
     esac
   done
+}
+
+selected_skill() {
+  local selected
+  [[ "${#INSTALL_SKILLS[@]}" == "0" ]] && return 0
+  for selected in ${INSTALL_SKILLS[@]+"${INSTALL_SKILLS[@]}"}; do
+    [[ "$selected" == "$1" ]] && return 0
+  done
+  return 1
 }
 
 # Prints the action verb, prefixed with "would " in dry-run mode.
@@ -217,6 +237,7 @@ uninstall_skill_links() {
   UNINSTALL_COUNT=0
   [[ -d "$target" ]] || return 0
   for entry in "$target"/*; do
+    selected_skill "$(basename "$entry")" || continue
     if is_managed_link "$entry" "$source_root"; then
       if [[ "$INSTALL_DRY_RUN" != "1" ]]; then
         rm -- "$entry"
@@ -235,9 +256,18 @@ uninstall_skill_links() {
 #   host_apply      — extra install steps after the skills are linked
 #   host_uninstall  — extra removal steps
 run_host_installer() {
-  local label="$1" target="$2" source_root="$ROOT/skills" skill_names name count=0
+  local label="$1" target="$2" source_root="$ROOT/skills" skill_names name source_status count=0
   shift 2
   parse_install_args "$@"
+  if [[ -n "$INSTALL_REF" ]]; then
+    [[ "$(git -C "$ROOT" rev-parse HEAD)" == "$INSTALL_REF" ]] || { echo "FAIL: checkout does not match --ref" >&2; return 2; }
+    source_status="$(git -C "$ROOT" status --porcelain --untracked-files=all)" || { echo "FAIL: cannot inspect pinned checkout" >&2; return 2; }
+    [[ -z "$source_status" ]] || { echo "FAIL: pinned installation requires a clean checkout" >&2; return 2; }
+    echo "source commit: $INSTALL_REF"
+  fi
+  for name in ${INSTALL_SKILLS[@]+"${INSTALL_SKILLS[@]}"}; do
+    [[ -f "$source_root/$name/SKILL.md" ]] || { echo "FAIL: unknown skill: $name" >&2; return 2; }
+  done
 
   if [[ "$INSTALL_MODE" == "uninstall" ]]; then
     uninstall_skill_links "$target" "$source_root"
@@ -249,6 +279,9 @@ run_host_installer() {
   fi
 
   skill_names="$(list_skills)"
+  if [[ "${#INSTALL_SKILLS[@]}" -gt 0 ]]; then
+    skill_names="$(printf '%s\n' "${INSTALL_SKILLS[@]}" | sort -u)"
+  fi
   [[ -n "$skill_names" ]] || { echo "FAIL: no skill packages found" >&2; return 1; }
   prepare_install_target "$target" "$source_root"
   preflight_install_conflicts "$target" "$source_root" "$skill_names"
@@ -264,7 +297,9 @@ run_host_installer() {
     install_skill_link "$source_root/$name" "$target/$name" "$name"
     count=$((count + 1))
   done <<< "$skill_names"
-  prune_stale_links "$target" "$source_root"
+  if [[ "${#INSTALL_SKILLS[@]}" == "0" ]]; then
+    prune_stale_links "$target" "$source_root"
+  fi
   if declare -F host_apply >/dev/null; then
     host_apply
   fi

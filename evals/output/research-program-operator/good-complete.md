@@ -9,7 +9,7 @@
 
 - Question: What is the activation effect of the intervention?
 - as_of: 2026-10-05
-- Stage: analysis
+- Stage: manuscript
 
 ## Studies
 
@@ -47,7 +47,7 @@ Estimand: activation effect.
   "program": {
     "question": "What should the program do after the pilot?",
     "as_of": "2026-10-05",
-    "stage": "analysis",
+    "stage": "manuscript",
     "studies": [
       {
         "id": "S1",

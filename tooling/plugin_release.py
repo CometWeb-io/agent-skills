@@ -214,7 +214,7 @@ def content_errors(root: Path) -> list[str]:
     markers = ("Replace these rules with the skill's real contract",
                "Scaffold placeholder from tooling/new_skill.py; replace with a real case")
     paths = list((root / "skills").rglob("*.py")) + list((root / "skills").rglob("*.md"))
-    paths += list((root / "evals").rglob("*.json"))
+    paths += list((root / "skills").rglob("*.json")) + list((root / "evals").rglob("*.json"))
     return [f"{path.relative_to(root)}: unreplaced scaffold content" for path in sorted(paths)
             if any(marker in path.read_text(encoding="utf-8") for marker in markers)]
 

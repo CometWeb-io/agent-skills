@@ -21,12 +21,21 @@ CONTROL=[
 ZERO_WIDTH=re.compile('[\u200b\u200c\u200d\u2060\ufeff]')
 SECRET=[
  ('openai_key',re.compile(r'\bsk-[A-Za-z0-9_-]{20,}')),
- ('github_token',re.compile(r'\bgh[pousr]_[A-Za-z0-9]{20,}')),
+ ('github_token',re.compile(r'\b(?:gh[pousr]_|github_pat_)[A-Za-z0-9_]{20,}')),
  ('aws_access_key',re.compile(r'\bAKIA[0-9A-Z]{16}\b')),
 ]
 
 _OPEN_FLAGS=os.O_RDONLY|getattr(os,'O_NONBLOCK',0)|getattr(os,'O_CLOEXEC',0)
 _NOFOLLOW=getattr(os,'O_NOFOLLOW',0)
+
+def redact(text:str)->str:
+    for _,pattern in SECRET:
+        text=pattern.sub('[credential-like value redacted]',text)
+    return text
+
+class RedactingParser(argparse.ArgumentParser):
+    def error(self,message):
+        super().error(redact(message))
 
 def _windows_fd(name,follow:bool,boundary=None):
     """Check the opened Windows handle before reading, including junction escapes."""
@@ -88,7 +97,7 @@ def _read_open(name,max_bytes:int,dir_fd=None,follow:bool=False,boundary=None):
     except OSError: return None
     finally: os.close(fd)
 
-def files(root:Path,max_files:int,max_bytes:int):
+def files(root:Path,max_files:int,max_bytes:int,coverage:dict):
     """Yield (path, bytes-or-None) for regular files; symlinks and special files are not listed.
 
     The walk holds a descriptor for each directory (os.fwalk) and opens names relative
@@ -97,44 +106,59 @@ def files(root:Path,max_files:int,max_bytes:int):
     if root.is_file(): yield root,_read_open(root,max_bytes,follow=True); return
     n=0
     top=os.path.realpath(root)
+    def walk_error(_error):
+        coverage['walk_errors']+=1
     if os.name=='nt':
-        for base,dirs,names in os.walk(top):
+        for base,dirs,names in os.walk(top,onerror=walk_error):
             kept=[]
             for directory in sorted(dirs):
                 try: st=os.lstat(os.path.join(base,directory))
-                except OSError: continue
+                except OSError: coverage['walk_errors']+=1; continue
                 if directory not in IGNORE and not st.st_file_attributes&0x400: kept.append(directory)
             dirs[:]=kept
             for name in sorted(names):
                 path=Path(base)/name
                 try: st=path.lstat()
-                except OSError: continue
+                except OSError: coverage['walk_errors']+=1; continue
                 if not stat.S_ISREG(st.st_mode) or st.st_file_attributes&0x400: continue
-                yield root/path.relative_to(top),_read_open(path,max_bytes,boundary=top); n+=1
-                if n>=max_files: return
+                yield root/path.relative_to(top),_read_open(path,max_bytes,boundary=top) if n<max_files else None; n+=1
+                if n>max_files: return
         return
-    for base,dirs,names,dir_fd in os.fwalk(top):
+    for base,dirs,names,dir_fd in os.fwalk(top,onerror=walk_error):
         dirs[:]=[d for d in sorted(dirs) if d not in IGNORE]
         for name in sorted(names):
             try: st=os.stat(name,dir_fd=dir_fd,follow_symlinks=False)
-            except OSError: continue
+            except OSError: coverage['walk_errors']+=1; continue
             if not stat.S_ISREG(st.st_mode): continue
-            yield root/os.path.relpath(os.path.join(base,name),top),_read_open(name,max_bytes,dir_fd=dir_fd); n+=1
-            if n>=max_files: return
+            yield root/os.path.relpath(os.path.join(base,name),top),_read_open(name,max_bytes,dir_fd=dir_fd) if n<max_files else None; n+=1
+            if n>max_files: return
 
 def scan(path:Path,max_files:int=5000,max_bytes:int=2_000_000)->dict:
-    flags=[]; scanned=0; skipped=0
-    for p,raw in files(path,max_files,max_bytes):
+    if type(max_files) is not int or type(max_bytes) is not int or max_files<=0 or max_bytes<=0:
+        raise ValueError('max_files and max_bytes must be positive integers')
+    if not path.is_file() and not path.is_dir(): raise ValueError('scan path must be a file or directory')
+    flags=[]; scanned=0; skipped=0; discovered=0; limit_reached=False
+    coverage={'walk_errors':0}
+    for p,raw in files(path,max_files,max_bytes,coverage):
+        discovered+=1
+        if scanned+skipped>=max_files:
+            limit_reached=True
+            break
         if raw is None or b'\x00' in raw[:4096]: skipped+=1; continue
         text=raw.decode('utf-8','replace'); scanned+=1
-        rel=str(p if path.is_file() else p.relative_to(path))
+        rel=redact(str(p if path.is_file() else p.relative_to(path)))
         for line_no,line in enumerate(text.splitlines(),1):
-            if ZERO_WIDTH.search(line): flags.append({'path':rel,'line':line_no,'kind':'zero_width_unicode','excerpt':line[:180]})
+            excerpt=redact(line)[:180]
+            if ZERO_WIDTH.search(line): flags.append({'path':rel,'line':line_no,'kind':'zero_width_unicode','excerpt':excerpt})
             for kind,pat in CONTROL:
-                if pat.search(line): flags.append({'path':rel,'line':line_no,'kind':kind,'excerpt':line[:180]})
+                if pat.search(line): flags.append({'path':rel,'line':line_no,'kind':kind,'excerpt':excerpt})
             for kind,pat in SECRET:
                 if pat.search(line): flags.append({'path':rel,'line':line_no,'kind':kind,'excerpt':'[credential-like value redacted]'})
-    return {'schema':'cometweb.roaster-source-risk-scan/v1','root':str(path),'files_scanned':scanned,'files_skipped':skipped,'flags':flags,
+    return {'schema':'cometweb.roaster-source-risk-scan/v1','root':redact(str(path)),'files_scanned':scanned,'files_skipped':skipped,'flags':flags,
+            'scan_status':'PARTIAL' if limit_reached or skipped or coverage['walk_errors'] else 'COMPLETE',
+            'limit_reached':limit_reached,'files_discovered':discovered,'remaining_files_unknown':limit_reached or bool(coverage['walk_errors']),
+            'walk_errors':coverage['walk_errors'],
+            'coverage_scope':'Regular files outside ignored directories; symlinks and special files excluded. Discovery stops after one extra file at the limit; remaining count is unknown.',
             'note':'Flags indicate review hazards or credential-like text. They do not establish exploitability, intent, or a defect.'}
 
 def _atomic_write(path: Path, text: str) -> None:
@@ -157,16 +181,18 @@ def _atomic_write(path: Path, text: str) -> None:
         raise
 
 def main()->int:
-    ap=argparse.ArgumentParser(description=__doc__); ap.add_argument('path',type=Path); ap.add_argument('--max-files',type=int,default=5000); ap.add_argument('--max-bytes',type=int,default=2_000_000); ap.add_argument('--output',type=Path); a=ap.parse_args()
-    if not a.path.exists(): raise SystemExit(f'path not found: {a.path}')
-    out=scan(a.path,a.max_files,a.max_bytes); text=json.dumps(out,indent=2,ensure_ascii=False)+'\n'
+    ap=RedactingParser(description=__doc__); ap.add_argument('path',type=Path); ap.add_argument('--max-files',type=int,default=5000); ap.add_argument('--max-bytes',type=int,default=2_000_000); ap.add_argument('--output',type=Path); a=ap.parse_args()
+    if not a.path.exists(): raise SystemExit(redact(f'path not found: {a.path}'))
+    try: out=scan(a.path,a.max_files,a.max_bytes)
+    except (OSError,ValueError) as exc: ap.error(redact(str(exc)))
+    text=json.dumps(out,indent=2,ensure_ascii=False)+'\n'
     if a.output:
         try:
             _atomic_write(a.output, text)
         except (OSError, ValueError) as exc:
-            print(f'error: {exc}', file=sys.stderr)
+            print(redact(f'error: {exc}'), file=sys.stderr)
             return 2
-        print(f'OK: wrote {a.output}')
+        print(redact(f'OK: wrote {a.output}'))
     else:
         print(text,end='')
     return 0

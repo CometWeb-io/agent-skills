@@ -395,6 +395,7 @@ class RunOptions:
     max_total_tokens: int | None = None
     max_turns: int = 8
     model: str | None = None
+    reasoning_effort: str | None = None
     price_in: float | None = None
     price_out: float | None = None
     overhead_tokens: int | None = None
@@ -407,6 +408,10 @@ class RunOptions:
 def validate_options(opts: RunOptions) -> None:
     if opts.host not in HOSTS:
         raise ValueError(f"unknown host {opts.host!r}; known: {', '.join(HOSTS)}")
+    efforts = {"claude": {"low", "medium", "high", "xhigh", "max"},
+               "codex": {"none", "minimal", "low", "medium", "high", "xhigh", "max"}}
+    if opts.reasoning_effort is not None and opts.reasoning_effort not in efforts.get(opts.host, set()):
+        raise ValueError(f"unsupported reasoning effort for {opts.host}; no cross-host mapping is applied")
     if not opts.conditions or any(c not in CONDITIONS for c in opts.conditions):
         raise ValueError("condition must be plugin, baseline or both")
     if not 1 <= opts.repeat <= 20:
@@ -501,6 +506,8 @@ def build_commands(opts: RunOptions, condition: str, stage: Path, out_file: Path
                 "--max-turns", str(opts.max_turns), "--max-budget-usd", f"{opts.max_usd_per_task:g}"]
         if opts.model:
             argv += ["--model", opts.model]
+        if opts.reasoning_effort:
+            argv += ["--effort", opts.reasoning_effort]
         if condition == "plugin":
             argv += ["--plugin-dir", str(stage)]
         return [], argv
@@ -512,6 +519,8 @@ def build_commands(opts: RunOptions, condition: str, stage: Path, out_file: Path
             "--output-last-message", str(out_file)]
     if opts.model:
         argv += ["--model", opts.model]
+    if opts.reasoning_effort:
+        argv += ["--config", f'model_reasoning_effort="{opts.reasoning_effort}"']
     argv.append("-")
     return setup, argv
 
@@ -540,6 +549,10 @@ def materialize_not_run(plan: dict[str, Any], opts: RunOptions, out: Path,
         "plan_sha256": plan["plan_sha256"],
         "host": opts.host,
         "model_requested": opts.model,
+        "reasoning_effort_requested": opts.reasoning_effort,
+        "reasoning_effort_observed": None,
+        "reasoning_effort_status": "NOT_CONTROLLED",
+        "run_config_sha256": sha256(canonical(vars(opts))),
         "conditions": list(opts.conditions),
         "repeat": opts.repeat,
         "planned_jobs": len(jobs),
@@ -759,6 +772,10 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
             "plan_sha256": plan["plan_sha256"], "repo_version": plan["repo_version"],
             "host": opts.host, "host_version": (probe.stdout or probe.stderr).strip()[:200],
             "model_requested": opts.model, "conditions": list(opts.conditions), "repeat": opts.repeat,
+            "reasoning_effort_requested": opts.reasoning_effort,
+            "reasoning_effort_observed": None,
+            "reasoning_effort_status": "REQUESTED_NOT_OBSERVED" if opts.reasoning_effort else "NOT_CONTROLLED",
+            "run_config_sha256": sha256(canonical(vars(opts))),
             "payload_sha256": payload_digest(stage),
             "caps": {"max_tasks": opts.max_tasks, "timeout": opts.timeout, "max_turns": opts.max_turns,
                      "max_usd_per_task": opts.max_usd_per_task if host.native_budget else None,
@@ -832,6 +849,7 @@ def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out:
         "status": "executed", "execution_status": "EXECUTED",
         "exit_code": None, "elapsed_seconds": None, "cost_usd": None, "input_tokens": None, "output_tokens": None,
         "model": None, "num_turns": None, "activated_skills": [],
+        "reasoning_effort_requested": opts.reasoning_effort, "reasoning_effort_observed": None,
     }
     (run_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
     for index, cmd in enumerate(setup):
@@ -961,6 +979,9 @@ def grade_run(run_dir: Path, root: Path = ROOT) -> dict[str, Any]:
     grades = {"schema": GRADES_SCHEMA, "acceptance_version": manifest.get("acceptance_version", 1),
               "plan_sha256": manifest["plan_sha256"], "host": manifest["host"],
               "host_version": manifest.get("host_version"), "model_requested": manifest.get("model_requested"),
+              "reasoning_effort_requested": manifest.get("reasoning_effort_requested"),
+              "reasoning_effort_observed": manifest.get("reasoning_effort_observed"),
+              "run_config_sha256": manifest.get("run_config_sha256"),
               "models_reported": manifest.get("models_reported", []), "payload_sha256": manifest.get("payload_sha256"),
               "candidate_sha256": manifest.get("candidate_sha256"),
               "benchmark_sha256": manifest.get("benchmark_sha256"),
@@ -1027,6 +1048,10 @@ def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
     frozen = {json.dumps(frozen_hashes(g), sort_keys=True) for g in grade_sets}
     if len(frozen) > 1:
         warnings.append("grades carry different frozen acceptance hashes")
+    if any(g.get("reasoning_effort_observed") is None for g in grade_sets):
+        warnings.append("reasoning effort was not observed; requested settings do not prove effective model effort")
+    if len({g.get("run_config_sha256") for g in grade_sets}) > 1:
+        warnings.append("run configurations differ; resource and effort comparisons are not controlled")
 
     per: dict[str, Any] = {}
     for cond in conditions:
@@ -1128,7 +1153,8 @@ def _options(args: argparse.Namespace) -> RunOptions:
     opts = RunOptions(host=args.host, bin=args.bin or args.host, conditions=tuple(conditions), repeat=args.repeat,
                       max_tasks=args.max_tasks, timeout=args.timeout, max_usd_per_task=args.max_usd_per_task,
                       max_total_usd=args.max_total_usd, max_total_tokens=args.max_total_tokens,
-                      max_turns=args.max_turns, model=args.model, price_in=args.price_in, price_out=args.price_out,
+                      max_turns=args.max_turns, model=args.model, reasoning_effort=args.reasoning_effort,
+                      price_in=args.price_in, price_out=args.price_out,
                       overhead_tokens=args.overhead_tokens, assume_turns=args.assume_turns,
                       assume_output_tokens=args.assume_output_tokens,
                       max_consecutive_errors=args.max_consecutive_errors, seed=args.seed)
@@ -1163,6 +1189,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--max-total-usd", type=float, help="stop before a run could take the total past this")
     r.add_argument("--max-total-tokens", type=int, help="stop once reported tokens reach this")
     r.add_argument("--model", help="pin the model; recommended for any comparison")
+    r.add_argument("--reasoning-effort", help="host-native effort; forwarded unchanged, never treated as observed")
     r.add_argument("--price-in", type=float, help="USD per 1M input tokens, for estimates and codex cost")
     r.add_argument("--price-out", type=float, help="USD per 1M output tokens")
     r.add_argument("--overhead-tokens", type=int, help="assumed host context per turn, for the estimate")
@@ -1208,9 +1235,10 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{summary['completed_jobs']} completed, {summary['error_jobs']} failed, "
                   f"{summary['not_started_jobs']} not started; spent ~${summary['spent_usd']:.4f}"
                   + (f"; stopped: {summary['stop_reason']}" if summary["stop_reason"] else ""))
-            return 0 if summary.get("execution_status") == "NOT_RUN" or (
-                summary["error_jobs"] == 0 and not summary["stop_reason"]
-            ) else 1
+            if summary.get("execution_status") == "NOT_RUN":
+                return 3
+            return 0 if (summary["completed_jobs"] > 0 and summary["error_jobs"] == 0
+                         and summary["not_started_jobs"] == 0 and not summary["stop_reason"]) else 1
         if args.command == "grade":
             grades = grade_run(args.run_dir)
             if args.json:

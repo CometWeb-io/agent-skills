@@ -16,11 +16,12 @@ concurrency:
 jobs:
   skill-runtime:
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.python == '3.15.0' }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.10", "3.11", "3.12", "3.13"]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15.0"]
         package:
           - skill: ebook-publisher
             deps: "pypdf>=4,<7"
@@ -78,11 +79,12 @@ jobs:
   # lists in step.
   stdlib-skills:
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.python == '3.15.0' }}
     timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.10", "3.11", "3.12", "3.13"]
+        python: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15.0"]
     name: stdlib skills / py${{ matrix.python }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7

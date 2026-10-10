@@ -46,12 +46,14 @@ def _read_regular_file(path: Path) -> bytes | None:
         return handle.read()
 
 
-def _atomic_write(path: Path, data: bytes) -> None:
+def _atomic_write(path: Path, data: bytes, mode: int) -> None:
     """Replace a shared file atomically without following a leaf symlink."""
     fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
     try:
         with os.fdopen(fd, "wb") as handle:
             handle.write(data)
+            if os.name != "nt":
+                os.fchmod(handle.fileno(), mode)
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary, path)
@@ -71,6 +73,7 @@ def verify() -> list[str]:
             errors.append(f"missing canonical: {canonical.relative_to(ROOT)}")
             continue
         expected = canonical.read_bytes()
+        mode = canonical.stat().st_mode & 0o777
         for target in TARGETS:
             candidate = target / filename
             if not candidate.is_file():
@@ -78,17 +81,21 @@ def verify() -> list[str]:
                 continue
             if candidate.read_bytes() != expected:
                 errors.append(f"shared resource drift: {candidate.relative_to(ROOT)}")
+            if os.name != "nt" and candidate.stat().st_mode & 0o777 != mode:
+                errors.append(f"shared resource mode drift: {candidate.relative_to(ROOT)}")
     return errors
 
 
 def sync() -> list[str]:
     written: list[str] = []
     for filename in SHARED:
-        expected = (CANONICAL / filename).read_bytes()
+        source = CANONICAL / filename
+        expected = source.read_bytes()
+        mode = source.stat().st_mode & 0o777
         for target in TARGETS:
             candidate = target / filename
-            if _read_regular_file(candidate) != expected:
-                _atomic_write(candidate, expected)
+            if _read_regular_file(candidate) != expected or (os.name != "nt" and candidate.stat().st_mode & 0o777 != mode):
+                _atomic_write(candidate, expected, mode)
                 written.append(candidate.relative_to(ROOT).as_posix())
     return written
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## [6.1.6] - 2026-10-10
+
+- Redact detected credentials in all scanner excerpts, paths and diagnostics; report truncated/skipped coverage and reject nonpositive limits.
+
 ## 6.1.5
 
 - Read eval corpora as UTF-8 and scan Windows directories with checked file handles, rejecting reparse points and paths outside the target before reading.

@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 from pathlib import Path
+
+import pytest
 
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "sync_roaster_shared.py"
@@ -69,3 +72,27 @@ def test_sync_replaces_leaf_symlink_without_following_it(tmp_path: Path) -> None
     assert outside.read_bytes() == b"do not modify"
     assert not candidate.is_symlink()
     assert candidate.read_bytes() == expected
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX executable and permission bits")
+@pytest.mark.parametrize("mode", [0o755, 0o644])
+@pytest.mark.parametrize("content_changed", [True, False])
+def test_sync_preserves_canonical_mode_and_repairs_mode_only_drift(tmp_path, mode, content_changed):
+    module = load_module()
+    filename = "scripts/shared.py"
+    canonical = tmp_path / "skills/repo-roaster"
+    target = tmp_path / "skills/content-roaster"
+    source, candidate = canonical / filename, target / filename
+    source.parent.mkdir(parents=True)
+    candidate.parent.mkdir(parents=True)
+    source.write_bytes(b"canonical")
+    source.chmod(mode)
+    candidate.write_bytes(b"changed" if content_changed else b"canonical")
+    candidate.chmod(0o600)
+    module.ROOT, module.CANONICAL, module.TARGETS, module.SHARED = tmp_path, canonical, (target,), (filename,)
+    assert any("mode drift" in error for error in module.verify())
+    assert module.sync() == ["skills/content-roaster/scripts/shared.py"]
+    assert candidate.read_bytes() == b"canonical"
+    assert candidate.stat().st_mode & 0o777 == mode
+    assert module.verify() == []
+    assert module.sync() == []

@@ -35,3 +35,10 @@ Complete programs require non-empty READY gates and empty `governance` and
 READY means prepared for that bounded next step. It never means authorized to
 acquire data, submit, publish, contact participants, or approve a manuscript.
 Those actions require external authorization and their own acceptance gates.
+
+READY handoffs must match `program.stage`: `longform-publisher` requires
+`manuscript` or `closed`; `science-roaster` accepts `protocol`, `execution`,
+`analysis`, `manuscript`, or `closed`. `next-study` accepts any valid stage but
+requires a non-empty, bounded `next_studies` plan. Non-READY handoffs can name
+a later target while reporting the missing readiness evidence. Manuscript
+programs may still propose a follow-up study; this grants no publication authority.

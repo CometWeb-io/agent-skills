@@ -252,10 +252,16 @@ schema: cometweb.roaster-source-risk-scan/v1
 root
 files_scanned
 files_skipped
+scan_status  # COMPLETE or PARTIAL within coverage_scope
+limit_reached
+files_discovered  # observed prefix only, not total repository files
+remaining_files_unknown
+walk_errors
+coverage_scope
 flags[]:
   path
   line
   kind  # ignore_instructions, role_override, tool_coercion, secret_request, zero_width_unicode, or a credential pattern
-  excerpt  # credential-like values are redacted
+  excerpt  # all detected credential-like spans are redacted before truncation
 note
 ```

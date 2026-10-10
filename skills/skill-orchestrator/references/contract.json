@@ -256,7 +256,8 @@
     "locator": {},
     "source": {},
     "report_as_of": {},
-    "report_timestamp_scope": {}
+    "report_timestamp_scope": {},
+    "completion_class": {}
   },
   "outputs": {
     "archetype": {

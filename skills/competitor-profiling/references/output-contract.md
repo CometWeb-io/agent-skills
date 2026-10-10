@@ -21,6 +21,14 @@ non-empty `claim_ids` referencing profile claims. A section name or "covered"
 label alone cannot establish coverage. A partial dossier can record unknowns
 with a supporting source locator and describe its gaps without inventing facts.
 
+Complete profiles also require non-empty `section_support` in every section.
+Each entry has `claim_id` from that section's `claim_ids`, `source_id` from that
+claim's `source_ids`, and a non-empty `rationale` explaining how that source
+supports the section. A claim can support multiple sections with explicit
+bindings. Supplied support is a structural mapping, never proof of source truth.
+`assess` reports `coverage_status: SUPPORT_MAPPED|NOT_ASSESSED` and always
+`factual_verification: not_assessed`; it does not fetch or independently review sources.
+
 `complete` requires empty `not_verified`, `contradictions`, and `gaps`, and no
 `UNKNOWN` or `HYPOTHESIS` claims. It describes completion of the declared scope,
 not independent factual verification or authority for a side effect.

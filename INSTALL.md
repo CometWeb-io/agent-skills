@@ -3,8 +3,8 @@
 This repository is the public canonical source: `CometWeb-io/agent-skills`.
 
 ```bash
-./scripts/install-all.sh
-# or individually:
+./scripts/install-claude.sh --skill evidence-researcher --skill product-operator
+# or every skill in a chosen host:
 ./scripts/install-cursor.sh
 ./scripts/install-claude.sh
 ./scripts/install-codex.sh
@@ -25,12 +25,15 @@ them:
 | Qoder | `install-qoder.sh` | `~/.qoder/skills` | `QODER_SKILLS_DIR` |
 | Lingma | `install-lingma.sh` | `~/.lingma/skills` | `LINGMA_SKILLS_DIR` |
 
-Cursor links the compact `rules/cometweb-agent-skills.mdc` routing rule
+Full-catalog Cursor installs link the compact `rules/cometweb-agent-skills.mdc` routing rule
 (`~/.cursor/rules/cometweb-agent-skills.mdc`, override with `CURSOR_RULES_DIR`).
 Older managed links to the full catalog or `extras/cursor-routing.mdc` are
 re-pointed to the compact rule. The full generated catalog stays available
 in `docs/generated-cursor-routing.mdc` for deliberate reference loading.
 All three are generated from `registry/skills.json`.
+Selective installs use Cursor's native skill discovery and do not add the full
+catalog routing rule. Existing rules are preserved; remove an old full-catalog
+rule separately if you no longer want those routing hints.
 
 Codex documents `~/.agents/skills` as the user skills directory
 ([Codex skills](https://developers.openai.com/codex/skills)). Earlier versions of
@@ -180,3 +183,39 @@ when replacing managed links from another checkout. The shared installer backs
 up conflicting paths and removes only links it owns during uninstall. Keep the
 previous checkout for rollback; local package or discovery PASS is not a signed
 release or model qualification. A global install is a separate promotion action.
+
+## Pinning and rollback
+
+For a stable installation, keep the source clone detached at a reviewed full
+commit SHA. Each host installer accepts repeatable `--skill ID` and `--ref SHA`.
+The latter refuses a mismatched HEAD or dirty checkout before changing targets.
+It validates the existing clone; it does not fetch, check out or trust a version
+on your behalf. For example, replace the placeholder with a reviewed commit:
+
+```bash
+git checkout --detach <reviewed-full-commit-SHA>
+./scripts/install-claude.sh --ref <reviewed-full-commit-SHA> --skill evidence-researcher
+```
+
+Record the SHA printed by the installer. To roll back, require a clean clone,
+check out the earlier reviewed SHA detached, and rerun the same host/skill
+selection with that SHA. Symlinks follow the clone, so changing its commit
+updates instructions immediately; do it between host sessions. Keep separate
+clones for stable use and development. Selected uninstall preserves other skills
+and Cursor's shared rule. All-host preflight prevents known conflicts before
+writes, but it cannot make six filesystem destinations atomic against I/O
+failure; inspect output and rerun a specific host after resolving the failure.
+
+## Release assets
+
+A version tag, after owner approval, runs full gates, native platform checks,
+package construction, CycloneDX SBOM and GitHub attestation. Successful tag runs
+prepare a **draft** GitHub Release with `<skill>-<version>.zip`, `SHA256SUMS`,
+`SOURCE_COMMIT` and `agent-skills.cdx.json`. Publishing the draft is a separate
+owner action. Manual workflow runs retain Actions artifacts without creating
+or publishing a release. No public release is implied by a green build.
+
+After downloading a release, verify `sha256sum -c SHA256SUMS` (macOS:
+`shasum -a 256 -c SHA256SUMS`) and `gh attestation verify PACKAGE.zip --repo
+CometWeb-io/agent-skills` before trusting its code. SHA checks detect alteration;
+attestation binds provenance. Neither proves that the skill improves a model.

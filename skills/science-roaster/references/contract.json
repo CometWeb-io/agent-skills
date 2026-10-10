@@ -711,7 +711,13 @@
     },
     "survives": {},
     "minimal_surviving_claim": {},
-    "core_fix": {}
+    "core_fix": {},
+    "coverage_scope": {},
+    "files_discovered": {},
+    "limit_reached": {},
+    "remaining_files_unknown": {},
+    "scan_status": {},
+    "walk_errors": {}
   },
   "outputs": {
     "root": {},

@@ -23,7 +23,7 @@ python3 scripts/workflow_ledger.py claim-next "$LEDGER_ROOT/run-1" \
   --plan-json plan.json
 python3 scripts/workflow_ledger.py complete-step "$LEDGER_ROOT/run-1" \
   --step-id step-1 --attempt-id ATTEMPT \
-  --envelope-id ENVELOPE --envelope-hash HASH
+  --envelope-id ENVELOPE --envelope-hash HASH --envelope-json envelope.json
 ```
 
 `resume` is an alias of `claim-next`. `fail-step`, `block-step`, and `cancel`
@@ -60,6 +60,17 @@ partial JSON record is a truncated log and is rejected.
 The ledger stores hashes and references, not raw prompts, credentials,
 transcripts, or arbitrary tool output. `COMPLETED` means workflow execution
 finished; it is not a Council or Release Readiness authorization.
+
+Every new completion records `completion_class`: `RECEIPT_ONLY` for untyped
+operational receipts, `SCHEMA_VALIDATED` for a validated final CW-AIP wrapper,
+or `DOMAIN_ACCEPTED` for a pinned producer/profile kernel gate. These labels
+describe deterministic checks, never model effectiveness or permission to act.
+Any step with `envelope_out` requires full `--envelope-json`, correct producer,
+type and recomputed envelope/payload hashes; its `dependencies` must equal the
+completed prefix's envelope IDs. An ID/hash alone cannot complete a typed step.
+Legacy receipts still replay as `RECEIPT_ONLY` and cannot unlock a typed
+downstream step. Start a new run with validated envelopes rather than upgrading
+an old receipt's status. Untyped receipt-only logging remains supported.
 
 ## PRD prerequisite
 

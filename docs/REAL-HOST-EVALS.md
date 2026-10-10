@@ -32,6 +32,10 @@ their headless/plugin adapters exist. Missing credentials and unsupported hosts
 materialize terminal records with a reason; they never become passes or
 silently invoke a host.
 
+With `--execute`, `NOT_RUN` exits 3; errors or an incomplete schedule exit 1.
+Only a non-empty completed schedule without errors or stops exits 0. A deliberate
+dry run still exits 0 and starts no host. Always inspect the JSON alongside exit status.
+
 ## 1. Plan
 
 `plan` selects tasks per skill from cases the repository already holds:
@@ -85,6 +89,15 @@ See [OUTPUT-GRADING.md](OUTPUT-GRADING.md#canary-files).
 | `codex` | `codex exec --json --skip-git-repo-check --sandbox read-only --output-last-message <file> -` | first runs `codex plugin marketplace add <stage>` and `codex plugin add cometweb-agent-skills@cometweb-agent-skills` | none; only `--timeout` |
 
 The prompt goes on stdin. `--model` pins the model for either host.
+
+`--reasoning-effort` forwards a host-native value unchanged: Claude gets
+`--effort`, Codex gets `--config model_reasoning_effort="VALUE"`. Supported
+CLI values are host-specific and the selected model may reject them. There is
+no cross-provider effort equivalence. Omission is `NOT_CONTROLLED`; a supplied
+value is `REQUESTED_NOT_OBSERVED` because current transcripts do not establish
+the effective effort. Manifests and records separate requested and observed
+values and hash run options as `run_config_sha256`. Scorecards flag missing
+observations and different run configurations rather than declaring controlled A/B.
 
 **Isolation.** Each run gets a new temporary directory holding its own HOME, its
 own host config directory (`CLAUDE_CONFIG_DIR` or `CODEX_HOME`) and an empty

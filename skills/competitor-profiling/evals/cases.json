@@ -11,30 +11,114 @@
         "scope": "public first baseline",
         "sources": [
           {
-            "id": "S1",
+            "id": "S-company",
+            "kind": "official",
+            "locator": "https://example.invalid/company",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-icp",
+            "kind": "official",
+            "locator": "https://example.invalid/icp",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-positioning",
+            "kind": "official",
+            "locator": "https://example.invalid/positioning",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-product",
+            "kind": "official",
+            "locator": "https://example.invalid/product",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-pricing",
             "kind": "official",
             "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-proof",
+            "kind": "official",
+            "locator": "https://example.invalid/proof",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-discovery",
+            "kind": "official",
+            "locator": "https://example.invalid/discovery",
             "observed_at": "2026-10-05"
           }
         ],
         "claims": [
           {
-            "id": "C1",
-            "text": "The source describes the product and pricing page.",
+            "id": "C-company",
+            "text": "Acme is the vendor named on the company page.",
             "state": "OBSERVED",
             "source_ids": [
-              "S1"
+              "S-company"
+            ]
+          },
+          {
+            "id": "C-icp",
+            "text": "The product is described for small retail teams.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-icp"
+            ]
+          },
+          {
+            "id": "C-positioning",
+            "text": "The stated positioning is a lightweight inventory tool.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-positioning"
+            ]
+          },
+          {
+            "id": "C-product",
+            "text": "The documented product provides stock tracking.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-product"
+            ]
+          },
+          {
+            "id": "C-pricing",
+            "text": "The listed price is 20 USD per month.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-pricing"
+            ]
+          },
+          {
+            "id": "C-proof",
+            "text": "The proof page contains one vendor-published case study.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-proof"
+            ]
+          },
+          {
+            "id": "C-discovery",
+            "text": "The vendor lists a public newsletter as a discovery channel.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-discovery"
             ]
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "Acme is the vendor named on the company page.", "claim_ids": [ "C-company" ], "section_support": [ { "claim_id": "C-company", "source_id": "S-company", "rationale": "The synthetic company page explicitly states this company claim." } ] },
+          "icp": { "summary": "The product is described for small retail teams.", "claim_ids": [ "C-icp" ], "section_support": [ { "claim_id": "C-icp", "source_id": "S-icp", "rationale": "The synthetic icp page explicitly states this icp claim." } ] },
+          "positioning": { "summary": "The stated positioning is a lightweight inventory tool.", "claim_ids": [ "C-positioning" ], "section_support": [ { "claim_id": "C-positioning", "source_id": "S-positioning", "rationale": "The synthetic positioning page explicitly states this positioning claim." } ] },
+          "product": { "summary": "The documented product provides stock tracking.", "claim_ids": [ "C-product" ], "section_support": [ { "claim_id": "C-product", "source_id": "S-product", "rationale": "The synthetic product page explicitly states this product claim." } ] },
+          "pricing": { "summary": "The listed price is 20 USD per month.", "claim_ids": [ "C-pricing" ], "section_support": [ { "claim_id": "C-pricing", "source_id": "S-pricing", "rationale": "The synthetic pricing page explicitly states this pricing claim." } ] },
+          "proof": { "summary": "The proof page contains one vendor-published case study.", "claim_ids": [ "C-proof" ], "section_support": [ { "claim_id": "C-proof", "source_id": "S-proof", "rationale": "The synthetic proof page explicitly states this proof claim." } ] },
+          "discovery": { "summary": "The vendor lists a public newsletter as a discovery channel.", "claim_ids": [ "C-discovery" ], "section_support": [ { "claim_id": "C-discovery", "source_id": "S-discovery", "rationale": "The synthetic discovery page explicitly states this discovery claim." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -42,7 +126,7 @@
       "competitive_intelligence_handoff": {
         "baseline_id": "competitor:acme:2026-10-05",
         "source_profile_status": "READY",
-        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+        "profile_sha256": "sha256:636c86ee6586f5ba0953ab6d98e2c49b3f4bccf188e4bfbc7fb05e16fc36c854"
       }
     },
     "expected_errors": []
@@ -78,13 +162,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -135,13 +219,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -184,13 +268,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -232,13 +316,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -246,7 +330,7 @@
       "competitive_intelligence_handoff": {
         "baseline_id": "competitor:acme:2026-10-05",
         "source_profile_status": "READY",
-        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+        "profile_sha256": "sha256:906bec491292a40147c9baf9b1c4b917dcc88ea5b1c8a54d7c580728d49a65f0"
       }
     },
     "expected_errors": [
@@ -285,13 +369,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -299,7 +383,7 @@
       "competitive_intelligence_handoff": {
         "baseline_id": "competitor:acme:2026-10-05",
         "source_profile_status": "READY",
-        "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+        "profile_sha256": "sha256:906bec491292a40147c9baf9b1c4b917dcc88ea5b1c8a54d7c580728d49a65f0"
       }
     },
     "expected_errors": [
@@ -344,13 +428,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -358,7 +442,7 @@
       "competitive_intelligence_handoff": {
         "baseline_id": "competitor:acme:2026-10-05",
         "source_profile_status": "READY",
-        "profile_sha256": "sha256:ec0e18ad956d8dd8a32ed497b28de71b69de2477afc83b7558e49a375ce1fe7a"
+        "profile_sha256": "sha256:1a959b165df09899392d74b53a3def2ca42f54318878dedc3dec750b74400b94"
       }
     },
     "expected_errors": [
@@ -387,13 +471,13 @@
         ],
         "claims": [],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [] }
         },
         "contradictions": [],
         "gaps": []
@@ -401,18 +485,25 @@
       "competitive_intelligence_handoff": {
         "baseline_id": "competitor:acme:2026-10-05",
         "source_profile_status": "READY",
-        "profile_sha256": "sha256:6605605bdb3c8cb6280776a271d178261a5352a4d518f6f41e5919dd35304cd0"
+        "profile_sha256": "sha256:d334b4c48199e90661254bb366e18e0b5223b5d52d9a3ff2b231b5ffa1c97556"
       }
     },
     "expected_errors": [
       "profile.claims: required non-empty list",
       "profile.sections.company.claim_ids: required non-empty references to profile claims",
+      "profile.sections.company.section_support: required non-empty evidence mapping",
       "profile.sections.discovery.claim_ids: required non-empty references to profile claims",
+      "profile.sections.discovery.section_support: required non-empty evidence mapping",
       "profile.sections.icp.claim_ids: required non-empty references to profile claims",
+      "profile.sections.icp.section_support: required non-empty evidence mapping",
       "profile.sections.positioning.claim_ids: required non-empty references to profile claims",
+      "profile.sections.positioning.section_support: required non-empty evidence mapping",
       "profile.sections.pricing.claim_ids: required non-empty references to profile claims",
+      "profile.sections.pricing.section_support: required non-empty evidence mapping",
       "profile.sections.product.claim_ids: required non-empty references to profile claims",
+      "profile.sections.product.section_support: required non-empty evidence mapping",
       "profile.sections.proof.claim_ids: required non-empty references to profile claims",
+      "profile.sections.proof.section_support: required non-empty evidence mapping",
       "handoff.source_profile_status: READY requires a valid complete profile"
     ]
   },
@@ -445,7 +536,7 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -453,7 +544,7 @@
       "competitive_intelligence_handoff": {
         "baseline_id": "competitor:acme:2026-10-05",
         "source_profile_status": "READY",
-        "profile_sha256": "sha256:82f1c01bb34e7d7b38d51de21200fce2d1e7fc8c0e2a7d3838eab876efe42de5"
+        "profile_sha256": "sha256:04db335a9993e0b7db385f43d999765131ce955ab039e8761bb59ca6dc7750eb"
       }
     },
     "expected_errors": [
@@ -490,13 +581,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S404", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S404", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S404", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S404", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S404", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S404", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S404", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -504,7 +595,7 @@
       "competitive_intelligence_handoff": {
         "baseline_id": "competitor:acme:2026-10-05",
         "source_profile_status": "READY",
-        "profile_sha256": "sha256:c5fd3b624f589b320249f43f40bd5b36124d8bf3c8cd52b35f5b47a64833d6b5"
+        "profile_sha256": "sha256:50816d5294a36f373c0ca64961dbf48a4bafb1af6a1eff72738dc1900770a118"
       }
     },
     "expected_errors": [
@@ -541,13 +632,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -590,13 +681,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -639,13 +730,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -684,13 +775,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -729,13 +820,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -777,13 +868,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -833,13 +924,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -879,13 +970,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -931,13 +1022,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -974,13 +1065,13 @@
         ],
         "claims": {},
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1023,13 +1114,13 @@
           null
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1079,13 +1170,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1143,13 +1234,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1192,13 +1283,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1241,13 +1332,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1288,13 +1379,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1378,13 +1469,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": "none",
         "gaps": {}
@@ -1428,13 +1519,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1474,13 +1565,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1522,13 +1613,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1574,12 +1665,12 @@
         ],
         "sections": {
           "company": null,
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1625,12 +1716,12 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
           "discovery": null
         },
         "contradictions": [],
@@ -1677,13 +1768,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
           "icp": null,
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1729,13 +1820,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
           "positioning": null,
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1781,13 +1872,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
           "pricing": null,
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1833,13 +1924,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
           "product": null,
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1885,13 +1976,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
           "proof": null,
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1937,13 +2028,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -1989,13 +2080,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -2041,13 +2132,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -2093,13 +2184,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -2145,13 +2236,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -2196,16 +2287,13 @@
           }
         ],
         "sections": {
-          "company": {
-            "summary": "covered",
-            "claim_ids": []
-          },
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [], "section_support": [] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": []
@@ -2218,6 +2306,7 @@
     },
     "expected_errors": [
       "profile.sections.company.claim_ids: required non-empty references to profile claims",
+      "profile.sections.company.section_support: required non-empty evidence mapping",
       "handoff.profile_sha256: READY requires the exact profile fingerprint",
       "handoff.source_profile_status: READY requires a valid complete profile"
     ]
@@ -2253,13 +2342,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -2304,13 +2393,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "", "claim_ids": [ "C1" ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ] }
         },
         "contradictions": [],
         "gaps": []
@@ -2353,13 +2442,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [],
         "gaps": [
@@ -2369,7 +2458,7 @@
       "competitive_intelligence_handoff": {
         "baseline_id": "competitor:acme:2026-10-05",
         "source_profile_status": "READY",
-        "profile_sha256": "sha256:c7b08560511c2b03726700306bad8b9ee7efbee6832a285ba1708bf30208cf45"
+        "profile_sha256": "sha256:4f7ab428d7dc006edb92eeaf06fc51ebf796c669809398fd9da49f265885533b"
       }
     },
     "expected_errors": [
@@ -2406,13 +2495,13 @@
           }
         ],
         "sections": {
-          "company": {"summary": "covered", "claim_ids": ["C1"]},
-          "icp": {"summary": "covered", "claim_ids": ["C1"]},
-          "positioning": {"summary": "covered", "claim_ids": ["C1"]},
-          "product": {"summary": "covered", "claim_ids": ["C1"]},
-          "pricing": {"summary": "covered", "claim_ids": ["C1"]},
-          "proof": {"summary": "covered", "claim_ids": ["C1"]},
-          "discovery": {"summary": "covered", "claim_ids": ["C1"]}
+          "company": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for company; no live verification." } ] },
+          "icp": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for icp; no live verification." } ] },
+          "positioning": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for positioning; no live verification." } ] },
+          "product": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for product; no live verification." } ] },
+          "pricing": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for pricing; no live verification." } ] },
+          "proof": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for proof; no live verification." } ] },
+          "discovery": { "summary": "covered", "claim_ids": [ "C1" ], "section_support": [ { "claim_id": "C1", "source_id": "S1", "rationale": "Synthetic evidence mapping for discovery; no live verification." } ] }
         },
         "contradictions": [
           "unresolved"
@@ -2422,11 +2511,416 @@
       "competitive_intelligence_handoff": {
         "baseline_id": "competitor:acme:2026-10-05",
         "source_profile_status": "READY",
-        "profile_sha256": "sha256:4ddde125db1cdf27f48d607de80db6c650cfad85f2be0f3a5e6b4ea78b7ca37c"
+        "profile_sha256": "sha256:8afa1ce0bc3cbc9a239fabe362fc7597112d74c7475000b8f4d846aa1ba807aa"
       }
     },
     "expected_errors": [
       "profile.contradictions: complete requires no unresolved items",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-missing-support",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S-company",
+            "kind": "official",
+            "locator": "https://example.invalid/company",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-icp",
+            "kind": "official",
+            "locator": "https://example.invalid/icp",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-positioning",
+            "kind": "official",
+            "locator": "https://example.invalid/positioning",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-product",
+            "kind": "official",
+            "locator": "https://example.invalid/product",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-pricing",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-proof",
+            "kind": "official",
+            "locator": "https://example.invalid/proof",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-discovery",
+            "kind": "official",
+            "locator": "https://example.invalid/discovery",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C-company",
+            "text": "Acme is the vendor named on the company page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-company"
+            ]
+          },
+          {
+            "id": "C-icp",
+            "text": "The product is described for small retail teams.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-icp"
+            ]
+          },
+          {
+            "id": "C-positioning",
+            "text": "The stated positioning is a lightweight inventory tool.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-positioning"
+            ]
+          },
+          {
+            "id": "C-product",
+            "text": "The documented product provides stock tracking.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-product"
+            ]
+          },
+          {
+            "id": "C-pricing",
+            "text": "The listed price is 20 USD per month.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-pricing"
+            ]
+          },
+          {
+            "id": "C-proof",
+            "text": "The proof page contains one vendor-published case study.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-proof"
+            ]
+          },
+          {
+            "id": "C-discovery",
+            "text": "The vendor lists a public newsletter as a discovery channel.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-discovery"
+            ]
+          }
+        ],
+        "sections": {
+          "company": { "summary": "Acme is the vendor named on the company page.", "claim_ids": [ "C-company" ], "section_support": [ { "claim_id": "C-company", "source_id": "S-company", "rationale": "The synthetic company page explicitly states this company claim." } ] },
+          "icp": { "summary": "The product is described for small retail teams.", "claim_ids": [ "C-icp" ], "section_support": [ { "claim_id": "C-icp", "source_id": "S-icp", "rationale": "The synthetic icp page explicitly states this icp claim." } ] },
+          "positioning": { "summary": "The stated positioning is a lightweight inventory tool.", "claim_ids": [ "C-positioning" ], "section_support": [ { "claim_id": "C-positioning", "source_id": "S-positioning", "rationale": "The synthetic positioning page explicitly states this positioning claim." } ] },
+          "product": { "summary": "The documented product provides stock tracking.", "claim_ids": [ "C-product" ], "section_support": [ { "claim_id": "C-product", "source_id": "S-product", "rationale": "The synthetic product page explicitly states this product claim." } ] },
+          "pricing": { "summary": "The listed price is 20 USD per month.", "claim_ids": [ "C-pricing" ] },
+          "proof": { "summary": "The proof page contains one vendor-published case study.", "claim_ids": [ "C-proof" ], "section_support": [ { "claim_id": "C-proof", "source_id": "S-proof", "rationale": "The synthetic proof page explicitly states this proof claim." } ] },
+          "discovery": { "summary": "The vendor lists a public newsletter as a discovery channel.", "claim_ids": [ "C-discovery" ], "section_support": [ { "claim_id": "C-discovery", "source_id": "S-discovery", "rationale": "The synthetic discovery page explicitly states this discovery claim." } ] }
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:1f7815c0596f175d5971c2cbf7535198e52c8325e7246f4b180fc4664780431a"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.pricing.section_support: required non-empty evidence mapping",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-wrong-source",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S-company",
+            "kind": "official",
+            "locator": "https://example.invalid/company",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-icp",
+            "kind": "official",
+            "locator": "https://example.invalid/icp",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-positioning",
+            "kind": "official",
+            "locator": "https://example.invalid/positioning",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-product",
+            "kind": "official",
+            "locator": "https://example.invalid/product",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-pricing",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-proof",
+            "kind": "official",
+            "locator": "https://example.invalid/proof",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-discovery",
+            "kind": "official",
+            "locator": "https://example.invalid/discovery",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C-company",
+            "text": "Acme is the vendor named on the company page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-company"
+            ]
+          },
+          {
+            "id": "C-icp",
+            "text": "The product is described for small retail teams.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-icp"
+            ]
+          },
+          {
+            "id": "C-positioning",
+            "text": "The stated positioning is a lightweight inventory tool.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-positioning"
+            ]
+          },
+          {
+            "id": "C-product",
+            "text": "The documented product provides stock tracking.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-product"
+            ]
+          },
+          {
+            "id": "C-pricing",
+            "text": "The listed price is 20 USD per month.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-pricing"
+            ]
+          },
+          {
+            "id": "C-proof",
+            "text": "The proof page contains one vendor-published case study.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-proof"
+            ]
+          },
+          {
+            "id": "C-discovery",
+            "text": "The vendor lists a public newsletter as a discovery channel.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-discovery"
+            ]
+          }
+        ],
+        "sections": {
+          "company": { "summary": "Acme is the vendor named on the company page.", "claim_ids": [ "C-company" ], "section_support": [ { "claim_id": "C-company", "source_id": "S-company", "rationale": "The synthetic company page explicitly states this company claim." } ] },
+          "icp": { "summary": "The product is described for small retail teams.", "claim_ids": [ "C-icp" ], "section_support": [ { "claim_id": "C-icp", "source_id": "S-icp", "rationale": "The synthetic icp page explicitly states this icp claim." } ] },
+          "positioning": { "summary": "The stated positioning is a lightweight inventory tool.", "claim_ids": [ "C-positioning" ], "section_support": [ { "claim_id": "C-positioning", "source_id": "S-positioning", "rationale": "The synthetic positioning page explicitly states this positioning claim." } ] },
+          "product": { "summary": "The documented product provides stock tracking.", "claim_ids": [ "C-product" ], "section_support": [ { "claim_id": "C-product", "source_id": "S-product", "rationale": "The synthetic product page explicitly states this product claim." } ] },
+          "pricing": { "summary": "The listed price is 20 USD per month.", "claim_ids": [ "C-pricing" ], "section_support": [ { "claim_id": "C-pricing", "source_id": "S-company", "rationale": "The synthetic pricing page explicitly states this pricing claim." } ] },
+          "proof": { "summary": "The proof page contains one vendor-published case study.", "claim_ids": [ "C-proof" ], "section_support": [ { "claim_id": "C-proof", "source_id": "S-proof", "rationale": "The synthetic proof page explicitly states this proof claim." } ] },
+          "discovery": { "summary": "The vendor lists a public newsletter as a discovery channel.", "claim_ids": [ "C-discovery" ], "section_support": [ { "claim_id": "C-discovery", "source_id": "S-discovery", "rationale": "The synthetic discovery page explicitly states this discovery claim." } ] }
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:436d442c8e629421e17a892800c08239dc539c3a92aa5359889489abf753684f"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.pricing.section_support: must bind a section claim to its source with rationale",
+      "handoff.source_profile_status: READY requires a valid complete profile"
+    ]
+  },
+  {
+    "id": "audit-empty-rationale",
+    "input": {
+      "summary": "Built an evidence-backed initial competitor baseline.",
+      "status": "complete",
+      "not_verified": [],
+      "profile": {
+        "subject": "Acme competitor",
+        "as_of": "2026-10-05",
+        "scope": "public first baseline",
+        "sources": [
+          {
+            "id": "S-company",
+            "kind": "official",
+            "locator": "https://example.invalid/company",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-icp",
+            "kind": "official",
+            "locator": "https://example.invalid/icp",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-positioning",
+            "kind": "official",
+            "locator": "https://example.invalid/positioning",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-product",
+            "kind": "official",
+            "locator": "https://example.invalid/product",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-pricing",
+            "kind": "official",
+            "locator": "https://example.invalid/pricing",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-proof",
+            "kind": "official",
+            "locator": "https://example.invalid/proof",
+            "observed_at": "2026-10-05"
+          },
+          {
+            "id": "S-discovery",
+            "kind": "official",
+            "locator": "https://example.invalid/discovery",
+            "observed_at": "2026-10-05"
+          }
+        ],
+        "claims": [
+          {
+            "id": "C-company",
+            "text": "Acme is the vendor named on the company page.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-company"
+            ]
+          },
+          {
+            "id": "C-icp",
+            "text": "The product is described for small retail teams.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-icp"
+            ]
+          },
+          {
+            "id": "C-positioning",
+            "text": "The stated positioning is a lightweight inventory tool.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-positioning"
+            ]
+          },
+          {
+            "id": "C-product",
+            "text": "The documented product provides stock tracking.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-product"
+            ]
+          },
+          {
+            "id": "C-pricing",
+            "text": "The listed price is 20 USD per month.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-pricing"
+            ]
+          },
+          {
+            "id": "C-proof",
+            "text": "The proof page contains one vendor-published case study.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-proof"
+            ]
+          },
+          {
+            "id": "C-discovery",
+            "text": "The vendor lists a public newsletter as a discovery channel.",
+            "state": "OBSERVED",
+            "source_ids": [
+              "S-discovery"
+            ]
+          }
+        ],
+        "sections": {
+          "company": { "summary": "Acme is the vendor named on the company page.", "claim_ids": [ "C-company" ], "section_support": [ { "claim_id": "C-company", "source_id": "S-company", "rationale": "The synthetic company page explicitly states this company claim." } ] },
+          "icp": { "summary": "The product is described for small retail teams.", "claim_ids": [ "C-icp" ], "section_support": [ { "claim_id": "C-icp", "source_id": "S-icp", "rationale": "The synthetic icp page explicitly states this icp claim." } ] },
+          "positioning": { "summary": "The stated positioning is a lightweight inventory tool.", "claim_ids": [ "C-positioning" ], "section_support": [ { "claim_id": "C-positioning", "source_id": "S-positioning", "rationale": "The synthetic positioning page explicitly states this positioning claim." } ] },
+          "product": { "summary": "The documented product provides stock tracking.", "claim_ids": [ "C-product" ], "section_support": [ { "claim_id": "C-product", "source_id": "S-product", "rationale": "The synthetic product page explicitly states this product claim." } ] },
+          "pricing": { "summary": "The listed price is 20 USD per month.", "claim_ids": [ "C-pricing" ], "section_support": [ { "claim_id": "C-pricing", "source_id": "S-pricing", "rationale": " " } ] },
+          "proof": { "summary": "The proof page contains one vendor-published case study.", "claim_ids": [ "C-proof" ], "section_support": [ { "claim_id": "C-proof", "source_id": "S-proof", "rationale": "The synthetic proof page explicitly states this proof claim." } ] },
+          "discovery": { "summary": "The vendor lists a public newsletter as a discovery channel.", "claim_ids": [ "C-discovery" ], "section_support": [ { "claim_id": "C-discovery", "source_id": "S-discovery", "rationale": "The synthetic discovery page explicitly states this discovery claim." } ] }
+        },
+        "contradictions": [],
+        "gaps": []
+      },
+      "competitive_intelligence_handoff": {
+        "baseline_id": "competitor:acme:2026-10-05",
+        "source_profile_status": "READY",
+        "profile_sha256": "sha256:84ea05dbcd063f23ce19f2c27f95d8e879ffdde9b7a5c5196c90d9bb6e343723"
+      }
+    },
+    "expected_errors": [
+      "profile.sections.pricing.section_support: must bind a section claim to its source with rationale",
       "handoff.source_profile_status: READY requires a valid complete profile"
     ]
   }

@@ -44,6 +44,7 @@ host_apply() {
   for entry in "$LEGACY_DIR"/*; do
     is_managed_link "$entry" "$ROOT/skills" || continue
     name="$(basename "$entry")"
+    selected_skill "$name" || continue
     if [[ "$INSTALL_DRY_RUN" == "1" ]]; then
       echo "would move legacy link $name out of $LEGACY_DIR"
     else

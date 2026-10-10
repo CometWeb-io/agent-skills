@@ -327,7 +327,18 @@ def replay(run_dir: Path) -> dict[str, Any]:
             if definition.get("handoff_gate") == gate.DOMAIN_GATE:
                 if proof.get("domain_accepted") is not True or proof.get("domain_hash") != proof.get("payload_hash"):
                     raise ValueError("completion lacks domain kernel proof")
-            state["steps"][data["step_id"]] = {"status": "COMPLETED", "attempt_number": previous["attempt_number"], **data}
+            completion_class = data.get("completion_class", "SCHEMA_VALIDATED" if gate.protected(definition) else "RECEIPT_ONLY")
+            if completion_class not in {"RECEIPT_ONLY", "SCHEMA_VALIDATED", "DOMAIN_ACCEPTED"}:
+                raise ValueError("unknown completion class")
+            if not gate.protected(definition) and completion_class != "RECEIPT_ONLY":
+                proof = data.get("handoff_validation")
+                if (completion_class != "SCHEMA_VALIDATED" or not isinstance(proof, dict)
+                        or proof.get("envelope_hash") != data.get("envelope_hash")
+                        or proof.get("expected_type") != definition.get("envelope_out")
+                        or proof.get("producer") != definition.get("skill")):
+                    raise ValueError("typed completion lacks schema validation proof")
+            state["steps"][data["step_id"]] = {"status": "COMPLETED", "attempt_number": previous["attempt_number"],
+                                              **data, "completion_class": completion_class}
         elif event_type == "step_retry_exhausted":
             previous = state["steps"].get(data["step_id"])
             definition = step_definitions[data["step_id"]]
@@ -425,6 +436,7 @@ def claim_next(run_dir: Path, current_plan: dict[str, Any] | None = None,
     if any(step.get("status") == "RUNNING" for step in state["steps"].values()):
         raise ValueError("orphaned running attempt")
     manifest = _read_manifest(run_dir)
+    gate = _prd_gate()
     for step in manifest["steps"]:
         previous = state["steps"].get(step["step_id"])
         status = previous.get("status") if previous else "PENDING"
@@ -432,6 +444,10 @@ def claim_next(run_dir: Path, current_plan: dict[str, Any] | None = None,
             continue
         if status == "BLOCKED":
             raise ValueError("workflow is blocked")
+        if step.get("envelope_out") or gate.protected(step):
+            earlier = manifest["steps"][:manifest["steps"].index(step)]
+            if any(state["steps"].get(s["step_id"], {}).get("completion_class") == "RECEIPT_ONLY" for s in earlier):
+                raise ValueError("receipt-only completion cannot unlock a typed downstream step; create a validated run")
         limit = step.get("retry_limit", step.get("domain_context", {}).get("max_attempts"))
         if limit is not None and previous and previous["attempt_number"] >= limit:
             append_event(run_dir, "step_retry_exhausted", {"step_id":step["step_id"],"attempt_id":previous["attempt_id"],
@@ -459,6 +475,7 @@ def complete_step(run_dir: Path, step_id: str, envelope_id: str, envelope_hash: 
     if definition is None:
         raise ValueError("unknown workflow step")
     proof = None
+    completion_class = "RECEIPT_ONLY"
     gate = _prd_gate()
     if gate.protected(definition):
         if envelope is None:
@@ -475,6 +492,7 @@ def complete_step(run_dir: Path, step_id: str, envelope_id: str, envelope_hash: 
         if result["envelope_id"] != envelope_id or result["envelope_hash"] != envelope_hash:
             raise ValueError("PRD envelope id/hash does not match validated content")
         proof = {"gate_lock_hash": result["gate_lock_hash"]}
+        completion_class = "SCHEMA_VALIDATED" if definition["handoff_gate"] == gate.WRAPPER_GATE else "DOMAIN_ACCEPTED"
         if is_prd:
             proof.update(brief_hash=result["brief_hash"], brief_status="READY")
         else:
@@ -482,13 +500,26 @@ def complete_step(run_dir: Path, step_id: str, envelope_id: str, envelope_hash: 
             proof.update(payload_hash=result["payload_hash"], expected_type=result["expected_type"], producer=result["producer"])
     elif isinstance(envelope, dict) and isinstance(envelope.get("payload"), dict) and envelope["payload"].get("artifact_profile") == "PRD":
         raise ValueError("PRD envelope requires an explicitly gated PRD plan")
+    elif definition.get("envelope_out"):
+        if envelope is None:
+            raise ValueError("typed completion requires full envelope JSON, not only id/hash")
+        result = gate.validate(envelope, expected_type=definition["envelope_out"],
+                               expected_producer=definition["skill"], prd_required=False)
+        if not result["accepted"] or result["envelope_id"] != envelope_id or result["envelope_hash"] != envelope_hash:
+            raise ValueError("typed envelope rejected or id/hash does not match validated content")
+        proof = {"envelope_hash": result["envelope_hash"], "payload_hash": result["payload_hash"],
+                 "expected_type": result["expected_type"], "producer": result["producer"]}
+        completion_class = "SCHEMA_VALIDATED"
     definitions = _read_manifest(run_dir)["steps"]
     position = next(i for i, v in enumerate(definitions) if v["step_id"] == step_id)
     # Protected combined workflows bind even the PRD to the exact completed prefix.
-    if gate.protected(definition) and any("trusted_context" in s for s in definitions):
+    if (gate.protected(definition) and any("trusted_context" in s for s in definitions)) or (
+            not gate.protected(definition) and definition.get("envelope_out")):
         earlier = definitions[:position]
         if any(state["steps"].get(s["step_id"], {}).get("status") != "COMPLETED" for s in earlier):
             raise ValueError("upstream prefix is incomplete")
+        if any(state["steps"][s["step_id"]].get("completion_class") == "RECEIPT_ONLY" for s in earlier):
+            raise ValueError("receipt-only upstream cannot authorize a typed handoff")
         ids = [state["steps"][s["step_id"]]["envelope_id"] for s in earlier]
         if envelope.get("dependencies") != ids:
             raise ValueError("protected dependencies must match exact completed prefix")
@@ -520,6 +551,7 @@ def complete_step(run_dir: Path, step_id: str, envelope_id: str, envelope_hash: 
     completion = {
         "step_id": step_id, "attempt_id": attempt_id, "plan_hash": state["plan_hash"],
         "envelope_id": envelope_id, "envelope_hash": envelope_hash,
+        "completion_class": completion_class,
     }
     if proof is not None: completion["handoff_validation"] = proof
     event = append_event(run_dir, "step_completed", completion)
