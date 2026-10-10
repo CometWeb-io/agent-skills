@@ -379,7 +379,8 @@ def test_both_conditions_run_as_adjacent_pairs_and_report_a_paired_result(tmp_pa
     assert all(r["checks"]["routing"]["status"] == "n/a" for r in baseline)
     report = rhe.build_report([grades])
     assert report["paired"]["pairs"] == 2 and report["paired"]["both_pass"] == 2
-    assert report["paired"]["comparable"] is True
+    assert report["paired"]["comparable"] is False
+    assert any("reasoning effort was not observed" in warning for warning in report["warnings"])
     text = rhe.render_markdown(report)
     assert "## Output - plugin" in text and "Plugin vs baseline" in text and "`release-readiness`" in text
 
@@ -446,3 +447,29 @@ def test_options_are_bounded():
         rhe.validate_options(rhe.RunOptions(host="claude", bin="x", conditions=("plugin",), price_in=1.0))
     with pytest.raises(ValueError):
         rhe.validate_options(rhe.RunOptions(host="claude", bin="x", conditions=("plugin",), model="a b; rm"))
+
+
+def test_execute_not_run_is_nonzero_but_dry_run_stays_successful(tmp_path):
+    plan = make_plan(tmp_path, [task("a", "PROMPT-A")])
+    args = ["run", "--plan", str(plan), "--host", "cursor", "--out", str(tmp_path / "out")]
+    assert rhe.main(args) == 0
+    assert not (tmp_path / "out").exists()
+    assert rhe.main([*args, "--execute"]) == 3
+    assert json.loads((tmp_path / "out" / "manifest.json").read_text())["execution_status"] == "NOT_RUN"
+
+
+@pytest.mark.parametrize("host,effort,flag,value", [
+    ("claude", "high", "--effort", "high"),
+    ("codex", "high", "--config", 'model_reasoning_effort="high"'),
+])
+def test_reasoning_effort_uses_host_native_flags(host, effort, flag, value, tmp_path):
+    opts = rhe.RunOptions(host=host, bin=host, conditions=("plugin",), reasoning_effort=effort)
+    rhe.validate_options(opts)
+    _, command = rhe.build_commands(opts, "plugin", tmp_path / "stage", tmp_path / "output.md")
+    assert command[command.index(flag) + 1] == value
+
+
+@pytest.mark.parametrize("host,effort", [("cursor", "high"), ("claude", "ultra"), ("codex", "invented")])
+def test_unsupported_effort_is_not_silently_mapped(host, effort):
+    with pytest.raises(ValueError, match="unsupported reasoning effort"):
+        rhe.validate_options(rhe.RunOptions(host=host, bin=host, conditions=("plugin",), reasoning_effort=effort))

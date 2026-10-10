@@ -1,6 +1,6 @@
 # CometWeb Agent Skills
 
-Tested Agent Skills for research, product decisions, QA and release gates, installable in Cursor, Claude Code, Codex and other hosts that read `SKILL.md` packages.
+Agent Skills with executable package and contract tests for research, product decisions, QA and release gates, installable in Cursor, Claude Code, Codex and other hosts that read `SKILL.md` packages.
 
 ![A request passes through a specialist skill to a structured result; tools and approvals stay with the host.](docs/media/overview.svg)
 
@@ -22,6 +22,19 @@ your authorization.
 - [Write and evaluate a new skill](#write-and-evaluate-a-new-skill)
 - [Contributing](#contributing)
 
+## What the tests establish
+
+| Evidence | What passing establishes | What remains unmeasured |
+| --- | --- | --- |
+| Package gates and CI badges above | The identified source meets package, security and contract checks | Correctness of every model answer |
+| Deterministic behavior suites | Helpers enforce their tested invariants | Live task success and comparative lift |
+| Host adapters and compatibility matrix | Declared formats and capabilities; Claude/Codex execution adapters exist | A successful session on every host/model |
+| Real-host evals | Only the recorded runs, exact identities and reviewed outcomes | General effectiveness without independent, repeated A/B |
+
+Live task success remains **NOT_ASSESSED** for the catalog as a whole.
+[Real-host evaluation](docs/REAL-HOST-EVALS.md) separates structural grades,
+blind review, cost and missing execution. A passing CI run grants no release authority.
+
 ## Quickstart
 
 Clone once, then run the installer for your host. Installers **symlink** each
@@ -31,12 +44,16 @@ it is; `git pull` updates every installed skill in place.
 ```bash
 git clone https://github.com/CometWeb-io/agent-skills.git
 cd agent-skills
-./scripts/install-all.sh      # all six hosts, previewed before anything is written
-./scripts/install-claude.sh   # or one host: install-cursor.sh, install-codex.sh,
-                              # install-qwen.sh, install-qoder.sh, install-lingma.sh
+./scripts/install-claude.sh --skill evidence-researcher --skill product-operator
+# Other hosts: install-cursor.sh, install-codex.sh, install-qwen.sh,
+# install-qoder.sh, install-lingma.sh. Omit --skill to install every package.
+# ./scripts/install-all.sh explicitly installs into all six hosts.
 ```
 
-A successful run ends with a line such as `OK: 34 Claude Code skills installed in /home/you/.claude/skills`.
+Installing every package ends with a line such as `OK: 34 Claude Code skills installed in /home/you/.claude/skills`.
+Installers support repeatable `--skill ID` and `--ref <full-commit-SHA>` for a
+clean pinned checkout. Keep stable installations on a detached reviewed commit;
+see [pinning and rollback](INSTALL.md#pinning-and-rollback).
 Installers are safe to rerun, stop before changing anything when a target path
 is already taken, and accept `--dry-run` and `--uninstall`.
 [INSTALL.md](INSTALL.md) lists each host's target directory and override
@@ -84,8 +101,8 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. | 1.5.2 |
 | [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. | 1.0.7 |
 | [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. | 1.2.4 |
-| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.3.1 |
-| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.2.1 |
+| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.4.0 |
+| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.2.2 |
 | [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. | 1.7.4 |
 | [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. | 1.8.1 |
 | [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. | 1.7.4 |
@@ -106,13 +123,13 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. | 1.8.0 |
 | [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. | 1.7.4 |
 | [`content-reviewer`](skills/content-reviewer/) | Constructive editorial QA with evidence-backed, actionable findings. | 1.7.5 |
-| [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. | 6.1.5 |
-| [`science-roaster`](skills/science-roaster/) | Reviewer #2-style critique of methods, inference, validity, and reproducibility. | 6.1.5 |
-| [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. | 6.1.5 |
+| [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. | 6.1.6 |
+| [`science-roaster`](skills/science-roaster/) | Reviewer #2-style critique of methods, inference, validity, and reproducibility. | 6.1.6 |
+| [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. | 6.1.6 |
 | [`repair-operator`](skills/repair-operator/) | Minimal dependency-aware repairs and fresh verification of closed findings. | 1.7.5 |
 | [`artifact-acceptance`](skills/artifact-acceptance/) | Final evidence-backed acceptance gates for knowledge artifacts. | 1.7.5 |
-| [`competitor-profiling`](skills/competitor-profiling/) | Initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence. | 0.1.1 |
-| [`research-program-operator`](skills/research-program-operator/) | Research-program stage gates, next-study planning, and manuscript-readiness handoffs. *(frozen)* | 1.3.2 |
+| [`competitor-profiling`](skills/competitor-profiling/) | Initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence. | 0.2.0 |
+| [`research-program-operator`](skills/research-program-operator/) | Research-program stage gates, next-study planning, and manuscript-readiness handoffs. *(frozen)* | 1.3.3 |
 
 ### Publication, operations, QA, and release
 

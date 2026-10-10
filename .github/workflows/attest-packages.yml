@@ -93,3 +93,40 @@ jobs:
             dist/*/*/skill.zip.sha256
           if-no-files-found: error
           retention-days: 90
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: attest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          persist-credentials: false
+      - name: Prepare versioned assets from the attested artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          gh run download "$RUN_ID" --name agent-skills-packages --dir downloaded
+          mkdir assets
+          cp downloaded/agent-skills.cdx.json assets/
+          for package in downloaded/*/*/skill.zip; do
+            (cd "$(dirname "$package")" && sha256sum -c skill.zip.sha256)
+            version="$(basename "$(dirname "$package")")"
+            skill="$(basename "$(dirname "$(dirname "$package")")")"
+            cp "$package" "assets/$skill-$version.zip"
+          done
+          printf '%s\n' "$SOURCE_SHA" > assets/SOURCE_COMMIT
+          (cd assets && sha256sum ./*.zip agent-skills.cdx.json SOURCE_COMMIT > SHA256SUMS)
+      - name: Create a draft release for owner review
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" assets/* --verify-tag --draft --title "$TAG" \
+            --notes "Attested skill packages, SHA-256 checksums and CycloneDX SBOM. Package and deterministic checks do not establish model effectiveness."

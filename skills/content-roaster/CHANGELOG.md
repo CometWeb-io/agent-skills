@@ -1,5 +1,9 @@
 # Changelog
 
+## [6.1.6] - 2026-10-10
+
+- Synchronize safe scanner redaction, explicit partial coverage and validated limits across the roaster packages.
+
 ## 6.1.5
 
 - Read eval corpora as UTF-8 and scan Windows directories with checked file handles, rejecting reparse points and paths outside the target before reading.

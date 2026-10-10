@@ -1,5 +1,10 @@
 """Supply-chain and privilege rules every GitHub Actions workflow must keep."""
 import re
+import hashlib
+import os
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -53,6 +58,12 @@ def test_write_rights_are_job_scoped_and_used(path):
         for scope, level in (job.get("permissions") or {}).items():
             if level == "read":
                 continue
+            if scope == "contents" and job_id == "release" and path.name == "attest-packages.yml":
+                assert job["needs"] == "attest"
+                assert job["if"] == "startsWith(github.ref, 'refs/tags/v')"
+                assert any("gh release create" in step.get("run", "") and "--draft" in step["run"]
+                           and "--verify-tag" in step["run"] for step in job["steps"])
+                continue
             assert scope in WRITE_JUSTIFIED_BY, f"{path.name}/{job_id}: unexpected {scope}: {level}"
             assert any(u.startswith(WRITE_JUSTIFIED_BY[scope]) for u in uses), f"{path.name}/{job_id}: unused {scope}"
 
@@ -92,3 +103,44 @@ def test_uv_installs_cache_and_locked_syncs(path):
 def test_dependabot_tracks_pinned_actions():
     config = yaml.safe_load((ROOT / ".github" / "dependabot.yml").read_text(encoding="utf-8"))
     assert "github-actions" in {row["package-ecosystem"] for row in config["updates"]}
+
+
+@pytest.mark.skipif(not shutil.which("bash") or not shutil.which("sha256sum"), reason="POSIX release preparation")
+def test_release_asset_preparation_checks_bytes_and_avoids_name_collisions(tmp_path):
+    fixture = tmp_path / "artifact"
+    fixture.mkdir()
+    (fixture / "agent-skills.cdx.json").write_text('{}\n')
+    for skill in ("first", "second"):
+        package = fixture / skill / "1.0.0"
+        package.mkdir(parents=True)
+        payload = ("archive for " + skill).encode()
+        (package / "skill.zip").write_bytes(payload)
+        (package / "skill.zip.sha256").write_text(hashlib.sha256(payload).hexdigest() + "  skill.zip\n")
+    commands = tmp_path / "bin"
+    commands.mkdir()
+    gh = commands / "gh"
+    gh.write_text(f"#!{sys.executable}\nimport shutil,sys\n"
+                  + f"assert sys.argv[1:3] == ['run', 'download']\nshutil.copytree({str(fixture)!r}, sys.argv[-1])\n")
+    gh.chmod(0o755)
+    job = load(ROOT / ".github/workflows/attest-packages.yml")["jobs"]["release"]
+    prepare = next(step["run"] for step in job["steps"] if "gh run download" in step.get("run", ""))
+    env = {**os.environ, "PATH": str(commands) + os.pathsep + os.environ["PATH"],
+           "RUN_ID": "fixture-run", "SOURCE_SHA": "a" * 40}
+    good = tmp_path / "good"
+    good.mkdir()
+    result = subprocess.run(["bash", "-e", "-c", prepare], cwd=good, env=env,
+                            capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    assets = good / "assets"
+    assert {p.name for p in assets.glob("*.zip")} == {"first-1.0.0.zip", "second-1.0.0.zip"}
+    for line in (assets / "SHA256SUMS").read_text().splitlines():
+        digest, name = line.split(maxsplit=1)
+        assert digest == hashlib.sha256((assets / name.strip()).read_bytes()).hexdigest()
+    assert (assets / "SOURCE_COMMIT").read_text().strip() == "a" * 40
+    (fixture / "first/1.0.0/skill.zip").write_bytes(b"tampered")
+    bad = tmp_path / "bad"
+    bad.mkdir()
+    result = subprocess.run(["bash", "-e", "-c", prepare], cwd=bad, env=env,
+                            capture_output=True, text=True, check=False)
+    assert result.returncode != 0
+    assert not list((bad / "assets").glob("*.zip"))

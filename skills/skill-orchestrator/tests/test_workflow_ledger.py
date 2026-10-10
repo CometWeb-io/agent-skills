@@ -29,6 +29,7 @@ def test_create_replay_and_idempotent_completion(tmp_path: Path) -> None:
     attempt_id = claim["data"]["attempt_id"]
     event = ledger.complete_step(run_dir, "research", "env-1", "sha256:abc", attempt_id)
     assert event["event_type"] == "step_completed"
+    assert event["data"]["completion_class"] == "RECEIPT_ONLY"
     duplicate = ledger.complete_step(run_dir, "research", "env-1", "sha256:abc", attempt_id)
     assert duplicate["status"] == "COMPLETED"
     next_claim = ledger.claim_next(run_dir, plan())
@@ -159,3 +160,43 @@ def test_cli_resume_and_step_commands(tmp_path: Path, capsys: pytest.CaptureFixt
     assert json.loads(capsys.readouterr().out)["event_type"] == "step_failed"
     assert ledger.main(["cancel", str(run_dir), "--reason", "test cleanup"]) == 0
     assert json.loads(capsys.readouterr().out)["event_type"] == "run_cancelled"
+
+
+def test_receipt_only_cannot_unlock_typed_downstream(tmp_path):
+    value = plan()
+    value["steps"][1]["envelope_out"] = "DecisionHandoff"
+    run = ledger.create_run(tmp_path, "receipt", value)
+    attempt = ledger.claim_next(run, value)["data"]["attempt_id"]
+    ledger.complete_step(run, "research", "made-up", "sha256:abc", attempt)
+    with pytest.raises(ValueError, match="receipt-only"):
+        ledger.claim_next(run, value)
+
+
+@pytest.mark.parametrize("mutation", ["missing-envelope", "wrong-hash", "wrong-producer", "wrong-dependency"])
+def test_typed_completion_rejects_unbound_content_without_writing(tmp_path, mutation):
+    value = plan()
+    value["steps"][0]["envelope_out"] = "EvidenceEnvelope"
+    run = ledger.create_run(tmp_path, "typed", value)
+    attempt = ledger.claim_next(run, value)["data"]["attempt_id"]
+    envelope = json.loads((ROOT.parents[1] / "fixtures/cwaip-v2/evidence-final.json").read_text())
+    if mutation == "wrong-producer": envelope["producer"] = "ai-council"
+    if mutation == "wrong-dependency": envelope["dependencies"] = ["invented"]
+    digest = ledger.sha256(ledger.canonical(envelope))
+    if mutation == "wrong-hash": digest = "sha256:abc"
+    before = (run / "events.jsonl").read_bytes()
+    with pytest.raises(ValueError):
+        ledger.complete_step(run, "research", envelope["id"], digest, attempt,
+                             envelope=None if mutation == "missing-envelope" else envelope)
+    assert (run / "events.jsonl").read_bytes() == before
+
+
+def test_typed_completion_records_schema_validation(tmp_path):
+    value = plan()
+    value["steps"][0]["envelope_out"] = "EvidenceEnvelope"
+    run = ledger.create_run(tmp_path, "typed", value)
+    attempt = ledger.claim_next(run, value)["data"]["attempt_id"]
+    envelope = json.loads((ROOT.parents[1] / "fixtures/cwaip-v2/evidence-final.json").read_text())
+    event = ledger.complete_step(run, "research", envelope["id"], ledger.sha256(ledger.canonical(envelope)),
+                                 attempt, envelope=envelope)
+    assert event["data"]["completion_class"] == "SCHEMA_VALIDATED"
+    assert ledger.replay(run)["steps"]["research"]["completion_class"] == "SCHEMA_VALIDATED"

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.3] - 2026-10-10
+
+- Reject READY handoffs that contradict the reported program stage; require a bounded next-study plan. Frozen-preview correctness exception: no research evidence, protocols or inferred approvals change.
+
 ## [1.3.2] - 2026-10-09
 
 - Correct the frozen source preview: reject incomplete governance, unknown inference, empty next studies and unsupported READY gates. Separate bounded manuscript preparation from publication authorization; no research evidence or protocol is changed.

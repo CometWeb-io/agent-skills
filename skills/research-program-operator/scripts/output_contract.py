@@ -8,6 +8,9 @@ STATUSES = ("complete", "partial", "blocked",)
 STAGES = ("question", "protocol", "execution", "analysis", "manuscript", "closed",)
 GATE_STATUSES = ("READY", "BLOCKED", "UNKNOWN", "NOT_REPORTED",)
 STUDY_STATUSES = ("planned", "reported", "executed", "failed",)
+HANDOFF_STAGES = {"next-study": STAGES,
+                  "science-roaster": ("protocol", "execution", "analysis", "manuscript", "closed"),
+                  "longform-publisher": ("manuscript", "closed")}
 
 
 def valid_date(value: object) -> bool:
@@ -125,6 +128,13 @@ def validate(result: object) -> list[str]:
             errors.append("handoff.status: invalid")
         if handoff.get("target") not in ("next-study", "science-roaster", "longform-publisher"):
             errors.append("handoff.target: must be next-study, science-roaster or longform-publisher; never publication")
+        if handoff.get("status") == "READY":
+            target = handoff.get("target")
+            stages = HANDOFF_STAGES.get(target, ()) if isinstance(target, str) else ()
+            if program.get("stage") not in stages:
+                errors.append("handoff.target: READY target is incompatible with program.stage")
+            if handoff.get("target") == "next-study" and not program.get("next_studies"):
+                errors.append("program.next_studies: READY next-study requires a bounded study plan")
         if handoff.get("status") == "READY" and (result.get("status") != "complete" or errors):
             errors.append("handoff.status: READY requires a valid complete program; not publication authorization")
     return errors

@@ -1,5 +1,9 @@
 # Changelog — skill-orchestrator-multiagent
 
+## [1.2.2] - 2026-10-10
+
+- Align the ledger reference with completion classes, validated typed envelopes and receipt-only migration boundaries.
+
 ## [1.2.1] - 2026-10-09
 
 - Align the shared run-ledger contract with atomic local mutation and unchanged sequential/external-effect limits.

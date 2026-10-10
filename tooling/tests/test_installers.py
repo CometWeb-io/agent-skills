@@ -6,6 +6,7 @@ import json
 import os
 import re
 import shutil
+import shlex
 import subprocess
 from pathlib import Path
 
@@ -23,6 +24,101 @@ HOSTS = {
     "qoder": "QODER_SKILLS_DIR",
     "lingma": "LINGMA_SKILLS_DIR",
 }
+
+
+@pytest.mark.parametrize("host", HOSTS)
+def test_selected_install_and_uninstall_preserve_other_packages(host, tmp_path):
+    target = tmp_path / "skills"
+    env = os.environ.copy()
+    env[HOSTS[host]] = str(target)
+    env["CURSOR_RULES_DIR"] = str(tmp_path / "rules")
+    env["SKILLS_BACKUP_DIR"] = str(tmp_path / "backups")
+    script = str(ROOT / "scripts" / f"install-{host}.sh")
+    args = [script, "--skill", "evidence-researcher", "--skill", "product-operator", "--skill", "product-operator"]
+    result = subprocess.run(args, env=env, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    assert {p.name for p in target.iterdir()} == {"evidence-researcher", "product-operator"}
+    result = subprocess.run([script, "--uninstall", "--skill", "evidence-researcher"],
+                            env=env, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    assert {p.name for p in target.iterdir()} == {"product-operator"}
+    if host == "cursor":
+        assert not (tmp_path / "rules").exists()
+
+
+@pytest.mark.parametrize("arguments", [["--skill", "missing"], ["--skill", "../outside"], ["--skill"],
+                                      ["--ref", "main"], ["--ref", "0" * 40]])
+def test_invalid_selection_or_pin_writes_nothing(arguments, tmp_path):
+    env = os.environ.copy()
+    env["CLAUDE_SKILLS_DIR"] = str(tmp_path / "target")
+    result = subprocess.run([str(ROOT / "scripts/install-claude.sh"), *arguments],
+                            env=env, capture_output=True, text=True, check=False)
+    assert result.returncode != 0
+    assert not (tmp_path / "target").exists()
+
+
+def test_pin_refuses_failed_git_status_without_writes(tmp_path):
+    revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
+                              text=True, check=True).stdout.strip()
+    tools = tmp_path / "bin"
+    tools.mkdir()
+    shim = tools / "git"
+    shim.write_text("#!/bin/sh\ncase \"$*\" in *status*) exit 42;; esac\nexec "
+                    + shlex.quote(shutil.which("git")) + ' "$@"\n')
+    shim.chmod(0o755)
+    env = {**os.environ, "PATH": str(tools) + os.pathsep + os.environ["PATH"],
+           "CLAUDE_SKILLS_DIR": str(tmp_path / "target")}
+    result = subprocess.run([str(ROOT / "scripts/install-claude.sh"), "--ref", revision],
+                            env=env, capture_output=True, text=True, check=False)
+    assert result.returncode != 0 and "cannot inspect" in result.stderr
+    assert not (tmp_path / "target").exists()
+
+
+def test_selected_cursor_install_preserves_existing_shared_rule(tmp_path):
+    rules = tmp_path / "rules"
+    rules.mkdir()
+    rule = rules / "cometweb-agent-skills.mdc"
+    rule.write_text("existing user routing")
+    env = {**os.environ, "CURSOR_SKILLS_DIR": str(tmp_path / "skills"), "CURSOR_RULES_DIR": str(rules)}
+    result = subprocess.run([str(ROOT / "scripts/install-cursor.sh"), "--skill", "product-operator"],
+                            env=env, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    assert rule.read_text() == "existing user routing"
+
+
+def test_pinned_install_requires_clean_source_and_supports_detached_rollback(tmp_path):
+    root = tmp_path / "source"
+    shutil.copytree(ROOT / "scripts", root / "scripts")
+    skill = root / "skills" / "demo"
+    skill.mkdir(parents=True)
+    entry = skill / "SKILL.md"
+    entry.write_text("first reviewed instructions")
+    def git(*argv):
+        return subprocess.run(["git", *argv], cwd=root, capture_output=True, text=True,
+                              check=True).stdout.strip()
+    git("init", "-q")
+    def commit():
+        git("add", ".")
+        git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
+            "-c", "core.hooksPath=/dev/null", "-c", "commit.gpgsign=false", "commit", "-qm", "fixture")
+        return git("rev-parse", "HEAD")
+    first = commit()
+    env = os.environ.copy()
+    target = tmp_path / "target"
+    env["CLAUDE_SKILLS_DIR"] = str(target)
+    args = [str(root / "scripts/install-claude.sh"), "--skill", "demo", "--ref", first]
+    entry.write_text("unreviewed")
+    result = subprocess.run(args, env=env, capture_output=True, text=True, check=False)
+    assert result.returncode != 0 and "clean checkout" in result.stderr
+    assert not target.exists()
+    second = commit()
+    result = subprocess.run([*args[:-1], second], env=env, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    assert (target / "demo/SKILL.md").read_text() == "unreviewed"
+    git("checkout", "--detach", first)
+    result = subprocess.run(args, env=env, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    assert (target / "demo/SKILL.md").read_text() == "first reviewed instructions"
 
 
 def skill_count() -> int:

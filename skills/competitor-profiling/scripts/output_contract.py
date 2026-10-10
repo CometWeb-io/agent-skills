@@ -83,6 +83,7 @@ def validate(result: object) -> list[str]:
                 errors.append(f"{prefix}.observed_at: after profile.as_of")
     claims = profile.get("claims")
     claim_ids: set[str] = set()
+    claim_sources: dict[str, list] = {}
     if not isinstance(claims, list) or not claims:
         errors.append("profile.claims: required non-empty list")
     else:
@@ -107,6 +108,8 @@ def validate(result: object) -> list[str]:
                 errors.append(f"{prefix}.source_ids: required non-empty list")
             elif any(not isinstance(source_id, str) or source_id not in source_ids for source_id in evidence):
                 errors.append(f"{prefix}.source_ids: unknown source")
+            if isinstance(claim_id, str) and isinstance(evidence, list):
+                claim_sources[claim_id] = evidence
             if result.get("status") == "complete" and claim.get("state") in ("UNKNOWN", "HYPOTHESIS"):
                 errors.append(f"{prefix}.state: complete requires supported claims")
     sections = profile.get("sections")
@@ -124,6 +127,18 @@ def validate(result: object) -> list[str]:
             ids = row.get("claim_ids")
             if not isinstance(ids, list) or not ids or any(not isinstance(v, str) or v not in claim_ids for v in ids):
                 errors.append(f"{prefix}.claim_ids: required non-empty references to profile claims")
+            support = row.get("section_support")
+            if result.get("status") == "complete" or support is not None:
+                if not isinstance(support, list) or not support:
+                    errors.append(f"{prefix}.section_support: required non-empty evidence mapping")
+                else:
+                    for item in support:
+                        if (not isinstance(item, dict) or not isinstance(item.get("claim_id"), str)
+                                or not isinstance(ids, list) or item["claim_id"] not in ids
+                                or not isinstance(item.get("source_id"), str)
+                                or item["source_id"] not in claim_sources.get(item["claim_id"], [])
+                                or not isinstance(item.get("rationale"), str) or not item["rationale"].strip()):
+                            errors.append(f"{prefix}.section_support: must bind a section claim to its source with rationale")
     for field in ("contradictions", "gaps"):
         if not isinstance(profile.get(field), list):
             errors.append(f"profile.{field}: required list")
@@ -152,4 +167,6 @@ def validate(result: object) -> list[str]:
 
 def assess(result: object) -> dict:
     errors = validate(result)
-    return {"status": "INVALID" if errors else result["status"].upper(), "errors": errors}
+    return {"status": "INVALID" if errors else result["status"].upper(), "errors": errors,
+            "coverage_status": "SUPPORT_MAPPED" if not errors and result["status"] == "complete" else "NOT_ASSESSED",
+            "factual_verification": "not_assessed"}

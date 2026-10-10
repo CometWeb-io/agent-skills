@@ -22,63 +22,196 @@
             "scope": "public first baseline",
             "sources": [
               {
-                "id": "S1",
+                "id": "S-company",
+                "kind": "official",
+                "locator": "https://example.invalid/company",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-icp",
+                "kind": "official",
+                "locator": "https://example.invalid/icp",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-positioning",
+                "kind": "official",
+                "locator": "https://example.invalid/positioning",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-product",
+                "kind": "official",
+                "locator": "https://example.invalid/product",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-pricing",
                 "kind": "official",
                 "locator": "https://example.invalid/pricing",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-proof",
+                "kind": "official",
+                "locator": "https://example.invalid/proof",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-discovery",
+                "kind": "official",
+                "locator": "https://example.invalid/discovery",
                 "observed_at": "2026-10-05"
               }
             ],
             "claims": [
               {
-                "id": "C1",
-                "text": "The source describes the product and pricing page.",
+                "id": "C-company",
+                "text": "Acme is the vendor named on the company page.",
                 "state": "OBSERVED",
                 "source_ids": [
-                  "S1"
+                  "S-company"
+                ]
+              },
+              {
+                "id": "C-icp",
+                "text": "The product is described for small retail teams.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-icp"
+                ]
+              },
+              {
+                "id": "C-positioning",
+                "text": "The stated positioning is a lightweight inventory tool.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-positioning"
+                ]
+              },
+              {
+                "id": "C-product",
+                "text": "The documented product provides stock tracking.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-product"
+                ]
+              },
+              {
+                "id": "C-pricing",
+                "text": "The listed price is 20 USD per month.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-pricing"
+                ]
+              },
+              {
+                "id": "C-proof",
+                "text": "The proof page contains one vendor-published case study.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-proof"
+                ]
+              },
+              {
+                "id": "C-discovery",
+                "text": "The vendor lists a public newsletter as a discovery channel.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-discovery"
                 ]
               }
             ],
             "sections": {
               "company": {
-                "summary": "covered",
+                "summary": "Acme is the vendor named on the company page.",
                 "claim_ids": [
-                  "C1"
+                  "C-company"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-company",
+                    "source_id": "S-company",
+                    "rationale": "The synthetic company page explicitly states this company claim."
+                  }
                 ]
               },
               "icp": {
-                "summary": "covered",
+                "summary": "The product is described for small retail teams.",
                 "claim_ids": [
-                  "C1"
+                  "C-icp"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-icp",
+                    "source_id": "S-icp",
+                    "rationale": "The synthetic icp page explicitly states this icp claim."
+                  }
                 ]
               },
               "positioning": {
-                "summary": "covered",
+                "summary": "The stated positioning is a lightweight inventory tool.",
                 "claim_ids": [
-                  "C1"
+                  "C-positioning"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-positioning",
+                    "source_id": "S-positioning",
+                    "rationale": "The synthetic positioning page explicitly states this positioning claim."
+                  }
                 ]
               },
               "product": {
-                "summary": "covered",
+                "summary": "The documented product provides stock tracking.",
                 "claim_ids": [
-                  "C1"
+                  "C-product"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-product",
+                    "source_id": "S-product",
+                    "rationale": "The synthetic product page explicitly states this product claim."
+                  }
                 ]
               },
               "pricing": {
-                "summary": "covered",
+                "summary": "The listed price is 20 USD per month.",
                 "claim_ids": [
-                  "C1"
+                  "C-pricing"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-pricing",
+                    "source_id": "S-pricing",
+                    "rationale": "The synthetic pricing page explicitly states this pricing claim."
+                  }
                 ]
               },
               "proof": {
-                "summary": "covered",
+                "summary": "The proof page contains one vendor-published case study.",
                 "claim_ids": [
-                  "C1"
+                  "C-proof"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-proof",
+                    "source_id": "S-proof",
+                    "rationale": "The synthetic proof page explicitly states this proof claim."
+                  }
                 ]
               },
               "discovery": {
-                "summary": "covered",
+                "summary": "The vendor lists a public newsletter as a discovery channel.",
                 "claim_ids": [
-                  "C1"
+                  "C-discovery"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-discovery",
+                    "source_id": "S-discovery",
+                    "rationale": "The synthetic discovery page explicitly states this discovery claim."
+                  }
                 ]
               }
             },
@@ -88,7 +221,7 @@
           "competitive_intelligence_handoff": {
             "baseline_id": "competitor:acme:2026-10-05",
             "source_profile_status": "READY",
-            "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+            "profile_sha256": "sha256:636c86ee6586f5ba0953ab6d98e2c49b3f4bccf188e4bfbc7fb05e16fc36c854"
           }
         }
       ],
@@ -120,63 +253,196 @@
             "scope": "public first baseline",
             "sources": [
               {
-                "id": "S1",
+                "id": "S-company",
+                "kind": "official",
+                "locator": "https://example.invalid/company",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-icp",
+                "kind": "official",
+                "locator": "https://example.invalid/icp",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-positioning",
+                "kind": "official",
+                "locator": "https://example.invalid/positioning",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-product",
+                "kind": "official",
+                "locator": "https://example.invalid/product",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-pricing",
                 "kind": "official",
                 "locator": "https://example.invalid/pricing",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-proof",
+                "kind": "official",
+                "locator": "https://example.invalid/proof",
+                "observed_at": "2026-10-05"
+              },
+              {
+                "id": "S-discovery",
+                "kind": "official",
+                "locator": "https://example.invalid/discovery",
                 "observed_at": "2026-10-05"
               }
             ],
             "claims": [
               {
-                "id": "C1",
-                "text": "The source describes the product and pricing page.",
+                "id": "C-company",
+                "text": "Acme is the vendor named on the company page.",
                 "state": "OBSERVED",
                 "source_ids": [
-                  "S1"
+                  "S-company"
+                ]
+              },
+              {
+                "id": "C-icp",
+                "text": "The product is described for small retail teams.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-icp"
+                ]
+              },
+              {
+                "id": "C-positioning",
+                "text": "The stated positioning is a lightweight inventory tool.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-positioning"
+                ]
+              },
+              {
+                "id": "C-product",
+                "text": "The documented product provides stock tracking.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-product"
+                ]
+              },
+              {
+                "id": "C-pricing",
+                "text": "The listed price is 20 USD per month.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-pricing"
+                ]
+              },
+              {
+                "id": "C-proof",
+                "text": "The proof page contains one vendor-published case study.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-proof"
+                ]
+              },
+              {
+                "id": "C-discovery",
+                "text": "The vendor lists a public newsletter as a discovery channel.",
+                "state": "OBSERVED",
+                "source_ids": [
+                  "S-discovery"
                 ]
               }
             ],
             "sections": {
               "company": {
-                "summary": "covered",
+                "summary": "Acme is the vendor named on the company page.",
                 "claim_ids": [
-                  "C1"
+                  "C-company"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-company",
+                    "source_id": "S-company",
+                    "rationale": "The synthetic company page explicitly states this company claim."
+                  }
                 ]
               },
               "icp": {
-                "summary": "covered",
+                "summary": "The product is described for small retail teams.",
                 "claim_ids": [
-                  "C1"
+                  "C-icp"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-icp",
+                    "source_id": "S-icp",
+                    "rationale": "The synthetic icp page explicitly states this icp claim."
+                  }
                 ]
               },
               "positioning": {
-                "summary": "covered",
+                "summary": "The stated positioning is a lightweight inventory tool.",
                 "claim_ids": [
-                  "C1"
+                  "C-positioning"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-positioning",
+                    "source_id": "S-positioning",
+                    "rationale": "The synthetic positioning page explicitly states this positioning claim."
+                  }
                 ]
               },
               "product": {
-                "summary": "covered",
+                "summary": "The documented product provides stock tracking.",
                 "claim_ids": [
-                  "C1"
+                  "C-product"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-product",
+                    "source_id": "S-product",
+                    "rationale": "The synthetic product page explicitly states this product claim."
+                  }
                 ]
               },
               "pricing": {
-                "summary": "covered",
+                "summary": "The listed price is 20 USD per month.",
                 "claim_ids": [
-                  "C1"
+                  "C-pricing"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-pricing",
+                    "source_id": "S-pricing",
+                    "rationale": "The synthetic pricing page explicitly states this pricing claim."
+                  }
                 ]
               },
               "proof": {
-                "summary": "covered",
+                "summary": "The proof page contains one vendor-published case study.",
                 "claim_ids": [
-                  "C1"
+                  "C-proof"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-proof",
+                    "source_id": "S-proof",
+                    "rationale": "The synthetic proof page explicitly states this proof claim."
+                  }
                 ]
               },
               "discovery": {
-                "summary": "covered",
+                "summary": "The vendor lists a public newsletter as a discovery channel.",
                 "claim_ids": [
-                  "C1"
+                  "C-discovery"
+                ],
+                "section_support": [
+                  {
+                    "claim_id": "C-discovery",
+                    "source_id": "S-discovery",
+                    "rationale": "The synthetic discovery page explicitly states this discovery claim."
+                  }
                 ]
               }
             },
@@ -186,7 +452,7 @@
           "competitive_intelligence_handoff": {
             "baseline_id": "competitor:acme:2026-10-05",
             "source_profile_status": "READY",
-            "profile_sha256": "sha256:72f2456cdf88c87856010940e9f6d3d89cdea108ffd7088e6dddf11b3c70e203"
+            "profile_sha256": "sha256:636c86ee6586f5ba0953ab6d98e2c49b3f4bccf188e4bfbc7fb05e16fc36c854"
           }
         }
       ],

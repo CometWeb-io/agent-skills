@@ -98,7 +98,10 @@ a placeholder that works. Replace it in this order:
 4. **Bump the plugin version.** A new skill changes what the plugin ships:
    `uv run python tooling/plugin_release.py --bump minor`. See
    [Plugin version](#plugin-version).
-5. **Regenerate and run every gate** with the [flow](#the-flow) above. A grown
+5. **Replace all scaffold markers before release.** Fast gates admit scaffolds
+   for development; the mandatory full `plugin_release` gate rejects markers
+   in skill Markdown, Python, local JSON evals and shared JSON evals.
+6. **Regenerate and run every gate** with the [flow](#the-flow) above. A grown
    front door or a changed eval-strength count is accepted deliberately; the
    summary prints the command that records it.
 

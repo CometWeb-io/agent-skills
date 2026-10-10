@@ -60,7 +60,13 @@
       ]
     },
     "claim_ids": {},
-    "profile_sha256": {}
+    "profile_sha256": {},
+    "section_support": {},
+    "claim_id": {},
+    "source_id": {},
+    "rationale": {},
+    "coverage_status": {},
+    "factual_verification": {}
   },
   "outputs": {},
   "internal": {},

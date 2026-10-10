@@ -1,5 +1,9 @@
 # Changelog — skill-orchestrator
 
+## [1.4.0] - 2026-10-10
+
+- Classify operational receipts, schema validation and domain acceptance. Typed handoffs require full validated envelopes and exact upstream dependencies; receipts cannot unlock typed downstream work.
+
 ## [1.3.1] - 2026-10-09
 
 - Serialize ledger mutations across replay, validation and append on POSIX and Windows. Reject insecure existing roots without changing their permissions; preserve the sequential executor and external-effect limits.

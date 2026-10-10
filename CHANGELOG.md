@@ -6,6 +6,28 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Security and correctness
+
+- Redact detected credentials across all source scanner output categories and
+  diagnostics; distinguish truncated, skipped and complete eligible-file scans.
+- Fail `real_host_eval --execute` when no host ran. Forward host-native effort
+  explicitly and report missing observations instead of claiming controlled A/B.
+- Require section evidence mappings in complete competitor profiles, consistent
+  research stage/target handoffs, and validated full envelopes for typed workflows.
+- Classify receipt-only, schema-validated and domain-accepted completions without
+  treating any of them as external-write authority.
+
+### Distribution and qualification
+
+- Add selective `--skill` installation and clean-source `--ref` verification;
+  document and test rollback through a detached reviewed commit.
+- Prepare draft GitHub Releases from fully gated, attested tag artifacts, with
+  versioned ZIP names, a checksum manifest, source commit and SBOM.
+- Add required Python 3.14 runtime lanes and experimental Python 3.15 lanes.
+  Local results and hosted CI remain separate evidence surfaces.
+- Reject scaffold markers in skill-local JSON evals during the existing release
+  maturity gate and clarify package/contract tests versus live task success.
+
 ### Added
 
 - **Shared error envelope for skill kernels.** `tooling/kernel_error_envelope.py`

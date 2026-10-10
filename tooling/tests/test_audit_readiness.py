@@ -134,6 +134,51 @@ def test_release_rejects_scaffold_content(tmp_path):
     assert plugin_release.content_errors(tmp_path) == []
 
 
+def test_release_rejects_scaffold_marker_in_skill_local_evals(tmp_path):
+    import plugin_release
+    directory = tmp_path / "skills" / "example" / "evals"
+    directory.mkdir(parents=True)
+    path = directory / "cases.json"
+    path.write_text(json.dumps({"note": "Scaffold placeholder from tooling/new_skill.py; replace with a real case"}))
+    assert plugin_release.content_errors(tmp_path)
+
+
+def test_reused_general_claim_without_section_support_never_becomes_ready():
+    module, value = contract("competitor-profiling")
+    for section in value["profile"]["sections"].values():
+        section.pop("section_support", None)
+    value["competitive_intelligence_handoff"]["profile_sha256"] = module.profile_hash(value["profile"])
+    assert any("section_support" in error for error in module.validate(value))
+    assert module.assess(value)["coverage_status"] == "NOT_ASSESSED"
+
+
+@pytest.mark.parametrize("mutation", ["unknown-claim", "wrong-source", "empty-rationale", "nonobject"])
+def test_section_support_must_bind_to_its_own_claim_and_source(mutation):
+    module, value = contract("competitor-profiling")
+    support = value["profile"]["sections"]["pricing"]["section_support"][0]
+    if mutation == "unknown-claim": support["claim_id"] = "not-a-pricing-claim"
+    elif mutation == "wrong-source": support["source_id"] = "missing-source"
+    elif mutation == "empty-rationale": support["rationale"] = " "
+    else: value["profile"]["sections"]["pricing"]["section_support"] = [None]
+    value["competitive_intelligence_handoff"]["profile_sha256"] = module.profile_hash(value["profile"])
+    assert any("section_support" in error for error in module.validate(value))
+
+
+@pytest.mark.parametrize("stage", ["question", "protocol", "execution", "analysis"])
+def test_early_stage_never_hands_off_ready_manuscript(stage):
+    module, value = contract("research-program-operator")
+    value["program"]["stage"] = stage
+    assert any("incompatible" in error for error in module.validate(value))
+
+
+def test_manuscript_may_plan_a_next_study_without_publication_authority():
+    module, value = contract("research-program-operator")
+    value["research_handoff"]["target"] = "next-study"
+    assert module.validate(value) == []
+    value["program"]["next_studies"] = []
+    assert any("bounded study plan" in error for error in module.validate(value))
+
+
 def test_attestation_requires_full_gates_and_platform_matrix():
     import yaml
     workflow = yaml.safe_load((ROOT / ".github/workflows/attest-packages.yml").read_text())

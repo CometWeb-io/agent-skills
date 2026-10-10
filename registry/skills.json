@@ -747,7 +747,7 @@
     },
     {
       "id": "competitor-profiling",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -932,7 +932,7 @@
     },
     {
       "id": "content-roaster",
-      "version": "6.1.5",
+      "version": "6.1.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2406,7 +2406,7 @@
     },
     {
       "id": "repo-roaster",
-      "version": "6.1.5",
+      "version": "6.1.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2654,7 +2654,7 @@
     },
     {
       "id": "research-program-operator",
-      "version": "1.3.2",
+      "version": "1.3.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2845,7 +2845,7 @@
     },
     {
       "id": "science-roaster",
-      "version": "6.1.5",
+      "version": "6.1.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -3253,7 +3253,7 @@
     },
     {
       "id": "skill-orchestrator",
-      "version": "1.3.1",
+      "version": "1.4.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3375,7 +3375,7 @@
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",

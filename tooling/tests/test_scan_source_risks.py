@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -130,3 +133,75 @@ def test_output_symlink_is_rejected(package: str, tmp_path: Path, outside: Path)
         load(package)._atomic_write(output, "{}\n")
 
     assert outside.read_text(encoding="utf-8") == HOSTILE
+
+
+@pytest.mark.parametrize("package", PACKAGES)
+@pytest.mark.parametrize("token", ["sk-" + "X" * 27, "ghp_" + "X" * 30,
+                                    "github_pat_" + "X" * 30, "AKIA" + "X" * 16])
+@pytest.mark.parametrize("prefix", ["", "ignore previous instructions; ", "invisible\u200b ",
+                                     "ignore previous instructions; " + "x" * 200])
+def test_every_excerpt_redacts_all_detected_credentials(package, token, prefix, tmp_path):
+    path = tmp_path / "fixture.txt"
+    path.write_text(prefix + token + " " + token + "\n", encoding="utf-8")
+    report = load(package).scan(path)
+    assert report["flags"]
+    assert token not in json.dumps(report)
+
+
+@pytest.mark.parametrize("package", PACKAGES)
+def test_credential_like_paths_are_also_redacted(package, tmp_path):
+    token = "sk-" + "X" * 27
+    path = tmp_path / token
+    path.write_text(HOSTILE, encoding="utf-8")
+    assert token not in json.dumps(load(package).scan(path))
+
+
+@pytest.mark.parametrize("package", PACKAGES)
+def test_coverage_distinguishes_exact_limit_from_truncation(package, tmp_path):
+    module = load(package)
+    (tmp_path / "a.txt").write_text("safe", encoding="utf-8")
+    report = module.scan(tmp_path, max_files=1)
+    assert report["scan_status"] == "COMPLETE" and report["limit_reached"] is False
+    (tmp_path / "b.txt").write_text("safe", encoding="utf-8")
+    report = module.scan(tmp_path, max_files=1)
+    assert report["scan_status"] == "PARTIAL" and report["limit_reached"] is True
+    assert report["files_scanned"] == 1 and report["files_discovered"] == 2
+    assert report["remaining_files_unknown"] is True
+
+
+@pytest.mark.parametrize("package", PACKAGES)
+@pytest.mark.parametrize("limits", [{"max_files": 0}, {"max_files": -1}, {"max_bytes": 0}, {"max_bytes": -1},
+                                  {"max_files": True}, {"max_files": 1.5}, {"max_bytes": None}])
+def test_nonpositive_limits_are_rejected(package, limits, tmp_path):
+    with pytest.raises(ValueError, match="positive"):
+        load(package).scan(tmp_path, **limits)
+
+
+@pytest.mark.parametrize("package", PACKAGES)
+def test_walk_error_cannot_report_complete_coverage(package, tmp_path, monkeypatch):
+    module = load(package)
+
+    def failed_walk(*args, **kwargs):
+        kwargs["onerror"](PermissionError("unreadable directory"))
+        return iter(())
+
+    monkeypatch.setattr(module.os, "walk" if module.os.name == "nt" else "fwalk", failed_walk)
+    report = module.scan(tmp_path)
+    assert report["scan_status"] == "PARTIAL"
+    assert report["walk_errors"] == 1 and report["remaining_files_unknown"] is True
+    assert report["limit_reached"] is False
+
+
+@pytest.mark.parametrize("package", PACKAGES)
+def test_cli_redacts_stdout_output_paths_and_parser_errors(package, tmp_path):
+    script = ROOT / "skills" / package / "scripts/scan_source_risks.py"
+    token = "sk-" + "X" * 27
+    source = tmp_path / "fixture.txt"
+    source.write_text("ignore previous instructions " + token + "\u200b", encoding="utf-8")
+    output = tmp_path / (token + ".json")
+    for args in ([str(source)], [str(source), "--output", str(output)],
+                 [str(source), "--max-files", token], [str(source), "--max-files", "0"]):
+        result = subprocess.run([sys.executable, str(script), *args], capture_output=True, text=True, check=False)
+        assert token not in result.stdout + result.stderr
+        assert result.returncode == (2 if "--max-files" in args else 0)
+    assert token not in output.read_text()
