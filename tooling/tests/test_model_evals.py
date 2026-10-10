@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 TOOLS=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(TOOLS))
-from run_model_evals import CONDITIONS, execute, prepare, run, validate_response, validate_suite
+from run_model_evals import CONDITIONS, execute, instructions, prepare, run, validate_response, validate_suite
 from openai_eval_runner import build_request, convert_response
 
 
@@ -34,6 +34,49 @@ def test_no_skill_baseline_does_not_receive_skill_instructions(roots):
     assert current["instructions"] != candidate["instructions"]
     assert baseline["prompt"] == current["prompt"] == candidate["prompt"]
     assert baseline["fixture"] == current["fixture"] == candidate["fixture"]
+
+
+def alias_registry(root, target="core", chain=None):
+    (root/"registry").mkdir()
+    rows = [{"id":"demo", "alias_of":target}, {"id":"core", "alias_of":chain}]
+    (root/"registry/skills.json").write_text(json.dumps({"skills":rows}))
+    (root/"skills/core").mkdir()
+    (root/"skills/core/SKILL.md").write_text("Canonical " + root.name + " planning instructions")
+
+
+def test_alias_loads_its_canonical_front_door_without_polluting_baseline(roots):
+    for root in roots:
+        alias_registry(root)
+    baseline=prepare(case(),"no_skill",*roots,256)
+    current=prepare(case(),"current",*roots,256)
+    candidate=prepare(case(),"candidate",*roots,256)
+    assert baseline["instructions"] == {}
+    assert current["instructions"]["alias-of/core/SKILL.md"] == "Canonical current planning instructions"
+    assert candidate["instructions"]["alias-of/core/SKILL.md"] == "Canonical candidate planning instructions"
+    assert current["instructions"]["SKILL.md"] == "Synthetic current instructions"
+
+
+@pytest.mark.parametrize("target,chain", [("core","demo"),("demo",None),("absent",None),("../outside",None),(True,None)])
+def test_invalid_alias_binding_fails_before_runner(roots, target, chain):
+    alias_registry(roots[0],target,chain)
+    with pytest.raises(ValueError):
+        instructions(roots[0],case())
+
+
+@pytest.mark.parametrize("damage", ["missing","symlink","credential"])
+def test_unavailable_or_unsafe_canonical_instructions_are_not_silently_omitted(roots, damage):
+    root=roots[0]
+    alias_registry(root)
+    path=root/"skills/core/SKILL.md"
+    if damage=="missing":
+        path.unlink()
+    elif damage=="symlink":
+        path.unlink()
+        path.symlink_to(root/"skills/demo/SKILL.md")
+    else:
+        path.write_text("token = " + "sk-proj-" + "x"*56)
+    with pytest.raises((ValueError,FileNotFoundError)):
+        instructions(root,case())
 
 
 def test_mock_does_not_count_as_model_run():

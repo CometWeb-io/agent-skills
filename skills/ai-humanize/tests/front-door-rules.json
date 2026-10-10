@@ -216,6 +216,11 @@
       "id": "protect-exact-phrases",
       "text": "Use `--protect` for exact names, labels, or normative phrases that heuristics cannot infer safely.",
       "where": "references/semantic-fidelity.md"
+    },
+    {
+      "id": "rewrite-word-range-excludes-notes",
+      "text": "For a word range, count the finished rewrite before delivery; separate change or provenance notes do not count.",
+      "where": "SKILL.md"
     }
   ]
 }

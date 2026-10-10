@@ -68,6 +68,34 @@ def instructions(root: Path, case: dict) -> dict:
         if check_blob(name, text.encode(), public=False):
             raise ValueError("potential credential in outbound instructions")
         result[name] = text
+    registry_path = safe_path(root, "registry/skills.json")
+    aliases = {}
+    if registry_path.exists():
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+        if not isinstance(registry, dict) or not isinstance(registry.get("skills"), list):
+            raise ValueError("invalid alias registry")
+        for row in registry["skills"]:
+            if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+                raise ValueError("invalid alias registry entry")
+            skill = identifier(row["id"])
+            if skill in aliases:
+                raise ValueError("duplicate alias registry entry")
+            aliases[skill] = row.get("alias_of")
+    skill, seen = case["skill"], {case["skill"]}
+    while aliases.get(skill) is not None:
+        target = aliases[skill]
+        if not isinstance(target, str):
+            raise ValueError("invalid canonical skill identifier")
+        identifier(target)
+        if target in seen or target not in aliases:
+            raise ValueError("cyclic or unregistered canonical skill")
+        seen.add(target)
+        name = f"skills/{target}/SKILL.md"
+        text = safe_path(root, name).read_text(encoding="utf-8")
+        if check_blob(name, text.encode(), public=False):
+            raise ValueError("potential credential in outbound instructions")
+        result[f"alias-of/{target}/SKILL.md"] = text
+        skill = target
     return result
 
 

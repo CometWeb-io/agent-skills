@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.6.3] - 2026-10-10
+
+- Check the requested word range on the rewrite itself, excluding separately requested notes, with margin for counting boundaries.
+
 ## [2.6.2] - 2026-10-08
 
 - Replace output atomically and refuse symlinked output targets instead of redirecting cleaned text.

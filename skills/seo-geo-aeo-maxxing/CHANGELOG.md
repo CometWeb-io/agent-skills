@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.5] - 2026-10-10
+
+- Separate bundled-guide freshness from observed site evidence and require an available record for source-date or refresh-history claims.
+
 ## 1.3.4 — 2026-10-03
 
 - `references/composability.md` spelled the Release Readiness verdict `NO-GO`, the Council spelling; it now uses `NO_GO`, the token Release Readiness returns.

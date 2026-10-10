@@ -94,6 +94,8 @@ Inspect source entailment, date/version fit, units, denominators, normative scop
 contradictions, code examples, quotations, chapter consistency, and illustration labels.
 Review citations against the actual draft, not merely the ledger.
 
+Check the displayed calculation as well as its exact arithmetic. When presenting conservative uncertainty bounds, round the lower endpoint down and the upper endpoint up at the displayed precision, and retain the unrounded calculation for review.
+
 Edit Polish/English naturally without generic filler, fake personal experience, invented
 results, synonym churn, or marketing hype. Preserve names, numerical values, uncertainty,
 negation, causality, conditions, thresholds, normative verbs, and attribution. A mechanical

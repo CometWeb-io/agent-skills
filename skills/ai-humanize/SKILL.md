@@ -171,6 +171,8 @@ When the user asks for a finished rewrite:
 - do not mention edits you intentionally chose not to make;
 - if a material ambiguity prevents a faithful rewrite, preserve the ambiguous source meaning rather than guessing.
 
+For a word range, count the finished rewrite before delivery; separate change or provenance notes do not count. Preserve meaning and stay comfortably within the range.
+
 When the user asks for an audit/comparison, report only the useful findings: mode, major issues, material fidelity risks, and specific recommendations.
 
 ## 12. Quality gates

@@ -170,41 +170,71 @@ without `SKILL.md` that holds anything else still stops the run.
 
 ## Pinning and rollback
 
-For reviewed versions, use a dedicated checkout in detached HEAD at the exact
-approved commit. Run the existing installers from that checkout and keep it
-at the same path. Do not update it with `git pull`: the symlinks follow its bytes.
-Preview every host with `--dry-run` before changing the active installation.
+The shell installers retain their development mode: symlinks point into the
+source checkout. `--ref <full-commit-SHA>` requires matching HEAD and a clean
+checkout before installation; it does **not** freeze those links. A later
+checkout change still changes their active instructions. Keep a dedicated,
+detached clone at a reviewed commit if you use that mode for stable work.
 
-To upgrade or roll back, first review the exact target commit and its gates.
-Before rollback, run the current checkout's installers with `--uninstall` so
-packages added by the newer version do not remain active. Then run the
-installers from the selected checkout with `SKILLS_REPLACE_CONFLICTS=1`
-when replacing managed links from another checkout. The shared installer backs
-up conflicting paths and removes only links it owns during uninstall. Keep the
-previous checkout for rollback; local package or discovery PASS is not a signed
-release or model qualification. A global install is a separate promotion action.
-
-## Pinning and rollback
-
-For a stable installation, keep the source clone detached at a reviewed full
-commit SHA. Each host installer accepts repeatable `--skill ID` and `--ref SHA`.
-The latter refuses a mismatched HEAD or dirty checkout before changing targets.
-It validates the existing clone; it does not fetch, check out or trust a version
-on your behalf. For example, replace the placeholder with a reviewed commit:
+To retain committed bytes while the development checkout changes, install one
+host from a separate Git archive snapshot. POSIX file modes, Bash, Python 3.12+
+and Git are required; use WSL on Windows, since native Windows is unsupported.
+There is no fetch or default global destination. Review the commit before
+executing its installer. Supply absolute paths for both storage and the host
+skills directory:
 
 ```bash
-git checkout --detach <reviewed-full-commit-SHA>
-./scripts/install-claude.sh --ref <reviewed-full-commit-SHA> --skill evidence-researcher
+python3 scripts/install-snapshot.py \
+  --ref <reviewed-full-commit-SHA> --host codex \
+  --store /absolute/path/to/snapshots --target /absolute/path/to/profile/skills \
+  --skill evidence-researcher --dry-run
+# Remove --dry-run after reviewing the plan.
 ```
 
-Record the SHA printed by the installer. To roll back, require a clean clone,
-check out the earlier reviewed SHA detached, and rerun the same host/skill
-selection with that SHA. Symlinks follow the clone, so changing its commit
-updates instructions immediately; do it between host sessions. Keep separate
-clones for stable use and development. Selected uninstall preserves other skills
-and Cursor's shared rule. All-host preflight prevents known conflicts before
-writes, but it cannot make six filesystem destinations atomic against I/O
-failure; inspect output and rerun a specific host after resolving the failure.
+`--host` accepts `cursor`, `claude`, `codex`, `qwen`, `qoder` or `lingma`;
+repeatable `--skill` limits installation, and omitting it selects the catalog.
+A full Cursor install also requires `--rules-target /absolute/path/to/profile/rules`.
+Selected Cursor installs preserve the shared routing rule. The explicit Codex
+target disables migration of a user's legacy directory. The wrapper delegates
+discovery, links and routing to the existing installer from the selected commit.
+
+The selected commit's installer is trusted executable code, not sandboxed data.
+Use a reviewed commit that honors the current target-variable and `--dry-run`
+contract; arbitrary historical or malicious installers can ignore those controls.
+
+The snapshot contains archived tracked files, not dirty or untracked working
+files. It keeps the original file modes and records SHA-256 hashes in
+`<store>/<SHA>/manifest.json`. Before reuse, verification compares both this
+manifest and the stored bytes against a fresh archive of the requested Git
+commit; rewriting the manifest cannot bless changed content. Unexpected files,
+symlinks, special files or POSIX mode changes stop installation. Ownership,
+ACLs and extended attributes are not recorded. Archive links are unsupported.
+With a compatible installer, dry-run performs these checks and previews the host
+without writing the store or profile. Installed bytes remain available after moving or deleting
+the source checkout, but future verification and rollback require a checkout
+that still has the requested Git objects.
+
+To upgrade or roll back, review the target commit and rerun the same command
+with that SHA and `--replace-conflicts`. This flag explicitly permits replacing
+conflicting paths; the wrapper retains their prior contents and writes a
+`transaction-*/receipt.json` under the store. Full-catalog switching removes
+retired links belonging to this snapshot store while preserving unrelated user
+packages. A selected switch changes only the named packages; keep the same
+selection when comparing versions. Retain the store for as long as its links
+are installed. Existing development links remain a separate installation mode.
+
+A nonzero host-installer result restores the touched paths, including a full
+Cursor install's routing rule. This is recovery for one host during a running
+process, not an atomic transaction across six hosts. Process termination,
+concurrent edits to a host profile (including operations using another store),
+or storage failure during recovery require
+manual inspection of the transaction backups. A store lock prevents concurrent
+apply operations through this wrapper; inspect a leftover `.install-lock` after
+an interrupted process before removing it. Newly created empty directories may
+remain after a failed first install. Local hashes detect alteration when checked;
+they are not signed provenance and do not prevent the store owner from changing
+active bytes between checks. A snapshot install does not demonstrate model
+quality or release qualification, and global promotion remains a separate action.
 
 ## Release assets
 

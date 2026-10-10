@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.5] - 2026-10-10
+
+- Derive mandatory gates from the active frozen contract and explicitly selected profile; keep optional extra reviews separate.
+
 ## [1.7.4] - 2026-10-03
 
 - A payload that is not an object returned no `unresolved_conflicts` or `blocking_quality_debt`, which every other refusal carries; it now returns them at zero.

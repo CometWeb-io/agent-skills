@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.4] - 2026-10-10
+
+- Verify displayed uncertainty bounds against the exact calculation, with outward rounding when conservative bounds are claimed.
+
 ## [1.0.3] - 2026-10-03
 
 - `references/validation.md` now names every output value: it said `validate` emits a result but never named `RECORDS_COMPLETE`/`BLOCKED`, the `code`/`detail` shape of blockers and warnings, the `INPUT_ERROR` exit-2 output or `INITIALIZED_DRAFT` from `init`, and never named the required manifest `schema` value `cometweb.ebook/v1`.

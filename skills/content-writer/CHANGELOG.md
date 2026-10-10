@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.5] - 2026-10-10
+
+- Check artifact word ranges separately from claim ledgers and source maps; meet them with supported explanation rather than filler.
+
 ## [1.7.4] - 2026-10-03
 
 - A report that is not an object reported mode `DRAFT`, and one with a non-list `claims` defaulted to `DRAFT` too, although the documented default is `FINAL`; both now report `FINAL` unless the report names another mode.
