@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.6] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.3.5] - 2026-10-10
 
 - Separate bundled-guide freshness from observed site evidence and require an available record for source-date or refresh-history claims.

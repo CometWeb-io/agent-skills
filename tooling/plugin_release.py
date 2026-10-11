@@ -234,8 +234,54 @@ def content_errors(root: Path) -> list[str]:
     """Scaffolds may pass fast gates, but cannot become a release candidate."""
     paths = list((root / "skills").rglob("*.py")) + list((root / "skills").rglob("*.md"))
     paths += list((root / "skills").rglob("*.json")) + list((root / "evals").rglob("*.json"))
-    return [f"{path.relative_to(root)}: unreplaced scaffold content" for path in sorted(paths)
-            if unreplaced_scaffold(str(path.relative_to(root)), path.read_text(encoding="utf-8"))]
+    errors = [f"{path.relative_to(root)}: unreplaced scaffold content" for path in sorted(paths)
+              if unreplaced_scaffold(str(path.relative_to(root)), path.read_text(encoding="utf-8"))]
+    for skill_md in sorted((root / "skills").glob("*/SKILL.md")):
+        path = skill_md.parent / "MATURITY.json"
+        try:
+            data = read_maturity(skill_md.parent)
+            if data["stage"] == "SCAFFOLD":
+                raise ValueError("SCAFFOLD is development-only; use --dev")
+        except (OSError, ValueError) as exc:
+            errors.append(f"{path.relative_to(root)}: {exc}")
+    return errors
+
+
+def validate_maturity(blob: bytes, skill: str, version: str) -> dict:
+    """Current distributions are experimental; supplied labels never qualify a task."""
+    if len(blob) > 4096:
+        raise ValueError("MATURITY.json exceeds the metadata budget")
+    def unique(pairs):
+        result = dict(pairs)
+        if len(result) != len(pairs):
+            raise ValueError("MATURITY.json contains duplicate keys")
+        return result
+
+    try:
+        data = json.loads(blob.decode("utf-8"), object_pairs_hook=unique)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("invalid MATURITY.json") from exc
+    fields = {"schema", "skill", "version", "stage", "publication", "task_qualification"}
+    if not isinstance(data, dict) or set(data) != fields or any(not isinstance(v, str) for v in data.values()):
+        raise ValueError("invalid maturity fields")
+    if data["schema"] != "cometweb.skill-maturity/v1" or data["skill"] != skill or data["version"] != version:
+        raise ValueError("maturity identity disagrees with package")
+    if data["stage"] == "QUALIFIED":
+        raise ValueError("QUALIFIED requires independent task qualification; this distribution is experimental")
+    if data["stage"] not in {"SCAFFOLD", "DEVELOPMENT", "CANDIDATE"}:
+        raise ValueError("invalid maturity stage")
+    if data["publication"] != "EXPERIMENTAL" or data["task_qualification"] != "not_established":
+        raise ValueError("maturity must declare EXPERIMENTAL and unassessed task effectiveness")
+    return data
+
+
+def read_maturity(skill_dir: Path) -> dict:
+    path = skill_dir / "MATURITY.json"
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("MATURITY.json must be a regular file")
+    with path.open("rb") as stream:
+        return validate_maturity(stream.read(4097), skill_dir.name,
+                                 (skill_dir / "VERSION").read_text().strip())
 
 
 def next_version(version: str, level: str) -> str:

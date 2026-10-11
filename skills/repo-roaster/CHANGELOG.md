@@ -1,5 +1,9 @@
 # Changelog
 
+## [6.1.7] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [6.1.6] - 2026-10-10
 
 - Redact detected credentials in all scanner excerpts, paths and diagnostics; report truncated/skipped coverage and reject nonpositive limits.

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.7] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.7.6] - 2026-10-11
 
 - Add a standalone UTF-8 body word-range CLI with inclusive bounds, JSON count/verdict, fail-closed input checks, and documented raw Unicode-whitespace counting.

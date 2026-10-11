@@ -127,6 +127,10 @@ def test_release_rejects_scaffold_content(tmp_path):
     import plugin_release
     skill = tmp_path / "skills" / "example"
     skill.mkdir(parents=True)
+    (skill / "VERSION").write_text("1.0.0\n")
+    (skill / "MATURITY.json").write_text(json.dumps({"schema": "cometweb.skill-maturity/v1",
+        "skill": "example", "version": "1.0.0", "stage": "DEVELOPMENT",
+        "publication": "EXPERIMENTAL", "task_qualification": "not_established"}))
     path = skill / "SKILL.md"
     path.write_text("Replace these rules with the skill's real contract")
     assert plugin_release.content_errors(tmp_path)

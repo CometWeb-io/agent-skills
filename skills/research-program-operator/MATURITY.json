@@ -1,0 +1,8 @@
+{
+  "schema": "cometweb.skill-maturity/v1",
+  "skill": "research-program-operator",
+  "version": "1.3.4",
+  "stage": "DEVELOPMENT",
+  "publication": "EXPERIMENTAL",
+  "task_qualification": "not_established"
+}

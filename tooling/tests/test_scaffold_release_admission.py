@@ -1,6 +1,7 @@
 """Known generated scaffolds cannot enter either versioned distribution path."""
 from pathlib import Path
 import shutil
+import json
 
 import pytest
 
@@ -18,6 +19,11 @@ OLD_MARKERS = ("Replace these rules with the skill's real contract",
 @pytest.fixture
 def generated(tmp_path):
     new_skill.create('scaffold-probe', DESCRIPTION, False, tmp_path)
+    # These tests isolate template detection after a declared development transition.
+    path = tmp_path / 'skills/scaffold-probe/MATURITY.json'
+    maturity = json.loads(path.read_text())
+    maturity['stage'] = 'DEVELOPMENT'
+    path.write_text(json.dumps(maturity))
     (tmp_path / 'registry').mkdir()
     shutil.copyfile(ROOT / 'registry/package-policy.json', tmp_path / 'registry/package-policy.json')
     return tmp_path

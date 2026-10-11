@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.3.1] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [5.3.0] - 2026-10-08
 
 - Add explicit opt-in, pinned marketing framework packs for bounded Council roles. Framework instructions do not provide observed evidence or authorize actions.

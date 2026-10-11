@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.6.1] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.6.0] - 2026-10-11
 
 - Add explicit public-example, private-workspace and single-project context scopes. Public helper mode skips workspace overlays and repo inspection; project records require matching declared project references.

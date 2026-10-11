@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.5.1] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## 1.5.0 — 2026-10-05
 
 - Added bounded `contract-trace` mode with scenario accounting, evidence

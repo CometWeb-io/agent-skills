@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.5] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.1.4] - 2026-10-11
 
 - Classify the bundled competitor-profiling package as an in-repository baseline handoff.

@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.3] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [2.2.2] - 2026-10-08
 
 - Hash canonical JSON dedupe fields and remove premature case/incident closure transitions.

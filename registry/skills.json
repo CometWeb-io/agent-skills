@@ -7,7 +7,7 @@
   "skills": [
     {
       "id": "ai-council",
-      "version": "5.3.0",
+      "version": "5.3.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -113,11 +113,13 @@
           7,
           "\\bcouncil\\b.{0,15}\\b(?:decide|decides|pick|picks|choose|chooses|rule|rules|vote|votes|weigh)\\b|\\b(?:decide|pick|choose|vote)\\b.{0,20}\\b(?:with|by|via) the council\\b|\\brad[aey]\\b.{0,15}\\b(?:zdecyd|oceni|wybier|wybierz|rozstrzyg|przeglosuj)|\\b(?:to|before|with|by|via) the council\\b"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "ai-humanize",
-      "version": "2.6.4",
+      "version": "2.6.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -188,11 +190,13 @@
           9,
           "\\bbrzmi\\w*\\b.{0,30}\\b(?:jak (?:z |(?:napisan|wygenerowan|stworzon)\\w* przez )?(?:chatgpt|gpt|ai|sztuczn|bot|robot|maszyn)|sztucznie|robotycznie|drewnian)|\\bmniej (?:robotyczn|sztuczn|drewnian|korporacyjn)|\\bjak (?:normaln\\w* |zyw\\w* |prawdziw\\w* )?czlowiek|\\bwtret\\w* (?:ai|gpt)|\\bslad\\w* (?:ai|gpt|chatgpt)|\\bniewidoczn\\w* znak|\\bwygladz\\w*\\b.{0,60}\\b(?:tekst|post|mail|wpis|akapit|readme|sztuczn)|\\bsztuczn\\w* (?:zwrot|fraz|sformulowan)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "artifact-acceptance",
-      "version": "1.7.5",
+      "version": "1.7.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -304,11 +308,13 @@
           10,
           "\\b(?:raport|white ?paper|e-?book|prezentacj|dokument|material|poradnik|opracowan|artykul)\\w*\\b.{0,60}\\b(?:mozemy|mozna) (?:juz )?(?:go |je |to )?(?:oddac|wyslac|przekazac|opublikowac)\\b"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "benchmark-curator",
-      "version": "1.7.4",
+      "version": "1.7.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -415,11 +421,13 @@
           10,
           "\\b(?:zestaw|korpus)\\w* (?:testow|ewaluacyjn|regresyjn|referencyjn|przypadkow testow)\\w*|\\bgolden set\\w*|\\bholdout\\w*\\b.{0,80}\\b(?:wyciek|kontaminac|czyst|duplikat|odizol)|\\bkontaminac\\w*|\\b(?:zbuduj|przygotuj|uloz|zaprojektuj|uporzadkuj|wyczysc)\\w*\\b.{0,40}\\b(?:benchmark\\w*|korpus\\w*)\\b"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "brief-architect",
-      "version": "1.8.0",
+      "version": "1.8.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -547,11 +555,13 @@
           10,
           "\\bbrief\\w*\\b.{0,40}\\b(?:odbiorc|grup\\w* docelow|kryteri\\w* (?:odbioru|akceptacji|sukcesu))"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "cometweb-context",
-      "version": "1.6.0",
+      "version": "1.6.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -650,11 +660,13 @@
           10,
           "\\b(?:snapshot|migawk|stan)\\w* kontekstu\\b|\\bkontekst\\w*\\b.{0,30}\\b(?:cometpen|cometbase|cometlens|rankproof|agent-skills)\\b"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "competitive-intelligence",
-      "version": "1.1.4",
+      "version": "1.1.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -743,11 +755,13 @@
           10,
           "\\b(?:monitoruj|monitorow|sledz|obserwuj|pilnuj)\\w*\\b.{0,60}\\bkonkuren|\\bkonkuren\\w*\\b.{0,80}\\b(?:sprzed (?:tygodnia|miesiaca|kwartalu|roku)|od (?:naszego |ostatniego ){1,2}(?:przegladu|skanu|raportu|snapshotu)|podsumowani\\w* zmian|digest|raport\\w* zmian|co (?:tydzien|miesiac)|cotygodniow|comiesieczn)|\\b(?:zmian\\w*|co nowego|ruch\\w*)\\b.{0,40}\\bkonkuren|\\bod (?:naszego |ostatniego ){1,2}(?:przegladu|skanu) konkuren|\\bwywiad\\w* konkurencyjn|\\bobserwowan\\w* konkuren|\\b(?:cotygodniow|comiesieczn)\\w* (?:digest|raport|podsumowan)\\w*\\b.{0,40}\\bkonkuren"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "competitor-profiling",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -807,11 +821,13 @@
           20,
           "(?:pierwsz|wst[eę]pn|pocz[aą]tkow)\\w* profil\\w* konkurent\\w*|dossier\\w* konkurent\\w* od zera"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "content-reviewer",
-      "version": "1.7.5",
+      "version": "1.7.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -928,11 +944,13 @@
           9,
           "\\b(?:przejrzyj|zrecenzuj|ocen|sprawdz)\\w*\\b.{0,40}\\b(?:artykul|tekst|szkic|wpis|poradnik|dokumentacj|raport|draft|rozdzial)\\w*\\b.{0,40}\\b(?:pod katem|wzgledem|wobec|zgodnie z)\\b.{0,15}\\bbrief|\\b(?:redakcyjn|merytoryczn)\\w* (?:korekt|recenzj|przeglad|uwag|qa|ocen)\\w*|\\brecenzj\\w*\\b.{0,30}\\b(?:tekstu|artykulu|wpisu|szkicu|poradnika|dokumentacji|raportu|rozdzialu)\\b|\\bkonstruktywn\\w*\\b.{0,30}\\b(?:ocen|recenzj|przejrz|uwag|feedback)|\\b(?:ocen|przejrz|recenzj)\\w*\\b.{0,30}\\bkonstruktywn|\\b(?:zyczliw|lagodn)\\w*\\b.{0,40}\\b(?:recenzj|ocen|przeglad|uwag)|\\b(?:recenzj|ocen|przeglad)\\w*\\b.{0,40}\\b(?:zyczliw|lagodn)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "content-roaster",
-      "version": "6.1.6",
+      "version": "6.1.7",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1041,11 +1059,13 @@
           12,
           "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|zjedz|przejedz sie|red.?team\\w*|bez litosci|bezlitosn\\w* (?:ocen|przejrz|skrytykuj|sprawdz|recenz)|(?:ocen|przejrz|sprawdz|skrytykuj|przeanalizuj|recenzuj)\\w* (?:\\w+ )?bezlitosn\\w*|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad|recenzj)|(?:wrog|brutaln|bezlitosn|forensyczn|adwersaryjn|tward)\\w* (?:przeglad|recenzj|audyt|ocen)\\w*).{0,60}(?:ofert|stron|landing|cennik|maila?\\b|e-?mail|wpis|post|artykul(?! naukow)|deck|prezentacj|copy|case study|ebook|newsletter)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "content-writer",
-      "version": "1.7.6",
+      "version": "1.7.7",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1146,11 +1166,13 @@
           10,
           "\\b(?:napisz|przygotuj|stworz|zredaguj|opracuj)\\w*\\b.{0,40}\\b(?:artykul|wpis|tekst|poradnik|dokumentacj|przewodnik|explainer|opis)\\w*\\b.{0,80}\\b(?:na podstawie|z (?:tego|tych|moich|naszych) (?:briefu|notatek|materialow)|ze zrodl|zrodlami|rzetelni|bez wymysl|rejestr\\w* twierdzen)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "customer-ops",
-      "version": "2.2.2",
+      "version": "2.2.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1247,11 +1269,13 @@
           10,
           "\\bzgloszen\\w*\\b.{0,40}\\b(?:klient|uzytkownik|support)|\\b(?:klient|uzytkownik)\\w*\\b.{0,60}\\bzglasza|\\bspraw\\w* klient|\\beskal\\w*\\b.{0,40}\\b(?:developer|programist|deweloper|zespol\\w* tech|engineering|devow)|\\bsygnal\\w* churn|\\bnie odnowil\\w*|\\brozwiazan\\w*\\W{0,3}\\s{0,2}a\\s{0,2}\\W{0,3}zweryfikowan|\\bobietnic\\w* (?:wobec |dla |dane )?klient"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "design-partner-finder",
-      "version": "1.2.4",
+      "version": "1.2.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1324,11 +1348,13 @@
           10,
           "\\bdesign[ -]?partner(?:ami|ow|om|zy|a|em|ze)\\b|\\bpartner\\w* (?:pilotaz|do pilotaz|do bety|do testow)\\w*|\\b(?:kandydat|shortlist|szukamy|znajdz)\\w*\\b.{0,60}\\b(?:pilotaz|bety|beta|early adopt|pierwszych klient)|\\bpierwsz\\w* klient\\w*\\b.{0,30}\\b(?:do bety|do pilotaz|beta)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "ebook-publisher",
-      "version": "1.0.5",
+      "version": "1.0.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1403,11 +1429,13 @@
           14,
           "(ok[łl]adk|cover).*(ebook|e-book)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "evidence-researcher",
-      "version": "1.0.8",
+      "version": "1.0.9",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1499,11 +1527,13 @@
           9,
           "\\b(?:zrodl\\w* pierwotn|pierwotn\\w* zrodl|oryginaln\\w* zrodl)|\\b(?:sprawdz|zweryfikuj|potwierdz)\\w*\\b.{0,40}\\b(?:czy to prawda|twierdzen|claim|dane|liczb|statystyk)|\\bsprzeczn\\w* (?:dane|zrodl|informacj|raport|wynik)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "feedback-integrator",
-      "version": "1.8.1",
+      "version": "1.8.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1623,11 +1653,13 @@
           10,
           "\\b(?:te same|powtarzaj\\w*|wracaj\\w*|ciagle|stale|nawracaj\\w*)\\b.{0,40}\\b(?:bled|uwag|porazk|poprawk|problem|znalezisk|poprawiaj|wpadk)\\w*\\b.{0,100}\\b(?:skill|agent|ewaluac|eval|przebieg|instrukcj|routing|recenzent|regresyjn|wzorzec|wzorc)|\\bretrospektyw\\w*\\b.{0,60}\\b(?:skill|agent|ewaluac|eval|przebieg|instrukcj|jakosc|porazk)|\\b(?:zbierz|zagreguj)\\w*\\b.{0,30}\\bpowtarzaj\\w*"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "longform-publisher",
-      "version": "1.1.5",
+      "version": "1.1.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1728,11 +1760,13 @@
           10,
           "\\bmanuskrypt\\w*\\b.{0,80}\\b(?:docx|pdf|wydani|edycj|przebuduj|generowan|wygeneruj)|\\b(?:kanoniczn|jedn)\\w* manuskrypt|\\b(?:docx|pdf)\\b.{0,40}\\b(?:z manuskryptu|zgadzaj\\w* sie z manuskrypt)|\\b(?:nowe|nowa|kolejne|kolejna) (?:wydanie|edycj\\w*)\\b.{0,60}\\b(?:raport|white ?paper|handbook|poradnik|przewodnik|e-?book|playbook)|\\b(?:odswiez|zaktualizuj|uaktualnij)\\w*\\b.{0,40}\\b(?:raport|white ?paper|handbook|poradnik|przewodnik|playbook)\\w*\\b.{0,40}\\b(?:wydani|edycj|manuskrypt)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "portfolio-operator",
-      "version": "1.2.4",
+      "version": "1.2.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1836,11 +1870,13 @@
           10,
           "\\b(?:na )?czym (?:mam|mamy|powinienem|powinnam|powinnismy) sie skupic\\b.{0,120}\\b(?:projekt|klient|produkt)|\\bnajblizsze (?:\\d+|dwa|trzy|cztery) (?:tygodni|tygodnie|dni)\\b.{0,100}\\bprojekt|\\bmiedzy (?:projektami|produktem|produktami)\\b|\\bco (?:wstrzymac|odpuscic|oddelegowac)\\b|\\bza duzo (?:rzeczy|projektow|zobowiazan)|\\bzobowiazan\\w*\\b.{0,60}\\b(?:gryz|koliduj|konflikt|nie dowioz)|\\bpriorytet\\w*\\b.{0,40}\\bmiedzy\\b"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "product-operator",
-      "version": "2.4.3",
+      "version": "2.4.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2000,11 +2036,13 @@
         "code_execution",
         "git",
         "connectors"
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "product-teardown",
-      "version": "1.3.1",
+      "version": "1.3.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2079,11 +2117,13 @@
           9,
           "\\b(?:co|jakie \\w+|czego) (?:mozemy|warto|mozna|moglibysmy) (?:podpatrzec|przeniesc|zapozyczyc|skopiowac|sie nauczyc)|\\bwyciagnij\\w* (?:z (?:tego|nich) )?wzorce|\\brozbierz\\w*\\b.{0,30}\\b(?:onboarding|cennik|produkt|flow|lejek|dokumentacj)\\w*\\b.{0,30}\\bna (?:czesci|czynniki)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "quality-loop-operator",
-      "version": "1.7.6",
+      "version": "1.7.7",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2193,11 +2233,13 @@
           12,
           "\\bpetl\\w* jakosci|\\bcykl\\w* jakosci|\\bspecjalist\\w* (?:od |ds\\.? )?jakosci"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "release-readiness",
-      "version": "1.3.3",
+      "version": "1.3.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2278,11 +2320,13 @@
           10,
           "\\b(?:wersj|build|wydani|hotfix|kandydat|release)\\w*\\b.{0,40}\\b(?:na produkcj|do wydania|do produkcji)|\\bgotowos\\w*\\b.{0,30}\\b(?:hotfix|wydania|wersji|buildu|release)|\\bwerdykt\\w* go\\b|\\b(?:mozemy|mozna|czy) (?:je |go |to )?wypuscic\\b|\\bbramk\\w* (?:wydania|release|produkcyjn)|\\bpo (?:wczorajszym |ostatnim )?incydenc\\w*\\b.{0,60}\\bwydani"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "repair-operator",
-      "version": "1.7.6",
+      "version": "1.7.7",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2402,11 +2446,13 @@
           12,
           "\\b(?:napraw|popraw|wdroz|wprowadz|zamknij|zamien)\\w*\\b.{0,60}\\b(?:uwag|znalezisk|bled|poprawk|problem)\\w*\\b.{0,40}\\b(?:z|po)\\b.{0,5}\\b(?:code review|recenzj|review|audyt|roast|przeglad|odbior|akceptacj)|\\b(?:zaakceptowan|zatwierdzon)\\w* (?:uwag|znalezisk|poprawk|bled)\\w*|\\b(?:uwag|znalezisk|bled)\\w*\\b.{0,40}\\b(?:ktore|co) (?:zatwierdzil|zaakceptowal)|\\bplan\\w* naprawcz|\\b(?:znalezisk|uwag)\\w*\\b.{0,60}\\bnapraw\\w*"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "repo-roaster",
-      "version": "6.1.6",
+      "version": "6.1.7",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2522,11 +2568,13 @@
           12,
           "(?:upiecz|zroastuj|rozjedz|rozwal|rozbierz|zmiazdz|zjedz|przejedz sie|red.?team\\w*|bez litosci|bezlitosn\\w* (?:ocen|przejrz|skrytykuj|sprawdz|recenz)|(?:ocen|przejrz|sprawdz|skrytykuj|przeanalizuj|recenzuj)\\w* (?:\\w+ )?bezlitosn\\w*|brutaln\\w* (?:ocen|przejrz|skrytykuj|przeglad|recenzj)|(?:wrog|brutaln|bezlitosn|forensyczn|adwersaryjn|tward)\\w* (?:przeglad|recenzj|audyt|ocen)\\w*).{0,40}(?:\\brepo|repozytori|\\bkod|codebase|\\bpr\\b|pull request|\\bdiff|galez)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "repo-to-roadmap",
-      "version": "1.1.2",
+      "version": "1.1.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2650,11 +2698,13 @@
           12,
           "\\broadmap\\b.{0,80}\\b(?:before|until|up to|all the way to)\\b.{0,30}\\b(?:production|prod|launch|ga)\\b|\\b(?:before|until)\\b.{0,40}\\b(?:production|prod|launch)\\b.{0,80}\\broadmap\\b"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "research-program-operator",
-      "version": "1.3.3",
+      "version": "1.3.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2734,11 +2784,13 @@
         "web",
         "files",
         "connectors"
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "rubric-designer",
-      "version": "1.7.6",
+      "version": "1.7.7",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2841,11 +2893,13 @@
           10,
           "\\brubryk\\w*|\\bkart\\w* ocen\\w*|\\bkryteri\\w* (?:pass/fail|zaliczenia)|\\bpass/fail\\b|\\bwarunk\\w* blokuj"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "science-roaster",
-      "version": "6.1.6",
+      "version": "6.1.7",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2966,11 +3020,13 @@
           10,
           "(?:hiper)?krytyczn\\w* recenzent|recenzent\\w* (?:nr |numer |#)?2\\b"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "seo-geo-aeo-maxxing",
-      "version": "1.3.5",
+      "version": "1.3.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -3041,11 +3097,13 @@
           10,
           "\\baudyt\\w* (?:widocznosci|seo)\\b|\\bwidocznos\\w*\\b.{0,60}\\b(?:google|wyszukiw|ai\\b|chatgpt|perplexity|llm|odpowiedziach)|\\b(?:nie (?:pojawiamy|wyswietlamy) sie|brak nas)\\b.{0,40}\\b(?:chatgpt|perplexity|google|ai\\b|odpowiedzi)|\\bseo,? geo\\b"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "skill-auditor",
-      "version": "1.7.5",
+      "version": "1.7.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3145,11 +3203,13 @@
           10,
           "\\b(?:kolizj|konflikt|nachodz)\\w*\\b.{0,40}\\b(?:wyzwalacz|triggerow|opisow skilli|skilli)|\\bhigien\\w* paczek|\\bpaczk\\w* skill|\\brejestr\\w* skilli|\\b(?:opisy|opisow) skilli\\b.{0,40}\\b(?:nachodz|pokrywa|routing)|\\bskill\\w*\\b.{0,60}\\b(?:kolizj|nachodz|przenosnos|wyzwalacz)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "skill-evaluator",
-      "version": "1.8.0",
+      "version": "1.8.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3249,11 +3309,13 @@
           10,
           "\\b(?:zmierz|porownaj|sprawdz|przetestuj)\\w*\\b.{0,60}\\bskill\\w*\\b.{0,60}\\b(?:lepsz|gorsz|daje|pomaga|bazow|baseline|bez skilla|a/b)|\\bczy (?:ten |nowy |nasz )?skill\\b.{0,30}\\b(?:cokolwiek |w ogole |cos )?(?:daje|pomaga|dziala lepiej)|\\b(?:precyzj|czulos)\\w*\\b.{0,40}\\bwyzwalan|\\bskill\\w*\\b.{0,60}\\b(?:bazow\\w* model|bez skilla)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "skill-orchestrator",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3371,11 +3433,13 @@
           10,
           "\\b(?:zbadaj|zbierz|przeanalizuj|sprawdz|zweryfikuj|research)\\w*\\b.{0,100}\\b(?:potem|nastepnie|na tej podstawie|a po tym)\\b.{0,40}\\b(?:rad[aeyz]|council)\\b"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.2.2",
+      "version": "1.2.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3454,11 +3518,13 @@
           12,
           "\\bosobn\\w* (?:sub)?agen\\w*|\\b(?:kazd\\w*|per) (?:skill\\w*|krok\\w*)\\b.{0,40}\\b(?:sub)?agen|\\b(?:sub)?agen\\w*\\b.{0,30}\\b(?:dla kazdego|per) (?:skill|krok)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     },
     {
       "id": "web-app-auditor",
-      "version": "1.5.0",
+      "version": "1.5.1",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -3546,7 +3612,9 @@
           10,
           "\\bprzeklik\\w*|\\b(?:qa|test\\w*|przetestuj|sprawdz)\\w*\\b.{0,40}\\b(?:dashboard|checkout|rejestracj|logowani|onboarding|formularz|flow|aplikacj|panel)\\w*\\b.{0,60}\\b(?:ui|ux|przegladark|klawiatur|czytnik|rozjecha|gubi|bled|dostepnos)|\\bw przegladarce\\b.{0,40}\\b(?:flow|onboarding|rejestracj|checkout|formularz|aplikacj)|\\bdostepnos\\w*\\b.{0,30}\\bformularz\\w*|\\bqa (?:dashboardu|aplikacji|panelu|strony|checkoutu)|\\baudyt\\w* (?:aplikacji|apki|web ?app\\w*|panelu|dashboardu)"
         ]
-      ]
+      ],
+      "maturity_stage": "DEVELOPMENT",
+      "publication_channel": "EXPERIMENTAL"
     }
   ]
 }

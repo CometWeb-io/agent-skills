@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.7] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.7.6] - 2026-10-11
 
 - Do not mark a run COMPLETE when a specialist still requires changes after downstream passes; request its revalidation while preserving pending-repair routing.

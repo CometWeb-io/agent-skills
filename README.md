@@ -2,6 +2,11 @@
 
 Agent Skills with executable package and contract tests for research, product decisions, QA and release gates, installable in Cursor, Claude Code, Codex and other hosts that read `SKILL.md` packages.
 
+**Experimental distribution:** task qualification is unestablished for the
+published packages. Each installed folder and ZIP carries its declared stage and
+experimental status; see [skill maturity](docs/SKILL-MATURITY.md) for the four stages and
+the boundary between package checks and task evidence.
+
 ![A request passes through a specialist skill to a structured result; tools and approvals stay with the host.](docs/media/overview.svg)
 
 [![Validate](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml)
@@ -100,50 +105,50 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
-| [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. *(runs only when named)* | 5.3.0 |
-| [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. | 1.6.0 |
-| [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. | 1.0.8 |
-| [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. | 1.2.4 |
-| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. | 1.4.0 |
-| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. | 1.2.2 |
-| [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. | 1.7.4 |
-| [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. | 1.8.1 |
-| [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. | 1.7.6 |
-| [`rubric-designer`](skills/rubric-designer/) | Observable evaluation criteria, evidence floors, blocker rules, and rubric locks. | 1.7.6 |
-| [`skill-auditor`](skills/skill-auditor/) | Skill routing, portability, package hygiene, and supply-chain audits. | 1.7.5 |
-| [`skill-evaluator`](skills/skill-evaluator/) | Fair skill experiments, behavioral lift, resource cost, and host comparisons. | 1.8.0 |
+| [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. *(experimental; DEVELOPMENT; runs only when named)* | 5.3.1 |
+| [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. *(experimental; DEVELOPMENT)* | 1.6.1 |
+| [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. *(experimental; DEVELOPMENT)* | 1.0.9 |
+| [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. *(experimental; DEVELOPMENT)* | 1.2.5 |
+| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. *(experimental; DEVELOPMENT)* | 1.4.1 |
+| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. *(experimental; DEVELOPMENT)* | 1.2.3 |
+| [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. *(experimental; DEVELOPMENT)* | 1.7.5 |
+| [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. *(experimental; DEVELOPMENT)* | 1.8.2 |
+| [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. *(experimental; DEVELOPMENT)* | 1.7.7 |
+| [`rubric-designer`](skills/rubric-designer/) | Observable evaluation criteria, evidence floors, blocker rules, and rubric locks. *(experimental; DEVELOPMENT)* | 1.7.7 |
+| [`skill-auditor`](skills/skill-auditor/) | Skill routing, portability, package hygiene, and supply-chain audits. *(experimental; DEVELOPMENT)* | 1.7.6 |
+| [`skill-evaluator`](skills/skill-evaluator/) | Fair skill experiments, behavioral lift, resource cost, and host comparisons. *(experimental; DEVELOPMENT)* | 1.8.1 |
 
 ### Product, research, and partnerships
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
-| [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. | 2.6.4 |
-| [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. | 1.1.4 |
-| [`design-partner-finder`](skills/design-partner-finder/) | Finding, qualifying, and managing design partners and early adopters. | 1.2.4 |
-| [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. | 2.4.3 |
-| [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. | 1.3.1 |
-| [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. | 1.1.2 |
-| [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. | 1.8.0 |
-| [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. | 1.7.6 |
-| [`content-reviewer`](skills/content-reviewer/) | Constructive editorial QA with evidence-backed, actionable findings. | 1.7.5 |
-| [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. | 6.1.6 |
-| [`science-roaster`](skills/science-roaster/) | Reviewer #2-style critique of methods, inference, validity, and reproducibility. | 6.1.6 |
-| [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. | 6.1.6 |
-| [`repair-operator`](skills/repair-operator/) | Minimal dependency-aware repairs and fresh verification of closed findings. | 1.7.6 |
-| [`artifact-acceptance`](skills/artifact-acceptance/) | Final evidence-backed acceptance gates for knowledge artifacts. | 1.7.5 |
-| [`competitor-profiling`](skills/competitor-profiling/) | Initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence. | 0.2.0 |
-| [`research-program-operator`](skills/research-program-operator/) | Research-program stage gates, next-study planning, and manuscript-readiness handoffs. *(frozen)* | 1.3.3 |
+| [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. *(experimental; DEVELOPMENT)* | 2.6.5 |
+| [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. *(experimental; DEVELOPMENT)* | 1.1.5 |
+| [`design-partner-finder`](skills/design-partner-finder/) | Finding, qualifying, and managing design partners and early adopters. *(experimental; DEVELOPMENT)* | 1.2.5 |
+| [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. *(experimental; DEVELOPMENT)* | 2.4.4 |
+| [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. *(experimental; DEVELOPMENT)* | 1.3.2 |
+| [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. *(experimental; DEVELOPMENT)* | 1.1.3 |
+| [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. *(experimental; DEVELOPMENT)* | 1.8.1 |
+| [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. *(experimental; DEVELOPMENT)* | 1.7.7 |
+| [`content-reviewer`](skills/content-reviewer/) | Constructive editorial QA with evidence-backed, actionable findings. *(experimental; DEVELOPMENT)* | 1.7.6 |
+| [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. *(experimental; DEVELOPMENT)* | 6.1.7 |
+| [`science-roaster`](skills/science-roaster/) | Reviewer #2-style critique of methods, inference, validity, and reproducibility. *(experimental; DEVELOPMENT)* | 6.1.7 |
+| [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. *(experimental; DEVELOPMENT)* | 6.1.7 |
+| [`repair-operator`](skills/repair-operator/) | Minimal dependency-aware repairs and fresh verification of closed findings. *(experimental; DEVELOPMENT)* | 1.7.7 |
+| [`artifact-acceptance`](skills/artifact-acceptance/) | Final evidence-backed acceptance gates for knowledge artifacts. *(experimental; DEVELOPMENT)* | 1.7.6 |
+| [`competitor-profiling`](skills/competitor-profiling/) | Initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence. *(experimental; DEVELOPMENT)* | 0.2.1 |
+| [`research-program-operator`](skills/research-program-operator/) | Research-program stage gates, next-study planning, and manuscript-readiness handoffs. *(experimental; DEVELOPMENT; frozen)* | 1.3.4 |
 
 ### Publication, operations, QA, and release
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
-| [`customer-ops`](skills/customer-ops/) | Support triage, incidents, account risk, commitments, and engineering handoffs. | 2.2.2 |
-| [`ebook-publisher`](skills/ebook-publisher/) | Research-backed ebooks, white papers, workbooks, and publication QA. | 1.0.5 |
-| [`longform-publisher`](skills/longform-publisher/) | Canonical long-form manuscripts and release-ready derived documents. *(frozen)* | 1.1.5 |
-| [`release-readiness`](skills/release-readiness/) | Candidate-bound production gates and GO / GO_WITH_CONTROLS / NO_GO / DEFER verdicts. | 1.3.3 |
-| [`seo-geo-aeo-maxxing`](skills/seo-geo-aeo-maxxing/) | Multi-pillar SEO / GEO / AEO visibility audits. | 1.3.5 |
-| [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. | 1.5.0 |
+| [`customer-ops`](skills/customer-ops/) | Support triage, incidents, account risk, commitments, and engineering handoffs. *(experimental; DEVELOPMENT)* | 2.2.3 |
+| [`ebook-publisher`](skills/ebook-publisher/) | Research-backed ebooks, white papers, workbooks, and publication QA. *(experimental; DEVELOPMENT)* | 1.0.6 |
+| [`longform-publisher`](skills/longform-publisher/) | Canonical long-form manuscripts and release-ready derived documents. *(experimental; DEVELOPMENT; frozen)* | 1.1.6 |
+| [`release-readiness`](skills/release-readiness/) | Candidate-bound production gates and GO / GO_WITH_CONTROLS / NO_GO / DEFER verdicts. *(experimental; DEVELOPMENT)* | 1.3.4 |
+| [`seo-geo-aeo-maxxing`](skills/seo-geo-aeo-maxxing/) | Multi-pillar SEO / GEO / AEO visibility audits. *(experimental; DEVELOPMENT)* | 1.3.6 |
+| [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. *(experimental; DEVELOPMENT)* | 1.5.1 |
 
 <!-- END GENERATED: skill catalog -->
 
@@ -210,7 +215,9 @@ The scaffold is registered and passes every fast gate straight away, but its
 content is placeholder. [CONTRIBUTING.md](CONTRIBUTING.md#adding-a-skill) walks
 through replacing it, making the evals and routing cases real, and bumping the
 plugin version. Full admission and versioned packaging reject known generated
-author prompts even if their scaffold labels were removed. A development ZIP
+author prompts even if their scaffold labels were removed. Declared `SCAFFOLD`
+also blocks versioned publication; rewritten instructions can be distributed
+only with explicit experimental maturity metadata. A development ZIP
 (`package_skill.py --dev`) remains unassessed. Deterministic evals prove a package
 keeps its contract; whether
 a skill makes a model behave better is a separate experiment, described in

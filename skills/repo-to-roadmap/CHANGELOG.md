@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.3] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.1.2] - 2026-10-08
 
 - Use atomic inventory output and explicit JSON file errors without following symlink output targets.

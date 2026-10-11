@@ -1,0 +1,8 @@
+{
+  "schema": "cometweb.skill-maturity/v1",
+  "skill": "benchmark-curator",
+  "version": "1.7.5",
+  "stage": "DEVELOPMENT",
+  "publication": "EXPERIMENTAL",
+  "task_qualification": "not_established"
+}

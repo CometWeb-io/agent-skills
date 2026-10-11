@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.1] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [0.2.0] - 2026-10-10
 
 - Require explicit section-to-claim/source support mappings for complete profiles. Separate structural mapping from unassessed factual truth.

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.1] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.8.0] - 2026-10-11
 
 - Require calibration for performed model judging in every mode, typed flags, nonempty case IDs and finite policy values. A zero success-rate delta is not an improvement. SPEC_ONLY plans validate their policy without claiming execution or calibration. Use shared finite-number checks for policy and measurements; these checks do not establish source truth or authentic calibration.

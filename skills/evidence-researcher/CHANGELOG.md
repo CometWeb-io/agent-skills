@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.9] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.0.8] - 2026-10-11
 
 - Reject malformed enum containers across ledger validation without raising TypeError; keep audit/coverage callers safe on the same fields and preserve valid enum behavior.

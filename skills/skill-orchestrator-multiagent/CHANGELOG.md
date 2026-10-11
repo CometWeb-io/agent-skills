@@ -1,5 +1,9 @@
 # Changelog — skill-orchestrator-multiagent
 
+## [1.2.3] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.2.2] - 2026-10-10
 
 - Align the ledger reference with completion classes, validated typed envelopes and receipt-only migration boundaries.

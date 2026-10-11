@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tooling"))
 from compatibility import safe_load_unique  # noqa: E402
+from plugin_release import read_maturity  # noqa: E402
 
 REGISTRY = ROOT / "registry" / "skills.json"
 SKILLS = ROOT / "skills"
@@ -345,6 +346,10 @@ def desired_registry(current: dict) -> dict:
         if skill_id != "product-operator":
             for key in ("tier", "owns", "does_not_own", "trigger_examples", "negative_trigger_examples", "routing_signals"):
                 entry[key] = deepcopy(spec[key])
+    for entry in result["skills"]:
+        maturity = read_maturity(SKILLS / entry["id"])
+        entry["maturity_stage"] = maturity["stage"]
+        entry["publication_channel"] = maturity["publication"]
     result["skills"] = sorted(result["skills"], key=lambda entry: entry["id"])
     return result
 

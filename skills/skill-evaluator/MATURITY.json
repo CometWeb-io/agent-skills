@@ -1,0 +1,8 @@
+{
+  "schema": "cometweb.skill-maturity/v1",
+  "skill": "skill-evaluator",
+  "version": "1.8.1",
+  "stage": "DEVELOPMENT",
+  "publication": "EXPERIMENTAL",
+  "task_qualification": "not_established"
+}

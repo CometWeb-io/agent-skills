@@ -175,3 +175,12 @@ advance a report to a later stage. Positive and negative publication-kernel
 cases cover these checks. The frozen workflow and `FROZEN` release status are
 retained; this metadata correction does not authorize publication, models or
 a promotion of the frozen runtime baseline.
+
+## Unreleased distribution metadata — 1.1.6, 2026-10-11
+
+The package adds MATURITY.json declaring DEVELOPMENT/EXPERIMENTAL and task
+qualification not established. The version changes because bundled metadata
+changes; the frozen workflow, front door, references, kernel and FROZEN status
+remain byte-identical. This is an explicit distribution declaration, not
+promotion of the frozen runtime baseline or authorization to publish. The
+original acceptance record and earlier evidence remain their historical scope.

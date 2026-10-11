@@ -36,6 +36,9 @@ def root(tmp_path):
     source.mkdir(parents=True)
     (source / "SKILL.md").write_text("---\nname: demo\ndescription: Synthetic regression fixture for distribution checks.\n---\n# Demo\n")
     (source / "VERSION").write_text("1.0.0\n")
+    (source / "MATURITY.json").write_text(json.dumps({"schema": "cometweb.skill-maturity/v1",
+        "skill": "demo", "version": "1.0.0", "stage": "DEVELOPMENT",
+        "publication": "EXPERIMENTAL", "task_qualification": "not_established"}))
     (source / "LICENSE").write_text("Synthetic fixture license.\n")
     (tmp_path / "tooling").mkdir()
     shutil.copyfile(TOOLS / "public_safety.py", tmp_path / "tooling/public_safety.py")
@@ -62,6 +65,10 @@ def add(root, name, data=b"fixture"):
     path = root / "skills/demo" / name
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(data)
+    if name == "VERSION" and (path.parent / "MATURITY.json").is_file():
+        maturity = json.loads((path.parent / "MATURITY.json").read_text())
+        maturity["version"] = data.decode().strip()
+        (path.parent / "MATURITY.json").write_text(json.dumps(maturity))
     import subprocess
 
     # Keep the fixture tree clean so subsequent release builds stay admissible.

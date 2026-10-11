@@ -6,24 +6,26 @@ treated as package sources, not as a second repository architecture.
 
 ## Included sources
 
-| Canonical skill IDs | Source | Version choice |
+| Canonical skill IDs | Source | Current package version |
 | --- | --- | --- |
-| `content-roaster`, `science-roaster`, `repo-roaster` | CometWeb Roaster Suite | `6.1.4` |
-| `artifact-acceptance` | CometWeb Quality Skills | `1.7.5` |
-| `benchmark-curator` | CometWeb Quality Skills | `1.7.4` |
-| `content-reviewer` | CometWeb Quality Skills | `1.7.5` |
-| `content-writer` | CometWeb Quality Skills | `1.7.6` |
-| `quality-loop-operator` | CometWeb Quality Skills | `1.7.6` |
-| `repair-operator` | CometWeb Quality Skills | `1.7.6` |
-| `rubric-designer` | CometWeb Quality Skills | `1.7.6` |
-| `brief-architect` | CometWeb Quality Skills with experimental PRD profile | `1.8.0` |
-| `feedback-integrator` | CometWeb Quality Skills | `1.8.1` |
-| `skill-auditor` | CometWeb Quality Skills | `1.7.5` |
-| `skill-evaluator` | CometWeb Quality Skills | `1.8.0` |
+| `content-roaster`, `science-roaster`, `repo-roaster` | CometWeb Roaster Suite | `6.1.7` |
+| `artifact-acceptance` | CometWeb Quality Skills | `1.7.6` |
+| `benchmark-curator` | CometWeb Quality Skills | `1.7.5` |
+| `content-reviewer` | CometWeb Quality Skills | `1.7.6` |
+| `content-writer` | CometWeb Quality Skills | `1.7.7` |
+| `quality-loop-operator` | CometWeb Quality Skills | `1.7.7` |
+| `repair-operator` | CometWeb Quality Skills | `1.7.7` |
+| `rubric-designer` | CometWeb Quality Skills | `1.7.7` |
+| `brief-architect` | CometWeb Quality Skills with experimental PRD profile | `1.8.1` |
+| `feedback-integrator` | CometWeb Quality Skills | `1.8.2` |
+| `skill-auditor` | CometWeb Quality Skills | `1.7.6` |
+| `skill-evaluator` | CometWeb Quality Skills | `1.8.1` |
 
 The three roaster IDs also exist in the quality bundle. They are not copied a
 second time: the dedicated Roaster Suite packages are the canonical source for
 those IDs in this repository.
+The Roaster Suite was imported at `6.1.4`; the table follows current package
+versions, including later fixes and explicit experimental distribution metadata.
 
 ## Deliberately excluded
 

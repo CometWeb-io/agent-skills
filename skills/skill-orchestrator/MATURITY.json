@@ -1,0 +1,8 @@
+{
+  "schema": "cometweb.skill-maturity/v1",
+  "skill": "skill-orchestrator",
+  "version": "1.4.1",
+  "stage": "DEVELOPMENT",
+  "publication": "EXPERIMENTAL",
+  "task_qualification": "not_established"
+}

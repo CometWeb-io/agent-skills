@@ -41,6 +41,9 @@ def write_skill(repo: Path, skill: str, version: str) -> None:
     package.mkdir(parents=True, exist_ok=True)
     (package / "SKILL.md").write_text(f"---\nname: {skill}\ndescription: demo\n---\n", encoding="utf-8")
     (package / "VERSION").write_text(version + "\n", encoding="utf-8")
+    (package / "MATURITY.json").write_text(json.dumps({"schema": "cometweb.skill-maturity/v1",
+        "skill": skill, "version": version, "stage": "DEVELOPMENT",
+        "publication": "EXPERIMENTAL", "task_qualification": "not_established"}))
 
 
 @pytest.fixture

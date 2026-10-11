@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.7] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.7.6] - 2026-10-11
 
 - Distinguish missing evidence from unauthorized access. Require scoped positive/negative calibration contrasts and exact observable evidence for critical access/privacy criteria; preserve old grades when revising a flawed criterion.

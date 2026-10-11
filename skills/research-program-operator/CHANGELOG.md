@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.4] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.3.3] - 2026-10-10
 
 - Reject READY handoffs that contradict the reported program stage; require a bounded next-study plan. Frozen-preview correctness exception: no research evidence, protocols or inferred approvals change.

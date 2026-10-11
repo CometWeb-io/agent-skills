@@ -1,5 +1,9 @@
 # Changelog — skill-orchestrator
 
+## [1.4.1] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.4.0] - 2026-10-10
 
 - Classify operational receipts, schema validation and domain acceptance. Typed handoffs require full validated envelopes and exact upstream dependencies; receipts cannot unlock typed downstream work.

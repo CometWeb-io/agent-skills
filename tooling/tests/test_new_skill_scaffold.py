@@ -57,7 +57,7 @@ def scaffolded(tmp_path: Path):
 
 
 @pytest.mark.parametrize("relative", [
-    "SKILL.md", "VERSION", "LICENSE", "CHANGELOG.md",
+    "SKILL.md", "VERSION", "LICENSE", "CHANGELOG.md", "MATURITY.json",
     "assets/icon.svg", "references/output-contract.md",
     "scripts/run_evals.py", "scripts/output_contract.py", "evals/cases.json",
 ])

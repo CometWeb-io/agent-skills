@@ -6,6 +6,14 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+- Mark all current packages as experimental DEVELOPMENT in self-contained
+  maturity metadata, registry/catalog projections, ZIP manifests and CLI output.
+  New scaffolds remain SCAFFOLD and development-only; supplied QUALIFIED labels
+  cannot grant task qualification. Preserve unclassified historical ZIP inspection.
+- Recheck clean Git source and release archive provenance before cache reuse,
+  including a concurrent winner; a cached development ZIP cannot gain a clean
+  versioned release receipt.
+
 - Add the existing catalog owner/result/consumer map, task decision tree and small
   core/domain installation selections; keep profiles and framework overlays opt-in.
 - Correct bundled competitor-profiling handoff classification in Competitive

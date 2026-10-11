@@ -108,7 +108,13 @@ a placeholder that works. Replace it in this order:
    enforce the same check before writing or reusing an archive; `--dev` remains
    available for development. This recognizes the generated template, not the
    quality or task effectiveness of arbitrary rewritten instructions.
-6. **Regenerate and run every gate** with the [flow](#the-flow) above. A grown
+6. **Declare development explicitly.** The generator writes `MATURITY.json`
+   with `SCAFFOLD`. After replacing the instructions and cases, set its stage
+   to `DEVELOPMENT` and retain `EXPERIMENTAL` publication and unestablished task
+   qualification. Identity must follow `VERSION`; supplying `QUALIFIED` or
+   passing local tests does not grant task qualification. Read the
+   [maturity policy](docs/SKILL-MATURITY.md) before declaring a candidate.
+7. **Regenerate and run every gate** with the [flow](#the-flow) above. A grown
    front door or a changed eval-strength count is accepted deliberately; the
    summary prints the command that records it.
 
