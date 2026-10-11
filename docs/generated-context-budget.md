@@ -25,7 +25,7 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `content-roaster` | 11,485 B | 2,871 | 116,270 B | 29,067 | 37 | 0.91 |
 | `release-readiness` | 11,298 B | 2,824 | 77,630 B | 19,407 | 12 | 0.87 |
 | `longform-publisher` | 10,755 B | 2,688 | 19,054 B | 4,763 | 10 | 0.64 |
-| `product-teardown` | 10,335 B | 2,583 | 67,997 B | 16,999 | 12 | 0.87 |
+| `product-teardown` | 10,335 B | 2,583 | 68,002 B | 17,000 | 12 | 0.87 |
 | `ai-council` | 9,990 B | 2,497 | 69,225 B | 17,306 | 31 | 0.87 |
 | `product-operator` | 9,900 B | 2,475 | 50,692 B | 12,673 | 13 | 0.84 |
 | `competitive-intelligence` | 9,329 B | 2,332 | 41,765 B | 10,441 | 8 | 0.82 |

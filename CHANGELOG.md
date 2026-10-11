@@ -6,6 +6,11 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+- Add the existing catalog owner/result/consumer map, task decision tree and small
+  core/domain installation selections; keep profiles and framework overlays opt-in.
+- Correct bundled competitor-profiling handoff classification in Competitive
+  Intelligence and Product Teardown.
+
 - Validate canonical and legacy contradiction states without letting a resolved
   alias erase an explicit unresolved material state. Require typed records for
   the same claim as accepted contradictory evidence in full envelope admission,

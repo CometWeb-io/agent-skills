@@ -10,6 +10,7 @@ the way GitHub slugs it. External URLs are not fetched: the suite runs offline.
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -101,3 +102,29 @@ def test_checker_reports_a_missing_file_and_a_missing_heading(tmp_path: Path) ->
 def test_github_slugs_match_the_readme_contents_list() -> None:
     assert github_slug("How skills hand off: CW-AIP") == "how-skills-hand-off-cw-aip"
     assert github_slug("Pick a starting point") == "pick-a-starting-point"
+
+
+def test_skill_map_covers_every_owner_once_and_identifies_aliases() -> None:
+    skills = json.loads((ROOT / "registry/skills.json").read_text())["skills"]
+    text = (ROOT / "docs/SKILL-MAP.md").read_text()
+    rows = re.findall(r"^\| \[`([a-z0-9-]+)`\]\(\.\./skills/\1/SKILL\.md\)(.*)$", text, re.M)
+    assert len(rows) == len(skills)
+    assert {sid for sid, _ in rows} == {skill["id"] for skill in skills}
+    for skill in skills:
+        if skill.get("alias_of"):
+            assert f"`{skill['alias_of']}`" in dict(rows)[skill["id"]]
+
+
+def test_installation_selections_cover_catalog_and_keep_alias_dependencies() -> None:
+    skills = json.loads((ROOT / "registry/skills.json").read_text())["skills"]
+    section = (ROOT / "docs/SKILL-MAP.md").read_text().split("## Installation selections\n")[1]
+    section = section.split("## Owner → result → next consumer\n")[0]
+    named = set(re.findall(r"`([a-z0-9]+(?:-[a-z0-9]+)+)`", section))
+    assert named == {skill["id"] for skill in skills}
+    selections = [set(re.findall(r"`([a-z0-9-]+)`", row)) for row in section.splitlines()
+                  if row.startswith("| ") and "`" in row]
+    assert selections
+    for selection in selections:
+        for skill in skills:
+            if skill["id"] in selection and skill.get("alias_of"):
+                assert skill["alias_of"] in selection

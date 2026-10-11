@@ -76,6 +76,9 @@ Give me the three most useful next actions and how to verify each one.
 
 ## Pick a starting point
 
+Use the [owner and handoff map](docs/SKILL-MAP.md) to choose a task owner,
+follow its output contract, and install a small core plus the needed domain skills.
+
 | You need to… | Start with | You get |
 | --- | --- | --- |
 | Check a claim | [evidence-researcher](skills/evidence-researcher/) | Sources, contradictions and an Evidence Pack |
@@ -115,10 +118,10 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | Skill | Use it for | Version |
 | --- | --- | ---: |
 | [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. | 2.6.4 |
-| [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. | 1.1.3 |
+| [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. | 1.1.4 |
 | [`design-partner-finder`](skills/design-partner-finder/) | Finding, qualifying, and managing design partners and early adopters. | 1.2.4 |
 | [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. | 2.4.3 |
-| [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. | 1.3.0 |
+| [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. | 1.3.1 |
 | [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. | 1.1.2 |
 | [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. | 1.8.0 |
 | [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. | 1.7.6 |

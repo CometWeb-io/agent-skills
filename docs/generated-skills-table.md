@@ -10,7 +10,7 @@
 | `benchmark-curator` | 1.7.4 | foundation | active | ACTIVE | 534 | False |
 | `brief-architect` | 1.8.0 | domain | active | ACTIVE | 577 | False |
 | `cometweb-context` | 1.6.0 | foundation | active | ACTIVE | 826 | False |
-| `competitive-intelligence` | 1.1.3 | domain | active | ACTIVE | 978 | False |
+| `competitive-intelligence` | 1.1.4 | domain | active | ACTIVE | 978 | False |
 | `competitor-profiling` | 0.2.0 | domain | active | ACTIVE | 454 | False |
 | `content-reviewer` | 1.7.5 | domain | active | ACTIVE | 553 | False |
 | `content-roaster` | 6.1.6 | domain | active | ACTIVE | 531 | False |
@@ -23,7 +23,7 @@
 | `longform-publisher` | 1.1.5 | domain | active | FROZEN | 539 | False |
 | `portfolio-operator` | 1.2.4 | foundation | active | ACTIVE | 647 | False |
 | `product-operator` | 2.4.3 | domain | active | ACTIVE | 1000 | False |
-| `product-teardown` | 1.3.0 | domain | active | ACTIVE | 639 | False |
+| `product-teardown` | 1.3.1 | domain | active | ACTIVE | 639 | False |
 | `quality-loop-operator` | 1.7.6 | foundation | active | ACTIVE | 534 | False |
 | `release-readiness` | 1.3.3 | domain | active | ACTIVE | 538 | False |
 | `repair-operator` | 1.7.6 | domain | active | ACTIVE | 587 | False |
