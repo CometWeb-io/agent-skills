@@ -1026,7 +1026,7 @@
         "exit_code": 2,
         "json": {
           "result": "INPUT_ERROR",
-          "error": "Duplicate JSON key: schema"
+          "error": "Cannot read manifest: Duplicate JSON key: schema"
         }
       }
     }

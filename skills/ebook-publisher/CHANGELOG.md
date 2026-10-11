@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.5] - 2026-10-11
+
+- Add standalone `check_calculations.py`: exact rational arithmetic compares actual displayed decimals, precision and units, separating nearest half-even rounding from outward conservative bounds. Results retain the original numerator/denominator expression and report failed comparisons versus malformed input with distinct exit codes.
+- Document the input/output contract, artifact copying, retests and limits; add arithmetic, malformed-input and CLI regression tests. This is deterministic helper evidence, not model, source-truth or publication qualification.
+- Harden the shared JSON loader and hashing against special files, so both CLIs reject FIFOs/devices without waiting for input; regular-file symlinks remain supported.
+
 ## [1.0.4] - 2026-10-10
 
 - Verify displayed uncertainty bounds against the exact calculation, with outward rounding when conservative bounds are claimed.

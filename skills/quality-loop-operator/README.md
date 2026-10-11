@@ -1,4 +1,4 @@
-# Quality Loop Operator 1.7.5
+# Quality Loop Operator 1.7.6
 
 Domain control plane for the CometWeb Quality Skills family. It coordinates
 adaptive depth, exact-fingerprint stage reuse, deterministic replay checks,

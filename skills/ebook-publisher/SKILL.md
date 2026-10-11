@@ -94,7 +94,7 @@ Inspect source entailment, date/version fit, units, denominators, normative scop
 contradictions, code examples, quotations, chapter consistency, and illustration labels.
 Review citations against the actual draft, not merely the ledger.
 
-Check the displayed calculation as well as its exact arithmetic. When presenting conservative uncertainty bounds, round the lower endpoint down and the upper endpoint up at the displayed precision, and retain the unrounded calculation for review.
+Check the displayed calculation as well as its exact arithmetic. For conservative bounds, round lower down and upper up at displayed precision; retain the exact calculation. For ratios or bounds, read [Calculation checks](references/calculations.md), run `scripts/check_calculations.py` using artifact values, and retest after changes.
 
 Edit Polish/English naturally without generic filler, fake personal experience, invented
 results, synonym churn, or marketing hype. Preserve names, numerical values, uncertainty,
@@ -147,6 +147,7 @@ python scripts/ebook_check.py fingerprints /path/to/publication/publication.json
 python scripts/ebook_check.py validate /path/to/publication/publication.json --stage research
 python scripts/ebook_check.py validate /path/to/publication/publication.json --stage manuscript
 python scripts/ebook_check.py validate /path/to/publication/publication.json --stage release
+python scripts/check_calculations.py /path/to/publication/calculations.json
 python -m unittest discover -s tests -v
 ```
 

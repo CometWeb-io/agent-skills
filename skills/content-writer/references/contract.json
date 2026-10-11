@@ -4,7 +4,8 @@
     "references/output-contract.md",
     "references/claim-discipline.md",
     "references/revision-and-invariants.md",
-    "references/evidence-calibration.md"
+    "references/evidence-calibration.md",
+    "references/word-range.md"
   ],
   "scripts": {
     "scripts/kernel.py": {
@@ -24,6 +25,10 @@
     "scripts/run_evals.py": {
       "input": "none",
       "role": "eval-harness"
+    },
+    "scripts/word_range.py": {
+      "input": "files",
+      "role": "validator"
     }
   },
   "fields": {
@@ -150,7 +155,21 @@
         "REVISION",
         "FINAL"
       ]
-    }
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "COUNTED",
+        "ERROR"
+      ],
+      "enforced": false
+    },
+    "word_count": {},
+    "min_words": {},
+    "max_words": {},
+    "checked_bounds": {},
+    "error": {}
   },
   "internal": {
     "input": "eval case wrapper: the case-runner reads the payload from a case's input, never a payload key"

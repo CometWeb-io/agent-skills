@@ -6,18 +6,18 @@ from typing import Any, Dict
 from .constants import LIVE_VERIFICATION_TYPES, VERSION
 from .coverage_ops import _accepted_edges_for_claim
 from .temporal_eval import temporal_status
-from .util import _claim_needs_freshness, _id_index
+from .util import _claim_needs_freshness, _id_index, _ids, _member
 
 
 def refresh_plan(ledger: Dict[str, Any]) -> Dict[str, Any]:
     contract = ledger.get("research_contract") if isinstance(ledger.get("research_contract"), dict) else {}
     as_of = contract.get("as_of")
     all_claims = _id_index([c for c in ledger.get("claims", []) if isinstance(c, dict)], "claim_id")
-    needed = {cid for cid, c in all_claims.items() if c.get("materiality") in {"critical", "material"}}
+    needed = {cid for cid, c in all_claims.items() if _member(c.get("materiality"), {"critical", "material"})}
     pending = list(needed)
     while pending:
         claim = all_claims.get(pending.pop(), {})
-        for dep in claim.get("depends_on_claim_ids", []):
+        for dep in _ids(claim.get("depends_on_claim_ids", [])):
             if dep in all_claims and dep not in needed:
                 needed.add(dep)
                 pending.append(dep)
@@ -58,7 +58,7 @@ def refresh_plan(ledger: Dict[str, Any]) -> Dict[str, Any]:
     dependent = set()
     while True:
         extra = {c["claim_id"] for c in claims if c.get("epistemic_kind") == "INFERENCE"
-                 and set(c.get("depends_on_claim_ids", [])) & affected} - affected
+                 and set(_ids(c.get("depends_on_claim_ids", []))) & affected} - affected
         if not extra:
             break
         dependent.update(extra)

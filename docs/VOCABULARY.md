@@ -136,6 +136,8 @@ next step, `DEFER` means decide later with named evidence, and
 | Owner | Field | Values | Why it differs |
 | --- | --- | --- | --- |
 | `ai-council` | `output:status` | `VALID` `WATCH` `REOPEN` `REFRESH_REQUIRED` `STALE` `SUPERSEDED` `DRAFT` `CURRENT` `NEAR_EXPIRY` `NOT_YET_EFFECTIVE` `UNKNOWN` `CLEAR` | Validity of a stored decision and of its evidence. |
+| `ai-humanize` | `output:verdict` | `COUNTED` `PASS` `FAIL` `ERROR` | Body-only word-range result; separate from rewrite fidelity. |
+| `content-writer` | `output:verdict` | `COUNTED` `PASS` `FAIL` `ERROR` | Body-only word-range result; separate from the claim ledger. |
 | `ai-humanize` | `output:status` | `automated_pass` `review` `missing_output` `invalid_output` | Rewrite check; lower case like its report. |
 | `benchmark-curator` | `output:status` | `READY_TO_FREEZE` `NEEDS_REBALANCE` `NEEDS_REVISION` `CONTAMINATED` `INVALID` | Corpus freeze gate. |
 | `brief-architect` | `output:status` | `READY` `PROVISIONAL` `BLOCKED` `INVALID` `CHANGED` `UNCHANGED` | Brief readiness, plus diff results. |
@@ -143,7 +145,7 @@ next step, `DEFER` means decide later with named evidence, and
 | `content-writer` | `output:status` | `PASS` `FAIL` | |
 | `customer-ops` | `output:status` | `PASS` `WARN` `BLOCK` `OK` `AT_RISK` `BREACHED` `MET` `PAUSED` `FIXED` `UNKNOWN` `OPEN` `DUE_SOON` `OVERDUE` `FULFILLED` `RENEGOTIATED` `CANCELLED` `FINDINGS` `NO_OBVIOUS_FINDINGS` `error` | One value set across the kernel's subcommands; `error` is the CLI failure. |
 | `design-partner-finder` | `output:status` | `PRIORITY_DISCOVERY` `DISCOVERY` `WATCHLIST` `HOLD_VERIFY` `REJECT` `PARTNER_READY` `ALIGNMENT_REQUIRED` `PAUSE` `CONTINUE` `REPAIR` `EXIT_REVIEW` `CONVERSION_CANDIDATE` | Candidate and partnership states. |
-| `ebook-publisher` | `output:result` | `RECORDS_COMPLETE` `BLOCKED` `INPUT_ERROR` `INITIALIZED_DRAFT` | |
+| `ebook-publisher` | `output:result` | `RECORDS_COMPLETE` `BLOCKED` `INPUT_ERROR` `INITIALIZED_DRAFT` `CALCULATIONS_MATCH` | |
 | `feedback-integrator` | `output:status` | `NO_SIGNAL` `WATCH` `PROPOSED` `PROMOTE` `HOLD` `RETIRED` `INVALID` | |
 | `product-operator` | `output:status` | `PASS` `WARN` `FAIL` | |
 | `quality-loop-operator` | `output:status` | `READY_FOR_NEXT` `CHANGES_REQUIRED` `NEEDS_RECONCILIATION` `BLOCKED` `READY_FOR_ROLLOUT` `COMPLETE` `INVALID` | |

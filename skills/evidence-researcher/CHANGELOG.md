@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.8] - 2026-10-11
+
+- Reject malformed enum containers across ledger validation without raising TypeError; keep audit/coverage callers safe on the same fields and preserve valid enum behavior.
+- Treat non-string claim types as invalid while retaining warnings for unregistered string types.
+- Reject malformed identifiers and reference lists without crashing validation or audit/coverage/refresh callers; do not coerce ledger identities to strings.
+
 ## [1.0.7] - 2026-10-08
 
 - Report missing JSON files as file errors, support explicit @ paths, and avoid symlinked output writes.

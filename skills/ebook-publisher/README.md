@@ -1,4 +1,4 @@
-# Ebook Publisher 1.0.4
+# Ebook Publisher 1.0.5
 
 Skill do przygotowywania ebooków CometWeb: od researchu po zweryfikowany plik PDF.
 Punkt wejścia: `SKILL.md`. Instrukcje główne są krótkim kontraktem; szczegóły wczytuje się
@@ -24,10 +24,14 @@ narzędzia PDF dostępnego w danym środowisku — patrz `references/pdf-product
 python3 -m unittest discover -s tests -v
 python3 scripts/ebook_check.py init ../nowy-ebook
 python3 scripts/ebook_check.py validate ../nowy-ebook/publication.json --stage research
+python3 scripts/check_calculations.py ../nowy-ebook/calculations.json
 ```
 
 Nowy szablon celowo NIE przechodzi walidacji. Trzeba go wypełnić wynikami rzeczywistej
 pracy. Testy są syntetycznymi testami programu, a nie dowodem jakości gotowych ebooków.
+Format dokładnych ułamków, pokazanych liczb, jednostek i zaokrągleń opisuje
+[kontrola obliczeń](references/calculations.md). Osobny checker porównuje zapisane liczby;
+nie wyciąga ich automatycznie z PDF i nie potwierdza poprawności źródłowych danych.
 
 ## Co zawiera pakiet
 

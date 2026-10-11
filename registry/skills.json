@@ -117,7 +117,7 @@
     },
     {
       "id": "ai-humanize",
-      "version": "2.6.3",
+      "version": "2.6.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1045,7 +1045,7 @@
     },
     {
       "id": "content-writer",
-      "version": "1.7.5",
+      "version": "1.7.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1328,7 +1328,7 @@
     },
     {
       "id": "ebook-publisher",
-      "version": "1.0.4",
+      "version": "1.0.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1407,7 +1407,7 @@
     },
     {
       "id": "evidence-researcher",
-      "version": "1.0.7",
+      "version": "1.0.8",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2083,7 +2083,7 @@
     },
     {
       "id": "quality-loop-operator",
-      "version": "1.7.5",
+      "version": "1.7.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2282,7 +2282,7 @@
     },
     {
       "id": "repair-operator",
-      "version": "1.7.5",
+      "version": "1.7.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",

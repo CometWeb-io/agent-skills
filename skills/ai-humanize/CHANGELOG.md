@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.6.4] - 2026-10-11
+
+- Add a standalone UTF-8 body word-range CLI with inclusive bounds, JSON count/verdict, fail-closed input checks, and documented raw Unicode-whitespace counting.
+- Run requested length checks on the explicit body file; fix failures and rerun without mixing in separate notes or implying semantic validation.
+
 ## [2.6.3] - 2026-10-10
 
 - Check the requested word range on the rewrite itself, excluding separately requested notes, with margin for counting boundaries.

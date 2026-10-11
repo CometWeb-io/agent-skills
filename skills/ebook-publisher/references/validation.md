@@ -14,6 +14,11 @@ self-review into independent evidence. `RECORDS_COMPLETE` means the required con
 records exist for this stage, not that the ebook is correct. The publication owner/agent
 must still complete the real work and decide `READY_FOR_OWNER_REVIEW` honestly.
 
+When checking displayed arithmetic, use the separate read-only
+[calculation checker](calculations.md). `ebook_check.py` does not execute it or grant an
+`examples_and_numbers` pass. Save actual calculation input/results as QA evidence and
+keep the publication review bound to the revised artifact.
+
 ## Commands and exit status
 
 Run from the skill directory. Python 3.10+ is needed. Release stage additionally needs
@@ -71,6 +76,8 @@ YYYY-MM-DD. `publication.edition` is a string and is independent of package VERS
   stale after review_by. There is no universal fixed time-to-live or source-count quota.
 - `files`: manuscript, pdf, deliverables. Paths are relative to the manifest directory.
   No parent traversal, absolute paths, or symlink escape. Manifest UTF-8 JSON max 4 MiB;
+  JSON loading and hashing require regular files, rejecting FIFOs/devices without waiting
+  for a writer; symlinks to regular files remain supported subject to path checks.
   duplicate keys and non-finite numeric constants are rejected. Manuscript max 16 MiB.
 - `checks`: id, status, reviewer, method, checked_on, notes, evidence_file,
   evidence_sha256, fingerprints. Allowed methods: `manual`, `self_review`, `automated`.

@@ -218,8 +218,8 @@
       "where": "references/semantic-fidelity.md"
     },
     {
-      "id": "rewrite-word-range-excludes-notes",
-      "text": "For a word range, count the finished rewrite before delivery; separate change or provenance notes do not count.",
+      "id": "word-range-executable-check",
+      "text": "Read `references/word-range.md` before use; fix a FAIL and rerun before delivery.",
       "where": "SKILL.md"
     }
   ]

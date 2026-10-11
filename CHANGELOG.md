@@ -8,6 +8,19 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Security and correctness
 
+- Validate loaded real-host plans and generate run paths independently of task IDs.
+  Capture host streams with a live quota, private output permissions and POSIX
+  process-group cleanup; unsupported cleanup platforms explicitly return NOT_RUN.
+- Separate native-cap USD admission from estimated budgets. Unknown costs remain
+  unknown, and usage-based estimates cannot release native budget reservations.
+
+- Add body-only word-range checks to prose writing and rewriting, and exact-rational
+  displayed-calculation checks to ebook preparation. Checks cover supplied inputs,
+  not semantic fidelity or source truth.
+- Reject special files before ebook manifest reads and fingerprinting; require
+  revalidation of unresolved changed specialist stages before quality-loop completion.
+- Reject malformed repair and quality-loop enum fields with structured validation errors.
+
 - Redact detected credentials across all source scanner output categories and
   diagnostics; distinguish truncated, skipped and complete eligible-file scans.
 - Fail `real_host_eval --execute` when no host ran. Forward host-native effort

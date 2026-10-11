@@ -9,7 +9,13 @@ treated as package sources, not as a second repository architecture.
 | Canonical skill IDs | Source | Version choice |
 | --- | --- | --- |
 | `content-roaster`, `science-roaster`, `repo-roaster` | CometWeb Roaster Suite | `6.1.4` |
-| `artifact-acceptance`, `benchmark-curator`, `content-reviewer`, `content-writer`, `quality-loop-operator`, `repair-operator`, `rubric-designer` | CometWeb Quality Skills | `1.7.5` |
+| `artifact-acceptance` | CometWeb Quality Skills | `1.7.5` |
+| `benchmark-curator` | CometWeb Quality Skills | `1.7.4` |
+| `content-reviewer` | CometWeb Quality Skills | `1.7.5` |
+| `content-writer` | CometWeb Quality Skills | `1.7.6` |
+| `quality-loop-operator` | CometWeb Quality Skills | `1.7.6` |
+| `repair-operator` | CometWeb Quality Skills | `1.7.6` |
+| `rubric-designer` | CometWeb Quality Skills | `1.7.5` |
 | `brief-architect` | CometWeb Quality Skills with experimental PRD profile | `1.8.0` |
 | `feedback-integrator` | CometWeb Quality Skills | `1.8.1` |
 | `skill-auditor` | CometWeb Quality Skills | `1.7.5` |

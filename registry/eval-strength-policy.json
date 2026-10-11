@@ -17,6 +17,10 @@
     "skill-auditor": 0.95,
     "skill-evaluator": 0.95
   },
-  "allow_unexercised_scripts": {},
-  "note": "Absolute floors ratchet quality. Since 2026-10-02 the measurement counts one-line and elif guards, which the compact kernels use for most rules; floors were raised to match the cases added that day. On 2026-10-03 every harness reached 0.85, so the default floor rose from 0.75 to 0.85 and the four skills that crossed it that day got their own floors. Held-guard counts remain the primary regression gate. On 2026-10-03 (later) every harness reached 0.93 after pinning exact error lists, boundary cases and non-object cases (raw_case); the default floor rose to 0.92 and every skill measured at 0.95 or above got a 0.95 floor."
+  "allow_unexercised_scripts": {
+    "content-writer": [
+      "word_range.py"
+    ]
+  },
+  "note": "Absolute floors ratchet quality. Since 2026-10-02 the measurement counts one-line and elif guards, which the compact kernels use for most rules; floors were raised to match the cases added that day. On 2026-10-03 every harness reached 0.85, so the default floor rose from 0.75 to 0.85 and the four skills that crossed it that day got their own floors. Held-guard counts remain the primary regression gate. On 2026-10-03 (later) every harness reached 0.93 after pinning exact error lists, boundary cases and non-object cases (raw_case); the default floor rose to 0.92 and every skill measured at 0.95 or above got a 0.95 floor. Word-range is a standalone text CLI, not a claim-ledger kernel. Its functional boundary/read-error tests run in skills/content-writer/tests/test_word_range.py under both package tests and the full suite; the identical ai-humanize copy is checked independently and by byte-parity. The ledger mutation harness does not measure this CLI."
 }

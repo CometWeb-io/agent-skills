@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.7.6] - 2026-10-11
+
+- Do not mark a run COMPLETE when a specialist still requires changes after downstream passes; request its revalidation while preserving pending-repair routing.
+- Reject malformed adaptive-depth, debt and rollout enums without raising TypeError.
+
 ## [1.7.5] - 2026-10-10
 
 - Derive mandatory gates from the active frozen contract and explicitly selected profile; keep optional extra reviews separate.

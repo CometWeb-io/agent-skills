@@ -6,9 +6,11 @@ import argparse
 from datetime import date, datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
 import shutil
+import stat
 import sys
 from typing import Any
 from urllib.parse import urlsplit
@@ -91,16 +93,27 @@ def invalid_constant(value: str) -> None:
     raise InputError(f'Non-finite JSON constant is not supported: {value}')
 
 
+def open_regular(path: Path):
+    descriptor = os.open(path, os.O_RDONLY | getattr(os, 'O_NONBLOCK', 0))
+    try:
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            raise InputError(f'Expected a regular file: {path.name}')
+        return os.fdopen(descriptor, 'rb')
+    except (OSError, InputError):
+        os.close(descriptor)
+        raise
+
+
 def load_json(path: Path) -> dict:
     try:
-        with path.open('rb') as stream:
+        with open_regular(path) as stream:
             raw = stream.read(MAX_JSON + 1)
         if len(raw) > MAX_JSON:
             raise InputError(f'Manifest exceeds {MAX_JSON} bytes')
         result = json.loads(raw.decode('utf-8'), object_pairs_hook=strict_pairs,
                             parse_constant=invalid_constant)
         return obj(result, 'manifest')
-    except (OSError, UnicodeError, json.JSONDecodeError, RecursionError) as exc:
+    except (OSError, UnicodeError, ValueError, RecursionError) as exc:
         raise InputError(f'Cannot read manifest: {exc}') from exc
 
 
@@ -123,7 +136,7 @@ def local_path(root: Path, relative: Any) -> Path:
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     try:
-        with path.open('rb') as stream:
+        with open_regular(path) as stream:
             for chunk in iter(lambda: stream.read(1024 * 1024), b''):
                 digest.update(chunk)
     except OSError as exc:

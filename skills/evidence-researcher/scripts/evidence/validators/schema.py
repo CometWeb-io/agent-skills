@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from ..constants import PROVENANCE_LANES, RESEARCH_MODES, SCHEMA_VERSION
+from ..util import _member
 from .context import LedgerValidationState
 
 
@@ -18,9 +19,9 @@ def validate(ledger: Dict[str, Any], state: LedgerValidationState) -> None:
         contract = {}
     if not contract.get("question"):
         errors.append("research_contract.question is required")
-    if contract.get("mode") not in RESEARCH_MODES:
+    if not _member(contract.get("mode"), RESEARCH_MODES):
         errors.append("research_contract.mode must be QUICK, STANDARD, or DEEP")
-    if contract.get("privacy_lane") and contract.get("privacy_lane") not in PROVENANCE_LANES:
+    if contract.get("privacy_lane") is not None and not _member(contract.get("privacy_lane"), PROVENANCE_LANES):
         errors.append("research_contract.privacy_lane is invalid")
     if not ledger.get("research_id"):
         errors.append("research_id is required")
@@ -54,12 +55,12 @@ def validate(ledger: Dict[str, Any], state: LedgerValidationState) -> None:
                 errors.append(f"{kind}s[{i}] must be an object")
                 continue
             value = row.get(field)
-            if not value:
+            if not isinstance(value, str) or not value.strip():
                 errors.append(f"{kind}s[{i}].{field} is required")
-            elif str(value) in seen:
+            elif value in seen:
                 errors.append(f"duplicate {field}: {value}")
             else:
-                seen.add(str(value))
+                seen.add(value)
         ids_by_kind[kind] = seen
 
     state.claim_ids = ids_by_kind.get("claim", set())
