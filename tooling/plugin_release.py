@@ -37,6 +37,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from markdown_resources import without_code
+
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = "cometweb.plugin-release/v1"
 RECORD = Path("registry/plugin-release.json")
@@ -209,14 +211,31 @@ VERSION_FILES = (
 LEVELS = ("patch", "minor", "major")
 
 
-def content_errors(root: Path) -> list[str]:
-    """Scaffolds may pass fast gates, but cannot become a release candidate."""
+def unreplaced_scaffold(relative: str, text: str) -> bool:
+    """Recognize known author prompts, not the quality of arbitrary instructions."""
+    normalized = " ".join(text.split())
     markers = ("Replace these rules with the skill's real contract",
                "Scaffold placeholder from tooling/new_skill.py; replace with a real case")
+    if any(marker in normalized for marker in markers):
+        return True
+    if Path(relative).name != "SKILL.md":
+        return False
+    prose = without_code(text)
+    # shortcut: only explicit > quote lines, upgrade if lazy CommonMark quotes need admission.
+    prose = "\n".join(line for line in prose.splitlines() if not line.lstrip().startswith(">"))
+    prompts = ("State what this skill owns in one paragraph",
+               "Describe the request shapes that belong here.",
+               "Name the neighbouring skills and the cases that belong to them.")
+    return any(re.search(r"(?m)^ {0,3}" + r"\s+".join(map(re.escape, prompt.split())), prose)
+               for prompt in prompts)
+
+
+def content_errors(root: Path) -> list[str]:
+    """Scaffolds may pass fast gates, but cannot become a release candidate."""
     paths = list((root / "skills").rglob("*.py")) + list((root / "skills").rglob("*.md"))
     paths += list((root / "skills").rglob("*.json")) + list((root / "evals").rglob("*.json"))
     return [f"{path.relative_to(root)}: unreplaced scaffold content" for path in sorted(paths)
-            if any(marker in path.read_text(encoding="utf-8") for marker in markers)]
+            if unreplaced_scaffold(str(path.relative_to(root)), path.read_text(encoding="utf-8"))]
 
 
 def next_version(version: str, level: str) -> str:

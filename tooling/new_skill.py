@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scaffold and register a skill package that passes every gate on the day it is created.
+"""Scaffold and register a skill package that passes fast structural gates.
 
 Adding a skill used to mean copying an existing one and discovering the contract
 by watching checks fail: the registry entry, the shared package surface, the

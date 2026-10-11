@@ -100,7 +100,14 @@ a placeholder that works. Replace it in this order:
    [Plugin version](#plugin-version).
 5. **Replace all scaffold markers before release.** Fast gates admit scaffolds
    for development; the mandatory full `plugin_release` gate rejects markers
-   in skill Markdown, Python, local JSON evals and shared JSON evals.
+   in skill Markdown, Python, local JSON evals and shared JSON evals. Known
+   author prompts left in the generated `SKILL.md` also block admission after
+   cosmetic marker removal or line wrapping; fenced, inline-code and explicitly
+   `>`-prefixed counterexamples are excluded. Lazy blockquote continuation lines
+   are still checked as prose. Versioned `package_skill.py` builds
+   enforce the same check before writing or reusing an archive; `--dev` remains
+   available for development. This recognizes the generated template, not the
+   quality or task effectiveness of arbitrary rewritten instructions.
 6. **Regenerate and run every gate** with the [flow](#the-flow) above. A grown
    front door or a changed eval-strength count is accepted deliberately; the
    summary prints the command that records it.

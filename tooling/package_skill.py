@@ -17,6 +17,7 @@ from urllib.parse import unquote, urlsplit
 import yaml
 from public_safety import MAX_FILE_BYTES, check_blob, files
 from markdown_resources import destinations
+from plugin_release import unreplaced_scaffold
 
 ROOT = Path(__file__).resolve().parents[1]
 SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
@@ -342,6 +343,9 @@ def write_atomic(path: Path, blob: bytes, *, immutable: bool) -> None:
 
 def build(root: Path, skill: str) -> dict:
     entries, manifest = payload(root, skill)
+    for name, data in entries.items():
+        if Path(name).suffix in {".md", ".py", ".json"} and unreplaced_scaffold(name, data.decode("utf-8")):
+            raise ValueError(f"{name}: unreplaced scaffold content")
     out = safe_path(root, f"dist/{skill}/{manifest['version']}/skill.zip")
     if out.exists():
         old = inspect_archive(out.read_bytes())

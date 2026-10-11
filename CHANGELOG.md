@@ -6,6 +6,10 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+- Reject known generated skill author prompts at plugin admission and versioned
+  packaging, including wrapped text and existing archive reuse. Development
+  archives remain unassessed; scaffold detection does not establish task quality.
+
 ### Security and correctness
 
 - Refuse malformed judge/execution flags, uncalibrated performed model grades,

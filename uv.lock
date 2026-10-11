@@ -365,7 +365,7 @@ wheels = [
 
 [[package]]
 name = "cometweb-agent-skills"
-version = "2.7.6"
+version = "2.7.7"
 source = { virtual = "." }
 
 [package.dev-dependencies]

@@ -206,7 +206,10 @@ uv run python tooling/check_all.py --fast
 The scaffold is registered and passes every fast gate straight away, but its
 content is placeholder. [CONTRIBUTING.md](CONTRIBUTING.md#adding-a-skill) walks
 through replacing it, making the evals and routing cases real, and bumping the
-plugin version. Deterministic evals prove a package keeps its contract; whether
+plugin version. Full admission and versioned packaging reject known generated
+author prompts even if their scaffold labels were removed. A development ZIP
+(`package_skill.py --dev`) remains unassessed. Deterministic evals prove a package
+keeps its contract; whether
 a skill makes a model behave better is a separate experiment, described in
 [docs/CONTRACT-TRACE-AND-SKILL-EVALS.md](docs/CONTRACT-TRACE-AND-SKILL-EVALS.md)
 and run with the [skill-evaluator](skills/skill-evaluator/) skill.
