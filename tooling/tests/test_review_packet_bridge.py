@@ -142,4 +142,5 @@ def test_bridge_pins_homogeneous_execution_profile_in_reviewed_experiment(packet
     assert review.compare(packet["bundle"])["comparison_status"] == "incomplete"
     original_pin = packet["experiment_sha256"]
     packet["bundle"]["experiment"]["execution_profile"]["instruction_placement"] = "developer_instructions"
-    assert review.compare(packet["bundle"], original_pin)["comparison_status"] == "invalid"
+    with pytest.raises(ValueError, match="reviewed experiment changed"):
+        review.compare(packet["bundle"], original_pin)

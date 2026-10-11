@@ -47,11 +47,29 @@ def build_request(request: dict, model: str) -> dict:
 
 
 def convert_response(data: dict) -> dict:
-    text = "\n".join(part["text"] for item in data.get("output", []) if item.get("type") == "message" for part in item.get("content", []) if part.get("type") == "output_text")
-    return {"schema":"cometweb.eval-response/v1", "status":data.get("status"), "execution_kind":"model", "model":data.get("model"), "host":"openai-responses-text-only",
-            "response_id":data.get("id"), "output":text, "usage":{k:v for k,v in (data.get("usage") or {}).items() if type(v) is int},
-            "capabilities":{"tools":False}, "tool_trace":[],\n            "execution_surface":"responses_api_text_only",\n            "instruction_placement":"user_message_when_present",\n            "native_skill_activation":False}
-
+    text = "\n".join(
+        part["text"]
+        for item in data.get("output", [])
+        if item.get("type") == "message"
+        for part in item.get("content", [])
+        if part.get("type") == "output_text"
+    )
+    usage = {key: val for key, val in (data.get("usage") or {}).items() if type(val) is int}
+    return {
+        "schema": "cometweb.eval-response/v1",
+        "status": data.get("status"),
+        "execution_kind": "model",
+        "model": data.get("model"),
+        "host": "openai-responses-text-only",
+        "response_id": data.get("id"),
+        "output": text,
+        "usage": usage,
+        "capabilities": {"tools": False},
+        "tool_trace": [],
+        "execution_surface": "responses_api_text_only",
+        "instruction_placement": "user_message_when_present",
+        "native_skill_activation": False,
+    }
 
 def main() -> int:
     key, model = os.environ.get("OPENAI_API_KEY"), os.environ.get("COMETWEB_EVAL_MODEL")

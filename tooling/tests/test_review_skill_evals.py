@@ -176,7 +176,8 @@ def test_reviewed_experiment_rejects_malformed_execution_profile():
         "instruction_placement": "user_message_when_present",
         "native_skill_activation": "maybe",
     }
-    assert mod.compare(data)["comparison_status"] == "invalid"
+    with pytest.raises(ValueError, match="native skill activation"):
+        mod.compare(data)
 
 
 def test_execution_priority_is_part_of_experiment_pin():
@@ -188,4 +189,5 @@ def test_execution_priority_is_part_of_experiment_pin():
     }
     original_pin = mod.compare(data)["experiment_sha256"]
     data["experiment"]["execution_profile"]["instruction_placement"] = "developer_instructions"
-    assert mod.compare(data, original_pin)["comparison_status"] == "invalid"
+    with pytest.raises(ValueError, match="reviewed experiment changed"):
+        mod.compare(data, original_pin)
