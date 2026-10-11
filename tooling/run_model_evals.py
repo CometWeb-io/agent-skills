@@ -233,9 +233,19 @@ def run(suite: dict, current: Path, candidate: Path, command: list[str], output:
             break
     models = sorted({r["response"]["model"] for r in records if r["status"] == "executed"})
     hosts = sorted({r["response"]["host"] for r in records if r["status"] == "executed"})
+    # A model/host match is insufficient if different instruction priorities or
+    # native-vs-simulated skill loading were mixed into the same experiment.
+    profiles = sorted({
+        json.dumps({
+            "execution_surface": r["response"].get("execution_surface", "undeclared"),
+            "instruction_placement": r["response"].get("instruction_placement", "undeclared"),
+            "native_skill_activation": r["response"].get("native_skill_activation", "undeclared"),
+        }, sort_keys=True)
+        for r in records if r["status"] == "executed"
+    })
     result = {**manifest, "finished_at":dt.datetime.now(dt.timezone.utc).isoformat(), "completed_runs":sum(r["status"] == "executed" for r in records),
-              "errors":sum(r["status"] == "error" for r in records), "model_ids":models, "host_ids":hosts,
-              "comparison_status":"unreviewed" if len(models) == len(hosts) == 1 and len(records) == len(jobs) and all(r["status"] == "executed" for r in records) else "incomplete_or_unmatched",
+              "errors":sum(r["status"] == "error" for r in records), "model_ids":models, "host_ids":hosts,\n              "execution_profiles":[json.loads(profile) for profile in profiles],
+              "comparison_status":"unreviewed" if len(models) == len(hosts) == len(profiles) == 1 and len(records) == len(jobs) and all(r["status"] == "executed" for r in records) else "incomplete_or_unmatched",
               "quality_verdict":"pending_human_review", "runtime_installation_acceptance":"not_assessed"}
     (output / "summary.json").write_bytes(canonical(result))
     if result["comparison_status"] == "unreviewed":
