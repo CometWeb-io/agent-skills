@@ -1,7 +1,7 @@
 {
   "schema": "cometweb.skill-maturity/v1",
   "skill": "evidence-researcher",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "stage": "DEVELOPMENT",
   "publication": "EXPERIMENTAL",
   "task_qualification": "not_established"

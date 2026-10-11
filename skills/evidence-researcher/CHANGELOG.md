@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.10] - 2026-10-11
+
+- Add bounded caller-owned local fact observation and explicit knowledge basis; retain inference lineage and metadata/observation boundaries.
+
 ## [1.0.9] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

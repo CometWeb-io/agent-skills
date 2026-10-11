@@ -202,7 +202,6 @@
     "pack_hash": {},
     "proposal": {},
     "question": {},
-    "ready": {},
     "rejected_claim_ids": {},
     "required_confidence": {},
     "research_contract": {},
@@ -216,7 +215,9 @@
     "valid": {},
     "validation": {},
     "verdict": {},
-    "materiality": {},
+    "materiality": {
+      "unread": true
+    },
     "artifact": {},
     "framework_source_ids": {},
     "parameter_source_ids": {},
@@ -257,7 +258,72 @@
     "source": {},
     "report_as_of": {},
     "report_timestamp_scope": {},
-    "completion_class": {}
+    "completion_class": {},
+    "check_plan": {
+      "unread": true
+    },
+    "source_root": {
+      "unread": true
+    },
+    "evidence_use": {},
+    "premises": {},
+    "role": {
+      "unread": true
+    },
+    "scope": {},
+    "basis_assessment": {},
+    "required_fact_ids": {},
+    "observed_fact_ids": {},
+    "eligible_premise_ids": {},
+    "eligible": {},
+    "positive_verdict": {},
+    "policy_version": {
+      "unread": true
+    },
+    "missing_premise_ids": {
+      "unread": true
+    },
+    "caveats": {
+      "unread": true
+    },
+    "limit": {
+      "unread": true
+    },
+    "checks": {
+      "unread": true
+    },
+    "claim_hash": {
+      "unread": true
+    },
+    "source_hash": {
+      "unread": true
+    },
+    "evidence_hash": {
+      "unread": true
+    },
+    "path": {},
+    "sha256": {
+      "unread": true
+    },
+    "expected": {
+      "unread": true
+    },
+    "observed_scope": {
+      "unread": true
+    },
+    "context_hash": {
+      "unread": true
+    },
+    "all_claims": {
+      "unread": true
+    },
+    "metadata_ready": {
+      "unread": true
+    },
+    "falsifier_search_completed": {
+      "unread": true
+    },
+    "freshness_admissible": {}
   },
   "outputs": {
     "archetype": {
@@ -308,6 +374,7 @@
     "as_of": "Native research report evaluation anchor bound to parent report_as_of; never source observation or verification."
   },
   "doc_terms": [
+    "build_next_task",
     "plan_stale_detected"
   ],
   "evals": []

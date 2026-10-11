@@ -77,10 +77,11 @@ def test_exhausted_retry_is_durable_and_no_third_attempt(tmp_path):
 @pytest.mark.parametrize('value',[True,-.1,1.1,'0.1',None,float('nan'),float('inf')])
 def test_decision_value_must_be_finite_typed_scope(value):
     with pytest.raises(ValueError):domain.validate_context({**CONTEXT,'decision_value':value})
-def test_ready_material_graph_can_clear_and_supporting_claim_does_not_inflate():
+def test_legacy_ready_metadata_requires_migration_before_admission():
     g=json.loads((Path(__file__).parent/'fixtures/domain-ready-graph.json').read_text())
     r=wrap(domain.research_payload(g,[prd()]),'evidence-researcher','ready',[prd()]);b=bundle(r);ids=[c['claim_id'] for c in g['claims']];b['judge'].update(accepted_claim_ids=ids,rejected_claim_ids=[],critical_gaps=[],freshness_status='CLEAR',gate_statuses={'technical':'CLEAR'},controls_implemented=True);b['proposal'].update(verdict='GO',confidence=1.,required_confidence=domain._council().required_confidence(domain._council().compile_decision_contract(CONTEXT['question'],CONTEXT['context']),1,CONTEXT['decision_value']),critical_gap=None,freshness_status='CLEAR',controls_implemented=True)
-    assert domain.finalize_council(b,CONTEXT,[prd(),r])['verdict']=='GO'
+    with pytest.raises(ValueError,match='Judge admitted unsupported'):
+        domain.finalize_council(b,CONTEXT,[prd(),r])
     b['judge']['accepted_claim_ids']=[];b['proposal']['required_confidence']=domain._council().required_confidence(domain._council().compile_decision_contract(CONTEXT['question'],CONTEXT['context']),0,CONTEXT['decision_value']);out=domain.finalize_council(b,CONTEXT,[prd(),r]);assert out['verdict']=='DEFER';assert out['constraint_result']['evidence_coverage']==0
 
 def test_supporting_admission_cannot_replace_material_evidence():

@@ -1079,17 +1079,19 @@ def _hook_evidence_safe_inference(g: Grader, doc: Document, verdict: str | None,
     if ledger is None or handoff is None:
         return
     kinds: dict[str, str] = {}
+    bases: dict[str, str] = {}
     for table in doc.tables(ledger):
         for row in table:
             claim = re.match(r"\W*(C\d+)\b", _column(row, ["claim"]) or "")
             if claim:
                 kinds[claim.group(1)] = (_column(row, ["kind"]) or "").strip("`* ").upper()
+                bases[claim.group(1)] = (_column(row, ["basis"]) or "").strip("`* ").replace("\\_", "_").lower()
     for item in doc.items(handoff):
         if re.search(r"safe for downstream", item, re.I):
             for claim in re.findall(r"\bC\d+\b", item):
-                if kinds.get(claim) == "INFERENCE":
+                if kinds.get(claim) == "INFERENCE" or bases.get(claim) and bases[claim] != "verified_fact":
                     issues.append(g._issue("CONTRACT_VIOLATION", "inference-as-fact",
-                                           f"{claim} is an INFERENCE in the ledger but is handed off as safe for "
+                                           f"{claim} is an INFERENCE or explicitly nonfact/unassessed premise but is handed off as safe for "
                                            "downstream use; move it under 'requires caveats'", "handoff"))
 
 

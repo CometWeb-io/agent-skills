@@ -126,3 +126,35 @@ python3 -m unittest discover -s tests -p test_council_kernel.py
 Pytest is a development dependency for the new regression file. Runtime CLI uses the standard library only. CLI JSON rejects duplicate keys and non-finite numbers, with a four-megabyte input limit. It reports errors without echoing raw payloads. This is not a complete schema validator for every legacy command; unmodified ranking, learning and storage helpers retain their earlier contracts.
 
 Synthetic tests assess deterministic mechanics, not decision quality, external model independence, authenticity of evidence or qualified human approval. Package VERSION is unchanged and no release is published.
+
+## Consumer evidence purpose
+
+`basis_admission` is a pure policy helper, not authentication of supplied observations.
+The receiving domain gate reruns actual controlled sources. `gate_verdict` continues
+to assess declared constraints only; its token cannot establish factual eligibility.
+A serialized report or observed_fact_ids list cannot authorize an action.
+
+Consumer-owned evidence_use declares purpose, as_of and premises (claim_id, role,
+nonempty scope). Purpose: method_choice | planning | action | trial. Role:
+controlled_fact | document_fact | safeguard | method | intent | estimate | hypothesis |
+inference. Basis stays orthogonal: verified_fact | user_supplied | assumption |
+framework_method. Estimates may inform decisions with caveats, but never count as
+facts. A tested hypothesis needs explicit trial scope, low risk, reversibility and
+separately observed safeguards. Critical unobserved hypotheses and unresolved
+applicable contradictions do not clear. Derived inferences require observed
+factual dependency closure and contradiction/falsifier checks, remain supported
+INFERENCE, and do not receive MATCH or establish semantic entailment.
+
+Policy report fields (not execution authority):
+```text
+policy_version scope eligible positive_verdict eligible_premise_ids required_fact_ids
+observed_fact_ids missing_premise_ids blockers caveats execution_authorized limit
+all_claims metadata_ready falsifier_search_completed claims basis evidence_use premises role
+claim_id as_of materiality critical material supporting contradiction_tested depends_on_claim_ids
+research_contract epistemic_kind status observations observed_scope resolution severity
+```
+Scope also permits unassessed for legacy consumers; no factual eligibility is
+inferred. Policy version is decision-basis/v1. Fresh domain revalidation remains
+mandatory, and method/planning scope does not clear the eventual action's gates.
+
+Applicable gaps and contradictions remain blockers; a nonfact premise does not erase required current facts.

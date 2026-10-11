@@ -13,7 +13,7 @@ GATE = 'prd-schema-kernel/v1'
 WRAPPER_GATE = 'cw-aip-final/v1'
 PROFILE_GATE = 'specialist-profile-owner/v2'
 PROFILE_PATH = 'skills/skill-orchestrator/scripts/specialist_profiles.py'
-DOMAIN_GATE = 'research-council-schema-kernel/v1'
+DOMAIN_GATE = 'research-council-schema-kernel/v2'
 DOMAIN_PATH = 'skills/skill-orchestrator/scripts/domain_handoff.py'
 SCHEMA_PATH = 'skills/brief-architect/references/prd-output.schema.json'
 KERNEL_PATH = 'skills/brief-architect/scripts/kernel.py'
@@ -110,7 +110,7 @@ def _module(relative: str, name: str):
     return value
 
 
-def validate(envelope: Any, lock: dict | None = None, *, expected_type: str = 'ArtifactEnvelope', expected_producer: str = 'brief-architect', prd_required: bool = True, domain_required: bool = False, domain_context: dict | None = None, expected_report_as_of: str | None = None) -> dict:
+def validate(envelope: Any, lock: dict | None = None, *, expected_type: str = 'ArtifactEnvelope', expected_producer: str = 'brief-architect', prd_required: bool = True, domain_required: bool = False, domain_context: dict | None = None, expected_report_as_of: str | None = None, check_plan: dict | None = None, source_root: Path | None = None) -> dict:
     """No coercion or ledger writes. Reports remain separate from executable handoffs."""
     try:
         import jsonschema
@@ -148,7 +148,7 @@ def validate(envelope: Any, lock: dict | None = None, *, expected_type: str = 'A
     domain = None
     if domain_required:
         try:
-            domain = _module(DOMAIN_PATH, 'validate_domain_gate').validate(brief, expected_producer, domain_context, expected_report_as_of=expected_report_as_of)
+            domain = _module(DOMAIN_PATH, 'validate_domain_gate').validate(brief, expected_producer, domain_context, expected_report_as_of=expected_report_as_of, check_plan=check_plan, source_root=source_root)
         except (ValueError, TypeError, KeyError, OSError) as exc:
             domain = {'accepted':False,'error':str(exc)}
         accepted = accepted and domain['accepted']

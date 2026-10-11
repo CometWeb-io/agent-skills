@@ -87,6 +87,12 @@ completed envelope prefix, then returns at most one claimed task. It adds `step_
 or active input fails with exit 1 and no new claim. JSON output on resumed/terminal
 runs includes `plan`, `dispatch_status`, `subagent_tasks`; planning-only parent metadata
 is not repeated. Follow `references/prd-handoff.md` for canonical completion/retry.
+Completed factual/trial Council prefixes require caller-owned `--check-plan-json`
+and `--source-root` together for fresh receiving checks. The API passes `check_plan`
+and `source_root` as keyword arguments; neither is persisted as worker permission
+or included in prompts. Resume input files use the bounded owner JSON reader.
+The pinned step's `report_as_of` is forwarded to research validation; resume does
+not supply a new timestamp or turn report metadata into source verification.
 
 Council task prompts include selected `capability_packs` as locked role-scoped FRAMEWORK
 pointers. Dispatch rechecks registry file integrity and exact selected pointers.

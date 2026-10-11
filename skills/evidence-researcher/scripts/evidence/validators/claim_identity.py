@@ -8,6 +8,7 @@ from ..constants import (
     CLAIM_TYPES,
     CONFIDENCE_LEVELS,
     EPISTEMIC_KINDS,
+    KNOWLEDGE_BASES,
     MATERIALITIES,
     TEMPORAL_SENSITIVITIES,
 )
@@ -44,6 +45,16 @@ def validate(ledger: Dict[str, Any], state: LedgerValidationState) -> None:
         status = claim.get("status")
         if not _member(status, CLAIM_STATUSES):
             errors.append(f"{cid}.status is invalid")
+        if "basis" in claim:
+            basis = claim["basis"]
+            if not _member(basis, KNOWLEDGE_BASES):
+                errors.append(f"{cid}.basis is invalid")
+            elif basis == "verified_fact" and (epistemic, status) not in (("FACT", "VERIFIED"), ("INFERENCE", "SUPPORTED_INFERENCE")):
+                errors.append(f"{cid}.verified_fact requires VERIFIED FACT or SUPPORTED_INFERENCE; observation remains separate")
+            elif basis != "verified_fact" and status == "VERIFIED":
+                errors.append(f"{cid}.nonfact basis cannot use VERIFIED status")
+        else:
+            warnings.append(f"{cid}.basis is unassessed; legacy metadata does not establish observed fact eligibility")
         if not _member(claim.get("confidence"), CONFIDENCE_LEVELS):
             errors.append(f"{cid}.confidence must be high, medium, or low")
         deps = claim.get("depends_on_claim_ids", [])

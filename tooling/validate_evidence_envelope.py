@@ -23,6 +23,7 @@ REQUIRED = {
     "evidence_pack_hash",
 }
 ALLOWED = REQUIRED | {"handoff"}
+KNOWLEDGE_BASES = {"verified_fact", "user_supplied", "assumption", "framework_method"}
 CONTRADICTION_FIELDS = {
     "status": ("resolved", "unresolved"),
     "resolution": ("RESOLVED_SCOPE", "RESOLVED_TIME", "RESOLVED_DEFINITION", "RESOLVED_METHOD",
@@ -147,9 +148,25 @@ def validate_semantics(data: dict[str, Any]) -> None:
         if claim.get("epistemic_kind") == "INFERENCE" and claim.get("status") == "VERIFIED":
             fail(f"{cid}: INFERENCE cannot be VERIFIED")
 
+        if "basis" in claim:
+            basis = claim["basis"]
+            if not isinstance(basis, str) or basis not in KNOWLEDGE_BASES:
+                fail(f"{cid}: invalid knowledge basis")
+            if basis == "verified_fact" and (claim.get("epistemic_kind"), claim.get("status")) not in {
+                    ("FACT", "VERIFIED"), ("INFERENCE", "SUPPORTED"), ("INFERENCE", "SUPPORTED_INFERENCE")}:
+                fail(f"{cid}: verified_fact requires verified FACT or supported INFERENCE lineage")
+            if basis != "verified_fact" and claim.get("status") == "VERIFIED":
+                fail(f"{cid}: a nonfact basis cannot be VERIFIED")
+        if "scope" in claim and (not isinstance(claim["scope"], dict) or not claim["scope"]):
+            fail(f"{cid}: scope must be an explicit nonempty object")
+        if "scope" in claim:
+            json.dumps(claim["scope"], allow_nan=False)
+
     supported = set()
     contradicted = set()
     for edge in data.get("evidence_edges") or []:
+        if "basis" in edge and (not isinstance(edge["basis"], str) or edge["basis"] not in KNOWLEDGE_BASES):
+            fail("evidence edge has invalid knowledge basis")
         if edge.get("claim_id") not in claim_ids:
             fail(f"edge {edge.get('edge_id')} unknown claim_id")
         if edge.get("source_id") not in source_ids:

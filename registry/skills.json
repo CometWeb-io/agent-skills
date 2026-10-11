@@ -7,7 +7,7 @@
   "skills": [
     {
       "id": "ai-council",
-      "version": "5.3.1",
+      "version": "5.3.2",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -1435,7 +1435,7 @@
     },
     {
       "id": "evidence-researcher",
-      "version": "1.0.9",
+      "version": "1.0.10",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3315,7 +3315,7 @@
     },
     {
       "id": "skill-orchestrator",
-      "version": "1.4.2",
+      "version": "1.4.3",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3439,7 +3439,7 @@
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.2.3",
+      "version": "1.2.4",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",

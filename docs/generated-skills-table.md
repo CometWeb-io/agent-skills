@@ -4,7 +4,7 @@
 
 | id | version | tier | lifecycle | release_status | maturity_stage | publication | desc_len | explicit_only |
 | --- | ---: | --- | --- | --- | --- | --- | ---: | --- |
-| `ai-council` | 5.3.1 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 893 | True |
+| `ai-council` | 5.3.2 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 893 | True |
 | `ai-humanize` | 2.6.5 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 708 | False |
 | `artifact-acceptance` | 1.7.6 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 626 | False |
 | `benchmark-curator` | 1.7.5 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 534 | False |
@@ -18,7 +18,7 @@
 | `customer-ops` | 2.2.3 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 991 | False |
 | `design-partner-finder` | 1.2.5 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 932 | False |
 | `ebook-publisher` | 1.0.6 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 952 | False |
-| `evidence-researcher` | 1.0.9 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 748 | False |
+| `evidence-researcher` | 1.0.10 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 748 | False |
 | `feedback-integrator` | 1.8.2 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 633 | False |
 | `longform-publisher` | 1.1.6 | domain | active | FROZEN | DEVELOPMENT | EXPERIMENTAL | 539 | False |
 | `portfolio-operator` | 1.2.5 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 647 | False |
@@ -35,6 +35,6 @@
 | `seo-geo-aeo-maxxing` | 1.3.6 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 659 | False |
 | `skill-auditor` | 1.7.6 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 517 | False |
 | `skill-evaluator` | 1.8.1 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 742 | False |
-| `skill-orchestrator` | 1.4.2 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 728 | False |
-| `skill-orchestrator-multiagent` | 1.2.3 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 467 | False |
+| `skill-orchestrator` | 1.4.3 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 728 | False |
+| `skill-orchestrator-multiagent` | 1.2.4 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 467 | False |
 | `web-app-auditor` | 1.5.1 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 762 | False |

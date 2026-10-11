@@ -46,6 +46,16 @@
       "id": "rule-03",
       "text": "Defer (do not invent readiness) when controlling current evidence is inaccessible, critical contradiction is unresolved, or privacy lane forbids the required retrieval.",
       "where": "SKILL.md"
+    },
+    {
+      "id": "fresh-controlled-observation",
+      "text": "Caller-owned `observe` checks actual controlled JSON; serialized checks/receipts never replace a fresh receiving read.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "inference-observation-limit",
+      "text": "Supported inference remains inference; observed dependencies do not prove entailment or external currentness.",
+      "where": "SKILL.md"
     }
   ]
 }

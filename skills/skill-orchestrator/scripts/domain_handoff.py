@@ -13,7 +13,7 @@ from types import SimpleNamespace
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[3]
-GATE = 'research-council-schema-kernel/v1'
+GATE = 'research-council-schema-kernel/v2'
 SCHEMAS = {'evidence-researcher': 'domain-research', 'ai-council': 'domain-council'}
 
 
@@ -49,7 +49,7 @@ def _council():
             return json.loads(result.stdout)
         return invoke
     return SimpleNamespace(**{name:method(name) for name in
-                             ('compile_decision_contract','required_confidence','plan_council','gate_verdict')})
+                             ('compile_decision_contract','required_confidence','plan_council','gate_verdict','basis_admission','validate_evidence_use')})
 
 
 def audit_graph(graph: dict) -> dict:
@@ -78,7 +78,7 @@ def bindings(envelopes: list[dict]) -> list[dict]:
 def research_payload(graph: dict, prior: list[dict]) -> dict:
     audit = audit_graph(graph)
     return {'research_contract': canonical(graph['research_contract']).decode(),
-            'material_claims': [{'claim_id': c['claim_id'], 'text': c['claim_text'], 'epistemic_kind': c['epistemic_kind'], 'status': c['status']} for c in graph['claims']],
+            'material_claims': [{'claim_id': c['claim_id'], 'text': c['claim_text'], 'epistemic_kind': c['epistemic_kind'], 'status': c['status'], **{k: c[k] for k in ('basis', 'scope') if k in c}} for c in graph['claims']],
             'gaps': [g['description'] for g in graph['gaps']],
             'contradictions': [c['explanation'] for c in graph['contradictions']],
             'evidence_pack_hash': audit['pack_hash'], 'evidence_graph': json.loads(canonical(graph)),
@@ -97,7 +97,8 @@ def validate_research(payload: dict) -> dict:
 
 
 def validate_context(context: dict) -> None:
-    if not isinstance(context, dict) or set(context) != {'question', 'context', 'mode', 'decision_value', 'max_attempts'}:
+    if (not isinstance(context, dict) or not {'question', 'context', 'mode', 'decision_value', 'max_attempts'} <= set(context)
+            or set(context) - {'question', 'context', 'mode', 'decision_value', 'max_attempts', 'evidence_use'}):
         raise ValueError('domain context must declare question/context/mode/decision_value/max_attempts')
     if not isinstance(context['question'], str) or not context['question'].strip() or not isinstance(context['context'], dict):
         raise ValueError('invalid decision input')
@@ -112,14 +113,45 @@ def validate_context(context: dict) -> None:
     kernel = _council()
     contract = kernel.compile_decision_contract(context['question'], context['context'])
     kernel.required_confidence(contract, 0.0, context['decision_value'])
+    kernel.validate_evidence_use(context.get('evidence_use'))
 
 
-def council_inputs(bundle: dict, context: dict) -> dict:
+def assess_research(payload: dict, context: dict, *, check_plan: dict | None = None,
+                    source_root: Path | None = None) -> tuple[dict, dict]:
+    """Fresh controlled checks; source capabilities are process inputs, never payload receipts."""
     validate_context(context)
+    audit = validate_research(payload)
+    if (check_plan is None) != (source_root is None):
+        raise ValueError('fact-check plan and controlled source root must be supplied together')
+    observations = None
+    if check_plan is not None:
+        with tempfile.TemporaryDirectory(prefix='cw-receiving-check-') as temp:
+            paths = [Path(temp) / name for name in ('graph.json', 'plan.json', 'context.json')]
+            for path, value in zip(paths, (payload['evidence_graph'], check_plan, context), strict=True):
+                path.write_bytes(canonical(value))
+            result = subprocess.run([sys.executable, str(ROOT / 'skills/evidence-researcher/scripts/evidence_kernel.py'),
+                'observe', '--ledger-json', str(paths[0]), '--check-plan-json', str(paths[1]),
+                '--source-root', str(source_root), '--consumer-context-json', str(paths[2])],
+                capture_output=True, text=True, timeout=30, check=False)
+        if result.returncode not in (0, 1):
+            raise ValueError('receiving fact-check input rejected')
+        try:
+            observations = json.loads(result.stdout)
+        except ValueError as exc:
+            raise ValueError('receiving fact-check did not return a report') from exc
+    kernel = _council()
+    contract = kernel.compile_decision_contract(context['question'], context['context'])
+    assessment = kernel.basis_admission(payload['evidence_graph'], audit['coverage'], observations,
+                                        contract, context.get('evidence_use'))
+    return audit, assessment
+
+
+def council_inputs(bundle: dict, context: dict, *, check_plan: dict | None = None,
+                   source_root: Path | None = None) -> dict:
     research = bundle['research_envelope']
     if research.get('type') != 'EvidenceEnvelope' or research.get('producer') != 'evidence-researcher':
         raise ValueError('Council research producer/type mismatch')
-    audit = validate_research(research['payload'])
+    audit, assessment = assess_research(research['payload'], context, check_plan=check_plan, source_root=source_root)
     judge = bundle['judge']
     proposal = bundle['proposal']
     _schema('domain-judge', judge)
@@ -127,9 +159,9 @@ def council_inputs(bundle: dict, context: dict) -> dict:
     if len(bundle['blind_memos']) != 2 or {m['role_id'] for m in bundle['blind_memos']} != {'technical', 'product_customer'}:
         raise ValueError('two separately produced LIGHT perspectives are required')
     claims = {v['claim_id'] for v in research['payload']['evidence_graph']['claims']}
-    ready = {v['claim_id'] for v in audit['coverage']['claims'] if v['ready']}
+    eligible = set(assessment['eligible_premise_ids'])
     admitted, rejected = set(judge['accepted_claim_ids']), set(judge['rejected_claim_ids'])
-    if not admitted <= ready or not rejected <= claims or admitted & rejected:
+    if not admitted <= eligible or not rejected <= claims or admitted & rejected:
         raise ValueError('Judge admitted unsupported/unknown claims or conflicting IDs')
     for memo in bundle['blind_memos']:
         _schema('domain-memo', memo)
@@ -138,35 +170,46 @@ def council_inputs(bundle: dict, context: dict) -> dict:
     kernel = _council()
     contract = kernel.compile_decision_contract(context['question'], context['context'])
     plan = kernel.plan_council(contract, context['mode'])
-    material = {c['claim_id'] for c in research['payload']['evidence_graph']['claims'] if c['materiality'] in {'material', 'critical'}}
-    coverage = len(admitted & material) / max(1, len(material))
+    facts = set(assessment['required_fact_ids'])
+    coverage = len(admitted & set(assessment['observed_fact_ids'])) / max(1, len(facts))
     required = kernel.required_confidence(contract, coverage, context['decision_value'])
     if proposal['required_confidence'] != required:
         raise ValueError('proposal changed the computed confidence threshold')
     if proposal['freshness_status'] != judge['freshness_status'] or proposal['controls_implemented'] != judge['controls_implemented']:
         raise ValueError('proposal changed Judge gate state')
-    kernel_gap = audit['research_status'] != 'READY' or not material <= admitted
-    critical = ('Research is not READY for this decision scope' if kernel_gap else
+    required_premises = {p['claim_id'] for p in (context.get('evidence_use') or {}).get('premises', [])}
+    kernel_gap = not assessment['eligible'] or not required_premises <= admitted
+    critical = ('Evidence is not qualified for the consumer scope' if kernel_gap else
                 judge['critical_gaps'][0] if judge['critical_gaps'] else proposal['critical_gap'])
-    freshness = 'REFRESH_REQUIRED' if audit['research_status'] == 'REFRESH_REQUIRED' else judge['freshness_status']
-    required_gates = sorted(set(plan['roles']['gatekeepers']) | {'technical'})
+    metadata = {row['claim_id']: row for row in audit['coverage']['all_claims']}
+    # Nonfact intent/method/estimate freshness does not stand in for required world facts.
+    stale_facts = any(metadata.get(cid, {}).get('freshness_admissible') is False for cid in facts)
+    freshness = 'REFRESH_REQUIRED' if stale_facts else judge['freshness_status']
+    # Choosing a method or a plan does not clear the gates of the eventual action.
+    scoped = assessment['scope'] in {'method_choice', 'planning'}
+    required_gates = ['technical'] if scoped else sorted(set(plan['roles']['gatekeepers']) | {'technical'})
     verdict = kernel.gate_verdict(proposal['verdict'], proposal['confidence'], required,
                                   proposal['reversible_experiment_available'], critical,
                                   judge['gate_statuses'], judge['controls_implemented'], freshness,
                                   required_gatekeepers=required_gates)
     kernel_verdict = verdict
-    # Incomplete research is admissible for discussing gaps, never a positive trial/launch gate.
-    if kernel_gap and verdict in {'GO', 'TEST'}:
-        verdict = 'DEFER'
+    if verdict in {'GO', 'TEST'}:
+        if kernel_gap:
+            verdict = 'DEFER'
+        elif verdict == 'TEST' and assessment['scope'] != 'trial':
+            verdict = 'DEFER'
+        elif assessment['positive_verdict'] == 'TEST':
+            verdict = 'TEST' if proposal['reversible_experiment_available'] and judge['controls_implemented'] else 'DEFER'
     return {'verdict': verdict, 'kernel_verdict': kernel_verdict, 'required_confidence': required, 'evidence_coverage': coverage,
             'required_gates': required_gates, 'freshness_status': freshness, 'critical_gap': critical,
-            'controls_implemented': judge['controls_implemented'], 'execution_authorized': False}
+            'controls_implemented': judge['controls_implemented'], 'execution_authorized': False,
+            'basis_assessment': assessment}
 
 
-def finalize_council(bundle: dict, context: dict, prior: list[dict]) -> dict:
+def finalize_council(bundle: dict, context: dict, prior: list[dict], *, check_plan: dict | None = None, source_root: Path | None = None) -> dict:
     # Keep the proposal unmodified; the separate deterministic result is authoritative for handoff.
     bundle = json.loads(canonical(bundle))
-    result = council_inputs(bundle, context)
+    result = council_inputs(bundle, context, check_plan=check_plan, source_root=source_root)
     blockers = list(bundle['proposal']['blockers'])
     if result['critical_gap'] and result['critical_gap'] not in blockers:
         blockers.append(result['critical_gap'])
@@ -174,7 +217,7 @@ def finalize_council(bundle: dict, context: dict, prior: list[dict]) -> dict:
             'decision_bundle': bundle, 'constraint_result': result, 'upstream_bindings': bindings(prior)}
 
 
-def validate(payload: dict, producer: str, context: dict, *, expected_report_as_of: str | None = None) -> dict:
+def validate(payload: dict, producer: str, context: dict, *, expected_report_as_of: str | None = None, check_plan: dict | None = None, source_root: Path | None = None) -> dict:
     if producer not in SCHEMAS:
         raise ValueError('unsupported domain producer')
     _schema(SCHEMAS[producer], payload)
@@ -183,7 +226,7 @@ def validate(payload: dict, producer: str, context: dict, *, expected_report_as_
         if expected_report_as_of is not None and payload['evidence_graph']['research_contract']['as_of'] != expected_report_as_of:
             raise ValueError('research_contract.as_of differs from parent report_as_of')
         return {'accepted': True, 'domain_status': audit['research_status'], 'domain_hash': digest(payload)}
-    expected = finalize_council(payload['decision_bundle'], context, [])
+    expected = finalize_council(payload['decision_bundle'], context, [], check_plan=check_plan, source_root=source_root)
     for field in ['verdict', 'blockers', 'controls', 'constraint_result']:
         if payload[field] != expected[field]:
             raise ValueError('Council final constraint result changed: ' + field)
@@ -201,14 +244,31 @@ def check_bindings(envelope: dict, prefix: list[dict], *, research_step_id: str 
             raise ValueError('Council substituted research after checkpoint')
 
 
+def load_input(path: Path) -> Any:
+    """Reuse the owner's bounded duplicate/finite-aware JSON reader in a fresh process."""
+    code = ("import json,sys;sys.path.insert(0,sys.argv[1]);"
+            "from evidence.util import _load_json;"
+            "print(json.dumps(_load_json(sys.argv[2]),allow_nan=False))")
+    result = subprocess.run([sys.executable, '-c', code, str(ROOT / 'skills/evidence-researcher/scripts'), '@' + str(path)],
+                            capture_output=True, text=True, timeout=30, check=False)
+    if result.returncode:
+        raise ValueError('bounded JSON input rejected')
+    return json.loads(result.stdout)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('input_json', type=Path)
     parser.add_argument('--producer', required=True, choices=sorted(SCHEMAS))
     parser.add_argument('--context-json', type=Path, required=True)
+    parser.add_argument('--check-plan-json', type=Path)
+    parser.add_argument('--source-root', type=Path)
     args = parser.parse_args()
     try:
-        result = validate(json.loads(args.input_json.read_text()), args.producer, json.loads(args.context_json.read_text()))
+        if (args.check_plan_json is None) != (args.source_root is None):
+            raise ValueError('fact-check plan and controlled source root must be supplied together')
+        result = validate(load_input(args.input_json), args.producer, load_input(args.context_json),
+                          check_plan=load_input(args.check_plan_json) if args.check_plan_json else None, source_root=args.source_root)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0
     except (ValueError, TypeError, KeyError, OSError, subprocess.SubprocessError) as exc:

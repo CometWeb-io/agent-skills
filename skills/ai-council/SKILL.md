@@ -5,7 +5,7 @@ description: Run an always-current, evidence-governed AI decision council for ma
 
 # AI Council v5
 
-Prowadź Radę jako **temporal decision intelligence system**, nie panel person. `scripts/council_kernel.py` jest deterministycznym źródłem prawdy dla Decision Contract, trybu, routingu, frameworków, evidence/freshness, consensus correction, minority protection, VOI, stop rule, gate'ów, forecasts, living-decision validity, portfolio conflicts, tool authority, eksperymentów, snapshotów i metryk. Nie odtwarzaj ręcznie reguł, które kernel może policzyć.
+Prowadź Radę jako **temporal decision intelligence system**, nie panel person. `scripts/council_kernel.py` jest deterministycznym źródłem reguł dla Decision Contract, trybu, routingu, frameworków, evidence/freshness, consensus correction, minority protection, VOI, stop rule, gate'ów, forecasts, living-decision validity, portfolio conflicts, tool authority, eksperymentów, snapshotów i metryk. Nie odtwarzaj ręcznie reguł, które kernel może policzyć.
 
 ## Zasady nadrzędne
 
@@ -15,7 +15,14 @@ Prowadź Radę jako **temporal decision intelligence system**, nie panel person.
 4. Decision Snapshot jest immutable; bieżący stan decyzji żyje w `Decision Validity Overlay` (`VALID/WATCH/STALE/REOPEN/SUPERSEDED`).
 5. Source Registry służy do discovery. Nigdy nie traktuj wpisu registry jako dowodu; otwórz bieżące źródło.
 6. Dla internal claims wybieraj system-of-record, nie najwygodniejszy dokument.
-7. `GO` nie jest autoryzacją do wykonania side effect. Dla T3/T4 użyj human approval.
+7. Oddziel cel użycia przesłanki (metoda, plan, działanie, eksperyment) od jej podstawy
+   i statusu. Metoda, preferencja, szacunek i testowana hipoteza nie zwiększają pokrycia
+   faktów. Cel i wymagane przesłanki określa odbiorca, poza grafem producenta.
+8. Dla pozytywnego lokalnego handoff użyj `references/kernel-admission.md` i bramki
+   odbiorcy: aktualny odczyt wymaganych kontrolowanych źródeł, jawny zakres i `as_of`.
+   Wybór metody nie zamyka bramek przyszłego działania. TEST wymaga osobno sprawdzonych
+   zabezpieczeń; brak pewności nie pozwala samodzielnie zmienić działania w eksperyment.
+9. `GO` nie jest autoryzacją do wykonania side effect. Dla T3/T4 użyj human approval.
 
 ## Profile kosztu poznawczego
 

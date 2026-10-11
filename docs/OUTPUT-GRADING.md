@@ -267,3 +267,10 @@ junk payloads fed to every sidecar validator.
 4. If the contract is ambiguous enough that two honest outputs would grade
    differently, fix the contract text minimally in the skill package, with the
    version bump that change requires.
+
+The Evidence ledger hook also rejects an explicitly nonfact/unassessed Basis
+column marked safe for factual downstream use. Legacy reports without the column
+retain structural compatibility and provide no observed eligibility. The
+Evidence wire validator checks basis/status consistency without upgrading any
+record. Neither a grader pass nor transported READY metadata runs a fact check;
+policy-aware receivers must preserve scope and perform fresh applicable checks.

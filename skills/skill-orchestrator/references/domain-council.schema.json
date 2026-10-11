@@ -403,6 +403,99 @@
             "TEST",
             "DEFER"
           ]
+        },
+        "basis_assessment": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "policy_version": {
+              "const": "decision-basis/v1"
+            },
+            "scope": {
+              "enum": [
+                "unassessed",
+                "method_choice",
+                "planning",
+                "action",
+                "trial"
+              ]
+            },
+            "eligible": {
+              "type": "boolean"
+            },
+            "positive_verdict": {
+              "enum": [
+                "DEFER",
+                "GO",
+                "TEST"
+              ]
+            },
+            "eligible_premise_ids": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "required_fact_ids": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "observed_fact_ids": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "missing_premise_ids": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "blockers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "caveats": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "execution_authorized": {
+              "const": false
+            },
+            "limit": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "policy_version",
+            "scope",
+            "eligible",
+            "positive_verdict",
+            "eligible_premise_ids",
+            "required_fact_ids",
+            "observed_fact_ids",
+            "missing_premise_ids",
+            "blockers",
+            "caveats",
+            "execution_authorized",
+            "limit"
+          ]
         }
       },
       "required": [
@@ -414,7 +507,8 @@
         "critical_gap",
         "controls_implemented",
         "execution_authorized",
-        "kernel_verdict"
+        "kernel_verdict",
+        "basis_assessment"
       ]
     },
     "upstream_bindings": {

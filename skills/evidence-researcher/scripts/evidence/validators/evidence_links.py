@@ -8,6 +8,7 @@ from ..constants import (
     DIRECTIONS,
     FALSIFIER_PURPOSES,
     FIT_LEVELS,
+    KNOWLEDGE_BASES,
     MEASUREMENT_LEVELS,
     SEARCH_LANES,
     SEARCH_PURPOSES,
@@ -50,6 +51,8 @@ def validate(ledger: Dict[str, Any], state: LedgerValidationState) -> None:
             errors.append(f"{eid}.scope_fit is invalid")
         if not _member(edge.get("measurement_quality"), MEASUREMENT_LEVELS):
             errors.append(f"{eid}.measurement_quality is invalid")
+        if "basis" in edge and not _member(edge["basis"], KNOWLEDGE_BASES):
+            errors.append(f"{eid}.basis is invalid")
         if edge.get("direction") == "CONTEXT" and edge.get("admission") == "ACCEPTED":
             errors.append(f"{eid} is CONTEXT but marked ACCEPTED; use CONTEXT_ONLY")
         if edge.get("admission") == "CONTEXT_ONLY" and edge.get("direction") != "CONTEXT":

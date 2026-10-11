@@ -205,12 +205,15 @@ def evidence_body(envelope: dict[str, Any]) -> str:
             f"{markdown_inline(claim['epistemic_kind'])} / {markdown_inline(claim['materiality'])}:"
         )
         claims.extend(markdown_quote(claim["text"]))
+        claims.append("  Basis: " + markdown_inline(claim.get("basis", "unassessed")) + "; not fresh verification.")
+        if "scope" in claim:
+            claims.extend(markdown_quote("Scope: " + json.dumps(claim["scope"], ensure_ascii=False, sort_keys=True, allow_nan=False)))
     claims = claims or ["- None recorded."]
     sources = [f"- {describe_source(source)}" for source in payload["sources"]] or ["- None recorded."]
     edges = [
         (
             f"- {markdown_inline(edge['claim_id'])} ← {markdown_inline(edge['source_id'])} "
-            f"({markdown_inline(edge['direction'])}, {markdown_inline(edge['admission'])})"
+            f"({markdown_inline(edge['direction'])}, {markdown_inline(edge['admission'])}; basis: {markdown_inline(edge.get('basis', 'unassessed'))})"
         )
         for edge in payload["evidence_edges"]
     ] or ["- None recorded."]
@@ -256,6 +259,7 @@ def evidence_body(envelope: dict[str, Any]) -> str:
             "",
             "This draft preserves the producer's claims and provenance. A human must review it and map",
             "source material to populated WhyKit evidence-register entries before approval.",
+            "Basis and scope remain producer records. This draft does not rerun local observations or authorize an action.",
         ]
     )
 

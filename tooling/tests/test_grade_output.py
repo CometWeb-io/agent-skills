@@ -595,3 +595,14 @@ def test_explain_names_built_in_rules_and_absences() -> None:
     case = next(c for c in go.load_cases("competitive-intelligence") if c["id"] == "broken-no-as-of")
     proc = run_cli("competitive-intelligence", "-", "--explain", stdin=go.materialize("competitive-intelligence", case))
     assert "excerpt: none, the rule fired on something absent from the output" in proc.stdout
+
+
+@pytest.mark.parametrize('basis', ['user_supplied', 'assumption', 'framework_method'])
+def test_explicit_nonfact_ledger_basis_cannot_be_handed_off_as_safe(basis):
+    text = good_text('evidence-researcher')
+    text = text.replace('| Claim | Kind |', '| Claim | Kind | Basis |')
+    text = text.replace('| --- | --- |', '| --- | --- | --- |', 1)
+    text = text.replace('| FACT |', '| FACT | ' + basis + ' |')
+    text = text.replace('| INFERENCE |', '| INFERENCE | verified_fact |')
+    issues = go.grade('evidence-researcher', text)
+    assert 'CONTRACT_VIOLATION:inference-as-fact' in {issue.key() for issue in issues}

@@ -371,3 +371,35 @@ def test_nonready_preserves_unknown_material_inference(path, readiness, monkeypa
     payload = _evidence(readiness=readiness, evidence_edges=[])
     payload["material_claims"][0].update(epistemic_kind="INFERENCE", status="UNKNOWN")
     _check_evidence_path(payload, path, monkeypatch)
+
+
+@pytest.mark.parametrize('basis', ['user_supplied', 'assumption', 'framework_method'])
+def test_nonfact_basis_cannot_use_verified_wire_status(basis):
+    data = _evidence()
+    data['material_claims'][0]['basis'] = basis
+    with pytest.raises(ValueError, match='nonfact basis'):
+        evidence.validate_semantics(data)
+
+
+@pytest.mark.parametrize('basis', ['verified_fact', 'user_supplied', 'assumption', 'framework_method'])
+def test_wire_basis_and_scope_survive_without_fact_upgrade(basis):
+    data = _evidence()
+    data['material_claims'][0].update(basis=basis, scope={'candidate': 'transport-unit'})
+    data['evidence_edges'][0]['basis'] = basis
+    if basis != 'verified_fact':
+        data['material_claims'][0]['status'] = 'PARTIAL'
+        data['readiness'] = 'NOT_READY'
+    before = json.dumps(data, sort_keys=True)
+    evidence.validate(data)
+    assert json.dumps(data, sort_keys=True) == before
+    assert set(json.loads(evidence.SCHEMA_PATH.read_text())['properties']['material_claims']['items']['properties']['basis']['enum']) == evidence.KNOWLEDGE_BASES
+
+
+@pytest.mark.parametrize('change', ['unknown-basis', 'empty-scope', 'infinite-scope', 'unknown-edge-basis'])
+def test_wire_basis_guards_work_without_schema_dependency(change):
+    data = _evidence()
+    if change == 'unknown-basis': data['material_claims'][0]['basis'] = 'trust_me'
+    elif change == 'empty-scope': data['material_claims'][0]['scope'] = {}
+    elif change == 'infinite-scope': data['material_claims'][0]['scope'] = {'x': float('inf')}
+    else: data['evidence_edges'][0]['basis'] = ['verified_fact']
+    with pytest.raises(ValueError): evidence.validate_semantics(data)

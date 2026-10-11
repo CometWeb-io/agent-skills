@@ -6,6 +6,12 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+- Distinguish knowledge basis and consumer purpose; rerun controlled local fact
+  checks at the research/Council receiver, compiler and completion gate. Keep
+  nonfact premises, inference caveats and explicit trial safeguards intact through
+  typed handoffs, structural grading and unreviewed WhyKit drafts. Legacy scope
+  remains unassessed; no current-world, model-quality or execution proof is implied.
+
 - Refuse READY evidence envelopes with unverified material facts or unassessed
   material inferences; retain nonready reports and unknown supporting claims
   without claiming independent fact checks or inference dependency assessment.

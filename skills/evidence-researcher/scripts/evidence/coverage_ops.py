@@ -155,7 +155,7 @@ def coverage(ledger: Dict[str, Any]) -> Dict[str, Any]:
         deps_ready = False
         all_rows[cid] = {"ready": ready, "dependency_ids": dep_ids, "local_gate": local_gate,
                          "inference": claim.get("epistemic_kind") == "INFERENCE",
-                         "status": claim.get("status")}
+                         "status": claim.get("status"), "falsifier_search_completed": bool(falsifiers), "freshness_admissible": freshness_ok}
         if not _member(claim.get("materiality"), {"critical", "material"}):
             continue
 
@@ -244,6 +244,9 @@ def coverage(ledger: Dict[str, Any]) -> Dict[str, Any]:
         "critical_gaps": critical_gaps,
         "material_gaps": material_gaps,
         "claims": claim_rows,
+        "all_claims": [{"claim_id": cid, "metadata_ready": cid in ready_ids,
+                        "falsifier_search_completed": row["falsifier_search_completed"], "freshness_admissible": row["freshness_admissible"]}
+                       for cid, row in all_rows.items()],
         "schema_version": SCHEMA_VERSION,
         "kernel_version": VERSION,
         "policy_version": POLICY_VERSION,

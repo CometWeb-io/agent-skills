@@ -226,6 +226,8 @@ WATCH_OPERATORS = {"changed", "gt", "gte", "lt", "lte", "pct_change_gt"}
 # A forecast row scores only a resolved binary outcome; the string aliases
 # forecast_score_report normalises ("yes", "occurred", ...) map onto these two.
 FORECAST_OUTCOMES = (0, 1)
+EVIDENCE_PURPOSES = {"method_choice", "planning", "action", "trial"}
+PREMISE_ROLES = {"controlled_fact", "document_fact", "safeguard", "method", "intent", "estimate", "hypothesis", "inference"}
 
 _MEMORY_ALLOWLIST_V4 = {
     "decision_key", "domain", "decision_kind", "decision_type", "risk", "risk_level", "reversibility",

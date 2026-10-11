@@ -7,6 +7,7 @@ import argparse
 import importlib.util
 from pathlib import Path
 import json
+import subprocess
 import sys
 from dataclasses import dataclass
 from typing import Any
@@ -232,8 +233,10 @@ def build_multiagent_plan(goal: str, workspace_root: str | None = None, *, with_
     return result
 
 
-def build_next_task(run_dir: Path, plan: dict, prior_envelopes: list, workspace_root: str | None = None, *, previous_error: str | None = None) -> dict:
+def build_next_task(run_dir: Path, plan: dict, prior_envelopes: list, workspace_root: str | None = None, *, previous_error: str | None = None, check_plan: dict | None = None, source_root: Path | None = None) -> dict:
     """Validate exact upstream prefix, then claim one isolated attempt. No domain execution."""
+    if (check_plan is None) != (source_root is None):
+        raise ValueError('fact-check plan and controlled source root must be supplied together')
     ledger = _canonical_module("workflow_ledger")
     gate = _canonical_module("prd_handoff")
     state = ledger.replay(run_dir)
@@ -263,7 +266,7 @@ def build_next_task(run_dir: Path, plan: dict, prior_envelopes: list, workspace_
             result=_canonical_module("specialist_profiles").validate_envelope(envelope,definition,ROOT)
         else:
             result = gate.validate(envelope,definition["gate_lock"],expected_type=definition["envelope_out"],
-                                   expected_producer=definition["skill"],prd_required=definition["handoff_gate"]==gate.GATE, domain_required=definition["handoff_gate"]==gate.DOMAIN_GATE, domain_context=definition.get("domain_context"))
+                                   expected_producer=definition["skill"],prd_required=definition["handoff_gate"]==gate.GATE, domain_required=definition["handoff_gate"]==gate.DOMAIN_GATE, domain_context=definition.get("domain_context"), expected_report_as_of=definition.get("report_as_of"), check_plan=check_plan, source_root=source_root)
         checkpoint = state["steps"][definition["step_id"]]
         if not result["accepted"] or result["envelope_id"] != checkpoint["envelope_id"] or result["envelope_hash"] != checkpoint["envelope_hash"]:
             raise ValueError("prior envelope invalid or changed since checkpoint")
@@ -295,25 +298,31 @@ def main() -> None:
     parser.add_argument("--run-dir", type=Path)
     parser.add_argument("--plan-json", type=Path)
     parser.add_argument("--prior-envelopes-json", type=Path)
+    parser.add_argument("--check-plan-json", type=Path)
+    parser.add_argument("--source-root", type=Path)
     args = parser.parse_args()
 
     try:
+        if (args.check_plan_json is None) != (args.source_root is None):
+            parser.error('fact-check plan and controlled source root must be supplied together')
         if args.run_dir:
             if args.report_as_of: parser.error("resume uses the parent timestamp in the pinned plan")
             if args.typed_native_reports: parser.error("resume uses the typed contract in the pinned plan")
             if args.specialist_profile: parser.error("resume uses the profile in the pinned plan, not an override")
             if not args.plan_json: parser.error("--run-dir requires --plan-json")
-            payload = build_next_task(args.run_dir,json.loads(args.plan_json.read_text()),
-                                      json.loads(args.prior_envelopes_json.read_text()) if args.prior_envelopes_json else [],
-                                      args.workspace_root or None, previous_error=args.previous_error)
+            reader = _canonical_module("domain_handoff").load_input
+            payload = build_next_task(args.run_dir,reader(args.plan_json),
+                                      reader(args.prior_envelopes_json) if args.prior_envelopes_json else [],
+                                      args.workspace_root or None, previous_error=args.previous_error,
+                                      check_plan=reader(args.check_plan_json) if args.check_plan_json else None, source_root=args.source_root)
         else:
             if not args.goal: parser.error("goal is required")
-            if args.plan_json or args.prior_envelopes_json: parser.error("execution inputs require --run-dir")
+            if args.plan_json or args.prior_envelopes_json or args.check_plan_json or args.source_root: parser.error("execution inputs require --run-dir")
             payload = build_multiagent_plan(args.goal,args.workspace_root or None,with_prd_handoff=args.with_prd_handoff,
                                            with_capability_packs=args.with_capability_packs, specialist_profile=args.specialist_profile, with_domain_gates=args.with_domain_gates,
                                            domain_context=json.loads(args.domain_context_json.read_text()) if args.domain_context_json else None,
                                            trusted_context=json.loads(args.trusted_context_json.read_text()) if args.trusted_context_json else None, instruction_arm=args.instruction_arm, typed_native_reports=args.typed_native_reports, report_as_of=args.report_as_of)
-    except (OSError,ValueError) as exc:
+    except (OSError,ValueError,subprocess.SubprocessError) as exc:
         print("FAIL: "+str(exc),file=sys.stderr)
         raise SystemExit(1) from exc
 
