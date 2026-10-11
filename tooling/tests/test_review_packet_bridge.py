@@ -113,16 +113,12 @@ def test_duplicate_execution_identity_rejected_globally(packet_source,field):
 ])
 def test_bridge_refuses_mixed_instruction_priority_and_activation(packet_source, field, value):
     suite, requests, records, _ = packet_source
-    records[0]["response"].update({
-        "execution_surface": "responses_api_text_only",
-        "instruction_placement": "user_message_when_present",
-        "native_skill_activation": False,
-    })
-    records[1]["response"].update({
-        "execution_surface": "responses_api_text_only",
-        "instruction_placement": "user_message_when_present",
-        "native_skill_activation": False,
-    })
+    for record in records:
+        record["response"].update({
+            "execution_surface": "responses_api_text_only",
+            "instruction_placement": "user_message_when_present",
+            "native_skill_activation": False,
+        })
     records[0]["response"][field] = value
     with pytest.raises(ValueError, match="mixed execution surfaces"):
         bridge.build_packets(suite, requests, records)
