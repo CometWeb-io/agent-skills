@@ -121,9 +121,14 @@ do not establish equivalent effort across models or providers.
 
 **Isolation.** Each run gets a new temporary directory holding its own HOME, its
 own host config directory (`CLAUDE_CONFIG_DIR` or `CODEX_HOME`) and an empty
-working directory, removed when the run ends. Your settings, other plugins, MCP
-servers, memory and project instruction files are not visible to the host. The
-plugin is staged once per run directory from this checkout, the same payload
+working directory, removed when the run ends. The runner does not copy your
+existing settings, other plugins, MCP configuration, memory or project
+instruction files into those directories. This does not enforce filesystem read
+isolation: a same-user process can still access files by absolute path, parent
+traversal or a symlink unless separate host permissions prevent it. The runner
+has not verified those host permissions; blind keys and other-arm outputs must
+not rely on HOME/config separation for protection. The plugin is staged once
+per run directory from this checkout, the same payload
 `tooling/host_smoke.py` installs, and its digest goes into `manifest.json`. The
 tool set is read-only. This is separation, not an operating-system sandbox.
 
@@ -278,3 +283,30 @@ mean the answer is correct, that the evidence it cites exists, or that the skill
 helps users. The task set is drawn from the repository's own cases, which were
 written alongside the skills; a high score on them is weaker evidence than a
 score on prompts collected from real use.
+
+## Native local cache migration (no model calls)
+
+`host_smoke.py` can test old→new→rollback in the same temporary HOME/config/cache
+for Codex and Claude Code. Supply an archived source tree from a pinned prior
+commit; the current checkout is the new source. Both versions must differ.
+
+```bash
+uv run python tooling/host_smoke.py --migration-from /path/to/prior-source \
+  --require claude,codex --json runs/native-migration.json
+```
+
+Use a fresh output path. The JSON retains source payload hashes, raw commands
+(including failures/timeouts), installed version readbacks and cache manifests.
+Actual cache bytes are retained beside it in `native-migration-cache/`, before
+removal. A failure stops that host's sequence; diagnostic retries cannot replace
+the original result. Every migration command has a 60-second timeout. The runner
+removes its owned temporary profile at the end; an empty final plugin list proves
+registration removal, not physical cache purge by the native uninstall command.
+
+The Claude test uses the existing local `host-smoke` marketplace wrapper, not
+the shipped GitHub URL. These commands do not execute models, copy credentials
+or install into your normal profile. They do not prove OS isolation, online
+distribution, automatic skill activation or task quality. A missing required
+CLI fails rather than passing. Cursor is unsupported in this migration mode.
+Deterministic migration fault tests run in portable CI; actual native migration
+requires the two installed CLIs and the explicitly supplied prior source.
