@@ -9,7 +9,7 @@
 | `artifact-acceptance` | 1.7.5 | domain | active | ACTIVE | 626 | False |
 | `benchmark-curator` | 1.7.4 | foundation | active | ACTIVE | 534 | False |
 | `brief-architect` | 1.8.0 | domain | active | ACTIVE | 577 | False |
-| `cometweb-context` | 1.5.2 | foundation | active | ACTIVE | 826 | False |
+| `cometweb-context` | 1.6.0 | foundation | active | ACTIVE | 826 | False |
 | `competitive-intelligence` | 1.1.3 | domain | active | ACTIVE | 978 | False |
 | `competitor-profiling` | 0.2.0 | domain | active | ACTIVE | 454 | False |
 | `content-reviewer` | 1.7.5 | domain | active | ACTIVE | 553 | False |

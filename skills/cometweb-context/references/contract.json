@@ -18,7 +18,8 @@
         "SENSITIVITY": "sensitivity",
         "CONFIDENCE": "confidence",
         "CONFLICT_STATUS": "conflicts.status",
-        "FP_STATUS": "first_principles.status"
+        "FP_STATUS": "first_principles.status",
+        "CONTEXT_SCOPES": "context_scope"
       }
     },
     "scripts/context_plan.py": {
@@ -165,7 +166,15 @@
     "handoff": {},
     "recommended_next_skill": {},
     "dependencies": {},
-    "constraints": {}
+    "constraints": {},
+    "context_scope": {
+      "enum": [
+        "public_example",
+        "workspace_private",
+        "project_context"
+      ]
+    },
+    "project_ref": {}
   },
   "outputs": {
     "source_groups": {},
@@ -208,7 +217,13 @@
     "dirty_count": {},
     "commits_7d": {},
     "commits_30d": {},
-    "error": {}
+    "error": {},
+    "blocked_source_group_count": {},
+    "execution_status": {
+      "enum": [
+        "NOT_RUN"
+      ]
+    }
   },
   "internal": {
     "primary": "profile pick result the planner builds from its own candidates",

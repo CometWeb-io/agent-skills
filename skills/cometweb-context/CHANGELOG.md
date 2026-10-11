@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.0] - 2026-10-11
+
+- Add explicit public-example, private-workspace and single-project context scopes. Public helper mode skips workspace overlays and repo inspection; project records require matching declared project references.
+- Reject source-to-fact and outer-wrapper sensitivity downgrades. Public CW-AIP wrappers require explicit public-example context; omitted scope remains private for legacy payloads.
+- These checks validate supplied labels and references, not free-text privacy, source truth, native tenant permissions or publication authorization.
+
 ## [1.5.2] - 2026-10-03
 
 - `references/contract.json` gives the reason for every `internal` key (why the scripts read it although it is not a payload field), in the reasoned map form `tooling/skill_contracts.py` now checks.

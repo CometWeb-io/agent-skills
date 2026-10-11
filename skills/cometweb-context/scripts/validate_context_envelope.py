@@ -13,11 +13,13 @@ REQUIRED = [
     "sources", "facts", "deltas", "conflicts", "gaps", "blocked_public_claims", "handoff",
 ]
 MODES = {"targeted", "standard", "delta", "full"}
+CONTEXT_SCOPES = {"public_example", "workspace_private", "project_context"}
 PROFILES = {"product", "portfolio", "gtm", "outreach", "brand", "meeting", "weekly", "claim-verification", "custom"}
 FRESHNESS = {"fresh", "aging", "stale", "unknown"}
 AUTHORITIES = {"system_of_record", "canonical", "primary", "secondary", "fallback"}
 ACCESS = {"live", "local", "connector", "cached", "fallback"}
 SENSITIVITY = {"public", "internal", "confidential", "restricted"}
+SENSITIVITY_LEVELS = {"public": 0, "internal": 1, "confidential": 2, "restricted": 3}
 SOURCE_TYPES = {"github", "local-repo", "vault", "notion", "crm", "gmail", "calendar", "contacts", "insight", "website", "social", "file", "other"}
 BASELINE_STATUS = {"available", "unavailable", "not_requested"}
 FP_STATUS = {"loaded", "not_required", "unavailable"}
@@ -48,6 +50,12 @@ def validate(data: dict) -> None:
         fail(f"missing keys: {', '.join(missing)}")
     if data["schema"] != "cometweb.context/v2":
         fail("schema must be cometweb.context/v2")
+    context_scope = data.get("context_scope", "workspace_private")
+    if not isinstance(context_scope, str) or context_scope not in CONTEXT_SCOPES:
+        fail("invalid context_scope")
+    project_ref = data.get("project_ref")
+    if context_scope == "project_context" and (not isinstance(project_ref, str) or not project_ref.strip()):
+        fail("project_context requires project_ref")
     if not isinstance(data["mode"], str) or data["mode"] not in MODES:
         fail(f"invalid mode: {data['mode']}")
     if not isinstance(data["profile"], str) or data["profile"] not in PROFILES:
@@ -75,6 +83,7 @@ def validate(data: dict) -> None:
     if not isinstance(data["sources"], list):
         fail("sources must be a list")
     source_ids: set[str] = set()
+    source_sensitivity: dict[str, int] = {}
     for index, source in enumerate(data["sources"]):
         if not isinstance(source, dict):
             fail(f"sources[{index}] must be an object")
@@ -100,6 +109,11 @@ def validate(data: dict) -> None:
             fail(f"sources[{index}] invalid freshness")
         if not isinstance(source["sensitivity"], str) or source["sensitivity"] not in SENSITIVITY:
             fail(f"sources[{index}] invalid sensitivity")
+        source_sensitivity[sid] = SENSITIVITY_LEVELS[source["sensitivity"]]
+        if context_scope == "public_example" and source["sensitivity"] != "public":
+            fail(f"sources[{index}] public_example requires public sensitivity")
+        if context_scope == "project_context" and source.get("project_ref") != project_ref:
+            fail(f"sources[{index}] project_ref must match the context project_ref")
         require_iso8601(source["retrieved_at"], f"sources[{index}].retrieved_at")
         retrieved = dt.datetime.fromisoformat(source["retrieved_at"].replace("Z", "+00:00"))
         generated = dt.datetime.fromisoformat(data["generated_at"].replace("Z", "+00:00"))
@@ -146,6 +160,10 @@ def validate(data: dict) -> None:
             fail(f"facts[{index}] invalid confidence")
         if not isinstance(fact["sensitivity"], str) or fact["sensitivity"] not in SENSITIVITY:
             fail(f"facts[{index}] invalid sensitivity")
+        if SENSITIVITY_LEVELS[fact["sensitivity"]] < max(source_sensitivity[sid] for sid in refs):
+            fail(f"facts[{index}] cannot downgrade source sensitivity")
+        if context_scope == "public_example" and fact["sensitivity"] != "public":
+            fail(f"facts[{index}] public_example requires public sensitivity")
 
     for key in ["deltas", "conflicts", "gaps", "blocked_public_claims"]:
         if not isinstance(data[key], list):

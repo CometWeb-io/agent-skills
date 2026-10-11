@@ -61,7 +61,8 @@
       "recommended_next_skill": null,
       "dependencies": [],
       "constraints": []
-    }
+    },
+    "context_scope": "public_example"
   },
-  "payload_hash": "sha256:e75e2c111543b182266307dfe18ab73295d79d65efd3119a1d5a0e7bad3bd780"
+  "payload_hash": "sha256:ccff09f98426968e357a47622fab80a782a044e336e9584f023ce4e13ad24de2"
 }

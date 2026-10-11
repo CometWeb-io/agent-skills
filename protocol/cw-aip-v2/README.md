@@ -30,6 +30,10 @@ not express, enforced by `tooling/validate_envelope.py`:
   for them are published for review (see [Draft payload schemas](#draft-payload-schemas)).
 - `payload_hash` is the canonical hash defined below, or the draft marker
   `pending`. A finalized handoff (`--final`) MUST NOT carry `pending`.
+- A ContextEnvelope wrapper cannot lower the sensitivity of its sources or
+  facts. A public wrapper requires explicit `context_scope: public_example`;
+  omission in legacy payloads means `workspace_private`. Reclassifying a wrapper
+  does not sanitize its payload or authorize publication.
 
 ## Payload hash
 

@@ -8,6 +8,13 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Security and correctness
 
+- Separate public-example, private-workspace and single-project context scopes.
+  Skip local overlays and repository inspection for public examples, bind project
+  source references, and reject declared source/fact/wrapper sensitivity downgrades.
+  Public context wrappers now require explicit public-example scope; legacy
+  payloads with omitted scope remain private. Labels do not establish semantic
+  privacy, tenant authorization or permission to publish.
+
 - Mark unassessed host outputs explicitly instead of passing them by default;
   resolve the multiagent alias to its canonical output rubric and retain canary
   failures when no rubric exists. Check joined tokens consistently without

@@ -241,6 +241,36 @@
       "id": "no-raw-private",
       "text": "Streszczaj prywatne źródła. Nie wklejaj pełnych maili, prywatnych stron Notion ani surowych danych CRM.",
       "where": "SKILL.md"
+    },
+    {
+      "id": "context-scope-explicit",
+      "text": "Ustaw `context_scope` w nowych envelope'ach.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "no-fact-downgrade",
+      "text": "Klasyfikacja faktu nie może być mniej restrykcyjna niż klasyfikacja któregokolwiek jego źródła.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "public-wrapper-scope",
+      "text": "Publiczna koperta CW-AIP wymaga `public_example`; sama zmiana etykiety koperty nie zmienia klasyfikacji danych.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "public-no-private-governance",
+      "text": "W `public_example` nie pobieraj prywatnej doktryny; brak wymaganego governance oznacz jako gap.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "public-no-local-retrieval",
+      "text": "W `public_example` nie uruchamiaj lokalnego retrievalu; helper zwraca `NOT_RUN`.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "project-source-binding",
+      "text": "`project_context` — jeden jawny `project_ref`; źródła muszą deklarować tę samą referencję. Snapshot wymaga dokładnie jednego `--repo`.",
+      "where": "references/context-envelope.md"
     }
   ]
 }

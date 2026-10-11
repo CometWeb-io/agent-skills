@@ -14,6 +14,7 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `ai-humanize` | 11,999 B | 2,999 | 64,674 B | 16,168 | 13 | 0.84 |
 | `design-partner-finder` | 11,999 B | 2,999 | 47,718 B | 11,929 | 13 | 0.80 |
 | `seo-geo-aeo-maxxing` | 11,997 B | 2,999 | 106,515 B | 26,628 | 22 | 0.90 |
+| `cometweb-context` | 11,991 B | 2,997 | 33,157 B | 8,289 | 10 | 0.73 |
 | `science-roaster` | 11,967 B | 2,991 | 124,622 B | 31,155 | 38 | 0.91 |
 | `repo-to-roadmap` | 11,946 B | 2,986 | 70,194 B | 17,548 | 13 | 0.85 |
 | `portfolio-operator` | 11,910 B | 2,977 | 24,840 B | 6,210 | 7 | 0.68 |
@@ -22,7 +23,6 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `customer-ops` | 11,843 B | 2,960 | 136,245 B | 34,061 | 19 | 0.92 |
 | `ebook-publisher` | 11,833 B | 2,958 | 45,177 B | 11,294 | 8 | 0.79 |
 | `content-roaster` | 11,485 B | 2,871 | 116,270 B | 29,067 | 37 | 0.91 |
-| `cometweb-context` | 11,462 B | 2,865 | 29,512 B | 7,378 | 10 | 0.72 |
 | `release-readiness` | 11,298 B | 2,824 | 77,630 B | 19,407 | 12 | 0.87 |
 | `longform-publisher` | 10,755 B | 2,688 | 19,054 B | 4,763 | 10 | 0.64 |
 | `product-teardown` | 10,335 B | 2,583 | 67,997 B | 16,999 | 12 | 0.87 |
@@ -46,4 +46,4 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `research-program-operator` | 2,903 B | 725 | 4,451 B | 1,112 | 2 | 0.61 |
 | `skill-orchestrator-multiagent` | 2,063 B | 515 | 49,564 B | 12,391 | 13 | 0.96 |
 
-**34 skills.** Discovery metadata totals roughly 6,025 tokens. Activating all skills would load ~72,437 instruction tokens; the median activation is ~2,403, and the largest ~2,999.
+**34 skills.** Discovery metadata totals roughly 6,025 tokens. Activating all skills would load ~72,569 instruction tokens; the median activation is ~2,403, and the largest ~2,999.
