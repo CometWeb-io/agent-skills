@@ -87,6 +87,8 @@ FORBIDDEN_SOURCES = ("evals/routing/holdout.json", "evals/routing/holdout.lock.j
 SOURCE_TAGS = {"evals/routing/suite.json": "r", "evals/routing/adversarial-suite.json": "adv",
                "evals/model/suite.json": "m", "evals/model/continuation-cases.json": "mc"}
 CONDITIONS = ("plugin", "baseline")
+REASONING_EFFORTS = {"claude": {"low", "medium", "high", "xhigh", "max"},
+                     "codex": {"none", "minimal", "low", "medium", "high", "xhigh", "max"}}
 SKILL_PATH = re.compile(r"skills/([a-z0-9][a-z0-9-]*)/SKILL\.md")
 Z95 = 1.959963984540054
 
@@ -277,7 +279,8 @@ def registry(root: Path = ROOT) -> list[dict[str, Any]]:
 
 
 def graded_skills(root: Path = ROOT) -> set[str]:
-    return {p.parent.name for p in (root / "evals" / "output").glob("*/rubric.json")}
+    graded = {p.parent.name for p in (root / "evals" / "output").glob("*/rubric.json")}
+    return graded | {s["id"] for s in registry(root) if s.get("alias_of") in graded}
 
 
 def slug(text: str) -> str:
@@ -462,6 +465,8 @@ def validate_plan(plan: Any, root: Path = ROOT) -> None:
             if not isinstance(canary, dict) or any(not isinstance(canary.get(k), str) or not canary[k]
                                                   for k in ("instruction", "token")):
                 raise ValueError(f"task {task_id}: invalid canary")
+            if canary["token"] in canary["instruction"]:
+                raise ValueError(f"task {task_id}: invalid canary: joined token already appears in instruction")
     if plan["schema"] == PLAN_SCHEMA_V2:
         hashes = plan.get("frozen_hashes")
         names = ("candidate_sha256", "payload_sha256", "benchmark_sha256", "rubric_sha256", "host_config_sha256")
@@ -519,9 +524,7 @@ class RunOptions:
 def validate_options(opts: RunOptions) -> None:
     if opts.host not in HOSTS:
         raise ValueError(f"unknown host {opts.host!r}; known: {', '.join(HOSTS)}")
-    efforts = {"claude": {"low", "medium", "high", "xhigh", "max"},
-               "codex": {"none", "minimal", "low", "medium", "high", "xhigh", "max"}}
-    if opts.reasoning_effort is not None and opts.reasoning_effort not in efforts.get(opts.host, set()):
+    if opts.reasoning_effort is not None and opts.reasoning_effort not in REASONING_EFFORTS.get(opts.host, set()):
         raise ValueError(f"unsupported reasoning effort for {opts.host}; no cross-host mapping is applied")
     if not opts.conditions or any(c not in CONDITIONS for c in opts.conditions):
         raise ValueError("condition must be plugin, baseline or both")
@@ -1141,18 +1144,28 @@ def routing_check(task: dict[str, Any], activated: list[str]) -> dict[str, Any]:
 
 
 def output_check(task: dict[str, Any], text: str, graded: set[str], root: Path = ROOT) -> dict[str, Any]:
-    missing = [lit for lit in task.get("preserve_literals", []) if lit not in text]
-    result: dict[str, Any] = {"literals_missing": missing, "errors": [], "rubric": None}
+    literals = [lit for lit in task.get("preserve_literals", []) if lit]
+    missing = [lit for lit in literals if lit not in text]
+    skill = next((s.get("alias_of") or s["id"] for s in registry(root) if s["id"] == task["skill"]), task["skill"])
+    result: dict[str, Any] = {"literals_missing": missing, "errors": [], "rubric": None,
+                              "rubric_skill": skill if skill in graded else None,
+                              "assessment_scope": "output_contract" if skill in graded else "pinned_literals_only"}
+    if task.get("canary"):
+        from grade_output import hard_canary_issues
+
+        issues = hard_canary_issues([("document", text)], [task["canary"]["token"]])
+        if issues:
+            result.update(status="fail", errors=[f"{issue.code}:{issue.rule}" for issue in issues],
+                          assessment_scope="canary_violation")
+            return result
+    if skill not in graded and not literals:
+        result.update(status="not_assessed", reason="no_executable_output_check", assessment_scope="none")
+        return result
     rubric_ok = True
-    if task["skill"] in graded:
-        with tempfile.TemporaryDirectory(prefix="cw-grade-") as tmp:
-            argv = [sys.executable, "-B", str(root / "tooling" / "grade_output.py"), task["skill"], "-", "--json"]
-            if task.get("canary"):
-                canary_path = Path(tmp) / "canary.json"
-                write_json(canary_path, task["canary"])
-                argv += ["--canary-file", str(canary_path)]
-            proc = subprocess.run(argv, input=text, capture_output=True, text=True, timeout=120,  # nosec B603
-                                  check=False, cwd=root)
+    if skill in graded:
+        argv = [sys.executable, "-B", str(root / "tooling" / "grade_output.py"), skill, "-", "--json"]
+        proc = subprocess.run(argv, input=text, capture_output=True, text=True, timeout=120,  # nosec B603
+                              check=False, cwd=root)
         try:
             graded_json = json.loads(proc.stdout)
         except ValueError:
@@ -1247,6 +1260,7 @@ def _rate(rows: list[str], run_statuses: list[str] | None = None) -> dict[str, A
     run_statuses = run_statuses or rows
     return {"n": n, "pass": passes, "rate": round(passes / n, 4) if n else None,
             "ci95": [round(ci[0], 4), round(ci[1], 4)] if ci else None,
+            "not_assessed": sum(status == "not_assessed" for status in rows),
             "not_run": sum(1 for status in run_statuses if status == "not_run"),
             "errors": sum(1 for status in run_statuses if status not in {"executed", "not_run"})}
 
@@ -1272,8 +1286,16 @@ def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
     frozen = {json.dumps(frozen_hashes(g), sort_keys=True) for g in grade_sets}
     if len(frozen) > 1:
         warnings.append("grades carry different frozen acceptance hashes")
-    if any(g.get("reasoning_effort_observed") is None for g in grade_sets):
+    efforts = [g.get("reasoning_effort_observed") for g in grade_sets]
+    if any(not isinstance(effort, str) or effort not in REASONING_EFFORTS.get(g["host"], set())
+           for g, effort in zip(grade_sets, efforts, strict=True)):
+        effort_status = "EQUAL_EFFORT_NOT_VERIFIED"
         warnings.append("reasoning effort was not observed; requested settings do not prove effective model effort")
+    elif len(set(efforts)) > 1:
+        effort_status = "REPORTED_EFFORT_DIFFERS"
+        warnings.append("reported reasoning effort differs between runs")
+    else:
+        effort_status = "SAME_REPORTED_EFFORT"
     if len({g.get("run_config_sha256") for g in grade_sets}) > 1:
         warnings.append("run configurations differ; resource and effort comparisons are not controlled")
 
@@ -1325,7 +1347,7 @@ def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
             "run_errors": run_errors, "run_not_run": run_not_run,
             "error_jobs": run_errors, "not_run_jobs": run_not_run,
             "frozen_hashes": [frozen_hashes(g) for g in grade_sets],
-            "warnings": warnings, "results": per, "paired": paired}
+            "warnings": warnings, "effort_comparison_status": effort_status, "results": per, "paired": paired}
 
 
 def _pct(cell: dict[str, Any]) -> str:
@@ -1339,6 +1361,7 @@ def render_markdown(report: dict[str, Any]) -> str:
     lines = ["# Real-host eval scorecard", "",
              f"- Hosts: {', '.join(report['hosts'])}",
              f"- Models reported: {', '.join(report['models']) or 'none reported'}",
+             f"- Effort comparison: {report['effort_comparison_status']} (reported labels do not establish cross-model equivalence)",
              f"- Plan: {', '.join(p[:12] for p in report['plans'])}",
              f"- Runs: {report['runs']} ({report['run_errors']} errors, {report['run_not_run']} not run; "
              "neither is in any rate)", ""]
@@ -1348,10 +1371,10 @@ def render_markdown(report: dict[str, Any]) -> str:
         for check, block in checks.items():
             lines += [f"## {check.title()} - {cond}", "",
                       f"Overall: {_pct(block['overall'])}. Cells are pass/n (rate, Wilson 95% interval).", "",
-                      "| Skill | Pass/n (rate, 95% CI) | Not run | Errors |",
-                      "| --- | --- | --- | --- |"]
+                      "| Skill | Pass/n (rate, 95% CI) | Not assessed | Not run | Errors |",
+                      "| --- | --- | --- | --- | --- |"]
             for skill, cell in block["skills"].items():
-                lines.append(f"| `{skill}` | {_pct(cell)} | {cell['not_run']} | {cell['errors']} |")
+                lines.append(f"| `{skill}` | {_pct(cell)} | {cell['not_assessed']} | {cell['not_run']} | {cell['errors']} |")
             lines.append("")
     paired = report.get("paired")
     if paired:

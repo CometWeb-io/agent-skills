@@ -8,6 +8,13 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Security and correctness
 
+- Mark unassessed host outputs explicitly instead of passing them by default;
+  resolve the multiagent alias to its canonical output rubric and retain canary
+  failures when no rubric exists. Check joined tokens consistently without
+  treating schema-less canary JSON as legacy text lines.
+- Distinguish missing, matching and different reported effort observations in
+  scorecards without claiming cross-model effort equivalence.
+
 - Validate loaded real-host plans and generate run paths independently of task IDs.
   Capture host streams with a live quota, private output permissions and POSIX
   process-group cleanup; unsupported cleanup platforms explicitly return NOT_RUN.

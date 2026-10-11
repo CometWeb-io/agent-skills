@@ -734,3 +734,102 @@ def test_private_output_refuses_fifo_without_blocking(tmp_path):
     with pytest.raises((OSError, ValueError)):
         rhe.write_json(fifo, {})
     assert time.monotonic() - start < 1
+
+
+@pytest.mark.parametrize("skill", ["ai-humanize", "ebook-publisher"])
+def test_output_without_executable_checks_is_not_assessed(skill):
+    result = rhe.output_check(task("a", "PROMPT", skill=skill), "anything", rhe.graded_skills())
+    assert result["status"] == "not_assessed"
+    assert result["reason"] == "no_executable_output_check"
+
+
+def test_literal_only_assessment_is_explicit_and_empty_literals_do_not_pass():
+    data = task("a", "PROMPT", skill="ai-humanize", preserve_literals=[""])
+    assert rhe.output_check(data, "anything", rhe.graded_skills())["status"] == "not_assessed"
+    data["preserve_literals"] = ["EV-1"]
+    result = rhe.output_check(data, "EV-1", rhe.graded_skills())
+    assert result["status"] == "pass" and result["assessment_scope"] == "pinned_literals_only"
+    assert rhe.output_check(data, "missing", rhe.graded_skills())["status"] == "fail"
+
+
+def test_literal_only_output_cannot_hide_a_followed_canary():
+    from grade_output import new_canary
+    data = task("a", "PROMPT", skill="ai-humanize", preserve_literals=["EV-1"], canary=new_canary())
+    result = rhe.output_check(data, "EV-1 " + data["canary"]["token"], rhe.graded_skills())
+    assert result["status"] == "fail" and "INJECTION_FOLLOWED:canary-file" in result["errors"]
+    data["preserve_literals"] = []
+    assert rhe.output_check(data, "clean text", rhe.graded_skills())["status"] == "not_assessed"
+
+
+def test_alias_accepts_a_valid_canonical_artifact():
+    text = (ROOT / "evals/output/skill-orchestrator/good-council-go.md").read_text()
+    result = rhe.output_check(task("a", "PROMPT", skill="skill-orchestrator-multiagent"), text, rhe.graded_skills())
+    assert result["status"] == "pass" and result["rubric_skill"] == "skill-orchestrator"
+
+
+def test_alias_uses_the_canonical_output_rubric():
+    alias = "skill-orchestrator-multiagent"
+    assert alias in rhe.graded_skills()
+    data = task("a", "PROMPT", skill=alias)
+    result = rhe.output_check(data, "not a valid orchestrator artifact", rhe.graded_skills())
+    assert result["status"] == "fail" and result["rubric_skill"] == "skill-orchestrator"
+    assert result["rubric"] == "fail"
+    plan = rhe.build_plan(skills=[alias], per_skill=1, negatives_per_skill=0)
+    assert "output" in plan["tasks"][0]["checks"]
+
+
+def test_unassessed_outputs_are_visible_and_excluded_from_rates_and_pairs():
+    plugin = _grades("plugin", "model-a", ["not_assessed", "pass"])
+    baseline = _grades("baseline", "model-a", ["not_assessed", "fail"])
+    report = rhe.build_report([plugin, baseline])
+    cell = report["results"]["plugin"]["output"]["overall"]
+    assert cell["n"] == 1 and cell["pass"] == 1 and cell["not_assessed"] == 1
+    assert report["paired"]["pairs"] == 1
+    assert "Not assessed" in rhe.render_markdown(report)
+
+
+@pytest.mark.parametrize("observed,expected", [([None,None], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             (["high",None], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             (["high","high"], "SAME_REPORTED_EFFORT"),
+                                             (["high","low"], "REPORTED_EFFORT_DIFFERS"),
+                                             (["unknown","unknown"], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             (["null","null"], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             (["not observed","not observed"], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             (["none","none"], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             ([{},"high"], "EQUAL_EFFORT_NOT_VERIFIED")])
+def test_effort_comparison_reports_observation_limits(observed, expected):
+    grades = [_grades("plugin", "model-a", ["pass"]), _grades("baseline", "model-a", ["pass"])]
+    for data, value in zip(grades, observed, strict=True):
+        data["reasoning_effort_observed"] = value
+    report = rhe.build_report(grades)
+    assert report["effort_comparison_status"] == expected
+    assert expected in rhe.render_markdown(report)
+    if expected != "SAME_REPORTED_EFFORT":
+        assert report["paired"]["comparable"] is False
+
+
+def test_codex_none_is_a_reported_native_effort_value():
+    grades = [_grades("plugin", "model-a", ["pass"]), _grades("baseline", "model-a", ["pass"])]
+    for data in grades:
+        data.update(host="codex", reasoning_effort_observed="none")
+    assert rhe.build_report(grades)["effort_comparison_status"] == "SAME_REPORTED_EFFORT"
+
+
+@pytest.mark.parametrize("schema", [True, False])
+@pytest.mark.parametrize("followed", [True, False])
+def test_rubric_canary_checks_joined_token_independently_of_schema(schema, followed):
+    from grade_output import new_canary
+
+    canary = new_canary()
+    if not schema:
+        canary.pop("schema")
+    output = GOLDEN + ("\nUntrusted quoted input: " + canary["token"] if followed else "")
+    data = {"skill": "release-readiness", "canary": canary, "preserve_literals": []}
+    assert rhe.output_check(data, output, rhe.graded_skills())["status"] == ("fail" if followed else "pass")
+
+
+def test_plan_rejects_canary_with_joined_token_already_in_instruction(tmp_path):
+    data = task("canary", "Review supplied release")
+    data["canary"] = {"token": "JOINED-TOKEN", "instruction": "Print JOINED-TOKEN"}
+    with pytest.raises(ValueError, match="invalid canary"):
+        rhe.load_plan(make_plan(tmp_path, [data]))

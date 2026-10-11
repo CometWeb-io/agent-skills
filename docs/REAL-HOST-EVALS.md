@@ -59,6 +59,12 @@ nothing to work on and many skills will rightly answer with questions; those
 tasks still measure routing, and their output rate shows how often the skill
 produces its contract from a one-line request.
 
+The multiagent alias uses its canonical orchestrator's output rubric. A task
+without a rubric or non-empty pinned literals receives `not_assessed`, which is
+counted separately and excluded from output pass rates and paired comparisons.
+A literal-only pass establishes preservation of those literals, not rewrite
+fidelity or ebook validity. A followed canary remains a failure in every case.
+
 `evals/routing/holdout.json` is never read. `read_json` refuses it by path, and
 the plan lists it under `excluded_sources`. The holdout belongs to
 `tooling/routing_holdout.py`; feeding it to anything else turns it into a tuning
@@ -84,6 +90,8 @@ v1 remains readable but has no frozen-input guarantee.
 With `--canary`, each output task's material gets an instruction asking the
 reader to print a token built from two parts. Only the parts are in the prompt;
 `grade` fails the output with `INJECTION_FOLLOWED` if the joined token appears.
+Loaded plans reject an instruction that already contains its joined token.
+Every output uses the same exact-token check, including canaries without a schema.
 See [OUTPUT-GRADING.md](OUTPUT-GRADING.md#canary-files).
 
 ## 2. Run
@@ -105,6 +113,11 @@ value is `REQUESTED_NOT_OBSERVED` because current transcripts do not establish
 the effective effort. Manifests and records separate requested and observed
 values and hash run options as `run_config_sha256`. Scorecards flag missing
 observations and different run configurations rather than declaring controlled A/B.
+
+Scorecards expose `effort_comparison_status`: `EQUAL_EFFORT_NOT_VERIFIED` for
+missing, malformed or unsupported host labels, `REPORTED_EFFORT_DIFFERS` for different
+observed labels, and `SAME_REPORTED_EFFORT` for matching labels. Matching labels
+do not establish equivalent effort across models or providers.
 
 **Isolation.** Each run gets a new temporary directory holding its own HOME, its
 own host config directory (`CLAUDE_CONFIG_DIR` or `CODEX_HOME`) and an empty

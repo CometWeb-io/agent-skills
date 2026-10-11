@@ -1,6 +1,6 @@
 {
   "schema": "cometweb.plugin-release/v1",
-  "plugin_version": "2.7.3",
+  "plugin_version": "2.7.4",
   "skills": {
     "ai-council": "5.3.0",
     "ai-humanize": "2.6.4",
