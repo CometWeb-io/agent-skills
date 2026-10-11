@@ -105,3 +105,45 @@ def test_duplicate_execution_identity_rejected_globally(packet_source,field):
     if field=="blind_id":records[3][field]=records[0][field]
     else:records[3]["response"][field]=records[0]["response"][field]
     with pytest.raises(ValueError):bridge.build_packets(suite,requests,records)
+
+@pytest.mark.parametrize("field,value", [
+    ("execution_surface", "native_host"),
+    ("instruction_placement", "developer_instructions"),
+    ("native_skill_activation", True),
+])
+def test_bridge_refuses_mixed_instruction_priority_and_activation(packet_source, field, value):
+    suite, requests, records, _ = packet_source
+    records[0]["response"].update({
+        "execution_surface": "responses_api_text_only",
+        "instruction_placement": "user_message_when_present",
+        "native_skill_activation": False,
+    })
+    records[1]["response"].update({
+        "execution_surface": "responses_api_text_only",
+        "instruction_placement": "user_message_when_present",
+        "native_skill_activation": False,
+    })
+    records[0]["response"][field] = value
+    with pytest.raises(ValueError, match="mixed execution surfaces"):
+        bridge.build_packets(suite, requests, records)
+
+
+def test_bridge_pins_homogeneous_execution_profile_in_reviewed_experiment(packet_source):
+    suite, requests, records, _ = packet_source
+    for record in records:
+        record["response"].update({
+            "execution_surface": "responses_api_text_only",
+            "instruction_placement": "user_message_when_present",
+            "native_skill_activation": False,
+        })
+    packets = bridge.build_packets(suite, requests, records)
+    packet = packets[0]
+    assert packet["bundle"]["experiment"]["execution_profile"] == {
+        "execution_surface": "responses_api_text_only",
+        "instruction_placement": "user_message_when_present",
+        "native_skill_activation": False,
+    }
+    assert review.compare(packet["bundle"])["comparison_status"] == "incomplete"
+    original_pin = packet["experiment_sha256"]
+    packet["bundle"]["experiment"]["execution_profile"]["instruction_placement"] = "developer_instructions"
+    assert review.compare(packet["bundle"], original_pin)["comparison_status"] == "invalid"
