@@ -1,5 +1,9 @@
 # Changelog — skill-orchestrator
 
+## [1.4.2] - 2026-10-11
+
+- Bundle the shared protocol rule that READY requires verified material facts and declared supported material inferences; status consistency remains distinct from fact checking or dependency assessment.
+
 ## [1.4.1] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

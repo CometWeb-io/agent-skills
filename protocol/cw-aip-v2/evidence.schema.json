@@ -104,5 +104,25 @@
         "constraints": { "type": "array", "items": { "type": "string" } }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "readiness": { "const": "READY" } } },
+      "then": {
+        "properties": {
+          "material_claims": {
+            "items": {
+              "if": { "properties": { "materiality": { "enum": ["critical", "material"] } } },
+              "then": { "allOf": [
+                { "if": { "properties": { "epistemic_kind": { "const": "FACT" } } },
+                  "then": { "properties": { "status": { "const": "VERIFIED" } } } },
+                { "if": { "properties": { "epistemic_kind": { "const": "INFERENCE" } } },
+                  "then": { "properties": { "status": { "enum": ["SUPPORTED", "SUPPORTED_INFERENCE"] } } } }
+              ] }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

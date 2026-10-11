@@ -6,6 +6,10 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+- Refuse READY evidence envelopes with unverified material facts or unassessed
+  material inferences; retain nonready reports and unknown supporting claims
+  without claiming independent fact checks or inference dependency assessment.
+
 - Mark all current packages as experimental DEVELOPMENT in self-contained
   maturity metadata, registry/catalog projections, ZIP manifests and CLI output.
   New scaffolds remain SCAFFOLD and development-only; supplied QUALIFIED labels

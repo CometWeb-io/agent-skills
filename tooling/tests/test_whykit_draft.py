@@ -366,3 +366,21 @@ def test_cli_defaults_to_stdout_without_mutating_the_working_directory(tmp_path:
     assert proc.returncode == 0, proc.stderr
     assert "type: research" in proc.stdout
     assert sorted(path.name for path in tmp_path.iterdir()) == ["evidence.json"]
+
+
+@pytest.mark.parametrize("status", ["UNKNOWN", "PARTIAL", "UNSUPPORTED", "CONTRADICTED", "SUPPORTED_INFERENCE", "UNVERIFIED"])
+def test_whykit_draft_refuses_ready_with_unverified_material_fact(status):
+    envelope = _evidence_envelope()
+    envelope["payload"]["material_claims"][0]["status"] = status
+    envelope["payload_hash"] = _hash(envelope["payload"])
+    with pytest.raises(ValueError):
+        _load().render_draft(envelope, owner="Review team")
+
+
+@pytest.mark.parametrize("status", ["UNKNOWN", "PARTIAL", "UNSUPPORTED", "CONTRADICTED", "UNVERIFIED"])
+def test_whykit_draft_refuses_ready_with_unassessed_material_inference(status):
+    envelope = _evidence_envelope()
+    envelope["payload"]["material_claims"][0].update(epistemic_kind="INFERENCE", status=status)
+    envelope["payload_hash"] = _hash(envelope["payload"])
+    with pytest.raises(ValueError):
+        _load().render_draft(envelope, owner="Review team")

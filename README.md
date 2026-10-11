@@ -109,7 +109,7 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. *(experimental; DEVELOPMENT)* | 1.6.1 |
 | [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. *(experimental; DEVELOPMENT)* | 1.0.9 |
 | [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. *(experimental; DEVELOPMENT)* | 1.2.5 |
-| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. *(experimental; DEVELOPMENT)* | 1.4.1 |
+| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. *(experimental; DEVELOPMENT)* | 1.4.2 |
 | [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. *(experimental; DEVELOPMENT)* | 1.2.3 |
 | [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. *(experimental; DEVELOPMENT)* | 1.7.5 |
 | [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. *(experimental; DEVELOPMENT)* | 1.8.2 |

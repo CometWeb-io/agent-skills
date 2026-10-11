@@ -325,6 +325,23 @@
       "file": "valid/evidence-canonical-unresolved-defer.json",
       "expect": "accept",
       "final": true
+    },
+    {
+      "file": "invalid/evidence-ready-unverified-material-fact.json",
+      "expect": "reject",
+      "final": true,
+      "error": "VERIFIED"
+    },
+    {
+      "file": "valid/evidence-unverified-material-fact-defer.json",
+      "expect": "accept",
+      "final": true
+    },
+    {
+      "file": "invalid/evidence-ready-unknown-material-inference.json",
+      "expect": "reject",
+      "final": true,
+      "error": "SUPPORTED"
     }
   ]
 }

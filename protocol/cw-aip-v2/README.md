@@ -185,3 +185,12 @@ or reject the output of a shipped producer.
 
 - Core envelope, payload hash, and the Context, Evidence, Decision, Finding,
   Roadmap and Release payload schemas.
+
+A `READY` EvidenceEnvelope cannot retain a critical/material `FACT` with a status
+other than `VERIFIED`, even when a nominal support edge is present. A material
+`INFERENCE` must declare `SUPPORTED` (legacy) or `SUPPORTED_INFERENCE`; this
+status check does not assess dependency coverage or source truth. Unverified
+material facts remain admissible in `NOT_READY` or `DEFER`; an unknown supporting
+claim does not block an otherwise assessed material scope. `VERIFIED` still
+requires accepted support. These are supplied-field consistency checks, not
+independent authentication or semantic fact-checking of cited sources.

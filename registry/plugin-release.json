@@ -1,6 +1,6 @@
 {
   "schema": "cometweb.plugin-release/v1",
-  "plugin_version": "2.8.0",
+  "plugin_version": "2.8.1",
   "skills": {
     "ai-council": "5.3.1",
     "ai-humanize": "2.6.5",
@@ -33,7 +33,7 @@
     "seo-geo-aeo-maxxing": "1.3.6",
     "skill-auditor": "1.7.6",
     "skill-evaluator": "1.8.1",
-    "skill-orchestrator": "1.4.1",
+    "skill-orchestrator": "1.4.2",
     "skill-orchestrator-multiagent": "1.2.3",
     "web-app-auditor": "1.5.1"
   }

@@ -184,6 +184,16 @@ def validate_semantics(data: dict[str, Any]) -> None:
     for cid in sorted(contradicted - contradiction_claims):
         fail(f"{cid}: ACCEPTED CONTRADICT requires a same-claim contradiction record")
 
+    if data.get("readiness") == "READY":
+        for claim in data.get("material_claims") or []:
+            if (claim.get("materiality") in {"critical", "material"}
+                    and claim.get("epistemic_kind") == "FACT" and claim.get("status") != "VERIFIED"):
+                fail(f"{claim.get('claim_id')}: READY requires material FACT status VERIFIED")
+            if (claim.get("materiality") in {"critical", "material"}
+                    and claim.get("epistemic_kind") == "INFERENCE"
+                    and claim.get("status") not in {"SUPPORTED", "SUPPORTED_INFERENCE"}):
+                fail(f"{claim.get('claim_id')}: READY requires material INFERENCE status SUPPORTED or SUPPORTED_INFERENCE")
+
 
 def validate(data: dict[str, Any]) -> None:
     if not isinstance(data, dict):

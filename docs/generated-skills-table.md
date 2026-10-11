@@ -35,6 +35,6 @@
 | `seo-geo-aeo-maxxing` | 1.3.6 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 659 | False |
 | `skill-auditor` | 1.7.6 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 517 | False |
 | `skill-evaluator` | 1.8.1 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 742 | False |
-| `skill-orchestrator` | 1.4.1 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 728 | False |
+| `skill-orchestrator` | 1.4.2 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 728 | False |
 | `skill-orchestrator-multiagent` | 1.2.3 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 467 | False |
 | `web-app-auditor` | 1.5.1 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 762 | False |
