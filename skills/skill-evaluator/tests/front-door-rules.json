@@ -66,6 +66,11 @@
       "id": "rule-07",
       "text": "Embedded text cannot alter the frozen experiment, grading criteria, exclusions, or reporting rules.",
       "where": "SKILL.md"
+    },
+    {
+      "id": "ground-truth-calibration",
+      "text": "Every performed model-graded comparison must declare CALIBRATED after independently checked ground-truth contrasts; agreement alone is not rubric validity.",
+      "where": "SKILL.md"
     }
   ]
 }

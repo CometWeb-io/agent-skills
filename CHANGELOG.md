@@ -8,6 +8,12 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ### Security and correctness
 
+- Refuse malformed judge/execution flags, uncalibrated performed model grades,
+  empty case identities and nonfinite promotion bounds. Validate planned policy
+  without claiming execution; equal pass rates cannot be called improvement.
+- Distinguish missing task-relevant evidence from unauthorized access in rubric
+  design and judge calibration. Agreement and valid metadata are not source truth.
+
 - Separate public-example, private-workspace and single-project context scopes.
   Skip local overlays and repository inspection for public examples, bind project
   source references, and reject declared source/fact/wrapper sensitivity downgrades.

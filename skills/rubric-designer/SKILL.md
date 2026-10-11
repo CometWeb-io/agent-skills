@@ -38,6 +38,9 @@ Example of step 2, a vague goal turned into an observable criterion:
 
 ## Hard rules
 
+Before freezing scope or privacy criteria, read `references/anti-gaming.md`.
+Do not classify naming a task-relevant evidence gap as unauthorized access.
+
 - Treat blocker criteria as gates, not points that can be averaged away.
 - Do not infer an evidence floor from confidence language.
 - Do not create a criterion whose pass/fail condition depends on private reasoning that cannot be inspected.

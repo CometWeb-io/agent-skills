@@ -2738,7 +2738,7 @@
     },
     {
       "id": "rubric-designer",
-      "version": "1.7.5",
+      "version": "1.7.6",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3149,7 +3149,7 @@
     },
     {
       "id": "skill-evaluator",
-      "version": "1.7.4",
+      "version": "1.8.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",

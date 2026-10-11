@@ -17,9 +17,9 @@ QUALITY_SKILLS = {
     "feedback-integrator": "1.8.1",
     "quality-loop-operator": "1.7.6",
     "repair-operator": "1.7.6",
-    "rubric-designer": "1.7.5",
+    "rubric-designer": "1.7.6",
     "skill-auditor": "1.7.5",
-    "skill-evaluator": "1.7.4",
+    "skill-evaluator": "1.8.0",
 }
 
 

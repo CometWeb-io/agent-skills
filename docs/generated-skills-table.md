@@ -30,11 +30,11 @@
 | `repo-roaster` | 6.1.6 | domain | active | ACTIVE | 825 | False |
 | `repo-to-roadmap` | 1.1.2 | domain | active | ACTIVE | 1005 | False |
 | `research-program-operator` | 1.3.3 | domain | active | FROZEN | 462 | False |
-| `rubric-designer` | 1.7.5 | foundation | active | ACTIVE | 672 | False |
+| `rubric-designer` | 1.7.6 | foundation | active | ACTIVE | 672 | False |
 | `science-roaster` | 6.1.6 | domain | active | ACTIVE | 739 | False |
 | `seo-geo-aeo-maxxing` | 1.3.5 | domain | active | ACTIVE | 659 | False |
 | `skill-auditor` | 1.7.5 | foundation | active | ACTIVE | 517 | False |
-| `skill-evaluator` | 1.7.4 | foundation | active | ACTIVE | 742 | False |
+| `skill-evaluator` | 1.8.0 | foundation | active | ACTIVE | 742 | False |
 | `skill-orchestrator` | 1.4.0 | foundation | active | ACTIVE | 728 | False |
 | `skill-orchestrator-multiagent` | 1.2.2 | foundation | active | ACTIVE | 467 | False |
 | `web-app-auditor` | 1.5.0 | domain | active | ACTIVE | 762 | False |

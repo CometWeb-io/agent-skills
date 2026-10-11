@@ -15,11 +15,11 @@ treated as package sources, not as a second repository architecture.
 | `content-writer` | CometWeb Quality Skills | `1.7.6` |
 | `quality-loop-operator` | CometWeb Quality Skills | `1.7.6` |
 | `repair-operator` | CometWeb Quality Skills | `1.7.6` |
-| `rubric-designer` | CometWeb Quality Skills | `1.7.5` |
+| `rubric-designer` | CometWeb Quality Skills | `1.7.6` |
 | `brief-architect` | CometWeb Quality Skills with experimental PRD profile | `1.8.0` |
 | `feedback-integrator` | CometWeb Quality Skills | `1.8.1` |
 | `skill-auditor` | CometWeb Quality Skills | `1.7.5` |
-| `skill-evaluator` | CometWeb Quality Skills | `1.7.4` |
+| `skill-evaluator` | CometWeb Quality Skills | `1.8.0` |
 
 The three roaster IDs also exist in the quality bundle. They are not copied a
 second time: the dedicated Roaster Suite packages are the canonical source for
