@@ -291,6 +291,40 @@
       "expect": "accept",
       "final": true,
       "note": "unresolved gates are expected next to DEFER or NO_GO"
+    },
+    {
+      "file": "invalid/evidence-ready-canonical-unresolved.json",
+      "expect": "reject",
+      "final": true,
+      "error": "unresolved material contradictions"
+    },
+    {
+      "file": "invalid/evidence-ready-conflicting-contradiction-aliases.json",
+      "expect": "reject",
+      "final": true,
+      "error": "unresolved material contradictions"
+    },
+    {
+      "file": "invalid/evidence-accepted-contradict-without-record.json",
+      "expect": "reject",
+      "final": true,
+      "error": "same-claim contradiction record"
+    },
+    {
+      "file": "invalid/evidence-contradict-wrong-claim-record.json",
+      "expect": "reject",
+      "final": true,
+      "error": "same-claim contradiction record"
+    },
+    {
+      "file": "valid/evidence-resolved-contradiction.json",
+      "expect": "accept",
+      "final": true
+    },
+    {
+      "file": "valid/evidence-canonical-unresolved-defer.json",
+      "expect": "accept",
+      "final": true
     }
   ]
 }

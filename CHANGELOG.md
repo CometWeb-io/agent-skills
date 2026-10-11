@@ -6,6 +6,11 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+- Validate canonical and legacy contradiction states without letting a resolved
+  alias erase an explicit unresolved material state. Require typed records for
+  the same claim as accepted contradictory evidence in full envelope admission,
+  including the output grader; preserve declared resolved and nonready controls.
+
 - Reject known generated skill author prompts at plugin admission and versioned
   packaging, including wrapped text and existing archive reuse. Development
   archives remain unassessed; scaffold detection does not establish task quality.
