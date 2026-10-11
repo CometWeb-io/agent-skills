@@ -49,6 +49,18 @@ def build_packets(suite: dict, requests: dict, records: list[dict], repetitions:
     require(len({r["response"]["response_id"] for r in records}) == len(records), "response ID reused across cohorts")
     require(len({(r["response"]["host"], r["response"]["model"]) for r in records}) == 1,
             "cross-host/model records cannot be silently partitioned into a matched experiment")
+    # Reject priority/activation mismatches independently of the CLI runner,
+    # since the review-packet bridge can also be invoked directly.
+    def profile(response: dict) -> dict:
+        return {
+            "execution_surface": response.get("execution_surface", "undeclared"),
+            "instruction_placement": response.get("instruction_placement", "undeclared"),
+            "native_skill_activation": response.get("native_skill_activation", "undeclared"),
+        }
+
+    profiles = {json.dumps(profile(r["response"]), sort_keys=True) for r in records}
+    require(len(profiles) == 1, "mixed execution surfaces or instruction priorities")
+    execution_profile = profile(records[0]["response"])
     # Different resource bundles are separate cohorts, not silently averaged together.
     groups = {}
     for cid, case in cases.items():
@@ -71,7 +83,7 @@ def build_packets(suite: dict, requests: dict, records: list[dict], repetitions:
         exp = {"id":group_id, "suite_sha256":digest(canonical(suite)), "instruction_sha256":group["hashes"],
                "host":identity["host"], "model":identity["model"], "capabilities":group["capabilities"],
                "dimensions":DIMENSIONS, "cases":[{"id":cid,"fixture_sha256":fixtures[cid]} for cid in group["ids"]],
-               "repetitions":repetitions,
+               "repetitions":repetitions, "execution_profile":execution_profile,
                "case_rubrics":{cid:cases[cid]["rubric"] for cid in group["ids"]}}
         bundle = {"schema":"cometweb.skill-comparison/v1", "experiment":exp, "runs":[], "reviews":[]}
         templates, reviewer_tasks = [], []
