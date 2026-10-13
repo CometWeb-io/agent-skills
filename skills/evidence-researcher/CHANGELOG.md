@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.8] - 2026-10-13
+
+- `references/source-routing.md` gains a source screening step between routing and registration: publisher, author, purpose, volume and originality are checked on the open page, and the outcome is register, register with a limit carried on each edge, or discovery only. Pages that exist to sell or to rank from publishers that are not well established, content mills, restatements and unverifiable authors never become evidence edges.
+- Interested voices: an established vendor's engineering posts, research, docs and data are admissible, but what the publisher sells is recorded in the source `notes` and stated at first citation, and vendor data supports only the vendor's own system or sample. A table says what each kind of voice may support; the neutral definition of a category comes from a public body or an independent analyst, not a vendor.
+- A quoted passage is confirmed on the page as cited, with the locator on the edge and `last_verified_at` on the source.
+- The Evidence Pack's coverage block lists the sources screened out, with the reason for each, and the citation discipline names what an interested publisher sells once, at first citation.
+- SKILL.md points to the screening step from the load table and workflow step 3. No payload key or kernel behavior changes.
+
 ## [1.0.7] - 2026-10-08
 
 - Report missing JSON files as file errors, support explicit @ paths, and avoid symlinked output writes.

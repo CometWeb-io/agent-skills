@@ -25,7 +25,7 @@ This file is the contract only. Load detail by stage:
 | Responsibility / stop | Boundary + Hard rules below |
 | Framing | `references/research-contract.md` |
 | Graph model | `references/evidence-graph.md` |
-| Authority routing | `references/source-routing.md` |
+| Authority routing / source screening | `references/source-routing.md` |
 | Provenance / independence | `references/source-lineage.md` |
 | Falsifiers / contradictions | `references/contradiction-protocol.md` |
 | Temporal truth | `references/freshness.md` |
@@ -76,7 +76,7 @@ verified, independents disagree, or legal/security/privacy gates downstream acti
 
 1. Build Research Contract → `research-contract.md`
 2. Decompose atomic claims → `evidence-graph.md`
-3. Route authority → `source-routing.md`
+3. Route authority and screen each source → `source-routing.md`
 4. Register sources → `source-lineage.md`
 5. Create claim-specific edges (SUPPORT / CONTRADICT / CONTEXT)
 6. Falsifier pass → `contradiction-protocol.md`

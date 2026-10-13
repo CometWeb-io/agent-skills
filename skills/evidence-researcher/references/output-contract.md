@@ -38,7 +38,8 @@ Report at minimum:
 - falsifier coverage,
 - freshness coverage,
 - unresolved critical contradictions/gaps,
-- unknown source-independence count when material.
+- unknown source-independence count when material,
+- sources screened out (`source-routing.md`, "Source screening"): the count, and each one with its canonical reference and the reason.
 
 ### 6. Handoff
 
@@ -55,4 +56,4 @@ Use schema `2.0` from `evidence-graph.md`. Include the kernel `pack_hash` when p
 
 ## Citation discipline
 
-Cite at the claim/evidence statement, not in a detached bibliography. Preserve pinpoint locators when the tool/source supports them. Do not reproduce long copyrighted/private passages merely to make provenance look stronger.
+Cite at the claim/evidence statement, not in a detached bibliography. Preserve pinpoint locators when the tool/source supports them. Do not reproduce long copyrighted/private passages merely to make provenance look stronger. At an interested source's first citation, say what its publisher sells, once; later citations need only the name. Attribute a participant's view to the participant, not to the market.

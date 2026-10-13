@@ -1,6 +1,6 @@
 {
   "schema": "cometweb.plugin-release/v1",
-  "plugin_version": "2.7.0",
+  "plugin_version": "2.7.1",
   "skills": {
     "ai-council": "5.3.0",
     "ai-humanize": "2.6.2",
@@ -16,7 +16,7 @@
     "customer-ops": "2.2.2",
     "design-partner-finder": "1.2.4",
     "ebook-publisher": "1.0.3",
-    "evidence-researcher": "1.0.7",
+    "evidence-researcher": "1.0.8",
     "feedback-integrator": "1.8.1",
     "longform-publisher": "1.1.5",
     "portfolio-operator": "1.2.4",

@@ -1407,7 +1407,7 @@
     },
     {
       "id": "evidence-researcher",
-      "version": "1.0.7",
+      "version": "1.0.8",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",

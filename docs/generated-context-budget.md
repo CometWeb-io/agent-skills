@@ -37,7 +37,7 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `skill-evaluator` | 5,894 B | 1,473 | 14,626 B | 3,656 | 11 | 0.71 |
 | `skill-auditor` | 5,892 B | 1,473 | 12,136 B | 3,034 | 9 | 0.67 |
 | `feedback-integrator` | 5,869 B | 1,467 | 13,400 B | 3,350 | 8 | 0.70 |
-| `evidence-researcher` | 5,624 B | 1,406 | 49,358 B | 12,339 | 15 | 0.90 |
+| `evidence-researcher` | 5,666 B | 1,416 | 53,788 B | 13,447 | 15 | 0.90 |
 | `artifact-acceptance` | 5,314 B | 1,328 | 11,798 B | 2,949 | 8 | 0.69 |
 | `content-reviewer` | 5,200 B | 1,300 | 10,664 B | 2,666 | 8 | 0.67 |
 | `rubric-designer` | 4,144 B | 1,036 | 5,009 B | 1,252 | 6 | 0.55 |
@@ -46,4 +46,4 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `research-program-operator` | 2,903 B | 725 | 4,451 B | 1,112 | 2 | 0.61 |
 | `skill-orchestrator-multiagent` | 2,063 B | 515 | 49,564 B | 12,391 | 13 | 0.96 |
 
-**34 skills.** Discovery metadata totals roughly 6,025 tokens. Activating all skills would load ~72,092 instruction tokens; the median activation is ~2,403, and the largest ~2,999.
+**34 skills.** Discovery metadata totals roughly 6,025 tokens. Activating all skills would load ~72,102 instruction tokens; the median activation is ~2,403, and the largest ~2,999.
