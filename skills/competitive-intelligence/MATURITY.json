@@ -1,0 +1,8 @@
+{
+  "schema": "cometweb.skill-maturity/v1",
+  "skill": "competitive-intelligence",
+  "version": "1.1.5",
+  "stage": "DEVELOPMENT",
+  "publication": "EXPERIMENTAL",
+  "task_qualification": "not_established"
+}

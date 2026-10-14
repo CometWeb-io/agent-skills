@@ -37,10 +37,20 @@ def _compare(data: dict, expected_experiment_sha256: str | None = None) -> dict:
     obj(data, {"schema", "experiment", "runs", "reviews"}, set(), "comparison")
     require(data["schema"] == "cometweb.skill-comparison/v1", "unknown comparison schema")
     exp = obj(data["experiment"], {"id", "suite_sha256", "instruction_sha256", "host", "model",
-                                  "capabilities", "dimensions", "cases", "repetitions"}, {"case_rubrics"}, "experiment")
+                                  "capabilities", "dimensions", "cases", "repetitions"}, {"case_rubrics", "execution_profile"}, "experiment")
     text(exp["id"], "experiment id", 128)
     text(exp["host"], "host", 128)
     text(exp["model"], "model", 128)
+    if "execution_profile" in exp:
+        profile = obj(exp["execution_profile"],
+                      {"execution_surface", "instruction_placement", "native_skill_activation"},
+                      set(), "execution profile")
+        text(profile["execution_surface"], "execution surface", 128)
+        text(profile["instruction_placement"], "instruction placement", 128)
+        require(type(profile["native_skill_activation"]) is bool or
+                profile["native_skill_activation"] == "undeclared",
+                "native skill activation must be a boolean or undeclared")
+
     sha(exp["suite_sha256"], "suite")
     require(isinstance(exp["capabilities"], dict) and type(exp["capabilities"].get("tools")) is bool,
             "explicit tool capability required")

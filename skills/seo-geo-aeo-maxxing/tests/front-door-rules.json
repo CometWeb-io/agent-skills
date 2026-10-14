@@ -251,6 +251,11 @@
       "id": "aeo-not-guarantee",
       "text": "AEO means extraction readiness, not guaranteed snippets/PAA/voice/AI citation.",
       "where": "SKILL.md"
+    },
+    {
+      "id": "guide-metadata-not-site-provenance",
+      "text": "Guide metadata is not site evidence; state rule sources, dates and refresh history only from records.",
+      "where": "SKILL.md"
     }
   ]
 }

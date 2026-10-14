@@ -13,6 +13,8 @@ States are evidence-backed observations, not motivational labels.
 
 Never infer a later state from an earlier one. A new candidate version invalidates candidate-bound review/roast/repair evidence unless a delta rule explicitly preserves it.
 
+A specialist still marked `CHANGES_REQUIRED` requires revalidation after repair; a later PASS does not silently clear its state. Pending repair still runs before that revalidation.
+
 Operational statuses:
 
 - `READY_FOR_NEXT`

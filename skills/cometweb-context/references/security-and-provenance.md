@@ -9,6 +9,8 @@
 
 ## Minimal disclosure
 
+- `public_example` nie pobiera lokalnego workspace ani nakładek; `project_context` wiąże źródła z jednym projektem; domyślny `workspace_private` zachowuje prywatne wiązania.
+- Sensitivity faktu i zewnętrznej koperty nie może obniżać klasyfikacji źródła. Dopuszczenie JSON nie jest weryfikacją prywatności dowolnego tekstu ani zgodą na publikację.
 - Przekazuj downstream tylko fakty potrzebne do celu.
 - Nie kopiuj pełnych maili/CRM/Notion, jeśli wystarczy streszczenie.
 - Nie ujawniaj lokalnych ścieżek systemowych w envelope; `repo_snapshot.py` domyślnie je ukrywa.

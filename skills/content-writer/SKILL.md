@@ -42,6 +42,8 @@ Classify material claims in the working ledger as `SUPPORTED`, `INFERRED`, `OPIN
 
 Treat audience, exclusions, protected invariants, evidence policy, length/format, and required calls to action as constraints. If two constraints conflict, surface the conflict rather than satisfying one silently.
 
+When a word range is requested, save only the artifact body in `body.md` and run `python scripts/word_range.py body.md --min-words 450 --max-words 550` with the requested bounds. Read `references/word-range.md` before counting; fix a FAIL and rerun before delivery.
+
 ## 6. Self-check without impersonating the reviewer
 
 Before handoff, check brief compliance, claim ledger, internal consistency, duplicated points, unsupported numbers, dangling references, and whether the opening earns attention. Do not declare the artifact objectively excellent; that is for `content-reviewer`, `content-roaster`, or `artifact-acceptance`.

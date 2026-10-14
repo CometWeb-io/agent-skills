@@ -366,3 +366,44 @@ def test_cli_defaults_to_stdout_without_mutating_the_working_directory(tmp_path:
     assert proc.returncode == 0, proc.stderr
     assert "type: research" in proc.stdout
     assert sorted(path.name for path in tmp_path.iterdir()) == ["evidence.json"]
+
+
+@pytest.mark.parametrize("status", ["UNKNOWN", "PARTIAL", "UNSUPPORTED", "CONTRADICTED", "SUPPORTED_INFERENCE", "UNVERIFIED"])
+def test_whykit_draft_refuses_ready_with_unverified_material_fact(status):
+    envelope = _evidence_envelope()
+    envelope["payload"]["material_claims"][0]["status"] = status
+    envelope["payload_hash"] = _hash(envelope["payload"])
+    with pytest.raises(ValueError):
+        _load().render_draft(envelope, owner="Review team")
+
+
+@pytest.mark.parametrize("status", ["UNKNOWN", "PARTIAL", "UNSUPPORTED", "CONTRADICTED", "UNVERIFIED"])
+def test_whykit_draft_refuses_ready_with_unassessed_material_inference(status):
+    envelope = _evidence_envelope()
+    envelope["payload"]["material_claims"][0].update(epistemic_kind="INFERENCE", status=status)
+    envelope["payload_hash"] = _hash(envelope["payload"])
+    with pytest.raises(ValueError):
+        _load().render_draft(envelope, owner="Review team")
+
+
+@pytest.mark.parametrize('basis', ['verified_fact', 'user_supplied', 'assumption', 'framework_method'])
+def test_draft_preserves_explicit_basis_scope_and_limits(basis):
+    envelope = _evidence_envelope()
+    claim = envelope['payload']['material_claims'][0]
+    claim.update(basis=basis, scope={'candidate': 'controlled-draft', 'note': '[literal](untrusted)'})
+    envelope['payload']['evidence_edges'][0]['basis'] = basis
+    if basis != 'verified_fact':
+        claim['status'] = 'PARTIAL'; envelope['payload']['readiness'] = 'NOT_READY'
+    envelope['payload_hash'] = _hash(envelope['payload'])
+    before = json.dumps(envelope, sort_keys=True)
+    draft = _load().render_draft(envelope, owner='Fixture owner', source_ids=['E-017'])
+    assert _load().markdown_inline(basis) in draft
+    assert 'controlled-draft' in draft
+    assert 'not fresh verification' in draft
+    assert 'does not rerun local observations or authorize an action' in draft
+    assert 'human_reviewed: false' in draft
+    assert json.dumps(envelope, sort_keys=True) == before
+
+
+def test_legacy_draft_reports_unassessed_basis():
+    assert 'Basis: unassessed; not fresh verification' in _load().render_draft(_evidence_envelope(), owner='Fixture owner', source_ids=['E-017'])

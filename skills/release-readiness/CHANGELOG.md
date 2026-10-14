@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.4] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.3.3] - 2026-10-08
 
 - Distinguish missing files, invalid UTF-8, malformed JSON and excessive nesting in manifest input errors.

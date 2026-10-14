@@ -168,3 +168,26 @@ def test_external_pin_allows_reviews_to_arrive_later():
 @pytest.mark.parametrize("data",[None,True,42,"not an object",[],[{}]])
 def test_invalid_top_level(data):
     with pytest.raises(ValueError):mod.compare(data)
+
+def test_reviewed_experiment_rejects_malformed_execution_profile():
+    data = bundle()
+    data["experiment"]["execution_profile"] = {
+        "execution_surface": "responses_api_text_only",
+        "instruction_placement": "user_message_when_present",
+        "native_skill_activation": "maybe",
+    }
+    with pytest.raises(ValueError, match="native skill activation"):
+        mod.compare(data)
+
+
+def test_execution_priority_is_part_of_experiment_pin():
+    data = bundle()
+    data["experiment"]["execution_profile"] = {
+        "execution_surface": "responses_api_text_only",
+        "instruction_placement": "user_message_when_present",
+        "native_skill_activation": False,
+    }
+    original_pin = mod.compare(data)["experiment_sha256"]
+    data["experiment"]["execution_profile"]["instruction_placement"] = "developer_instructions"
+    with pytest.raises(ValueError, match="reviewed experiment changed"):
+        mod.compare(data, original_pin)

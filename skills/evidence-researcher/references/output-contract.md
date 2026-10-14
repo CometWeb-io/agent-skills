@@ -19,8 +19,8 @@ State what the evidence establishes, what it does not establish, and the highest
 
 ### 3. Material Claim Ledger
 
-| Claim | Kind | Type | Status | Confidence | Best support | Opposition | Freshness |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+| Claim | Kind | Basis | Scope | Type | Status | Confidence | Best support | Opposition | Freshness |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Show critical/material claims. Supporting claims can remain machine-readable only.
 
@@ -56,3 +56,11 @@ Use schema `2.0` from `evidence-graph.md`. Include the kernel `pack_hash` when p
 ## Citation discipline
 
 Cite at the claim/evidence statement, not in a detached bibliography. Preserve pinpoint locators when the tool/source supports them. Do not reproduce long copyrighted/private passages merely to make provenance look stronger.
+
+Preserve basis and explicit scope in the machine claim/edge records and the ledger.
+Basis is verified_fact, user_supplied, assumption or framework_method; legacy
+missing basis is unassessed. Basis is orthogonal to FACT/INFERENCE and source
+class. INFERENCE stays supported, never VERIFIED. Nonfact or unassessed premises
+belong under caveats, not safe factual handoff. A grader pass remains structural;
+READY metadata or an explicit verified_fact label does not run observation.
+Only the receiving consumer can rerun applicable caller-owned controlled checks.

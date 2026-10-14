@@ -298,7 +298,8 @@
     "trusted_context": {},
     "owner_output_json": {
       "unread": true
-    }
+    },
+    "report_as_of": {}
   },
   "outputs": {
     "execution_mode": {
@@ -366,6 +367,10 @@
     "orchestrated_goal": "intent label the router assigns from its own patterns",
     "data": "canonical ledger event data"
   },
-  "doc_terms": [],
+  "doc_terms": [
+    "build_next_task",
+    "check_plan",
+    "source_root"
+  ],
   "evals": []
 }

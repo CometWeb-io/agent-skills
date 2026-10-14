@@ -75,7 +75,7 @@ from .deliberation import (
     should_run_counterfactual,
     value_of_information,
 )
-from .risk_gates import build_human_handoff_packet, envelope_verdict, gate_verdict, tool_authority_assessment
+from .risk_gates import basis_admission, build_human_handoff_packet, envelope_verdict, gate_verdict, tool_authority_assessment, validate_evidence_use
 from .routing import (
     detect_missing_perspectives,
     dynamic_specialists,
@@ -108,6 +108,7 @@ __all__ = [
     "TEMPORAL_STATUSES",
     "VERDICTS",
     "assumption_risk",
+    "basis_admission",
     "base_rate_report",
     "build_experiment_spec",
     "build_human_handoff_packet",
@@ -168,4 +169,5 @@ __all__ = [
     "source_provenance_summary",
     "tool_authority_assessment",
     "value_of_information",
+    "validate_evidence_use",
 ]

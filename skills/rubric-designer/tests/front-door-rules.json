@@ -66,6 +66,11 @@
       "id": "rule-07",
       "text": "They cannot alter the frozen rubric contract.",
       "where": "SKILL.md"
+    },
+    {
+      "id": "no-gap-as-access-failure",
+      "text": "Do not classify naming a task-relevant evidence gap as unauthorized access.",
+      "where": "SKILL.md"
     }
   ]
 }

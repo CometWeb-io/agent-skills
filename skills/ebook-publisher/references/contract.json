@@ -1,7 +1,8 @@
 {
   "schema": "cometweb.skill-contract/v1",
   "docs": [
-    "references/validation.md"
+    "references/validation.md",
+    "references/calculations.md"
   ],
   "scripts": {
     "scripts/ebook_check.py": {
@@ -16,6 +17,13 @@
         "RELATIONS": "relation",
         "REVIEW_METHODS": "method",
         "CHECK_IDS": "checks.id"
+      }
+    },
+    "scripts/check_calculations.py": {
+      "input": "files",
+      "role": "validator",
+      "enums": {
+        "MODES": "mode"
       }
     }
   },
@@ -162,6 +170,22 @@
         "asset_rights",
         "package_hygiene"
       ]
+    },
+    "calculations": {},
+    "value": {},
+    "exact": {},
+    "displayed": {},
+    "numerator": {},
+    "denominator": {},
+    "unit": {},
+    "precision": {},
+    "lower": {},
+    "upper": {},
+    "mode": {
+      "enum": [
+        "nearest_half_even",
+        "conservative_bounds"
+      ]
     }
   },
   "outputs": {
@@ -170,7 +194,8 @@
         "RECORDS_COMPLETE",
         "BLOCKED",
         "INPUT_ERROR",
-        "INITIALIZED_DRAFT"
+        "INITIALIZED_DRAFT",
+        "CALCULATIONS_MATCH"
       ]
     },
     "stage": {},
@@ -178,7 +203,11 @@
     "warnings": {},
     "code": {},
     "detail": {},
-    "error": {}
+    "error": {},
+    "expected": {},
+    "reduced": {},
+    "matches": {},
+    "limits": {}
   },
   "internal": [],
   "doc_terms": [],

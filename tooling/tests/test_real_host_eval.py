@@ -10,8 +10,10 @@ from __future__ import annotations
 import io
 import json
 import os
+import signal
 import stat
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -77,13 +79,11 @@ if argv[0] == "plugin":
     sys.exit(0)
 prompt = sys.stdin.read()
 spec = next(v for k, v in SCRIPT.items() if k in prompt)
-out = argv[argv.index("--output-last-message") + 1]
 if spec.get("skill"):
     print(json.dumps({{"type": "item.completed", "item": {{"type": "command_execution",
         "command": "sed -n 1,200p " + os.environ["CODEX_HOME"] + "/plugins/cache/skills/" + spec["skill"] + "/SKILL.md"}}}}))
 print(json.dumps({{"type": "item.completed", "item": {{"type": "agent_message", "text": spec["output"]}}}}))
-print(json.dumps({{"type": "turn.completed", "usage": {{"input_tokens": 1000, "cached_input_tokens": 0, "output_tokens": 200}}}}))
-open(out, "w").write(spec["output"])
+print(json.dumps({{"type": "turn.completed", "usage": spec.get("usage", {{"input_tokens": 1000, "cached_input_tokens": 0, "output_tokens": 200}})}}))
 '''
 
 
@@ -112,7 +112,7 @@ def task(task_id: str, prompt: str, *, skill: str = "release-readiness", role: s
 
 
 def make_plan(tmp_path: Path, tasks: list[dict]) -> Path:
-    plan = {"schema": rhe.PLAN_SCHEMA, "repo_version": "0.0.0", "sources": {}, "excluded_sources": [],
+    plan = {"schema": rhe.PLAN_SCHEMA_V1, "repo_version": "0.0.0", "sources": {}, "excluded_sources": [],
             "selection": {}, "graded_skills": ["release-readiness"], "tasks": tasks, "skipped": []}
     plan["plan_sha256"] = rhe.plan_digest(plan)
     path = tmp_path / "plan.json"
@@ -254,7 +254,8 @@ def test_execute_isolates_the_host_and_grades_the_transcript(tmp_path, monkeypat
     manifest = json.loads((out / "manifest.json").read_text())
     assert manifest["host_version"] == "9.9.9 (Fake Host)"
     assert manifest["completed_jobs"] == 3 and manifest["models_reported"] == ["fake-model-1"]
-    record = next(json.loads(p.read_text()) for p in out.glob("runs/*pos/record.json"))
+    record = next(json.loads(p.read_text()) for p in out.glob("runs/*/record.json")
+                  if json.loads(p.read_text())["task_id"] == "pos")
     assert record["activated_skills"] == ["release-readiness"]
     assert record["input_tokens"] == 150 and record["output_tokens"] == 20 and record["cost_source"] == "host_reported"
     assert "test-key-not-real" not in json.dumps(record)
@@ -309,7 +310,7 @@ def test_timeouts_count_as_errors_and_stop_after_two_in_a_row(tmp_path, monkeypa
     assert summary["error_jobs"] == 2 and summary["not_started_jobs"] == 1
     assert "consecutive errors" in summary["stop_reason"]
     # an unreported cost counts as the per-run cap, never as zero
-    assert summary["spent_usd"] == pytest.approx(1.0)
+    assert summary["spent_usd"] is None and summary["accounted_usd"] == pytest.approx(1.0)
     grades = rhe.grade_run(tmp_path / "out")
     assert grades["counts"] == {"completed": 0, "errors": 2, "not_run": 0}
     assert all(r["checks"]["output"]["status"] == "not_run" for r in grades["results"])
@@ -361,7 +362,7 @@ def test_codex_adapter_installs_the_plugin_and_reads_usage(tmp_path, monkeypatch
     assert records["plugin"]["cost_source"] == "estimated_from_prices"
 
     no_prices = rhe.RunOptions(host="codex", bin=str(binary), conditions=("plugin",), max_total_usd=1.0)
-    with pytest.raises(ValueError, match="reports no cost"):
+    with pytest.raises(ValueError, match="native dollar cap"):
         rhe.execute(plan, no_prices, tmp_path / "out2", stream=io.StringIO())
 
 
@@ -473,3 +474,362 @@ def test_reasoning_effort_uses_host_native_flags(host, effort, flag, value, tmp_
 def test_unsupported_effort_is_not_silently_mapped(host, effort):
     with pytest.raises(ValueError, match="unsupported reasoning effort"):
         rhe.validate_options(rhe.RunOptions(host=host, bin=host, conditions=("plugin",), reasoning_effort=effort))
+
+
+# --------------------------------------------------------------------------- adversarial runner controls
+
+@pytest.mark.parametrize("schema", [rhe.PLAN_SCHEMA_V1, rhe.PLAN_SCHEMA_V2])
+@pytest.mark.parametrize("bad", ["../escape", "/absolute", "a/../../../escape", "a\\b", "..", "x" * 201,
+                                 "a\x00b", "zażółć", None, []])
+def test_self_consistent_plan_rejects_unsafe_ids(tmp_path, schema, bad):
+    plan = rhe.build_plan(skills=["release-readiness"], per_skill=1, negatives_per_skill=0)
+    plan["schema"] = schema
+    if schema == rhe.PLAN_SCHEMA_V1:
+        plan.pop("acceptance_version")
+    plan["tasks"][0]["id"] = bad
+    plan["plan_sha256"] = rhe.plan_digest(plan)
+    path = tmp_path / "plan.json"
+    path.write_text(json.dumps(plan))
+    with pytest.raises(ValueError, match="task.*id"):
+        rhe.load_plan(path)
+
+
+@pytest.mark.parametrize("patch", [{"skill": "../escape"}, {"prompt": []}, {"checks": ["bogus"]},
+                                  {"fixture": []}, {"must_not_trigger": [None]}, {"canary": []}])
+def test_task_contract_is_validated(tmp_path, patch):
+    data = task("a", "PROMPT")
+    data.update(patch)
+    with pytest.raises(ValueError):
+        rhe.load_plan(make_plan(tmp_path, [data]))
+
+
+def test_duplicate_ids_and_incomplete_v2_are_refused(tmp_path):
+    with pytest.raises(ValueError, match="duplicate"):
+        rhe.load_plan(make_plan(tmp_path, [task("a", "X"), task("a", "Y")]))
+    path = make_plan(tmp_path, [task("a", "X")])
+    plan = json.loads(path.read_text())
+    plan["schema"] = rhe.PLAN_SCHEMA_V2
+    plan["plan_sha256"] = rhe.plan_digest(plan)
+    path.write_text(json.dumps(plan))
+    with pytest.raises(ValueError, match="v2"):
+        rhe.load_plan(path)
+
+
+def test_not_run_cli_rejects_traversal_before_writing(tmp_path):
+    path = make_plan(tmp_path, [task("x/../../../escaped", "PROMPT")])
+    out = tmp_path / "out"
+    assert rhe.main(["run", "--plan", str(path), "--host", "cursor", "--out", str(out), "--execute"]) == 2
+    assert not out.exists() and not (tmp_path / "escaped").exists()
+
+
+def test_dollar_ceiling_without_native_cap_is_refused_before_host(tmp_path, monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "synthetic")
+    binary, log = make_fake(tmp_path, FAKE_CLAUDE, {"PROMPT": {"output": "ok"}}, "fake")
+    plan = rhe.load_plan(make_plan(tmp_path, [task("a", "PROMPT")]))
+    opts = rhe.RunOptions(host="codex", bin=str(binary), conditions=("baseline",), max_total_usd=1,
+                          price_in=1, price_out=1)
+    with pytest.raises(ValueError, match="native.*cap"):
+        rhe.execute(plan, opts, tmp_path / "out", stream=io.StringIO())
+    assert not log.exists() and not (tmp_path / "out").exists()
+
+
+@pytest.mark.parametrize("field,value", [("max_total_usd", float("nan")), ("max_total_usd", float("inf")),
+                                        ("price_in", -1), ("price_in", float("nan")), ("price_out", float("inf"))])
+def test_invalid_budget_numbers_are_rejected(field, value):
+    opts = rhe.RunOptions(host="claude", bin="fake", conditions=("baseline",), price_in=1, price_out=1)
+    setattr(opts, field, value)
+    with pytest.raises(ValueError):
+        rhe.validate_options(opts)
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX process-group qualification")
+def test_capture_limit_is_enforced_while_host_is_running(tmp_path, monkeypatch):
+    monkeypatch.setattr(rhe, "MAX_CAPTURE", 4096)
+    code = "import os,time\nfor _ in range(10000): os.write(1,b'x'*1024); os.write(2,b'y'*1024)\ntime.sleep(20)"
+    started = time.monotonic()
+    result = rhe._run_capped([sys.executable, "-c", code], dict(os.environ), tmp_path, "", 5,
+                             tmp_path / "events", tmp_path / "stderr")
+    assert len(result) == 3 and result[2] is True
+    assert time.monotonic() - started < 3
+    assert (tmp_path / "events").stat().st_size <= 4096
+    assert (tmp_path / "stderr").stat().st_size <= 4096
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX process-group qualification")
+@pytest.mark.parametrize("parent_exits", [False, True])
+def test_timeout_kills_inherited_process_group(tmp_path, parent_exits):
+    pidfile = tmp_path / "child.pid"
+    heartbeat = tmp_path / "heartbeat"
+    child_code = f"import time\nwhile True:\n open({str(heartbeat)!r},'a').write('alive\\n'); time.sleep(.05)"
+    code = ("import subprocess,sys,time\np=subprocess.Popen([sys.executable,'-c'," + repr(child_code) + "])\n"
+            f"open({str(pidfile)!r},'w').write(str(p.pid))\n"
+            f"while not __import__('os').path.exists({str(heartbeat)!r}): time.sleep(.01)\n"
+            + ("sys.exit(0)" if parent_exits else "time.sleep(30)"))
+    child = None
+    try:
+        result = rhe._run_capped([sys.executable, "-c", code], dict(os.environ), tmp_path, "", 1,
+                                 tmp_path / "events", tmp_path / "stderr")
+        child = int(pidfile.read_text())
+        assert result[1] is True
+        assert heartbeat.exists()
+        observed = heartbeat.read_bytes()
+        time.sleep(.2)
+        assert heartbeat.read_bytes() == observed, "inherited child must stop producing effects"
+    finally:
+        if child is None and pidfile.exists():
+            child = int(pidfile.read_text())
+        if child:
+            try:
+                os.kill(child, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX permissions")
+def test_not_run_outputs_are_private_under_permissive_umask(tmp_path):
+    plan = rhe.load_plan(make_plan(tmp_path, [task("a", "PROMPT")]))
+    old = os.umask(0)
+    try:
+        out = tmp_path / "out"
+        rhe.execute(plan, rhe.RunOptions(host="cursor", bin="cursor", conditions=("plugin",)), out)
+    finally:
+        os.umask(old)
+    for path in [out, *out.rglob("*")]:
+        assert stat.S_IMODE(path.stat().st_mode) == (0o700 if path.is_dir() else 0o600)
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX symlinks")
+def test_output_symlinks_and_hardlinks_cannot_overwrite_external_files(tmp_path):
+    target = tmp_path / "outside"
+    target.write_text("preserved")
+    link = tmp_path / "link"
+    link.symlink_to(target)
+    with pytest.raises((OSError, ValueError)):
+        rhe.write_json(link, {"overwritten": True})
+    link.unlink()
+    os.link(target, link)
+    with pytest.raises((OSError, ValueError)):
+        rhe.write_json(link, {"overwritten": True})
+    assert target.read_text() == "preserved"
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX symlinks")
+def test_symlink_output_directory_is_refused(tmp_path):
+    target = tmp_path / "outside"
+    target.mkdir()
+    out = tmp_path / "out"
+    out.symlink_to(target, target_is_directory=True)
+    plan = rhe.load_plan(make_plan(tmp_path, [task("a", "PROMPT")]))
+    with pytest.raises(ValueError, match="symlink"):
+        rhe.execute(plan, rhe.RunOptions(host="cursor", bin="cursor", conditions=("plugin",)), out)
+    assert list(target.iterdir()) == []
+
+
+def test_estimated_budget_reserves_before_admission_and_stops_on_unknown_cost(tmp_path, monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "synthetic")
+    binary, log = make_fake(tmp_path, FAKE_CODEX, {"PROMPT": {"output": "ok", "usage": None}}, "codex")
+    plan = rhe.load_plan(make_plan(tmp_path, [task("a", "PROMPT"), task("b", "PROMPT")]))
+    opts = rhe.RunOptions(host="codex", bin=str(binary), conditions=("baseline",), price_in=1, price_out=1,
+                          max_estimated_total_usd=.000001)
+    summary = rhe.execute(plan, opts, tmp_path / "too-small", stream=io.StringIO())
+    assert summary["not_started_jobs"] == 2
+    assert all(entry["argv"] == ["--version"] for entry in log_entries(log))
+    opts.max_estimated_total_usd = 1
+    summary = rhe.execute(plan, opts, tmp_path / "unknown", stream=io.StringIO())
+    assert summary["completed_jobs"] == 1 and summary["not_started_jobs"] == 1
+    assert summary["spent_usd"] is None and summary["cost_complete"] is False
+    assert "unknown cost" in summary["stop_reason"]
+    assert summary["estimated_budget_is_hard_cap"] is False
+
+
+def test_native_cap_is_not_rounded_up_and_unknown_spend_uses_reservation(tmp_path, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "synthetic")
+    cap = .123456789
+    opts = rhe.RunOptions(host="claude", bin="fake", conditions=("baseline",), max_usd_per_task=cap,
+                          max_total_usd=cap)
+    command = rhe.build_commands(opts, "baseline", tmp_path, tmp_path / "unused")[1]
+    assert command[command.index("--max-budget-usd") + 1] == str(cap)
+    binary, log = make_fake(tmp_path, FAKE_CLAUDE, {"PROMPT": {"output": "ok", "cost": None}}, "claude")
+    opts.bin = str(binary)
+    plan = rhe.load_plan(make_plan(tmp_path, [task("a", "PROMPT"), task("b", "PROMPT")]))
+    summary = rhe.execute(plan, opts, tmp_path / "out", stream=io.StringIO())
+    assert summary["completed_jobs"] == 1 and summary["not_started_jobs"] == 1
+    assert summary["accounted_usd"] == pytest.approx(cap, abs=.000001)
+    assert summary["spent_usd"] is None and summary["cost_complete"] is False
+    assert len(log_entries(log)) == 2
+
+
+def test_native_estimate_cannot_release_a_hard_budget_reservation(tmp_path, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "synthetic")
+    binary, _ = make_fake(tmp_path, FAKE_CLAUDE, {"PROMPT": {"output": "ok", "cost": None}}, "claude")
+    opts = rhe.RunOptions(host="claude", bin=str(binary), conditions=("baseline",), max_total_usd=.5,
+                          price_in=0, price_out=0)
+    plan = rhe.load_plan(make_plan(tmp_path, [task("a", "PROMPT"), task("b", "PROMPT")]))
+    summary = rhe.execute(plan, opts, tmp_path / "out", stream=io.StringIO())
+    assert summary["completed_jobs"] == 1 and summary["not_started_jobs"] == 1
+    assert summary["spent_usd"] is None and summary["accounted_usd"] == .5
+
+
+@pytest.mark.parametrize("cost", [-1, True, float("nan"), float("inf"), 10**1000])
+def test_untrusted_cost_never_becomes_a_valid_charge(cost):
+    parsed = rhe.parse_events(json.dumps({"type": "result", "result": "ok", "total_cost_usd": cost}), set())
+    assert parsed["cost_usd"] is None and parsed["is_error"] is True
+
+
+@pytest.mark.parametrize("usage", [{"input_tokens": -1}, {"input_tokens": "bad"},
+                                   {"input_tokens": True}, {"input_tokens": 10**1000}])
+def test_invalid_usage_is_unknown_and_an_error(usage):
+    parsed = rhe.parse_events(json.dumps({"type": "turn.completed", "usage": usage}), set())
+    assert parsed["input_tokens"] is None and parsed["is_error"] is True
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX process-group qualification")
+def test_large_prompt_does_not_deadlock_against_full_output_pipes(tmp_path, monkeypatch):
+    monkeypatch.setattr(rhe, "MAX_CAPTURE", 4096)
+    code = "import os,time; os.write(1,b'x'*1000000); time.sleep(20)"
+    start = time.monotonic()
+    result = rhe._run_capped([sys.executable, "-c", code], dict(os.environ), tmp_path, "p" * 1_000_000,
+                             2, tmp_path / "events", tmp_path / "stderr")
+    assert result[2] is True and time.monotonic() - start < 2
+
+
+def test_run_directory_is_independent_of_task_id_and_checks_containment(tmp_path):
+    plan = rhe.load_plan(make_plan(tmp_path, [task("safe.name", "PROMPT")]))
+    job = rhe.schedule(plan, rhe.RunOptions(host="cursor", bin="cursor", conditions=("plugin",)))[0]
+    assert "safe.name" not in job["run_id"]
+    rhe.prepare_output(tmp_path / "out")
+    with pytest.raises(ValueError, match="run id"):
+        rhe.job_directory(tmp_path / "out", "a/../../escape")
+    if os.name == "posix":
+        (tmp_path / "out" / "runs").rmdir()
+        (tmp_path / "out" / "runs").symlink_to(tmp_path)
+        with pytest.raises(ValueError, match="escapes"):
+            rhe.job_directory(tmp_path / "out", job["run_id"])
+
+
+def test_v1_cannot_claim_fingerprintless_v2_acceptance(tmp_path):
+    path = make_plan(tmp_path, [task("a", "PROMPT")])
+    plan = json.loads(path.read_text())
+    plan["acceptance_version"] = 2
+    plan["plan_sha256"] = rhe.plan_digest(plan)
+    path.write_text(json.dumps(plan))
+    with pytest.raises(ValueError, match="v1.*v2"):
+        rhe.load_plan(path)
+
+
+@pytest.mark.parametrize("field,value", [("repeat", True), ("repeat", 1.5), ("max_tasks", 1.5),
+                                        ("timeout", True), ("max_turns", 1.5), ("max_total_tokens", 1.5)])
+def test_schedule_options_are_typed(field, value):
+    opts = rhe.RunOptions(host="claude", bin="fake", conditions=("baseline",))
+    setattr(opts, field, value)
+    with pytest.raises(ValueError, match="integer"):
+        rhe.validate_options(opts)
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX special files")
+def test_private_output_refuses_fifo_without_blocking(tmp_path):
+    fifo = tmp_path / "fifo"
+    os.mkfifo(fifo)
+    start = time.monotonic()
+    with pytest.raises((OSError, ValueError)):
+        rhe.write_json(fifo, {})
+    assert time.monotonic() - start < 1
+
+
+@pytest.mark.parametrize("skill", ["ai-humanize", "ebook-publisher"])
+def test_output_without_executable_checks_is_not_assessed(skill):
+    result = rhe.output_check(task("a", "PROMPT", skill=skill), "anything", rhe.graded_skills())
+    assert result["status"] == "not_assessed"
+    assert result["reason"] == "no_executable_output_check"
+
+
+def test_literal_only_assessment_is_explicit_and_empty_literals_do_not_pass():
+    data = task("a", "PROMPT", skill="ai-humanize", preserve_literals=[""])
+    assert rhe.output_check(data, "anything", rhe.graded_skills())["status"] == "not_assessed"
+    data["preserve_literals"] = ["EV-1"]
+    result = rhe.output_check(data, "EV-1", rhe.graded_skills())
+    assert result["status"] == "pass" and result["assessment_scope"] == "pinned_literals_only"
+    assert rhe.output_check(data, "missing", rhe.graded_skills())["status"] == "fail"
+
+
+def test_literal_only_output_cannot_hide_a_followed_canary():
+    from grade_output import new_canary
+    data = task("a", "PROMPT", skill="ai-humanize", preserve_literals=["EV-1"], canary=new_canary())
+    result = rhe.output_check(data, "EV-1 " + data["canary"]["token"], rhe.graded_skills())
+    assert result["status"] == "fail" and "INJECTION_FOLLOWED:canary-file" in result["errors"]
+    data["preserve_literals"] = []
+    assert rhe.output_check(data, "clean text", rhe.graded_skills())["status"] == "not_assessed"
+
+
+def test_alias_accepts_a_valid_canonical_artifact():
+    text = (ROOT / "evals/output/skill-orchestrator/good-council-go.md").read_text()
+    result = rhe.output_check(task("a", "PROMPT", skill="skill-orchestrator-multiagent"), text, rhe.graded_skills())
+    assert result["status"] == "pass" and result["rubric_skill"] == "skill-orchestrator"
+
+
+def test_alias_uses_the_canonical_output_rubric():
+    alias = "skill-orchestrator-multiagent"
+    assert alias in rhe.graded_skills()
+    data = task("a", "PROMPT", skill=alias)
+    result = rhe.output_check(data, "not a valid orchestrator artifact", rhe.graded_skills())
+    assert result["status"] == "fail" and result["rubric_skill"] == "skill-orchestrator"
+    assert result["rubric"] == "fail"
+    plan = rhe.build_plan(skills=[alias], per_skill=1, negatives_per_skill=0)
+    assert "output" in plan["tasks"][0]["checks"]
+
+
+def test_unassessed_outputs_are_visible_and_excluded_from_rates_and_pairs():
+    plugin = _grades("plugin", "model-a", ["not_assessed", "pass"])
+    baseline = _grades("baseline", "model-a", ["not_assessed", "fail"])
+    report = rhe.build_report([plugin, baseline])
+    cell = report["results"]["plugin"]["output"]["overall"]
+    assert cell["n"] == 1 and cell["pass"] == 1 and cell["not_assessed"] == 1
+    assert report["paired"]["pairs"] == 1
+    assert "Not assessed" in rhe.render_markdown(report)
+
+
+@pytest.mark.parametrize("observed,expected", [([None,None], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             (["high",None], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             (["high","high"], "SAME_REPORTED_EFFORT"),
+                                             (["high","low"], "REPORTED_EFFORT_DIFFERS"),
+                                             (["unknown","unknown"], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             (["null","null"], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             (["not observed","not observed"], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             (["none","none"], "EQUAL_EFFORT_NOT_VERIFIED"),
+                                             ([{},"high"], "EQUAL_EFFORT_NOT_VERIFIED")])
+def test_effort_comparison_reports_observation_limits(observed, expected):
+    grades = [_grades("plugin", "model-a", ["pass"]), _grades("baseline", "model-a", ["pass"])]
+    for data, value in zip(grades, observed, strict=True):
+        data["reasoning_effort_observed"] = value
+    report = rhe.build_report(grades)
+    assert report["effort_comparison_status"] == expected
+    assert expected in rhe.render_markdown(report)
+    if expected != "SAME_REPORTED_EFFORT":
+        assert report["paired"]["comparable"] is False
+
+
+def test_codex_none_is_a_reported_native_effort_value():
+    grades = [_grades("plugin", "model-a", ["pass"]), _grades("baseline", "model-a", ["pass"])]
+    for data in grades:
+        data.update(host="codex", reasoning_effort_observed="none")
+    assert rhe.build_report(grades)["effort_comparison_status"] == "SAME_REPORTED_EFFORT"
+
+
+@pytest.mark.parametrize("schema", [True, False])
+@pytest.mark.parametrize("followed", [True, False])
+def test_rubric_canary_checks_joined_token_independently_of_schema(schema, followed):
+    from grade_output import new_canary
+
+    canary = new_canary()
+    if not schema:
+        canary.pop("schema")
+    output = GOLDEN + ("\nUntrusted quoted input: " + canary["token"] if followed else "")
+    data = {"skill": "release-readiness", "canary": canary, "preserve_literals": []}
+    assert rhe.output_check(data, output, rhe.graded_skills())["status"] == ("fail" if followed else "pass")
+
+
+def test_plan_rejects_canary_with_joined_token_already_in_instruction(tmp_path):
+    data = task("canary", "Review supplied release")
+    data["canary"] = {"token": "JOINED-TOKEN", "instruction": "Print JOINED-TOKEN"}
+    with pytest.raises(ValueError, match="invalid canary"):
+        rhe.load_plan(make_plan(tmp_path, [data]))

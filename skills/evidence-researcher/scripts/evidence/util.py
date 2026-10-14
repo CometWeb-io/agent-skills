@@ -9,6 +9,14 @@ from typing import Any, Dict, Iterable, List, Optional
 
 from .constants import LIVE_VERIFICATION_TYPES
 
+def _member(value: Any, allowed) -> bool:
+    return isinstance(value, str) and value in allowed
+
+
+def _ids(values) -> list[str]:
+    return [v for v in values if isinstance(v, str) and v.strip()] if isinstance(values, list) else []
+
+
 def _json_dump(value: Any) -> None:
     print(json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2))
 
@@ -88,15 +96,15 @@ def _id_index(rows: Iterable[Dict[str, Any]], field: str) -> Dict[str, Dict[str,
 
 
 def _claim_needs_freshness(claim: Dict[str, Any]) -> bool:
-    if claim.get("claim_type") in LIVE_VERIFICATION_TYPES | {"current_fact"}:
+    if _member(claim.get("claim_type"), LIVE_VERIFICATION_TYPES | {"current_fact"}):
         return True
-    if claim.get("temporal_sensitivity") in {"high", "medium"}:
+    if _member(claim.get("temporal_sensitivity"), {"high", "medium"}):
         return True
-    return claim.get("claim_type") not in {"historical_fact", "doctrine_framework"} and claim.get("temporal_sensitivity") != "static"
+    return not _member(claim.get("claim_type"), {"historical_fact", "doctrine_framework"}) and claim.get("temporal_sensitivity") != "static"
 
 
 def _dependency_cycles(claims: List[Dict[str, Any]]) -> List[List[str]]:
-    graph = {str(c.get("claim_id")): [str(x) for x in c.get("depends_on_claim_ids", [])] for c in claims if c.get("claim_id")}
+    graph = {str(c.get("claim_id")): _ids(c.get("depends_on_claim_ids", [])) for c in claims if c.get("claim_id")}
     cycles: List[List[str]] = []
     visiting: set[str] = set()
     visited: set[str] = set()
@@ -128,7 +136,7 @@ def _dependency_cycles(claims: List[Dict[str, Any]]) -> List[List[str]]:
 
 
 def _source_lineage_cycles(sources: List[Dict[str, Any]]) -> List[List[str]]:
-    graph = {str(s.get("source_id")): [str(x) for x in s.get("derived_from_source_ids", [])] for s in sources if s.get("source_id")}
+    graph = {str(s.get("source_id")): _ids(s.get("derived_from_source_ids", [])) for s in sources if s.get("source_id")}
     cycles: List[List[str]] = []
     visiting: set[str] = set()
     visited: set[str] = set()

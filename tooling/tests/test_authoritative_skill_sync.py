@@ -16,8 +16,8 @@ ROOT = Path(__file__).resolve().parents[2]
 # everywhere rather than half-registered.
 EXPECTED = {
     "founder-led-sales-operator": ("1.1.2", "FROZEN"),
-    "research-program-operator": ("1.3.3", "FROZEN"),
-    "portfolio-operator": ("1.2.4", "ACTIVE"),
+    "research-program-operator": ("1.3.4", "FROZEN"),
+    "portfolio-operator": ("1.2.5", "ACTIVE"),
     # 1.1.0 moved a frozen baseline. The freeze rationale in
     # docs/acceptance/longform-publisher-1.0.0.md allows a contract change, and
     # validate_report declares "-> list[str]" yet raised TypeError on a list or
@@ -31,8 +31,8 @@ EXPECTED = {
     # 1.1.4 fits the description, whole boundary included, in the shortest
     # observed host cut and gives each reference a load trigger; see the 1.1.4
     # exception.
-    "longform-publisher": ("1.1.5", "FROZEN"),
-    "product-operator": ("2.4.3", "ACTIVE"),
+    "longform-publisher": ("1.1.6", "FROZEN"),
+    "product-operator": ("2.4.4", "ACTIVE"),
 }
 
 SUPPORTED_HOSTS = {
@@ -173,9 +173,13 @@ def test_version_sync_covers_packages_without_routing_overrides(tmp_path, monkey
     package.mkdir()
     (package / "SKILL.md").write_text("placeholder")
     (package / "VERSION").write_text("1.0.1\n")
+    (package / "MATURITY.json").write_text(json.dumps({"schema": "cometweb.skill-maturity/v1",
+        "skill": "sample", "version": "1.0.1", "stage": "DEVELOPMENT",
+        "publication": "EXPERIMENTAL", "task_qualification": "not_established"}))
     monkeypatch.setattr(module, "SKILLS", tmp_path)
     monkeypatch.setattr(module, "OVERRIDES", {})
     current = {"skills": [{"id": "sample", "version": "1.0.0", "description": "kept", "routing_signals": []}]}
     result = module.desired_registry(current)
-    assert result["skills"][0] == {"id": "sample", "version": "1.0.1", "description": "kept", "routing_signals": []}
+    assert result["skills"][0] == {"id": "sample", "version": "1.0.1", "description": "kept", "routing_signals": [],
+                                  "maturity_stage": "DEVELOPMENT", "publication_channel": "EXPERIMENTAL"}
     assert current["skills"][0]["version"] == "1.0.0"

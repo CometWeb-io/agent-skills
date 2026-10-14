@@ -35,7 +35,12 @@ Decision preflight: [references/decision-preflight.md](references/decision-prefl
 
 ## 2. Ustal tryb i profil
 
-Użyj najmniejszego sensownego zakresu.
+Użyj minimalnego zakresu.
+
+Before choosing `context_scope`, read sekcję „Zakres danych” w [references/context-envelope.md](references/context-envelope.md).
+Ustaw `context_scope` w nowych envelope'ach. Zakresy: `public_example`, `workspace_private`, `project_context`. Brak pola w starszym envelope oznacza prywatny workspace.
+Klasyfikacja faktu nie może być mniej restrykcyjna niż klasyfikacja któregokolwiek jego źródła.
+Publiczna koperta CW-AIP wymaga `public_example`; sama zmiana etykiety koperty nie zmienia klasyfikacji danych.
 
 **Tryby**
 - `targeted` — jedno pytanie / jeden obszar.
@@ -43,24 +48,19 @@ Użyj najmniejszego sensownego zakresu.
 - `delta` — porównanie z jawnym baseline'em.
 - `full` — pełny portfolio/boardroom refresh tylko przy wyraźnym szerokim zakresie.
 
-**Profile**
-- `product` — jeden produkt/repo/release context.
-- `portfolio` — kilka lub wszystkie projekty CometWeb + cross-project dependencies.
-- `gtm` — positioning, pricing, packaging, ICP, GTM.
-- `outreach` — design partner/prospect/outbound context.
-- `brand` — marka/content/public surfaces.
-- `meeting` — spotkanie z kontekstem osób, komunikacji i projektu.
-- `weekly` — boardroom/weekly operating refresh.
-- `claim-verification` — public claim + evidence/publication surface.
-- `custom` — tylko jeśli żaden profil nie pasuje.
+Przed wyborem profilu przeczytaj sekcję „11. Minimalny context set per profil” w
+[references/source-registry.md](references/source-registry.md).
 
-Jeśli execution jest dostępny, planner może pomóc:
+Planner:
 
 ```bash
 python3 scripts/context_plan.py "<cel użytkownika>" --json
 ```
 
-Planner nie jest źródłem prawdy. Nie uruchamiaj go, jeśli profil jest oczywisty.
+Planner nie jest źródłem prawdy. Pomijaj go dla oczywistego profilu.
+Przekaż `--context-scope`; dla `project_context` także `--project-ref`.
+W `public_example` wykluczone prywatne grupy nie są pobierane; brak wymaganego
+governance pozostaje gapem, nie zwalnia z First Principles.
 
 ## 3. Routing narzędzi i źródeł
 
@@ -77,6 +77,7 @@ Dla materialnych decyzji produktowych, portfolio, GTM, pricing, packaging, ICP, 
 3. przekaż downstream constraint: pełny FP-6 albo fast path zgodnie z kanoniczną doktryną,
 4. nie przeprowadzaj sam Council verdictu ani nie zapisuj FP TRACE.
 
+W `public_example` nie pobieraj prywatnej doktryny; brak wymaganego governance oznacz jako gap.
 Dla zwykłej mechanicznej realizacji wcześniejszej decyzji nie dokładaj governance theatre.
 
 ## 5. Zbieraj minimalny context set
@@ -85,16 +86,17 @@ Before retrieval for the chosen profile, read sekcję „11. Minimalny context s
 
 ## 6. Repo snapshot tylko gdy lokalny checkout naprawdę istnieje
 
-Jeśli lokalny filesystem jest dostępny:
+W `public_example` nie uruchamiaj lokalnego retrievalu; helper zwraca `NOT_RUN`.
+W pozostałych zakresach, gdy filesystem jest dostępny:
 
 ```bash
-python3 scripts/repo_snapshot.py --json
+python3 scripts/repo_snapshot.py --context-scope <zakres> --json
 ```
 
 Skrypt nie ujawnia lokalnych ścieżek domyślnie. Jeśli root nie istnieje, wynik ma wskazać fallback do bieżącego GitHub connectora. Nie traktuj brakującego lokalnego checkoutu jako braku repozytorium.
 
 Lista repo: [references/repos.txt](references/repos.txt), rozszerzana o nieśledzony
-`references/repos.local.txt`, jeśli istnieje.
+`references/repos.local.txt` tylko w `workspace_private`. W `project_context` przekaż jeden `--repo`.
 
 ## 7. Provenance, freshness i konflikty
 

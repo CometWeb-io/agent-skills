@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from ..constants import PROVENANCE_LANES, SOURCE_CLASSES, SOURCE_ROLES
-from ..util import _source_lineage_cycles
+from ..util import _member, _source_lineage_cycles
 from .context import LedgerValidationState
 
 
@@ -21,18 +21,18 @@ def validate(ledger: Dict[str, Any], state: LedgerValidationState) -> None:
             errors.append(f"{sid}.title is required")
         if not source.get("canonical_ref"):
             errors.append(f"{sid}.canonical_ref is required")
-        if source.get("source_class") not in SOURCE_CLASSES:
+        if not _member(source.get("source_class"), SOURCE_CLASSES):
             errors.append(f"{sid}.source_class is invalid")
-        if source.get("source_role") not in SOURCE_ROLES:
+        if not _member(source.get("source_role"), SOURCE_ROLES):
             errors.append(f"{sid}.source_role is invalid")
-        if source.get("provenance_lane") not in PROVENANCE_LANES:
+        if not _member(source.get("provenance_lane"), PROVENANCE_LANES):
             errors.append(f"{sid}.provenance_lane is invalid")
         derived = source.get("derived_from_source_ids", [])
         if not isinstance(derived, list):
             errors.append(f"{sid}.derived_from_source_ids must be a list")
             derived = []
         for parent in derived:
-            if parent not in source_ids:
+            if not _member(parent, source_ids):
                 errors.append(f"{sid} derives from unknown source_id {parent}")
             if parent == source.get("source_id"):
                 errors.append(f"{sid} cannot derive from itself")

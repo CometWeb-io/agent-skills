@@ -23,6 +23,14 @@ REQUIRED = {
     "evidence_pack_hash",
 }
 ALLOWED = REQUIRED | {"handoff"}
+KNOWLEDGE_BASES = {"verified_fact", "user_supplied", "assumption", "framework_method"}
+CONTRADICTION_FIELDS = {
+    "status": ("resolved", "unresolved"),
+    "resolution": ("RESOLVED_SCOPE", "RESOLVED_TIME", "RESOLVED_DEFINITION", "RESOLVED_METHOD",
+                   "RESOLVED_SUPERSEDED", "RESOLVED_AUTHORITY", "UNRESOLVED"),
+    "materiality": ("critical", "material", "supporting"),
+    "severity": ("critical", "material", "supporting"),
+}
 
 
 def fail(message: str) -> None:
@@ -75,7 +83,16 @@ def validate_fallback(data: dict[str, Any]) -> None:
             fail("evidence_edges.admission must be ACCEPTED|CONTEXT_ONLY|REJECTED")
 
     require_object_list(data.get("gaps"), "gaps")
-    require_object_list(data.get("contradictions"), "contradictions")
+    for row in require_object_list(data.get("contradictions"), "contradictions"):
+        for key, choices in CONTRADICTION_FIELDS.items():
+            if key in row and (not isinstance(row[key], str) or row[key] not in choices):
+                fail(f"contradictions.{key} is invalid")
+        if not ("status" in row or "resolution" in row):
+            fail("contradictions requires status or resolution")
+        if not ("materiality" in row or "severity" in row):
+            fail("contradictions requires materiality or severity")
+        if "claim_id" in row and (not isinstance(row["claim_id"], str) or not row["claim_id"]):
+            fail("contradictions.claim_id must be a non-empty string")
     handoff = data.get("handoff")
     if handoff is not None:
         if not isinstance(handoff, dict):
@@ -131,14 +148,33 @@ def validate_semantics(data: dict[str, Any]) -> None:
         if claim.get("epistemic_kind") == "INFERENCE" and claim.get("status") == "VERIFIED":
             fail(f"{cid}: INFERENCE cannot be VERIFIED")
 
+        if "basis" in claim:
+            basis = claim["basis"]
+            if not isinstance(basis, str) or basis not in KNOWLEDGE_BASES:
+                fail(f"{cid}: invalid knowledge basis")
+            if basis == "verified_fact" and (claim.get("epistemic_kind"), claim.get("status")) not in {
+                    ("FACT", "VERIFIED"), ("INFERENCE", "SUPPORTED"), ("INFERENCE", "SUPPORTED_INFERENCE")}:
+                fail(f"{cid}: verified_fact requires verified FACT or supported INFERENCE lineage")
+            if basis != "verified_fact" and claim.get("status") == "VERIFIED":
+                fail(f"{cid}: a nonfact basis cannot be VERIFIED")
+        if "scope" in claim and (not isinstance(claim["scope"], dict) or not claim["scope"]):
+            fail(f"{cid}: scope must be an explicit nonempty object")
+        if "scope" in claim:
+            json.dumps(claim["scope"], allow_nan=False)
+
     supported = set()
+    contradicted = set()
     for edge in data.get("evidence_edges") or []:
+        if "basis" in edge and (not isinstance(edge["basis"], str) or edge["basis"] not in KNOWLEDGE_BASES):
+            fail("evidence edge has invalid knowledge basis")
         if edge.get("claim_id") not in claim_ids:
             fail(f"edge {edge.get('edge_id')} unknown claim_id")
         if edge.get("source_id") not in source_ids:
             fail(f"edge {edge.get('edge_id')} unknown source_id")
         if edge.get("direction") == "SUPPORT" and edge.get("admission") == "ACCEPTED":
             supported.add(edge.get("claim_id"))
+        if edge.get("direction") == "CONTRADICT" and edge.get("admission") == "ACCEPTED":
+            contradicted.add(edge.get("claim_id"))
 
     # VERIFIED means the FACT has accepted evidence (evidence-graph.md); a
     # label with no accepted SUPPORT edge behind it is an assertion, not a result.
@@ -150,10 +186,30 @@ def validate_semantics(data: dict[str, Any]) -> None:
         for gap in data.get("gaps") or []:
             if isinstance(gap, dict) and gap.get("blocking"):
                 fail("READY cannot have blocking gaps")
-        for contradiction in data.get("contradictions") or []:
-            if isinstance(contradiction, dict) and contradiction.get("status") == "unresolved":
-                if contradiction.get("materiality") in {"critical", "material"}:
-                    fail("READY cannot have unresolved material contradictions")
+
+    contradiction_claims = set()
+    for row in data.get("contradictions") or []:
+        if "claim_id" in row:
+            if row["claim_id"] not in claim_ids:
+                fail(f"contradiction record unknown claim_id: {row['claim_id']}")
+            contradiction_claims.add(row["claim_id"])
+        # Neither vocabulary may erase an explicit unresolved/material state in the other.
+        unresolved = row.get("status") == "unresolved" or row.get("resolution") == "UNRESOLVED"
+        material = any(row.get(key) in {"critical", "material"} for key in ("materiality", "severity"))
+        if data.get("readiness") == "READY" and unresolved and material:
+            fail("READY cannot have unresolved material contradictions")
+    for cid in sorted(contradicted - contradiction_claims):
+        fail(f"{cid}: ACCEPTED CONTRADICT requires a same-claim contradiction record")
+
+    if data.get("readiness") == "READY":
+        for claim in data.get("material_claims") or []:
+            if (claim.get("materiality") in {"critical", "material"}
+                    and claim.get("epistemic_kind") == "FACT" and claim.get("status") != "VERIFIED"):
+                fail(f"{claim.get('claim_id')}: READY requires material FACT status VERIFIED")
+            if (claim.get("materiality") in {"critical", "material"}
+                    and claim.get("epistemic_kind") == "INFERENCE"
+                    and claim.get("status") not in {"SUPPORTED", "SUPPORTED_INFERENCE"}):
+                fail(f"{claim.get('claim_id')}: READY requires material INFERENCE status SUPPORTED or SUPPORTED_INFERENCE")
 
 
 def validate(data: dict[str, Any]) -> None:

@@ -118,7 +118,9 @@
           "reason": "material evidence gate satisfied",
           "validation.valid": true,
           "validation.errors": [],
-          "validation.warnings": [],
+          "validation.warnings": [
+            "clm_policy.basis is unassessed; legacy metadata does not establish observed fact eligibility"
+          ],
           "coverage.material_ready_rate": 1.0,
           "coverage.critical_gaps": []
         }
@@ -481,7 +483,9 @@
           "errors": [
             "clm_policy is INFERENCE and cannot be marked VERIFIED"
           ],
-          "warnings": []
+          "warnings": [
+            "clm_policy.basis is unassessed; legacy metadata does not establish observed fact eligibility"
+          ]
         }
       }
     },
@@ -598,7 +602,9 @@
           "errors": [
             "schema_version must be 2.0; use migrate-v1 for v1 ledgers"
           ],
-          "warnings": []
+          "warnings": [
+            "clm_policy.basis is unassessed; legacy metadata does not establish observed fact eligibility"
+          ]
         }
       }
     },

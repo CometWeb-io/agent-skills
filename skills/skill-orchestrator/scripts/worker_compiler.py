@@ -120,7 +120,7 @@ def compile_task(task, plan, step, prior, root, *, previous_error=None):
                   compiled_worker_version="cometweb.local-worker/v2" if step.get("native_report_contract") else "cometweb.local-worker/v1", previous_attempt_error=previous_error, instruction_arm=plan.get("instruction_arm", "candidate"))
     return result
 
-def compile_council_role(task, role, root, *, research, prior, memos=None, judge=None):
+def compile_council_role(task, role, root, *, research, prior, memos=None, judge=None, check_plan=None, source_root=None):
     if task.get("skill") != "ai-council" or not task.get("compiled_worker_version"):
         raise ValueError("Council roles require a compiled ledger task")
     if role not in {"blind-technical", "blind-product", "judge", "chair"}:
@@ -129,10 +129,10 @@ def compile_council_role(task, role, root, *, research, prior, memos=None, judge
     context = task["domain_context"]
     kernel = domain._council()
     contract = kernel.compile_decision_contract(context["question"], context["context"])
-    audit = domain.validate_research(research["payload"])
-    ready = [c["claim_id"] for c in audit["coverage"]["claims"] if c["ready"]]
+    audit, assessment = domain.assess_research(research["payload"], context, check_plan=check_plan, source_root=source_root)
+    ready = assessment["eligible_premise_ids"]
     inputs = {"decision_contract": contract, "council_plan": kernel.plan_council(contract, "LIGHT"),
-              "research": research, "prior_envelopes": prior, "kernel_ready_claim_ids": ready}
+              "research": research, "prior_envelopes": prior, "eligible_premise_ids": ready, "basis_assessment": assessment, "consumer_evidence_use": context.get("evidence_use")}
     if role.startswith("blind-"):
         if memos is not None or judge is not None:
             raise ValueError("blind memo cannot receive peers or judge")
@@ -143,20 +143,20 @@ def compile_council_role(task, role, root, *, research, prior, memos=None, judge
             raise ValueError("Judge needs exactly two blind memos")
         suffix = "judge"
         inputs["blind_memos"] = memos
-        instruction = "Admit only kernel_ready_claim_ids, often empty. Preserve minority, identify unresolved gaps and false certainty. controls_implemented false if no supplied implementation evidence. Use exact enums."
+        instruction = "Admit only eligible_premise_ids, often empty. Nonfact premises retain their basis and caveats; they never count as observed facts. Preserve minority, identify unresolved gaps and false certainty. controls_implemented false if no supplied implementation evidence. Use exact enums."
     else:
         if not isinstance(memos, list) or len(memos) != 2 or not isinstance(judge, dict):
             raise ValueError("Chair needs two memos and a Judge report")
         admitted = judge["accepted_claim_ids"]
         if not set(admitted).issubset(ready):
             raise ValueError("Judge admitted nonready evidence")
-        material = {c["claim_id"] for c in research["payload"]["evidence_graph"]["claims"] if c["materiality"] in {"critical", "material"}}
-        threshold = kernel.required_confidence(contract, len(set(admitted) & material) / max(1, audit["coverage"]["material_claim_count"]), context["decision_value"])
+        facts = set(assessment["required_fact_ids"])
+        threshold = kernel.required_confidence(contract, len(set(admitted) & set(assessment["observed_fact_ids"])) / max(1, len(facts)), context["decision_value"])
         inputs = {"decision_contract": contract, "required_confidence_kernel": threshold, "blind_memos": memos,
                   "judge": judge, "admitted_claims": [c for c in research["payload"]["evidence_graph"]["claims"] if c["claim_id"] in admitted],
-                  "scope": "bounded design/review only, no execution", "independence": "same-provider/model blind I1; not human evidence"}
+                  "scope": assessment["scope"], "basis_assessment": assessment, "consumer_evidence_use": context.get("evidence_use"), "execution_authorized": False, "independence": "same-provider/model blind I1; not human evidence"}
         suffix = "proposal"
-        instruction = "Return original Chairman proposal. required_confidence exactly the supplied kernel threshold; freshness exactly Judge state. DEFER for unresolved material gaps. No execution, memory mutation or fabricated experiment parameters."
+        instruction = "Return original Chairman proposal. required_confidence exactly the supplied kernel threshold; freshness exactly Judge state. DEFER when basis_assessment is ineligible. A qualified trial remains TEST; method/planning conclusions apply only to that scope. No execution, memory mutation or fabricated experiment parameters."
     # Keep feedback on every role, including the Chair's replaced input object.
     inputs["previous_attempt_error"] = task.get("previous_attempt_error")
     if inputs["previous_attempt_error"]:

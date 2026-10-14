@@ -8,6 +8,7 @@ import sys
 from .audit import audit
 from .constants import VERSION
 from .coverage_ops import coverage
+from .observations import observe_facts
 from .delta import delta
 from .identity import canonical_url, fingerprint_source, make_id, pack_hash, source_policy
 from .migrate import migrate_v1
@@ -57,6 +58,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--old-ledger-json", required=True)
     p.add_argument("--new-ledger-json", required=True)
 
+    p = sub.add_parser("observe", help="rerun consumer-owned checks against controlled local JSON sources")
+    p.add_argument("--ledger-json", required=True)
+    p.add_argument("--check-plan-json", required=True)
+    p.add_argument("--source-root", required=True)
+    p.add_argument("--consumer-context-json", required=True)
+
     p = sub.add_parser("stop")
     p.add_argument("--ledger-json", required=True)
     p.add_argument("--no-novelty-rounds", type=int, default=0)
@@ -91,6 +98,11 @@ def main() -> int:
             _json_dump(validate_ledger(_load_json(args.ledger_json)))
         elif args.command == "coverage":
             _json_dump(coverage(_load_json(args.ledger_json)))
+        elif args.command == "observe":
+            result = observe_facts(_load_json(args.ledger_json), _load_json(args.check_plan_json),
+                                   args.source_root, _load_json(args.consumer_context_json))
+            _json_dump(result)
+            return 0 if result["status"] == "CHECKED" else 1
         elif args.command == "audit":
             result = audit(_load_json(args.ledger_json))
             _json_dump(result)

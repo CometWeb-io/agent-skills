@@ -12,9 +12,17 @@ HEX64=re.compile(r'^[0-9a-f]{64}$')
 
 def _text(v): return isinstance(v,str) and bool(v.strip())
 def _member(v,allowed): return isinstance(v,str) and v in allowed
-def _ids(v): return isinstance(v,list) and all(_text(x) for x in v) and len(v)==len(set(v))
+def _ids(v): return isinstance(v,list) and bool(v) and all(_text(x) for x in v) and len(v)==len(set(v))
 def _metric_block(v): return isinstance(v,dict) and all(isinstance(v.get(k),int) and not isinstance(v.get(k),bool) and v.get(k)>=0 for k in ('passed','total','trigger_tp','trigger_fp','trigger_fn'))
 def _rate(a,b): return a/b if b else None
+
+def _finite_nonnegative(v, positive=False):
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
+        return False
+    try:
+        return math.isfinite(v) and (v > 0 if positive else v >= 0)
+    except (OverflowError, TypeError):
+        return False
 
 def validate(x):
     if not isinstance(x,dict): return {'status':'INVALID','errors':['payload:not-object'],'promotion_eligible':False}
@@ -39,10 +47,13 @@ def validate(x):
         if not isinstance(v,int) or isinstance(v,bool) or v<1: errors.append(key)
     runs=x.get('runs_per_case')
     if not isinstance(runs,int) or isinstance(runs,bool) or runs<1: errors.append('runs_per_case')
+    for flag in ('runtime_executed','uses_llm_judge'):
+        if flag in x and not isinstance(x[flag],bool): errors.append(f'{flag}:boolean')
     runtime=x.get('runtime_executed') is True
     judge=x.get('judge_agreement',{'status':'NOT_USED'})
     if not isinstance(judge,dict) or not _member(judge.get('status'),AGREEMENT): errors.append('judge_agreement:invalid')
-    elif x.get('uses_llm_judge') is True and mode=='DEEP' and judge.get('status')!='CALIBRATED': errors.append('judge_agreement:deep-not-calibrated')
+    elif x.get('uses_llm_judge') is True and execution!='SPEC_ONLY' and judge.get('status')!='CALIBRATED': errors.append('judge_agreement:deep-not-calibrated' if mode=='DEEP' else 'judge_agreement:not-calibrated')
+    if execution=='LOCAL_DETERMINISTIC' and x.get('uses_llm_judge') is True: errors.append('local-deterministic:llm-judge')
     pareto=x.get('pareto_status','NOT_COMPUTED')
     if not _member(pareto,PARETO): errors.append('pareto_status:invalid')
     paired=x.get('paired_analysis',{'status':'NOT_USED'})
@@ -61,6 +72,11 @@ def validate(x):
         if mode=='DEEP':
             if _member(paired_status,{'NOT_USED','INSUFFICIENT_DATA'}): errors.append('paired_analysis:deep-required')
             if stability_status!='STABLE': errors.append('stability:deep-not-stable')
+    policy=x.get('promotion_policy',{})
+    if not isinstance(policy,dict): errors.append('promotion_policy:not-object'); policy={}
+    min_delta=policy.get('min_pass_rate_delta',0.05); precision_floor=policy.get('trigger_precision_floor',0.90); recall_floor=policy.get('trigger_recall_floor',0.90); max_token_ratio=policy.get('max_token_ratio',1.50); max_duration_ratio=policy.get('max_duration_ratio',2.00)
+    for key,val in [('min_pass_rate_delta',min_delta),('trigger_precision_floor',precision_floor),('trigger_recall_floor',recall_floor),('max_token_ratio',max_token_ratio),('max_duration_ratio',max_duration_ratio)]:
+        if not _finite_nonnegative(val): errors.append(f'promotion_policy:{key}')
     if execution=='SPEC_ONLY':
         if runtime: errors.append('spec-only:runtime-flag')
         if errors: return {'status':'INVALID','errors':errors,'promotion_eligible':False}
@@ -74,11 +90,6 @@ def validate(x):
     if _metric_block(cand) and _metric_block(base) and cand['total']!=base['total']: errors.append('metrics:total-mismatch')
     regress=x.get('invariant_regressions',0)
     if not isinstance(regress,int) or isinstance(regress,bool) or regress<0: errors.append('invariant_regressions')
-    policy=x.get('promotion_policy',{})
-    if not isinstance(policy,dict): errors.append('promotion_policy:not-object'); policy={}
-    min_delta=policy.get('min_pass_rate_delta',0.05); precision_floor=policy.get('trigger_precision_floor',0.90); recall_floor=policy.get('trigger_recall_floor',0.90); max_token_ratio=policy.get('max_token_ratio',1.50); max_duration_ratio=policy.get('max_duration_ratio',2.00)
-    for key,val in [('min_pass_rate_delta',min_delta),('trigger_precision_floor',precision_floor),('trigger_recall_floor',recall_floor),('max_token_ratio',max_token_ratio),('max_duration_ratio',max_duration_ratio)]:
-        if not isinstance(val,(int,float)) or isinstance(val,bool) or val<0: errors.append(f'promotion_policy:{key}')
     if errors: return {'status':'INVALID','errors':errors,'promotion_eligible':False,'paired_status':paired_status,'stability_status':stability_status}
     common={'errors':[],'paired_status':paired_status,'stability_status':stability_status}
     if paired_status=='SIGNIFICANT_REGRESSION': return {'status':'REGRESSION','promotion_eligible':False,'empirical_claim_allowed':True,**common}
@@ -93,14 +104,7 @@ def validate(x):
     if regress>0 or delta<0: return {'status':'REGRESSION','promotion_eligible':False,**metrics,**common}
     if precision<precision_floor or recall<recall_floor: return {'status':'TRADEOFF','promotion_eligible':False,'tradeoff':'TRIGGER_QUALITY',**metrics,**common}
     ct=cand.get('tokens'); bt=base.get('tokens'); cd=cand.get('duration_s'); bd=base.get('duration_s')
-    def resource(v, baseline=False):
-        if isinstance(v, bool) or not isinstance(v, (int, float)):
-            return False
-        try:
-            return math.isfinite(v) and (v > 0 if baseline else v >= 0)
-        except (OverflowError, TypeError):
-            return False
-    if not all((resource(ct), resource(bt, True), resource(cd), resource(bd, True))):
+    if not all((_finite_nonnegative(ct), _finite_nonnegative(bt, True), _finite_nonnegative(cd), _finite_nonnegative(bd, True))):
         return {'status':'INSUFFICIENT_EVIDENCE','promotion_eligible':False,'resource_reason':'MISSING_OR_INVALID_MEASUREMENTS',**metrics,**common}
     try:
         token_ratio, duration_ratio = ct / bt, cd / bd
@@ -111,7 +115,7 @@ def validate(x):
     metrics.update({'token_ratio':round(token_ratio,3),'duration_ratio':round(duration_ratio,3)})
     if token_ratio>max_token_ratio or duration_ratio>max_duration_ratio: return {'status':'TRADEOFF','promotion_eligible':False,'tradeoff':'RESOURCE_BUDGET',**metrics,**common}
     if mode=='DEEP' and execution=='REAL_HOST' and paired_status=='INCONCLUSIVE': return {'status':'INSUFFICIENT_EVIDENCE','promotion_eligible':False,**metrics,**common}
-    if delta>=min_delta:
+    if delta>0 and delta>=min_delta:
         if mode=='DEEP' and execution=='REAL_HOST' and paired_status!='SIGNIFICANT_IMPROVEMENT':
             return {'status':'NO_MATERIAL_CHANGE','promotion_eligible':False,'empirical_claim_allowed':True,**metrics,**common}
         return {'status':'IMPROVED','promotion_eligible':True,'empirical_claim_allowed':True,**metrics,**common}

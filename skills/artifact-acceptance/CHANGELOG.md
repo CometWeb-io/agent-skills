@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.6] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.7.5] - 2026-10-08
 
 - Reject malformed gate/control flags and require declared profile gates to be marked required.

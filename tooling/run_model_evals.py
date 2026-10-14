@@ -68,6 +68,34 @@ def instructions(root: Path, case: dict) -> dict:
         if check_blob(name, text.encode(), public=False):
             raise ValueError("potential credential in outbound instructions")
         result[name] = text
+    registry_path = safe_path(root, "registry/skills.json")
+    aliases = {}
+    if registry_path.exists():
+        registry = json.loads(registry_path.read_text(encoding="utf-8"))
+        if not isinstance(registry, dict) or not isinstance(registry.get("skills"), list):
+            raise ValueError("invalid alias registry")
+        for row in registry["skills"]:
+            if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+                raise ValueError("invalid alias registry entry")
+            skill = identifier(row["id"])
+            if skill in aliases:
+                raise ValueError("duplicate alias registry entry")
+            aliases[skill] = row.get("alias_of")
+    skill, seen = case["skill"], {case["skill"]}
+    while aliases.get(skill) is not None:
+        target = aliases[skill]
+        if not isinstance(target, str):
+            raise ValueError("invalid canonical skill identifier")
+        identifier(target)
+        if target in seen or target not in aliases:
+            raise ValueError("cyclic or unregistered canonical skill")
+        seen.add(target)
+        name = f"skills/{target}/SKILL.md"
+        text = safe_path(root, name).read_text(encoding="utf-8")
+        if check_blob(name, text.encode(), public=False):
+            raise ValueError("potential credential in outbound instructions")
+        result[f"alias-of/{target}/SKILL.md"] = text
+        skill = target
     return result
 
 
@@ -205,9 +233,20 @@ def run(suite: dict, current: Path, candidate: Path, command: list[str], output:
             break
     models = sorted({r["response"]["model"] for r in records if r["status"] == "executed"})
     hosts = sorted({r["response"]["host"] for r in records if r["status"] == "executed"})
+    # A model/host match is insufficient if different instruction priorities or
+    # native-vs-simulated skill loading were mixed into the same experiment.
+    profiles = sorted({
+        json.dumps({
+            "execution_surface": r["response"].get("execution_surface", "undeclared"),
+            "instruction_placement": r["response"].get("instruction_placement", "undeclared"),
+            "native_skill_activation": r["response"].get("native_skill_activation", "undeclared"),
+        }, sort_keys=True)
+        for r in records if r["status"] == "executed"
+    })
     result = {**manifest, "finished_at":dt.datetime.now(dt.timezone.utc).isoformat(), "completed_runs":sum(r["status"] == "executed" for r in records),
               "errors":sum(r["status"] == "error" for r in records), "model_ids":models, "host_ids":hosts,
-              "comparison_status":"unreviewed" if len(models) == len(hosts) == 1 and len(records) == len(jobs) and all(r["status"] == "executed" for r in records) else "incomplete_or_unmatched",
+              "execution_profiles":[json.loads(profile) for profile in profiles],
+              "comparison_status":"unreviewed" if len(models) == len(hosts) == len(profiles) == 1 and len(records) == len(jobs) and all(r["status"] == "executed" for r in records) else "incomplete_or_unmatched",
               "quality_verdict":"pending_human_review", "runtime_installation_acceptance":"not_assessed"}
     (output / "summary.json").write_bytes(canonical(result))
     if result["comparison_status"] == "unreviewed":

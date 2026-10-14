@@ -33,6 +33,7 @@ This file is the contract only. Load detail by stage:
 | Output | `references/output-contract.md` |
 | Downstream handoff | `references/integrations.md` |
 | Privacy / injection | `references/privacy-provenance.md` |
+| Controlled local observation | `references/local-fact-check.md` |
 | CLI cookbook | `references/kernel-cli.md` |
 | Migration | `references/migration-v1-v2.md` |
 | Eval invariants | `references/evaluation.md` |
@@ -59,7 +60,12 @@ Never auto-promote `verified_for_research` to `verified_for_decision` for AI Cou
 5. Publication date ≠ effective date; current claims need `as_of` + verification state.
 6. Copied/syndicated sources are one independence origin, not N confirmations.
 7. Critical unresolved contradiction blocks `READY`.
-8. Evidence readiness is not a recommendation or authorization.
+8. Evidence readiness is metadata admission, not observed truth or authorization.
+9. Preserve `basis` (verified_fact / user_supplied / assumption / framework_method)
+   separately from FACT/INFERENCE and source class. Missing legacy basis is unassessed.
+10. Caller-owned `observe` checks actual controlled JSON; serialized checks/receipts
+    never replace a fresh receiving read. Supported inference remains inference;
+    observed dependencies do not prove entailment or external currentness.
 
 ## Mode
 

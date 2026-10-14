@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.7.7] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
+## [1.7.6] - 2026-10-11
+
+- Add a standalone UTF-8 body word-range CLI with inclusive bounds, JSON count/verdict, fail-closed input checks, and documented raw Unicode-whitespace counting.
+- Run requested length checks on the explicit body file; fix failures and rerun without mixing in separate notes or implying semantic validation.
+
+## [1.7.5] - 2026-10-10
+
+- Check artifact word ranges separately from claim ledgers and source maps; meet them with supported explanation rather than filler.
+
 ## [1.7.4] - 2026-10-03
 
 - A report that is not an object reported mode `DRAFT`, and one with a non-list `claims` defaulted to `DRAFT` too, although the documented default is `FINAL`; both now report `FINAL` unless the report names another mode.

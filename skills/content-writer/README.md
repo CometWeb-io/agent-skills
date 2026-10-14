@@ -1,6 +1,6 @@
 # Content Writer
 
-Version **1.7.4**.
+Version **1.7.7**.
 
 Create evidence-aware informational or editorial prose such as articles, guides, reports, documentation, research-backed explainers, and other bounded knowledge content from an explicit brief or sufficiently clear request. Use when the user wants the actual written artifact and factual integrity, reader utility, structure, and claim discipline matter. Do not use primarily for persuasion-first landing-page copy, ads, lifecycle or cold email, generic copy-editing, humanization-only rewrites, long-form publication/release orchestration, hostile critique, or primary research collection; route those to the relevant copy, email, ai-humanize, longform-publisher, evidence-researcher, content-reviewer, or content-roaster specialist when available.
 
@@ -15,6 +15,8 @@ python3 -B scripts/run_evals.py
 ```
 
 `evals/cases.json` is the deterministic contract suite. `evals/real-host.json` contains natural-discovery, forced-invocation, negative-control, and instruction-boundary cases for an authenticated real-agent harness. The latter are specifications until actually run on a host.
+
+When a word range is requested, use `scripts/word_range.py` on an explicit body-only UTF-8 file; see [the counting convention and CLI contract](references/word-range.md).
 
 ## Evidence boundary
 

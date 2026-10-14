@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.2] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.8.1] - 2026-10-08
 
 - Require boolean strict/safety flags and list-shaped systemic evidence before promotion.

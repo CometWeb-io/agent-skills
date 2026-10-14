@@ -23,6 +23,103 @@ def ledger():
     return base.EvidenceKernelV2Tests().base_ledger()
 
 
+@pytest.mark.parametrize("value", [[], {}, ["invalid"], {"value": "invalid"}])
+@pytest.mark.parametrize("path", [
+    ("research_contract", "mode"), ("research_contract", "privacy_lane"),
+    ("claims", 0, "claim_type"), ("claims", 0, "materiality"),
+    ("claims", 0, "temporal_sensitivity"), ("claims", 0, "epistemic_kind"),
+    ("claims", 0, "status"), ("claims", 0, "confidence"),
+    ("sources", 0, "source_class"), ("sources", 0, "source_role"),
+    ("sources", 0, "provenance_lane"),
+    ("evidence", 0, "direction"), ("evidence", 0, "admission"),
+    ("evidence", 0, "authority_fit"), ("evidence", 0, "directness"),
+    ("evidence", 0, "scope_fit"), ("evidence", 0, "measurement_quality"),
+    ("searches", 0, "purpose"), ("searches", 0, "source_lane"),
+    ("contradictions", 0, "resolution"), ("contradictions", 0, "severity"),
+    ("gaps", 0, "severity"),
+])
+def test_malformed_enum_values_fail_validation_and_cannot_make_audit_ready(path, value):
+    data = ledger()
+    data["contradictions"] = [{
+        "contradiction_id": "ctr_scope", "claim_id": "clm_policy", "evidence_ids": [],
+        "resolution": "RESOLVED_SCOPE", "severity": "supporting",
+    }]
+    data["gaps"] = [{
+        "gap_id": "gap_minor", "claim_id": "clm_policy", "severity": "minor",
+        "what_closes_it": "Check optional appendix",
+    }]
+    assert kernel.validate_ledger(data)["valid"] is True
+    target = data
+    for part in path[:-1]:
+        target = target[part]
+    target[path[-1]] = value
+    result = kernel.validate_ledger(data)
+    assert result["valid"] is False
+    assert result["errors"]
+    audit = kernel.audit(data)
+    assert audit["research_status"] != "READY"
+    assert audit["validation"]["valid"] is False
+
+
+@pytest.mark.parametrize("value", [[], {}, ["invalid"], {"value": "invalid"}])
+@pytest.mark.parametrize("path", [
+    ("claims", 0, "claim_id"), ("sources", 0, "source_id"),
+    ("evidence", 0, "evidence_id"), ("evidence", 0, "claim_id"),
+    ("evidence", 0, "source_id"), ("searches", 0, "search_id"),
+    ("searches", 0, "claim_id"), ("searches", 0, "result_source_ids", 0),
+    ("contradictions", 0, "contradiction_id"), ("contradictions", 0, "claim_id"),
+    ("contradictions", 0, "evidence_ids", 0), ("gaps", 0, "gap_id"),
+    ("gaps", 0, "claim_id"), ("claims", 0, "depends_on_claim_ids", 0),
+    ("sources", 0, "derived_from_source_ids", 0),
+])
+def test_malformed_identifiers_fail_validation_without_crashing_callers(path, value):
+    data = ledger()
+    basis = copy.deepcopy(data["claims"][0])
+    basis.update(claim_id="clm_basis", materiality="supporting", status="PARTIAL", contradiction_tested=False)
+    data["claims"].append(basis)
+    source = copy.deepcopy(data["sources"][0])
+    source.update(source_id="src_basis", canonical_ref="https://example.com/basis")
+    data["sources"].append(source)
+    data["claims"][0]["depends_on_claim_ids"] = ["clm_basis"]
+    data["sources"][0]["derived_from_source_ids"] = ["src_basis"]
+    data["contradictions"] = [{
+        "contradiction_id": "ctr_scope", "claim_id": "clm_policy",
+        "evidence_ids": ["ev_policy_support"], "resolution": "RESOLVED_SCOPE",
+        "severity": "supporting",
+    }]
+    data["gaps"] = [{"gap_id": "gap_minor", "claim_id": "clm_policy", "severity": "minor"}]
+    assert kernel.validate_ledger(data)["valid"] is True
+    target = data
+    for part in path[:-1]:
+        target = target[part]
+    target[path[-1]] = value
+    assert kernel.validate_ledger(data)["valid"] is False
+    assert kernel.audit(data)["research_status"] != "READY"
+    kernel.coverage(data)
+    kernel.refresh_plan(data)
+
+
+@pytest.mark.parametrize("path", [
+    ("claims", 0, "depends_on_claim_ids"),
+    ("sources", 0, "derived_from_source_ids"),
+    ("searches", 0, "result_source_ids"),
+    ("contradictions", 0, "evidence_ids"),
+])
+def test_null_reference_collection_fails_validation_without_crashing(path):
+    data = ledger()
+    data["contradictions"] = [{
+        "contradiction_id": "ctr_scope", "claim_id": "clm_policy",
+        "evidence_ids": [], "resolution": "RESOLVED_SCOPE", "severity": "supporting",
+    }]
+    target = data
+    for part in path[:-1]:
+        target = target[part]
+    target[path[-1]] = None
+    assert kernel.validate_ledger(data)["valid"] is False
+    assert kernel.audit(data)["research_status"] != "READY"
+    kernel.refresh_plan(data)
+
+
 def inference(data, cid="clm_inference", dependency="clm_policy"):
     claim = copy.deepcopy(data["claims"][0])
     claim.update(claim_id=cid, materiality="material", epistemic_kind="INFERENCE", status="SUPPORTED_INFERENCE", depends_on_claim_ids=[dependency])

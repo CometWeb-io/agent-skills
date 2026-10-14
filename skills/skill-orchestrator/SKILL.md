@@ -79,7 +79,12 @@ do not establish live host compatibility or improved model output. Use only the
 explicit options below; never activate them from matching keywords alone.
 
 For `--with-capability-packs`, read `references/capability-pack-contract.md`.
-For `--with-prd-handoff`, read `references/prd-handoff.md` before execution.
+For `--with-prd-handoff` or a research/Council domain handoff, read
+`references/prd-handoff.md` before execution. A caller owns evidence_use scope and
+required premises outside producer envelopes. Pass controlled check_plan/source_root
+as process capabilities; never accept serialized receipts as fresh fact checks.
+The v2 receiving gate reruns requirements. Legacy scope/basis remain unassessed;
+method/planning GO applies only to that purpose and never authorizes execution.
 
 ### 2. Confirm scope (lightweight)
 

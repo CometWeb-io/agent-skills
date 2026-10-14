@@ -39,13 +39,17 @@ import math
 import os
 import random
 import re
+import selectors
 import shlex
 import shutil
+import signal
+import stat
 import subprocess  # nosec B404 - fixed argv lists, never a shell
 import sys
 import tempfile
 import time
 from dataclasses import dataclass
+from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
@@ -83,6 +87,8 @@ FORBIDDEN_SOURCES = ("evals/routing/holdout.json", "evals/routing/holdout.lock.j
 SOURCE_TAGS = {"evals/routing/suite.json": "r", "evals/routing/adversarial-suite.json": "adv",
                "evals/model/suite.json": "m", "evals/model/continuation-cases.json": "mc"}
 CONDITIONS = ("plugin", "baseline")
+REASONING_EFFORTS = {"claude": {"low", "medium", "high", "xhigh", "max"},
+                     "codex": {"none", "minimal", "low", "medium", "high", "xhigh", "max"}}
 SKILL_PATH = re.compile(r"skills/([a-z0-9][a-z0-9-]*)/SKILL\.md")
 Z95 = 1.959963984540054
 
@@ -213,7 +219,59 @@ def read_json(path: Path) -> Any:
 
 
 def write_json(path: Path, data: Any) -> None:
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    write_private(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+
+
+def private_file(path: Path):
+    """Do not truncate a symlink, hardlink or special file before checking it."""
+    if path.is_symlink():
+        raise ValueError(f"{path}: output cannot be a symlink")
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | getattr(os, "O_NONBLOCK", 0)
+                 | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise ValueError(f"{path}: output must be a single-link regular file")
+        if hasattr(os, "fchmod"):
+            os.fchmod(fd, 0o600)
+        else:
+            os.chmod(path, 0o600)
+        os.ftruncate(fd, 0)
+        return os.fdopen(fd, "wb")
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def write_private(path: Path, text: str) -> None:
+    with private_file(path) as stream:
+        stream.write(text.encode("utf-8"))
+
+
+def private_dir(path: Path) -> None:
+    if path.is_symlink():
+        raise ValueError(f"{path}: output directory cannot be a symlink")
+    path.mkdir(mode=0o700, parents=True, exist_ok=True)
+    path.chmod(0o700)
+
+
+def prepare_output(out: Path) -> None:
+    if out.is_symlink():
+        raise ValueError(f"{out}: output directory cannot be a symlink")
+    if out.exists() and any(out.iterdir()):
+        raise ValueError(f"{out} is not empty; give each run a new directory")
+    private_dir(out)
+    private_dir(out / "runs")
+
+
+def job_directory(out: Path, run_id: str) -> Path:
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,159}", run_id):
+        raise ValueError("invalid run id")
+    path = out / "runs" / run_id
+    if path.parent.is_symlink() or path.is_symlink() or not path.resolve().is_relative_to(out.resolve()):
+        raise ValueError("run directory escapes output root")
+    path.mkdir(mode=0o700)
+    return path
 
 
 def registry(root: Path = ROOT) -> list[dict[str, Any]]:
@@ -221,7 +279,8 @@ def registry(root: Path = ROOT) -> list[dict[str, Any]]:
 
 
 def graded_skills(root: Path = ROOT) -> set[str]:
-    return {p.parent.name for p in (root / "evals" / "output").glob("*/rubric.json")}
+    graded = {p.parent.name for p in (root / "evals" / "output").glob("*/rubric.json")}
+    return graded | {s["id"] for s in registry(root) if s.get("alias_of") in graded}
 
 
 def slug(text: str) -> str:
@@ -355,16 +414,72 @@ def plan_digest(plan: dict[str, Any]) -> str:
     return sha256(canonical({k: v for k, v in plan.items() if k != "plan_sha256"}))
 
 
-def load_plan(path: Path) -> dict[str, Any]:
-    plan = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(plan, dict) or plan.get("schema") not in {PLAN_SCHEMA_V1, PLAN_SCHEMA_V2}:
-        raise ValueError(f"{path} is not a supported real-host eval plan")
+def validate_plan(plan: Any, root: Path = ROOT) -> None:
+    if not isinstance(plan, dict) or plan.get("schema") not in (PLAN_SCHEMA_V1, PLAN_SCHEMA_V2):
+        raise ValueError("not a supported real-host eval plan")
     if plan.get("plan_sha256") != plan_digest(plan):
-        raise ValueError(f"{path} was edited after it was planned (plan_sha256 does not match); re-run plan")
+        raise ValueError("plan was edited after it was planned (plan_sha256 does not match); re-run plan")
     if not isinstance(plan.get("tasks"), list) or not plan["tasks"]:
         raise ValueError("plan has no tasks")
-    if plan.get("acceptance_version") == 2:
-        assert_fingerprints_current(plan)
+    if plan["schema"] == PLAN_SCHEMA_V1 and plan.get("acceptance_version", 1) != 1:
+        raise ValueError("v1 plan cannot claim v2 acceptance; re-run plan")
+    if not isinstance(plan.get("repo_version"), str) or not plan["repo_version"]:
+        raise ValueError("plan needs repo_version")
+    known = {skill["id"] for skill in registry(root)}
+    seen = set()
+    for task in plan["tasks"]:
+        if not isinstance(task, dict):
+            raise ValueError("task must be an object")
+        task_id = task.get("id")
+        if not isinstance(task_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,199}", task_id) or ".." in task_id:
+            raise ValueError("task has invalid id")
+        if task_id in seen:
+            raise ValueError("duplicate task id in plan")
+        seen.add(task_id)
+        if not isinstance(task.get("skill"), str) or task["skill"] not in known:
+            raise ValueError(f"task {task_id}: invalid skill")
+        if task.get("role") not in ("model", "positive", "negative"):
+            raise ValueError(f"task {task_id}: invalid role")
+        if task.get("source") not in (*ROUTING_SOURCES, *MODEL_SOURCES) or task.get("lang") not in ("en", "pl"):
+            raise ValueError(f"task {task_id}: invalid source or lang")
+        if not isinstance(task.get("case_id"), str) or not task["case_id"]:
+            raise ValueError(f"task {task_id}: invalid case_id")
+        if not isinstance(task.get("prompt"), str) or not task["prompt"].strip():
+            raise ValueError(f"task {task_id}: invalid prompt")
+        if task.get("fixture") is not None and not isinstance(task["fixture"], dict):
+            raise ValueError(f"task {task_id}: fixture must be an object or null")
+        checks = task.get("checks")
+        if not isinstance(checks, list) or not checks or any(c not in ("routing", "output") for c in checks):
+            raise ValueError(f"task {task_id}: invalid checks")
+        expected = task.get("expected_primary_skill")
+        if expected is not None and (not isinstance(expected, str) or expected not in known):
+            raise ValueError(f"task {task_id}: invalid expected_primary_skill")
+        for name in ("allowed_secondary_skills", "must_not_trigger", "preserve_literals", "review_notes"):
+            values = task.get(name, [])
+            if not isinstance(values, list) or any(not isinstance(v, str) for v in values):
+                raise ValueError(f"task {task_id}: invalid {name}")
+            if name in ("allowed_secondary_skills", "must_not_trigger") and any(v not in known for v in values):
+                raise ValueError(f"task {task_id}: unknown skill in {name}")
+        if "canary" in task:
+            canary = task["canary"]
+            if not isinstance(canary, dict) or any(not isinstance(canary.get(k), str) or not canary[k]
+                                                  for k in ("instruction", "token")):
+                raise ValueError(f"task {task_id}: invalid canary")
+            if canary["token"] in canary["instruction"]:
+                raise ValueError(f"task {task_id}: invalid canary: joined token already appears in instruction")
+    if plan["schema"] == PLAN_SCHEMA_V2:
+        hashes = plan.get("frozen_hashes")
+        names = ("candidate_sha256", "payload_sha256", "benchmark_sha256", "rubric_sha256", "host_config_sha256")
+        if plan.get("acceptance_version") != 2 or not isinstance(hashes, dict) or any(
+                not isinstance(hashes.get(k), str) or not re.fullmatch(r"[0-9a-f]{64}", hashes[k])
+                or plan.get(k) != hashes[k] for k in names):
+            raise ValueError("v2 plan needs complete consistent frozen hashes and acceptance_version=2")
+        assert_fingerprints_current(plan, root)
+
+
+def load_plan(path: Path) -> dict[str, Any]:
+    plan = json.loads(path.read_text(encoding="utf-8"))
+    validate_plan(plan)
     return plan
 
 
@@ -392,6 +507,7 @@ class RunOptions:
     timeout: int = 300
     max_usd_per_task: float = 0.5
     max_total_usd: float | None = None
+    max_estimated_total_usd: float | None = None
     max_total_tokens: int | None = None
     max_turns: int = 8
     model: str | None = None
@@ -408,12 +524,14 @@ class RunOptions:
 def validate_options(opts: RunOptions) -> None:
     if opts.host not in HOSTS:
         raise ValueError(f"unknown host {opts.host!r}; known: {', '.join(HOSTS)}")
-    efforts = {"claude": {"low", "medium", "high", "xhigh", "max"},
-               "codex": {"none", "minimal", "low", "medium", "high", "xhigh", "max"}}
-    if opts.reasoning_effort is not None and opts.reasoning_effort not in efforts.get(opts.host, set()):
+    if opts.reasoning_effort is not None and opts.reasoning_effort not in REASONING_EFFORTS.get(opts.host, set()):
         raise ValueError(f"unsupported reasoning effort for {opts.host}; no cross-host mapping is applied")
     if not opts.conditions or any(c not in CONDITIONS for c in opts.conditions):
         raise ValueError("condition must be plugin, baseline or both")
+    for name in ("repeat", "max_tasks", "timeout", "max_turns", "seed", "max_total_tokens"):
+        value = getattr(opts, name)
+        if value is not None and type(value) is not int:
+            raise ValueError(f"--{name.replace('_', '-')} must be an integer")
     if not 1 <= opts.repeat <= 20:
         raise ValueError("--repeat must be 1-20")
     if not 1 <= opts.max_tasks <= MAX_RUNS_CEILING:
@@ -424,18 +542,33 @@ def validate_options(opts: RunOptions) -> None:
         raise ValueError("--max-usd-per-task must be above 0 and at most 50")
     if not 1 <= opts.max_turns <= 100:
         raise ValueError("--max-turns must be 1-100")
-    if opts.max_total_usd is not None and opts.max_total_usd <= 0:
-        raise ValueError("--max-total-usd must be positive")
+    for name in ("max_usd_per_task", "max_total_usd", "max_estimated_total_usd", "price_in", "price_out"):
+        value = getattr(opts, name)
+        if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))
+                                  or not math.isfinite(value) or value < 0
+                                  or (name not in ("price_in", "price_out") and value == 0)):
+            raise ValueError(f"--{name.replace('_', '-')} must be finite and {'nonnegative' if name.startswith('price') else 'positive'}")
+    if opts.max_total_usd is not None and not HOSTS[opts.host].native_budget:
+        raise ValueError(f"{opts.host} has no native dollar cap; use --max-estimated-total-usd for estimates only")
+    if opts.max_estimated_total_usd is not None and (opts.price_in is None or opts.price_out is None):
+        raise ValueError("--max-estimated-total-usd needs --price-in/--price-out")
     if opts.max_total_tokens is not None and opts.max_total_tokens <= 0:
         raise ValueError("--max-total-tokens must be positive")
     if (opts.price_in is None) != (opts.price_out is None):
         raise ValueError("give both --price-in and --price-out, or neither")
+    for name, minimum in (("assume_turns", 1), ("assume_output_tokens", 0), ("overhead_tokens", 0),
+                          ("max_consecutive_errors", 1)):
+        value = getattr(opts, name)
+        if value is not None and (type(value) is not int or not minimum <= value <= 1_000_000):
+            raise ValueError(f"--{name.replace('_', '-')} is outside the supported integer range")
     if opts.model is not None and not re.fullmatch(r"[A-Za-z0-9._:\[\]/-]{1,128}", opts.model):
         raise ValueError("--model must be a plain model identifier")
 
 
-def schedule(plan: dict[str, Any], opts: RunOptions) -> list[dict[str, Any]]:
+def schedule(plan: dict[str, Any], opts: RunOptions, root: Path = ROOT) -> list[dict[str, Any]]:
     """Task x repeat, both conditions of a pair adjacent and in random order, so drift hits them alike."""
+    validate_options(opts)
+    validate_plan(plan, root)
     rng = random.Random(opts.seed)
     tasks = list(plan["tasks"])
     rng.shuffle(tasks)
@@ -450,7 +583,8 @@ def schedule(plan: dict[str, Any], opts: RunOptions) -> list[dict[str, Any]]:
         limit -= limit % 2  # never cut a pair in half
     jobs = jobs[:limit]
     for index, job in enumerate(jobs):
-        job["run_id"] = f"{index + 1:04d}-{job['condition']}-r{job['repeat']}-{job['task']['id']}"[:160]
+        task_hash = sha256(job["task"]["id"].encode("utf-8"))[:16]
+        job["run_id"] = f"{index + 1:04d}-{job['condition']}-r{job['repeat']}-{task_hash}"
     return jobs
 
 
@@ -478,7 +612,9 @@ def estimate_job(job: dict[str, Any], opts: RunOptions, root: Path = ROOT) -> di
     output_tokens = opts.assume_output_tokens
     usd = None
     if opts.price_in is not None and opts.price_out is not None:
-        usd = round((input_tokens * opts.price_in + output_tokens * opts.price_out) / 1_000_000, 4)
+        usd = (input_tokens * opts.price_in + output_tokens * opts.price_out) / 1_000_000
+        if not math.isfinite(usd):
+            raise ValueError("estimated cost is not finite")
     return {"input_tokens": input_tokens, "output_tokens": output_tokens, "usd": usd,
             "usd_cap": opts.max_usd_per_task if host.native_budget else None}
 
@@ -503,7 +639,7 @@ def build_commands(opts: RunOptions, condition: str, stage: Path, out_file: Path
     if opts.host == "claude":
         argv = [opts.bin, "-p", "--output-format", "stream-json", "--verbose", "--no-session-persistence",
                 "--strict-mcp-config", "--tools", HOSTS["claude"].tools, "--allowedTools", HOSTS["claude"].tools,
-                "--max-turns", str(opts.max_turns), "--max-budget-usd", f"{opts.max_usd_per_task:g}"]
+                "--max-turns", str(opts.max_turns), "--max-budget-usd", str(opts.max_usd_per_task)]
         if opts.model:
             argv += ["--model", opts.model]
         if opts.reasoning_effort:
@@ -515,8 +651,8 @@ def build_commands(opts: RunOptions, condition: str, stage: Path, out_file: Path
     if condition == "plugin":
         setup = [[opts.bin, "plugin", "marketplace", "add", str(stage)],
                  [opts.bin, "plugin", "add", f"{PLUGIN}@{PLUGIN}", "--json"]]
-    argv = [opts.bin, "exec", "--json", "--skip-git-repo-check", "--sandbox", "read-only",
-            "--output-last-message", str(out_file)]
+    # JSONL carries the final answer; do not let the host write an uncapped file.
+    argv = [opts.bin, "exec", "--json", "--skip-git-repo-check", "--sandbox", "read-only"]
     if opts.model:
         argv += ["--model", opts.model]
     if opts.reasoning_effort:
@@ -535,11 +671,10 @@ def payload_digest(stage: Path) -> str:
 def materialize_not_run(plan: dict[str, Any], opts: RunOptions, out: Path,
                         reason: str, root: Path = ROOT) -> dict[str, Any]:
     """Record every planned job without invoking an unsupported/unauthed host."""
-    jobs = schedule(plan, opts)
+    jobs = schedule(plan, opts, root)
     if plan.get("acceptance_version") == 2:
         assert_fingerprints_current(plan, root)
-    out.mkdir(parents=True, exist_ok=True)
-    (out / "runs").mkdir()
+    prepare_output(out)
     write_json(out / "plan.json", plan)
     manifest = {
         "schema": RUN_SCHEMA,
@@ -562,8 +697,7 @@ def materialize_not_run(plan: dict[str, Any], opts: RunOptions, out: Path,
         manifest["frozen_hashes"] = dict(plan["frozen_hashes"])
     write_json(out / "manifest.json", manifest)
     for job in jobs:
-        run_dir = out / "runs" / job["run_id"]
-        run_dir.mkdir(parents=True)
+        run_dir = job_directory(out, job["run_id"])
         write_json(run_dir / "record.json", {
             "schema": RECORD_SCHEMA,
             "run_id": job["run_id"],
@@ -627,7 +761,9 @@ def dry_run(plan: dict[str, Any], opts: RunOptions, out: Path | None, stream: An
               "Token figures are bytes/4 over the prompt, skill text and an assumed host overhead of "
               f"{opts.overhead_tokens or HOSTS[opts.host].overhead_tokens} tokens x {opts.assume_turns} turns."]
     if opts.max_total_usd is not None:
-        lines.append(f"Run stops before a job that could take the total past ${opts.max_total_usd:g}.")
+        lines.append(f"Reserve the native per-run cap before each job under ${opts.max_total_usd:g} total.")
+    if opts.max_estimated_total_usd is not None:
+        lines.append(f"Estimated budget ${opts.max_estimated_total_usd:g}; actual spend can exceed this.")
     print("\n".join(lines), file=stream)
     return {"status": "dry_run", "jobs": len(jobs), "estimated_input_tokens": total_in,
             "estimated_output_tokens": total_out, "estimated_usd": total_usd, "model_calls": 0}
@@ -640,6 +776,7 @@ def parse_events(text: str, known: set[str]) -> dict[str, Any]:
     activated: list[str] = []
     in_tok = out_tok = 0
     saw_usage = False
+    invalid_usage = False
     last_message = None
     for line in text.splitlines():
         line = line.strip()
@@ -657,37 +794,57 @@ def parse_events(text: str, known: set[str]) -> dict[str, Any]:
         if kind == "system" and event.get("subtype") == "init" and isinstance(event.get("model"), str):
             result["model"] = event["model"]
         if kind == "assistant":
-            content = (event.get("message") or {}).get("content") or []
+            message = event.get("message")
+            content = message.get("content", []) if isinstance(message, dict) else []
             for block in content if isinstance(content, list) else []:
                 if isinstance(block, dict) and block.get("type") == "tool_use" and block.get("name") == "Skill":
-                    name = str((block.get("input") or {}).get("skill") or (block.get("input") or {}).get("command") or "")
+                    data = block.get("input")
+                    if not isinstance(data, dict):
+                        continue
+                    name = str(data.get("skill") or data.get("command") or "")
                     activated.append(name.lstrip("/").split(":")[-1].strip())
         if kind == "result":
             if isinstance(event.get("result"), str):
                 result["output"] = event["result"]
-            if isinstance(event.get("total_cost_usd"), (int, float)):
-                result["cost_usd"] = float(event["total_cost_usd"])
+            cost = event.get("total_cost_usd")
+            try:
+                valid_cost = type(cost) in (int, float) and math.isfinite(cost) and cost >= 0
+            except OverflowError:
+                valid_cost = False
+            result["cost_usd"] = float(cost) if valid_cost else None
+            if cost is not None and not valid_cost:
+                result["is_error"] = True
             if isinstance(event.get("num_turns"), int):
                 result["num_turns"] = event["num_turns"]
-            result["is_error"] = bool(event.get("is_error"))
+            result["is_error"] = result["is_error"] or bool(event.get("is_error"))
             usage = event.get("usage")
             if isinstance(usage, dict) and usage:
-                saw_usage = True
-                in_tok += sum(int(usage.get(k) or 0) for k in
-                              ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens"))
-                out_tok += int(usage.get("output_tokens") or 0)
+                values = [usage.get(k, 0) for k in
+                          ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens", "output_tokens")]
+                if all(type(v) is int and 0 <= v <= 2**63 - 1 for v in values):
+                    saw_usage = True
+                    in_tok += sum(values[:-1])
+                    out_tok += values[-1]
+                else:
+                    invalid_usage = True
         if kind == "turn.completed" and isinstance(event.get("usage"), dict):
-            saw_usage = True
-            in_tok += int(event["usage"].get("input_tokens") or 0)
-            out_tok += int(event["usage"].get("output_tokens") or 0)
+            values = [event["usage"].get(k) for k in ("input_tokens", "output_tokens")]
+            if all(type(v) is int and 0 <= v <= 2**63 - 1 for v in values):
+                saw_usage = True
+                in_tok += values[0]
+                out_tok += values[1]
+            else:
+                invalid_usage = True
         if kind == "item.completed":
             item = event.get("item") or {}
-            if item.get("type") == "agent_message" and isinstance(item.get("text"), str):
+            if isinstance(item, dict) and item.get("type") == "agent_message" and isinstance(item.get("text"), str):
                 last_message = item["text"]
     if result["output"] is None:
         result["output"] = last_message
-    if saw_usage:
+    if saw_usage and not invalid_usage:
         result["input_tokens"], result["output_tokens"] = in_tok, out_tok
+    if invalid_usage:
+        result["is_error"] = True
     seen: list[str] = []
     for name in activated:
         if name in known and name not in seen:
@@ -697,19 +854,50 @@ def parse_events(text: str, known: set[str]) -> dict[str, Any]:
 
 
 def _run_capped(argv: list[str], env: dict[str, str], cwd: Path, stdin: str, timeout: int,
-                stdout_path: Path, stderr_path: Path) -> tuple[int | None, bool]:
-    with stdout_path.open("wb") as out, stderr_path.open("wb") as err:
+                stdout_path: Path, stderr_path: Path) -> tuple[int | None, bool, bool]:
+    if os.name != "posix":
+        raise ValueError("host execution requires POSIX process-group cleanup")
+    timed_out = exceeded = False
+    with private_file(stdout_path) as out, private_file(stderr_path) as err, \
+            tempfile.TemporaryFile() as prompt, selectors.DefaultSelector() as selector:
+        prompt.write(stdin.encode("utf-8"))
+        prompt.seek(0)
+        proc = subprocess.Popen(argv, stdin=prompt, stdout=subprocess.PIPE, stderr=subprocess.PIPE,  # nosec B603
+                                cwd=cwd, env=env, close_fds=True, start_new_session=True)
+        counts = {proc.stdout: 0, proc.stderr: 0}
+        for pipe, destination in ((proc.stdout, out), (proc.stderr, err)):
+            os.set_blocking(pipe.fileno(), False)
+            selector.register(pipe, selectors.EVENT_READ, destination)
+        deadline = time.monotonic() + timeout
         try:
-            proc = subprocess.run(argv, input=stdin.encode("utf-8"), stdout=out, stderr=err, cwd=cwd, env=env,  # nosec B603
-                                  timeout=timeout, check=False, close_fds=True)
-            code, timed_out = proc.returncode, False
-        except subprocess.TimeoutExpired:
-            code, timed_out = None, True
-    for path in (stdout_path, stderr_path):
-        if path.stat().st_size > MAX_CAPTURE:
-            with path.open("r+b") as fh:
-                fh.truncate(MAX_CAPTURE)
-    return code, timed_out
+            while selector.get_map() or proc.poll() is None:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    timed_out = True
+                    break
+                for key, _ in selector.select(min(remaining, .1)):
+                    chunk = os.read(key.fd, 65536)
+                    if not chunk:
+                        selector.unregister(key.fileobj)
+                        continue
+                    used = counts[key.fileobj]
+                    key.data.write(chunk[:max(0, MAX_CAPTURE - used)])
+                    counts[key.fileobj] += len(chunk)
+                    if counts[key.fileobj] > MAX_CAPTURE:
+                        exceeded = True
+                        break
+                if exceeded:
+                    break
+        finally:
+            # Cleanup also runs when the parent exits before inherited children.
+            try:
+                os.killpg(proc.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            proc.wait()
+            proc.stdout.close()
+            proc.stderr.close()
+    return (None if timed_out else proc.returncode), timed_out, exceeded
 
 
 RETRYABLE_EXIT_CODES = {75, 408, 429, 502, 503, 504}
@@ -737,10 +925,14 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
     from host_smoke import stage_payload
 
     stream = stream or sys.stdout
-
+    jobs = schedule(plan, opts, root)
     host = HOSTS[opts.host]
+    if out.is_symlink():
+        raise ValueError(f"{out}: output directory cannot be a symlink")
     if out.exists() and any(out.iterdir()):
         raise ValueError(f"{out} is not empty; give each run a new directory")
+    if os.name != "posix":
+        return materialize_not_run(plan, opts, out, "PROCESS_GROUP_CLEANUP_UNAVAILABLE", root)
     binary_override = None if opts.bin == opts.host else opts.bin
     capability = runtime_preflight(opts.host, environment=os.environ, root=root,
                                    binary_override=binary_override)
@@ -752,25 +944,26 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
             file=stream,
         )
         return summary
-    if opts.max_total_usd is not None and not host.native_budget and opts.price_in is None:
-        raise ValueError(f"{opts.host} reports no cost; --max-total-usd needs --price-in/--price-out to be enforced")
     if shutil.which(opts.bin) is None and not Path(opts.bin).is_file():
         raise ValueError(f"host binary {opts.bin!r} not found")
-    jobs = schedule(plan, opts)
     known = {s["id"] for s in registry(root)}
-    out.mkdir(parents=True, exist_ok=True)
-    (out / "runs").mkdir()
+    prepare_output(out)
     write_json(out / "plan.json", plan)
     with tempfile.TemporaryDirectory(prefix="cw-real-host-") as tmp:
         stage = stage_payload(Path(tmp) / "stage", root)
         version_base = Path(tmp) / "version"
         version_base.mkdir()
-        probe = subprocess.run([opts.bin, "--version"], env=build_env(host, version_base),  # nosec B603
-                               cwd=version_base, capture_output=True, text=True, timeout=60, check=False)
+        probe_code, probe_timeout, probe_limit = _run_capped(
+            [opts.bin, "--version"], build_env(host, version_base), version_base, "", 60,
+            version_base / "stdout", version_base / "stderr")
+        if probe_code != 0 or probe_timeout or probe_limit:
+            raise ValueError("host version probe failed, timed out or exceeded the capture limit")
+        probe_text = (version_base / "stdout").read_text(encoding="utf-8", errors="replace") or \
+            (version_base / "stderr").read_text(encoding="utf-8", errors="replace")
         manifest = {
             "schema": RUN_SCHEMA, "acceptance_version": plan.get("acceptance_version", 1),
             "plan_sha256": plan["plan_sha256"], "repo_version": plan["repo_version"],
-            "host": opts.host, "host_version": (probe.stdout or probe.stderr).strip()[:200],
+            "host": opts.host, "host_version": probe_text.strip()[:200],
             "model_requested": opts.model, "conditions": list(opts.conditions), "repeat": opts.repeat,
             "reasoning_effort_requested": opts.reasoning_effort,
             "reasoning_effort_observed": None,
@@ -779,7 +972,12 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
             "payload_sha256": payload_digest(stage),
             "caps": {"max_tasks": opts.max_tasks, "timeout": opts.timeout, "max_turns": opts.max_turns,
                      "max_usd_per_task": opts.max_usd_per_task if host.native_budget else None,
-                     "max_total_usd": opts.max_total_usd, "max_total_tokens": opts.max_total_tokens},
+                     "max_total_usd": opts.max_total_usd, "max_total_tokens": opts.max_total_tokens,
+                     "max_estimated_total_usd": opts.max_estimated_total_usd,
+                     "capture_bytes_per_stream": MAX_CAPTURE},
+            "budget_enforcement": "host_native_cap_reservation" if opts.max_total_usd is not None else "none",
+            "estimated_budget_is_hard_cap": False,
+            "process_cleanup": "POSIX_PROCESS_GROUP",
             "prices_per_mtok": {"input": opts.price_in, "output": opts.price_out},
             "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "planned_jobs": len(jobs),
         }
@@ -791,16 +989,25 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
         if "frozen_hashes" in plan:
             manifest["frozen_hashes"] = dict(plan["frozen_hashes"])
         write_json(out / "manifest.json", manifest)
-        spent_usd = 0.0
+        spent_usd = Fraction(0)
+        unknown_cost = False
         spent_tokens = 0
         consecutive_errors = 0
         stop_reason = None
         records = []
         for job in jobs:
             if opts.max_total_usd is not None:
-                upper = opts.max_usd_per_task if host.native_budget else 0.0
-                if spent_usd + upper > opts.max_total_usd or spent_usd >= opts.max_total_usd:
-                    stop_reason = f"max_total_usd: spent ${spent_usd:.4f} of ${opts.max_total_usd:g}"
+                upper = Fraction(str(opts.max_usd_per_task))
+                if spent_usd + upper > Fraction(str(opts.max_total_usd)):
+                    stop_reason = f"max_total_usd: accounted ${float(spent_usd):.4f} of ${opts.max_total_usd:g}"
+                    break
+            if opts.max_estimated_total_usd is not None:
+                estimate = estimate_job(job, opts, root)["usd"]
+                if unknown_cost or estimate is None:
+                    stop_reason = "max_estimated_total_usd: unknown cost; no further jobs admitted"
+                    break
+                if spent_usd + Fraction(str(estimate)) > Fraction(str(opts.max_estimated_total_usd)):
+                    stop_reason = "max_estimated_total_usd: next estimated job exceeds remaining budget"
                     break
             if opts.max_total_tokens is not None and spent_tokens >= opts.max_total_tokens:
                 stop_reason = f"max_total_tokens: spent {spent_tokens} of {opts.max_total_tokens}"
@@ -811,19 +1018,31 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
             record = run_job(job, opts, host, stage, out, Path(tmp), known)
             records.append(record)
             cost = record["cost_usd"]
-            if cost is None and host.native_budget and record["status"] != "setup_error":
-                cost = opts.max_usd_per_task  # unknown spend counts as the cap, never as zero
-            spent_usd += cost or 0.0
+            if host.native_budget and record.get("cost_source") != "host_reported" and record["status"] != "setup_error":
+                cost = opts.max_usd_per_task  # an estimate never releases a native-cap reservation
+                unknown_cost = True
+            elif cost is None and record["status"] != "setup_error":
+                unknown_cost = True
+            if cost is not None:
+                spent_usd += Fraction(str(cost))
             spent_tokens += (record["input_tokens"] or 0) + (record["output_tokens"] or 0)
             consecutive_errors = consecutive_errors + 1 if record["status"] != "executed" else 0
             print(f"{record['status']:>11}  {record['run_id']}  skills={','.join(record['activated_skills']) or '-'}",
                   file=stream)
+            if cost is not None and host.native_budget and cost > opts.max_usd_per_task:
+                stop_reason = "native per-run dollar cap contradicted by host cost; no further jobs admitted"
+                break
+            if unknown_cost and opts.max_estimated_total_usd is not None:
+                stop_reason = "max_estimated_total_usd: unknown cost; no further jobs admitted"
+                break
     summary = {**manifest, "finished_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                "completed_jobs": sum(r["status"] == "executed" for r in records),
                "error_jobs": sum(r["status"] not in {"executed", "not_run"} for r in records),
                "not_run_jobs": sum(r["status"] == "not_run" for r in records),
                "not_started_jobs": len(jobs) - len(records), "stop_reason": stop_reason,
-               "spent_usd": round(spent_usd, 6), "spent_tokens": spent_tokens,
+               "spent_usd": None if unknown_cost else round(float(spent_usd), 6),
+               "accounted_usd": round(float(spent_usd), 6), "cost_complete": not unknown_cost,
+               "spent_tokens": spent_tokens,
                "models_reported": sorted({r["model"] for r in records if r.get("model")})}
     write_json(out / "manifest.json", summary)
     return summary
@@ -832,8 +1051,7 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
 def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out: Path, tmp: Path,
             known: set[str]) -> dict[str, Any]:
     task = job["task"]
-    run_dir = out / "runs" / job["run_id"]
-    run_dir.mkdir(parents=True)
+    run_dir = job_directory(out, job["run_id"])
     base = Path(tempfile.mkdtemp(prefix="job-", dir=tmp))
     env = build_env(host, base)
     cwd = base / "cwd"
@@ -851,35 +1069,44 @@ def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out:
         "model": None, "num_turns": None, "activated_skills": [],
         "reasoning_effort_requested": opts.reasoning_effort, "reasoning_effort_observed": None,
     }
-    (run_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
+    write_private(run_dir / "prompt.txt", prompt)
     for index, cmd in enumerate(setup):
-        proc = subprocess.run(cmd, env=env, cwd=cwd, capture_output=True, text=True,  # nosec B603
-                              timeout=120, check=False)
-        if proc.returncode != 0:
-            record.update(status="setup_error", execution_status="ERROR", exit_code=proc.returncode)
-            (run_dir / f"setup-{index}.stderr.txt").write_text(proc.stderr[-4000:], encoding="utf-8")
-            retry = retry_metadata("error", proc.returncode, proc.stderr)
+        setup_err = run_dir / f"setup-{index}.stderr.txt"
+        code, timed_out, limited = _run_capped(cmd, env, cwd, "", 120,
+                                              run_dir / f"setup-{index}.stdout.txt", setup_err)
+        if code != 0 or timed_out or limited:
+            record.update(status="setup_error", execution_status="ERROR", exit_code=code,
+                          setup_timeout=timed_out, capture_limit_exceeded=limited)
+            retry = retry_metadata("timeout" if timed_out else "error", code,
+                                   setup_err.read_text(encoding="utf-8", errors="replace"))
             if retry:
                 record.update(retry)
             write_json(run_dir / "record.json", record)
             shutil.rmtree(base, ignore_errors=True)
             return record
     start = time.monotonic()
-    code, timed_out = _run_capped(argv, env, cwd, prompt, opts.timeout, run_dir / "events.jsonl",
+    code, timed_out, limited = _run_capped(argv, env, cwd, prompt, opts.timeout, run_dir / "events.jsonl",
                                   run_dir / "stderr.txt")
     record["elapsed_seconds"] = round(time.monotonic() - start, 3)
     record["exit_code"] = code
     parsed = parse_events((run_dir / "events.jsonl").read_text(encoding="utf-8", errors="replace"), known)
-    output = out_file.read_text(encoding="utf-8") if out_file.is_file() else parsed["output"]
+    output = parsed["output"]
     record.update({k: parsed[k] for k in ("cost_usd", "input_tokens", "output_tokens", "model", "num_turns",
                                           "activated_skills")})
     if record["cost_usd"] is None and record["input_tokens"] is not None and opts.price_in is not None:
-        record["cost_usd"] = round((record["input_tokens"] * opts.price_in
-                                    + (record["output_tokens"] or 0) * (opts.price_out or 0)) / 1_000_000, 6)
-        record["cost_source"] = "estimated_from_prices"
+        cost = (record["input_tokens"] * opts.price_in
+                + (record["output_tokens"] or 0) * (opts.price_out or 0)) / 1_000_000
+        if math.isfinite(cost):
+            record["cost_usd"] = cost
+            record["cost_source"] = "estimated_from_prices"
+        else:
+            parsed["is_error"] = True
     elif record["cost_usd"] is not None:
         record["cost_source"] = "host_reported"
-    if timed_out:
+    record["capture_limit_exceeded"] = limited
+    if limited:
+        record["status"] = "capture_limit"
+    elif timed_out:
         record["status"] = "timeout"
     elif code != 0 or parsed["is_error"] or not output:
         record["status"] = "error"
@@ -890,7 +1117,7 @@ def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out:
         if retry:
             record.update(retry)
     if output is not None:
-        out_file.write_text(output, encoding="utf-8")
+        write_private(out_file, output)
     write_json(run_dir / "record.json", record)
     shutil.rmtree(base, ignore_errors=True)
     return record
@@ -917,18 +1144,28 @@ def routing_check(task: dict[str, Any], activated: list[str]) -> dict[str, Any]:
 
 
 def output_check(task: dict[str, Any], text: str, graded: set[str], root: Path = ROOT) -> dict[str, Any]:
-    missing = [lit for lit in task.get("preserve_literals", []) if lit not in text]
-    result: dict[str, Any] = {"literals_missing": missing, "errors": [], "rubric": None}
+    literals = [lit for lit in task.get("preserve_literals", []) if lit]
+    missing = [lit for lit in literals if lit not in text]
+    skill = next((s.get("alias_of") or s["id"] for s in registry(root) if s["id"] == task["skill"]), task["skill"])
+    result: dict[str, Any] = {"literals_missing": missing, "errors": [], "rubric": None,
+                              "rubric_skill": skill if skill in graded else None,
+                              "assessment_scope": "output_contract" if skill in graded else "pinned_literals_only"}
+    if task.get("canary"):
+        from grade_output import hard_canary_issues
+
+        issues = hard_canary_issues([("document", text)], [task["canary"]["token"]])
+        if issues:
+            result.update(status="fail", errors=[f"{issue.code}:{issue.rule}" for issue in issues],
+                          assessment_scope="canary_violation")
+            return result
+    if skill not in graded and not literals:
+        result.update(status="not_assessed", reason="no_executable_output_check", assessment_scope="none")
+        return result
     rubric_ok = True
-    if task["skill"] in graded:
-        with tempfile.TemporaryDirectory(prefix="cw-grade-") as tmp:
-            argv = [sys.executable, "-B", str(root / "tooling" / "grade_output.py"), task["skill"], "-", "--json"]
-            if task.get("canary"):
-                canary_path = Path(tmp) / "canary.json"
-                write_json(canary_path, task["canary"])
-                argv += ["--canary-file", str(canary_path)]
-            proc = subprocess.run(argv, input=text, capture_output=True, text=True, timeout=120,  # nosec B603
-                                  check=False, cwd=root)
+    if skill in graded:
+        argv = [sys.executable, "-B", str(root / "tooling" / "grade_output.py"), skill, "-", "--json"]
+        proc = subprocess.run(argv, input=text, capture_output=True, text=True, timeout=120,  # nosec B603
+                              check=False, cwd=root)
         try:
             graded_json = json.loads(proc.stdout)
         except ValueError:
@@ -1023,6 +1260,7 @@ def _rate(rows: list[str], run_statuses: list[str] | None = None) -> dict[str, A
     run_statuses = run_statuses or rows
     return {"n": n, "pass": passes, "rate": round(passes / n, 4) if n else None,
             "ci95": [round(ci[0], 4), round(ci[1], 4)] if ci else None,
+            "not_assessed": sum(status == "not_assessed" for status in rows),
             "not_run": sum(1 for status in run_statuses if status == "not_run"),
             "errors": sum(1 for status in run_statuses if status not in {"executed", "not_run"})}
 
@@ -1048,8 +1286,16 @@ def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
     frozen = {json.dumps(frozen_hashes(g), sort_keys=True) for g in grade_sets}
     if len(frozen) > 1:
         warnings.append("grades carry different frozen acceptance hashes")
-    if any(g.get("reasoning_effort_observed") is None for g in grade_sets):
+    efforts = [g.get("reasoning_effort_observed") for g in grade_sets]
+    if any(not isinstance(effort, str) or effort not in REASONING_EFFORTS.get(g["host"], set())
+           for g, effort in zip(grade_sets, efforts, strict=True)):
+        effort_status = "EQUAL_EFFORT_NOT_VERIFIED"
         warnings.append("reasoning effort was not observed; requested settings do not prove effective model effort")
+    elif len(set(efforts)) > 1:
+        effort_status = "REPORTED_EFFORT_DIFFERS"
+        warnings.append("reported reasoning effort differs between runs")
+    else:
+        effort_status = "SAME_REPORTED_EFFORT"
     if len({g.get("run_config_sha256") for g in grade_sets}) > 1:
         warnings.append("run configurations differ; resource and effort comparisons are not controlled")
 
@@ -1101,7 +1347,7 @@ def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
             "run_errors": run_errors, "run_not_run": run_not_run,
             "error_jobs": run_errors, "not_run_jobs": run_not_run,
             "frozen_hashes": [frozen_hashes(g) for g in grade_sets],
-            "warnings": warnings, "results": per, "paired": paired}
+            "warnings": warnings, "effort_comparison_status": effort_status, "results": per, "paired": paired}
 
 
 def _pct(cell: dict[str, Any]) -> str:
@@ -1115,6 +1361,7 @@ def render_markdown(report: dict[str, Any]) -> str:
     lines = ["# Real-host eval scorecard", "",
              f"- Hosts: {', '.join(report['hosts'])}",
              f"- Models reported: {', '.join(report['models']) or 'none reported'}",
+             f"- Effort comparison: {report['effort_comparison_status']} (reported labels do not establish cross-model equivalence)",
              f"- Plan: {', '.join(p[:12] for p in report['plans'])}",
              f"- Runs: {report['runs']} ({report['run_errors']} errors, {report['run_not_run']} not run; "
              "neither is in any rate)", ""]
@@ -1124,10 +1371,10 @@ def render_markdown(report: dict[str, Any]) -> str:
         for check, block in checks.items():
             lines += [f"## {check.title()} - {cond}", "",
                       f"Overall: {_pct(block['overall'])}. Cells are pass/n (rate, Wilson 95% interval).", "",
-                      "| Skill | Pass/n (rate, 95% CI) | Not run | Errors |",
-                      "| --- | --- | --- | --- |"]
+                      "| Skill | Pass/n (rate, 95% CI) | Not assessed | Not run | Errors |",
+                      "| --- | --- | --- | --- | --- |"]
             for skill, cell in block["skills"].items():
-                lines.append(f"| `{skill}` | {_pct(cell)} | {cell['not_run']} | {cell['errors']} |")
+                lines.append(f"| `{skill}` | {_pct(cell)} | {cell['not_assessed']} | {cell['not_run']} | {cell['errors']} |")
             lines.append("")
     paired = report.get("paired")
     if paired:
@@ -1153,6 +1400,7 @@ def _options(args: argparse.Namespace) -> RunOptions:
     opts = RunOptions(host=args.host, bin=args.bin or args.host, conditions=tuple(conditions), repeat=args.repeat,
                       max_tasks=args.max_tasks, timeout=args.timeout, max_usd_per_task=args.max_usd_per_task,
                       max_total_usd=args.max_total_usd, max_total_tokens=args.max_total_tokens,
+                      max_estimated_total_usd=args.max_estimated_total_usd,
                       max_turns=args.max_turns, model=args.model, reasoning_effort=args.reasoning_effort,
                       price_in=args.price_in, price_out=args.price_out,
                       overhead_tokens=args.overhead_tokens, assume_turns=args.assume_turns,
@@ -1186,7 +1434,8 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--timeout", type=int, default=300, help="seconds per run before it is killed")
     r.add_argument("--max-turns", type=int, default=8, help="agent turns per run (claude)")
     r.add_argument("--max-usd-per-task", type=float, default=0.5, help="per-run dollar cap the host enforces (claude)")
-    r.add_argument("--max-total-usd", type=float, help="stop before a run could take the total past this")
+    r.add_argument("--max-total-usd", type=float, help="reserve native per-run dollar caps before admission (claude only)")
+    r.add_argument("--max-estimated-total-usd", type=float, help="admit by estimated cost; actual spend can exceed this")
     r.add_argument("--max-total-tokens", type=int, help="stop once reported tokens reach this")
     r.add_argument("--model", help="pin the model; recommended for any comparison")
     r.add_argument("--reasoning-effort", help="host-native effort; forwarded unchanged, never treated as observed")
@@ -1232,8 +1481,9 @@ def main(argv: list[str] | None = None) -> int:
             if not args.out:
                 parser.error("--execute needs --out, a new directory")
             summary = execute(plan, opts, args.out)
+            spend = "unknown" if summary["spent_usd"] is None else f"~${summary['spent_usd']:.4f}"
             print(f"{summary['completed_jobs']} completed, {summary['error_jobs']} failed, "
-                  f"{summary['not_started_jobs']} not started; spent ~${summary['spent_usd']:.4f}"
+                  f"{summary['not_started_jobs']} not started; accounted spend {spend}"
                   + (f"; stopped: {summary['stop_reason']}" if summary["stop_reason"] else ""))
             if summary.get("execution_status") == "NOT_RUN":
                 return 3
@@ -1257,11 +1507,11 @@ def main(argv: list[str] | None = None) -> int:
             report = build_report(grade_sets)
             text = render_markdown(report) if args.format == "md" else json.dumps(report, indent=2) + "\n"
             if args.out:
-                args.out.write_text(text, encoding="utf-8")
+                write_private(args.out, text)
             else:
                 print(text)
             return 0
-    except ValueError as exc:
+    except (ValueError, OSError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
     return 2

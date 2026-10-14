@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from ..constants import CONTRADICTION_RESOLUTIONS, MATERIALITIES
-from ..util import _id_index
+from ..util import _member, _id_index
 from .context import LedgerValidationState
 
 
@@ -22,20 +22,20 @@ def validate(ledger: Dict[str, Any], state: LedgerValidationState) -> None:
             continue
         xid = row.get("contradiction_id") or f"contradictions[{i}]"
         cid = row.get("claim_id")
-        if cid in claim_ids:
+        if _member(cid, claim_ids):
             contradiction_claim_ids.add(str(cid))
-        if cid not in claim_ids:
+        if not _member(cid, claim_ids):
             errors.append(f"{xid} references unknown claim_id {cid}")
-        if row.get("resolution") not in CONTRADICTION_RESOLUTIONS:
+        if not _member(row.get("resolution"), CONTRADICTION_RESOLUTIONS):
             errors.append(f"{xid}.resolution is invalid")
-        if row.get("severity") not in MATERIALITIES:
+        if not _member(row.get("severity"), MATERIALITIES):
             errors.append(f"{xid}.severity is invalid")
         eids = row.get("evidence_ids", [])
         if not isinstance(eids, list):
             errors.append(f"{xid}.evidence_ids must be a list")
             eids = []
         for eid in eids:
-            edge = evidence_by_id.get(eid)
+            edge = evidence_by_id.get(eid) if isinstance(eid, str) else None
             if not edge:
                 errors.append(f"{xid} references unknown evidence_id {eid}")
             elif edge.get("claim_id") != cid:

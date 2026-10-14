@@ -1,5 +1,14 @@
 # Changelog — skill-orchestrator-multiagent
 
+## [1.2.4] - 2026-10-11
+
+- Pass caller-owned source checks through completed-prefix resume without embedding capabilities in worker prompts.
+- Synchronize the v2 receiving/migration reference; caller capabilities and fresh checks remain required.
+
+## [1.2.3] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.2.2] - 2026-10-10
 
 - Align the ledger reference with completion classes, validated typed envelopes and receipt-only migration boundaries.

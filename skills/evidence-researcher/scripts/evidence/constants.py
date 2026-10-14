@@ -51,6 +51,8 @@ RESEARCH_MODES = {"QUICK", "STANDARD", "DEEP"}
 SOURCE_STATES = {"final", "draft", "superseded", "withdrawn"}
 TEMPORAL_SENSITIVITIES = {"high", "medium", "low", "static"}
 EPISTEMIC_KINDS = {"FACT", "INFERENCE"}
+KNOWLEDGE_BASES = {"verified_fact", "user_supplied", "assumption", "framework_method"}
+OBSERVATION_SCOPES = {"document_content", "controlled_state"}
 CLAIM_STATUSES = {
     "VERIFIED", "SUPPORTED_INFERENCE", "PARTIAL", "UNSUPPORTED", "CONTRADICTED", "UNKNOWN"
 }
@@ -75,3 +77,5 @@ CONTRADICTION_RESOLUTIONS = {
     "RESOLVED_SUPERSEDED", "RESOLVED_AUTHORITY", "UNRESOLVED",
 }
 PRIMARY_ROLES = {"PRIMARY", "OFFICIAL", "SYSTEM_OF_RECORD"}
+
+OBSERVATION_OPERATORS = {"equals", "count_matching", "text_present"}

@@ -28,6 +28,7 @@ PAIRED_STATUS={'SIGNIFICANT_IMPROVEMENT','SIGNIFICANT_REGRESSION','NONINFERIOR',
 STABILITY_STATUS={'STABLE','FLAKY','INSUFFICIENT_DATA','NOT_USED'}
 
 def _text(v): return isinstance(v,str) and bool(v.strip())
+def _member(value, allowed): return isinstance(value,str) and value in allowed
 def _dt(v):
     if not _text(v) or 'T' not in v:return None
     t=v[:-1]+'+00:00' if v.endswith('Z') else v
@@ -60,7 +61,7 @@ def validate(payload):
     errors.extend(lock_errors)
     adaptive=payload.get('adaptive_depth')
     if adaptive is not None:
-        if not isinstance(adaptive,dict) or adaptive.get('recommended_mode') not in RECOMMENDED_MODES: errors.append('adaptive_depth:invalid')
+        if not isinstance(adaptive,dict) or not _member(adaptive.get('recommended_mode'),RECOMMENDED_MODES): errors.append('adaptive_depth:invalid')
         elif adaptive.get('recommended_mode')!=mode and not (adaptive.get('override_approved') is True and _text(adaptive.get('override_rationale'))): errors.append('adaptive_depth:mode-mismatch')
     replay=payload.get('replay_status')
     if replay is not None and (not isinstance(replay,str) or replay not in REPLAY_STATUS): errors.append('replay_status:invalid')
@@ -79,8 +80,8 @@ def validate(payload):
         if not isinstance(row,dict): errors.append(f'debt[{i}]:not-object'); continue
         if row.get('candidate_id') is not None and row.get('candidate_id')!=cid: errors.append(f'debt[{i}]:candidate-mismatch')
         sev=row.get('severity');status=row.get('status')
-        if sev not in DEBT_SEV: errors.append(f'debt[{i}]:severity'); continue
-        if status not in DEBT_STATUS: errors.append(f'debt[{i}]:status'); continue
+        if not _member(sev,DEBT_SEV): errors.append(f'debt[{i}]:severity'); continue
+        if not _member(status,DEBT_STATUS): errors.append(f'debt[{i}]:status'); continue
         if row.get('kind') is not None and (not isinstance(row.get('kind'),str) or row.get('kind') not in DEBT_KINDS): errors.append(f'debt[{i}]:kind'); continue
         due=_dt(row.get('due_at')) if row.get('due_at') is not None else None
         expired=bool(status=='OPEN' and due and as_of and due<=as_of)
@@ -130,14 +131,14 @@ def validate(payload):
             obs=lifecycle.get('observation_runs',0); minobs=lifecycle.get('min_observation_runs',20)
             if not isinstance(obs,int) or isinstance(obs,bool) or obs<0: errors.append('runtime_lifecycle:observation-runs')
             if not isinstance(minobs,int) or isinstance(minobs,bool) or minobs<1: errors.append('runtime_lifecycle:min-observation-runs')
-            advanced=rollout_status in {'READY_FOR_STAGED','STAGED_RUNNING','READY_FOR_FULL','FULL'}
+            advanced=_member(rollout_status,{'READY_FOR_STAGED','STAGED_RUNNING','READY_FOR_FULL','FULL'})
             stability=lifecycle.get('stability_status','NOT_USED'); paired=lifecycle.get('paired_status','NOT_USED')
-            if stability not in STABILITY_STATUS: errors.append('runtime_lifecycle:stability-status')
-            if paired not in PAIRED_STATUS: errors.append('runtime_lifecycle:paired-status')
+            if not _member(stability,STABILITY_STATUS): errors.append('runtime_lifecycle:stability-status')
+            if not _member(paired,PAIRED_STATUS): errors.append('runtime_lifecycle:paired-status')
             if material and advanced and lifecycle.get('canary_passed') is not True: errors.append('runtime_lifecycle:canary-required')
             if material and advanced and isinstance(obs,int) and not isinstance(obs,bool) and isinstance(minobs,int) and not isinstance(minobs,bool) and obs<minobs: errors.append('runtime_lifecycle:observation-window')
             if advanced and stability!='STABLE': errors.append('runtime_lifecycle:stability-required')
-            if rollout_status in {'READY_FOR_FULL','FULL'} and paired not in {'SIGNIFICANT_IMPROVEMENT','NONINFERIOR'}: errors.append('runtime_lifecycle:paired-evidence-required')
+            if _member(rollout_status,{'READY_FOR_FULL','FULL'}) and not _member(paired,{'SIGNIFICANT_IMPROVEMENT','NONINFERIOR'}): errors.append('runtime_lifecycle:paired-evidence-required')
             if material and not _text(lifecycle.get('rollback_version')): errors.append('runtime_lifecycle:rollback-version')
             if compat=='BREAKING' and lifecycle.get('major_version_bump') is not True: errors.append('runtime_lifecycle:breaking-major-required')
             if compat=='BREAKING' and lifecycle.get('migration_guide_present') is not True: errors.append('runtime_lifecycle:migration-guide-required')
@@ -165,6 +166,9 @@ def validate(payload):
         row=by.get(skill)
         if row is None or row.get('state') in {'PENDING','RUNNING'}:return {'status':'READY_FOR_NEXT','next_stage':skill,'errors':[],'unresolved_conflicts':0,'blocking_quality_debt':0}
         if row.get('state')=='CHANGES_REQUIRED' and skill=='repair-operator':return {'status':'READY_FOR_NEXT','next_stage':'repair-operator','errors':[],'unresolved_conflicts':0,'blocking_quality_debt':0}
+    for skill in required:
+        if skill not in {'repair-operator','artifact-acceptance'} and by[skill].get('state')=='CHANGES_REQUIRED':
+            return {'status':'CHANGES_REQUIRED','next_stage':skill,'errors':[],'unresolved_conflicts':0,'blocking_quality_debt':0}
     if profile=='REPO_DEEP':return {'status':'COMPLETE','next_stage':'release-readiness','errors':[],'unresolved_conflicts':0,'software_release_verdict':'NOT_OWNED','blocking_quality_debt':0}
     if profile=='SKILL_QUALITY':
         result=by.get('skill-evaluator',{}).get('result')

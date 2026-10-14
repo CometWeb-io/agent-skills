@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.5] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.7.4] - 2026-10-03
 
 - A payload that is not an object returned no `split_counts`, `missing_classes` or `contaminated_holdout`, which every other refusal carries; it now returns them at zero.

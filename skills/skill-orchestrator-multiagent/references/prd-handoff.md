@@ -94,6 +94,11 @@ then claims exactly one attempt and embeds the prefix in its isolated prompt. Ta
 pin skill paths to this local tree, never an installed copy. Missing, duplicate,
 reordered or changed inputs dispatch nothing. Only append after successful completion.
 A restart resumes from checkpoints; it never silently reclaims a RUNNING attempt.
+For a completed factual/trial Council prefix, pass caller-owned `--check-plan-json`
+and `--source-root` together. `build_next_task` accepts the same keyword capabilities
+and reruns the receiver before reporting completion or claiming a downstream task.
+Missing, changed or unreadable sources refuse without appending ledger events.
+The source capabilities are process inputs and are never embedded in worker prompts.
 Explicit fail-step closes an unsuccessful attempt; the next claim increments its
 attempt_number and has a new attempt_id. Changed plans are STALE_PLAN and dispatch
 nothing. COMPLETED/CANCELLED return no tasks. The task builder does not launch agents;
@@ -112,23 +117,48 @@ plan inputs are pinned in the manifest; downstream output cannot change them.
 The default retry budget is 2. This qualifies a single sequential parent; it is not
 a distributed dispatcher or a native host Task/discovery test.
 
-The downstream gate is `research-council-schema-kernel/v1`. Its source lock includes
-domain_handoff.py, every domain JSON schema, and actual Evidence/Council kernels.
-Research payloads carry the full evidence_graph. The helper audits the graph in a
-fresh process, compares declared research_status with the audit and recomputes
-evidence_pack_hash, projections, gaps and contradictions. Partial/stale evidence
-is valid for discussing gaps; it cannot clear a positive trial or launch handoff.
+The downstream gate is `research-council-schema-kernel/v2`. Its source lock includes
+all domain schemas and the actual Evidence/Council source. Research carries the
+complete evidence_graph; audit recomputes metadata status, hashes and projections.
+READY is metadata readiness, separate from observed factual eligibility.
 
-Council payloads carry decision_bundle: the unchanged research_envelope, two
-blind_memos (technical and product_customer), judge and original proposal. Judge
-may admit only claims the actual Evidence audit marks ready. Confidence thresholds,
-freshness and required gatekeepers are recomputed from the pinned plan. A model
-proposal is retained unchanged. constraint_result records both kernel_verdict
-and the final verdict: the local admission rule additionally downgrades GO/TEST
-to DEFER whenever research is not READY. execution_authorized remains false.
-The helper cannot prove model-process independence: the host harness must record
-separate blind processes without shared memos. No factual truth is inferred from
-a valid schema.
+The independently controlled domain_context may add evidence_use with purpose,
+as_of and premises. Each premise maps claim_id to role and a nonempty scope.
+Purpose is method_choice, planning, action or trial. Roles are controlled_fact,
+document_fact, safeguard, method, intent, estimate, hypothesis or inference.
+The consumer chooses these requirements outside the producer graph. Relabeling a
+required premise as supporting does not erase it. Scope/as_of must match.
+
+For factual prerequisites, the receiving gate reruns Evidence `observe` using
+caller-owned check_plan and source_root process arguments. Never obtain these
+capabilities from decision_bundle, a report or the producer's files. A positive
+receipt, schema, hash or label does not replace a fresh read. Caller isolation,
+source authority and the reviewed predicate mapping remain host responsibilities.
+
+Council retains two blind memos, Judge and original proposal. Judge may admit
+only eligible_premise_ids from the current basis_assessment. Observed factual
+coverage counts admitted observed facts over all caller-required facts, including
+supporting prerequisites. Methods, supplied intent, estimates, hypotheses and
+derived inferences receive no fact-coverage credit. Estimates remain uncertain;
+an inference retains INFERENCE/SUPPORTED_INFERENCE and does not become VERIFIED.
+A fact-grounded dependency closure is not proof of entailment.
+
+A method_choice/planning conclusion applies only to that purpose; it does not
+clear the eventual action's specialist gates. Actual action uses the compiled
+contract and all gatekeepers. LIGHT supplies only technical gate records and
+therefore defers unsupported specialist gates. A low-risk reversible trial may
+retain an UNKNOWN hypothesis only with separately observed safeguards; its
+positive verdict is TEST, never GO. Missing qualifications defer positive
+results. A declared BLOCK stays NO-GO. execution_authorized always remains false.
+constraint_result retains kernel_verdict plus basis_assessment and final verdict.
+Fresh validation recomputes these fields; it does not trust the serialized report.
+
+Migration: legacy contexts without evidence_use are unassessed and cannot admit
+facts. Legacy basis is not inferred from confidence, source class or VERIFIED.
+An old v1 gate/run cannot consume this policy: create a new locked plan/run and
+review caller requirements/capabilities. Do not silently add basis or rewrite old
+receipts. Readers which ignore scope or basis_assessment are not policy-compatible.
+Historical replay proves a completed receipt, not fresh evidence or permission.
 
 upstream_bindings contains ordered step_id, envelope_id and envelope_hash for the
 completed prefix. The ledger matches these and dependencies exactly and rejects
@@ -144,7 +174,8 @@ CLI for domain payloads (full CW-AIP completion still goes through prd_handoff):
 
 ```sh
 cd ../skill-orchestrator
-python3 scripts/domain_handoff.py payload.json --producer ai-council --context-json context.json
+python3 scripts/domain_handoff.py payload.json --producer ai-council --context-json context.json \
+  --check-plan-json caller-checks.json --source-root /controlled/source-root
 ```
 
 Schema files: domain-research.schema.json, domain-council.schema.json,
@@ -211,6 +242,21 @@ validation
 verdict
 ```
 
-Material coverage counts only admitted critical/material claims. Supporting claim IDs never inflate coverage. A positive handoff additionally requires every declared material claim admitted by Judge. This conservative local rule can defer a kernel proposal; it does not modify it.
+Factual evidence_coverage counts only freshly observed caller-required facts admitted by Judge. Every caller-required premise must be admitted before a positive scoped handoff; producer materiality cannot erase required supporting facts.
 
 The graph field `materiality` distinguishes supporting, material and critical claims.
+
+Receiving policy vocabulary:
+```text
+assess_research check_plan check_plan_json source_root evidence_use premises role scope basis basis_assessment
+policy_version eligible positive_verdict eligible_premise_ids required_fact_ids observed_fact_ids missing_premise_ids
+blockers caveats execution_authorized limit metadata_ready all_claims falsifier_search_completed context_hash checks
+claim_hash source_hash evidence_hash path sha256 pointer expected observed_scope
+```
+
+Receiving freshness is evaluated for caller-required factual prerequisites using
+all_claims.freshness_admissible. A supplied preference/method/estimate encoded as
+FACT/PARTIAL may leave metadata research_status REFRESH_REQUIRED; it does not
+become a current world fact or impose global factual freshness on a scoped plan.
+Its original kind/status and the research report are preserved. Unqualified
+required world facts still refuse admission or defer the receiving result.

@@ -25,6 +25,12 @@
     "snapshot_id": { "type": "string", "minLength": 1 },
     "generated_at": { "type": "string", "format": "date-time" },
     "goal": { "type": "string", "minLength": 1 },
+    "context_scope": {
+      "type": "string",
+      "enum": ["public_example", "workspace_private", "project_context"],
+      "description": "Omission is workspace_private; this declaration is not publication authority."
+    },
+    "project_ref": { "type": ["string", "null"] },
     "mode": {
       "type": "string",
       "enum": ["targeted", "standard", "delta", "full"]
@@ -132,6 +138,7 @@
       ],
       "properties": {
         "source_id": { "type": "string", "minLength": 1 },
+        "project_ref": { "type": ["string", "null"] },
         "source_type": {
           "type": "string",
           "enum": [

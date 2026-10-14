@@ -3,7 +3,8 @@
   "docs": [
     "evaluation/README.md",
     "references/semantic-fidelity.md",
-    "references/mark-classes.md"
+    "references/mark-classes.md",
+    "references/word-range.md"
   ],
   "scripts": {
     "scripts/rewrite_guard.py": {
@@ -24,6 +25,10 @@
     "scripts/release_check.py": {
       "input": "none",
       "role": "eval-harness"
+    },
+    "scripts/word_range.py": {
+      "input": "files",
+      "role": "validator"
     }
   },
   "fields": {
@@ -104,7 +109,21 @@
     "chars_removed": {},
     "chars_replaced": {},
     "protected_spans": {},
-    "would_change": {}
+    "would_change": {},
+    "verdict": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "COUNTED",
+        "ERROR"
+      ],
+      "enforced": false
+    },
+    "word_count": {},
+    "min_words": {},
+    "max_words": {},
+    "checked_bounds": {},
+    "error": {}
   },
   "internal": [],
   "doc_terms": [

@@ -27,6 +27,8 @@ Record `run_id`, `candidate_id`, `contract_id`, mode, profile, and `as_of`. In D
 
 Resolve the named policy/rubric pack before substantive review. Preserve `pack_id`, `revision`, and canonical `sha256`. If the policy changes after findings are known, create a new policy revision and revalidate the affected stages; never silently move the goalposts.
 
+Derive required stages and gates from the active user-supplied contract, including any explicitly selected profile. Do not promote a default profile recommendation or suggested extra review into a missing mandatory gate when the supplied frozen contract does not require it; keep proposed additions separate and revise the policy prospectively if authorized.
+
 Read `references/policy-lock.md` for lock semantics. No lock or policy-pack resolver ships with this repository; apply that contract by hand and record what was locked.
 
 ## 3. Select the smallest complete profile

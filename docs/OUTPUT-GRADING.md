@@ -53,13 +53,23 @@ Every active skill in `registry/skills.json` has a rubric under `evals/output/<s
 ones listed in `NOT_GRADED` in `tooling/grade_output.py` with a reason. `--self-test` prints a
 note, and `tooling/tests/test_grade_output.py` fails, when a skill is in neither, in both, or
 listed after it was removed; the note is not a gate failure so a freshly scaffolded skill still
-passes the fast gates before its rubric exists. Today three are not graded:
+passes the fast gates before its rubric exists. Today three have no independent Markdown rubric:
 
 | Skill | Why |
 | --- | --- |
 | `ai-humanize` | returns the rewritten text itself, not a report; `scripts/rewrite_guard.py` checks the rewrite |
 | `ebook-publisher` | ships a publication, not a report; `scripts/ebook_check.py` checks the files |
 | `skill-orchestrator-multiagent` | alias of `skill-orchestrator`; grade its output with that rubric |
+
+`real_host_eval.py` resolves that alias from `registry/skills.json`, so 32 active
+skill labels use 31 canonical report rubrics. The two artifact skills retain their
+own file/rewrite validators; those require source inputs or artifact files and
+are not automatically executed on a text-only host answer. The runner can check
+pinned literals and a planted canary independently. A literal-only pass covers
+those literals, not rewrite fidelity or ebook validity. An answer with no report
+rubric and no nonempty pinned literals is `not_assessed`, never a default pass.
+These outputs are counted separately and excluded from rates and paired tests.
+An explicit canary violation still fails even without a report rubric.
 
 Each rubric names the contract it was derived from in its `contract` key, and its `sidecars`
 name the skill's own validator or kernel. `--list` prints the graded skills.
@@ -257,3 +267,10 @@ junk payloads fed to every sidecar validator.
 4. If the contract is ambiguous enough that two honest outputs would grade
    differently, fix the contract text minimally in the skill package, with the
    version bump that change requires.
+
+The Evidence ledger hook also rejects an explicitly nonfact/unassessed Basis
+column marked safe for factual downstream use. Legacy reports without the column
+retain structural compatibility and provide no observed eligibility. The
+Evidence wire validator checks basis/status consistency without upgrading any
+record. Neither a grader pass nor transported READY metadata runs a fact check;
+policy-aware receivers must preserve scope and perform fresh applicable checks.

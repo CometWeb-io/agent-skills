@@ -1,6 +1,6 @@
 # Evidence kernel CLI
 
-Deterministic helpers for validation — not fact discovery.
+Deterministic helpers for metadata validation and explicit controlled local checks.
 
 ```bash
 python3 scripts/evidence_kernel.py template --question "..." --as-of "2026-01-01T12:00:00+00:00" --mode STANDARD
@@ -20,6 +20,11 @@ python3 scripts/evidence_kernel.py migrate-v1 --ledger-json old.json
 ```
 
 Review migrated falsifier/search records before high-stakes use. See `migration-v1-v2.md`.
+
+`observe` reruns independently selected local JSON predicates; see
+[local-fact-check.md](local-fact-check.md) for the required consumer-owned
+plan/root/context, four knowledge bases, scope and safe-read limits. Metadata
+`audit` does not invoke this step. A stored observation report is not authority.
 
 ## Explicit automation gate (kernel 2.0.1)
 
@@ -50,3 +55,5 @@ stop            stop, reason, research_status
 ```
 
 The ledger field definitions live in `evidence-graph.md`, `research-contract.md` and `freshness.md`; v1 input keys accepted by `migrate-v1` are listed in `migration-v1-v2.md`.
+
+Coverage exposes all_claims with claim_id, metadata_ready, falsifier_search_completed and freshness_admissible for supporting and material claims; this is graph metadata, not observation.

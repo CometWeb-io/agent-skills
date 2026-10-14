@@ -9,17 +9,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 
 QUALITY_SKILLS = {
-    "artifact-acceptance": "1.7.5",
-    "benchmark-curator": "1.7.4",
-    "brief-architect": "1.8.0",
-    "content-reviewer": "1.7.5",
-    "content-writer": "1.7.4",
-    "feedback-integrator": "1.8.1",
-    "quality-loop-operator": "1.7.4",
-    "repair-operator": "1.7.5",
-    "rubric-designer": "1.7.5",
-    "skill-auditor": "1.7.5",
-    "skill-evaluator": "1.7.4",
+    "artifact-acceptance": "1.7.6",
+    "benchmark-curator": "1.7.5",
+    "brief-architect": "1.8.1",
+    "content-reviewer": "1.7.6",
+    "content-writer": "1.7.7",
+    "feedback-integrator": "1.8.2",
+    "quality-loop-operator": "1.7.7",
+    "repair-operator": "1.7.7",
+    "rubric-designer": "1.7.7",
+    "skill-auditor": "1.7.6",
+    "skill-evaluator": "1.8.1",
 }
 
 
@@ -38,6 +38,8 @@ def test_quality_integration_docs_match_shipped_versions() -> None:
         assert f"`{version}`" in document
     for skill in ("content-roaster", "science-roaster", "repo-roaster"):
         assert f"`{skill}`" in document
+        shipped = (ROOT / "skills" / skill / "VERSION").read_text().strip()
+        assert f"`{shipped}`" in document
     assert "`6.1.4`" in document
 
 

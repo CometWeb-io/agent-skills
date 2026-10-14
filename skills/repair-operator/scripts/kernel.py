@@ -11,6 +11,7 @@ MODES={'STANDARD','DEEP'}
 
 
 def _text(value): return isinstance(value,str) and bool(value.strip())
+def _member(value, allowed): return isinstance(value,str) and value in allowed
 
 
 def _dt(value):
@@ -93,15 +94,15 @@ def validate(payload):
         elif rid in seen: errors.append(f'{i}:duplicate-id')
         else: seen.add(rid)
         status=item.get('status'); repair_class=item.get('repair_class'); patch_risk=item.get('patch_risk','LOW')
-        if status not in VALID_STATUS: errors.append(f'{i}:status')
-        if repair_class not in VALID_CLASS: errors.append(f'{i}:repair-class')
-        if patch_risk not in PATCH_RISK: errors.append(f'{i}:patch-risk')
+        if not _member(status,VALID_STATUS): errors.append(f'{i}:status')
+        if not _member(repair_class,VALID_CLASS): errors.append(f'{i}:repair-class')
+        if not _member(patch_risk,PATCH_RISK): errors.append(f'{i}:patch-risk')
         if portfolio_mode:
             effort=item.get('effort_band'); blast=item.get('blast_radius'); rev=item.get('reversibility')
-            if effort not in EFFORT: errors.append(f'{i}:effort-band')
+            if not _member(effort,EFFORT): errors.append(f'{i}:effort-band')
             else: effort_units+=EFFORT[effort]
-            if blast not in BLAST: errors.append(f'{i}:blast-radius')
-            if rev not in REVERSIBILITY: errors.append(f'{i}:reversibility')
+            if not _member(blast,BLAST): errors.append(f'{i}:blast-radius')
+            if not _member(rev,REVERSIBILITY): errors.append(f'{i}:reversibility')
             if rev=='IRREVERSIBLE' and item.get('explicit_approval_required') is not True: errors.append(f'{i}:irreversible-without-approval-gate')
         finding_ids=item.get('finding_ids')
         if not isinstance(finding_ids,list) or not finding_ids or not all(_text(x) for x in finding_ids): errors.append(f'{i}:orphan-repair')
@@ -109,8 +110,8 @@ def validate(payload):
             for fid in finding_ids:
                 if fid in finding_to_repair and item.get('supersedes_repair_id')!=finding_to_repair[fid]: errors.append(f'{i}:finding-owned-by-multiple-active-repairs:{fid}')
                 else: finding_to_repair[fid]=rid
-        if patch_risk in {'HIGH','CRITICAL'} and not _text(item.get('rollback_plan')): errors.append(f'{i}:high-risk-without-rollback')
-        if status in {'OPEN','PLANNED','IN_PROGRESS','UNVERIFIED','DEFERRED','REOPENED'}: open_count+=1
+        if _member(patch_risk,{'HIGH','CRITICAL'}) and not _text(item.get('rollback_plan')): errors.append(f'{i}:high-risk-without-rollback')
+        if _member(status,{'OPEN','PLANNED','IN_PROGRESS','UNVERIFIED','DEFERRED','REOPENED'}): open_count+=1
         if status=='REOPENED':
             reopen_of=item.get('reopen_of')
             if not _text(reopen_of):
@@ -118,7 +119,7 @@ def validate(payload):
             elif reopen_of not in repair_ids:
                 errors.append(f'{i}:reopened-with-missing-origin:{reopen_of}')
         if status=='CLOSED':
-            if repair_class in {'VERIFY_FIRST','WONT_FIX'}: errors.append(f'{i}:closed-invalid-repair-class')
+            if _member(repair_class,{'VERIFY_FIRST','WONT_FIX'}): errors.append(f'{i}:closed-invalid-repair-class')
             if not _text(item.get('root_cause')) or not _text(item.get('done_when')): errors.append(f'{i}:closed-without-root-cause-done-when')
             if strict and not _verification_plan_ok(item.get('verification_plan')): errors.append(f'{i}:closed-without-verification-plan')
             if not _invariants_ok(item.get('protected_invariant_checks')): errors.append(f'{i}:closed-with-broken-invariant')

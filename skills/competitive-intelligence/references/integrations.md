@@ -108,6 +108,7 @@ Skills in this repository:
 
 | Trigger from CI | Handoff |
 |---|---|
+| Need initial deep baseline | `competitor-profiling` |
 | Material strategic response | `ai-council` |
 | SEO/content/AI-visibility movement | `seo-geo-aeo-maxxing` |
 | A competitor mechanism worth adapting into our product | `product-teardown` |
@@ -119,7 +120,6 @@ state the handoff as out of scope:
 
 | Trigger from CI | Handoff (when installed) |
 |---|---|
-| Need initial deep baseline | `competitor-profiling` |
 | Need public comparison/alternative page | `competitors` |
 | Need sales battlecard/objection response | `sales-enablement` |
 | Competitor price move may require our pricing change | `pricing` |

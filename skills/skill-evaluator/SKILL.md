@@ -53,6 +53,9 @@ Candidate and baseline must share the same declared cases, suite hash, host/mode
 
 ## Promotion discipline
 
+Before trusting model grading, read `references/runtime-observability.md`.
+Every performed model-graded comparison must declare CALIBRATED after independently checked ground-truth contrasts; agreement alone is not rubric validity.
+
 No promotion claim may rest on a single stochastic run. Invariant regressions override average-score gains. A cheaper/faster but materially worse skill is a regression; a more accurate but materially over-budget skill is a tradeoff, not an unconditional win.
 
 ## Scope of claims

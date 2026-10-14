@@ -11,7 +11,7 @@ from .constants import (
     VERSION,
 )
 from .temporal_eval import temporal_status
-from .util import _claim_needs_freshness, _id_index, _parse_dt
+from .util import _ids, _member, _claim_needs_freshness, _id_index, _parse_dt
 
 
 def _accepted_edges_for_claim(evidence: List[Dict[str, Any]], claim_id: str, direction: str) -> List[Dict[str, Any]]:
@@ -24,7 +24,7 @@ def _accepted_edges_for_claim(evidence: List[Dict[str, Any]], claim_id: str, dir
 def _falsifier_searches(searches: List[Dict[str, Any]], claim_id: str, as_of: Optional[str] = None) -> List[Dict[str, Any]]:
     clock = _parse_dt(as_of)
     return [s for s in searches if s.get("claim_id") == claim_id and s.get("completed") is True
-            and s.get("purpose") in FALSIFIER_PURPOSES
+            and _member(s.get("purpose"), FALSIFIER_PURPOSES)
             and isinstance(s.get("query_summary"), str) and s["query_summary"].strip()
             and _parse_dt(s.get("completed_at")) is not None and clock is not None
             and _parse_dt(s["completed_at"]) <= clock]
@@ -32,8 +32,8 @@ def _falsifier_searches(searches: List[Dict[str, Any]], claim_id: str, as_of: Op
 
 def _edge_quality(edge: Dict[str, Any]) -> bool:
     """All dimensions must hold on the same evidence edge, not across a mixture."""
-    return (all(edge.get(field) in {"high", "medium"} for field in ("authority_fit", "directness", "scope_fit"))
-            and edge.get("measurement_quality") in {"high", "medium", "not_applicable"}
+    return (all(_member(edge.get(field), {"high", "medium"}) for field in ("authority_fit", "directness", "scope_fit"))
+            and _member(edge.get("measurement_quality"), {"high", "medium", "not_applicable"})
             and isinstance(edge.get("locator"), str) and bool(edge["locator"].strip()))
 
 
@@ -52,7 +52,7 @@ def _independence_components(sources: List[Dict[str, Any]]) -> Dict[str, str]:
     seen = {}
     for source in sources:
         sid = source.get("source_id")
-        if sid not in parents:
+        if not _member(sid, parents):
             continue
         for field in ("independence_group", "canonical_ref", "content_hash"):
             value = source.get(field)
@@ -63,7 +63,7 @@ def _independence_components(sources: List[Dict[str, Any]]) -> Dict[str, str]:
                 join(sid, seen[key])
             else:
                 seen[key] = sid
-        for prior in source.get("derived_from_source_ids", []):
+        for prior in _ids(source.get("derived_from_source_ids", [])):
             if prior in parents:
                 join(sid, prior)
     return {sid: find(sid) for sid in parents}
@@ -109,7 +109,7 @@ def coverage(ledger: Dict[str, Any]) -> Dict[str, Any]:
     sources_by_id = _id_index(sources, "source_id")
     as_of = contract.get("as_of")
 
-    material_claims = [c for c in claims if c.get("materiality") in {"critical", "material"}]
+    material_claims = [c for c in claims if _member(c.get("materiality"), {"critical", "material"})]
     critical_claims = [c for c in material_claims if c.get("materiality") == "critical"]
 
     claim_rows: List[Dict[str, Any]] = []
@@ -119,8 +119,8 @@ def coverage(ledger: Dict[str, Any]) -> Dict[str, Any]:
     unknown_independence_edges = 0
 
     components = _independence_components(sources)
-    relevant_gaps = {g.get("claim_id") for g in gaps if g.get("severity") in {"critical", "material"}}
-    unresolved_ids = {c.get("claim_id") for c in contradictions if c.get("resolution") == "UNRESOLVED"}
+    relevant_gaps = {g["claim_id"] for g in gaps if isinstance(g.get("claim_id"), str) and _member(g.get("severity"), {"critical", "material"})}
+    unresolved_ids = {c["claim_id"] for c in contradictions if isinstance(c.get("claim_id"), str) and c.get("resolution") == "UNRESOLVED"}
     all_rows = {}
     for claim in claims:
         cid = str(claim.get("claim_id") or "")
@@ -128,7 +128,7 @@ def coverage(ledger: Dict[str, Any]) -> Dict[str, Any]:
         contradict_edges = _accepted_edges_for_claim(evidence, cid, "CONTRADICT")
         support_sources = [sources_by_id.get(str(e.get("source_id"))) for e in support_edges]
         support_sources = [s for s in support_sources if s]
-        has_primary = any(s.get("source_role") in PRIMARY_ROLES for s in support_sources)
+        has_primary = any(_member(s.get("source_role"), PRIMARY_ROLES) for s in support_sources)
         has_authority = any(_edge_quality(e) for e in support_edges)
         falsifiers = _falsifier_searches(searches, cid, as_of)
         freshness_ok, temporal_checks, stale_supports = _support_freshness(claim, support_edges, sources_by_id, as_of, ledger.get("research_id"), contract.get("started_at"))
@@ -138,25 +138,25 @@ def coverage(ledger: Dict[str, Any]) -> Dict[str, Any]:
             group = str(source.get("independence_group") or "").strip()
             if group:
                 groups.add(components[source["source_id"]])
-                if claim.get("materiality") in {"critical", "material"}:
+                if _member(claim.get("materiality"), {"critical", "material"}):
                     all_independence_groups.add(components[source["source_id"]])
             else:
                 unknown_groups += 1
-                if claim.get("materiality") in {"critical", "material"}:
+                if _member(claim.get("materiality"), {"critical", "material"}):
                     unknown_independence_edges += 1
 
-        dep_ids = [str(x) for x in claim.get("depends_on_claim_ids", [])]
+        dep_ids = _ids(claim.get("depends_on_claim_ids", []))
         falsifier_ok = bool(falsifiers) and claim.get("contradiction_tested") is True
         # Supporting facts need evidence too; a falsifier is mandatory when material.
-        requires_falsifier = claim.get("materiality") in {"critical", "material"}
+        requires_falsifier = _member(claim.get("materiality"), {"critical", "material"})
         local_gate = (falsifier_ok or not requires_falsifier) and cid not in relevant_gaps and cid not in unresolved_ids
         ready = (claim.get("epistemic_kind") == "FACT" and claim.get("status") == "VERIFIED"
                  and bool(support_edges) and has_authority and freshness_ok and local_gate)
         deps_ready = False
         all_rows[cid] = {"ready": ready, "dependency_ids": dep_ids, "local_gate": local_gate,
                          "inference": claim.get("epistemic_kind") == "INFERENCE",
-                         "status": claim.get("status")}
-        if claim.get("materiality") not in {"critical", "material"}:
+                         "status": claim.get("status"), "falsifier_search_completed": bool(falsifiers), "freshness_admissible": freshness_ok}
+        if not _member(claim.get("materiality"), {"critical", "material"}):
             continue
 
         if support_edges:
@@ -244,6 +244,9 @@ def coverage(ledger: Dict[str, Any]) -> Dict[str, Any]:
         "critical_gaps": critical_gaps,
         "material_gaps": material_gaps,
         "claims": claim_rows,
+        "all_claims": [{"claim_id": cid, "metadata_ready": cid in ready_ids,
+                        "falsifier_search_completed": row["falsifier_search_completed"], "freshness_admissible": row["freshness_admissible"]}
+                       for cid, row in all_rows.items()],
         "schema_version": SCHEMA_VERSION,
         "kernel_version": VERSION,
         "policy_version": POLICY_VERSION,

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.5] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.2.4] - 2026-10-03
 
 - `portfolio_kernel.py validate` and `render` died with an `AttributeError` traceback on a report file that was not a JSON object. `validate` now reports `valid: false` with `report must be a JSON object` (exit 1), and `render` exits 2 with the same message.

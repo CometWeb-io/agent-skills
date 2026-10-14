@@ -15,6 +15,7 @@ import pathlib
 import subprocess
 from typing import Any
 
+CONTEXT_SCOPES = {"public_example", "workspace_private", "project_context"}
 
 def run_git(repo: pathlib.Path, *args: str) -> str:
     proc = subprocess.run(
@@ -48,7 +49,7 @@ def _read_repo_list(path: pathlib.Path) -> list[str]:
     return repos
 
 
-def load_registry(path: pathlib.Path) -> list[str]:
+def load_registry(path: pathlib.Path, context_scope: str = "workspace_private") -> list[str]:
     """Read the tracked repo list plus an untracked local one beside it.
 
     The published list names only repositories that are safe to disclose.
@@ -56,9 +57,11 @@ def load_registry(path: pathlib.Path) -> list[str]:
     checkout still sees the whole estate without the layout of a private vault
     being committed.
     """
+    if not isinstance(context_scope, str) or context_scope not in CONTEXT_SCOPES:
+        raise ValueError("invalid context_scope")
     repos = _read_repo_list(path)
     local = path.with_name(path.stem + ".local" + path.suffix)
-    if local.is_file():
+    if context_scope == "workspace_private" and local.is_file():
         for rel in _read_repo_list(local):
             if rel not in repos:
                 repos.append(rel)
@@ -118,18 +121,31 @@ def main() -> None:
     parser.add_argument("--repo", action="append", default=[])
     parser.add_argument("--include-paths", action="store_true")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--context-scope", choices=sorted(CONTEXT_SCOPES), default="workspace_private")
     args = parser.parse_args()
+
+    if args.context_scope == "project_context" and len(args.repo) != 1:
+        parser.error("project_context requires exactly one --repo")
+    if args.context_scope == "public_example" and (args.root or args.registry or args.repo or args.include_paths):
+        parser.error("public_example does not accept workspace inspection options")
+    if args.context_scope == "public_example":
+        payload = {"schema": "cometweb.repo-snapshot/v2", "context_scope": args.context_scope,
+                   "execution_status": "NOT_RUN", "reason": "public_example does not inspect workspace repositories",
+                   "root": "<redacted>", "root_available": None, "snapshot_ref": None, "repos": []}
+        print(json.dumps(payload, ensure_ascii=False, indent=2) if args.json else payload["reason"])
+        return
 
     if args.root is None:
         root, root_source = default_root()
     else:
         root, root_source = args.root.expanduser(), "argument"
     registry = args.registry or (pathlib.Path(__file__).resolve().parent.parent / "references" / "repos.txt")
-    repos = args.repo or load_registry(registry)
+    repos = args.repo or load_registry(registry, args.context_scope)
     root_available = root.exists()
     observed_at = dt.datetime.now(dt.timezone.utc).isoformat()
     payload = {
         "schema": "cometweb.repo-snapshot/v2",
+        "context_scope": args.context_scope,
         "generated_at": observed_at,
         # Provenance the downstream envelope relies on: when the working trees
         # were read, and against which ref.

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.2] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
+## [1.3.1] - 2026-10-11
+
+- Identify competitor-profiling as a bundled baseline owner while keeping host installation conditional.
+
 ## [1.3.0] - 2026-10-04
 
 ### Added

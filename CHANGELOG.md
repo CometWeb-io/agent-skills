@@ -6,7 +6,72 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+- Distinguish knowledge basis and consumer purpose; rerun controlled local fact
+  checks at the research/Council receiver, compiler and completion gate. Keep
+  nonfact premises, inference caveats and explicit trial safeguards intact through
+  typed handoffs, structural grading and unreviewed WhyKit drafts. Legacy scope
+  remains unassessed; no current-world, model-quality or execution proof is implied.
+
+- Refuse READY evidence envelopes with unverified material facts or unassessed
+  material inferences; retain nonready reports and unknown supporting claims
+  without claiming independent fact checks or inference dependency assessment.
+
+- Mark all current packages as experimental DEVELOPMENT in self-contained
+  maturity metadata, registry/catalog projections, ZIP manifests and CLI output.
+  New scaffolds remain SCAFFOLD and development-only; supplied QUALIFIED labels
+  cannot grant task qualification. Preserve unclassified historical ZIP inspection.
+- Recheck clean Git source and release archive provenance before cache reuse,
+  including a concurrent winner; a cached development ZIP cannot gain a clean
+  versioned release receipt.
+
+- Add the existing catalog owner/result/consumer map, task decision tree and small
+  core/domain installation selections; keep profiles and framework overlays opt-in.
+- Correct bundled competitor-profiling handoff classification in Competitive
+  Intelligence and Product Teardown.
+
+- Validate canonical and legacy contradiction states without letting a resolved
+  alias erase an explicit unresolved material state. Require typed records for
+  the same claim as accepted contradictory evidence in full envelope admission,
+  including the output grader; preserve declared resolved and nonready controls.
+
+- Reject known generated skill author prompts at plugin admission and versioned
+  packaging, including wrapped text and existing archive reuse. Development
+  archives remain unassessed; scaffold detection does not establish task quality.
+
 ### Security and correctness
+
+- Refuse malformed judge/execution flags, uncalibrated performed model grades,
+  empty case identities and nonfinite promotion bounds. Validate planned policy
+  without claiming execution; equal pass rates cannot be called improvement.
+- Distinguish missing task-relevant evidence from unauthorized access in rubric
+  design and judge calibration. Agreement and valid metadata are not source truth.
+
+- Separate public-example, private-workspace and single-project context scopes.
+  Skip local overlays and repository inspection for public examples, bind project
+  source references, and reject declared source/fact/wrapper sensitivity downgrades.
+  Public context wrappers now require explicit public-example scope; legacy
+  payloads with omitted scope remain private. Labels do not establish semantic
+  privacy, tenant authorization or permission to publish.
+
+- Mark unassessed host outputs explicitly instead of passing them by default;
+  resolve the multiagent alias to its canonical output rubric and retain canary
+  failures when no rubric exists. Check joined tokens consistently without
+  treating schema-less canary JSON as legacy text lines.
+- Distinguish missing, matching and different reported effort observations in
+  scorecards without claiming cross-model effort equivalence.
+
+- Validate loaded real-host plans and generate run paths independently of task IDs.
+  Capture host streams with a live quota, private output permissions and POSIX
+  process-group cleanup; unsupported cleanup platforms explicitly return NOT_RUN.
+- Separate native-cap USD admission from estimated budgets. Unknown costs remain
+  unknown, and usage-based estimates cannot release native budget reservations.
+
+- Add body-only word-range checks to prose writing and rewriting, and exact-rational
+  displayed-calculation checks to ebook preparation. Checks cover supplied inputs,
+  not semantic fidelity or source truth.
+- Reject special files before ebook manifest reads and fingerprinting; require
+  revalidation of unresolved changed specialist stages before quality-loop completion.
+- Reject malformed repair and quality-loop enum fields with structured validation errors.
 
 - Redact detected credentials across all source scanner output categories and
   diagnostics; distinguish truncated, skipped and complete eligible-file scans.

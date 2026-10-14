@@ -178,6 +178,20 @@ text-only, through the OpenAI Responses API, with `store` off. It needs
 both, and refuses a request that declares tools, so tool-using skills need a
 host runner instead.
 
+**Instruction-priority fidelity.** This runner places preloaded `SKILL.md`
+text in a `user` message, never in the top-level Responses API `instructions`
+field (which has developer-level priority). OpenAI's native Skills are injected
+as user-prompt instructions. The treatment and baseline receive the same
+task/fixture message; only the treatment receives the additional skill message.
+This is still an **approximate preloaded text-only comparison**: it does not
+measure native skill discovery, shell/agent execution, tool permissions, or
+deployment. The response records `execution_surface=responses_api_text_only`,
+`instruction_placement=user_message_when_present` and
+`native_skill_activation=false`. Comparisons cannot be promoted if execution
+surfaces, instruction priorities or activation modes differ across arms. Legacy
+runner records with undeclared surfaces must not be pooled with these runs.
+See [OpenAI's Skills documentation](https://developers.openai.com/api/docs/guides/tools-skills).
+
 ```bash
 uv run python tooling/run_model_evals.py --suite evals/model/suite.json --execute \
   --current-root /path/to/current --candidate-root /path/to/candidate \

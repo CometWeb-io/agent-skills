@@ -91,6 +91,11 @@
       "id": "rule-12",
       "text": "Never claim those checks ran if they did not.",
       "where": "SKILL.md"
+    },
+    {
+      "id": "word-range-executable-check",
+      "text": "Read `references/word-range.md` before counting; fix a FAIL and rerun before delivery.",
+      "where": "SKILL.md"
     }
   ]
 }

@@ -188,23 +188,31 @@ def validate_core_fallback(data: dict[str, Any]) -> None:
         fail("core:payload_hash must be sha256 hex or 'pending'")
 
 
-def local_validate(path: pathlib.Path, module_name: str, payload: dict[str, Any]) -> None:
+def local_validate(path: pathlib.Path, module_name: str, payload: dict[str, Any]) -> Any:
     spec = importlib.util.spec_from_file_location(module_name, path)
     if not spec or not spec.loader:
         fail(f"cannot load validator: {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     module.validate(payload)
+    return module
 
 
-def semantic_payload(envelope_type: str, payload: dict[str, Any]) -> None:
+def semantic_payload(envelope_type: str, payload: dict[str, Any], sensitivity: str | None = None) -> None:
 
     if envelope_type == "ContextEnvelope":
-        local_validate(
+        module = local_validate(
             ROOT / "skills" / "cometweb-context" / "scripts" / "validate_context_envelope.py",
             "_cometweb_context_envelope_validator",
             payload,
         )
+        if sensitivity == "public" and payload.get("context_scope") != "public_example":
+            fail("public context wrapper requires public_example")
+        if sensitivity is not None:
+            nested = payload["sources"] + payload["facts"]
+            if module.SENSITIVITY_LEVELS[sensitivity] < max(
+                    (module.SENSITIVITY_LEVELS[record["sensitivity"]] for record in nested), default=0):
+                fail("context wrapper sensitivity cannot downgrade nested records")
         return
     if envelope_type == "EvidenceEnvelope":
         local_validate(
@@ -270,7 +278,7 @@ def validate_envelope(data: dict[str, Any], *, final: bool = False) -> None:
         # in semantic_payload(); the rest are checked against their schema file.
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
         validate_schema_subset(schema, payload, "payload")
-    semantic_payload(envelope_type, payload)
+    semantic_payload(envelope_type, payload, data["sensitivity"])
 
     digest = data.get("payload_hash")
     if not isinstance(digest, str):

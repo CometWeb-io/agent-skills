@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.6] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
+## [1.0.5] - 2026-10-11
+
+- Add standalone `check_calculations.py`: exact rational arithmetic compares actual displayed decimals, precision and units, separating nearest half-even rounding from outward conservative bounds. Results retain the original numerator/denominator expression and report failed comparisons versus malformed input with distinct exit codes.
+- Document the input/output contract, artifact copying, retests and limits; add arithmetic, malformed-input and CLI regression tests. This is deterministic helper evidence, not model, source-truth or publication qualification.
+- Harden the shared JSON loader and hashing against special files, so both CLIs reject FIFOs/devices without waiting for input; regular-file symlinks remain supported.
+
+## [1.0.4] - 2026-10-10
+
+- Verify displayed uncertainty bounds against the exact calculation, with outward rounding when conservative bounds are claimed.
+
 ## [1.0.3] - 2026-10-03
 
 - `references/validation.md` now names every output value: it said `validate` emits a result but never named `RECORDS_COMPLETE`/`BLOCKED`, the `code`/`detail` shape of blockers and warnings, the `INPUT_ERROR` exit-2 output or `INITIALIZED_DRAFT` from `init`, and never named the required manifest `schema` value `cometweb.ebook/v1`.

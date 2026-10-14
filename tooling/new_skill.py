@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scaffold and register a skill package that passes every gate on the day it is created.
+"""Scaffold and register a skill package that passes fast structural gates.
 
 Adding a skill used to mean copying an existing one and discovering the contract
 by watching checks fail: the registry entry, the shared package surface, the
@@ -422,6 +422,9 @@ def create(skill_id: str, description: str, force: bool, root: Path = ROOT) -> P
     )
     _write_text(target / "tests" / "front-door-rules.json", json.dumps(front_door_rules(skill_id), indent=2) + "\n")
     _write_text(target / "VERSION", "0.1.0\n")
+    write_json(target / "MATURITY.json", {"schema": "cometweb.skill-maturity/v1",
+               "skill": skill_id, "version": "0.1.0", "stage": "SCAFFOLD",
+               "publication": "EXPERIMENTAL", "task_qualification": "not_established"})
     _write_text(target / "CHANGELOG.md", CHANGELOG.format(today=today))
     _write_text(target / "references" / "output-contract.md", OUTPUT_CONTRACT)
     _write_text(target / "evals" / "cases.json", json.dumps(CASES, indent=2) + "\n")
@@ -472,6 +475,8 @@ def registry_entry(skill_id: str, description: str, plan: dict) -> dict:
     return {
         "id": skill_id,
         "version": "0.1.0",
+        "maturity_stage": "SCAFFOLD",
+        "publication_channel": "EXPERIMENTAL",
         "lifecycle": "active",
         "visibility": "public_canonical",
         "tier": "domain",

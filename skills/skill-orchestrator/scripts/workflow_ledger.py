@@ -469,7 +469,8 @@ def claim_next(run_dir: Path, current_plan: dict[str, Any] | None = None,
 
 @_serialized
 def complete_step(run_dir: Path, step_id: str, envelope_id: str, envelope_hash: str,
-                  attempt_id: str | None = None, *, envelope: dict[str, Any] | None = None) -> dict[str, Any]:
+                  attempt_id: str | None = None, *, envelope: dict[str, Any] | None = None,
+                  check_plan: dict | None = None, source_root: Path | None = None) -> dict[str, Any]:
     state = replay(run_dir)
     definition = next((s for s in _read_manifest(run_dir)["steps"] if s["step_id"] == step_id), None)
     if definition is None:
@@ -486,7 +487,7 @@ def complete_step(run_dir: Path, step_id: str, envelope_id: str, envelope_hash: 
         else:
             result = gate.validate(envelope, definition["gate_lock"], expected_type=definition["envelope_out"],
                                    expected_producer=definition["skill"], prd_required=is_prd,
-                                   domain_required=definition["handoff_gate"]==gate.DOMAIN_GATE, domain_context=definition.get("domain_context"), expected_report_as_of=definition.get("report_as_of"))
+                                   domain_required=definition["handoff_gate"]==gate.DOMAIN_GATE, domain_context=definition.get("domain_context"), expected_report_as_of=definition.get("report_as_of"), check_plan=check_plan, source_root=source_root)
         if not result["accepted"]:
             raise ValueError("PRD handoff rejected: " + json.dumps(result, ensure_ascii=False))
         if result["envelope_id"] != envelope_id or result["envelope_hash"] != envelope_hash:
@@ -642,6 +643,8 @@ def main(argv: list[str] | None = None) -> int:
     complete.add_argument("--envelope-hash", required=True)
     complete.add_argument("--attempt-id", required=True)
     complete.add_argument("--envelope-json", type=Path, help="Full CW-AIP envelope; mandatory for gated PRD steps")
+    complete.add_argument("--check-plan-json", type=Path)
+    complete.add_argument("--source-root", type=Path)
     fail = sub.add_parser("fail-step")
     fail.add_argument("run_dir", type=Path)
     fail.add_argument("--step-id", required=True)
@@ -666,9 +669,14 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command in {"claim-next", "resume"}:
             print(json.dumps(claim_next(args.run_dir, current_plan, args.worker_id)))
         elif args.command == "complete-step":
+            domain = _prd_gate()._module(_prd_gate().DOMAIN_PATH, "ledger_domain_input")
+            if (args.check_plan_json is None) != (args.source_root is None):
+                raise ValueError("fact-check plan and controlled source root must be supplied together")
             print(json.dumps(complete_step(args.run_dir, args.step_id, args.envelope_id,
                                             args.envelope_hash, args.attempt_id,
-                                            envelope=json.loads(args.envelope_json.read_text()) if args.envelope_json else None)))
+                                            envelope=domain.load_input(args.envelope_json) if args.envelope_json else None,
+                                            check_plan=domain.load_input(args.check_plan_json) if args.check_plan_json else None,
+                                            source_root=args.source_root)))
         elif args.command == "fail-step":
             print(json.dumps(fail_step(args.run_dir, args.step_id, args.reason, args.attempt_id)))
         elif args.command == "block-step":

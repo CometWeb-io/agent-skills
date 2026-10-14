@@ -7,7 +7,8 @@
     "references/contradiction-protocol.md",
     "references/migration-v1-v2.md",
     "references/kernel-cli.md",
-    "references/refresh-delta.md"
+    "references/refresh-delta.md",
+    "references/local-fact-check.md"
   ],
   "scripts": {
     "scripts/evidence_kernel.py": {
@@ -46,7 +47,10 @@
         "CONTRADICTION_RESOLUTIONS": "resolution",
         "SEARCH_PURPOSES": "purpose",
         "SEARCH_LANES": "source_lane",
-        "GAP_SEVERITIES": "gaps.severity"
+        "GAP_SEVERITIES": "gaps.severity",
+        "KNOWLEDGE_BASES": "basis",
+        "OBSERVATION_SCOPES": "observed_scope",
+        "OBSERVATION_OPERATORS": "operator"
       }
     },
     "scripts/evidence": {
@@ -388,7 +392,40 @@
     "canonical_url": {},
     "source_ref": {},
     "supports_claim_ids": {},
-    "contradicts_claim_ids": {}
+    "contradicts_claim_ids": {},
+    "basis": {
+      "enum": [
+        "assumption",
+        "framework_method",
+        "user_supplied",
+        "verified_fact"
+      ]
+    },
+    "checks": {},
+    "claim_hash": {},
+    "context_hash": {},
+    "evidence_hash": {},
+    "path": {},
+    "pointer": {},
+    "sha256": {},
+    "source_hash": {},
+    "observed_scope": {
+      "enum": [
+        "controlled_state",
+        "document_content"
+      ]
+    },
+    "expected": {
+      "opaque": true
+    },
+    "operator": {
+      "enum": [
+        "count_matching",
+        "equals",
+        "text_present"
+      ]
+    },
+    "where": {}
   },
   "outputs": {
     "valid": {},
@@ -435,7 +472,16 @@
         "REVERIFY_ON_NEXT_MATERIAL_RUN"
       ]
     },
-    "stop": {}
+    "stop": {},
+    "source_sha256": {},
+    "plan_hash": {},
+    "context_hash": {},
+    "execution_authorized": {},
+    "observed_scope": {},
+    "claims": {},
+    "all_claims": {},
+    "metadata_ready": {},
+    "falsifier_search_completed": {}
   },
   "internal": {
     "claim": "record kind label used to index ids, not a payload key",
@@ -444,6 +490,8 @@
     "local_gate": "coverage row flag the kernel derives per claim",
     "source": "record kind label used to index ids, not a payload key"
   },
-  "doc_terms": [],
+  "doc_terms": [
+    "reference_result"
+  ],
   "evals": []
 }

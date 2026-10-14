@@ -1,5 +1,9 @@
 # Changelog
 
+## [6.1.7] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [6.1.6] - 2026-10-10
 
 - Synchronize safe scanner redaction, explicit partial coverage and validated limits across the roaster packages.

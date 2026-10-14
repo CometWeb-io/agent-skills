@@ -32,6 +32,11 @@ their headless/plugin adapters exist. Missing credentials and unsupported hosts
 materialize terminal records with a reason; they never become passes or
 silently invoke a host.
 
+Host execution currently requires POSIX process groups (macOS/Linux). On other
+platforms `--execute` records `NOT_RUN: PROCESS_GROUP_CLEANUP_UNAVAILABLE`;
+planning, grading and reporting remain offline. Windows execution needs an
+independently qualified Job Object implementation before it can be enabled.
+
 With `--execute`, `NOT_RUN` exits 3; errors or an incomplete schedule exit 1.
 Only a non-empty completed schedule without errors or stops exits 0. A deliberate
 dry run still exits 0 and starts no host. Always inspect the JSON alongside exit status.
@@ -54,6 +59,12 @@ nothing to work on and many skills will rightly answer with questions; those
 tasks still measure routing, and their output rate shows how often the skill
 produces its contract from a one-line request.
 
+The multiagent alias uses its canonical orchestrator's output rubric. A task
+without a rubric or non-empty pinned literals receives `not_assessed`, which is
+counted separately and excluded from output pass rates and paired comparisons.
+A literal-only pass establishes preservation of those literals, not rewrite
+fidelity or ebook validity. A followed canary remains a failure in every case.
+
 `evals/routing/holdout.json` is never read. `read_json` refuses it by path, and
 the plan lists it under `excluded_sources`. The holdout belongs to
 `tooling/routing_holdout.py`; feeding it to anything else turns it into a tuning
@@ -71,12 +82,16 @@ set.
 The plan records the SHA-256 of every source file and of itself. A v2 plan also
 freezes `candidate_sha256`, `payload_sha256`, `benchmark_sha256`,
 `rubric_sha256`, and `host_config_sha256`. `run` refuses changed v2 inputs or a
-staged payload that differs from the plan. v1 plans remain readable with their
-original task-only contract.
+staged payload that differs from the plan. Both v1 and v2 validate task types,
+known skills, unique safe IDs and supported checks before scheduling. Recomputing
+a digest does not bypass admission. V2 requires all five matching frozen hashes;
+v1 remains readable but has no frozen-input guarantee.
 
 With `--canary`, each output task's material gets an instruction asking the
 reader to print a token built from two parts. Only the parts are in the prompt;
 `grade` fails the output with `INJECTION_FOLLOWED` if the joined token appears.
+Loaded plans reject an instruction that already contains its joined token.
+Every output uses the same exact-token check, including canaries without a schema.
 See [OUTPUT-GRADING.md](OUTPUT-GRADING.md#canary-files).
 
 ## 2. Run
@@ -86,7 +101,7 @@ See [OUTPUT-GRADING.md](OUTPUT-GRADING.md#canary-files).
 | Host | Command | Plugin condition | Native caps |
 | --- | --- | --- | --- |
 | `claude` | `claude -p --output-format stream-json --verbose --no-session-persistence --strict-mcp-config --tools Read,Glob,Grep,Skill --allowedTools Read,Glob,Grep,Skill --max-turns N --max-budget-usd X` | adds `--plugin-dir <stage>` | turns and dollars per run |
-| `codex` | `codex exec --json --skip-git-repo-check --sandbox read-only --output-last-message <file> -` | first runs `codex plugin marketplace add <stage>` and `codex plugin add cometweb-agent-skills@cometweb-agent-skills` | none; only `--timeout` |
+| `codex` | `codex exec --json --skip-git-repo-check --sandbox read-only -` | first runs `codex plugin marketplace add <stage>` and `codex plugin add cometweb-agent-skills@cometweb-agent-skills` | none; only `--timeout` |
 
 The prompt goes on stdin. `--model` pins the model for either host.
 
@@ -99,11 +114,21 @@ the effective effort. Manifests and records separate requested and observed
 values and hash run options as `run_config_sha256`. Scorecards flag missing
 observations and different run configurations rather than declaring controlled A/B.
 
+Scorecards expose `effort_comparison_status`: `EQUAL_EFFORT_NOT_VERIFIED` for
+missing, malformed or unsupported host labels, `REPORTED_EFFORT_DIFFERS` for different
+observed labels, and `SAME_REPORTED_EFFORT` for matching labels. Matching labels
+do not establish equivalent effort across models or providers.
+
 **Isolation.** Each run gets a new temporary directory holding its own HOME, its
 own host config directory (`CLAUDE_CONFIG_DIR` or `CODEX_HOME`) and an empty
-working directory, removed when the run ends. Your settings, other plugins, MCP
-servers, memory and project instruction files are not visible to the host. The
-plugin is staged once per run directory from this checkout, the same payload
+working directory, removed when the run ends. The runner does not copy your
+existing settings, other plugins, MCP configuration, memory or project
+instruction files into those directories. This does not enforce filesystem read
+isolation: a same-user process can still access files by absolute path, parent
+traversal or a symlink unless separate host permissions prevent it. The runner
+has not verified those host permissions; blind keys and other-arm outputs must
+not rely on HOME/config separation for protection. The plugin is staged once
+per run directory from this checkout, the same payload
 `tooling/host_smoke.py` installs, and its digest goes into `manifest.json`. The
 tool set is read-only. This is separation, not an operating-system sandbox.
 
@@ -112,25 +137,36 @@ the host's credential variables are passed: `ANTHROPIC_API_KEY` or
 `CLAUDE_CODE_OAUTH_TOKEN` for `claude`, `OPENAI_API_KEY` or `CODEX_API_KEY` for
 `codex`. Because HOME is fresh, a login stored in your normal config or keychain
 is not seen; export one of those variables for the session instead. Values are
-never written to the run directory; `record.json` lists the variable names only.
+not copied into `record.json`, which lists variable names only. A host can print
+credential values into its transcript or version output; private capture is
+not automatic redaction.
 
 **Caps.**
 
 | Option | Default | Effect |
 | --- | --- | --- |
 | `--max-tasks N` | 10 | hard cap on host runs (task x condition x repeat), at most 500 |
-| `--timeout S` | 300 | a run is killed after S seconds and recorded as `timeout` |
+| `--timeout S` | 300 | the POSIX process group is killed after S seconds and recorded as `timeout` |
 | `--max-turns N` | 8 | `claude` only |
 | `--max-usd-per-task X` | 0.5 | `claude` only; passed as `--max-budget-usd` |
-| `--max-total-usd X` | none | stop before a run that could take the total past X |
+| `--max-total-usd X` | none | reserve the full native per-run cap before each job; Claude only |
+| `--max-estimated-total-usd X` | none | reserve the next job's estimate; actual spend can exceed X |
 | `--max-total-tokens N` | none | stop once reported tokens reach N |
 | `--max-consecutive-errors N` | 2 | stop after N failed runs in a row, such as a missing credential |
 
-For `claude`, a run whose cost was not reported is counted at its per-run cap,
-never at zero, so `--max-total-usd` is a real ceiling. `codex` reports tokens
-but not dollars: `--max-total-usd` then needs `--price-in` and `--price-out` (USD
-per million tokens) and is checked between runs, so the last run can overshoot
-it by its own cost.
+For `claude`, a run whose cost was not reported consumes its entire native cap,
+even when prices and usage supply an estimate. An estimate never releases this
+reservation. This admission ceiling relies on the host enforcing its native
+`--max-budget-usd`; it is not independently verified provider billing. A reported
+cost above the native cap stops further jobs. `spent_usd` is null when any cost
+is unknown; `accounted_usd` includes conservative reservations.
+
+`codex` has no native dollar ceiling. `--max-total-usd` is rejected before any
+host command, even with prices supplied. Use `--max-estimated-total-usd` with
+both `--price-in` and `--price-out` only when an estimated admission budget is
+acceptable. It checks the next estimated job before launch and stops after an
+unknown cost. Price-based accounting remains an estimate; a job can overshoot
+its estimate. `--max-total-tokens` is a between-job stop, not a per-job token cap.
 
 **The estimate.** The dry run's token figure is bytes/4 over the prompt, the
 plugin's always-on skill descriptions and the expected skill's `SKILL.md`, plus
@@ -148,6 +184,26 @@ named, and the skills it loaded). `manifest.json` holds the plan digest, host
 version, frozen acceptance hashes, payload digest, caps, totals and why the run
 stopped, if it did. Unsupported hosts and missing credentials materialize one
 `not_run` record for every scheduled job; no host process is invoked.
+
+Run IDs use the scheduler index, condition, repeat and a task-ID hash. They do
+not embed user-provided path text; use `record.json.task_id` to locate a task.
+On POSIX, output directories are 0700 and files 0600 regardless of umask.
+Symlinks and multiply linked output files are refused before truncation.
+Keep run directories outside version control. Transcripts can contain secrets
+printed by a host or tool despite the credential-name-only record format;
+review and redact before sharing. Retention is owner managed: archive the
+reviewed evidence you need and delete raw runs when that review is complete.
+No automatic expiry or secure-erasure guarantee is provided.
+
+Version, setup and task commands use the same bounded capture: each stdout and
+stderr file stores at most 8 MiB while the process runs. Exceeding a task stream
+limit kills its process group and records `capture_limit`; partial output is
+never an executed pass. Codex answers come from captured JSONL, without a
+separate host-written `output.md`. Process groups are also cleaned after a
+successful parent exit. These controls cover ordinary inherited descendants,
+not a hostile same-user executable that escapes its group or writes arbitrary
+files. They are not a total filesystem quota or an OS sandbox. POSIX permissions
+do not establish Windows ACL protection or isolation from the same user.
 
 ## 3. Grade
 
@@ -227,3 +283,30 @@ mean the answer is correct, that the evidence it cites exists, or that the skill
 helps users. The task set is drawn from the repository's own cases, which were
 written alongside the skills; a high score on them is weaker evidence than a
 score on prompts collected from real use.
+
+## Native local cache migration (no model calls)
+
+`host_smoke.py` can test old→new→rollback in the same temporary HOME/config/cache
+for Codex and Claude Code. Supply an archived source tree from a pinned prior
+commit; the current checkout is the new source. Both versions must differ.
+
+```bash
+uv run python tooling/host_smoke.py --migration-from /path/to/prior-source \
+  --require claude,codex --json runs/native-migration.json
+```
+
+Use a fresh output path. The JSON retains source payload hashes, raw commands
+(including failures/timeouts), installed version readbacks and cache manifests.
+Actual cache bytes are retained beside it in `native-migration-cache/`, before
+removal. A failure stops that host's sequence; diagnostic retries cannot replace
+the original result. Every migration command has a 60-second timeout. The runner
+removes its owned temporary profile at the end; an empty final plugin list proves
+registration removal, not physical cache purge by the native uninstall command.
+
+The Claude test uses the existing local `host-smoke` marketplace wrapper, not
+the shipped GitHub URL. These commands do not execute models, copy credentials
+or install into your normal profile. They do not prove OS isolation, online
+distribution, automatic skill activation or task quality. A missing required
+CLI fails rather than passing. Cursor is unsupported in this migration mode.
+Deterministic migration fault tests run in portable CI; actual native migration
+requires the two installed CLIs and the explicitly supplied prior source.

@@ -16,12 +16,12 @@ gate — and those are listed rather than hidden.
 | `artifact-acceptance` | 68 | 68 | 1.00 |
 | `benchmark-curator` | 34 | 34 | 1.00 |
 | `brief-architect` | 108 | 108 | 1.00 |
-| `competitor-profiling` | 40 | 40 | 1.00 |
-| `quality-loop-operator` | 95 | 95 | 1.00 |
-| `research-program-operator` | 35 | 35 | 1.00 |
+| `competitor-profiling` | 43 | 43 | 1.00 |
+| `research-program-operator` | 38 | 38 | 1.00 |
 | `rubric-designer` | 29 | 29 | 1.00 |
 | `skill-auditor` | 55 | 55 | 1.00 |
 | `skill-evaluator` | 57 | 57 | 1.00 |
+| `quality-loop-operator` | 96 | 95 | 0.99 |
 | `longform-publisher` | 75 | 74 | 0.99 |
 | `repair-operator` | 55 | 54 | 0.98 |
 | `content-writer` | 54 | 53 | 0.98 |
@@ -30,4 +30,8 @@ gate — and those are listed rather than hidden.
 | `portfolio-operator` | 67 | 64 | 0.95 |
 | `product-operator` | 193 | 180 | 0.93 |
 
-**16 harnesses.** 1026 of 1047 reachable guards are held (98% if every skill counted equally, which they do not).
+Scripts a package ships that its harness never loads, so nothing above measures them:
+
+- `content-writer`: word_range.py
+
+**16 harnesses.** 1032 of 1054 reachable guards are held (98% if every skill counted equally, which they do not).

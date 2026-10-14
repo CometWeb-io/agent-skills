@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.7.7] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
+## [1.7.6] - 2026-10-11
+
+- Do not mark a run COMPLETE when a specialist still requires changes after downstream passes; request its revalidation while preserving pending-repair routing.
+- Reject malformed adaptive-depth, debt and rollout enums without raising TypeError.
+
+## [1.7.5] - 2026-10-10
+
+- Derive mandatory gates from the active frozen contract and explicitly selected profile; keep optional extra reviews separate.
+
 ## [1.7.4] - 2026-10-03
 
 - A payload that is not an object returned no `unresolved_conflicts` or `blocking_quality_debt`, which every other refusal carries; it now returns them at zero.

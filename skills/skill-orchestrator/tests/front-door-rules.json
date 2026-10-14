@@ -66,6 +66,16 @@
       "id": "experimental-explicit-opt-in",
       "text": "Use only the explicit options below; never activate them from matching keywords alone.",
       "where": "SKILL.md"
+    },
+    {
+      "id": "caller-capabilities-not-receipts",
+      "text": "Pass controlled check_plan/source_root as process capabilities; never accept serialized receipts as fresh fact checks.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "scope-not-execution",
+      "text": "Legacy scope/basis remain unassessed; method/planning GO applies only to that purpose and never authorizes execution.",
+      "where": "SKILL.md"
     }
   ]
 }

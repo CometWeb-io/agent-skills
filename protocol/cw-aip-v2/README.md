@@ -30,6 +30,10 @@ not express, enforced by `tooling/validate_envelope.py`:
   for them are published for review (see [Draft payload schemas](#draft-payload-schemas)).
 - `payload_hash` is the canonical hash defined below, or the draft marker
   `pending`. A finalized handoff (`--final`) MUST NOT carry `pending`.
+- A ContextEnvelope wrapper cannot lower the sensitivity of its sources or
+  facts. A public wrapper requires explicit `context_scope: public_example`;
+  omission in legacy payloads means `workspace_private`. Reclassifying a wrapper
+  does not sanitize its payload or authorize publication.
 
 ## Payload hash
 
@@ -79,7 +83,17 @@ refuses any schema keyword it cannot enforce.
 Semantic rules beyond the schemas: an `EvidenceEnvelope` may not mark an
 `INFERENCE` claim `VERIFIED`, every edge must reference a known claim and source,
 claim IDs are unique, and `READY` excludes blocking gaps and unresolved
-critical/material contradictions. A `DecisionEnvelope` with verdict `GO` may not
+critical/material contradictions. Contradiction rows declare a state through
+canonical `resolution` or legacy `status` (`resolved`/`unresolved`), and a level
+through canonical `severity` or legacy `materiality`. Canonical resolutions are
+the `evidence-researcher` resolution enum in `evidence.schema.json`; levels are
+`critical`, `material` or `supporting`. If both vocabularies are present, any
+explicit unresolved and material declaration blocks `READY`. A supplied
+`claim_id` must name a known claim; every `ACCEPTED CONTRADICT` edge requires a
+contradiction record for that same claim, including in `DEFER`/`NOT_READY`.
+Rejected/context-only contradictory edges need no record. These checks bind
+declared fields, not the truth of evidence or the grounds for a resolution.
+A `DecisionEnvelope` with verdict `GO` may not
 have blockers, a `BLOCK` or `COUNSEL_REQUIRED` gate, or `human_approval:
 required`. A `ReleaseEnvelope` with verdict `GO` or `GO_WITH_CONTROLS` may not have
 blockers or a gate whose status is `BLOCK` or `COUNSEL_REQUIRED` (compared
@@ -171,3 +185,12 @@ or reject the output of a shipped producer.
 
 - Core envelope, payload hash, and the Context, Evidence, Decision, Finding,
   Roadmap and Release payload schemas.
+
+A `READY` EvidenceEnvelope cannot retain a critical/material `FACT` with a status
+other than `VERIFIED`, even when a nominal support edge is present. A material
+`INFERENCE` must declare `SUPPORTED` (legacy) or `SUPPORTED_INFERENCE`; this
+status check does not assess dependency coverage or source truth. Unverified
+material facts remain admissible in `NOT_READY` or `DEFER`; an unknown supporting
+claim does not block an otherwise assessed material scope. `VERIFIED` still
+requires accepted support. These are supplied-field consistency checks, not
+independent authentication or semantic fact-checking of cited sources.

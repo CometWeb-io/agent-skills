@@ -52,6 +52,7 @@ jobs:
           tooling/tests/test_windows_portability.py
           tooling/tests/test_audit_readiness.py
           tooling/tests/test_frontmatter_host_matrix.py
+          tooling/tests/test_host_migration.py
           tooling/tests/test_context_budget.py
           skills/skill-orchestrator/tests/test_workflow_ledger.py
           tooling/tests/test_ledger_concurrency.py

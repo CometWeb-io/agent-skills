@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.4.4] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [2.4.3] - 2026-10-08
 
 - Parse inline object/array JSON before path heuristics, including URL/path values; report file/UTF-8/JSON errors distinctly.

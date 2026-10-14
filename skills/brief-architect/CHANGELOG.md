@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.8.1] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.8.0] - 2026-10-08
 
 - Add the opt-in PRD profile with closed JSON output, requirement/slice verification and schema plus readiness-kernel admission; reject malformed brief deltas.

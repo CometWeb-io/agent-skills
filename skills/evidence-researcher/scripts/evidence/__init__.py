@@ -11,6 +11,7 @@ from .constants import (
     DEFAULT_TTL_DAYS,
     DIRECTIONS,
     EPISTEMIC_KINDS,
+    KNOWLEDGE_BASES,
     FALSIFIER_PURPOSES,
     FIT_LEVELS,
     LIVE_VERIFICATION_TYPES,
@@ -31,6 +32,7 @@ from .constants import (
     VERSION,
 )
 from .coverage_ops import coverage
+from .observations import observe_facts
 from .delta import delta
 from .identity import canonical_url, fingerprint_source, make_id, pack_hash, source_policy
 from .migrate import migrate_v1
@@ -53,6 +55,7 @@ __all__ = [
     "MATERIALITIES",
     "TEMPORAL_SENSITIVITIES",
     "EPISTEMIC_KINDS",
+    "KNOWLEDGE_BASES",
     "CLAIM_STATUSES",
     "CONFIDENCE_LEVELS",
     "SOURCE_CLASSES",
@@ -77,6 +80,7 @@ __all__ = [
     "pack_hash",
     "validate_ledger",
     "coverage",
+    "observe_facts",
     "audit",
     "refresh_plan",
     "delta",

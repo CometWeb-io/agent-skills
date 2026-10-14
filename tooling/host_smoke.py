@@ -6,9 +6,10 @@
     uv run python tooling/host_smoke.py --codex-bin /path/to/codex --json report.json
 
 Each host runs against a staged copy of the working tree, with HOME and the
-host's config directory pointed at a fresh temporary directory, so the real
-installs and settings on the machine are never read or written. Only
-commands that do not reach a model are used:
+host's config directory pointed at a fresh temporary directory. Existing
+credentials/settings are not copied; this is not an OS filesystem sandbox.
+Only commands that do not reach a model are used. With --migration-from and
+--json, test old→new→rollback in one profile and retain raw commands/cache copies:
 
 claude  `plugin validate --strict` on both manifests and on a plugin-only stage
         (with a negative control that must be flagged, proving skills are
@@ -33,10 +34,12 @@ non-zero when any exercised host FAILs.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -116,8 +119,8 @@ def isolated_env(base: Path, **extra: str) -> dict[str, str]:
     return env
 
 
-def run(argv: list[str], env: dict[str, str], cwd: Path) -> subprocess.CompletedProcess:
-    return subprocess.run(argv, env=env, cwd=cwd, capture_output=True, text=True, check=False, timeout=TIMEOUT)
+def run(argv: list[str], env: dict[str, str], cwd: Path, *, timeout: int = TIMEOUT) -> subprocess.CompletedProcess:
+    return subprocess.run(argv, env=env, cwd=cwd, capture_output=True, text=True, check=False, timeout=timeout)
 
 
 def normalise(text: str) -> str:
@@ -370,6 +373,157 @@ def smoke_codex(codex: str, work: Path, expected: dict[str, str], version: str) 
     return result
 
 
+def payload_hashes(root: Path) -> dict[str, dict]:
+    """Full regular-file bytes/modes; do not follow links in staged or cached inputs."""
+    if not root.is_dir() or root.is_symlink():
+        raise ValueError(f"not a regular directory: {root}")
+    out = {}
+    for path in sorted(root.rglob("*")):
+        mode = path.lstat().st_mode
+        if not (stat.S_ISREG(mode) or stat.S_ISDIR(mode)):
+            raise ValueError(f"non-regular payload entry: {path}")
+        if stat.S_ISREG(mode):
+            out[str(path.relative_to(root))] = {
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "mode": stat.S_IMODE(mode)}
+    return out
+
+
+def smoke_migration(host: str, cli: str, work: Path, prior: Path, snapshots: Path,
+                    root: Path = ROOT) -> HostResult:
+    """Native local cache migration only; stop at the first failure and retain evidence."""
+    result = HostResult({"codex": "openai-codex", "claude": "claude-code"}[host])
+    work = work.resolve()
+    config = work / "config"
+    config.mkdir(parents=True)
+    env = isolated_env(work, **({"CODEX_HOME": str(config)} if host == "codex" else
+                               {"CLAUDE_CONFIG_DIR": str(config), "DISABLE_AUTOUPDATER": "1"}))
+    cwd = work / "cwd"
+    cwd.mkdir()
+    market = work / "market"
+    target = f"{PLUGIN}@{PLUGIN if host == 'codex' else 'host-smoke'}"
+    commands, phases = [], {}
+    result.facts.update(commands=commands, phases=phases, model_calls=0,
+                        scope="native local install/cache only; no OS isolation or online distribution",
+                        home=env["HOME"], config=str(config), cwd=str(cwd))
+
+    def call(*args: str) -> subprocess.CompletedProcess:
+        argv = [cli, *args]
+        record = {"argv": argv, "cwd": str(cwd), "env_keys": sorted(env), "timeout_seconds": 60}
+        commands.append(record)
+        try:
+            proc = run(argv, env, cwd, timeout=60)
+        except subprocess.TimeoutExpired as exc:
+            record.update(exit=None, timeout=True,
+                          stdout=exc.stdout.decode(errors="replace") if isinstance(exc.stdout, bytes) else exc.stdout or "",
+                          stderr=exc.stderr.decode(errors="replace") if isinstance(exc.stderr, bytes) else exc.stderr or "")
+            raise
+        except OSError as exc:
+            record.update(exit=None, error=str(exc))
+            raise
+        record.update(exit=proc.returncode, stdout=proc.stdout, stderr=proc.stderr, timeout=False)
+        if proc.returncode != 0:
+            raise ValueError(f"native command failed: {args}")
+        return proc
+
+    def listed() -> list[dict]:
+        data = json.loads(call("plugin", "list", "--json").stdout)
+        if host == "codex":
+            data = data.get("installed") if isinstance(data, dict) else None
+        if not isinstance(data, list) or any(not isinstance(row, dict) for row in data):
+            raise ValueError("unsupported plugin list schema")
+        return data
+
+    try:
+        inputs = {}
+        for label, source in (("old", prior), ("new", root)):
+            # Validate before copytree can follow an untrusted input link.
+            for rel in PAYLOAD:
+                path = source / rel
+                if path.is_symlink():
+                    raise ValueError(f"linked source payload: {path}")
+                if path.is_dir():
+                    payload_hashes(path)
+                elif path.exists() and not path.is_file():
+                    raise ValueError(f"non-regular source payload: {path}")
+            staged = stage_payload(work / f"source-{label}", source)
+            manifest = json.loads((staged / ".claude-plugin/plugin.json").read_text())
+            if not isinstance(manifest, dict):
+                raise ValueError("unsupported source manifest schema")
+            version = manifest["version"]
+            if manifest.get("name") != PLUGIN or not isinstance(version, str) or not version.strip() or (
+                    staged / "VERSION").read_text().strip() != version:
+                raise ValueError("source name/version mismatch")
+            inputs[label] = {"stage": staged, "version": version, "payload": payload_hashes(staged)}
+        result.facts["inputs"] = {k: {"version": v["version"], "payload": v["payload"]} for k, v in inputs.items()}
+        if inputs["old"]["version"] == inputs["new"]["version"]:
+            raise ValueError("migration requires two distinct versions")
+        result.facts["cli_version"] = call("--version").stdout.strip()
+        if listed():
+            raise ValueError("test profile baseline is not empty")
+        for phase, label in (("old", "old"), ("new", "new"), ("rollback", "old")):
+            if market.exists():
+                shutil.rmtree(market)
+            plugin = stage_payload(market if host == "codex" else market / "plugin", inputs[label]["stage"])
+            if host == "claude":
+                (plugin / ".claude-plugin/marketplace.json").unlink()
+                (market / ".claude-plugin").mkdir()
+                (market / ".claude-plugin/marketplace.json").write_text(json.dumps({
+                    "name": "host-smoke", "owner": {"name": "host-smoke"},
+                    "plugins": [{"name": PLUGIN, "source": "./plugin", "description": "host smoke"}]}))
+            expected = payload_hashes(plugin)
+            if phase == "old":
+                call("plugin", "marketplace", "add", str(market))
+            elif host == "claude":
+                call("plugin", "marketplace", "update", "host-smoke")
+            else:
+                call("plugin", "list", "--available", "--json")
+            if phase == "rollback":
+                call("plugin", "remove" if host == "codex" else "uninstall", target)
+            installed = call("plugin", "add" if host == "codex" else
+                             "update" if phase == "new" else "install", target,
+                             *(["--json"] if host == "codex" or phase == "new" else []))
+            rows = listed()
+            if len(rows) != 1:
+                raise ValueError(f"{phase}: expected exactly one installed plugin")
+            row = rows[0]
+            installed_data = json.loads(installed.stdout) if host == "codex" else row
+            if not isinstance(installed_data, dict):
+                raise ValueError(f"{phase}: unsupported native install schema")
+            cache_value = installed_data.get("installedPath" if host == "codex" else "installPath")
+            if not isinstance(cache_value, str) or not cache_value:
+                raise ValueError(f"{phase}: missing native cache path")
+            cache = Path(cache_value)
+            if (not cache.is_absolute() or cache.is_symlink() or
+                    not cache.resolve().is_relative_to((config / "plugins/cache").absolute())):
+                raise ValueError(f"{phase}: cache path escapes test profile")
+            actual = payload_hashes(cache)
+            snapshot = snapshots / host / phase
+            shutil.copytree(cache, snapshot)
+            phases[phase] = {"version": row.get("version"), "row": row, "cache": str(cache), "snapshot": str(snapshot),
+                             "expected": expected, "actual": actual,
+                             "skills": sum(Path(p).name == "SKILL.md" for p in actual)}
+            if host == "codex":
+                listed_cache = row.get("installedPath", row.get("installPath"))
+                phases[phase]["native_list_cache_path_reported"] = listed_cache is not None
+                if (installed_data.get("pluginId") != target or installed_data.get("version") != row.get("version") or
+                        row.get("installed") is not True or not isinstance(row.get("source"), dict) or
+                        row["source"].get("source") != "local" or not isinstance(row["source"].get("path"), str) or
+                        Path(row["source"]["path"]).resolve() != market or
+                        (listed_cache is not None and (not isinstance(listed_cache, str) or
+                         Path(listed_cache).resolve() != cache.resolve()))):
+                    raise ValueError(f"{phase}: native add/list installation metadata disagree")
+            if (row.get("pluginId" if host == "codex" else "id") != target or
+                    row.get("version") != inputs[label]["version"] or row.get("enabled") is not True):
+                raise ValueError(f"{phase}: stale, disabled or unexpected installed plugin")
+            if not result.check(f"{phase}: full cache bytes/modes", actual == expected):
+                return result
+        call("plugin", "remove" if host == "codex" else "uninstall", target)
+        result.check("final plugin registration absent", listed() == [])
+    except (OSError, ValueError, TypeError, KeyError, subprocess.TimeoutExpired) as exc:
+        result.check("migration completed", False, str(exc))
+    return result
+
+
 # --------------------------------------------------------------------------- cursor
 
 def read_mdc_frontmatter(path: Path) -> dict | None:
@@ -469,12 +623,23 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--claude-bin", default=os.environ.get("CLAUDE_BIN"))
     parser.add_argument("--codex-bin", default=os.environ.get("CODEX_BIN"))
     parser.add_argument("--json", type=Path, help="also write the full report here")
+    parser.add_argument("--migration-from", type=Path, help="prior source directory for same-profile old→new→rollback")
     args = parser.parse_args(argv)
     hosts = args.host or ["claude", "codex", "cursor"]
     required = {h.strip() for h in args.require.split(",") if h.strip()}
     unknown = required - {"claude", "codex", "cursor"}
     if unknown:
         parser.error(f"unknown --require host(s): {sorted(unknown)}")
+    if args.migration_from:
+        hosts = args.host or ["claude", "codex"]
+        if "cursor" in hosts or required - set(hosts):
+            parser.error("migration supports only selected Claude/Codex hosts")
+        if not args.json:
+            parser.error("--migration-from requires --json to retain raw commands and cache snapshots")
+        snapshots = args.json.resolve().with_name(args.json.stem + "-cache")
+        if args.json.exists() or snapshots.exists():
+            parser.error("migration evidence destination already exists; choose a fresh --json path")
+        args.json.parent.mkdir(parents=True, exist_ok=True)
 
     expected = expected_skills()
     version = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"]
@@ -483,11 +648,13 @@ def main(argv: list[str] | None = None) -> int:
         base = Path(tmp)
         if "claude" in hosts:
             cli = find_cli("claude", args.claude_bin)
-            results.append(smoke_claude(cli, base / "claude", expected, version) if cli
+            results.append((smoke_migration("claude", cli, base / "claude", args.migration_from, snapshots)
+                            if args.migration_from else smoke_claude(cli, base / "claude", expected, version)) if cli
                            else HostResult("claude-code").skip("claude CLI not found"))
         if "codex" in hosts:
             cli = find_cli("codex", args.codex_bin)
-            results.append(smoke_codex(cli, base / "codex", expected, version) if cli
+            results.append((smoke_migration("codex", cli, base / "codex", args.migration_from, snapshots)
+                            if args.migration_from else smoke_codex(cli, base / "codex", expected, version)) if cli
                            else HostResult("openai-codex").skip("codex CLI not found (pass --codex-bin)"))
         if "cursor" in hosts:
             (base / "cursor").mkdir()

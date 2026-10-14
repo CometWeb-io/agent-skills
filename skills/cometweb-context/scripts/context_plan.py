@@ -9,6 +9,9 @@ import pathlib
 import re
 import unicodedata
 
+CONTEXT_SCOPES = {"public_example", "workspace_private", "project_context"}
+PUBLIC_SOURCE_GROUPS = {"github-product", "github-portfolio", "website", "prospect-web",
+                        "public-profiles", "primary-claim-source", "publication-surface"}
 _DEFAULT_PROFILES = {
     "product": ["github-product", "insight", "vault-status", "vault-decisions"],
     "portfolio": [
@@ -79,7 +82,7 @@ def _deep_merge(base: dict, overlay: dict) -> dict:
     return base
 
 
-def load_source_registry(registry: pathlib.Path) -> dict:
+def load_source_registry(registry: pathlib.Path, context_scope: str = "workspace_private") -> dict:
     """Read the tracked registry and apply an untracked local overlay.
 
     Paths into a private vault are placeholders in the committed file and real
@@ -87,9 +90,11 @@ def load_source_registry(registry: pathlib.Path) -> dict:
     keeps one registry shape for everyone while the concrete locations never
     reach a published tree.
     """
+    if not isinstance(context_scope, str) or context_scope not in CONTEXT_SCOPES:
+        raise ValueError("invalid context_scope")
     data = json.loads(registry.read_text(encoding="utf-8"))
     local = registry.with_name(registry.stem + ".local" + registry.suffix)
-    if local.is_file():
+    if context_scope == "workspace_private" and local.is_file():
         overlay = json.loads(local.read_text(encoding="utf-8"))
         if not isinstance(overlay, dict):
             raise ValueError("local source registry overlay must be an object")
@@ -97,11 +102,13 @@ def load_source_registry(registry: pathlib.Path) -> dict:
     return data
 
 
-def load_profiles(registry: pathlib.Path | None = None) -> dict[str, list[str]]:
+def load_profiles(registry: pathlib.Path | None = None, context_scope: str = "workspace_private") -> dict[str, list[str]]:
+    if not isinstance(context_scope, str) or context_scope not in CONTEXT_SCOPES:
+        raise ValueError("invalid context_scope")
     registry = registry or pathlib.Path(__file__).resolve().parents[1] / "references/source-registry.json"
     if not registry.is_file():
         return {name: list(groups) for name, groups in _DEFAULT_PROFILES.items()}
-    data = load_source_registry(registry)
+    data = load_source_registry(registry, context_scope)
     profiles = data.get("profiles") if isinstance(data, dict) else None
     if not isinstance(profiles, dict):
         raise ValueError("source registry profiles must be an object")
@@ -114,9 +121,6 @@ def load_profiles(registry: pathlib.Path | None = None) -> dict[str, list[str]]:
             raise ValueError(f"duplicate source group in profile: {name}")
         merged[name] = list(groups)
     return merged
-
-
-PROFILES = load_profiles()
 
 
 def pick_profiles(goal: str) -> dict:
@@ -155,14 +159,25 @@ def requires_first_principles(goal: str, profile: str) -> bool:
     return bool(MATERIAL_DECISION.search(text))
 
 
-def plan(goal: str, requested_mode: str = "auto") -> dict:
+def plan(goal: str, requested_mode: str = "auto", context_scope: str = "workspace_private",
+         project_ref: str | None = None) -> dict:
+    if context_scope == "project_context" and (not isinstance(project_ref, str) or not project_ref.strip()):
+        raise ValueError("project_context requires project_ref")
     profile = pick_profile(goal)
     mode = pick_mode(goal, requested_mode)
-    groups = list(load_profiles()[profile])
+    groups = list(load_profiles(context_scope=context_scope)[profile])
     fp_required = requires_first_principles(goal, profile)
     if fp_required and "vault-first-principles" not in groups:
         groups.insert(0, "vault-first-principles")
+    blocked = 0
+    if context_scope == "public_example":
+        allowed = [group for group in groups if group in PUBLIC_SOURCE_GROUPS]
+        blocked = len(groups) - len(allowed)
+        groups = allowed
     return {
+        "context_scope": context_scope,
+        "project_ref": project_ref if context_scope == "project_context" else None,
+        "blocked_source_group_count": blocked,
         "profile": profile,
         "mode": mode,
         "source_groups": groups,
@@ -180,14 +195,19 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("goal")
     parser.add_argument("--mode", choices=["auto", "targeted", "standard", "delta", "full"], default="auto")
+    parser.add_argument("--context-scope", choices=sorted(CONTEXT_SCOPES), default="workspace_private")
+    parser.add_argument("--project-ref")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
 
-    payload = plan(args.goal, args.mode)
+    try:
+        payload = plan(args.goal, args.mode, args.context_scope, args.project_ref)
+    except ValueError as exc:
+        parser.error(str(exc))
     if args.json:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
     else:
-        print(f"profile={payload['profile']} mode={payload['mode']}")
+        print(f"profile={payload['profile']} mode={payload['mode']} context_scope={payload['context_scope']}")
         print(f"first_principles_required={payload['governance']['first_principles_required']}")
         for source in payload["source_groups"]:
             print(f"- {source}")

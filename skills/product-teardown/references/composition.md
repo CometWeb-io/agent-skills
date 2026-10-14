@@ -29,7 +29,7 @@ It does not own portfolio-level product priority, ongoing monitoring, a broad co
 
 ### competitor-profiling (when installed)
 
-Not part of this repository; route here only when the host has such a skill. Otherwise keep the teardown narrow and say a dossier is out of scope.
+Bundled in this repository; route here when its package is installed in the host. Otherwise keep the teardown narrow and say a dossier is out of scope.
 
 
 Use when the main deliverable is a broad dossier: company, ICP, positioning, pricing, product surface, strengths/weaknesses, and competitive posture.

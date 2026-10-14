@@ -23,8 +23,8 @@
       "unexercised": []
     },
     {
-      "guards": 40,
-      "held": 40,
+      "guards": 43,
+      "held": 43,
       "id": "competitor-profiling",
       "strength": 1.0,
       "unexercised": []
@@ -41,7 +41,9 @@
       "held": 53,
       "id": "content-writer",
       "strength": 0.981,
-      "unexercised": []
+      "unexercised": [
+        "word_range.py"
+      ]
     },
     {
       "guards": 37,
@@ -72,10 +74,10 @@
       "unexercised": []
     },
     {
-      "guards": 95,
+      "guards": 96,
       "held": 95,
       "id": "quality-loop-operator",
-      "strength": 1.0,
+      "strength": 0.99,
       "unexercised": []
     },
     {
@@ -86,8 +88,8 @@
       "unexercised": []
     },
     {
-      "guards": 35,
-      "held": 35,
+      "guards": 38,
+      "held": 38,
       "id": "research-program-operator",
       "strength": 1.0,
       "unexercised": []

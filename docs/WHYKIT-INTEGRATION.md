@@ -77,3 +77,8 @@ the Markdown intentionally does not mirror every producer-specific field.
 
 The converter has no runtime dependency beyond Python's standard library and
 does not add another GitHub Actions workflow.
+
+Evidence drafts preserve per-claim basis and scope plus edge basis. Missing legacy
+basis is printed as unassessed. These are producer records: the converter does not
+run observations, authenticate authority or authorize a decision. Review and
+fresh receiving checks remain separate from deterministic draft conversion.

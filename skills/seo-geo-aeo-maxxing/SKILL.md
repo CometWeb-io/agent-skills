@@ -102,6 +102,8 @@ audit; read the "Refresh protocol" section of `references/live-source-registry.m
 
 If current first-party evidence cannot be obtained, keep the claim narrow and label it `UNVERIFIED`.
 
+Guide metadata is not site evidence; state rule sources, dates and refresh history only from records.
+
 ## Step 3 - Generate the complete audit skeleton
 
 Use `references/check-registry.json` as the closed registry. Do not omit inconvenient checks.

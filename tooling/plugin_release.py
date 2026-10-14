@@ -37,6 +37,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from markdown_resources import without_code
+
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = "cometweb.plugin-release/v1"
 RECORD = Path("registry/plugin-release.json")
@@ -209,14 +211,77 @@ VERSION_FILES = (
 LEVELS = ("patch", "minor", "major")
 
 
-def content_errors(root: Path) -> list[str]:
-    """Scaffolds may pass fast gates, but cannot become a release candidate."""
+def unreplaced_scaffold(relative: str, text: str) -> bool:
+    """Recognize known author prompts, not the quality of arbitrary instructions."""
+    normalized = " ".join(text.split())
     markers = ("Replace these rules with the skill's real contract",
                "Scaffold placeholder from tooling/new_skill.py; replace with a real case")
+    if any(marker in normalized for marker in markers):
+        return True
+    if Path(relative).name != "SKILL.md":
+        return False
+    prose = without_code(text)
+    # shortcut: only explicit > quote lines, upgrade if lazy CommonMark quotes need admission.
+    prose = "\n".join(line for line in prose.splitlines() if not line.lstrip().startswith(">"))
+    prompts = ("State what this skill owns in one paragraph",
+               "Describe the request shapes that belong here.",
+               "Name the neighbouring skills and the cases that belong to them.")
+    return any(re.search(r"(?m)^ {0,3}" + r"\s+".join(map(re.escape, prompt.split())), prose)
+               for prompt in prompts)
+
+
+def content_errors(root: Path) -> list[str]:
+    """Scaffolds may pass fast gates, but cannot become a release candidate."""
     paths = list((root / "skills").rglob("*.py")) + list((root / "skills").rglob("*.md"))
     paths += list((root / "skills").rglob("*.json")) + list((root / "evals").rglob("*.json"))
-    return [f"{path.relative_to(root)}: unreplaced scaffold content" for path in sorted(paths)
-            if any(marker in path.read_text(encoding="utf-8") for marker in markers)]
+    errors = [f"{path.relative_to(root)}: unreplaced scaffold content" for path in sorted(paths)
+              if unreplaced_scaffold(str(path.relative_to(root)), path.read_text(encoding="utf-8"))]
+    for skill_md in sorted((root / "skills").glob("*/SKILL.md")):
+        path = skill_md.parent / "MATURITY.json"
+        try:
+            data = read_maturity(skill_md.parent)
+            if data["stage"] == "SCAFFOLD":
+                raise ValueError("SCAFFOLD is development-only; use --dev")
+        except (OSError, ValueError) as exc:
+            errors.append(f"{path.relative_to(root)}: {exc}")
+    return errors
+
+
+def validate_maturity(blob: bytes, skill: str, version: str) -> dict:
+    """Current distributions are experimental; supplied labels never qualify a task."""
+    if len(blob) > 4096:
+        raise ValueError("MATURITY.json exceeds the metadata budget")
+    def unique(pairs):
+        result = dict(pairs)
+        if len(result) != len(pairs):
+            raise ValueError("MATURITY.json contains duplicate keys")
+        return result
+
+    try:
+        data = json.loads(blob.decode("utf-8"), object_pairs_hook=unique)
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("invalid MATURITY.json") from exc
+    fields = {"schema", "skill", "version", "stage", "publication", "task_qualification"}
+    if not isinstance(data, dict) or set(data) != fields or any(not isinstance(v, str) for v in data.values()):
+        raise ValueError("invalid maturity fields")
+    if data["schema"] != "cometweb.skill-maturity/v1" or data["skill"] != skill or data["version"] != version:
+        raise ValueError("maturity identity disagrees with package")
+    if data["stage"] == "QUALIFIED":
+        raise ValueError("QUALIFIED requires independent task qualification; this distribution is experimental")
+    if data["stage"] not in {"SCAFFOLD", "DEVELOPMENT", "CANDIDATE"}:
+        raise ValueError("invalid maturity stage")
+    if data["publication"] != "EXPERIMENTAL" or data["task_qualification"] != "not_established":
+        raise ValueError("maturity must declare EXPERIMENTAL and unassessed task effectiveness")
+    return data
+
+
+def read_maturity(skill_dir: Path) -> dict:
+    path = skill_dir / "MATURITY.json"
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("MATURITY.json must be a regular file")
+    with path.open("rb") as stream:
+        return validate_maturity(stream.read(4097), skill_dir.name,
+                                 (skill_dir / "VERSION").read_text().strip())
 
 
 def next_version(version: str, level: str) -> str:

@@ -171,6 +171,8 @@ When the user asks for a finished rewrite:
 - do not mention edits you intentionally chose not to make;
 - if a material ambiguity prevents a faithful rewrite, preserve the ambiguous source meaning rather than guessing.
 
+For a word range, save only the rewrite in `body.md`; run `python scripts/word_range.py body.md --min-words 450 --max-words 550` using requested bounds. Read `references/word-range.md` before use; fix a FAIL and rerun before delivery.
+
 When the user asks for an audit/comparison, report only the useful findings: mode, major issues, material fidelity risks, and specific recommendations.
 
 ## 12. Quality gates

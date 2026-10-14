@@ -20,7 +20,9 @@
         "FRESHNESS_POLICIES": "claim_type",
         "WATCH_OPERATORS": "operator",
         "GATE_STATUSES": "gate_statuses",
-        "FORECAST_OUTCOMES": "forecasts.outcome"
+        "FORECAST_OUTCOMES": "forecasts.outcome",
+        "EVIDENCE_PURPOSES": "purpose",
+        "PREMISE_ROLES": "role"
       }
     },
     "scripts/council_kernel.py": {
@@ -183,7 +185,18 @@
     "importance": {},
     "expert_id": {},
     "role_id": {},
-    "role": {},
+    "role": {
+      "enum": [
+        "controlled_fact",
+        "document_fact",
+        "estimate",
+        "hypothesis",
+        "inference",
+        "intent",
+        "method",
+        "safeguard"
+      ]
+    },
     "assumptions": {},
     "key": {},
     "assumption_key": {},
@@ -367,7 +380,35 @@
     "route_version": {},
     "adjusted_consensus": {},
     "effective_independent_perspectives": {},
-    "text": {}
+    "text": {},
+    "evidence_use": {
+      "unread": true
+    },
+    "premises": {},
+    "basis": {},
+    "scope": {},
+    "claims": {},
+    "epistemic_kind": {},
+    "status": {},
+    "depends_on_claim_ids": {},
+    "research_contract": {},
+    "all_claims": {},
+    "metadata_ready": {},
+    "falsifier_search_completed": {},
+    "observations": {},
+    "observed_scope": {},
+    "resolution": {},
+    "severity": {},
+    "purpose": {
+      "enum": [
+        "action",
+        "method_choice",
+        "planning",
+        "trial"
+      ]
+    },
+    "gaps": {},
+    "contradictions": {}
   },
   "outputs": {
     "status": {
@@ -403,7 +444,19 @@
         "NO_GO",
         "TEST"
       ]
-    }
+    },
+    "policy_version": {},
+    "scope": {},
+    "eligible": {},
+    "positive_verdict": {},
+    "eligible_premise_ids": {},
+    "required_fact_ids": {},
+    "observed_fact_ids": {},
+    "missing_premise_ids": {},
+    "blockers": {},
+    "caveats": {},
+    "execution_authorized": {},
+    "limit": {}
   },
   "internal": {
     "STANDARD": "council mode value compared after normalisation, not a payload key",
@@ -445,7 +498,9 @@
     "did_not_occur",
     "option_ranking",
     "recommended_option",
-    "watch_dependencies"
+    "watch_dependencies",
+    "basis_admission",
+    "gate_verdict"
   ],
   "evals": [
     {

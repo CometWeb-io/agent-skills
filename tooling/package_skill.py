@@ -17,6 +17,7 @@ from urllib.parse import unquote, urlsplit
 import yaml
 from public_safety import MAX_FILE_BYTES, check_blob, files
 from markdown_resources import destinations
+from plugin_release import unreplaced_scaffold, validate_maturity
 
 ROOT = Path(__file__).resolve().parents[1]
 SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
@@ -172,6 +173,8 @@ def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
         "files": {name: digest(data) for name, data in sorted(entries.items())},
         "runtime_acceptance": "not_assessed",
     }
+    if "MATURITY.json" in entries:
+        validate_maturity(entries["MATURITY.json"], skill, version)
     if runtime is not None:
         manifest["runtime_requirements"] = {
             "python": runtime["python"],
@@ -219,7 +222,7 @@ def archive(entries: dict[str, bytes], manifest: dict) -> bytes:
     return stream.getvalue()
 
 
-def inspect_archive(blob: bytes) -> dict:
+def inspect_archive(blob: bytes, *, require_provenance: bool = False) -> dict:
     """Validate payload identity as well as hashes; metadata cannot certify itself."""
     import unicodedata
 
@@ -283,7 +286,7 @@ def inspect_archive(blob: bytes) -> dict:
                     raise ValueError("invalid manifest fingerprint")
             provenance = {"source_revision", "source_tree"}
             present = provenance & manifest.keys()
-            if present:
+            if present or require_provenance:
                 if present != provenance:
                     raise ValueError("incomplete source provenance")
                 revision, state = manifest["source_revision"], manifest["source_tree"]
@@ -309,6 +312,8 @@ def inspect_archive(blob: bytes) -> dict:
             validate_frontmatter(entries["SKILL.md"], manifest["skill"])
             if entries["VERSION"].decode("utf-8").strip() != manifest["version"]:
                 raise ValueError("manifest version disagrees with VERSION")
+            if "MATURITY.json" in entries:
+                validate_maturity(entries["MATURITY.json"], manifest["skill"], manifest["version"])
             actual = {n: digest(data) for n, data in entries.items()}
             if manifest["files"] != actual:
                 raise ValueError("package manifest mismatch")
@@ -342,36 +347,45 @@ def write_atomic(path: Path, blob: bytes, *, immutable: bool) -> None:
 
 def build(root: Path, skill: str) -> dict:
     entries, manifest = payload(root, skill)
+    if "MATURITY.json" not in entries:
+        raise ValueError("versioned packaging requires MATURITY.json")
+    maturity = validate_maturity(entries["MATURITY.json"], skill, manifest["version"])
+    if maturity["stage"] == "SCAFFOLD":
+        raise ValueError("SCAFFOLD is development-only; use --dev")
+    for name, data in entries.items():
+        if Path(name).suffix in {".md", ".py", ".json"} and unreplaced_scaffold(name, data.decode("utf-8")):
+            raise ValueError(f"{name}: unreplaced scaffold content")
     out = safe_path(root, f"dist/{skill}/{manifest['version']}/skill.zip")
+    revision = source_revision(root)
     if out.exists():
-        old = inspect_archive(out.read_bytes())
+        old = inspect_archive(out.read_bytes(), require_provenance=True)
         if old["payload_sha256"] != manifest["payload_sha256"]:
             raise ValueError("immutable version conflict: bump VERSION; existing release is unchanged")
     else:
-        revision = source_revision(root)
         manifest.update(source_revision=revision, source_tree="clean")
         data = archive(entries, manifest)
-        inspect_archive(data)
+        inspect_archive(data, require_provenance=True)
         try:
             write_atomic(out, data, immutable=True)
         except FileExistsError as exc:
-            if inspect_archive(out.read_bytes())["payload_sha256"] != manifest["payload_sha256"]:
+            if inspect_archive(out.read_bytes(), require_provenance=True)["payload_sha256"] != manifest["payload_sha256"]:
                 raise ValueError("concurrent immutable version conflict") from exc
     data = out.read_bytes()
     latest = safe_path(root, f"dist/{skill}/skill.zip")
     write_atomic(latest, data, immutable=False)
     write_atomic(safe_path(root, f"dist/{skill}/{manifest['version']}/skill.zip.sha256"), (digest(data) + "  skill.zip\n").encode(), immutable=False)
-    return {"status": "packaged", "skill": skill, "version": manifest["version"], "payload_sha256": manifest["payload_sha256"], "archive_sha256": digest(data), "path": out.relative_to(root).as_posix(), "runtime_acceptance": "not_assessed", "source_tree": "clean"}
+    return {"status": "packaged", "skill": skill, "version": manifest["version"], "payload_sha256": manifest["payload_sha256"], "archive_sha256": digest(data), "path": out.relative_to(root).as_posix(), "runtime_acceptance": "not_assessed", "source_tree": "clean", "maturity": maturity}
 
 
 def build_dev(root: Path, skill: str) -> dict:
     """Experimental package outside the versioned release path; not distributable."""
     entries, manifest = payload(root, skill)
+    maturity = validate_maturity(entries["MATURITY.json"], skill, manifest["version"]) if "MATURITY.json" in entries else None
     out = safe_path(root, f"dist/{skill}/dev/skill.zip")
     data = archive(entries, manifest)
     inspect_archive(data)
     write_atomic(out, data, immutable=False)
-    return {"status": "packaged-dev", "skill": skill, "version": manifest["version"], "payload_sha256": manifest["payload_sha256"], "archive_sha256": digest(data), "path": out.relative_to(root).as_posix(), "runtime_acceptance": "not_assessed", "source_tree": "unavailable"}
+    return {"status": "packaged-dev", "skill": skill, "version": manifest["version"], "payload_sha256": manifest["payload_sha256"], "archive_sha256": digest(data), "path": out.relative_to(root).as_posix(), "runtime_acceptance": "not_assessed", "source_tree": "unavailable", "maturity": maturity}
 
 
 def main() -> int:

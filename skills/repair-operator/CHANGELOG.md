@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.7] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
+## [1.7.6] - 2026-10-11
+
+- Reject malformed item enums without crashing, including portfolio fields; preserve the existing invalid-ledger error envelope.
+
 ## [1.7.5] - 2026-10-08
 
 - Reject REOPENED repairs whose reopen_of does not reference an existing repair in the ledger.

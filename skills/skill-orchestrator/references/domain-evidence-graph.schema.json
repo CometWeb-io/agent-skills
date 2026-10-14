@@ -191,6 +191,19 @@
                 "type": "null"
               }
             ]
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "verified_fact",
+              "user_supplied",
+              "assumption",
+              "framework_method"
+            ]
+          },
+          "scope": {
+            "type": "object",
+            "minProperties": 1
           }
         },
         "required": [
@@ -339,6 +352,15 @@
           },
           "admission": {
             "type": "string"
+          },
+          "basis": {
+            "type": "string",
+            "enum": [
+              "verified_fact",
+              "user_supplied",
+              "assumption",
+              "framework_method"
+            ]
           }
         },
         "required": [

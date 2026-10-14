@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.5] - 2026-10-11
+
+- Include explicit experimental distribution metadata; task qualification remains unestablished.
+
 ## [1.2.4] - 2026-10-08
 
 - Distinguish missing boolean fields from explicit null in research, live and cohort inputs.

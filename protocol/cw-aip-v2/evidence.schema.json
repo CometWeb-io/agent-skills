@@ -33,6 +33,8 @@
           "text": { "type": "string", "minLength": 1 },
           "epistemic_kind": { "type": "string", "enum": ["FACT", "INFERENCE"] },
           "status": { "type": "string", "minLength": 1 },
+          "basis": { "type": "string", "enum": ["assumption", "framework_method", "user_supplied", "verified_fact"] },
+          "scope": { "type": "object", "minProperties": 1 },
           "materiality": {
             "type": "string",
             "enum": ["critical", "material", "supporting"]
@@ -59,6 +61,7 @@
         "required": ["edge_id", "claim_id", "source_id", "direction", "admission"],
         "properties": {
           "edge_id": { "type": "string" },
+          "basis": { "type": "string", "enum": ["assumption", "framework_method", "user_supplied", "verified_fact"] },
           "claim_id": { "type": "string" },
           "source_id": { "type": "string" },
           "direction": {
@@ -73,7 +76,24 @@
       }
     },
     "gaps": { "type": "array", "items": { "type": "object" } },
-    "contradictions": { "type": "array", "items": { "type": "object" } },
+    "contradictions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "claim_id": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "enum": ["resolved", "unresolved"] },
+          "resolution": { "type": "string", "enum": ["RESOLVED_SCOPE", "RESOLVED_TIME", "RESOLVED_DEFINITION", "RESOLVED_METHOD", "RESOLVED_SUPERSEDED", "RESOLVED_AUTHORITY", "UNRESOLVED"] },
+          "materiality": { "type": "string", "enum": ["critical", "material", "supporting"] },
+          "severity": { "type": "string", "enum": ["critical", "material", "supporting"] }
+        },
+        "allOf": [
+          { "anyOf": [{ "required": ["status"] }, { "required": ["resolution"] }] },
+          { "anyOf": [{ "required": ["materiality"] }, { "required": ["severity"] }] }
+        ]
+      }
+    },
     "readiness": {
       "type": "string",
       "enum": ["READY", "NOT_READY", "DEFER"]
@@ -87,5 +107,25 @@
         "constraints": { "type": "array", "items": { "type": "string" } }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "readiness": { "const": "READY" } } },
+      "then": {
+        "properties": {
+          "material_claims": {
+            "items": {
+              "if": { "properties": { "materiality": { "enum": ["critical", "material"] } } },
+              "then": { "allOf": [
+                { "if": { "properties": { "epistemic_kind": { "const": "FACT" } } },
+                  "then": { "properties": { "status": { "const": "VERIFIED" } } } },
+                { "if": { "properties": { "epistemic_kind": { "const": "INFERENCE" } } },
+                  "then": { "properties": { "status": { "enum": ["SUPPORTED", "SUPPORTED_INFERENCE"] } } } }
+              ] }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
