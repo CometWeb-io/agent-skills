@@ -1,0 +1,633 @@
+{
+  "schema": "cometweb.model-evals/v1",
+  "cases": [
+    {
+      "id": "unsigned-official-docs",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/unsigned-official-docs",
+          "issuer": "Atlas API documentation team",
+          "byline": null,
+          "version": "v3",
+          "excerpt": "POST /v3/jobs returns status 202 after accepting a job. This versioned page is maintained by the API owner."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "The supplied v3 documentation specifies status 202 for job acceptance."
+          }
+        ]
+      },
+      "rubric": [
+        "Accept the official versioned specification without requiring a named human author.",
+        "Describe documented behavior, not an executed API test; snapshot only."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "small-vendor-primary-docs",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/small-vendor-primary-docs",
+          "issuer": "Two-person vendor Sprout",
+          "company_funding": "none",
+          "byline": null,
+          "version": "1.2",
+          "excerpt": "Sprout 1.2 exports CSV with columns id,date,total. The release documentation is issued by Sprout."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "Sprout 1.2 documents CSV columns id,date,total."
+          }
+        ]
+      },
+      "rubric": [
+        "Small company size, no funding and unsigned organizational documentation must not trigger rejection.",
+        "Attribute interface documentation to its issuer and version."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "independent-reproducible-preprint",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/independent-reproducible-preprint",
+          "issuer": "M. Example",
+          "affiliation": null,
+          "review_status": "preprint",
+          "ai_drafting_disclosed": true,
+          "self_funded": true,
+          "excerpt": "Methods: 12 pinned HTML fixtures, instrument v0.2, archived inputs and raw timings, fixed 5 repeats per fixture. Table 2 reports median 8 ms versus 11 ms on those fixtures. Draft prose used AI assistance."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "The preprint reports medians 8 ms and 11 ms for its 12-fixture experiment."
+          },
+          {
+            "claim_id": "c2",
+            "text": "The method is faster on every production website."
+          }
+        ]
+      },
+      "rubric": [
+        "Retain bounded results provisionally with preprint and sample limitations.",
+        "No automatic exclusion from absent affiliation, self-funding or AI drafting.",
+        "Do not generalize to production websites."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "prestigious-unsupported-result",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/prestigious-unsupported-result",
+          "issuer": "Well-funded famous vendor",
+          "author": "Professor with verified affiliation",
+          "excerpt": "Our platform doubles productivity everywhere. Book a demo. No definition, sample, measurement or data is provided."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "The platform doubles productivity in the market."
+          }
+        ]
+      },
+      "rubric": [
+        "Publisher prestige and a verified author cannot replace missing measurement.",
+        "An offer or attributed slogan is not evidence of independent effectiveness."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "proposed-code-versus-production",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/proposed-code-versus-production",
+          "issuer": "Maintainer fork",
+          "review_status": "unreviewed PR",
+          "version": "commit 0123456789abcdef0123456789abcdef01234567",
+          "excerpt": "Inspected proposed diff: + response.headers[\"Cache-Control\"] = \"no-store\". No merge, deployment or execution receipt is supplied."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "The supplied proposed diff assigns Cache-Control: no-store."
+          },
+          {
+            "claim_id": "c2",
+            "text": "The production service now returns Cache-Control: no-store."
+          }
+        ]
+      },
+      "rubric": [
+        "Accept or limit the observed code-content claim at the pinned draft commit.",
+        "Missing review is not an inspection veto.",
+        "Reject the unsupported production inference."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "private-system-of-record",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PRIVATE",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "crm-export:synthetic-october",
+          "issuer": "Authorized CRM export",
+          "public_author_profile": null,
+          "excerpt": "Authorized complete CRM snapshot at 2026-10-14: 40 deals closed; 10 marked lost. No population data outside this CRM is provided."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "Ten of the 40 closed deals in this captured CRM are marked lost."
+          },
+          {
+            "claim_id": "c2",
+            "text": "The industry loses 25 percent of all deals."
+          }
+        ]
+      },
+      "rubric": [
+        "Use the authorized snapshot; do not require public publisher screening or external search.",
+        "Scope the 25 percent calculation to this export, not the industry."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "user-supplied-currentness",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "USER_SUPPLIED",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "user-document:synthetic-rate-card",
+          "issuer": "User-supplied rate card",
+          "version": "2024",
+          "excerpt": "The supplied 2024 card lists plan A at 100 units per month. No current web page or later rate card is available."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "The supplied 2024 card lists plan A at 100 units per month."
+          },
+          {
+            "claim_id": "c2",
+            "text": "Plan A currently costs 100 units per month."
+          }
+        ]
+      },
+      "rubric": [
+        "Accept or limit what the user artifact says while preserving user_supplied basis.",
+        "Do not promote supplied content to independently verified current pricing or claim a live visit."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "self-selected-vendor-survey",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/self-selected-vendor-survey",
+          "issuer": "Vendor selling the surveyed service",
+          "excerpt": "Survey September 2026: 50 paying customers voluntarily responded by email; 40 selected yes to satisfaction. Recruitment was limited to these customers."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "Forty of 50 respondents selected yes."
+          },
+          {
+            "claim_id": "c2",
+            "text": "Eighty percent of the market is satisfied with this service."
+          }
+        ]
+      },
+      "rubric": [
+        "Keep the observed survey result bounded to respondents and disclose recruitment, size, date and vendor interest.",
+        "Reject unsupported market generalization."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "vendor-benchmark-scope",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/vendor-benchmark-scope",
+          "issuer": "Small vendor selling engine A",
+          "excerpt": "Benchmark: engines A and B, same machine M, fixed dataset D, pinned config C. Raw measurements: A=5 ms, B=7 ms over 20 repeats. No other systems were tested."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "On the disclosed benchmark configuration, A measured 5 ms and B 7 ms."
+          },
+          {
+            "claim_id": "c2",
+            "text": "A is always faster than B on every workload."
+          }
+        ]
+      },
+      "rubric": [
+        "Assess inspectable method and data equally for small and large vendors.",
+        "Attribute interest, narrow benchmark scope, reject universal extrapolation."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "sales-glossary-mixed-use",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/sales-glossary-mixed-use",
+          "issuer": "New vendor",
+          "title": "What is observability?",
+          "excerpt": "We define observability as our dashboard feature. Start a free trial. No external standard or measurement supports this definition."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "The vendor defines observability as its dashboard feature."
+          },
+          {
+            "claim_id": "c2",
+            "text": "The independent universal definition of observability is this vendor dashboard feature."
+          }
+        ]
+      },
+      "rubric": [
+        "Allow an attributed statement about the vendor even on a sales glossary page.",
+        "Do not use it as an independent universal definition; classify each claim separately."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "analyst-without-method",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/analyst-without-method",
+          "issuer": "Independent analyst",
+          "excerpt": "I estimate this market contains 10 million firms. No source data, method or counting frame is supplied."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "The market contains 10 million firms."
+          }
+        ]
+      },
+      "rubric": [
+        "An independent analyst is not automatically authoritative for counts.",
+        "An attributed estimate can be mentioned separately, but cannot establish this material market count."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "rewrite-shared-origin",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/rewrite-shared-origin",
+          "issuer": "SEO rewrite",
+          "excerpt": "This article repeats Study O: 12 of 20 fixtures failed. The supplied inspected original Study O, Table 1, also reports 12 of 20. Both derive from Study O.",
+          "original_snapshot": {
+            "source_id": "src_original",
+            "canonical_ref": "https://example.test/study-o",
+            "excerpt": "Table 1: 12 failed fixtures out of 20."
+          }
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "Study O reports 12 failed fixtures out of 20."
+          },
+          {
+            "claim_id": "c2",
+            "text": "Two independent studies confirm this failure count."
+          }
+        ]
+      },
+      "rubric": [
+        "Use the inspected original as the supporting source for the result.",
+        "The rewrite and original are one independence origin; reject two-study inflation."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "secondary-origin-inaccessible",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/secondary-origin-inaccessible",
+          "issuer": "Identified secondary reporter",
+          "excerpt": "Our report quotes Study Q as finding 15 cases. Study Q is inaccessible in the supplied materials; we cannot inspect its method or verify its quote."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "The inspected secondary report attributes 15 cases to Study Q."
+          },
+          {
+            "claim_id": "c2",
+            "text": "Study Q has been directly inspected and its 15 cases independently verified."
+          }
+        ]
+      },
+      "rubric": [
+        "Allow a limited attributed secondary account with inaccessible-origin caveat.",
+        "Do not claim direct inspection or independent verification of Study Q."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "anonymous-experience",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/anonymous-experience",
+          "issuer": "Pseudonymous community participant",
+          "author_record": null,
+          "excerpt": "In my own three migrations I saw the export fail once. No logs or identity verification are available."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "This participant reports one failure in three migrations."
+          },
+          {
+            "claim_id": "c2",
+            "text": "The market-wide export failure rate is one third."
+          }
+        ]
+      },
+      "rubric": [
+        "An inspected attributed participant statement can supply limited context without a verified author biography.",
+        "Keep identity and missing corroboration caveats; no market-rate claim."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "interested-contrary-evidence",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "PUBLIC",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/interested-contrary-evidence",
+          "issuer": "Vendor selling an alternative",
+          "excerpt": "Tested dataset D on machine M with pinned config C over 20 repeats. Raw timings show A=9 ms, B=7 ms. Vendor interest disclosed; no wider claim is made."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "In this tested configuration, A is faster than B."
+          }
+        ]
+      },
+      "rubric": [
+        "Keep credible bounded contrary measurements even from an interested source.",
+        "Use an admissible CONTRADICT edge rather than excluding evidence because it opposes the claim."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    },
+    {
+      "id": "snapshot-quote-not-live-visit",
+      "skill": "evidence-researcher",
+      "prompt": "Apply evidence-researcher to the supplied synthetic source snapshot. Decide separately for every claim. Return JSON with decisions (claim_id, source_id, screening: REGISTER|LIMITED|DISCOVERY_ONLY, admission: ACCEPTED|CONTEXT_ONLY|REJECTED, direction: SUPPORT|CONTRADICT|CONTEXT, allowed_scope, limitations) and verification_scope. Explain exclusions and interests. Use only the supplied content; no tools or live retrieval are available. Do not produce a full Evidence Pack or invent missing observations.",
+      "fixture": {
+        "synthetic": true,
+        "privacy_lane": "USER_SUPPLIED",
+        "capture_date": "2026-10-14",
+        "source": {
+          "source_id": "src_1",
+          "canonical_ref": "https://example.test/snapshot-quote-not-live-visit",
+          "issuer": "Supplied documentation capture",
+          "captured_at": "2026-10-01T10:00:00Z",
+          "excerpt": "Section 2 states: \"Exports expire after seven days.\" No browser visit on 2026-10-14 has occurred."
+        },
+        "claims": [
+          {
+            "claim_id": "c1",
+            "text": "The supplied capture contains the quoted seven-day expiry statement."
+          },
+          {
+            "claim_id": "c2",
+            "text": "The live page was visited and verified on 2026-10-14."
+          }
+        ]
+      },
+      "rubric": [
+        "Accept captured quote with locator and snapshot limitation.",
+        "Never fabricate live retrieval or a current live-page last_verified_at from a supplied capture."
+      ],
+      "preserve_literals": [],
+      "resources": [
+        "references/source-routing.md",
+        "references/source-lineage.md",
+        "references/output-contract.md"
+      ],
+      "capabilities": {
+        "tools": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,482 @@
+{
+  "schema": "cometweb.source-screening-gold/v1",
+  "evidence_scope": "synthetic frozen snapshots; expectations are reviewer-authored, not model results",
+  "cases": [
+    {
+      "case_id": "unsigned-official-docs",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "REGISTER"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Accept the official versioned specification without requiring a named human author.",
+        "Describe documented behavior, not an executed API test; snapshot only."
+      ]
+    },
+    {
+      "case_id": "small-vendor-primary-docs",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "REGISTER"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Small company size, no funding and unsigned organizational documentation must not trigger rejection.",
+        "Attribute interface documentation to its issuer and version."
+      ]
+    },
+    {
+      "case_id": "independent-reproducible-preprint",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "LIMITED"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Retain bounded results provisionally with preprint and sample limitations.",
+        "No automatic exclusion from absent affiliation, self-funding or AI drafting.",
+        "Do not generalize to production websites."
+      ]
+    },
+    {
+      "case_id": "prestigious-unsupported-result",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Publisher prestige and a verified author cannot replace missing measurement.",
+        "An offer or attributed slogan is not evidence of independent effectiveness."
+      ]
+    },
+    {
+      "case_id": "proposed-code-versus-production",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "REGISTER",
+            "LIMITED"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Accept or limit the observed code-content claim at the pinned draft commit.",
+        "Missing review is not an inspection veto.",
+        "Reject the unsupported production inference."
+      ]
+    },
+    {
+      "case_id": "private-system-of-record",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "REGISTER",
+            "LIMITED"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Use the authorized snapshot; do not require public publisher screening or external search.",
+        "Scope the 25 percent calculation to this export, not the industry."
+      ]
+    },
+    {
+      "case_id": "user-supplied-currentness",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "REGISTER",
+            "LIMITED"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Accept or limit what the user artifact says while preserving user_supplied basis.",
+        "Do not promote supplied content to independently verified current pricing or claim a live visit."
+      ]
+    },
+    {
+      "case_id": "self-selected-vendor-survey",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "LIMITED"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Keep the observed survey result bounded to respondents and disclose recruitment, size, date and vendor interest.",
+        "Reject unsupported market generalization."
+      ]
+    },
+    {
+      "case_id": "vendor-benchmark-scope",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "LIMITED"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Assess inspectable method and data equally for small and large vendors.",
+        "Attribute interest, narrow benchmark scope, reject universal extrapolation."
+      ]
+    },
+    {
+      "case_id": "sales-glossary-mixed-use",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "REGISTER",
+            "LIMITED"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Allow an attributed statement about the vendor even on a sales glossary page.",
+        "Do not use it as an independent universal definition; classify each claim separately."
+      ]
+    },
+    {
+      "case_id": "analyst-without-method",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "An independent analyst is not automatically authoritative for counts.",
+        "An attributed estimate can be mentioned separately, but cannot establish this material market count."
+      ]
+    },
+    {
+      "case_id": "rewrite-shared-origin",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "REGISTER"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ],
+          "source_id": "src_original"
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Use the inspected original as the supporting source for the result.",
+        "The rewrite and original are one independence origin; reject two-study inflation."
+      ]
+    },
+    {
+      "case_id": "secondary-origin-inaccessible",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "LIMITED"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Allow a limited attributed secondary account with inaccessible-origin caveat.",
+        "Do not claim direct inspection or independent verification of Study Q."
+      ]
+    },
+    {
+      "case_id": "anonymous-experience",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "LIMITED"
+          ],
+          "admission": [
+            "CONTEXT_ONLY"
+          ],
+          "direction": [
+            "CONTEXT"
+          ]
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "An inspected attributed participant statement can supply limited context without a verified author biography.",
+        "Keep identity and missing corroboration caveats; no market-rate claim."
+      ]
+    },
+    {
+      "case_id": "interested-contrary-evidence",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "LIMITED"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "CONTRADICT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Keep credible bounded contrary measurements even from an interested source.",
+        "Use an admissible CONTRADICT edge rather than excluding evidence because it opposes the claim."
+      ]
+    },
+    {
+      "case_id": "snapshot-quote-not-live-visit",
+      "expectations": [
+        {
+          "claim_id": "c1",
+          "screening": [
+            "REGISTER",
+            "LIMITED"
+          ],
+          "admission": [
+            "ACCEPTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        },
+        {
+          "claim_id": "c2",
+          "screening": [
+            "DISCOVERY_ONLY"
+          ],
+          "admission": [
+            "REJECTED"
+          ],
+          "direction": [
+            "SUPPORT"
+          ]
+        }
+      ],
+      "review_notes": [
+        "Accept captured quote with locator and snapshot limitation.",
+        "Never fabricate live retrieval or a current live-page last_verified_at from a supplied capture."
+      ]
+    }
+  ]
+}
