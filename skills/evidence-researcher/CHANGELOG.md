@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.11] - 2026-10-14
+
+- Screen public sources for each claim and attribute interested voices, incorporating the source-screening contribution without publisher-prestige or author-affiliation vetoes.
+- Preserve official unsigned documents, version-pinned proposed code, independent research and private/system-of-record lanes; distinguish inspected proposals from deployed behavior and vendor samples from market estimates.
+- Record screening decisions and limitations in existing notes and edge admission fields. Screening remains a researcher judgment, not a kernel-enforced source-quality classification.
+- Add frozen source-screening model cases and separate grading expectations. Offline checks validate fixtures and instruction loading; no model-effectiveness claim follows from those checks.
+
 ## [1.0.10] - 2026-10-11
 
 - Add bounded caller-owned local fact observation and explicit knowledge basis; retain inference lineage and metadata/observation boundaries.

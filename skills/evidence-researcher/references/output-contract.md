@@ -38,7 +38,10 @@ Report at minimum:
 - falsifier coverage,
 - freshness coverage,
 - unresolved critical contradictions/gaps,
-- unknown source-independence count when material.
+- unknown source-independence count when material,
+- screening exclusions: count distinct excluded sources and list each reference,
+  affected claim IDs and reason. For mixed-use artifacts, retain the allowed uses
+  and edge-specific limits rather than blacklisting the source.
 
 ### 6. Handoff
 
@@ -56,6 +59,12 @@ Use schema `2.0` from `evidence-graph.md`. Include the kernel `pack_hash` when p
 ## Citation discipline
 
 Cite at the claim/evidence statement, not in a detached bibliography. Preserve pinpoint locators when the tool/source supports them. Do not reproduce long copyrighted/private passages merely to make provenance look stronger.
+
+At first material citation, attribute a source's relevant commercial interest or
+advocacy role once (`source-routing.md`). A participant's position is its own,
+not a market consensus. Screening reasons in `notes` are human-readable judgments;
+they are not separately enforced by the kernel. Keep edge `admission` consistent
+with those judgments; `scope_fit: medium` alone does not impose a use restriction.
 
 Preserve basis and explicit scope in the machine claim/edge records and the ledger.
 Basis is verified_fact, user_supplied, assumption or framework_method; legacy

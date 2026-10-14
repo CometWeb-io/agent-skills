@@ -94,6 +94,25 @@ Maintain fixtures for:
 15. v1 -> v2 migration with non-reconstructable search provenance,
 16. delta where only one source/version changes.
 
+## Public source-screening cases
+
+`evals/model/source-screening.json` freezes source snapshots and per-claim tasks.
+`evals/model/source-screening-gold.json` holds reviewer expectations separately;
+do not send that file or the case rubric to the answering model. The model suite
+explicitly loads `source-routing.md`, `source-lineage.md` and `output-contract.md`
+alongside the front door. Fixture snapshots are supplied data, not fresh live retrieval.
+
+Cover false rejection as well as false admission: unsigned official documents,
+small vendors, independent preprints, proposed code versus deployment, private
+metrics, inaccessible originals, derivative independence, vendor samples and
+credible contrary evidence. A source can pass for one claim and fail for another.
+
+Run the existing `tooling/run_model_evals.py` harness with this suite, frozen
+current/candidate roots, a configured runner and explicit run/output budgets.
+Its dry run starts no model. Offline tests validate fixture shape, withheld grading
+expectations and loaded resources; they do not measure model decisions. Keep
+`task_qualification: not_established` until repeated, reviewed runs justify it.
+
 ## Promotion rule
 
 Compare frozen identical inputs. Promote a challenger only after repeatable improvement in authority fit, temporal correctness, contradiction recall, readiness precision, and integration compatibility without invariant regressions.

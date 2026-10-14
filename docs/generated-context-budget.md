@@ -33,9 +33,9 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `skill-orchestrator` | 7,786 B | 1,946 | 148,797 B | 37,199 | 20 | 0.95 |
 | `brief-architect` | 7,373 B | 1,843 | 27,727 B | 6,931 | 9 | 0.79 |
 | `content-writer` | 6,305 B | 1,576 | 14,338 B | 3,584 | 8 | 0.69 |
+| `evidence-researcher` | 6,176 B | 1,544 | 64,706 B | 16,176 | 16 | 0.91 |
 | `repair-operator` | 6,141 B | 1,535 | 11,639 B | 2,909 | 7 | 0.65 |
 | `skill-evaluator` | 6,126 B | 1,531 | 17,134 B | 4,283 | 11 | 0.74 |
-| `evidence-researcher` | 6,123 B | 1,530 | 57,393 B | 14,348 | 16 | 0.90 |
 | `skill-auditor` | 5,892 B | 1,473 | 12,136 B | 3,034 | 9 | 0.67 |
 | `feedback-integrator` | 5,869 B | 1,467 | 13,400 B | 3,350 | 8 | 0.70 |
 | `artifact-acceptance` | 5,314 B | 1,328 | 11,798 B | 2,949 | 8 | 0.69 |
@@ -46,4 +46,4 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `research-program-operator` | 2,903 B | 725 | 4,451 B | 1,112 | 2 | 0.61 |
 | `skill-orchestrator-multiagent` | 2,063 B | 515 | 53,230 B | 13,307 | 13 | 0.96 |
 
-**34 skills.** Discovery metadata totals roughly 6,025 tokens. Activating all skills would load ~73,045 instruction tokens; the median activation is ~2,403, and the largest ~2,999.
+**34 skills.** Discovery metadata totals roughly 6,025 tokens. Activating all skills would load ~73,059 instruction tokens; the median activation is ~2,403, and the largest ~2,999.

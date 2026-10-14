@@ -18,7 +18,7 @@
 | `customer-ops` | 2.2.3 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 991 | False |
 | `design-partner-finder` | 1.2.5 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 932 | False |
 | `ebook-publisher` | 1.0.6 | domain | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 952 | False |
-| `evidence-researcher` | 1.0.10 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 748 | False |
+| `evidence-researcher` | 1.0.11 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 748 | False |
 | `feedback-integrator` | 1.8.2 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 633 | False |
 | `longform-publisher` | 1.1.6 | domain | active | FROZEN | DEVELOPMENT | EXPERIMENTAL | 539 | False |
 | `portfolio-operator` | 1.2.5 | foundation | active | ACTIVE | DEVELOPMENT | EXPERIMENTAL | 647 | False |
