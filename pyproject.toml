@@ -28,7 +28,7 @@ dev = [
 # built from the hashes in uv.lock. Pinned exactly: the rules in
 # tooling/sast/ are tested against this engine version.
 sast = [
-    "semgrep==1.179.0",
+    "semgrep==1.180.0",
 ]
 
 [tool.uv]
