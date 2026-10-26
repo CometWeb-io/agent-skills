@@ -140,7 +140,7 @@ a fictitious skill.
 | [`rubric-designer`](../skills/rubric-designer/SKILL.md) | [Rubric payload with criterion coverage/blockers/anti-gaming and frozen hash](../skills/rubric-designer/references/output-contract.md) | [skill-evaluator / benchmark-curator](../skills/skill-evaluator/references/output-contract.md); rubric_hash-bound experiment input; benchmark also uses frozen rubric | documented receiving contract + local hash guards |
 | [`science-roaster`](../skills/science-roaster/SKILL.md) | [cometweb.science-roaster/v6 report; cometweb.roaster-handoff/v2](../skills/science-roaster/references/output-contract.md) | [repair-operator](../skills/repair-operator/SKILL.md); post-arbitration methodological findings only; retain integrity/evidence/assurance limitations | documented/manual handoff; no roaster handoff validator |
 | [`seo-geo-aeo-maxxing`](../skills/seo-geo-aeo-maxxing/SKILL.md) | [SEO/GEO/AEO report with scope/as_of, observed visibility, evidence and priorities](../skills/seo-geo-aeo-maxxing/references/output-contract.md) | [product-operator / repo-to-roadmap / release-readiness / competitive-intelligence](../skills/seo-geo-aeo-maxxing/references/composability.md); operator/roadmap findings, release only same candidate scope, CI ongoing watch | documented producer-side routes; outcome claims require live evidence |
-| [`skill-auditor`](../skills/skill-auditor/SKILL.md) | [Skill Audit Report/payload; issues, contract/migration gaps, repair path](../skills/skill-auditor/references/output-contract.md) | [quality-loop-operator → skill-evaluator when required](../skills/quality-loop-operator/references/output-contract.md); SKILL_QUALITY audit stage; empirical_eval_required must route to evaluator | documented stage contract; skill-creator is outside 34 |
+| [`skill-auditor`](../skills/skill-auditor/SKILL.md) | [Skill Audit Report/payload; issues, contract/migration gaps, repair path](../skills/skill-auditor/references/output-contract.md) | [quality-loop-operator → skill-evaluator when required](../skills/quality-loop-operator/references/output-contract.md); SKILL_QUALITY audit stage; empirical_eval_required must route to evaluator | documented stage contract; skill-creator is outside this catalog |
 | [`skill-evaluator`](../skills/skill-evaluator/SKILL.md) | [ExperimentReport with pinned rubric/benchmark/suite/config/host-model evidence](../skills/skill-evaluator/references/output-contract.md) | [quality-loop-operator](../skills/quality-loop-operator/references/output-contract.md); SKILL_QUALITY evaluation stage with runtime/canary policy; promotion eligibility is not rollout | documented receiving stage + local hash guards; empirical results not exercised |
 | [`skill-orchestrator`](../skills/skill-orchestrator/SKILL.md) | [Workflow plan, per-step outputs, Workflow result; append-only workflow ledger](../skills/skill-orchestrator/SKILL.md) | [portfolio-operator / designated step owner](../skills/portfolio-operator/references/delegation.md); final specialist/control-plane result; designated steps receive own contracts | documented receiving contract + five executable nonempty archetypes |
 | [`skill-orchestrator-multiagent`](../skills/skill-orchestrator-multiagent/SKILL.md) → `skill-orchestrator` | [Same canonical Workflow plan/result/ledger; isolated_subagents mode](../skills/skill-orchestrator-multiagent/SKILL.md) | [skill-orchestrator](../skills/skill-orchestrator/SKILL.md); load canonical planner; unavailable canonical/Task API stops alias | alias, not independent semantic owner |
@@ -163,3 +163,17 @@ or authority to execute side effects. Read the
 These overlays do not change the task-specific installation selections above.
 Structural installation checks and linked output contracts do not prove native
 host execution, model quality, external facts or publication readiness.
+
+## Optional contracts and helpers
+
+Use `brief-architect` for an actual ArtifactBrief consumer, not as a prerequisite
+for ordinary clarification. `ai-humanize` and `quality-loop-operator` are optional
+editing and workflow stages. `release-readiness` is an adapter to declared gates;
+its engine does not authenticate evidence or grant deployment authority.
+These selection guidelines do not change host invocation policy or establish
+behavioral qualification. Keep source maps and executable helpers available when
+they are useful without loading their associated workflow instructions.
+
+The [local QA example](../examples/qa-repair-retest/README.md) demonstrates one
+bounded audit, repair and fresh retest. A successful synthetic example is not
+proof that adding a skill improves the native model.

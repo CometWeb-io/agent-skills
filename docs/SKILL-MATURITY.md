@@ -1,6 +1,6 @@
 # Skill maturity and experimental distribution
 
-All 34 current packages are **experimental**, with declared stage `DEVELOPMENT`.
+All 33 current packages are **experimental**, with declared stage `DEVELOPMENT`.
 Their package and contract checks do not establish task effectiveness across
 models or hosts. Previous bounded experiments retain their original scope;
 they are not qualification of the current catalog.
@@ -69,3 +69,20 @@ make them eligible for a new build. Development ZIPs remain outside the versione
 release path and retain their declared stage and unassessed runtime acceptance.
 Installers copy/link whole skill folders, so the declaration accompanies a
 selective install without a new pack loader or front-door instruction.
+
+## Recheck after model or host changes
+
+Retain version-bound task cases and raw failures when changing a model, host,
+skill payload, material reference or tool contract. Keep a held-out case outside
+instruction tuning. Compare the native model, the model with the same available
+helpers, and those helpers with skill instructions; separate instruction effects
+from tool access. Also test a known-good control so unnecessary repair or refusal
+is observable. Reuse the [existing evaluation tooling](REAL-HOST-EVALS.md).
+
+Choose a practical outcome and regression tolerance before running the cases.
+Report task success, false completion or release claims, corrections needed and
+available resource telemetry. Missing token/cost telemetry remains unknown;
+output size and deterministic assertions are not substitutes. A small diagnostic
+does not establish qualification or equivalence. If a simpler condition suffices
+in the measured scope, narrow or remove instructions while preserving useful
+tools and receiving contracts; do not add workflow stages to rescue a weak result.

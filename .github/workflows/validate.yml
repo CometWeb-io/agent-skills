@@ -32,6 +32,12 @@ jobs:
       - name: Sync locked dependencies
         run: uv sync --frozen --group dev
 
+      - name: Install Node for the standalone QA example
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          package-manager-cache: false
+
       # Every gate lives in tooling/check_all.py, the same list contributors run
       # locally; tooling/tests/test_check_all.py fails if a gate step is added
       # here instead. Each gate's output is folded into its own log group.

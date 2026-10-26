@@ -42,6 +42,10 @@ blind review, cost and missing execution. A passing CI run grants no release aut
 
 ## Quickstart
 
+For a small local job with a known result, start with the
+[QA → repair → retest example](examples/qa-repair-retest/README.md).
+It uses synthetic data and requires no account, model API or new package manager.
+
 Clone once, then run the installer for your host. Installers **symlink** each
 package from `skills/` into the host's skills directory, so keep the clone where
 it is; `git pull` updates every installed skill in place.

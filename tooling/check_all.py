@@ -161,6 +161,8 @@ GATES: tuple[Gate, ...] = (
     Gate("public_safety_history", _python("tooling/public_safety.py", "--root", ".", "--history"),
          "leak scan, every reachable commit", fast=False, cost=6),
     # Tests and packaging.
+    Gate("qa_example", ("node", "--test", "examples/qa-repair-retest/policy.test.mjs"),
+         "synthetic QA example: plan boundaries, annual totals and invalid input", tool="node"),
     # When skill_package_tests runs too, the full suite leaves those modules to
     # it instead of collecting and running them a second time.
     Gate("pytest", _python("-m", "pytest", "-q", "-n", "auto", "-p", "no:cacheprovider"),

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import importlib.util
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -43,6 +44,36 @@ def run_steps() -> list[str]:
 def test_ci_runs_check_all_and_nothing_else() -> None:
     """A gate step written straight into the workflow would be a second list."""
     assert run_steps() == ["uv sync --frozen --group dev", CI_COMMAND]
+
+
+def test_ci_provides_node_before_repository_gates() -> None:
+    for workflow in WORKFLOW.parent.glob("*.yml"):
+        for job in yaml.safe_load(workflow.read_text(encoding="utf-8"))["jobs"].values():
+            steps = job.get("steps", [])
+            for gates, step in enumerate(steps):
+                if step.get("run") != CI_COMMAND:
+                    continue
+                node = next(i for i, s in enumerate(steps) if s.get("uses", "").startswith("actions/setup-node@"))
+                assert node < gates, workflow.name
+                assert re.fullmatch(r"actions/setup-node@[0-9a-f]{40}", steps[node]["uses"])
+                assert steps[node]["with"]["node-version"] == "22"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node required for the standalone QA example")
+def test_qa_example_gate_rejects_a_false_plan_recommendation(tmp_path: Path) -> None:
+    gate = next(g for g in check_all.GATES if g.id == "qa_example")
+    example = tmp_path / "examples" / "qa-repair-retest"
+    shutil.copytree(ROOT / "examples" / "qa-repair-retest", example)
+    assert check_all.run_gate(gate, tmp_path, 30, ci=True).status == "passed"
+    policy = example / "policy.mjs"
+    clean = policy.read_text(encoding="utf-8")
+    assert clean.count("if (!plan) return null;") == 1
+    policy.write_text(clean.replace("if (!plan) return null;", "if (!plan) return { plan: 'portfolio', sites, runs };"), encoding="utf-8")
+    result = check_all.run_gate(gate, tmp_path, 30, ci=True)
+    assert result.status == "failed"
+    assert "never recommends a plan" in result.output
+    policy.write_text(clean, encoding="utf-8")
+    assert check_all.run_gate(gate, tmp_path, 30, ci=True).status == "passed"
 
 
 def test_ci_mode_selects_every_gate() -> None:

@@ -11,6 +11,11 @@ tools import, or an operator tool run by hand.
 Run every gate with `uv run python tooling/check_all.py` (`--fast` while
 iterating, `--ci` before a pull request); `--list` prints them.
 
+The `qa_example` gate runs the standalone example's Node test suite. It needs
+Node.js 22 or newer, installed explicitly by CI; a missing local Node is
+reported as skipped, while CI treats it as a failure. It does not run a browser
+or establish skill effectiveness.
+
 ## Gate runner and local validation
 
 | Tool | What it does | Gate | Reads → writes |
