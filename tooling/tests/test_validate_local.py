@@ -31,6 +31,8 @@ def checkout(tmp_path):
             put(root, relative, '[project]\nname = "fixture"\nversion = "0.0.0"\nrequires-python = ">=3.12"\n')
         elif relative == "uv.lock":
             put(root, relative, 'version = 1\nrequires-python = ">=3.12"\n')
+        elif relative == "tooling/pytest_inventory.py":
+            put(root, relative, (Path(__file__).parents[1] / "pytest_inventory.py").read_text())
         else:
             put(root, relative, "pass\n" if relative.endswith(".py") else "{}\n")
     put(root, "registry/skills.json", json.dumps({"skills": [{"id": "example"}]}))
@@ -205,6 +207,9 @@ def mock_steps(monkeypatch, *, failed=None, junit='<testsuite><testcase/></tests
         log.write_text("synthetic test runner result\n")
         if name == "pytest" and junit is not None:
             put(log.parent, "junit.xml", junit)
+            cases = local.platform_evidence.cases_from_xml(junit.encode())
+            ids = [c["id"] for c in cases]
+            put(log.parent, "collection.json", json.dumps({"schema": "cometweb.pytest-collection/v1", "collected": ids, "selected": ids}))
         if modify and name == "registry":
             modify(root)
         return {"status": failed[1] if failed and failed[0] == name else "passed", "returncode": 0,

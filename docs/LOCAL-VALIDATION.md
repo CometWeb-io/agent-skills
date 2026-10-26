@@ -43,10 +43,14 @@ Pytest używa `--import-mode=importlib`, żeby pliki o tej samej nazwie w różn
 pakietach nie kolidowały podczas importu. Runner czyści `PYTEST_ADDOPTS` i nadpisuje
 konfiguracyjne `addopts`, aby odziedziczony filtr `-k` nie pomijał testów po cichu.
 Pozostała konfiguracja pytest i pluginy środowiska nadal obowiązują.
+Plugin `tooling/pytest_inventory.py` zapisuje `collection.json` przed filtrowaniem
+przez `-k`, `-m` lub hooki innych pluginów. Deselekcja, brak manifestu, duplikaty
+i różnica między zebranymi testami a węzłami JUnit blokują PASS. Manifest używa
+kodowania identyfikatorów JUnit z zablokowanej w `uv.lock` wersji pytest.
 
 ## Wyniki i kody wyjścia
 
-W katalogu wyniku są osobne logi, `junit.xml` oraz `report.json`.
+W katalogu wyniku są osobne logi, `collection.json`, `junit.xml` oraz `report.json`.
 
 - `0`: wszystkie zaplanowane kontrole zakończyły się powodzeniem, testy nie mają
   błędów, każde odroczenie platformowe ma zweryfikowany wynik natywny, a źródła
@@ -82,8 +86,14 @@ uv run --frozen python tooling/validate_local.py --trusted-checkout \
 `--platform-run` przyjmuje do ośmiu identyfikatorów przebiegów. Weryfikator
 odczytuje wyłącznie `CometWeb-io/agent-skills` na `github.com`. Wymaga zakończonego
 udanego zaufanego workflow, właściwego natywnego joba i oryginalnego ZIP-u z
-JUnit, receipt i logiem. Sprawdza skrót ZIP z API GitHub, nieprzeterminowanie,
+JUnit, manifestem kolekcji, receipt v2 i logiem. Sprawdza skrót ZIP z API GitHub, nieprzeterminowanie,
 próbę uruchomienia, SHA, odcisk zawartości źródeł oraz wersję major/minor Pythona.
+Job musi mieć ten sam run, próbę i SHA, stan `completed`, udane kroki producenta
+i żadnego nieudanego kroku. Akceptowana jest wyłącznie pula GitHub Actions
+(`runner_group_id=0`, `runner_group_name=GitHub Actions`) z właściwą etykietą OS;
+runner self-hosted nie jest obsługiwany. Nieznane elementy i statusy JUnit,
+błędy poza testami oraz niepełna kolekcja są odrzucane. Starsze receipts v1
+wymagają nowego przebiegu, nie mają zgodności wstecznej z tym kontraktem.
 Sam zielony job, ręczny JSON, stary SHA, inny test, skip/xfail zamiast wykonania,
 WSL zamiast Windows i zmienione źródła nie wystarczają. Workflow przełącza checkout
 na rzeczywisty head PR, a nie syntetyczny merge. Artefakty zachowuje przez 30 dni.

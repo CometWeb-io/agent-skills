@@ -47,7 +47,8 @@ MODULE_CHECKS = (
 )
 REQUIRED = ("plugin.json", ".agents/plugins/marketplace.json", "registry/skills.json", "registry/hosts.json",
             "pyproject.toml", "uv.lock",
-            "fixtures/cwaip-v2/evidence-final.json", "tooling/validate_local.py", "tooling/platform_evidence.py")
+            "fixtures/cwaip-v2/evidence-final.json", "tooling/validate_local.py", "tooling/platform_evidence.py",
+            "tooling/pytest_inventory.py")
 MAX_FILE = 32 * 1024 * 1024
 
 
@@ -193,6 +194,7 @@ def commands(scope: dict, output: Path) -> list[tuple[str, list[str]]]:
     rows = [(name, [sys.executable, "-B", "-m", *args]) for name, args in MODULE_CHECKS]
     rows += [(name, [sys.executable, "-B", script, *args]) for name, script, args in CHECKS]
     rows.append(("pytest", [sys.executable, "-B", "-m", "pytest", "-q", "-p", "no:cacheprovider",
+                            "-p", "tooling.pytest_inventory", f"--collection-manifest={output / 'collection.json'}",
                             "--import-mode=importlib", "-o", "addopts=", f"--junitxml={output / 'junit.xml'}",
                             *scope["test_directories"]]))
     return rows
@@ -201,17 +203,11 @@ def commands(scope: dict, output: Path) -> list[tuple[str, list[str]]]:
 def junit_counts(path: Path) -> dict:
     with path.open("rb") as handle:
         blob = handle.read(MAX_FILE + 1)
-    if len(blob) > MAX_FILE or b"<!DOCTYPE" in blob.upper() or b"<!ENTITY" in blob.upper():
-        raise ValueError("unsupported or oversized JUnit")
-    # Local pytest JUnit only; DOCTYPE/ENTITY already rejected above.
-    root = ET.fromstring(blob)  # nosec B314
-    if root.tag not in {"testsuite", "testsuites"}:
-        raise ValueError("invalid JUnit root")
-    cases = list(root.iter("testcase"))
-    if not cases:
-        raise ValueError("JUnit contains no executed test cases")
-    return {"tests": len(cases), **{key: sum(case.find(tag) is not None for case in cases)
-            for key, tag in (("failures", "failure"), ("errors", "error"), ("skipped", "skipped"))}}
+    if len(blob) > MAX_FILE:
+        raise ValueError("oversized JUnit")
+    cases = platform_evidence.cases_from_xml(blob)
+    return {"tests": len(cases), **{key: sum(case["status"] == value for case in cases)
+            for key, value in (("failures", "failed"), ("errors", "error"), ("skipped", "skipped"))}}
 
 
 def run_step(root: Path, command: list[str], log: Path, timeout: int) -> dict:
@@ -248,6 +244,8 @@ def assess_tests(output: Path, state: dict, platform_runs: tuple[int, ...]) -> d
         return result
     with (output / "junit.xml").open("rb") as handle:
         cases = platform_evidence.cases_from_xml(handle.read(MAX_FILE + 1))
+    with (output / "collection.json").open("rb") as handle:
+        platform_evidence.verify_collection(handle.read(MAX_FILE + 1), cases)
     skips = platform_evidence.classify_skips(cases, sys.platform)
     result["skipped_tests"] = skips
     result["platform_evidence"] = []

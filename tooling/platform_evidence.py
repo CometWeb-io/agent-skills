@@ -19,12 +19,13 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 REPOSITORY = "CometWeb-io/agent-skills"
-SCHEMA = "cometweb.native-platform-tests/v1"
+SCHEMA = "cometweb.native-platform-tests/v2"
 MAX_BYTES = 32 * 1024 * 1024
 POSIX = ("darwin", "linux")
 # Selectors are reviewable source policy, never inferred from a skip's message.
 REQUIREMENTS = {
-    "tooling/tests/test_windows_portability.py::test_windows_scanner_checks_handle_containment_and_junctions": ("win32",),
+    **{f"tooling/tests/test_windows_portability.py::test_windows_scanner_checks_handle_containment_and_junctions[{skill}]": ("win32",)
+       for skill in ("repo-roaster", "content-roaster", "science-roaster")},
     "tooling/tests/test_snapshot_installer.py": POSIX,
     "tooling/tests/test_ledger_concurrency.py::test_existing_root_permissions_never_change": POSIX,
     "tooling/tests/test_roaster_shared.py::test_sync_preserves_canonical_mode_and_repairs_mode_only_drift": POSIX,
@@ -65,8 +66,28 @@ def cases_from_xml(blob: bytes) -> list[dict]:
     root = ET.fromstring(blob)  # nosec B314 - DTD/entities refused above
     if root.tag not in {"testsuite", "testsuites"}:
         raise ValueError("invalid JUnit root")
+    children = {"testsuites": {"testsuite"}, "testsuite": {"testsuite", "testcase", "properties", "system-out", "system-err"},
+                "testcase": {"failure", "error", "skipped", "properties", "system-out", "system-err"},
+                "properties": {"property"}, "property": set(), "failure": set(), "error": set(),
+                "skipped": set(), "system-out": set(), "system-err": set()}
+    attributes = {"testsuites": {"name", "tests", "failures", "errors", "skipped", "time"},
+                  "testsuite": {"name", "tests", "failures", "errors", "skipped", "time", "timestamp", "hostname"},
+                  "testcase": {"classname", "name", "time", "file", "line", "url", "status", "result"},
+                  "failure": {"message", "type"}, "error": {"message", "type"}, "skipped": {"message", "type"},
+                  "property": {"name", "value"}}
+    for node in root.iter():
+        if (node.tag not in children or any(child.tag not in children[node.tag] for child in node)
+                or not node.attrib.keys() <= attributes.get(node.tag, set())):
+            raise ValueError("unsupported JUnit element or outcome")
+        if node.tag in {"testsuite", "testsuites"}:
+            for attr, tag in (("failures", "failure"), ("errors", "error"), ("skipped", "skipped")):
+                count = node.get(attr)
+                if count is not None and (not count.isdecimal() or int(count) > len(list(node.iter(tag)))):
+                    raise ValueError("JUnit summary has outcomes missing from test cases")
     rows, seen = [], set()
     for case in root.iter("testcase"):
+        if case.get("status") not in {None, "run", "passed"} or case.get("result") not in {None, "completed", "passed"}:
+            raise ValueError("JUnit case was not executed")
         cls, name = case.get("classname", ""), case.get("name", "")
         key = cls + "::" + name
         if cls and name and key in seen:
@@ -74,13 +95,26 @@ def cases_from_xml(blob: bytes) -> list[dict]:
         seen.add(key)
         skip = case.find("skipped")
         rows.append({"id": key, "classname": cls, "name": name,
-                     "status": "failed" if case.find("failure") is not None or case.find("error") is not None
+                     "status": "error" if case.find("error") is not None else "failed" if case.find("failure") is not None
                      else "skipped" if skip is not None else "passed",
                      "reason": skip.get("message", "") if skip is not None else "",
                      "skip_type": skip.get("type", "") if skip is not None else ""})
     if not rows:
         raise ValueError("JUnit contains no executed test cases")
     return rows
+
+
+def verify_collection(blob: bytes, cases: list[dict]) -> None:
+    if len(blob) > MAX_BYTES:
+        raise ValueError("oversized collection manifest")
+    manifest = json.loads(blob, object_pairs_hook=unique_pairs)
+    if not isinstance(manifest, dict) or manifest.get("schema") != "cometweb.pytest-collection/v1":
+        raise ValueError("invalid collection manifest")
+    collected, selected = manifest.get("collected"), manifest.get("selected")
+    if (not isinstance(collected, list) or not collected or any(not isinstance(c, str) or "::" not in c for c in collected)
+            or len(set(collected)) != len(collected) or collected != selected
+            or set(collected) != {c["id"] for c in cases}):
+        raise ValueError("JUnit does not cover the full unfiltered collection")
 
 
 def required_platforms(case: dict) -> tuple[str, ...]:
@@ -99,7 +133,7 @@ def classify_skips(cases: list[dict], current: str) -> list[dict]:
         if case["status"] != "skipped":
             continue
         platforms = required_platforms(case)
-        foreign = platforms and current not in platforms and "xfail" not in case["skip_type"].lower()
+        foreign = platforms and current not in platforms and case["skip_type"] in {"", "pytest.skip"}
         rows.append({**case, "required_platforms": list(platforms),
                      "coverage": "platform_evidence_required" if foreign else "environment_blocked"})
     return rows
@@ -137,13 +171,14 @@ def verify_archive(blob: bytes, artifact: dict, run: dict, state: dict) -> tuple
         raise ValueError("invalid platform ZIP") from exc
     with archive:
         names = archive.namelist()
-        if sorted(names) != ["junit.xml", "receipt.json", "test.log"]:
+        if sorted(names) != ["collection.json", "junit.xml", "receipt.json", "test.log"]:
             raise ValueError("unexpected or duplicate platform artifact files")
         if any(info.file_size > MAX_BYTES for info in archive.infolist()):
             raise ValueError("oversized platform artifact member")
         try:
             receipt = json.loads(archive.read("receipt.json"), object_pairs_hook=unique_pairs)
             junit = archive.read("junit.xml")
+            collection = archive.read("collection.json")
         except (zipfile.BadZipFile, RuntimeError, NotImplementedError) as exc:
             raise ValueError("unreadable platform artifact members") from exc
     if not isinstance(receipt, dict):
@@ -151,6 +186,7 @@ def verify_archive(blob: bytes, artifact: dict, run: dict, state: dict) -> tuple
     native = receipt.get("platform")
     expected = {"schema": SCHEMA, "status": "passed", "revision": state["revision"],
                 "content_fingerprint": content_fingerprint(state), "junit_sha256": digest(junit),
+                "collection_sha256": digest(collection),
                 "repository": REPOSITORY, "run_id": run["id"], "run_attempt": run["run_attempt"]}
     if state["dirty"] or any(type(receipt.get(k)) is not type(v) or receipt.get(k) != v for k, v in expected.items()):
         raise ValueError("platform receipt/source binding mismatch")
@@ -162,6 +198,7 @@ def verify_archive(blob: bytes, artifact: dict, run: dict, state: dict) -> tuple
     if artifact.get("name") != expected_name:
         raise ValueError("platform artifact name/platform mismatch")
     cases = cases_from_xml(junit)
+    verify_collection(collection, cases)
     if any(c["status"] != "passed" or not c["classname"] or not c["name"] or native not in required_platforms(c) for c in cases):
         raise ValueError("native evidence contains failed, skipped or unrelated cases")
     return receipt, cases
@@ -198,9 +235,15 @@ def fetch_evidence(run_id: int, state: dict, output: Path) -> list[dict]:
         seen.update((aid, artifact["name"]))
         blob = gh_api(f"actions/artifacts/{aid}/zip")
         receipt, cases = verify_archive(blob, artifact, run, state)
-        matching = [j for j in jobs.get("jobs", []) if j.get("conclusion") == "success"
+        matching = [j for j in jobs.get("jobs", []) if j.get("conclusion") == "success" and j.get("status") == "completed"
+                    and type(j.get("run_id")) is int and j["run_id"] == run_id
+                    and type(j.get("run_attempt")) is int and j["run_attempt"] == run["run_attempt"]
+                    and j.get("head_sha") == state["revision"]
+                    and type(j.get("runner_group_id")) is int and j["runner_group_id"] == 0
+                    and j.get("runner_group_name") == "GitHub Actions" and "self-hosted" not in j.get("labels", [])
                     and RUNNER[receipt["platform"]] in j.get("labels", [])
                     and j.get("name", "").endswith(f"{RUNNER[receipt['platform']]} / py{receipt['python_minor']}")
+                    and all(s.get("conclusion") in {"success", "skipped"} for s in j.get("steps", []))
                     and all(any(s.get("name") == name and s.get("conclusion") == "success" for s in j.get("steps", []))
                             for name in ("Collect native platform evidence", "Upload native platform evidence"))]
         if len(matching) != 1:
@@ -229,10 +272,12 @@ def collect(root: Path, output: Path) -> int:
     output.mkdir(mode=0o700)
     selectors = [s for s, platforms in REQUIREMENTS.items() if sys.platform in platforms]
     command = [sys.executable, "-B", "-m", "pytest", "-q", "-p", "no:cacheprovider", "-o", "addopts=",
+               "-p", "tooling.pytest_inventory", f"--collection-manifest={output / 'collection.json'}",
                f"--junitxml={output / 'junit.xml'}", *selectors]
     result = run_step(root, command, output / "test.log", 900)
     after = source_state(root)
     cases = cases_from_xml((output / "junit.xml").read_bytes())
+    verify_collection((output / "collection.json").read_bytes(), cases)
     passed = result["returncode"] == 0 and before == after and all(c["status"] == "passed" for c in cases)
     receipt = {"schema": SCHEMA, "status": "passed" if passed else "failed",
                "revision": before["revision"], "content_fingerprint": content_fingerprint(before),
@@ -242,6 +287,7 @@ def collect(root: Path, output: Path) -> int:
                "run_id": int(os.environ.get("GITHUB_RUN_ID", "0")),
                "run_attempt": int(os.environ.get("GITHUB_RUN_ATTEMPT", "0")),
                "completed_at": datetime.now(timezone.utc).isoformat(), "command": command,
+               "collection_sha256": digest(output.joinpath("collection.json").read_bytes()),
                "junit_sha256": digest(output.joinpath("junit.xml").read_bytes())}
     output.joinpath("receipt.json").write_text(json.dumps(receipt, sort_keys=True), encoding="utf-8")
     return 0 if passed else 1
