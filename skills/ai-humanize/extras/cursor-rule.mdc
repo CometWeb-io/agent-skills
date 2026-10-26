@@ -6,7 +6,8 @@ alwaysApply: false
 When the user asks to **humanize**, remove AI tells, deep/strong rewrite, or clean invisible
 Unicode in prose/Markdown — load `ai-humanize`.
 
-Run `scripts/layer_a_clean.py` and `scripts/rewrite_guard.py` when executing rewrites.
+For substantial file rewrites, use `scripts/rewrite_guard.py` as an invariant check, not a semantic verdict.
+Use `scripts/layer_a_clean.py` only when Unicode cleanup is requested or in scope.
 Never promise detector defeat, watermark removal, or human authorship without evidence.
 
 Do not use for unrelated copywriting or as substitute for Evidence Researcher / Council decisions.

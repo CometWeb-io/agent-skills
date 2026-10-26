@@ -24,6 +24,12 @@ SHARED = (
     "references/source-safety.md",
     "references/workspace-ops.md",
 )
+# Content review uses a compact counterevidence check, not the suite's role procedure.
+CONTENT_LOCAL = frozenset({
+    "references/adversarial-protocol.md",
+    "references/assurance-protocol.md",
+    "references/revision-protocol.md",
+})
 CANONICAL = ROOT / "skills" / "repo-roaster"
 TARGETS = (
     ROOT / "skills" / "content-roaster",
@@ -75,6 +81,8 @@ def verify() -> list[str]:
         expected = canonical.read_bytes()
         mode = canonical.stat().st_mode & 0o777
         for target in TARGETS:
+            if target.name == "content-roaster" and filename in CONTENT_LOCAL:
+                continue
             candidate = target / filename
             if not candidate.is_file():
                 errors.append(f"missing: {candidate.relative_to(ROOT)}")
@@ -93,6 +101,8 @@ def sync() -> list[str]:
         expected = source.read_bytes()
         mode = source.stat().st_mode & 0o777
         for target in TARGETS:
+            if target.name == "content-roaster" and filename in CONTENT_LOCAL:
+                continue
             candidate = target / filename
             if _read_regular_file(candidate) != expected or (os.name != "nt" and candidate.stat().st_mode & 0o777 != mode):
                 _atomic_write(candidate, expected, mode)

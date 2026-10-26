@@ -45,6 +45,9 @@ higher floor. `checks` must be a nonempty array. `governance_gates` is an array,
 empty only when no routed surface requires one. Optional `domain_weights` and
 `thresholds` may not disable the hard gates.
 
+- `scope.audience`: `external | internal | library_consumers | unknown`.
+- `scope.commercial`: `paid | free | not_applicable | unknown`.
+
 ## Field reference
 
 Every key the engine reads. Values are compared lower-cased and trimmed.

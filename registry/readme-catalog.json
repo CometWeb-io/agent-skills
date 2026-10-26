@@ -10,10 +10,6 @@
           "summary": "Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts."
         },
         {
-          "id": "cometweb-context",
-          "summary": "Fresh, provenance-aware context snapshots before work that depends on current project state."
-        },
-        {
           "id": "evidence-researcher",
           "summary": "Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs."
         },

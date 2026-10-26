@@ -6,6 +6,25 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+### Catalog, optional workflows and local examples
+
+- Retire `cometweb-context` as a discoverable skill while retaining its source
+  map, helper scripts, tests and formal ContextEnvelope contract in
+  `resources/context`. Preserve semantic CW-AIP validation and archive the
+  original routing holdout before the roster-only rebase.
+- Shorten `web-app-auditor` 1.6.0, `content-roaster` 6.2.0,
+  `quality-loop-operator` 1.8.0, `ai-humanize` 2.7.0,
+  `release-readiness` 1.4.0 and `brief-architect` 1.9.0. Keep formal contracts
+  available for their consumers and avoid routine extra review stages.
+- Correct short-profile stage selection in the quality-loop kernel. Retain
+  native-model-first selection and optional workflow/contract adapters without
+  claiming task qualification or changing host invocation policy.
+- Add a synthetic QA/repair/retest example with a Node test gate in the shared
+  runner. Prepare Node in both validation and package-attestation workflows;
+  keep browser interaction and deployment evidence separate from policy tests.
+- Carry standalone resources in host-smoke staging and continue excluding
+  ignored private bindings from those staged plugin payloads.
+
 - Distinguish knowledge basis and consumer purpose; rerun controlled local fact
   checks at the research/Council receiver, compiler and completion gate. Keep
   nonfact premises, inference caveats and explicit trial safeguards intact through
@@ -24,8 +43,8 @@ tags use `vMAJOR.MINOR.PATCH`.
   including a concurrent winner; a cached development ZIP cannot gain a clean
   versioned release receipt.
 
-- Add the existing catalog owner/result/consumer map, task decision tree and small
-  core/domain installation selections; keep profiles and framework overlays opt-in.
+- Add the existing catalog owner/result/consumer map, task decision tree and
+  task-specific installation selections; keep profiles and framework overlays opt-in.
 - Correct bundled competitor-profiling handoff classification in Competitive
   Intelligence and Product Teardown.
 

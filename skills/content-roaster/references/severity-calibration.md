@@ -12,7 +12,7 @@ Admit only when the reviewed evidence shows that the primary promise, trust basi
 - scope sensitivity LOW or MEDIUM;
 - materiality centrality CENTRAL and consequence HIGH;
 - impact on TRUST, DECISION, or ACTION;
-- a surviving Challenger -> Defender -> Arbiter pass.
+- a documented counterevidence check that does not defeat the finding.
 
 Examples: the offer asks for a high-cost commitment before the buyer can establish what is being sold; a guarantee directly contradicts the stated commercial terms; a primary quantitative outcome claim has no decision-relevant proof where proof is necessary for the requested commitment.
 

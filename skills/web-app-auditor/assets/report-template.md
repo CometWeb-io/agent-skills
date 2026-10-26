@@ -1,7 +1,8 @@
 # Audit report — <target>
 
 - Date:
-- Protocol: web-app-auditor 1.1
+- Protocol: web-app-auditor 1.3 (JSON schema 1.1)
+- Build identity: <observed target build; local source revision separately, deployment match known/unknown>
 - Mode / depth:
 - Persona:
 - Viewports:

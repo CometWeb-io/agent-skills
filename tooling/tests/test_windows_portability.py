@@ -40,7 +40,8 @@ def test_autocrlf_checkout_preserves_frozen_bytes_and_binary(tmp_path):
     """Checkout policy must protect byte-pinned files, not normalize their hashes."""
     source = ROOT / "evals/routing/holdout.json"
     frozen = source.read_bytes()
-    expected_hash = "e14eacb0865e00819b04a0659903c4109b1908ab5e8b2f87ce5805950d22ab59"
+    lock = json.loads((ROOT / "evals/routing/holdout.lock.json").read_text())
+    expected_hash = next(v["sha256"] for v in lock["versions"] if v["holdout_version"] == lock["current"])
     assert hashlib.sha256(frozen).hexdigest() == expected_hash
     skill = b"---\nname: demo\ndescription: A synthetic portable skill fixture.\n---\n# Demo\n"
     contents = {"holdout.json": frozen, "SKILL.md": skill, "image.bin": b"\x00\x01\r\n\xff\n"}

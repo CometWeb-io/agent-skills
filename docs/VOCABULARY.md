@@ -86,7 +86,7 @@ case.
 
 | Owner | Field | Values | Why it differs |
 | --- | --- | --- | --- |
-| `cometweb-context` | `confidence` | `high` `medium` `low` | |
+| `resources/context` | `confidence` | `high` `medium` `low` | |
 | `content-roaster` | `confidence` | `high` `medium` `low` | |
 | `evidence-researcher` | `confidence` | `high` `medium` `low` | |
 | `repo-roaster` | `confidence` | `high` `medium` `low` | |
@@ -108,7 +108,7 @@ states their decision needs.
 | `repo-to-roadmap` | `freshness` | `CURRENT` `NEAR_EXPIRY` `NOT_TIME_SENSITIVE` `STALE` `SUPERSEDED` `UNKNOWN` | `NOT_TIME_SENSITIVE` is the same idea as `NOT_REQUIRED`, named for a project fact rather than a citation. Kept: renaming it would make the kernel reject baselines already written with it. |
 | `content-writer` | `freshness_status` | `CURRENT` `NEAR_EXPIRY` | Only the states a freshness-sensitive `SUPPORTED` claim may carry. |
 | `release-readiness` | `freshness` | `current` `stale` `mismatched` `unknown` | Evidence against a pinned candidate: `mismatched` means it was gathered on another build. Lower case, like its manifest. |
-| `cometweb-context` | `freshness` | `fresh` `aging` `stale` `unknown` | Age of a context source, matching the v2 context envelope. |
+| `resources/context` | `freshness` | `fresh` `aging` `stale` `unknown` | Age of a context source, matching the v2 context envelope. |
 | `skill-orchestrator-multiagent` | `freshness` | `CURRENT` `NOT_YET_EFFECTIVE` `STALE` `SUPERSEDED` `UNKNOWN` | The CW-AIP v1 core set, checked on every envelope. |
 | `cw-aip-v1/schemas/envelope.core.schema.json` | `freshness` | `CURRENT` `NOT_YET_EFFECTIVE` `STALE` `SUPERSEDED` `UNKNOWN` | v1 wire form. |
 | `cw-aip-v2/context.schema.json` | `freshness` | `fresh` `aging` `stale` `unknown` | v2 wire form for context sources. |

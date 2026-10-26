@@ -22,8 +22,9 @@ SCRIPT_REF = re.compile(r"(scripts/[\w./-]+\.py)")
 
 def documented_scripts() -> list[tuple[str, str]]:
     found: set[tuple[str, str]] = set()
-    for skill_md in sorted(ROOT.glob("skills/*/SKILL.md")):
-        skill = skill_md.parent.name
+    docs = sorted(ROOT.glob("skills/*/SKILL.md")) + [ROOT / "resources/context/README.md"]
+    for skill_md in docs:
+        skill = str(skill_md.parent.relative_to(ROOT))
         for block in re.findall(r"```bash\n(.*?)```", skill_md.read_text(encoding="utf-8"), re.S):
             for match in SCRIPT_REF.finditer(block):
                 found.add((skill, match.group(1)))
@@ -32,14 +33,14 @@ def documented_scripts() -> list[tuple[str, str]]:
 
 @pytest.mark.parametrize("skill,script", documented_scripts(), ids=lambda v: v)
 def test_documented_script_exists(skill: str, script: str) -> None:
-    assert (ROOT / "skills" / skill / script).is_file(), f"{skill}/SKILL.md documents a missing {script}"
+    assert (ROOT / skill / script).is_file(), f"{skill} documents a missing {script}"
 
 
 @pytest.mark.parametrize("skill,script", documented_scripts(), ids=lambda v: v)
 def test_documented_script_answers_help(skill: str, script: str) -> None:
     proc = subprocess.run(
         [sys.executable, script, "--help"],
-        cwd=ROOT / "skills" / skill,
+        cwd=ROOT / skill,
         capture_output=True, text=True, timeout=120,
     )
     output = (proc.stdout + proc.stderr).strip()

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>QA repair and retest example</title>
+<style>body{font:16px system-ui;max-width:720px;margin:40px auto;padding:16px;color:#17212b;background:#fafbfc}label{display:block;margin:12px 0}input,select,button{font:inherit;padding:6px}section{border:1px solid #d5dce2;border-radius:8px;padding:16px;margin:16px 0}pre{white-space:pre-wrap}</style>
+<h1>Plan estimate</h1><p>Synthetic demo data. No payment, account, or production service.</p>
+<form id="quote">
+<label>Sites <input id="projects" type="number" min="1" step="1" value="3" required></label>
+<label>Runs per site <input id="audits" type="number" min="1" step="1" value="4" required></label>
+<label>Billing <select id="billing"><option value="monthly">Monthly</option><option value="annual">Annual</option></select></label>
+<button id="calculate">Calculate</button></form>
+<section><h2>Result</h2><pre id="result" role="status"></pre><button id="save" type="button">Save test result</button></section>
+<section><h2>Saved test result</h2><button id="load" type="button">Read</button><button id="clear" type="button">Clear</button><pre id="saved" role="status"></pre></section>
+<script type="module">
+import { quote } from './policy.mjs';
+const $=s=>document.querySelector(s);let current;
+$('#quote').onsubmit=e=>{e.preventDefault();try{current=quote(Number($('#projects').value),Number($('#audits').value),$('#billing').value==='annual');$('#result').textContent=JSON.stringify(current,null,2);}catch(err){current=undefined;$('#result').textContent=err.message;}};
+$('#save').onclick=()=>{if(current!==undefined){try{localStorage.setItem('qa-demo-quote',JSON.stringify(current));$('#saved').textContent='Saved; reload and read to verify.';}catch{$('#saved').textContent='Storage unavailable; not saved.';}}};
+$('#load').onclick=()=>{try{$('#saved').textContent=localStorage.getItem('qa-demo-quote')??'No data';}catch{$('#saved').textContent='Storage unavailable; not read.';}};
+$('#clear').onclick=()=>{try{localStorage.removeItem('qa-demo-quote');$('#saved').textContent='No data';}catch{$('#saved').textContent='Storage unavailable; not cleared.';}};
+$('#quote').requestSubmit();document.body.append(Object.assign(document.createElement('span'),{id:'ready',textContent:'Demo ready'}));
+</script></html>

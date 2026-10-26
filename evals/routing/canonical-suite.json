@@ -50,43 +50,19 @@
       ]
     },
     {
-      "id": "canonical-positive-cometweb-context-1",
-      "prompt": "Co zmieniło się w Insight od ostatniego review?",
-      "expected_primary_skill": "cometweb-context",
-      "expected_status": "single_skill"
-    },
-    {
-      "id": "canonical-positive-cometweb-context-2",
-      "prompt": "Odśwież kontekst przed weekly boardroom",
-      "expected_primary_skill": "cometweb-context",
-      "expected_status": "single_skill"
-    },
-    {
-      "id": "canonical-positive-cometweb-context-3",
-      "prompt": "Przygotuj kontekst na spotkanie z design partnerem",
-      "expected_primary_skill": "cometweb-context",
-      "expected_status": "single_skill"
-    },
-    {
       "id": "canonical-negative-cometweb-context-1",
       "prompt": "Ile gwiazdek ma MaciejZet/agent-skills na GitHub?",
-      "must_not_trigger": [
-        "cometweb-context"
-      ]
+      "must_not_trigger": []
     },
     {
       "id": "canonical-negative-cometweb-context-2",
       "prompt": "Czy claim X jest prawdziwy? Zrób Evidence Pack",
-      "must_not_trigger": [
-        "cometweb-context"
-      ]
+      "must_not_trigger": []
     },
     {
       "id": "canonical-negative-cometweb-context-3",
       "prompt": "Przepuść decyzję o cenie przez Council",
-      "must_not_trigger": [
-        "cometweb-context"
-      ]
+      "must_not_trigger": []
     },
     {
       "id": "canonical-positive-competitive-intelligence-1",
@@ -299,16 +275,6 @@
       "must_not_trigger": [
         "web-app-auditor"
       ]
-    },
-    {
-      "id": "paraphrase-1",
-      "prompt": "Co się zmieniło w Insight od poprzedniego przeglądu?",
-      "expected_primary_skill": "cometweb-context"
-    },
-    {
-      "id": "paraphrase-2",
-      "prompt": "Co zmieniło się w CometWeb?",
-      "expected_primary_skill": "cometweb-context"
     },
     {
       "id": "paraphrase-3",

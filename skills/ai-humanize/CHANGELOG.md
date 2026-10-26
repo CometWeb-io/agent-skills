@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0] - 2026-10-26
+
+- Replace generic editing stages and routine catalog loading with a compact fidelity checklist and task-specific tool triggers.
+- Keep deterministic Unicode, invariant and word-range helpers unchanged; make their limits explicit, including role swaps that can pass token checks.
+- Replace mandatory deep-rewrite passes and per-deep-rewrite claim ledgers with optional claim mapping for dense or ambiguous material.
+- Align the optional Cursor rule with conditional Unicode cleanup rather than cleaning every rewrite.
+
 ## [2.6.5] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

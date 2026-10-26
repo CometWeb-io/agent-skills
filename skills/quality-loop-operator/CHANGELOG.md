@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.0] - 2026-10-26
+
+- Default to one relevant review, conditional repair and targeted verification; remove automatic duplicate reviews, recreation of existing artifacts and routine rollout/reporting stages.
+- Honor an explicit prelocked required_stages plan in the kernel while retaining the legacy full sequence for old sidecars. Preserve domain review/acceptance and skill-evidence safeguards.
+- Keep candidate identity, unresolved findings/conflicts, policy revision and reuse checks; state validation remains separate from factual or empirical validation.
+
 ## [1.7.7] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

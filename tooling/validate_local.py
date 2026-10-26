@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run local repository checks, without Actions, installation or publication.
+"""Run local repository checks, without starting Actions, installation or publication.
 
 Execute only in a trusted checkout: repository tests are executable code, not a
 sandbox. Reports contain local command output; review before sharing them.
@@ -19,6 +19,8 @@ import subprocess
 import sys
 import time
 import xml.etree.ElementTree as ET
+
+import platform_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECKS = (
@@ -45,7 +47,8 @@ MODULE_CHECKS = (
 )
 REQUIRED = ("plugin.json", ".agents/plugins/marketplace.json", "registry/skills.json", "registry/hosts.json",
             "pyproject.toml", "uv.lock",
-            "fixtures/cwaip-v2/evidence-final.json", "tooling/validate_local.py")
+            "fixtures/cwaip-v2/evidence-final.json", "tooling/validate_local.py", "tooling/platform_evidence.py",
+            "tooling/pytest_inventory.py")
 MAX_FILE = 32 * 1024 * 1024
 
 
@@ -136,6 +139,12 @@ def inventory(root: Path) -> dict:
             no_tests.append(name)
         else:
             raise ValueError(f"empty test directory or missing Python tests: skills/{name}/tests")
+    context_tests = root / "resources/context/tests"
+    if context_tests.parent.exists() or context_tests.parent.is_symlink():
+        test_dirs.append("resources/context/tests")
+        for source in context_tests.rglob("*"):
+            if source.is_file() or source.is_symlink():
+                safe_file(root, source.relative_to(root).as_posix())
     for directory in test_dirs:
         path = root / directory
         if path.is_symlink() or not any(path.rglob("test_*.py")):
@@ -185,6 +194,7 @@ def commands(scope: dict, output: Path) -> list[tuple[str, list[str]]]:
     rows = [(name, [sys.executable, "-B", "-m", *args]) for name, args in MODULE_CHECKS]
     rows += [(name, [sys.executable, "-B", script, *args]) for name, script, args in CHECKS]
     rows.append(("pytest", [sys.executable, "-B", "-m", "pytest", "-q", "-p", "no:cacheprovider",
+                            "-p", "tooling.pytest_inventory", f"--collection-manifest={output / 'collection.json'}",
                             "--import-mode=importlib", "-o", "addopts=", f"--junitxml={output / 'junit.xml'}",
                             *scope["test_directories"]]))
     return rows
@@ -193,17 +203,11 @@ def commands(scope: dict, output: Path) -> list[tuple[str, list[str]]]:
 def junit_counts(path: Path) -> dict:
     with path.open("rb") as handle:
         blob = handle.read(MAX_FILE + 1)
-    if len(blob) > MAX_FILE or b"<!DOCTYPE" in blob.upper() or b"<!ENTITY" in blob.upper():
-        raise ValueError("unsupported or oversized JUnit")
-    # Local pytest JUnit only; DOCTYPE/ENTITY already rejected above.
-    root = ET.fromstring(blob)  # nosec B314
-    if root.tag not in {"testsuite", "testsuites"}:
-        raise ValueError("invalid JUnit root")
-    cases = list(root.iter("testcase"))
-    if not cases:
-        raise ValueError("JUnit contains no executed test cases")
-    return {"tests": len(cases), **{key: sum(case.find(tag) is not None for case in cases)
-            for key, tag in (("failures", "failure"), ("errors", "error"), ("skipped", "skipped"))}}
+    if len(blob) > MAX_FILE:
+        raise ValueError("oversized JUnit")
+    cases = platform_evidence.cases_from_xml(blob)
+    return {"tests": len(cases), **{key: sum(case["status"] == value for case in cases)
+            for key, value in (("failures", "failed"), ("errors", "error"), ("skipped", "skipped"))}}
 
 
 def run_step(root: Path, command: list[str], log: Path, timeout: int) -> dict:
@@ -232,12 +236,54 @@ def run_step(root: Path, command: list[str], log: Path, timeout: int) -> dict:
             "log": log.name, "command": command}
 
 
-def run(root: Path, output: Path, timeout: int = 300) -> dict:
+def assess_tests(output: Path, state: dict, platform_runs: tuple[int, ...]) -> dict:
+    counts = junit_counts(output / "junit.xml")
+    result = {"junit": counts, "status": "passed"}
+    if counts["failures"] or counts["errors"]:
+        result["status"] = "failed"
+        return result
+    with (output / "junit.xml").open("rb") as handle:
+        cases = platform_evidence.cases_from_xml(handle.read(MAX_FILE + 1))
+    with (output / "collection.json").open("rb") as handle:
+        platform_evidence.verify_collection(handle.read(MAX_FILE + 1), cases)
+    skips = platform_evidence.classify_skips(cases, sys.platform)
+    result["skipped_tests"] = skips
+    result["platform_evidence"] = []
+    if not skips:
+        return result
+    if platform_runs:
+        try:
+            for run_id in platform_runs:
+                result["platform_evidence"].extend(platform_evidence.fetch_evidence(run_id, state, output))
+        except (OSError, ValueError, KeyError, TypeError, ET.ParseError, subprocess.SubprocessError) as exc:
+            result.update(status="invalid_platform_evidence", evidence_error=str(exc) if isinstance(exc, ValueError)
+                          else "Platform evidence unavailable")
+            return result
+    for row in skips:
+        if row["coverage"] != "platform_evidence_required":
+            continue
+        matches = [e for e in result["platform_evidence"] if row["id"] in e["cases"]
+                   and e["platform"] in row["required_platforms"]
+                   and e["python_minor"] == f"{sys.version_info.major}.{sys.version_info.minor}"]
+        if matches:
+            row.update(coverage="verified_on_native_platform", evidence={k: v for k, v in matches[0].items() if k != "cases"})
+    if all(r["coverage"] == "verified_on_native_platform" for r in skips):
+        result["status"] = "passed_with_platform_evidence"
+    elif any(r["coverage"] == "environment_blocked" for r in skips):
+        result["status"] = "incomplete"
+    else:
+        result["status"] = "platform_evidence_required"
+    return result
+
+
+def run(root: Path, output: Path, timeout: int = 300, platform_runs: tuple[int, ...] = ()) -> dict:
     from core.paths import canonical_input, canonical_output
 
     root = canonical_input(root)
     if type(timeout) is not int or not 1 <= timeout <= 1800:
         raise ValueError("timeout must be an integer between 1 and 1800")
+    if len(platform_runs) > 8 or any(type(i) is not int or i < 1 for i in platform_runs):
+        raise ValueError("provide at most eight positive platform run IDs")
     scope = inventory(root)
     before = source_state(root)
     before_status = source_status(root)
@@ -251,8 +297,9 @@ def run(root: Path, output: Path, timeout: int = 300) -> dict:
     if not output.parent.is_dir():
         raise ValueError("output parent must exist without symlink ancestors")
     output.mkdir(mode=0o700)
-    report = {"schema": "cometweb.local-validation/v1", "status": "running",
+    report = {"schema": "cometweb.local-validation/v2", "status": "running",
               "started_at": datetime.now(timezone.utc).isoformat(), "python": sys.version,
+              "platform": sys.platform,
               "scope": scope, "source_before": before, "checks": [],
               "not_assessed": ["model_behavior", "host_acceptance", "package_installation", "release_readiness"],
               "environment_fingerprint": "not_captured",
@@ -271,12 +318,8 @@ def run(root: Path, output: Path, timeout: int = 300) -> dict:
             result = run_step(root, command, output / f"{name}.log", timeout)
             if name == "pytest" and result["status"] == "passed":
                 try:
-                    counts = junit_counts(output / "junit.xml")
-                    result["junit"] = counts
-                    if counts["failures"] or counts["errors"]:
-                        result["status"] = "failed"
-                    elif counts["skipped"]:
-                        result["status"] = "incomplete"
+                    result.update(assess_tests(output, before, platform_runs))
+                    report["github_actions_used"] = bool(platform_runs and result.get("skipped_tests"))
                 except (OSError, ValueError, ET.ParseError):
                     result["status"] = "invalid_test_report"
             report["checks"].append({"id": name, **result})
@@ -288,7 +331,13 @@ def run(root: Path, output: Path, timeout: int = 300) -> dict:
                 report["status"] = "source_changed"
                 break
         else:
-            report["status"] = "passed" if all(c["status"] == "passed" for c in report["checks"]) else "failed"
+            statuses = {c["status"] for c in report["checks"]}
+            if statuses <= {"passed", "passed_with_platform_evidence"}:
+                report["status"] = "passed"
+            elif statuses <= {"passed", "passed_with_platform_evidence", "platform_evidence_required", "incomplete"}:
+                report["status"] = "incomplete"
+            else:
+                report["status"] = "failed"
         report["source_after"] = source_state(root)
         if before != report["source_after"]:
             report["status"] = "source_changed"
@@ -310,6 +359,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--plan", action="store_true", help="Validate inventory and print commands without running them")
+    parser.add_argument("--platform-run", type=int, action="append", default=[], metavar="RUN_ID",
+                        help="Read and verify native JUnit artifacts from this repository's GitHub Actions run (repeatable)")
     parser.add_argument("--timeout", type=int, default=300, help="Per-command timeout in seconds (1-1800)")
     parser.add_argument(
         "--trusted-checkout",
@@ -333,7 +384,7 @@ def main(argv: list[str] | None = None) -> int:
                 "Dynamic validation executes repository code. "
                 "Review the checkout and pass --trusted-checkout, or use a sandboxed runner."
             )
-        result = run(root, args.output.absolute(), args.timeout)
+        result = run(root, args.output.absolute(), args.timeout, tuple(args.platform_run))
         print(json.dumps({"status": result["status"], "report": str(args.output / "report.json")}))
         return 0 if result["status"] == "passed" else 1
     except (OSError, ValueError, subprocess.SubprocessError) as exc:

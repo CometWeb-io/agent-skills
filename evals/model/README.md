@@ -1,6 +1,6 @@
 # Text behavior cases
 
-`hard-all34-suite.json` contains 68 synthetic development cases: one difficult
+`hard-all34-suite.json` retains its historical filename and now contains 66 synthetic development cases for 33 active skill labels: one difficult
 material task and one narrow scope control per skill label, including the
 multiagent alias. Source conflicts, calculations, tenant/version identity,
 embedded instructions and permission gates require a useful answer within the
@@ -9,7 +9,9 @@ their presence is not evidence of model success.
 Fixture text is wrapped in an object for this runner's schema. This export has
 not been executed or qualified through the public model runner.
 
-Fixture revision 2 clarifies source timezones in `h-06` and distinguishes the
+Context-skill retirement removed its active cases without changing remaining task outcomes; old experiment artifacts are not rescored.
+
+Fixture revision 2 clarified source timezones in the now-retired `h-06` and distinguishes the
 scope boundary from a mandatory disclaimer in `h-27`. These additions received
 separate design review before new execution. Original ambiguous-run outcomes
 remain unknown; the revised fixtures do not retrospectively change their scores.

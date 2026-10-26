@@ -11,39 +11,38 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 
 | Skill | Front door | ~tokens | Depth | ~tokens | Refs | Deferred |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `ai-humanize` | 11,999 B | 2,999 | 64,674 B | 16,168 | 13 | 0.84 |
 | `design-partner-finder` | 11,999 B | 2,999 | 47,718 B | 11,929 | 13 | 0.80 |
 | `seo-geo-aeo-maxxing` | 11,997 B | 2,999 | 106,515 B | 26,628 | 22 | 0.90 |
-| `cometweb-context` | 11,991 B | 2,997 | 33,157 B | 8,289 | 10 | 0.73 |
 | `science-roaster` | 11,967 B | 2,991 | 124,622 B | 31,155 | 38 | 0.91 |
 | `repo-to-roadmap` | 11,946 B | 2,986 | 70,194 B | 17,548 | 13 | 0.85 |
 | `portfolio-operator` | 11,910 B | 2,977 | 24,840 B | 6,210 | 7 | 0.68 |
-| `web-app-auditor` | 11,908 B | 2,977 | 59,834 B | 14,958 | 17 | 0.83 |
 | `repo-roaster` | 11,863 B | 2,965 | 139,853 B | 34,963 | 43 | 0.92 |
 | `customer-ops` | 11,843 B | 2,960 | 136,245 B | 34,061 | 19 | 0.92 |
-| `ebook-publisher` | 11,833 B | 2,958 | 45,177 B | 11,294 | 8 | 0.79 |
-| `content-roaster` | 11,485 B | 2,871 | 116,270 B | 29,067 | 37 | 0.91 |
-| `release-readiness` | 11,298 B | 2,824 | 77,630 B | 19,407 | 12 | 0.87 |
+| `ebook-publisher` | 11,833 B | 2,958 | 45,261 B | 11,315 | 8 | 0.79 |
 | `longform-publisher` | 10,755 B | 2,688 | 19,054 B | 4,763 | 10 | 0.64 |
 | `ai-council` | 10,613 B | 2,653 | 72,431 B | 18,107 | 31 | 0.87 |
 | `product-teardown` | 10,335 B | 2,583 | 68,002 B | 17,000 | 12 | 0.87 |
 | `product-operator` | 9,900 B | 2,475 | 50,692 B | 12,673 | 13 | 0.84 |
 | `competitive-intelligence` | 9,329 B | 2,332 | 41,765 B | 10,441 | 8 | 0.82 |
-| `quality-loop-operator` | 9,081 B | 2,270 | 21,677 B | 5,419 | 15 | 0.70 |
-| `skill-orchestrator` | 7,786 B | 1,946 | 148,797 B | 37,199 | 20 | 0.95 |
-| `brief-architect` | 7,373 B | 1,843 | 27,727 B | 6,931 | 9 | 0.79 |
+| `skill-orchestrator` | 8,076 B | 2,019 | 148,797 B | 37,199 | 20 | 0.95 |
 | `content-writer` | 6,305 B | 1,576 | 14,338 B | 3,584 | 8 | 0.69 |
 | `evidence-researcher` | 6,176 B | 1,544 | 64,706 B | 16,176 | 16 | 0.91 |
 | `repair-operator` | 6,141 B | 1,535 | 11,639 B | 2,909 | 7 | 0.65 |
 | `skill-evaluator` | 6,126 B | 1,531 | 17,134 B | 4,283 | 11 | 0.74 |
 | `skill-auditor` | 5,892 B | 1,473 | 12,136 B | 3,034 | 9 | 0.67 |
 | `feedback-integrator` | 5,869 B | 1,467 | 13,400 B | 3,350 | 8 | 0.70 |
+| `release-readiness` | 5,671 B | 1,417 | 73,493 B | 18,373 | 12 | 0.93 |
 | `artifact-acceptance` | 5,314 B | 1,328 | 11,798 B | 2,949 | 8 | 0.69 |
 | `content-reviewer` | 5,200 B | 1,300 | 10,664 B | 2,666 | 8 | 0.67 |
+| `ai-humanize` | 5,026 B | 1,256 | 51,792 B | 12,948 | 13 | 0.91 |
+| `brief-architect` | 4,944 B | 1,236 | 28,159 B | 7,039 | 9 | 0.85 |
+| `web-app-auditor` | 4,529 B | 1,132 | 17,840 B | 4,460 | 5 | 0.80 |
+| `quality-loop-operator` | 4,498 B | 1,124 | 24,344 B | 6,086 | 15 | 0.84 |
+| `content-roaster` | 4,459 B | 1,114 | 103,932 B | 25,983 | 37 | 0.96 |
 | `rubric-designer` | 4,298 B | 1,074 | 6,246 B | 1,561 | 6 | 0.59 |
 | `benchmark-curator` | 3,803 B | 950 | 9,492 B | 2,373 | 8 | 0.71 |
 | `competitor-profiling` | 2,994 B | 748 | 4,117 B | 1,029 | 2 | 0.58 |
 | `research-program-operator` | 2,903 B | 725 | 4,451 B | 1,112 | 2 | 0.61 |
 | `skill-orchestrator-multiagent` | 2,063 B | 515 | 53,230 B | 13,307 | 13 | 0.96 |
 
-**34 skills.** Discovery metadata totals roughly 6,025 tokens. Activating all skills would load ~73,059 instruction tokens; the median activation is ~2,403, and the largest ~2,999.
+**33 skills.** Discovery metadata totals roughly 5,800 tokens. Activating all skills would load ~61,630 instruction tokens; the median activation is ~1,535, and the largest ~2,999.

@@ -57,7 +57,8 @@ def validate(payload):
     if not _text(contract): errors.append('contract_id:required')
     base=payload.get('base_candidate_id')
     if mode=='DELTA' and (not _text(base) or base==cid): errors.append('base_candidate_id:required-distinct')
-    _,lock_errors=_lock_ok(payload.get('policy_lock'), isinstance(mode,str) and mode in {'DEEP','DELTA'})
+    explicit_plan='required_stages' in payload
+    _,lock_errors=_lock_ok(payload.get('policy_lock'), explicit_plan or (isinstance(mode,str) and mode in {'DEEP','DELTA'}))
     errors.extend(lock_errors)
     adaptive=payload.get('adaptive_depth')
     if adaptive is not None:
@@ -88,6 +89,21 @@ def validate(payload):
         if status=='OPEN' and (sev=='BLOCKER' or (expired and (sev=='MAJOR' or row.get('kind') in {'WAIVER','CONTROL'}))): blocking_debt+=1
         if status=='CLOSED' and not row.get('closure_evidence'): errors.append(f'debt[{i}]:closed-without-evidence')
     required=PROFILES.get(profile,[]) if isinstance(profile,str) else []
+    if explicit_plan:
+        plan=payload.get('required_stages')
+        if not isinstance(plan,list) or not plan or any(not isinstance(s,str) or s not in required for s in plan):
+            errors.append('required_stages:invalid')
+        elif len(set(plan))!=len(plan): errors.append('required_stages:duplicate')
+        elif plan!=sorted(plan,key=required.index): errors.append('required_stages:out-of-order')
+        else:
+            if _member(profile,{'EDITORIAL','SALES','TECHNICAL_DOCS'}):
+                if 'artifact-acceptance' not in plan or not any(s in plan for s in ('content-reviewer','content-roaster')):
+                    errors.append('required_stages:review-and-acceptance-required')
+            if profile=='RESEARCH' and not {'science-roaster','artifact-acceptance'}.issubset(plan):
+                errors.append('required_stages:research-review-and-acceptance-required')
+            if profile=='REPO_DEEP' and 'repo-roaster' not in plan: errors.append('required_stages:repo-audit-required')
+            if profile=='SKILL_QUALITY' and plan!=required: errors.append('required_stages:skill-evidence-chain-required')
+            required=plan
     rows=payload.get('stages')
     if not isinstance(rows,list): errors.append('stages:not-list'); rows=[]
     by={}; last_index=-1
@@ -104,7 +120,8 @@ def validate(payload):
         if row.get('contract_id') is not None and row.get('contract_id')!=contract: errors.append(f'stage[{i}]:contract-mismatch')
         if state=='SKIPPED':
             if row.get('skip_allowed') is not True or not _text(row.get('skip_rationale')): errors.append(f'stage[{i}]:unjustified-skip')
-            if mode=='DEEP': errors.append(f'stage[{i}]:deep-required-skip')
+            if explicit_plan: errors.append(f'stage[{i}]:required-plan-skip')
+            elif mode=='DEEP': errors.append(f'stage[{i}]:deep-required-skip')
     if profile=='SKILL_QUALITY':
         rub=by.get('rubric-designer'); bm=by.get('benchmark-curator'); ev=by.get('skill-evaluator')
         rub_hash=rub.get('rubric_hash') if isinstance(rub,dict) and rub.get('state')=='PASS' else None

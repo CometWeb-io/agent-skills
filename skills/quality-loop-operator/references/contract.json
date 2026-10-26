@@ -241,7 +241,8 @@
     },
     "completion_evidence": {
       "unread": true
-    }
+    },
+    "required_stages": {}
   },
   "outputs": {
     "status": {

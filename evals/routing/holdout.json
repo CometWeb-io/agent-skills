@@ -1,8 +1,8 @@
 {
   "schema": "cometweb.routing-holdout/v1",
-  "holdout_version": "1.0.0",
+  "holdout_version": "1.1.0",
   "frozen_on": "2026-10-03",
-  "description": "Frozen blind routing holdout. Written before reading routing signals; never tune routing on these prompts. See evals/routing/README.md (Frozen holdout).",
+  "description": "Frozen blind routing holdout. Written before reading routing signals; never tune routing on these prompts. See evals/routing/README.md (Frozen holdout). Roster rebase 2026-10-26: remove retired context target; no prompt or remaining expected owner was tuned. Original v1.0.0 retained in archive/.",
   "cases": [
     {
       "id": "ho-ai-council-positive-1",
@@ -282,42 +282,6 @@
         "brief-architect"
       ],
       "reason": "Brief already exists; produce the artifact"
-    },
-    {
-      "id": "ho-cometweb-context-positive-1",
-      "kind": "positive",
-      "lang": "en",
-      "prompt": "Give me a fresh snapshot of where CometWeb stands across Insight, CometPen and CometBase before my meeting tomorrow.",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "portfolio-operator"
-      ],
-      "reason": "Cross-project current-state snapshot"
-    },
-    {
-      "id": "ho-cometweb-context-positive-2",
-      "kind": "positive",
-      "lang": "pl",
-      "prompt": "Co się zmieniło we wszystkich projektach CometWeb od zeszłego tygodnia? Zbierz stan z GitHuba i Notion.",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "product-operator"
-      ],
-      "reason": "Polish 'what changed' across CometWeb projects"
-    },
-    {
-      "id": "ho-cometweb-context-positive-3",
-      "kind": "positive",
-      "lang": "en",
-      "prompt": "Pull the current state of CometLens and cometweb.io from the repos and Notion before we talk about the next step.",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "product-operator"
-      ],
-      "reason": "Context preflight across CometWeb surfaces"
     },
     {
       "id": "ho-competitive-intelligence-positive-1",

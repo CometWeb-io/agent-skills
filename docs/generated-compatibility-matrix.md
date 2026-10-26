@@ -11,7 +11,6 @@ Cells are **declared host-profile support** (`format` + `declared_runtime`), not
 | `artifact-acceptance` | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED |
 | `benchmark-curator` | DEGRADED | FULL | FULL | FULL | FULL | FULL | FULL | DEGRADED |
 | `brief-architect` | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED |
-| `cometweb-context` | FULL | FULL | FULL | FULL | — | — | — | — |
 | `competitive-intelligence` | FULL | FULL | FULL | FULL | — | — | — | — |
 | `competitor-profiling` | FULL | FULL | FULL | FULL | — | — | — | — |
 | `content-reviewer` | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED | DEGRADED |

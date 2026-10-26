@@ -24,7 +24,7 @@ VALIDATORS = [
     ("skills/product-teardown/scripts/validate_pattern_ledger.py", "validate"),
     ("skills/portfolio-operator/scripts/portfolio_kernel.py", "validate_report"),
     ("skills/longform-publisher/scripts/publication_kernel.py", "validate_report"),
-    ("skills/cometweb-context/scripts/validate_context_envelope.py", "validate"),
+    ("resources/context/scripts/validate_context_envelope.py", "validate"),
     ("skills/evidence-researcher/scripts/evidence_kernel.py", "validate_ledger"),
     ("skills/repo-to-roadmap/scripts/roadmap_kernel.py", "validate_roadmap"),
     # validate_acceptance takes (item_id, criteria); the payload is its second

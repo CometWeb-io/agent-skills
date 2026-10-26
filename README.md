@@ -11,9 +11,9 @@ the boundary between package checks and task evidence.
 
 [![Validate](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml)
 [![MIT](https://img.shields.io/badge/license-MIT-034C32)](LICENSE)
-![Skills](https://img.shields.io/badge/skills-34-informational.svg)
+![Skills](https://img.shields.io/badge/skills-33-informational.svg)
 
-This repository contains 34 reusable skill packages. Each one is a `SKILL.md`
+This repository contains 33 reusable skill packages. Each one is a `SKILL.md`
 entry point plus the references, scripts and eval cases it needs, and every
 package is covered by the test suite. Skills supply instructions and output
 contracts. They do not supply a model, connector accounts or permission to act:
@@ -42,20 +42,27 @@ blind review, cost and missing execution. A passing CI run grants no release aut
 
 ## Quickstart
 
-Clone once, then run the installer for your host. Installers **symlink** each
+For a small local job with a known result, start with the
+[QA → repair → retest example](examples/qa-repair-retest/README.md).
+It uses synthetic data and requires no account, model API or new package manager.
+
+Start with the native model. Add a skill when the task needs its maintained
+resources, executable checks or a formal receiving contract. There is no default
+multi-skill core. For an optional specialist, clone once and install only the
+package relevant to your task. Installers **symlink** each
 package from `skills/` into the host's skills directory, so keep the clone where
 it is; `git pull` updates every installed skill in place.
 
 ```bash
 git clone https://github.com/CometWeb-io/agent-skills.git
 cd agent-skills
-./scripts/install-claude.sh --skill evidence-researcher --skill product-operator
-# Other hosts: install-cursor.sh, install-codex.sh, install-qwen.sh,
+./scripts/install-codex.sh --skill web-app-auditor
+# Other hosts: install-cursor.sh, install-claude.sh, install-qwen.sh,
 # install-qoder.sh, install-lingma.sh. Omit --skill to install every package.
 # ./scripts/install-all.sh explicitly installs into all six hosts.
 ```
 
-Installing every package ends with a line such as `OK: 34 Claude Code skills installed in /home/you/.claude/skills`.
+Installing every package ends with a line such as `OK: 33 Claude Code skills installed in /home/you/.claude/skills`.
 Installers support repeatable `--skill ID` and `--ref <full-commit-SHA>` for a
 clean pinned checkout. Keep stable installations on a detached reviewed commit;
 see [pinning and rollback](INSTALL.md#pinning-and-rollback).
@@ -72,17 +79,19 @@ claude plugin marketplace add CometWeb-io/agent-skills
 claude plugin install cometweb-agent-skills@cometweb-agent-skills
 ```
 
-Then ask your assistant:
+For the running example, ask your assistant:
 
 ```text
-Use product-operator to compare this repo with the roadmap.
-Give me the three most useful next actions and how to verify each one.
+Inspect my disposable demo at http://127.0.0.1:8765.
+Reproduce the incorrect recommendation, repair only the local copy,
+and verify the fix, saved result after reload and test-data cleanup.
+Report what you actually checked and what remains untested.
 ```
 
 ## Pick a starting point
 
-Use the [owner and handoff map](docs/SKILL-MAP.md) to choose a task owner,
-follow its output contract, and install a small core plus the needed domain skills.
+Use the [owner and handoff map](docs/SKILL-MAP.md) to choose the smallest
+task-specific selection. Load a formal output contract when its receiver needs it.
 
 | You need to… | Start with | You get |
 | --- | --- | --- |
@@ -99,21 +108,20 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 <!-- BEGIN GENERATED: skill catalog (tooling/generate_adapters.py) -->
 <!-- Edit registry/readme-catalog.json or registry/skills.json, then run generate_adapters.py. -->
 
-**34 skills.** Versions come from each package's `VERSION`; the [compatibility matrix](docs/generated-compatibility-matrix.md) lists host support.
+**33 skills.** Versions come from each package's `VERSION`; the [compatibility matrix](docs/generated-compatibility-matrix.md) lists host support.
 
 ### Foundation and orchestration
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
 | [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. *(experimental; DEVELOPMENT; runs only when named)* | 5.3.2 |
-| [`cometweb-context`](skills/cometweb-context/) | Fresh, provenance-aware context snapshots before work that depends on current project state. *(experimental; DEVELOPMENT)* | 1.6.1 |
 | [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. *(experimental; DEVELOPMENT)* | 1.0.11 |
 | [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. *(experimental; DEVELOPMENT)* | 1.2.5 |
-| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. *(experimental; DEVELOPMENT)* | 1.4.3 |
+| [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. *(experimental; DEVELOPMENT)* | 1.5.0 |
 | [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. *(experimental; DEVELOPMENT)* | 1.2.4 |
 | [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. *(experimental; DEVELOPMENT)* | 1.7.5 |
 | [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. *(experimental; DEVELOPMENT)* | 1.8.2 |
-| [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. *(experimental; DEVELOPMENT)* | 1.7.7 |
+| [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. *(experimental; DEVELOPMENT)* | 1.8.0 |
 | [`rubric-designer`](skills/rubric-designer/) | Observable evaluation criteria, evidence floors, blocker rules, and rubric locks. *(experimental; DEVELOPMENT)* | 1.7.7 |
 | [`skill-auditor`](skills/skill-auditor/) | Skill routing, portability, package hygiene, and supply-chain audits. *(experimental; DEVELOPMENT)* | 1.7.6 |
 | [`skill-evaluator`](skills/skill-evaluator/) | Fair skill experiments, behavioral lift, resource cost, and host comparisons. *(experimental; DEVELOPMENT)* | 1.8.1 |
@@ -122,16 +130,16 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 
 | Skill | Use it for | Version |
 | --- | --- | ---: |
-| [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. *(experimental; DEVELOPMENT)* | 2.6.5 |
+| [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. *(experimental; DEVELOPMENT)* | 2.7.0 |
 | [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. *(experimental; DEVELOPMENT)* | 1.1.5 |
 | [`design-partner-finder`](skills/design-partner-finder/) | Finding, qualifying, and managing design partners and early adopters. *(experimental; DEVELOPMENT)* | 1.2.5 |
 | [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. *(experimental; DEVELOPMENT)* | 2.4.4 |
 | [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. *(experimental; DEVELOPMENT)* | 1.3.2 |
 | [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. *(experimental; DEVELOPMENT)* | 1.1.3 |
-| [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. *(experimental; DEVELOPMENT)* | 1.8.1 |
+| [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. *(experimental; DEVELOPMENT)* | 1.9.0 |
 | [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. *(experimental; DEVELOPMENT)* | 1.7.7 |
 | [`content-reviewer`](skills/content-reviewer/) | Constructive editorial QA with evidence-backed, actionable findings. *(experimental; DEVELOPMENT)* | 1.7.6 |
-| [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. *(experimental; DEVELOPMENT)* | 6.1.7 |
+| [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. *(experimental; DEVELOPMENT)* | 6.2.0 |
 | [`science-roaster`](skills/science-roaster/) | Reviewer #2-style critique of methods, inference, validity, and reproducibility. *(experimental; DEVELOPMENT)* | 6.1.7 |
 | [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. *(experimental; DEVELOPMENT)* | 6.1.7 |
 | [`repair-operator`](skills/repair-operator/) | Minimal dependency-aware repairs and fresh verification of closed findings. *(experimental; DEVELOPMENT)* | 1.7.7 |
@@ -144,11 +152,11 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | Skill | Use it for | Version |
 | --- | --- | ---: |
 | [`customer-ops`](skills/customer-ops/) | Support triage, incidents, account risk, commitments, and engineering handoffs. *(experimental; DEVELOPMENT)* | 2.2.3 |
-| [`ebook-publisher`](skills/ebook-publisher/) | Research-backed ebooks, white papers, workbooks, and publication QA. *(experimental; DEVELOPMENT)* | 1.0.6 |
+| [`ebook-publisher`](skills/ebook-publisher/) | Research-backed ebooks, white papers, workbooks, and publication QA. *(experimental; DEVELOPMENT)* | 1.0.7 |
 | [`longform-publisher`](skills/longform-publisher/) | Canonical long-form manuscripts and release-ready derived documents. *(experimental; DEVELOPMENT; frozen)* | 1.1.6 |
-| [`release-readiness`](skills/release-readiness/) | Candidate-bound production gates and GO / GO_WITH_CONTROLS / NO_GO / DEFER verdicts. *(experimental; DEVELOPMENT)* | 1.3.4 |
+| [`release-readiness`](skills/release-readiness/) | Candidate-bound production gates and GO / GO_WITH_CONTROLS / NO_GO / DEFER verdicts. *(experimental; DEVELOPMENT)* | 1.4.0 |
 | [`seo-geo-aeo-maxxing`](skills/seo-geo-aeo-maxxing/) | Multi-pillar SEO / GEO / AEO visibility audits. *(experimental; DEVELOPMENT)* | 1.3.6 |
-| [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. *(experimental; DEVELOPMENT)* | 1.5.1 |
+| [`web-app-auditor`](skills/web-app-auditor/) | Evidence-driven click-through QA for websites and web applications. *(experimental; DEVELOPMENT)* | 1.6.0 |
 
 <!-- END GENERATED: skill catalog -->
 
@@ -169,6 +177,10 @@ descriptions, versions, ownership boundaries and routing signals. The Cursor
 routing rule, the compatibility matrix and the catalog above are generated from
 it. A passing validator checks a contract; it does not prove that an AI answer
 is correct.
+
+Source maps, repository snapshots and formal ContextEnvelope validation are
+[standalone resources](resources/context/README.md), without an additional skill
+or automatic preflight. Existing CW-AIP consumers keep the same payload contract.
 
 ## How skills hand off: CW-AIP
 

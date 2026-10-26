@@ -1,7 +1,7 @@
 {
   "schema": "cometweb.operator-eval-cases/v1",
   "execution_status": "not_run",
-  "scope": "operator_task_inventory_not_executable_runner_schema",
+  "scope": "Active-skill text-only development cases after context skill retirement; no new model runs. Historical source filename retained.",
   "cases": [
     {
       "id": "pl-fidelity-uncertainty",
@@ -44,18 +44,6 @@
       "skill": "release-readiness",
       "prompt": "Build B jest gotowy? Raport testów PASS dotyczy buildu A, po nim zmieniono autoryzację.",
       "success": "Does not transfer PASS to B; pins candidate and leaves changed dependency gates unresolved."
-    },
-    {
-      "id": "context-no-baseline",
-      "skill": "cometweb-context",
-      "prompt": "A jak teraz, co się poprawiło? Masz stan obecny, ale żadnego poprzedniego snapshotu.",
-      "success": "Reports current observations and missing baseline; invents no deltas."
-    },
-    {
-      "id": "context-conflicting-shipped",
-      "skill": "cometweb-context",
-      "prompt": "Notion mówi shipped; repo ma stub endpointu, a testów wdrożenia nie ma.",
-      "success": "Keeps intent, implementation and runtime evidence separate; does not silently mark shipped."
     },
     {
       "id": "seo-fetch-not-schema-proof",

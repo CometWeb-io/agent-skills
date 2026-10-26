@@ -83,18 +83,18 @@ def test_continuation_suite_is_runnable_and_does_not_replace_legacy_suite():
     root=Path(__file__).resolve().parents[2]
     old=json.loads((root/'evals/model/suite.json').read_text())
     extra=json.loads((root/'evals/model/continuation-suite.json').read_text())
-    assert len(runner.validate_suite(old))==16
-    assert len(runner.validate_suite(extra))==12
+    assert len(runner.validate_suite(old))==13
+    assert len(runner.validate_suite(extra))==10
     assert not {c['id'] for c in old['cases']} & {c['id'] for c in extra['cases']}
-    assert len({c['skill'] for c in extra['cases']})==6
+    assert len({c['skill'] for c in extra['cases']})==5
     assert all(c['capabilities']=={'tools':False} for c in extra['cases'])
     assert all(c['fixture'] and c['rubric'] for c in extra['cases'])
     proc=subprocess.run([sys.executable,str(root/'tooling/run_model_evals.py'),'--suite',str(root/'evals/model/continuation-suite.json')],capture_output=True,text=True,check=True)
     assert json.loads(proc.stdout)['model_calls']==0
-    assert json.loads(proc.stdout)['case_count']==12
+    assert json.loads(proc.stdout)['case_count']==10
 
 
-def test_36_synthetic_cells_reach_review_export_without_calls_to_provider(tmp_path,monkeypatch):
+def test_synthetic_cells_reach_review_export_without_calls_to_provider(tmp_path,monkeypatch):
     root=Path(__file__).resolve().parents[2]
     suite=json.loads((root/'evals/model/continuation-suite.json').read_text())
     roots=[tmp_path/'current',tmp_path/'candidate']
@@ -110,9 +110,10 @@ def test_36_synthetic_cells_reach_review_export_without_calls_to_provider(tmp_pa
                 'output':f'Synthetic response {n}, not a real model output.',
                 'usage':{},'tool_trace':[],'capabilities':request['capabilities']},0.01
     monkeypatch.setattr(runner,'execute',fake_execute)
-    result=runner.run(suite,*roots,['not-launched'],tmp_path/'output',max_runs=36,max_output_tokens=256)
-    assert len(calls)==36 and result['comparison_status']=='unreviewed'
-    assert len(result['review_packets'])==6
+    cells=3*len(suite['cases'])
+    result=runner.run(suite,*roots,['not-launched'],tmp_path/'output',max_runs=cells,max_output_tokens=256)
+    assert len(calls)==cells and result['comparison_status']=='unreviewed'
+    assert len(result['review_packets'])==len({c['skill'] for c in suite['cases']})
     assert result['quality_verdict']=='pending_human_review'
     assert all((tmp_path/'output'/p['reviewer_archive']).exists() for p in result['review_packets'])
 

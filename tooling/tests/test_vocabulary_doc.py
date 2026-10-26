@@ -70,6 +70,10 @@ def protocol_enums(rel: str) -> dict[str, set[str]]:
 
 
 def expected(owner: str, field: str) -> set[str] | None:
+    if owner == "resources/context":
+        contract = json.loads((ROOT / owner / "references/contract.json").read_text())
+        values = contract["fields"].get(field, {}).get("enum")
+        return set(values) if values is not None else None
     if owner.startswith("cw-aip-"):
         path = PROTOCOL / owner
         return protocol_enums(owner).get(field) if path.is_file() else None

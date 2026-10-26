@@ -5,7 +5,7 @@ skill in ``skills/<roaster>/tests/front-door-rules.json`` and enforced by
 ``tooling/tests/test_front_door_rules.py``, the same mechanism every slimmed
 front door uses. This file keeps only the roaster-specific structure: the
 21-rule core contract, the workflow step index, reference reachability, and the
-rules all three roasters must carry identically.
+rules the legacy roasters must carry identically. Content uses a compact checklist.
 """
 
 from __future__ import annotations
@@ -39,14 +39,14 @@ def test_common_and_shared_rules_are_identical_across_roasters() -> None:
             if rule["id"].startswith(("common-", "shared-"))
         }
 
-    first, *rest = (carried(skill) for skill in ROASTERS)
+    first, *rest = (carried(skill) for skill in ("repo-roaster", "science-roaster"))
     assert first, "no common-/shared- rules inventoried"
     assert {where for _, _, where in first if where != "SKILL.md"} == {"references/review-operations.md"}
     for other in rest:
         assert other == first, sorted(first ^ other)
 
 
-@pytest.mark.parametrize("skill", ROASTERS)
+@pytest.mark.parametrize("skill", ("repo-roaster", "science-roaster"))
 def test_core_contract_keeps_all_21_rules(skill: str) -> None:
     text = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
     section = text.split("## Core contract", 1)[1].split("\n## ", 1)[0]
@@ -54,7 +54,7 @@ def test_core_contract_keeps_all_21_rules(skill: str) -> None:
     assert numbers == list(range(1, 22)), numbers
 
 
-@pytest.mark.parametrize("skill", ROASTERS)
+@pytest.mark.parametrize("skill", ("repo-roaster", "science-roaster"))
 def test_step_index_matches_full_workflow(skill: str) -> None:
     """Adding a step to references/workflow.md without indexing it in SKILL.md fails."""
     package = ROOT / "skills" / skill

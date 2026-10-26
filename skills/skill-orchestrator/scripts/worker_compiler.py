@@ -14,7 +14,7 @@ Profile IDs are metadata, never executors. Include all essential content in arti
 A canonical owner report must reflect the artifact; structural validity alone cannot establish truth.
 """
 READS = {
-    "web-app-auditor": ["evidence-and-report.md", "runtime-policy.md", "safety-and-mutations.md"],
+    "web-app-auditor": ["evidence-and-report.md"],
     "brief-architect": ["output-contract.md"],
     "product-operator": ["output-contract.md", "safety.md"],
     "content-writer": ["output-contract.md", "claim-discipline.md"],

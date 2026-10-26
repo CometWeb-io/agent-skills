@@ -9,9 +9,10 @@ is a small publication-facing view, not a replacement or undocumented incompatib
 Keep the full evidence pack as an additional source when supplied.
 
 `ai-humanize` owns natural-language rewriting with fidelity controls, not fact discovery.
-Read its contract and actually run its tools when applicable. `cometweb-context` is useful
-only when public product claims need a fresh multi-source internal context, not for every
-generic educational ebook. SEO, accessibility, security, or other specialist skills can
+Read its contract and actually run its tools when applicable. When public product claims
+need current internal context, retrieve only relevant sources. If repository resources
+are available, consult `resources/context/references/source-registry.md`; this is not
+an automatic skill preflight. SEO, accessibility, security, or other specialist skills can
 supply domain checks when present; their conclusions still need scope and evidence.
 Do not run a live website audit merely because the ebook teaches auditing.
 

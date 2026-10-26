@@ -28,8 +28,6 @@ REFERENCE = re.compile(
 # gitignored. See the local-binding rule in AGENTS.md.
 ABSENT_BY_DESIGN = {
     ("ai-council", "references/notion-bindings.local.json"),
-    ("cometweb-context", "references/repos.local.txt"),
-    ("cometweb-context", "references/source-registry.local.json"),
 }
 
 

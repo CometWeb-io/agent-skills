@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.6.0] - 2026-10-26
+
+- Replace the mandatory multi-reference preflight and generic QA passes with a
+  self-contained checklist and concrete evidence/readback rules. Default to a
+  short recon audit; standard/forensic and contract-trace remain explicit opt-ins.
+- Retain the report schemas, validators and evidence handoff contract; protocol
+  1.3 keeps JSON schema 1.1 unchanged. Remove twelve generic reference guides
+  and reduce modes to the requested-depth contract.
+- Preserve same-ID readback, scope/persona and build binding, honest capability
+  limits, safe cleanup and the shared untrusted-content boundary.
+
+## [1.5.2] - 2026-10-25
+
+- Check settled authentication redirects, actual session persona and destination
+  selections before confirming a cross-app handoff. Keep anonymous signup
+  coverage separate when an existing session takes the authenticated branch.
+- Align the report template with protocol 1.2, distinguish JSON schema 1.1, and
+  record observed build identity separately from a local source revision.
+
 ## [1.5.1] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

@@ -52,7 +52,7 @@ from compatibility import read_frontmatter, safe_load_unique  # noqa: E402
 
 PLUGIN = "cometweb-agent-skills"
 # What a host needs to load the plugin; tooling, tests and docs stay behind.
-PAYLOAD = (".claude-plugin", ".cursor-plugin", ".agents", "plugin.json", "skills", "rules", "VERSION", "LICENSE",
+PAYLOAD = (".claude-plugin", ".cursor-plugin", ".agents", "plugin.json", "skills", "resources", "rules", "VERSION", "LICENSE",
            "NOTICE", "README.md")
 IGNORE = shutil.ignore_patterns("__pycache__", "*.pyc", ".pytest_cache", "*.local.json", "*.local.txt")
 TIMEOUT = 180

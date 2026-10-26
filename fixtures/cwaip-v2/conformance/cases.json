@@ -36,7 +36,7 @@
       "file": "valid/context-portfolio-governance.json",
       "expect": "accept",
       "final": true,
-      "note": "profile=portfolio and governance are part of the cometweb-context contract"
+      "note": "profile=portfolio and governance are part of the context resource contract"
     },
     {
       "file": "valid/hash-bare-uppercase-hex.json",

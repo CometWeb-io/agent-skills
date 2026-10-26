@@ -1,18 +1,8 @@
 # Output contract
 
-Return a compact human brief plus, when supported, a machine sidecar.
+Ordinary output follows SKILL.md: candidate, passed checks, unresolved findings, next action and completion evidence. A fixed section order or sidecar is not required for a simple task.
 
-Human brief default:
-
-1. `STATE`
-2. `POLICY LOCK`
-3. `CONFLICTS`
-4. `MEASUREMENT` — rubric/benchmark identity plus paired/stability state when the profile measures a skill
-5. `RUNTIME LIFECYCLE` — compatibility, host support, rollout state, observation window, rollback/deprecation state when applicable
-6. `NEXT STAGE`
-7. `REVALIDATE`
-8. `BLOCKER`
-9. `DONE WHEN`
+Use the machine sidecar below only for validated run state, resume or pipeline integration.
 
 Machine sidecar fields. This list is the payload `scripts/kernel.py` validates;
 `references/contract.json` declares it and `tooling/skill_contracts.py` checks
@@ -29,8 +19,10 @@ as_of                               # timezone-aware ISO time; required when qua
 candidate_id
 base_candidate_id?                  # required and distinct from candidate_id in DELTA
 contract_id
+required_stages[]?                  # ordered non-empty subset of the profile; absent = legacy full sequence
+                                    # frozen in the active contract before evaluation; requires policy_lock
 policy_lock: {pack_id, revision, sha256, locked_before_evaluation: true}
-                                    # required in DEEP and DELTA; sha256 is 64 lowercase hex
+                                    # required in DEEP, DELTA or with required_stages; sha256 is 64 lowercase hex
 adaptive_depth?: {recommended_mode, override_approved?, override_rationale?}
   recommended_mode: LIGHT|STANDARD|DEEP|DELTA   # must equal mode unless an approved override has a rationale
 replay_status?: REPRODUCIBLE|DRIFT|INCOMPLETE   # DRIFT or INCOMPLETE blocks on revalidation
@@ -50,7 +42,7 @@ stages[]:
   state: PENDING|RUNNING|PASS|CHANGES_REQUIRED|BLOCKED|DEFER|SKIPPED
   candidate_id?                     # must equal the run candidate_id when present
   contract_id?                      # must equal the run contract_id when present
-  skip_allowed: true                # required for SKIPPED, with skip_rationale; DEEP never skips
+  skip_allowed: true                # legacy SKIPPED requires rationale; DEEP and explicit plans never skip
   skip_rationale
   rubric_hash                       # SKILL_QUALITY: rubric-designer, benchmark-curator, skill-evaluator
   benchmark_hash                    # SKILL_QUALITY: benchmark-curator, skill-evaluator
@@ -83,7 +75,7 @@ revalidate[]
 completion_evidence[]
 ```
 
-The skill names a stage may carry, in order, per profile (`references/profiles.md`):
+Available skill names for a stage, in order, per profile (`references/profiles.md`):
 
 - `EDITORIAL`, `SALES`, `TECHNICAL_DOCS`: brief-architect, content-writer, content-reviewer, content-roaster, repair-operator, artifact-acceptance
 - `RESEARCH`: brief-architect, content-writer, content-reviewer, science-roaster, repair-operator, artifact-acceptance
@@ -92,6 +84,11 @@ The skill names a stage may carry, in order, per profile (`references/profiles.m
  In `SKILL_QUALITY`, a PASS benchmark and a PASS
 evaluator stage must carry the same `rubric_hash` (and the evaluator the same
 `benchmark_hash`) as the stages they consume.
+
+
+An explicit `required_stages` plan must retain at least one of content-reviewer/content-roaster plus artifact-acceptance for editorial/sales/technical docs; science-roaster plus artifact-acceptance for research; repo-roaster for repositories; and the full linked chain for SKILL_QUALITY. Malformed, duplicate, unordered or unsafe plans are INVALID. Stage rows outside the selected plan are INVALID. Omitting a planned row returns the next required stage, not COMPLETE.
+
+The caller must bind the plan to the pre-evaluation policy. The kernel checks lock shape and its declared prelock flag; it does not resolve a policy pack, recompute its hash, inspect external approvals or verify stage evidence. A caller can lie about PASS; validate(payload) is not an independent acceptance check.
 
 To check a sidecar, call `validate(payload)` in `scripts/kernel.py`. It returns
 `{status, next_stage, errors[], unresolved_conflicts, blocking_quality_debt}`

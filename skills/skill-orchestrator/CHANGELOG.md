@@ -1,5 +1,10 @@
 # Changelog — skill-orchestrator
 
+## [1.5.0] - 2026-10-26
+
+- Remove the retired context skill dependency and preflight step; use standalone source maps and optional formal ContextEnvelope validation instead.
+- Load the current slim web-app-auditor evidence reference when compiling native owner tasks; removed preflight files are no longer requested.
+
 ## [1.4.3] - 2026-10-11
 
 - Rerun controlled source checks at the v2 receiving gate, compiler and ledger; retain scoped verdicts and explicit trial safeguards.

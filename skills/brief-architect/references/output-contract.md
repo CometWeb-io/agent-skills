@@ -42,6 +42,8 @@ Lead with the brief itself. Put `BLOCKED/PROVISIONAL` reasons immediately after 
 
 The deterministic kernel validates readiness and lineage semantics. It does not prove that the chosen objective, audience, or acceptance criteria are strategically correct.
 
+It also cannot tell whether a criterion labelled `observable: true` is actually falsifiable. Inspect the criterion itself before relying on READY. A syntactically valid rubric hash does not authenticate the referenced rubric.
+
 `kernel.readiness(brief)` returns `{status, missing[], errors[],
 open_material_decisions, material_assumptions, mode}`. `kernel.delta(old, new)`
 compares two briefs and returns `{status: CHANGED|UNCHANGED, material_changes[],

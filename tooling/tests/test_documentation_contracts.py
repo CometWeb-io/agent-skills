@@ -11,11 +11,11 @@ ROOT = Path(__file__).resolve().parents[2]
 QUALITY_SKILLS = {
     "artifact-acceptance": "1.7.6",
     "benchmark-curator": "1.7.5",
-    "brief-architect": "1.8.1",
+    "brief-architect": "1.9.0",
     "content-reviewer": "1.7.6",
     "content-writer": "1.7.7",
     "feedback-integrator": "1.8.2",
-    "quality-loop-operator": "1.7.7",
+    "quality-loop-operator": "1.8.0",
     "repair-operator": "1.7.7",
     "rubric-designer": "1.7.7",
     "skill-auditor": "1.7.6",
@@ -91,7 +91,9 @@ def test_pr_template_uses_canonical_gates_and_external_report_directory() -> Non
     assert "uv run python tooling/check_all.py --ci" in template
     assert "--output ../agent-skills-pr-validation" in template
     assert "--output .validation" not in template
-    assert "no skipped test cases" in template
+    assert "no unverified skips" in template
+    assert "native evidence for the same SHA" in template
+    assert "--platform-run" in template
 
 
 def test_third_party_notices_preserve_all_retained_adaptations() -> None:

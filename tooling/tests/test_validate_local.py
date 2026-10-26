@@ -31,6 +31,8 @@ def checkout(tmp_path):
             put(root, relative, '[project]\nname = "fixture"\nversion = "0.0.0"\nrequires-python = ">=3.12"\n')
         elif relative == "uv.lock":
             put(root, relative, 'version = 1\nrequires-python = ">=3.12"\n')
+        elif relative == "tooling/pytest_inventory.py":
+            put(root, relative, (Path(__file__).parents[1] / "pytest_inventory.py").read_text())
         else:
             put(root, relative, "pass\n" if relative.endswith(".py") else "{}\n")
     put(root, "registry/skills.json", json.dumps({"skills": [{"id": "example"}]}))
@@ -51,6 +53,26 @@ def test_inventory_declares_actual_test_directories(checkout):
     assert result["skills"] == ["example"]
     assert result["test_directories"] == ["tooling/tests", "skills/example/tests"]
     assert result["skills_without_tests"] == []
+
+
+def test_standalone_context_tests_are_in_the_executed_plan(checkout):
+    put(checkout, "resources/context/tests/test_context.py", "def test_context():\n    assert True\n")
+    rows = dict(local.commands(local.inventory(checkout), Path("/report")))
+    assert "resources/context/tests" in rows["pytest"]
+
+
+def test_symlinked_context_test_source_is_rejected(checkout):
+    path = put(checkout, "resources/context/tests/test_context.py", "pass\n")
+    path.unlink()
+    path.symlink_to(put(checkout, "outside.py", "pass\n"))
+    with pytest.raises(ValueError, match="symlink"):
+        local.inventory(checkout)
+
+
+def test_context_resources_without_regression_tests_are_rejected(checkout):
+    (checkout / "resources/context").mkdir(parents=True)
+    with pytest.raises(ValueError, match="missing tests: resources/context/tests"):
+        local.inventory(checkout)
 
 
 def test_fixture_only_directory_is_declared_without_python_test_collection(checkout):
@@ -185,6 +207,9 @@ def mock_steps(monkeypatch, *, failed=None, junit='<testsuite><testcase/></tests
         log.write_text("synthetic test runner result\n")
         if name == "pytest" and junit is not None:
             put(log.parent, "junit.xml", junit)
+            cases = local.platform_evidence.cases_from_xml(junit.encode())
+            ids = [c["id"] for c in cases]
+            put(log.parent, "collection.json", json.dumps({"schema": "cometweb.pytest-collection/v1", "collected": ids, "selected": ids}))
         if modify and name == "registry":
             modify(root)
         return {"status": failed[1] if failed and failed[0] == name else "passed", "returncode": 0,
@@ -206,7 +231,47 @@ def test_zero_exit_is_insufficient_for_pass(checkout, monkeypatch, xml, expected
     mock_steps(monkeypatch, junit=xml)
     report = local.run(checkout, checkout.parent / "report")
     assert report["checks"][-1]["status"] == expected
+    assert report["status"] == ("incomplete" if expected == "incomplete" else "failed")
+
+
+def test_foreign_platform_skip_requires_evidence_instead_of_becoming_a_failure(checkout, monkeypatch):
+    mock_steps(monkeypatch, junit='''<testsuite><testcase
+      classname="tooling.tests.test_windows_portability"
+      name="test_windows_scanner_checks_handle_containment_and_junctions[repo-roaster]">
+      <skipped message="native Windows handle checks"/></testcase></testsuite>''')
+    monkeypatch.setattr(local.sys, "platform", "darwin")
+    report = local.run(checkout, checkout.parent / "report")
+    assert report["status"] == "incomplete"
+    step = report["checks"][-1]
+    assert step["status"] == "platform_evidence_required"
+    assert step["skipped_tests"][0]["required_platforms"] == ["win32"]
+
+
+def test_platform_test_failure_cannot_be_deferred(checkout, monkeypatch):
+    mock_steps(monkeypatch, junit='''<testsuite><testcase
+      classname="tooling.tests.test_windows_portability"
+      name="test_windows_scanner_checks_handle_containment_and_junctions[repo-roaster]">
+      <failure message="containment broken"/></testcase></testsuite>''')
+    report = local.run(checkout, checkout.parent / "report")
     assert report["status"] == "failed"
+    assert report["checks"][-1]["status"] == "failed"
+
+
+def test_verified_platform_coverage_closes_report_without_erasing_local_skip(checkout, monkeypatch):
+    # Synthetic provider seam; transport/authenticity rejection is tested separately.
+    cls = "tooling.tests.test_windows_portability"
+    name = "test_windows_scanner_checks_handle_containment_and_junctions[repo-roaster]"
+    mock_steps(monkeypatch, junit=f'<testsuite><testcase classname="{cls}" name="{name}"><skipped/></testcase></testsuite>')
+    monkeypatch.setattr(local.sys, "platform", "darwin")
+    proof = {"run_id": 1, "artifact_id": 2, "platform": "win32", "python_minor": f"{sys.version_info.major}.{sys.version_info.minor}",
+             "artifact_sha256": "a" * 64, "cases": [cls + "::" + name]}
+    monkeypatch.setattr(local.platform_evidence, "fetch_evidence", lambda *a: [proof])
+    report = local.run(checkout, checkout.parent / "report", platform_runs=(1,))
+    assert report["schema"] == "cometweb.local-validation/v2"
+    assert report["status"] == "passed" and report["github_actions_used"] is True
+    assert report["checks"][-1]["status"] == "passed_with_platform_evidence"
+    assert report["checks"][-1]["junit"]["skipped"] == 1
+    assert report["checks"][-1]["skipped_tests"][0]["evidence"]["artifact_id"] == 2
 
 
 def test_source_change_stops_remaining_steps(checkout, monkeypatch):

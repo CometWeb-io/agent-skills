@@ -21,7 +21,6 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 | knowledge-artifact acceptance gates, evidence-backed artifact verdicts, candidate and contract traceability | `artifact-acceptance` |
 | benchmark and eval corpus design, holdout and contamination controls, benchmark revision hashes | `benchmark-curator` |
 | artifact brief and execution contract, observable acceptance criteria, evidence policy and handoff fields | `brief-architect` |
-| context snapshot, provenance, conflicts/gaps, ContextEnvelope, public claim gate | `cometweb-context` |
 | competitor watchlist, delta digest, normalized competitor state | `competitive-intelligence` |
 | initial competitor baseline, evidence-backed competitor dossier, competitive-intelligence bootstrap handoff | `competitor-profiling` |
 | constructive content review, evidence-backed editorial findings, review coverage and repair direction | `content-reviewer` |
@@ -58,7 +57,6 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - **artifact-acceptance** — does not own: software release verdicts; initial editorial review; consequential strategic decisions.
 - **benchmark-curator** — does not own: model experiment execution; rubric design; skill editing.
 - **brief-architect** — does not own: final artifact production; broad product discovery; consequential strategic decisions.
-- **cometweb-context** — does not own: evidence packs; domain decisions; release gates; outbound copy.
 - **competitive-intelligence** — does not own: strategic GO/NO_GO; pricing decision.
 - **competitor-profiling** — does not own: recurring competitor monitoring; transferable product mechanism teardown; pricing or strategy decisions.
 - **content-reviewer** — does not own: adversarial roasting; full content rewrites; final publication acceptance.
@@ -118,14 +116,6 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - trigger: Define acceptance criteria before we write the report
 - do not trigger: Write the final article
 - do not trigger: Choose the product strategy
-
-### `cometweb-context`
-- trigger: Co zmieniło się w Insight od ostatniego review?
-- trigger: Odśwież kontekst przed weekly boardroom
-- trigger: Przygotuj kontekst na spotkanie z design partnerem
-- do not trigger: Ile gwiazdek ma MaciejZet/agent-skills na GitHub?
-- do not trigger: Czy claim X jest prawdziwy? Zrób Evidence Pack
-- do not trigger: Przepuść decyzję o cenie przez Council
 
 ### `competitive-intelligence`
 - trigger: Competitor digest since last month snapshot

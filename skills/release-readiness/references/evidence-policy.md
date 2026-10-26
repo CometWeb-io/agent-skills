@@ -22,7 +22,8 @@ Store at least:
 ```json
 {
   "summary": "Critical checkout E2E passed on candidate",
-  "candidate_ref": "abc1234",
+  "candidate_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "environment": "production",
   "last_verified_at": "2026-08-25T21:50:00+02:00",
   "source_type": "ci",
   "location": "workflow run / artifact / dashboard reference"
@@ -31,7 +32,7 @@ Store at least:
 
 Recommended metadata when available:
 
-- `candidate_ref`: commit SHA, image digest, artifact ID, build number, release ID;
+- `candidate_ref`: the exact immutable identity pinned in the release; a full commit SHA, image digest, artifact ID or build number;
 - `environment`: environment where evidence was observed;
 - `source_type`: `ci`, `runtime`, `repo`, `provider`, `docs`, `dashboard`, `ticket`, `human`;
 - `last_verified_at` / `observed_at`;
@@ -45,14 +46,14 @@ The engine requires structured summary + timestamp for binding passes. A binding
 
 Prefer evidence that directly records one or more of:
 
-- commit SHA/tag;
+- full commit SHA;
 - image/package digest;
 - mobile/desktop build number;
-- release/deployment ID.
+- the complete set of immutable identities when more than one is pinned.
 
 A test run from another commit is `MISMATCHED`, even when the diff looks small, unless a new run or explicit evidence establishes equivalence. Do not silently transfer evidence across candidates.
 
-Short/full commit identifiers may be treated as the same candidate when they share an unambiguous prefix of at least seven characters.
+Short SHA prefixes and release/tag aliases do not establish binding to a pinned full SHA. All pinned immutable identities and any pinned configuration digest must match. Execution/provider evidence must explicitly name the matching target environment; staging evidence cannot silently pass a production binding gate.
 
 ## Environment fit
 

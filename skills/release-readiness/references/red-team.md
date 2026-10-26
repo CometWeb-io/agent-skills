@@ -1,11 +1,12 @@
-# Red-Team Before the Final Verdict
+# Targeted false-green prompts
 
-Read this file before issuing any final verdict. The provisional engine result is
-the thing under attack: search specifically for false-green paths.
+Use these prompts for a concrete unresolved failure mode. This is not a mandatory
+second review or a requirement to produce another report. Search specifically for
+false-green paths in the affected gate.
 
 ## Questions to test
 
-Test at least:
+Relevant questions:
 
 - Was a required gate omitted rather than passed?
 - Was a risk flag set to `no` without evidence?

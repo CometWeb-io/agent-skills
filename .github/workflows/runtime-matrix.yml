@@ -104,9 +104,9 @@ jobs:
           uv venv --python "$PYTHON_VERSION" .runtime-venv
           uv pip install --python .runtime-venv pytest
 
-      - name: Run stdlib-only skill tests
+      - name: Run stdlib-only skill and context helper tests
         run: >-
-          .runtime-venv/bin/python -m pytest -q skills
+          .runtime-venv/bin/python -m pytest -q skills resources/context/tests
           --ignore=skills/ebook-publisher
           --ignore=skills/skill-orchestrator
           --ignore=skills/skill-orchestrator-multiagent

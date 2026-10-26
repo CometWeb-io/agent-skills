@@ -30,7 +30,7 @@ Use this file before finalizing FULL, RED_TEAM, or DELTA reviews. These are revi
 
 **Failure:** criticizing the hero while ignoring proof immediately below it, footnotes, case-study caveats, terms, or supplied analytics.
 
-**Correction:** run the Defender search across the reviewed scope before admitting severity.
+**Correction:** search for counterevidence across the reviewed scope before admitting severity.
 
 ## 6. Conversion folklore
 

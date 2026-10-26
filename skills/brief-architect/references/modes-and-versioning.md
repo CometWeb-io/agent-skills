@@ -16,7 +16,7 @@ Treat a materially changed brief as a new contract version. Preserve:
 
 `brief_id`, `brief_version`, `supersedes_brief_id`, `material_changes`, `requires_downstream_revalidation`.
 
-A change is material when it can alter claims, audience, evidence policy, scope, acceptance, protected invariants, or a consequential decision. Cosmetic wording changes do not force downstream revalidation.
+A change is material when it can alter claims, audience, evidence policy, scope, acceptance, protected invariants, or a consequential decision. The delta kernel compares the stored contract values; even a wording edit inside a tracked field can return CHANGED. It does not infer cosmetic equivalence. Keep display-only formatting outside those fields, and do not silently override a reported delta as stylistic.
 
 ## Decision rule
 

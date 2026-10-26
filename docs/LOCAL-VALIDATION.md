@@ -1,7 +1,9 @@
-# Lokalna walidacja bez GitHub Actions
+# Lokalna walidacja i dowody platformowe
 
 Uruchamiaj w pełnym, zaufanym checkoutcie repozytorium. Skrypt nie włącza
 Actions, nie instaluje zależności, nie aktualizuje gałęzi i nie publikuje paczek.
+Opcjonalne `--platform-run` tylko odczytuje dowody z GitHub Actions przez
+zalogowany CLI `gh`; nie uruchamia workflow ani zapytań do modeli.
 Testy repo są wykonywalnym kodem: ten runner nie jest sandboxem ani kontrolą
 bezpieczeństwa dla nieznanych repozytoriów.
 
@@ -30,7 +32,7 @@ Po timeoutcie lub błędzie uruchomienia dalsze kontrole nie są wykonywane.
 Runner sprawdza składnię Pythona w pamięci, rejestr, alias orkiestratora,
 strukturalną kompatybilność, wygenerowane adaptery w trybie `--check`, routing,
 fixtures kontekstu, końcową kopertę CW-AIP oraz testy w `tooling/tests` i we
-wszystkich istniejących katalogach `skills/*/tests`.
+wszystkich istniejących katalogach `skills/*/tests` oraz `resources/context/tests`.
 
 Nie generuje adapterów przed ich sprawdzeniem. Błąd rozjazdu trzeba rozwiązać
 osobną, przejrzaną zmianą. Nie uruchamia instalatora, benchmarku modeli ani
@@ -41,14 +43,19 @@ Pytest używa `--import-mode=importlib`, żeby pliki o tej samej nazwie w różn
 pakietach nie kolidowały podczas importu. Runner czyści `PYTEST_ADDOPTS` i nadpisuje
 konfiguracyjne `addopts`, aby odziedziczony filtr `-k` nie pomijał testów po cichu.
 Pozostała konfiguracja pytest i pluginy środowiska nadal obowiązują.
+Plugin `tooling/pytest_inventory.py` zapisuje `collection.json` przed filtrowaniem
+przez `-k`, `-m` lub hooki innych pluginów. Deselekcja, brak manifestu, duplikaty
+i różnica między zebranymi testami a węzłami JUnit blokują PASS. Manifest używa
+kodowania identyfikatorów JUnit z zablokowanej w `uv.lock` wersji pytest.
 
 ## Wyniki i kody wyjścia
 
-W katalogu wyniku są osobne logi, `junit.xml` oraz `report.json`.
+W katalogu wyniku są osobne logi, `collection.json`, `junit.xml` oraz `report.json`.
 
-- `0`: wszystkie zaplanowane kontrole zakończyły się powodzeniem, JUnit zawiera
-  testy bez błędów i pominięć, a źródła nie zmieniły się podczas przebiegu.
-- `1`: co najmniej jedna kontrola nie przeszła, test został pominięty, raport testów
+- `0`: wszystkie zaplanowane kontrole zakończyły się powodzeniem, testy nie mają
+  błędów, każde odroczenie platformowe ma zweryfikowany wynik natywny, a źródła
+  nie zmieniły się podczas przebiegu.
+- `1`: co najmniej jedna kontrola nie przeszła, pominięcie nie ma wymaganego dowodu, raport testów
   jest nieważny, nastąpił timeout/przerwanie albo zmieniły się źródła.
 - `2`: nie można rozpocząć kontroli, np. checkout jest niepełny, występuje konflikt
   Git, ścieżka prowadzi przez symlink lub katalog wynikowy już istnieje.
@@ -56,8 +63,51 @@ W katalogu wyniku są osobne logi, `junit.xml` oraz `report.json`.
 `--plan` z kodem `0` oznacza wyłącznie przygotowanie planu, nie zaliczenie kontroli.
 Status i lista `not_run` rozróżniają testy niewykonane od nieudanych. Suma testów
 pochodzi z węzłów `testcase` w JUnit, nie z deklarowanej liczby w nagłówku XML.
-Celowe xfail/skip także zatrzymują pełny wynik pozytywny; przejrzyj ich przyczynę,
-nie usuwaj wymaganych kontroli, żeby uzyskać zielony wynik.
+`failed` oznacza błąd kontroli, nieprawidłowy raport lub odrzucony dowód.
+`incomplete` oznacza brak wykonania: np. wymagany inny system, brak CLI lub
+ograniczenie uprawnień. Oba statusy mają kod wyjścia 1. Xfail, nieznany skip
+i brak możliwości wykonania testu na bieżącej platformie nadal blokują PASS.
+
+## Testy wymagające innego systemu
+
+Lista w `tooling/platform_evidence.py` wiąże identyfikatory konkretnych testów
+z Windows lub POSIX. Treść powodu skip nie stanowi uprawnienia do odroczenia.
+Zarejestrowany test pominięty na właściwej platformie pozostaje luką środowiska:
+np. test SUID pominięty na macOS nie może zostać zamknięty wynikiem z Linuksa.
+
+Na czystym checkoutcie po zakończeniu Platform matrix dla tego samego SHA:
+
+```bash
+uv run --frozen python tooling/validate_local.py --trusted-checkout \
+  --output ../validation-with-native-evidence --timeout 900 \
+  --platform-run "$PLATFORM_RUN_ID"
+```
+
+`--platform-run` przyjmuje do ośmiu identyfikatorów przebiegów. Weryfikator
+odczytuje wyłącznie `CometWeb-io/agent-skills` na `github.com`. Wymaga zakończonego
+udanego zaufanego workflow, właściwego natywnego joba i oryginalnego ZIP-u z
+JUnit, manifestem kolekcji, receipt v2 i logiem. Sprawdza skrót ZIP z API GitHub, nieprzeterminowanie,
+próbę uruchomienia, SHA, odcisk zawartości źródeł oraz wersję major/minor Pythona.
+Job musi mieć ten sam run, próbę i SHA, stan `completed`, udane kroki producenta
+i żadnego nieudanego kroku. Akceptowana jest wyłącznie pula GitHub Actions
+(`runner_group_id=0`, `runner_group_name=GitHub Actions`) z właściwą etykietą OS;
+runner self-hosted nie jest obsługiwany. Nieznane elementy i statusy JUnit,
+błędy poza testami oraz niepełna kolekcja są odrzucane. Starsze receipts v1
+wymagają nowego przebiegu, nie mają zgodności wstecznej z tym kontraktem.
+Sam zielony job, ręczny JSON, stary SHA, inny test, skip/xfail zamiast wykonania,
+WSL zamiast Windows i zmienione źródła nie wystarczają. Workflow przełącza checkout
+na rzeczywisty head PR, a nie syntetyczny merge. Artefakty zachowuje przez 30 dni.
+
+Surowy lokalny JUnit zachowuje pominięcia. Raport v2 zawiera ich klasyfikację,
+wymagane platformy i powiązania z pobranymi artefaktami. Dopiero zweryfikowane
+pokrycie daje krokowi status `passed_with_platform_evidence`; brak dowodu daje
+`platform_evidence_required`, a cały raport pozostaje `incomplete`. Błędu testu
+nie wolno zamienić w odroczenie ani przykryć cudzym PASS. ZIP-y i metadane
+pochodzenia trafiają do katalogu wyniku; nie są wypakowywane ani wykonywane.
+
+Zaufaniem są przejrzany kod danego commita i pochodzenie w GitHub Actions.
+Skróty wykrywają zmianę artefaktu, ale nie dowodzą uczciwości nieprzejrzanego kodu
+testu lub workflow. Wynik nie nadaje uprawnień do merge ani publikacji.
 
 ## Powiązanie wyniku ze źródłami
 
