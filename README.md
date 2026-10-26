@@ -46,15 +46,18 @@ For a small local job with a known result, start with the
 [QA → repair → retest example](examples/qa-repair-retest/README.md).
 It uses synthetic data and requires no account, model API or new package manager.
 
-Clone once, then run the installer for your host. Installers **symlink** each
+Start with the native model. Add a skill when the task needs its maintained
+resources, executable checks or a formal receiving contract. There is no default
+multi-skill core. For an optional specialist, clone once and install only the
+package relevant to your task. Installers **symlink** each
 package from `skills/` into the host's skills directory, so keep the clone where
 it is; `git pull` updates every installed skill in place.
 
 ```bash
 git clone https://github.com/CometWeb-io/agent-skills.git
 cd agent-skills
-./scripts/install-claude.sh --skill evidence-researcher --skill product-operator
-# Other hosts: install-cursor.sh, install-codex.sh, install-qwen.sh,
+./scripts/install-codex.sh --skill web-app-auditor
+# Other hosts: install-cursor.sh, install-claude.sh, install-qwen.sh,
 # install-qoder.sh, install-lingma.sh. Omit --skill to install every package.
 # ./scripts/install-all.sh explicitly installs into all six hosts.
 ```
@@ -76,17 +79,19 @@ claude plugin marketplace add CometWeb-io/agent-skills
 claude plugin install cometweb-agent-skills@cometweb-agent-skills
 ```
 
-Then ask your assistant:
+For the running example, ask your assistant:
 
 ```text
-Use product-operator to compare this repo with the roadmap.
-Give me the three most useful next actions and how to verify each one.
+Inspect my disposable demo at http://127.0.0.1:8765.
+Reproduce the incorrect recommendation, repair only the local copy,
+and verify the fix, saved result after reload and test-data cleanup.
+Report what you actually checked and what remains untested.
 ```
 
 ## Pick a starting point
 
-Use the [owner and handoff map](docs/SKILL-MAP.md) to choose a task owner,
-follow its output contract, and install a small core plus the needed domain skills.
+Use the [owner and handoff map](docs/SKILL-MAP.md) to choose the smallest
+task-specific selection. Load a formal output contract when its receiver needs it.
 
 | You need to… | Start with | You get |
 | --- | --- | --- |

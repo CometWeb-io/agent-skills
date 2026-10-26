@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -135,6 +136,28 @@ def test_cursor_key_sets_come_from_hosts_json() -> None:
 def test_stage_payload_carries_the_plugin_rule(tmp_path: Path) -> None:
     stage = host_smoke.stage_payload(tmp_path / "stage")
     assert (stage / "rules" / "cometweb-agent-skills.mdc").is_file()
+
+
+def test_staged_context_validator_runs_without_private_overlays(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    shutil.copytree(ROOT / "resources", source / "resources", ignore=host_smoke.IGNORE)
+    refs = source / "resources/context/references"
+    (refs / "source-registry.local.json").write_text('{"private": true}', encoding="utf-8")
+    (refs / "repos.local.txt").write_text("private binding", encoding="utf-8")
+    stage = host_smoke.stage_payload(tmp_path / "stage", source)
+    assert not list(stage.rglob("*.local.json"))
+    assert not list(stage.rglob("*.local.txt"))
+    data = json.loads((ROOT / "fixtures/cwaip-v2/conformance/valid/context-portfolio-governance.json").read_text())
+    payload = tmp_path / "context.json"
+    payload.write_text(json.dumps(data["payload"]), encoding="utf-8")
+    validator = stage / "resources/context/scripts/validate_context_envelope.py"
+    result = subprocess.run([sys.executable, str(validator), str(payload)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    data["payload"]["facts"][0]["source_ids"] = ["missing-source"]
+    payload.write_text(json.dumps(data["payload"]), encoding="utf-8")
+    result = subprocess.run([sys.executable, str(validator), str(payload)], capture_output=True, text=True)
+    assert result.returncode != 0
+    assert "unknown source_ids" in result.stderr
 
 
 def broken_cursor_copy(tmp_path: Path) -> Path:
