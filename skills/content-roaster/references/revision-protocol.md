@@ -17,7 +17,7 @@ For every prior finding:
 1. recover the original observation and verification contract;
 2. inspect the exact changed surface;
 3. rerun the original success condition where possible;
-4. rerun the Defender pass for new counterevidence;
+4. search the revised scope for new counterevidence;
 5. classify the finding.
 
 Every resolution-ledger row must also record `verification_status` (`PASSED`, `PARTIAL`, `FAILED`, or `NOT_RUN`) and `change_basis` (`ARTIFACT_CHANGED`, `SCOPE_CHANGED`, `JUDGMENT_CORRECTED`, `MIXED`, or `UNKNOWN`). `RESOLVED` requires `verification_status=PASSED`; `NOT_ASSESSABLE` requires `NOT_RUN`.

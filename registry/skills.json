@@ -119,7 +119,7 @@
     },
     {
       "id": "ai-humanize",
-      "version": "2.6.5",
+      "version": "2.7.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -427,12 +427,12 @@
     },
     {
       "id": "brief-architect",
-      "version": "1.8.1",
+      "version": "1.9.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Turn an ambiguous request for a content, product requirements (PRD), research, sales, documentation, or knowledge artifact into an explicit execution contract with audience, objective, evidence policy, constraints, acceptance criteria, risks, and handoff fields. Do not use to write the final artifact, run broad product discovery, make a consequential decision, or replace product-operator, evidence-researcher, content-writer, or ai-council. Use when the task is underspecified, expensive to redo, spans multiple specialists, or needs a durable brief before writing/research.",
+      "description": "Create or revise a durable ArtifactBrief for a formal handoff, repeatable acceptance contract, multi-specialist artifact or explicitly requested PRD. Preserve evidence policy, protected invariants, unresolved material choices and brief/rubric identity. Do not use for ordinary clarification, a clear request to produce the artifact, general planning, product discovery, candidate scoring or a consequential decision. Use when the user requests a brief before execution or a downstream receiver requires this contract.",
       "explicit_only": false,
       "owns": [
         "artifact brief and execution contract",
@@ -554,111 +554,6 @@
         [
           10,
           "\\bbrief\\w*\\b.{0,40}\\b(?:odbiorc|grup\\w* docelow|kryteri\\w* (?:odbioru|akceptacji|sukcesu))"
-        ]
-      ],
-      "maturity_stage": "DEVELOPMENT",
-      "publication_channel": "EXPERIMENTAL"
-    },
-    {
-      "id": "cometweb-context",
-      "version": "1.6.1",
-      "lifecycle": "active",
-      "visibility": "public_canonical",
-      "tier": "foundation",
-      "alias_of": null,
-      "description": "Builds a fresh, provenance-aware context snapshot for CometWeb and its active projects before product, portfolio, strategy, GTM, pricing, outreach, meeting, content, or advisory work. Do not use for simple conceptual questions or when one direct authoritative source is sufficient. Use when the request depends on current state across GitHub/repositories, Notion, CometWeb Insight, CRM/communications, files, live CometWeb surfaces, or multiple CometWeb projects such as Insight, CometBase, CometPen, CometLens/Extensions, cometweb.io, agent-skills, RankProof, and research. Also use for \"what changed\", full/portfolio refreshes, meeting prep, and as a preflight for Product Operator, AI Council, Repo to Roadmap, or Skill Orchestrator. Include First Principles governance for material product/GTM/pricing/portfolio decisions.",
-      "explicit_only": false,
-      "owns": [
-        "context snapshot",
-        "provenance",
-        "conflicts/gaps",
-        "ContextEnvelope",
-        "public claim gate"
-      ],
-      "does_not_own": [
-        "evidence packs",
-        "domain decisions",
-        "release gates",
-        "outbound copy"
-      ],
-      "trigger_examples": [
-        "Co zmieniło się w Insight od ostatniego review?",
-        "Odśwież kontekst przed weekly boardroom",
-        "Przygotuj kontekst na spotkanie z design partnerem"
-      ],
-      "negative_trigger_examples": [
-        "Ile gwiazdek ma MaciejZet/agent-skills na GitHub?",
-        "Czy claim X jest prawdziwy? Zrób Evidence Pack",
-        "Przepuść decyzję o cenie przez Council"
-      ],
-      "inputs": [
-        "user goal",
-        "optional baseline ContextEnvelope"
-      ],
-      "outputs": [
-        "ContextEnvelope",
-        "human status report"
-      ],
-      "dependencies": [],
-      "compatible_hosts": [
-        "cursor",
-        "claude-code",
-        "openai-codex",
-        "chatgpt"
-      ],
-      "execution_capabilities": [
-        "read-only retrieval",
-        "local scripts"
-      ],
-      "eval_suite": "evals/behavior/cometweb-context",
-      "routing_signals": [
-        [
-          10,
-          "\\bwhere\\b.{0,40}\\bcometweb\\b.{0,60}\\bstands?\\b|\\bcometweb\\b.{0,40}\\b(?:stands?|status)\\b"
-        ],
-        [
-          10,
-          "\\b(?:up.to.date|current|fresh|latest)\\b.{0,30}\\b(?:picture|overview|state|status|snapshot|view)\\b.{0,40}\\bcometweb\\b|\\bcometweb\\b.{0,20}\\b(?:products|projects|portfolio)\\b.{0,40}\\b(?:state|status|picture|overview|snapshot|context)"
-        ],
-        [
-          11,
-          "\\bwhat(?:'s| has| have)? changed\\b.{0,40}\\b(?:cometweb|insight|cometbase|cometpen|cometlens|rankproof)\\b|\\bco (?:sie )?zmienil\\w*(?: sie)?\\b.{0,60}\\b(?:cometweb|insight|cometbase|cometpen|cometlens)\\b"
-        ],
-        [
-          12,
-          "\\b(?:refresh|update|rebuild|pull|gather|build)\\w*\\b.{0,30}\\b(?:the )?cometweb (?:context|state|snapshot)|\\bcometweb\\b.{0,40}\\b(?:context snapshot|current state|where (?:it|we) stand)"
-        ],
-        [
-          12,
-          "od[sś]wie[zż].*kontekst|refresh context|context envelope|przygotuj kontekst"
-        ],
-        [
-          11,
-          "aktualny stan\\b.{0,30}\\b(?:insight|cometweb|cometbase|cometpen|cometlens|notion|repo|projekt|produkt|portfel)|potrzebuj[eę] kontekstu|contextenvelope|context-only"
-        ],
-        [
-          10,
-          "kontekst.*(spotkani|review|insight|boardroom|cometweb)|context snapshot|stan na "
-        ],
-        [
-          8,
-          "delta baseline|authority_gap|provenance-aware context"
-        ],
-        [
-          6,
-          "context gateway|minimal.?source"
-        ],
-        [
-          11,
-          "co (?:zmieni[łl]o si[eę]|si[eę] zmieni[łl]o) w (?:insight|cometweb)\\b"
-        ],
-        [
-          11,
-          "what changed (in|across|on) (cometweb|insight|cometbase|cometpen)\\b"
-        ],
-        [
-          10,
-          "\\b(?:snapshot|migawk|stan)\\w* kontekstu\\b|\\bkontekst\\w*\\b.{0,30}\\b(?:cometpen|cometbase|cometlens|rankproof|agent-skills)\\b"
         ]
       ],
       "maturity_stage": "DEVELOPMENT",
@@ -950,7 +845,7 @@
     },
     {
       "id": "content-roaster",
-      "version": "6.1.7",
+      "version": "6.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -1354,7 +1249,7 @@
     },
     {
       "id": "ebook-publisher",
-      "version": "1.0.6",
+      "version": "1.0.7",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2123,7 +2018,7 @@
     },
     {
       "id": "quality-loop-operator",
-      "version": "1.7.7",
+      "version": "1.8.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -2239,7 +2134,7 @@
     },
     {
       "id": "release-readiness",
-      "version": "1.3.4",
+      "version": "1.4.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -3315,7 +3210,7 @@
     },
     {
       "id": "skill-orchestrator",
-      "version": "1.4.3",
+      "version": "1.5.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",
@@ -3349,9 +3244,7 @@
         "envelopes",
         "workflow result"
       ],
-      "dependencies": [
-        "cometweb-context?"
-      ],
+      "dependencies": [],
       "compatible_hosts": [
         "cursor",
         "claude-code",
@@ -3524,7 +3417,7 @@
     },
     {
       "id": "web-app-auditor",
-      "version": "1.5.1",
+      "version": "1.6.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",

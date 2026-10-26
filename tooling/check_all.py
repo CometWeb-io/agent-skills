@@ -67,6 +67,7 @@ def _python(*args: str) -> tuple[str, ...]:
 # This list is what --fast adds; a full run leaves them out of the pytest gate
 # (see Gate.defer) so they are not collected and run twice.
 PACKAGE_TESTS = (
+    "test_context_resources.py",
     "test_skill_eval_harnesses.py",
     "test_untrusted_content_rules.py",
     "test_front_door_rules.py",

@@ -24,8 +24,8 @@ i procedura publikacji przez kopiowanie drzewa już nie obowiązują.
 realne wartości leżą obok w nieśledzonych plikach `*.local.json` / `*.local.txt`, wczytywanych jako
 nakładka:
 
-- `skills/cometweb-context/references/repos.local.txt` uzupełnia `repos.txt`
-- `skills/cometweb-context/references/source-registry.local.json` nadpisuje wiązania w
+- `resources/context/references/repos.local.txt` uzupełnia `repos.txt`
+- `resources/context/references/source-registry.local.json` nadpisuje wiązania w
   `source-registry.json`
 
 Nie commituj tych plików i nie wpisuj realnych ścieżek do wersji śledzonych. Bramka
@@ -34,6 +34,10 @@ z założenia niepublikowany i nie jest zgłaszany. Przed wydaniem uruchom też
 `python3 tooling/public_safety.py --history`.
 
 Publikacją jest przejrzany pull request do tego repozytorium; nie ma osobnego narzędzia eksportu ani lustra.
+
+`cometweb-context` jest wycofany jako skill. Nie przywracaj jego frontu, wpisu rejestru,
+adaptera ani routingu. Mapa źródeł, helpery i kontrakt ContextEnvelope są w
+`resources/context/`; formalna walidacja CW-AIP pozostaje obowiązująca.
 
 Odróżniaj lokalny wynik testów od GitHub Actions, obiekt drzewa od commita oraz commit od
 aktualizacji gałęzi. Przy blokadzie narzędzia podaj dokładny stan; nie ogłaszaj powodzenia bez

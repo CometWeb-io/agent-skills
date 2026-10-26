@@ -1,5 +1,5 @@
 {
-  "suite_version": "1.0.0",
+  "suite_version": "1.1.0",
   "description": "Cross-skill implicit routing eval cases. Run manually or in CI structure checks; LLM routing evals are operator-run.",
   "cases": [
     {
@@ -867,54 +867,23 @@
       "reason": "Default orchestrator when multiagent not requested"
     },
     {
-      "id": "context-delta-insight",
-      "prompt": "Odśwież kontekst: co zmieniło się w Insight od ostatniego review?",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [
-        "product-operator"
-      ],
-      "must_not_trigger": [
-        "ai-council",
-        "release-readiness"
-      ],
-      "reason": "Multi-source delta context refresh, not decision or RC gate"
-    },
-    {
       "id": "context-not-single-github",
       "prompt": "Fact-check: ile gwiazdek ma MaciejZet/agent-skills? Jedno pytanie, bez pełnego context gateway.",
       "lang": "pl",
       "expected_primary_skill": "evidence-researcher",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
-        "cometweb-context",
         "ai-council",
         "skill-orchestrator"
       ],
       "reason": "Single direct source question must not run full context gateway; light lookup/research"
     },
     {
-      "id": "context-meeting-prep",
-      "prompt": "Przygotuj kontekst na jutrzejsze spotkanie (calendar + CRM), bez pełnego design-partner workflow",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [
-        "design-partner-finder"
-      ],
-      "must_not_trigger": [
-        "ai-council",
-        "design-partner-finder"
-      ],
-      "reason": "Meeting prep context gateway"
-    },
-    {
       "id": "context-vs-evidence-claim",
       "prompt": "Czy claim o wzroście MRR jest prawdziwy? Zrób Evidence Pack.",
       "lang": "pl",
       "expected_primary_skill": "evidence-researcher",
-      "allowed_secondary_skills": [
-        "cometweb-context"
-      ],
+      "allowed_secondary_skills": [],
       "must_not_trigger": [
         "ai-council"
       ],
@@ -925,41 +894,11 @@
       "prompt": "Zrób Evidence Pack: czy nasze claimy pricing na landing page są aktualne?",
       "lang": "pl",
       "expected_primary_skill": "evidence-researcher",
-      "allowed_secondary_skills": [
-        "cometweb-context"
-      ],
-      "must_not_trigger": [
-        "ai-council",
-        "cometweb-context"
-      ],
-      "reason": "Explicit Evidence Pack is ER, not context gateway"
-    },
-    {
-      "id": "boundary-context-refresh-only",
-      "prompt": "Odśwież kontekst CometWeb przed weekly — tylko ContextEnvelope, bez decyzji",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [
-        "product-operator"
-      ],
-      "must_not_trigger": [
-        "ai-council",
-        "evidence-researcher"
-      ],
-      "reason": "Explicit context-only refresh"
-    },
-    {
-      "id": "boundary-context-not-council",
-      "prompt": "Jaki jest aktualny stan Insight i Notion decisions? Potrzebuję kontekstu / ContextEnvelope.",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [
-        "product-operator"
-      ],
+      "allowed_secondary_skills": [],
       "must_not_trigger": [
         "ai-council"
       ],
-      "reason": "State snapshot is context, not Council"
+      "reason": "Explicit Evidence Pack is ER, not context gateway"
     },
     {
       "id": "boundary-operator-not-roadmap",
@@ -1157,24 +1096,9 @@
       "expected_primary_skill": "ai-humanize",
       "allowed_secondary_skills": [],
       "must_not_trigger": [
-        "cometweb-context",
         "ai-council"
       ],
       "reason": "Prose humanize"
-    },
-    {
-      "id": "boundary-context-meeting",
-      "prompt": "Przygotuj kontekst na jutrzejsze spotkanie z klientem — calendar i CRM",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [
-        "customer-ops"
-      ],
-      "must_not_trigger": [
-        "ai-council",
-        "design-partner-finder"
-      ],
-      "reason": "Meeting context gateway"
     },
     {
       "id": "boundary-living-decision",
@@ -1198,19 +1122,6 @@
       ],
       "must_not_trigger": [],
       "reason": "Audit then release flow"
-    },
-    {
-      "id": "boundary-context-delta-product",
-      "prompt": "Odśwież kontekst produktu: delta Insight vs last ContextEnvelope baseline",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [
-        "product-operator"
-      ],
-      "must_not_trigger": [
-        "ai-council"
-      ],
-      "reason": "Context delta with baseline"
     },
     {
       "id": "longform-report-through-manuscript-not-release-gate",
@@ -2205,16 +2116,6 @@
       "reason": "Claim verification against primary sources, not the decision itself"
     },
     {
-      "id": "context-what-changed-insight",
-      "prompt": "What changed in CometWeb Insight this week?",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "product-operator"
-      ],
-      "reason": "Current-state delta across CometWeb sources"
-    },
-    {
       "id": "longform-canonical-manuscript-regenerate",
       "prompt": "Refresh the 2024 handbook and regenerate the derived DOCX and PDF from the canonical manuscript.",
       "expected_primary_skill": "longform-publisher",
@@ -2603,9 +2504,7 @@
       "lang": "pl",
       "expected_primary_skill": null,
       "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "cometweb-context"
-      ],
+      "must_not_trigger": [],
       "reason": "'aktualny stan' without a CometWeb project is not a context snapshot"
     },
     {
@@ -3335,51 +3234,6 @@
       "reason": "Execution contract for an expensive-to-redo artifact"
     },
     {
-      "id": "pl-cometweb-context-1",
-      "prompt": "Odśwież mi kontekst CometBase przed jutrzejszą rozmową z partnerem.",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "design-partner-finder"
-      ],
-      "reason": "Context snapshot before a meeting"
-    },
-    {
-      "id": "pl-cometweb-context-2",
-      "prompt": "Co się zmieniło w Insight od zeszłego tygodnia? Tylko stan, bez rekomendacji.",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "product-operator"
-      ],
-      "reason": "State delta only, no prioritization"
-    },
-    {
-      "id": "pl-cometweb-context-3",
-      "prompt": "Zbierz aktualny stan wszystkich projektów CometWeb z GitHuba i Notion, zanim zaczniemy planowanie.",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "portfolio-operator",
-        "repo-to-roadmap"
-      ],
-      "reason": "Preflight context across projects, before planning"
-    },
-    {
-      "id": "pl-cometweb-context-4",
-      "prompt": "Daj mi świeży snapshot kontekstu CometPen, potrzebny do decyzji o cenniku.",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "ai-council"
-      ],
-      "reason": "Context preflight for a later decision, not the decision"
-    },
-    {
       "id": "pl-competitive-intelligence-1",
       "prompt": "Śledź zmiany u konkurencji co tydzień i daj znać, jak ktoś ruszy cennik.",
       "lang": "pl",
@@ -3396,9 +3250,7 @@
       "lang": "pl",
       "expected_primary_skill": "competitive-intelligence",
       "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "cometweb-context"
-      ],
+      "must_not_trigger": [],
       "reason": "Delta since prior competitor scan"
     },
     {
@@ -3878,9 +3730,7 @@
       "lang": "pl",
       "expected_primary_skill": "product-operator",
       "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "cometweb-context"
-      ],
+      "must_not_trigger": [],
       "reason": "Weekly review delta and sprint blockers"
     },
     {
@@ -4794,17 +4644,6 @@
       "reason": "Brief before commissioning"
     },
     {
-      "id": "pl-cometweb-context-5",
-      "prompt": "Przygotuj kontekst o CometLens na spotkanie z inwestorem.",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "design-partner-finder"
-      ],
-      "reason": "Meeting context preflight"
-    },
-    {
       "id": "pl-content-roaster-5",
       "prompt": "Rozjedź nasz nowy newsletter – co brzmi jak pusta obietnica?",
       "lang": "pl",
@@ -5430,33 +5269,6 @@
       "prompt": "Draft a brief for the partner guide so the writer and the researcher work from the same contract.",
       "lang": "en",
       "expected_primary_skill": "brief-architect",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [],
-      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
-    },
-    {
-      "id": "r4-cometweb-context-1",
-      "prompt": "Refresh the CometWeb context: open PRs, Notion tasks and what's live on cometweb.io.",
-      "lang": "en",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [],
-      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
-    },
-    {
-      "id": "r4-cometweb-context-2",
-      "prompt": "Zbierz aktualny kontekst CometWeb przed spotkaniem: Insight, CometPen, repozytoria.",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [],
-      "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
-    },
-    {
-      "id": "r4-cometweb-context-3",
-      "prompt": "What changed across the CometWeb projects since Monday?",
-      "lang": "en",
-      "expected_primary_skill": "cometweb-context",
       "allowed_secondary_skills": [],
       "must_not_trigger": [],
       "reason": "Round-4 tune prompt (fresh phrasing written for signal work; the frozen holdout was never read per case)"
@@ -6361,24 +6173,6 @@
       "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
     },
     {
-      "id": "r4b-cometweb-context-1",
-      "prompt": "I need an up-to-date picture of all CometWeb products before the planning session.",
-      "lang": "en",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [],
-      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
-    },
-    {
-      "id": "r4b-cometweb-context-2",
-      "prompt": "Jaki jest aktualny stan CometBase i CometLens? Zbierz kontekst.",
-      "lang": "pl",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [],
-      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
-    },
-    {
       "id": "r4b-competitive-intelligence-1",
       "prompt": "Did any of our competitors change their free tier this quarter? Track it going forward.",
       "lang": "en",
@@ -6963,17 +6757,6 @@
       "allowed_secondary_skills": [],
       "must_not_trigger": [
         "content-writer"
-      ],
-      "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
-    },
-    {
-      "id": "r4c-cometweb-context-1",
-      "prompt": "Before the roadmap meeting, give me where every CometWeb repo and Notion board stands today.",
-      "lang": "en",
-      "expected_primary_skill": "cometweb-context",
-      "allowed_secondary_skills": [],
-      "must_not_trigger": [
-        "product-operator"
       ],
       "reason": "Round-4 validation-then-tune prompt: measured before the signal change it motivated"
     },

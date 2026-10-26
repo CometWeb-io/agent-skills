@@ -202,7 +202,7 @@ def semantic_payload(envelope_type: str, payload: dict[str, Any], sensitivity: s
 
     if envelope_type == "ContextEnvelope":
         module = local_validate(
-            ROOT / "skills" / "cometweb-context" / "scripts" / "validate_context_envelope.py",
+            ROOT / "resources" / "context" / "scripts" / "validate_context_envelope.py",
             "_cometweb_context_envelope_validator",
             payload,
         )

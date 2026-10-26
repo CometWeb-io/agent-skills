@@ -1,7 +1,7 @@
 {
   "schema": "cometweb.skill-maturity/v1",
   "skill": "ai-humanize",
-  "version": "2.6.5",
+  "version": "2.7.0",
   "stage": "DEVELOPMENT",
   "publication": "EXPERIMENTAL",
   "task_qualification": "not_established"

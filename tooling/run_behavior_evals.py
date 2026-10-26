@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Executable deterministic behavior evals for every skill that ships a script (CI-gated).
 
-Two suite shapes live under evals/behavior/<skill>/suite.json:
+Two suite shapes are checked:
 
-- cometweb-context keeps its assertion suite: every assertion string maps to a
+- resources/context/evals/suite.json keeps the context helper assertion suite: every assertion string maps to a
   real handler below. No pass-through theatre.
-- Every other skill has an offline command suite (schema
+- Every skill has an offline command suite under evals/behavior/<skill>/suite.json (schema
   `cometweb.behavior-suite/v1`): each case runs one of the skill's own scripts
   the way its references tell a user to, and pins what comes back -- the exit
   code plus exact JSON values or output text. A script the references document
@@ -46,7 +46,7 @@ SKILLS = ROOT / "skills"
 JOBS = min(8, os.cpu_count() or 2)
 BEHAVIOR = ROOT / "evals" / "behavior"
 COMMAND_SCHEMA = "cometweb.behavior-suite/v1"
-ASSERTION_SUITE_SKILL = "cometweb-context"
+CONTEXT_RESOURCES = ROOT / "resources" / "context"
 MIN_COMMAND_CASES = 3
 CASE_KINDS = {"accept", "refuse", "boundary"}
 EXPECT_KEYS = {"exit_code", "json", "json_len", "stdout_contains", "stdout_absent", "stderr_contains"}
@@ -65,14 +65,14 @@ spec.loader.exec_module(module)
 print(json.dumps(getattr(module, name)(*json.load(sys.stdin)), ensure_ascii=False, sort_keys=True))
 """
 CASE_TIMEOUT = 60
-SUITE = ROOT / "evals" / "behavior" / "cometweb-context" / "suite.json"
-PLANNER = ROOT / "skills" / "cometweb-context" / "scripts" / "context_plan.py"
-VALIDATOR = ROOT / "skills" / "cometweb-context" / "scripts" / "validate_context_envelope.py"
-SNAPSHOT = ROOT / "skills" / "cometweb-context" / "scripts" / "repo_snapshot.py"
+SUITE = CONTEXT_RESOURCES / "evals" / "suite.json"
+PLANNER = CONTEXT_RESOURCES / "scripts" / "context_plan.py"
+VALIDATOR = CONTEXT_RESOURCES / "scripts" / "validate_context_envelope.py"
+SNAPSHOT = CONTEXT_RESOURCES / "scripts" / "repo_snapshot.py"
 ROUTING = ROOT / "tooling" / "run_routing_evals.py"
-SKILL_MD = ROOT / "skills" / "cometweb-context" / "SKILL.md"
-SOURCE_REGISTRY = ROOT / "skills" / "cometweb-context" / "references" / "source-registry.json"
-SECURITY_MD = ROOT / "skills" / "cometweb-context" / "references" / "security-and-provenance.md"
+CONTEXT_README = CONTEXT_RESOURCES / "README.md"
+SOURCE_REGISTRY = CONTEXT_RESOURCES / "references" / "source-registry.json"
+SECURITY_MD = CONTEXT_RESOURCES / "references" / "security-and-provenance.md"
 
 Handler = Callable[[str, dict, Any, Any, Any], None]
 
@@ -193,9 +193,9 @@ def assert_no_research_verdict(cid: str, case: dict, planner, routing, validate_
     predicted = routing.classify(case["prompt"])
     if predicted != "evidence-researcher":
         fail(f"{cid}: expected handoff to evidence-researcher, got {predicted!r}")
-    skill = SKILL_MD.read_text(encoding="utf-8").casefold()
+    skill = CONTEXT_README.read_text(encoding="utf-8").casefold()
     if "evidence-researcher" not in skill:
-        fail(f"{cid}: SKILL.md must hand off claim truth to evidence-researcher")
+        fail(f"{cid}: Context resource README must defer claim truth to evidence-researcher")
 
 
 def assert_keep_unresolved(cid: str, case: dict, planner, routing, validate_mod) -> None:
@@ -307,7 +307,7 @@ def assert_authority_over_recency(cid: str, case: dict, planner, routing, valida
         ],
     )
     validate_mod.validate(data)
-    doc = (ROOT / "skills/cometweb-context/references/source-registry.md").read_text(encoding="utf-8")
+    doc = (ROOT / "resources/context/references/source-registry.md").read_text(encoding="utf-8")
     if "freshness" not in doc.casefold() or "authority" not in doc.casefold():
         fail(f"{cid}: source-registry.md must document authority vs freshness")
 
@@ -328,9 +328,9 @@ def assert_blocked_public_claims(cid: str, case: dict, planner, routing, validat
 
 
 def assert_no_raw_confidential(cid: str, case: dict, planner, routing, validate_mod) -> None:
-    skill = SKILL_MD.read_text(encoding="utf-8")
+    skill = CONTEXT_README.read_text(encoding="utf-8")
     if "Nie wklejaj pełnych prywatnych" not in skill and "nie wklejaj" not in skill.casefold():
-        fail(f"{cid}: SKILL.md must forbid pasting full private documents")
+        fail(f"{cid}: Context resource README must forbid pasting full private documents")
     security = SECURITY_MD.read_text(encoding="utf-8").casefold()
     if "confidential" not in security:
         fail(f"{cid}: security-and-provenance.md must define confidential handling")
@@ -799,7 +799,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"OK: {args.skill} behavior suite ({count} cases{f', {len(skipped)} skipped' if skipped else ''})")
         return 1 if problems else 0
 
-    skills = [s for s in skills_with_scripts() if s != ASSERTION_SUITE_SKILL]
+    skills = skills_with_scripts()
     # Every case runs its script in its own temporary directory, so suites are
     # independent; they run side by side and report in skill order.
     with ThreadPoolExecutor(max_workers=JOBS) as pool:
@@ -822,7 +822,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"FAIL: {problem}", file=sys.stderr)
     if problems:
         return 1
-    print(f"OK: behavior evals ({assertion_cases} {ASSERTION_SUITE_SKILL} cases, {len(HANDLERS)} assertion "
+    print(f"OK: behavior evals ({assertion_cases} context-resource cases, {len(HANDLERS)} assertion "
           f"handlers; {total} command cases across {len(skills)} skills"
           f"{f', {len(skipped)} skipped for a missing RUNTIME.json package' if skipped else ''})")
     return 0

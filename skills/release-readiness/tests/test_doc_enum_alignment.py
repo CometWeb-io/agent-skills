@@ -28,7 +28,7 @@ def _engine():
     return module
 
 
-DOCS = [ROOT / "SKILL.md", ROOT / "references" / "manifest-schema.md"]
+DOCS = [ROOT / "references" / "manifest-schema.md"]
 
 
 # Only keys whose allowed values SKILL.md spells out inline. PROFILES and MODES
@@ -63,9 +63,9 @@ def test_declared_values_are_engine_values(enum_name: str, doc_key: str) -> None
     assert seen_a_declaration, f"no document declares allowed values for {doc_key}"
 
 
-def test_skill_md_lists_every_audience_and_commercial_value() -> None:
+def test_schema_lists_every_audience_and_commercial_value() -> None:
     engine = _engine()
-    text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+    text = (ROOT / "references/manifest-schema.md").read_text(encoding="utf-8")
     for enum_name in ("AUDIENCES", "COMMERCIAL"):
         for member in getattr(engine, enum_name):
             assert member in text, f"SKILL.md never mentions {enum_name} member {member!r}"

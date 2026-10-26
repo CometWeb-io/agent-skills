@@ -222,7 +222,7 @@ prefer a narrow `# noqa: <RULE>` with a comment saying why.
 
 Test modules must not import each other. Shared fixtures and builders live in
 `tooling/tests/_tooling_fixtures.py` and
-`skills/cometweb-context/tests/_context_fixtures.py`. The suite runs under
+`resources/context/tests/_context_fixtures.py`. The suite runs under
 pytest's `importlib` import mode, so test basenames do not have to be unique
 across skills — but a test module that imports a sibling will not collect.
 

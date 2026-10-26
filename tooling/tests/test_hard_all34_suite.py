@@ -13,7 +13,8 @@ def test_hard_corpus_covers_each_registered_skill_without_leaking_keys_to_reques
     suite=json.loads((ROOT/'evals/model/hard-all34-suite.json').read_text())
     cases=validate_suite(suite)
     ids={s['id'] for s in json.loads((ROOT/'registry/skills.json').read_text())['skills']}
-    assert len(ids)==34 and len(cases)==68
+    assert 'cometweb-context' not in ids
+    assert len(cases)==2*len(ids)
     assert {(c['skill'],c['kind']) for c in cases}=={(s,k) for s in ids for k in ('hard','negative_control')}
     for case in cases:
         baseline=prepare(case,'no_skill',ROOT,ROOT,3072)

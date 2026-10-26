@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0] - 2026-10-26
+
+- Reduce the entry point to candidate/scope admission, evidence limits, engine execution and a concise decision.
+- Remove the universal second red-team pass and mandatory long prose report; retain targeted failure-mode checks and machine output for receiving contracts or CI.
+- Align evidence examples with exact immutable identity and environment binding. Highlight scope warnings and the engine's inability to authenticate supplied evidence declarations.
+- Keep all engine/bootstrap Python code and manifest/schema contracts unchanged; no comparative model qualification is claimed.
+
 ## [1.3.4] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

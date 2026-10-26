@@ -10,7 +10,7 @@ This repository is the public canonical source: `CometWeb-io/agent-skills`.
 ./scripts/install-codex.sh
 ```
 
-Skills are discovered from `skills/*/SKILL.md` (includes `cometweb-context`).
+Skills are discovered from `skills/*/SKILL.md`. Standalone source maps and context helpers live in `resources/context/`; they are not installed or routed as a skill.
 Every host installer runs the same code path (`scripts/lib/install.sh`) and
 links each package as a symlink into the host's skills directory, so `git pull`
 in this clone updates installed skills and moving or deleting the clone breaks

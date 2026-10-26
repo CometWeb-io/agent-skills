@@ -112,8 +112,6 @@ def main() -> None:
             if not suite_path.is_file():
                 fail(f"{sid}: eval_suite path missing suite.json ({suite})")
         # Foundation context skill must keep executable behavior suite wired
-        if sid == "cometweb-context" and suite != "evals/behavior/cometweb-context":
-            fail(f"{sid}: eval_suite must be evals/behavior/cometweb-context")
 
         version_file = (skill_dir / "VERSION").read_text(encoding="utf-8").strip()
         if entry.get("version") != version_file:

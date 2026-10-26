@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.2.0] - 2026-10-26
+
+- Replace the default multi-stage review with a compact evidence checklist and concise findings.
+- Remove scripted reviewer roles and mandatory prose ledgers; retain counterevidence, scope, diagnosis and falsifiable repairs.
+- Keep the v6 machine contract and validators for callers that request structured output; ordinary prose needs no references.
+
 ## [6.1.7] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

@@ -9,7 +9,7 @@ markers.
 <!-- BEGIN cometweb-agent-skills routing -->
 ## CometWeb Agent Skills
 
-34 skills are installed from CometWeb-io/agent-skills.
+33 skills are installed from CometWeb-io/agent-skills.
 
 Prefer **one primary skill** per turn. For a multi-step workflow use
 `skill-orchestrator` (single thread) or `skill-orchestrator-multiagent` (one
@@ -26,7 +26,6 @@ run its deterministic scripts in `scripts/` when it ships them.
 | knowledge-artifact acceptance gates | `artifact-acceptance` |
 | benchmark and eval corpus design | `benchmark-curator` |
 | artifact brief and execution contract | `brief-architect` |
-| context snapshot; provenance; conflicts/gaps; ContextEnvelope | `cometweb-context` |
 | competitor watchlist; delta digest; normalized competitor state | `competitive-intelligence` |
 | initial competitor baseline; evidence-backed competitor dossier | `competitor-profiling` |
 | constructive content review; evidence-backed editorial findings | `content-reviewer` |

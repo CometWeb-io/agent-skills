@@ -1,6 +1,6 @@
 # ContextEnvelope v2
 
-Minimalny kontrakt przekazywany do kolejnego skilla lub orkiestratora.
+Formalny kontrakt, gdy wymaga go odbiorca/protokół albo użytkownik jawnie żąda tego artefaktu. Nie jest warunkiem zwykłej odpowiedzi ani każdego preflightu; nie buduj go wtedy w tle. Szczegóły doboru formatu: [README](../README.md). Poniższy schemat i walidacja pozostają obowiązujące dla formalnego pakietu.
 
 ```json
 {

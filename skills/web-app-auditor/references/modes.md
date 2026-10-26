@@ -1,173 +1,34 @@
-# Audit modes and depth
+# Requested audit depth and coverage
 
-Mode defines *what* is audited. Depth defines *how exhaustively*.
+Default depth is `recon`: the named job, primary safe interactions, evidence,
+cleanup and explicit limits. No exhaustive control inventory or JSON is required.
+Use a larger depth only when requested; scope and permissions still bound it.
 
-## Depth contract
+| Depth | Required coverage |
+|---|---|
+| `standard` | All primary actions, unique interaction/state patterns, form/validation classes and high-risk claims in scope; representative repeated low-risk instances |
+| `forensic` | Every in-scope instance; no sampling |
 
-| Depth | Coverage bar | Sampling |
-|---|---|---|
-| `recon` | inventory + primary safe interactions + obvious high-impact contradictions | allowed; state what was skipped |
-| `standard` | all primary actions, all unique interaction/state patterns, all high-risk claims, every form/state class, representative repeated instances | allowed only for repeated low-risk instances; record the rule |
-| `forensic` | exhaust all in-scope activatable instances and material claims until IN is exhausted or policy/environment blocks them | no sampling |
+For standard sampling, name the repeated pattern and representatives. Cover its
+material state variants; a sample of one pattern does not cover another.
+For unbounded forensic scope, establish a finite boundary or report incomplete.
 
-Default: `standard`.
+Modes describe the selected target, not additional passes:
 
-Use `forensic` for explicit requests such as "every button", "dokladnie",
-"dogłębnie", "forensic", "exhaustive". Do not silently turn `standard` into
-forensic because the interface is small.
+- `page`: one route and its owned dialogs.
+- `area`: one bounded feature across screens.
+- `crawl`: bounded navigation/templates; standard covers each of up to 15
+  templates, otherwise primary destinations and a representative per template.
+- `flow`: one user job with start, steps and observable terminal outcome.
+- `data`: compare IDs, values, units, counts and state across the relevant views.
+- `visual`: rendered facts; static-only completion applies only to a static brief.
+- `regression`: requires a prior finding or explicit baseline to recheck.
+- `a11y`: measured interaction/semantics and applicable criteria, not blanket compliance.
+- `contract-trace`: explicitly requested cross-layer journey; read
+  `references/contract-tracing.md` for its scenario and runtime-binding contract.
 
-### Standard sampling rule
-
-Test 100% of:
-
-- primary/terminal actions that are policy-safe
-- unique control types/behavior variants
-- destructive/high-risk controls up to the safe pre-commit boundary
-- forms and validation classes
-- high-risk claims: money, identity, permission, quota, terminal status
-- screens/templates explicitly named by the user
-
-For repeated homogeneous rows/cards/controls, test a representative set that
-covers state variants (e.g. active/inactive, paid/unpaid, long/short content),
-not every identical instance. Record the sample and why it is representative.
-
-## `page`
-
-One route/screen plus its owned modals/drawers/popovers. Do not follow global
-navigation into another feature.
-
-- recon: inventory + primary controls
-- standard: unique controls/states + representative repeated rows
-- forensic: every in-scope control instance, tab, menu, row action, state
-
-## `area`
-
-A bounded feature/job slice such as Billing, Users, Settings.
-
-Map entry points/screens/return paths. Check cross-screen state for repeated
-entities. Shared chrome counts only when it belongs to the area.
-
-## `crawl`
-
-Bounded multi-page IA/navigation audit.
-
-- <=15 unique templates: cover each template once + named/key instances
-- larger: all primary nav/footer destinations + one representative of each
-  template + user-named pages
-
-Forensic crawl may expand beyond this only when the user explicitly requests
-exhaustive page-instance coverage and the scope remains finite. If the requested
-forensic population is effectively unbounded/huge, do not silently sample and
-call it forensic: define a finite boundary when possible, otherwise finish as
-`incomplete` with the unexhausted population stated.
-
-## `flow`
-
-A start, steps, and success definition (signup, checkout, invite, export).
-
-Walk happy path and relevant unhappy paths only to the mutation boundary allowed
-by `safety-and-mutations.md`. If terminal success cannot be tested safely, mark
-it policy-blocked and use `incomplete` when terminal proof is essential.
-
-## `data`
-
-Integrity-first. Build the contradiction matrix and recalculate material
-aggregates. UI/UX findings are incidental unless they hide or misrepresent data.
-Safe mutation/re-read is optional and governed by environment policy.
-
-## `visual`
-
-UI/UX primary. Verify hierarchy, affordance, legibility, responsive behavior,
-copy/labels, state communication. Do not manufacture a full data audit unless a
-material contradiction is discovered.
-
-A screenshot-only visual audit can be complete for the static objective if the
-user explicitly asked for static visual review; interaction claims remain out.
-
-## `regression`
-
-Requires baseline evidence: previous report, screenshots, or explicit old
-behavior. Re-run prior findings as `fixed | still-open | regressed`; then run a
-thin standard pass on the same scope for collateral damage.
-
-## `contract-trace`
-
-One explicitly named journey across UI, API, authorization, service, job/data
-and durable UI state. Require the five scenario kinds in
-`references/contract-tracing.md`; browser-only evidence leaves backend edges
-`unknown`, and an unresolved scenario makes the result incomplete.
-
-## `a11y`
-
-Accessibility-first. Test supported keyboard/semantics/contrast/zoom patterns.
-Do not claim formal conformance unless the required criteria and tooling were
-actually measured.
-
-## Combining intent
-
-"Przeklikaj billing i sprawdz liczby" = `area` mode with data-integrity bar,
-not two separate audits. Keep one scope card and one report.
-
-## Universal passes
-
-Run passes in order: recon, inventory, interaction, data integrity, adversarial
-states, source cross-check. Execute only passes supported by the capability
-profile and selected mode.
-
-### Pass 0 — Recon
-
-- Load/inspect the target and record URL/route, persona, title, nav/chrome.
-- Map in-scope screens/templates and data objects.
-- Record available browser diagnostics (console/network) if actually present.
-- Capture baseline desktop/mobile evidence when screenshot capability exists.
-- Confirm environment and mutation policy before Pass 2.
-
-### Pass 1 — Inventory
-
-Build:
-
-1. **Interactive map** — buttons, links, tabs, inputs, selects, toggles,
-   menus, row actions, pagination, modal triggers, fake-clickable surfaces.
-2. **Claim map** — numbers, names, IDs, dates, statuses, prices, counts,
-   badges, tooltips, empty/error copy, and where each repeats.
-
-For repeated controls, mark whether each instance must be tested or may be
-sampled under the selected depth.
-
-### Pass 2 — Interaction
-
-Use `click-through.md` and the mutation policy.
-
-- `recon`: primary navigation and obvious safe interactions only.
-- `standard`: 100% primary actions, 100% unique interaction patterns, every
-  form/state class, representative repeated instances, all policy-safe high-risk
-  controls; account for all others.
-- `forensic`: exhaust every in-scope activatable instance unless policy or the
-  environment blocks it.
-
-After a safe mutation, re-read the durable state and clean up test data when
-possible. A toast alone is not proof of persistence.
-
-### Pass 3 — Data integrity
-
-Use `data-integrity.md`.
-
-- Build a contradiction matrix for facts repeated across surfaces.
-- Recalculate aggregates from visible/available inputs.
-- Check counts, filters, pagination, currency/unit/locale/timezone, status,
-  identity, stale state, impossible values, and duplicate identifiers.
-- Prioritize high-risk facts: money, permissions, identity, quotas, status,
-  terminal-flow outcomes.
-
-### Pass 4 — Adversarial states
-
-Use forms/accessibility/responsive references.
-
-Test only policy-safe states: empty/invalid values, loading/error handling,
-keyboard, back/refresh, overflow, long content, disabled states, duplicate-safe
-submission behavior, and recovery paths.
-
-### Pass 5 — Source cross-check
-
-Only when source is available. Observe or prove reachability first, then use
-source to explain the root cause.
+Coverage: `tested | sampled | policy-blocked | environment-blocked | unreachable`;
+record out-of-scope notes separately. Incomplete required coverage stays incomplete
+in downstream reports. Source/screenshot/fetch-only evidence cannot complete an
+interaction-heavy standard/forensic audit unless the brief is explicitly static.
+Use the verdict/count/schema mapping in `references/evidence-and-report.md`.

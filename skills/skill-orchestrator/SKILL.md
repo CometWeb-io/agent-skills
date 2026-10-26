@@ -23,8 +23,11 @@ validated envelopes before claiming the next step.
 `skill-orchestrator-multiagent` is a **thin alias** for `execution_mode=isolated_subagents`.
 Do not maintain a divergent planning model there.
 
-Optional context preflight: when the goal depends on current multi-source CometWeb
-state, run `cometweb-context` first and pass the ContextEnvelope as a dependency.
+When the goal needs current project state, retrieve only relevant sources. If the
+repository resources are available, consult `resources/context/references/source-registry.md`.
+This does not add a workflow step. Build a ContextEnvelope only when a receiving
+contract requires it; `resources/context/README.md` documents the standalone validator.
+If that validator is unavailable, report the validation gap rather than claiming a pass.
 
 ## Boundaries
 
@@ -44,7 +47,7 @@ state, run `cometweb-context` first and pass the ContextEnvelope as a dependency
 - release gate verdicts (Release Readiness),
 - weekly priority reconciliation (Product Operator),
 - domain findings (auditors, CI, SEO, etc.),
-- ContextEnvelope construction (`cometweb-context`).
+- treating a context snapshot as evidence admission or a domain verdict.
 
 Read `references/workflow-archetypes.md` before choosing an archetype and
 `references/sequencing-rules.md` before executing the first step. For isolated mode also

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.7] - 2026-10-26
+
+- Remove the retired context skill preflight; retain source-map access and optional formal ContextEnvelope validation through standalone resources.
+
 ## [1.0.6] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

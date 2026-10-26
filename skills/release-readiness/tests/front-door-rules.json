@@ -1,207 +1,7 @@
 {
   "skill": "release-readiness",
-  "note": "Normative rules the skill must keep. Front-door rules live in SKILL.md; the rest sit in a reference SKILL.md points to with a load trigger. Removing or moving a rule means editing this inventory deliberately.",
+  "note": "Evidence, candidate, scope and formal-output rules after slimming; engine contracts and conditional reference checks remain. Facets pin the shared untrusted-content boundary.",
   "rules": [
-    {
-      "id": "false-green-bias",
-      "text": "must reduce confidence or block the verdict rather than disappear from scoring",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "no-average-blocker",
-      "text": "Never average away a blocker",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "derive-gates",
-      "text": "do not let omitted checks create a false green result",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "na-no-credit",
-      "text": "Treat `N/A` as exclusion with rationale, never as credit",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "not-deploy-authorization",
-      "text": "not authorization to deploy or perform side effects",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "gates-before-scoring",
-      "text": "Never start scoring before this step",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "route-selectively",
-      "text": "do not recursively invoke every specialist",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "no-verdict-inertia",
-      "text": "Do not preserve a previous verdict for consistency",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "no-invented-facts",
-      "text": "Do not invent unknown values",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "identity-caps-defer",
-      "text": "the final verdict cannot exceed `DEFER`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "tag-not-identity",
-      "text": "Branch, tag, deployment ID and release name are descriptive, not immutable identities",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "profile-no-hiding",
-      "text": "Do not use a profile to hide risk",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "mode-floor",
-      "text": "Do not downgrade mode merely to obtain a faster `GO`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "unknown-not-no",
-      "text": "Prefer `DEFER` over assuming `no`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "unknown-flag-rejected",
-      "text": "a key the engine does not recognise is rejected rather than guessed",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "blocker-not-averaged",
-      "text": "`BLOCKER`, `CRITICAL`, or binding failure must not be averaged away",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "major-blocks",
-      "text": "`MAJOR` unresolved failure blocks by default",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "controls-require",
-      "text": "`PASS_WITH_CONTROLS` requires a real compensating control, owner, mitigation, and non-expired due/expiry point",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "accepted-risk-scope",
-      "text": "`ACCEPTED_RISK` is allowed only for non-binding `MAJOR/MINOR` risk with explicit approver, owner, rationale, mitigation, and expiry",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "accepted-risk-never-binding",
-      "text": "Never use `ACCEPTED_RISK` for binding, blocker, or critical findings",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "na-rationale",
-      "text": "\"Not checked\" means `UNKNOWN`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "binding-pass-downgrade",
-      "text": "A binding `PASS` with insufficient evidence, missing timestamp, candidate mismatch, stale evidence, or unknown freshness becomes `UNKNOWN` for gating",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "gov-block",
-      "text": "`BLOCK` → `NO_GO`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "gov-counsel",
-      "text": "`COUNSEL_REQUIRED` → `DEFER`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "gov-missing",
-      "text": "Missing a required governance gate → `DEFER`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "gov-controls-cap",
-      "text": "can yield at most `GO_WITH_CONTROLS`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "gov-no-override",
-      "text": "Do not let a score or majority opinion override a governance `BLOCK`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "gov-no-overclaim",
-      "text": "Do not claim legal/privacy/compliance assurance beyond the evidence actually obtained",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "placeholders",
-      "text": "Never treat generated placeholders as evidence",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "bootstrap-unknown",
-      "text": "The bootstrapper preserves unknown risk flags as `unknown`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "engine-authority",
-      "text": "do not manually override the engine result",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "unknown-reenters",
-      "text": "Any new material unknown must re-enter the manifest and gate logic",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "defer-vs-nogo",
-      "text": "Use `DEFER` for \"we do not yet know\" and `NO_GO` for \"we know this should not ship\"",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "immutable-snapshot",
-      "text": "do not edit an old snapshot to make a new candidate appear covered",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "blocker-fields",
-      "text": "Every blocker carries domain and gate, production failure mode, exact evidence or gap, smallest credible remediation, owner if known, and exact closure verification",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "read-only",
-      "text": "Operate read-only by default",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "no-side-effects",
-      "text": "Do not deploy, merge, charge, refund, migrate, delete, publish, or notify users merely because readiness is `GO`",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "no-overclaim-assurance",
-      "text": "Do not claim penetration testing, formal compliance, legal approval, or production safety unless that work was actually performed and evidenced",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "no-proxy-metrics",
-      "text": "Do not use test count, issue count, repository cleanliness, code coverage, Lighthouse score, or a single security score as a proxy for release readiness",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "no-timeless-law",
-      "text": "Do not encode current law, platform policy, vendor requirements, payment-network rules, or security advisories as timeless facts",
-      "where": "SKILL.md"
-    },
     {
       "id": "redteam-omitted-gate",
       "text": "Was a required gate omitted rather than passed?",
@@ -336,6 +136,136 @@
       "text": "Confirm with the user before you send, post, publish, delete, buy, or change permissions or production state.",
       "where": "SKILL.md",
       "facet": "confirm-side-effects"
+    },
+    {
+      "id": "readiness-admission-01",
+      "text": "Assess one pinned software candidate in one environment. The reusable mechanism is the deterministic gate engine; a complete-looking report is not evidence that a release works.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-02",
+      "text": "Record release ID, immutable artifact identity (full commit SHA, digest, artifact ID or build number), target environment and timezone-aware `as_of`. A branch, tag or release name alone is insufficient.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-03",
+      "text": "Read [risk routing](references/risk-routing.md) when selecting the profile, mode and required gates. Keep unknown risk flags `unknown`; never infer `no` from an omitted answer. Auth, billing, migration and other elevated risks cannot use a mode below the engine's floor.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-04",
+      "text": "Read [manifest schema](references/manifest-schema.md) before creating or changing a manifest. Unknown `scope` keys can produce `scope_warnings` without changing the engine verdict. Resolve those warnings and rerun before relying on the result; otherwise report incomplete assessment, including the engine's raw verdict and limitation.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-05",
+      "text": "Read [evidence policy](references/evidence-policy.md) when admitting evidence. Binding passes need structured, timestamped evidence at the required level, exact candidate binding and an explicit matching environment for execution/provider evidence. Stale, expired, mismatched or unknown evidence cannot support a binding pass. A changed candidate or material configuration needs fresh matching evidence; do not copy the old PASS.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-06",
+      "text": "The engine validates supplied declarations. It does not authenticate a CI run, fetch a locator, inspect production, verify legal approval or detect a fabricated `verified` label. Check the actual source before asserting that evidence was verified. Keep static code review separate from execution and provider/customer outcomes.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-07",
+      "text": "python3 scripts/bootstrap_manifest.py --context release-context.json --output readiness.json --pretty python3 scripts/readiness_engine.py --input readiness.json --pretty",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-08",
+      "text": "Use the bootstrapper only when a manifest is missing; generated gates are `unknown` placeholders, not evidence. Run the engine for the actual manifest. Keep scope completeness, required-gate completeness, governance and binding gates separate from weighted scores; never average away a blocker. If new evidence changes the assessment, update the manifest and rerun rather than manually preserving or upgrading a verdict.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-09",
+      "text": "`GO`: declared gates and evidence meet policy; it is not permission to deploy.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-10",
+      "text": "`GO_WITH_CONTROLS`: conditions or accepted residual risks remain.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-11",
+      "text": "`NO_GO`: known blocking failure or governance block.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-12",
+      "text": "`DEFER`: decisive identity, scope, evidence, mode or governance is unresolved.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-13",
+      "text": "`N/A` excludes a check only with rationale; it adds no readiness credit. Unknown is not N/A. `PASS_WITH_CONTROLS` needs a current compensating control and accountable owner. `ACCEPTED_RISK` needs explicit authority, rationale, owner, mitigation and expiry; it cannot waive a binding, blocker or critical finding. Governance `BLOCK` overrides scores; `COUNSEL_REQUIRED` defers the decision.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-14",
+      "text": "Read [domain checks](references/domain-checks.md) when assessing a required gate; [integrations](references/integrations.md) only when missing specialist evidence could change it. Do not launch every reviewer or require a second generic red-team report. Use [red-team prompts](references/red-team.md) only for a concrete unresolved failure mode.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-15",
+      "text": "Report the candidate, environment, as-of, verdict, decisive blockers/gaps and the smallest closure check. No mandatory seven-section report or full gate table. Retain the engine JSON when a receiving contract or CI needs it; read [output contract](references/output-contract.md) then. A valid JSON result is not proof of runtime safety.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-16",
+      "text": "For comparison use `python3 scripts/readiness_engine.py --input current.json --previous previous.json --pretty`. Read [rollout/revalidation](references/rollout-revalidation.md) when a candidate, configuration or decisive evidence changes, [CI integration](references/ci-integration.md) for automation, and [examples](references/examples.md) for an ambiguous manifest. Read [evaluation](references/evaluation.md) when modifying this package.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "readiness-admission-17",
+      "text": "Operate read-only. Do not deploy, merge, charge, refund, migrate, delete or publish because readiness says GO. Verify current primary sources for material legal, vendor or platform requirements; do not claim assurance beyond the evidence obtained.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "normative-sentence-01",
+      "text": "Keep unknown risk flags `unknown`; never infer `no` from an omitted answer.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "normative-sentence-02",
+      "text": "Auth, billing, migration and other elevated risks cannot use a mode below the engine's floor.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "normative-sentence-03",
+      "text": "Stale, expired, mismatched or unknown evidence cannot support a binding pass.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "normative-sentence-04",
+      "text": "A changed candidate or material configuration needs fresh matching evidence; do not copy the old PASS.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "normative-sentence-05",
+      "text": "Keep scope completeness, required-gate completeness, governance and binding gates separate from weighted scores; never average away a blocker.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "normative-sentence-06",
+      "text": "`ACCEPTED_RISK` needs explicit authority, rationale, owner, mitigation and expiry; it cannot waive a binding, blocker or critical finding.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "normative-sentence-07",
+      "text": "Do not launch every reviewer or require a second generic red-team report.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "normative-sentence-08",
+      "text": "Do not deploy, merge, charge, refund, migrate, delete or publish because readiness says GO.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "normative-sentence-09",
+      "text": "Verify current primary sources for material legal, vendor or platform requirements; do not claim assurance beyond the evidence obtained.",
+      "where": "SKILL.md"
     }
   ]
 }

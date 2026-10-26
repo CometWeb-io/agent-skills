@@ -71,7 +71,7 @@ Validators:
 
 - `tooling/validate_envelope.py` — full envelope: core, typed payload, payload
   hash, `--final`. Runs every check below.
-- `skills/cometweb-context/scripts/validate_context_envelope.py`
+- `resources/context/scripts/validate_context_envelope.py`
 - `tooling/validate_evidence_envelope.py`
 - `tooling/validate_decision_envelope.py`
 
@@ -137,7 +137,7 @@ conventions inside one payload document.
 
 ## Migration rule
 
-- New envelopes from `cometweb-context` → Context payload validated by v2 schema.
+- Context payloads from any producer → v2 schema plus the standalone context resource validator.
 - Existing Evidence/Decision producers may keep emitting v1 until their package bumps.
 - Orchestrators SHOULD accept both and record `protocol_version` per envelope. The
   multiagent gate (`skills/skill-orchestrator-multiagent/scripts/validate_envelope.py`)

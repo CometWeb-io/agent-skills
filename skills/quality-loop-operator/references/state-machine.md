@@ -1,6 +1,6 @@
 # State machine
 
-States are evidence-backed observations, not motivational labels.
+States are evidence-backed observations, not a compulsory linear route through every label. Only stages selected by the active contract are required.
 
 - `CONTRACTED`: executable brief/policy exists.
 - `DRAFTED`: candidate exists and is bound to a contract.

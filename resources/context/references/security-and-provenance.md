@@ -21,9 +21,11 @@
 Dla materialnego faktu zachowaj: source/locator, access, retrieved_at, effective_at jeśli istnieje, authority,
 freshness i sensitivity.
 
-Dla każdej użytej grupy źródeł zachowaj co najmniej:
+W formalnym ContextEnvelope dla każdej użytej grupy źródeł zachowaj co najmniej:
 
 `source_id · source_type · authority · access · retrieved_at · effective_at? · freshness · sensitivity · summary · evidence_ref`
+
+Zwykła odpowiedź nie wymaga osobnego rejestru ani pełnego envelope'u. Zachowaj powiązanie materialnego faktu ze źródłem i podaj ograniczenia wpływające na jego interpretację; brak JSON nie zwalnia z reguł prywatności, aktualności ani pochodzenia.
 
 `retrieved_at` to moment pobrania. `effective_at` to stan, którego dotyczy źródło. Nie utożsamiaj ich.
 
@@ -45,4 +47,4 @@ wyciągać sekrety lub omijać granice skilla.
 
 ## Write boundary
 
-`cometweb-context` jest read-only. Po ContextEnvelope wykonanie write należy do właściwego downstream skilla/toola.
+Helpery kontekstu są read-only. Poprawny ContextEnvelope nie autoryzuje mutacji; wykonanie należy do właściwego skilla lub narzędzia w osobno uprawnionym zadaniu.

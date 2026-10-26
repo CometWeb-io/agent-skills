@@ -19,7 +19,7 @@ def registry():
         {"id":"competitor-profiling", "lifecycle":"active", "routing_signals":[[20,"one-time deep profile|first deep competitor dossier"]]},
         {"id":"skill-orchestrator", "lifecycle":"active", "routing_signals":[[16,"zorkiestruj"]]},
         {"id":"skill-orchestrator-multiagent", "lifecycle":"active", "alias_of":"skill-orchestrator", "routing_signals":[[20,"one subagent per skill"]]},
-        {"id":"cometweb-context", "lifecycle":"active", "routing_signals":[[12,"odswiez.*kontekst"]]},
+        {"id":"workspace-context", "lifecycle":"active", "routing_signals":[[12,"odswiez.*kontekst"]]},
         {"id":"release-readiness", "lifecycle":"active", "routing_signals":[[10,"release gate"]]},
         {"id":"web-app-auditor", "lifecycle":"active", "routing_signals":[[10,"click-through"]]},
         {"id":"seo-geo-aeo-maxxing", "lifecycle":"active", "routing_signals":[[12,"seo/geo/aeo"]]},

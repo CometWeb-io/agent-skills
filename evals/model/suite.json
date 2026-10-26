@@ -1,6 +1,6 @@
 {
   "schema": "cometweb.model-evals/v1",
-  "scope": "16 synthetic text-only output-quality cases; not live tools, installation or scientific validation.",
+  "scope": "Active-skill text-only development cases after context skill retirement; no new model runs. Historical source filename retained.",
   "cases": [
     {
       "id": "humanize-pl-fidelity",
@@ -170,63 +170,6 @@
       "rubric": [
         "Separates observed readiness from causal impact.",
         "Frames any outcome claim as unverified; proposes measurement rather than guarantee."
-      ],
-      "preserve_literals": [],
-      "resources": [],
-      "capabilities": {
-        "tools": false
-      }
-    },
-    {
-      "id": "context-no-baseline",
-      "skill": "cometweb-context",
-      "prompt": "A jak teraz? Co się poprawiło?",
-      "fixture": {
-        "current_commit": "abc1234",
-        "previous_snapshot": null,
-        "current_status": "3 failing tests"
-      },
-      "rubric": [
-        "No invented before/after comparison.",
-        "States baseline unavailable and preserves current findings."
-      ],
-      "preserve_literals": [],
-      "resources": [],
-      "capabilities": {
-        "tools": false
-      }
-    },
-    {
-      "id": "context-conflict",
-      "skill": "cometweb-context",
-      "prompt": "Czy funkcja jest już wdrożona?",
-      "fixture": {
-        "notion": "Status: done",
-        "github": "Implementation marked WIP",
-        "deployment_evidence": null
-      },
-      "rubric": [
-        "Preserves unresolved conflict.",
-        "Does not equate planning status with deployed behavior."
-      ],
-      "preserve_literals": [],
-      "resources": [],
-      "capabilities": {
-        "tools": false
-      }
-    },
-    {
-      "id": "context-crm-fallback",
-      "skill": "cometweb-context",
-      "prompt": "Podsumuj bieżący pipeline.",
-      "fixture": {
-        "crm_connector": "unavailable",
-        "csv_export_date": "2026-01-01",
-        "request_as_of": "2026-09-12"
-      },
-      "rubric": [
-        "Does not promote an old CSV to the current system of record.",
-        "Reports an authority/freshness gap instead of invented current pipeline numbers."
       ],
       "preserve_literals": [],
       "resources": [],

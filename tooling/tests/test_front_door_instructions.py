@@ -9,8 +9,8 @@ other gate is green:
   `EVIDENCE_REQUIRED`, and feedback-integrator offered a `RUNTIME` root layer
   its kernel rejects. A value that exists only in the front door is either a
   typo or a contract nothing enforces.
-- A reference file SKILL.md never names. Nothing will ever load it, so the
-  rules inside it are dead.
+- A reference file unreachable from SKILL.md, including through another named
+  reference. Nothing will load it, so the rules inside it are dead.
 - One sentence that says to read three or more references at once. It gives no
   trigger, so a model either loads everything up front or guesses; a table or
   list that says when each file is needed does neither.
@@ -98,14 +98,35 @@ def test_front_door_only_entries_are_still_relevant() -> None:
         )
 
 
-@pytest.mark.parametrize("doc", FRONT_DOORS, ids=lambda p: p.parent.name)
-def test_every_reference_is_named_by_the_front_door(doc: Path) -> None:
-    references = doc.parent / "references"
-    if not references.is_dir():
-        pytest.skip("no references/")
+def unreachable_references(doc: Path) -> list[str]:
+    references = {p.name: p for p in (doc.parent / "references").glob("*.md")}
     text = doc.read_text(encoding="utf-8")
-    orphans = sorted(path.name for path in references.glob("*.md") if path.name not in text)
-    assert not orphans, f"{doc.parent.name}/SKILL.md never names {orphans}; nothing will load them"
+    reached = set()
+    while True:
+        found = {name for name in references if name in text} - reached
+        if not found:
+            return sorted(set(references) - reached)
+        reached |= found
+        text += "\n" + "\n".join(references[name].read_text(encoding="utf-8") for name in found)
+
+
+@pytest.mark.parametrize("doc", FRONT_DOORS, ids=lambda p: p.parent.name)
+def test_every_reference_is_reachable_from_the_front_door(doc: Path) -> None:
+    orphans = unreachable_references(doc)
+    assert not orphans, f"{doc.parent.name}/SKILL.md cannot reach {orphans}; nothing will load them"
+
+
+def test_transitive_references_keep_unreachable_cycles_visible(tmp_path):
+    doc = tmp_path / "SKILL.md"
+    refs = tmp_path / "references"
+    refs.mkdir()
+    doc.write_text("Read a.md for the formal contract.")
+    (refs / "a.md").write_text("Read b.md for the schema.")
+    (refs / "b.md").write_text("See a.md.")
+    (refs / "orphan.md").write_text("See orphan.md.")
+    assert unreachable_references(doc) == ["orphan.md"]
+    (refs / "b.md").write_text("Read orphan.md when needed.")
+    assert unreachable_references(doc) == []
 
 
 TRIGGER = re.compile(r"\b(when|whenever|before|after|if|for|while|only)\b", re.IGNORECASE)

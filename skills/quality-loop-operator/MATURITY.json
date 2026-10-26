@@ -1,7 +1,7 @@
 {
   "schema": "cometweb.skill-maturity/v1",
   "skill": "quality-loop-operator",
-  "version": "1.7.7",
+  "version": "1.8.0",
   "stage": "DEVELOPMENT",
   "publication": "EXPERIMENTAL",
   "task_qualification": "not_established"

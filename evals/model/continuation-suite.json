@@ -1,6 +1,6 @@
 {
   "schema": "cometweb.model-evals/v1",
-  "scope": "12 executable text-only evaluation cases with synthetic fixtures. Ready for a configured runner, not executed model evidence.",
+  "scope": "Active-skill text-only development cases after context skill retirement; no new model runs. Historical source filename retained.",
   "cases": [
     {
       "id": "continuation-pl-fidelity-uncertainty",
@@ -175,60 +175,6 @@
         "tools": false
       },
       "source_case_id": "release-old-build"
-    },
-    {
-      "id": "continuation-context-no-baseline",
-      "skill": "cometweb-context",
-      "prompt": "A jak teraz, co się poprawiło? Odpowiedz na podstawie dostępnego stanu.",
-      "fixture": {
-        "current": {
-          "revision": "cccccccccccccccccccccccccccccccccccccccc",
-          "observed_at": "2026-09-12T10:00:00Z",
-          "files": [
-            "backend/api.py",
-            "frontend/report.ts"
-          ]
-        },
-        "baseline": null,
-        "deployment_evidence": null
-      },
-      "rubric": [
-        "Reports current observations and missing baseline; invents no deltas.",
-        "No fabricated retrieval, test execution, deployment, independent agents or current factual verification."
-      ],
-      "preserve_literals": [],
-      "resources": [],
-      "capabilities": {
-        "tools": false
-      },
-      "source_case_id": "context-no-baseline"
-    },
-    {
-      "id": "continuation-context-conflicting-shipped",
-      "skill": "cometweb-context",
-      "prompt": "Ustal aktualny stan funkcji na podstawie notatki i repo. Pokaż ewentualny konflikt.",
-      "fixture": {
-        "notion": {
-          "statement": "Feature shipped",
-          "source_kind": "planning note"
-        },
-        "repo": {
-          "handler": "def endpoint(): return {\"detail\":\"Not implemented\"}, 501",
-          "revision": "dddddddddddddddddddddddddddddddddddddddd"
-        },
-        "runtime_tests": [],
-        "deployment_record": null
-      },
-      "rubric": [
-        "Keeps intent, implementation and runtime evidence separate; does not silently mark shipped.",
-        "No fabricated retrieval, test execution, deployment, independent agents or current factual verification."
-      ],
-      "preserve_literals": [],
-      "resources": [],
-      "capabilities": {
-        "tools": false
-      },
-      "source_case_id": "context-conflicting-shipped"
     },
     {
       "id": "continuation-seo-fetch-not-schema-proof",

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0] - 2026-10-26
+
+- Limit the entry point to durable ArtifactBrief/PRD contracts rather than ordinary clarification or general planning.
+- Replace generic briefing stages with a compact contract checklist; acceptance criteria can remain inline without a separate rubric workflow.
+- State that readiness/delta are Python library calls and validate supplied declarations, not semantic quality or factual truth.
+- Clarify conservative value-based delta behavior, including wording edits inside tracked contract fields. Keep both Python scripts, schemas and receiving contracts unchanged.
+
 ## [1.8.1] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

@@ -1,8 +1,8 @@
 # Brief Architect
 
-Version **1.8.1**.
+Version **1.9.0**.
 
-Turn an ambiguous request for a content, research, sales, documentation, or knowledge artifact into an explicit execution contract with audience, objective, evidence policy, constraints, acceptance criteria, risks, and handoff fields. Use when the task is underspecified, expensive to redo, spans multiple specialists, or needs a durable brief before writing/research. Do not use to write the final artifact, run broad product discovery, make a consequential decision, or replace product-operator, evidence-researcher, content-writer, or ai-council.
+Create or revise a durable ArtifactBrief when requested or required by a downstream contract. Ordinary clarification and clear requests to produce an artifact can be handled directly. The kernel checks declared readiness, material assumptions, lineage and contract deltas; it does not assess the semantic quality of the objective or criteria. PRD remains a separately requested experimental profile.
 
 ## Install
 

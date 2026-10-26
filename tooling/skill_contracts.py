@@ -240,7 +240,10 @@ def documentation(skill: str, contract: dict[str, Any]) -> tuple[str, str]:
     """(declared docs text, declared docs plus SKILL.md text)."""
     base = SKILLS / skill
     declared = "\n".join((base / rel).read_text(encoding="utf-8") for rel in contract.get("docs", []))
-    return declared, declared + "\n" + (base / "SKILL.md").read_text(encoding="utf-8")
+    entry = base / "SKILL.md"
+    if not entry.is_file():
+        entry = base / "README.md"  # Standalone resources retain the same script contract.
+    return declared, declared + "\n" + entry.read_text(encoding="utf-8")
 
 
 def word_in(word: str, text: str) -> bool:

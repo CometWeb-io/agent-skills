@@ -35,7 +35,6 @@ OUT_CURSOR = ROOT / "docs" / "generated-cursor-routing.mdc"
 OUT_COMPAT = ROOT / "docs" / "generated-compatibility-matrix.md"
 
 DISPLAY_NAMES = {
-    "cometweb-context": "CometWeb Context",
     "evidence-researcher": "Evidence Researcher",
     "skill-orchestrator": "Skill Orchestrator",
     "skill-orchestrator-multiagent": "Skill Orchestrator Multiagent",
@@ -61,10 +60,6 @@ DISPLAY_NAMES = {
 # explicitly as `$skill-id`. Skills with a hand-tuned starting prompt are listed
 # here; every other skill gets one built from its README catalog summary.
 DEFAULT_PROMPTS = {
-    "cometweb-context": (
-        "Use $cometweb-context to refresh only the context my goal needs and return a "
-        "ContextEnvelope with sources, facts, conflicts and gaps."
-    ),
     "evidence-researcher": (
         "Use $evidence-researcher to build an Evidence Pack for my question, with verified "
         "sources, falsifier passes and a readiness verdict."

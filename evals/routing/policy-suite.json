@@ -1,5 +1,5 @@
 {
-  "suite_version": "1.0.0",
+  "suite_version": "1.1.0",
   "description": "Admission/tie/no-skill regression cases; not host or model evaluations. Legacy suite.json remains a separate signal-only diagnostic.",
   "cases": [
     {
@@ -196,13 +196,6 @@
       "invoked": [
         "ai-humanize"
       ]
-    },
-    {
-      "id": "context-pl",
-      "prompt": "Odśwież kontekst",
-      "expected_status": "single_skill",
-      "expected_primary_skill": "cometweb-context",
-      "must_not_trigger": []
     },
     {
       "id": "release-pin",

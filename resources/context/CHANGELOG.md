@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0] - 2026-10-26
+
+- Replace universal preflight and report stages with a compact source-selection and evidence checklist.
+- Answer ordinary questions without constructing a full ContextEnvelope; retain the complete schema and validation when required by the receiver/protocol or explicitly requested.
+- Preserve the source map, provenance, freshness, project/sensitivity boundaries and read-only operation. Load governance only for context feeding a material decision.
+- Remove fixed response budgets and unrelated handoff names. Keep all three helper scripts unchanged; task qualification remains unestablished.
+
 ## [1.6.1] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

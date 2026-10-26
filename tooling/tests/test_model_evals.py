@@ -127,9 +127,9 @@ def test_interrupted_execution_retains_error_and_unrun_counts(roots,tmp_path):
     assert (tmp_path/"output/records.json").exists()
 
 
-def test_suite_has_16_real_prompts_but_no_claimed_model_runs():
+def test_active_suite_has_13_real_prompts_but_no_claimed_model_runs():
     suite=json.loads((TOOLS.parent/"evals/model/suite.json").read_text())
-    assert len(validate_suite(suite)) == 16
+    assert len(validate_suite(suite)) == 13
     proc=subprocess.run([sys.executable,str(TOOLS/"run_model_evals.py")],capture_output=True,text=True,check=True)
     record=json.loads(proc.stdout)
     assert record["status"] == "not_run" and record["model_calls"] == 0

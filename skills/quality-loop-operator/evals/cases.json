@@ -4221,5 +4221,331 @@
         "candidate_id:required"
       ]
     }
+  },
+  {
+    "id": "explicit-plan-single-review-complete",
+    "input": {
+      "profile": "SALES",
+      "candidate_id": "offer-v2",
+      "contract_id": "single-review-v1",
+      "policy_lock": {
+        "pack_id": "bounded-sales",
+        "revision": "1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "locked_before_evaluation": true
+      },
+      "required_stages": [
+        "content-roaster",
+        "artifact-acceptance"
+      ],
+      "stages": [
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "COMPLETE",
+      "next_stage": null
+    }
+  },
+  {
+    "id": "explicit-plan-awaits-verification",
+    "input": {
+      "profile": "SALES",
+      "candidate_id": "offer-v2",
+      "contract_id": "single-review-v1",
+      "policy_lock": {
+        "pack_id": "bounded-sales",
+        "revision": "1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "locked_before_evaluation": true
+      },
+      "required_stages": [
+        "content-roaster",
+        "artifact-acceptance"
+      ],
+      "stages": [
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PENDING"
+        }
+      ]
+    },
+    "expect": {
+      "status": "READY_FOR_NEXT",
+      "next_stage": "artifact-acceptance"
+    }
+  },
+  {
+    "id": "explicit-plan-needs-review",
+    "input": {
+      "profile": "SALES",
+      "candidate_id": "offer-v2",
+      "contract_id": "single-review-v1",
+      "policy_lock": {
+        "pack_id": "bounded-sales",
+        "revision": "1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "locked_before_evaluation": true
+      },
+      "required_stages": [
+        "artifact-acceptance"
+      ],
+      "stages": [
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "required_stages:review-and-acceptance-required"
+      ]
+    }
+  },
+  {
+    "id": "explicit-plan-open-review-finding",
+    "input": {
+      "profile": "SALES",
+      "candidate_id": "offer-v2",
+      "contract_id": "single-review-v1",
+      "policy_lock": {
+        "pack_id": "bounded-sales",
+        "revision": "1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "locked_before_evaluation": true
+      },
+      "required_stages": [
+        "content-roaster",
+        "artifact-acceptance"
+      ],
+      "stages": [
+        {
+          "skill": "content-roaster",
+          "state": "CHANGES_REQUIRED"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "CHANGES_REQUIRED",
+      "next_stage": "content-roaster"
+    }
+  },
+  {
+    "id": "explicit-plan-needs-lock",
+    "input": {
+      "profile": "SALES",
+      "candidate_id": "offer-v2",
+      "contract_id": "single-review-v1",
+      "required_stages": [
+        "content-roaster",
+        "artifact-acceptance"
+      ],
+      "stages": [
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "policy-lock:required"
+      ]
+    }
+  },
+  {
+    "id": "explicit-plan-cannot-skip-required-review",
+    "input": {
+      "profile": "SALES",
+      "candidate_id": "offer-v2",
+      "contract_id": "single-review-v1",
+      "policy_lock": {
+        "pack_id": "bounded-sales",
+        "revision": "1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "locked_before_evaluation": true
+      },
+      "required_stages": [
+        "content-roaster",
+        "artifact-acceptance"
+      ],
+      "stages": [
+        {
+          "skill": "content-roaster",
+          "state": "SKIPPED",
+          "skip_allowed": true,
+          "skip_rationale": "Budget"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "stage[0]:required-plan-skip"
+      ]
+    }
+  },
+  {
+    "id": "explicit-plan-null-is-invalid",
+    "input": {
+      "profile": "SALES",
+      "candidate_id": "offer-v2",
+      "contract_id": "single-review-v1",
+      "policy_lock": {
+        "pack_id": "bounded-sales",
+        "revision": "1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "locked_before_evaluation": true
+      },
+      "required_stages": null,
+      "stages": [
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "required_stages:invalid"
+      ]
+    }
+  },
+  {
+    "id": "explicit-plan-duplicate-is-invalid",
+    "input": {
+      "profile": "SALES",
+      "candidate_id": "offer-v2",
+      "contract_id": "single-review-v1",
+      "policy_lock": {
+        "pack_id": "bounded-sales",
+        "revision": "1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "locked_before_evaluation": true
+      },
+      "required_stages": [
+        "content-roaster",
+        "content-roaster"
+      ],
+      "stages": [
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "required_stages:duplicate"
+      ]
+    }
+  },
+  {
+    "id": "explicit-plan-order-is-invalid",
+    "input": {
+      "profile": "SALES",
+      "candidate_id": "offer-v2",
+      "contract_id": "single-review-v1",
+      "policy_lock": {
+        "pack_id": "bounded-sales",
+        "revision": "1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "locked_before_evaluation": true
+      },
+      "required_stages": [
+        "artifact-acceptance",
+        "content-roaster"
+      ],
+      "stages": [
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ]
+    },
+    "expect": {
+      "status": "INVALID",
+      "errors": [
+        "required_stages:out-of-order"
+      ]
+    }
+  },
+  {
+    "id": "explicit-plan-conflict-still-blocks",
+    "input": {
+      "profile": "SALES",
+      "candidate_id": "offer-v2",
+      "contract_id": "single-review-v1",
+      "policy_lock": {
+        "pack_id": "bounded-sales",
+        "revision": "1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "locked_before_evaluation": true
+      },
+      "required_stages": [
+        "content-roaster",
+        "artifact-acceptance"
+      ],
+      "stages": [
+        {
+          "skill": "content-roaster",
+          "state": "PASS"
+        },
+        {
+          "skill": "artifact-acceptance",
+          "state": "PASS"
+        }
+      ],
+      "reconciliation": [
+        {
+          "status": "CONFLICT",
+          "resolved": false
+        }
+      ]
+    },
+    "expect": {
+      "status": "NEEDS_RECONCILIATION",
+      "next_stage": "finding-reconciliation"
+    }
   }
 ]

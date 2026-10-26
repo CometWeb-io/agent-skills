@@ -1,13 +1,14 @@
 # Choose an owner and a small installation
 
-Start with the requested result. A single bounded task usually needs one owner.
-For a longer workflow, add the owners of the required next results; installing
-the catalog does not mean loading every skill or running every review.
+Start with the native model. Add a skill when the task needs its maintained
+source bindings, executable checks or receiving contract. Routine editing,
+planning and review do not require a specialist process merely because a matching
+package exists. Installing the catalog does not mean loading every skill.
 
 ## Decision tree
 
-1. **Missing or unstable requirements?** Use `brief-architect` to establish the
-   artifact contract. If the contract already exists, keep it.
+1. **Missing or unstable requirements?** Clarify the task directly. Use
+   `brief-architect` when a reusable formal brief or receiving contract is needed.
 2. **Missing evidence for a material claim?** Use `evidence-researcher`.
    A supplied document and an admitted Evidence Pack are different inputs.
 3. **Need to produce or change an artifact?** Use `content-writer` for an
@@ -45,9 +46,9 @@ These are lists of existing packages for the current
 selection covering the requested work; add an actual downstream owner when its
 step is required. Handoffs do not install consumers automatically.
 
-The optional **core** has three packages: `brief-architect`,
-`evidence-researcher`, `skill-orchestrator`. It covers scope, evidence and
-sequencing. Domain work still needs its own owner.
+There is no default multi-skill core. The following is an optional contract-heavy
+workflow selection, not a requirement or evidence of superiority over the model:
+`brief-architect`, `evidence-researcher`, `skill-orchestrator`.
 
 ```bash
 ./scripts/install-codex.sh --skill brief-architect --skill evidence-researcher --skill skill-orchestrator
@@ -62,10 +63,10 @@ sequencing. Domain work still needs its own owner.
 | Engineering and release | `web-app-auditor`, `repo-roaster`, `release-readiness` |
 | Research program | `research-program-operator`, `science-roaster` |
 | Skill evaluation | `skill-auditor`, `rubric-designer`, `benchmark-curator`, `skill-evaluator`, `feedback-integrator` |
-| Decision and workspace context | `portfolio-operator`, `ai-council`, `cometweb-context` |
+| Decisions and portfolio | `portfolio-operator`, `ai-council` |
 | Workflow control | `quality-loop-operator`, `skill-orchestrator`, `skill-orchestrator-multiagent` |
 
-For example, select one editorial owner alongside the core:
+For example, select the contract and editorial owners required by a particular workflow:
 
 ```bash
 ./scripts/install-codex.sh --skill brief-architect --skill evidence-researcher --skill skill-orchestrator --skill content-writer
@@ -73,15 +74,26 @@ For example, select one editorial owner alongside the core:
 
 The same `--skill` arguments work with the other host installers listed in
 [INSTALL.md](../INSTALL.md). Use `--dry-run` to preview.
-The three-package core is optional; an isolated rewrite can select only
-`ai-humanize`. Installed Council availability does not invoke the Council or
-grant permission for external actions. `cometweb-context` still needs a declared
-public/private/project source scope.
+`ai-humanize` and `quality-loop-operator` are optional workflow stages, not default
+rewrite/review passes. A requested rewrite may be handled directly; use the former
+when its fidelity/Unicode tools are useful, and the latter for an explicit quality
+policy and finding lifecycle. Installed Council availability does not invoke the Council or
+grant permission for external actions. Standalone [context resources](../resources/context/README.md)
+retain source maps and public/private/project boundaries without adding a skill or preflight.
 
 `skill-orchestrator-multiagent` is an alias package for the canonical
 `skill-orchestrator` owner with isolated specialist execution; its packaged
 payload builder is needed for that interface. It is not a second planning owner. Select `skill-orchestrator` together with
-its alias even when omitting the core.
+its alias even when omitting other foundation packages.
+
+## Evidence boundaries
+
+Package metadata, schemas, helpers and offline tests describe maintained contracts.
+They do not establish task-success lift, native host acceptance or a qualified
+default. Read each package's MATURITY.json and the scoped experiment evidence;
+absence of comparative evidence is not proof of equivalence or usefulness.
+Retire an instruction wrapper only with a bounded reason and a consumer migration;
+retain reusable tools and source bindings independently when appropriate.
 
 ## Owner → result → next consumer
 
@@ -105,7 +117,6 @@ a fictitious skill.
 | [`artifact-acceptance`](../skills/artifact-acceptance/SKILL.md) | [cometweb.artifact-acceptance/v1 acceptance payload/report](../skills/artifact-acceptance/references/output-contract.md) | [quality-loop-operator](../skills/quality-loop-operator/references/output-contract.md); candidate/brief-bound acceptance verdict at acceptance stage | documented stage contract + local sidecar controls |
 | [`benchmark-curator`](../skills/benchmark-curator/SKILL.md) | [Frozen benchmark revision/hash, corpus fingerprint, split/leakage/provenance](../skills/benchmark-curator/references/output-contract.md) | [skill-evaluator](../skills/skill-evaluator/references/output-contract.md); benchmark_hash + rubric_hash bound experiment input | documented receiving contract + local hash guards |
 | [`brief-architect`](../skills/brief-architect/SKILL.md) | [cometweb.artifact-brief/v1 ArtifactBrief](../skills/brief-architect/references/output-contract.md) | [content-writer](../skills/content-writer/SKILL.md); brief constraints/invariants before draft | documented receiving contract |
-| [`cometweb-context`](../skills/cometweb-context/SKILL.md) | [ContextEnvelope; compressed direct-user context](../skills/cometweb-context/references/output-contract.md) | [ebook-publisher](../skills/ebook-publisher/references/integration.md); fresh internal context only when needed for public product claims | documented optional receiving use |
 | [`competitive-intelligence`](../skills/competitive-intelligence/SKILL.md) | [Material delta brief; baseline/snapshot/delta/watch metadata](../skills/competitive-intelligence/references/output-contract.md) | [evidence-researcher → ai-council (explicit request)](../skills/skill-orchestrator/scripts/orchestrate_kernel.py); SnapshotMetadata in competitive_then_council, followed by evidence admission | explicit executable archetype; external facts not proved |
 | [`competitor-profiling`](../skills/competitor-profiling/SKILL.md) | [Competitor profile + competitive_intelligence_handoff](../skills/competitor-profiling/references/output-contract.md) | [competitive-intelligence](../skills/competitive-intelligence/references/integrations.md); normalize factual profile fields into CI snapshot before delta computation | documented receiving mapping; manual normalization |
 | [`content-reviewer`](../skills/content-reviewer/SKILL.md) | [cometweb.content-review/v1 review with stable findings and coverage](../skills/content-reviewer/references/output-contract.md) | [repair-operator](../skills/repair-operator/SKILL.md); accepted findings become repair inputs; review is not final acceptance | documented receiving contract |
@@ -149,6 +160,6 @@ previews, carry FRAMEWORK claims, and do not supply verified facts, a new owner
 or authority to execute side effects. Read the
 [pack contract](../skills/skill-orchestrator/references/capability-pack-contract.md).
 
-These overlays do not change the core/domain installation selections above.
+These overlays do not change the task-specific installation selections above.
 Structural installation checks and linked output contracts do not prove native
 host execution, model quality, external facts or publication readiness.

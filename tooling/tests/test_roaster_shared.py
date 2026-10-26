@@ -38,12 +38,12 @@ def test_reference_drift_is_detected_and_repaired(tmp_path: Path) -> None:
             path = base / "references" / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("same contract", encoding="utf-8")
-    drift = targets[0] / "references" / "adversarial-protocol.md"
+    drift = targets[0] / "references" / "source-safety.md"
     drift.write_text("weakened contract", encoding="utf-8")
     module.ROOT = root
     module.CANONICAL = canonical
     module.TARGETS = tuple(targets)
-    assert any("adversarial-protocol.md" in error for error in module.verify())
+    assert any("source-safety.md" in error for error in module.verify())
     module.sync()
     assert drift.read_text(encoding="utf-8") == "same contract"
 
@@ -53,7 +53,7 @@ def test_sync_replaces_leaf_symlink_without_following_it(tmp_path: Path) -> None
     root = tmp_path
     canonical = root / "skills" / "repo-roaster"
     target = root / "skills" / "content-roaster"
-    filename = "references/adversarial-protocol.md"
+    filename = "references/source-safety.md"
     expected = b"canonical contract"
     source = canonical / filename
     candidate = target / filename
@@ -68,7 +68,7 @@ def test_sync_replaces_leaf_symlink_without_following_it(tmp_path: Path) -> None
     module.TARGETS = (target,)
     module.SHARED = (filename,)
 
-    assert module.sync() == ["skills/content-roaster/references/adversarial-protocol.md"]
+    assert module.sync() == ["skills/content-roaster/references/source-safety.md"]
     assert outside.read_bytes() == b"do not modify"
     assert not candidate.is_symlink()
     assert candidate.read_bytes() == expected
@@ -94,5 +94,27 @@ def test_sync_preserves_canonical_mode_and_repairs_mode_only_drift(tmp_path, mod
     assert module.sync() == ["skills/content-roaster/scripts/shared.py"]
     assert candidate.read_bytes() == b"canonical"
     assert candidate.stat().st_mode & 0o777 == mode
+    assert module.verify() == []
+    assert module.sync() == []
+
+
+def test_content_local_protocols_survive_sync_but_science_stays_shared(tmp_path: Path) -> None:
+    module = load_module()
+    module.ROOT = tmp_path
+    module.CANONICAL = tmp_path / "skills/repo-roaster"
+    content = tmp_path / "skills/content-roaster"
+    science = tmp_path / "skills/science-roaster"
+    module.TARGETS = (content, science)
+    module.SHARED = tuple(module.CONTENT_LOCAL)
+    for filename in module.SHARED:
+        for package, text in ((module.CANONICAL, "shared"), (content, "compact"), (science, "drift")):
+            path = package / filename
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text)
+    errors = module.verify()
+    assert len(errors) == len(module.SHARED)
+    assert all("science-roaster" in error for error in errors)
+    assert len(module.sync()) == len(module.SHARED)
+    assert all((content / name).read_text() == "compact" for name in module.SHARED)
     assert module.verify() == []
     assert module.sync() == []
