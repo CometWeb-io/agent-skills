@@ -4,6 +4,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 
@@ -18,7 +19,8 @@ from route_skill import route  # noqa: E402
 
 
 def test_context_is_not_a_skill_or_dependency():
-    assert not (ROOT / "skills/cometweb-context").exists()
+    # git pull leaves ignored bytecode behind after removing a skill's files.
+    assert not (ROOT / "skills/cometweb-context/SKILL.md").exists()
     assert not (RESOURCE / "SKILL.md").exists()
     registry = json.loads((ROOT / "registry/skills.json").read_text())
     for entry in registry["skills"]:
@@ -27,6 +29,18 @@ def test_context_is_not_a_skill_or_dependency():
         assert "cometweb-context" not in [name.rstrip("?") for name in entry.get("dependencies", [])]
     assert "cometweb-context" not in generate_adapters.DISPLAY_NAMES
     assert "cometweb-context" not in generate_adapters.DEFAULT_PROMPTS
+
+
+def test_default_pytest_collection_includes_context_resources(tmp_path):
+    shutil.copy(ROOT / "pytest.ini", tmp_path / "pytest.ini")
+    for directory in ("tooling/tests", "skills/example/tests", "resources/context/tests"):
+        path = tmp_path / directory / "test_example.py"
+        path.parent.mkdir(parents=True)
+        path.write_text("def test_example():\n    assert True\n")
+    result = subprocess.run([sys.executable, "-m", "pytest", "--collect-only", "-q"],
+                            cwd=tmp_path, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "resources/context/tests/test_example.py::test_example" in result.stdout
 
 
 def test_context_helper_contract_is_still_checked(monkeypatch):

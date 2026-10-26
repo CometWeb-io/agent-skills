@@ -136,6 +136,12 @@ def inventory(root: Path) -> dict:
             no_tests.append(name)
         else:
             raise ValueError(f"empty test directory or missing Python tests: skills/{name}/tests")
+    context_tests = root / "resources/context/tests"
+    if context_tests.parent.exists() or context_tests.parent.is_symlink():
+        test_dirs.append("resources/context/tests")
+        for source in context_tests.rglob("*"):
+            if source.is_file() or source.is_symlink():
+                safe_file(root, source.relative_to(root).as_posix())
     for directory in test_dirs:
         path = root / directory
         if path.is_symlink() or not any(path.rglob("test_*.py")):

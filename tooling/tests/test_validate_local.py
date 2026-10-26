@@ -53,6 +53,26 @@ def test_inventory_declares_actual_test_directories(checkout):
     assert result["skills_without_tests"] == []
 
 
+def test_standalone_context_tests_are_in_the_executed_plan(checkout):
+    put(checkout, "resources/context/tests/test_context.py", "def test_context():\n    assert True\n")
+    rows = dict(local.commands(local.inventory(checkout), Path("/report")))
+    assert "resources/context/tests" in rows["pytest"]
+
+
+def test_symlinked_context_test_source_is_rejected(checkout):
+    path = put(checkout, "resources/context/tests/test_context.py", "pass\n")
+    path.unlink()
+    path.symlink_to(put(checkout, "outside.py", "pass\n"))
+    with pytest.raises(ValueError, match="symlink"):
+        local.inventory(checkout)
+
+
+def test_context_resources_without_regression_tests_are_rejected(checkout):
+    (checkout / "resources/context").mkdir(parents=True)
+    with pytest.raises(ValueError, match="missing tests: resources/context/tests"):
+        local.inventory(checkout)
+
+
 def test_fixture_only_directory_is_declared_without_python_test_collection(checkout):
     (checkout / "skills/example/tests/test_fixture.py").unlink()
     put(checkout, "skills/example/tests/front-door-rules.json", '{"rules": []}')
