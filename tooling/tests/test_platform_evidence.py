@@ -239,7 +239,9 @@ def test_real_collector_records_actual_execution_and_never_turns_skip_into_pass(
     root = tmp_path / "source"
     test = root / "tests/test_native.py"
     test.parent.mkdir(parents=True)
-    test.write_text("def test_native():\n    " + body + "\n")
+    # Exercise Windows CRLF with the same normalization policy as the real repo.
+    test.write_bytes(("def test_native():\r\n    " + body + "\r\n").encode())
+    (root / ".gitattributes").write_bytes((Path(__file__).parents[2] / ".gitattributes").read_bytes())
     plugin = root / "tooling/pytest_inventory.py"
     plugin.parent.mkdir()
     plugin.write_bytes((Path(__file__).parents[1] / "pytest_inventory.py").read_bytes())
@@ -247,6 +249,7 @@ def test_real_collector_records_actual_execution_and_never_turns_skip_into_pass(
     for command in (["init", "-q"], ["add", "."], ["-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
                     "-c", "core.hooksPath=/dev/null", "commit", "-qm", "synthetic native collector"]):
         subprocess.run(["git", "-C", str(root), *command], check=True, capture_output=True)
+    assert local.source_state(root)["dirty"] is False
     monkeypatch.setattr(pe, "REQUIREMENTS", {"tests/test_native.py::test_native": (sys.platform,)})
     out = tmp_path / "evidence"
     assert pe.collect(root, out) == expected
