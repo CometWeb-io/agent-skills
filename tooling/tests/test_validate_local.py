@@ -226,7 +226,47 @@ def test_zero_exit_is_insufficient_for_pass(checkout, monkeypatch, xml, expected
     mock_steps(monkeypatch, junit=xml)
     report = local.run(checkout, checkout.parent / "report")
     assert report["checks"][-1]["status"] == expected
+    assert report["status"] == ("incomplete" if expected == "incomplete" else "failed")
+
+
+def test_foreign_platform_skip_requires_evidence_instead_of_becoming_a_failure(checkout, monkeypatch):
+    mock_steps(monkeypatch, junit='''<testsuite><testcase
+      classname="tooling.tests.test_windows_portability"
+      name="test_windows_scanner_checks_handle_containment_and_junctions[repo-roaster]">
+      <skipped message="native Windows handle checks"/></testcase></testsuite>''')
+    monkeypatch.setattr(local.sys, "platform", "darwin")
+    report = local.run(checkout, checkout.parent / "report")
+    assert report["status"] == "incomplete"
+    step = report["checks"][-1]
+    assert step["status"] == "platform_evidence_required"
+    assert step["skipped_tests"][0]["required_platforms"] == ["win32"]
+
+
+def test_platform_test_failure_cannot_be_deferred(checkout, monkeypatch):
+    mock_steps(monkeypatch, junit='''<testsuite><testcase
+      classname="tooling.tests.test_windows_portability"
+      name="test_windows_scanner_checks_handle_containment_and_junctions[repo-roaster]">
+      <failure message="containment broken"/></testcase></testsuite>''')
+    report = local.run(checkout, checkout.parent / "report")
     assert report["status"] == "failed"
+    assert report["checks"][-1]["status"] == "failed"
+
+
+def test_verified_platform_coverage_closes_report_without_erasing_local_skip(checkout, monkeypatch):
+    # Synthetic provider seam; transport/authenticity rejection is tested separately.
+    cls = "tooling.tests.test_windows_portability"
+    name = "test_windows_scanner_checks_handle_containment_and_junctions[repo-roaster]"
+    mock_steps(monkeypatch, junit=f'<testsuite><testcase classname="{cls}" name="{name}"><skipped/></testcase></testsuite>')
+    monkeypatch.setattr(local.sys, "platform", "darwin")
+    proof = {"run_id": 1, "artifact_id": 2, "platform": "win32", "python_minor": f"{sys.version_info.major}.{sys.version_info.minor}",
+             "artifact_sha256": "a" * 64, "cases": [cls + "::" + name]}
+    monkeypatch.setattr(local.platform_evidence, "fetch_evidence", lambda *a: [proof])
+    report = local.run(checkout, checkout.parent / "report", platform_runs=(1,))
+    assert report["schema"] == "cometweb.local-validation/v2"
+    assert report["status"] == "passed" and report["github_actions_used"] is True
+    assert report["checks"][-1]["status"] == "passed_with_platform_evidence"
+    assert report["checks"][-1]["junit"]["skipped"] == 1
+    assert report["checks"][-1]["skipped_tests"][0]["evidence"]["artifact_id"] == 2
 
 
 def test_source_change_stops_remaining_steps(checkout, monkeypatch):

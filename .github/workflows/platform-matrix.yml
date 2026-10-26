@@ -29,6 +29,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
         with:
           persist-credentials: false
+          # Native evidence must describe the reviewed head, not a synthetic merge.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
@@ -56,3 +58,18 @@ jobs:
           tooling/tests/test_context_budget.py
           skills/skill-orchestrator/tests/test_workflow_ledger.py
           tooling/tests/test_ledger_concurrency.py
+
+      - name: Collect native platform evidence
+        shell: bash
+        env:
+          NATIVE_EVIDENCE_DIR: ${{ runner.temp }}/native-tests
+        run: uv run --frozen python tooling/platform_evidence.py --trusted-checkout --output "$NATIVE_EVIDENCE_DIR"
+
+      - name: Upload native platform evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: native-tests-${{ matrix.os }}-py${{ matrix.python }}-attempt-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-tests/
+          if-no-files-found: error
+          retention-days: 30

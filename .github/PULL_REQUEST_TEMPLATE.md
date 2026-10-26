@@ -12,10 +12,11 @@
 uv run python tooling/check_all.py --ci
 # A new report directory outside the checkout; nothing is overwritten.
 uv run python tooling/validate_local.py --trusted-checkout --output ../agent-skills-pr-validation --timeout 900
+# For deferred native tests, add --platform-run RUN_ID from this SHA's Platform matrix.
 ```
 
 - [ ] Canonical CI gates pass with zero failed or skipped gates
-- [ ] External validation `report.json` says `passed` (no skipped test cases)
+- [ ] External validation `report.json` says `passed` (no unverified skips; deferred tests have native evidence for the same SHA)
 - [ ] `./tooling/public-safety-check.sh` reports no findings
 - [ ] Registry and packages agree — generated files regenerated, not hand-edited
 

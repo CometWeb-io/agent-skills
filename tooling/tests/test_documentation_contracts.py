@@ -91,7 +91,9 @@ def test_pr_template_uses_canonical_gates_and_external_report_directory() -> Non
     assert "uv run python tooling/check_all.py --ci" in template
     assert "--output ../agent-skills-pr-validation" in template
     assert "--output .validation" not in template
-    assert "no skipped test cases" in template
+    assert "no unverified skips" in template
+    assert "native evidence for the same SHA" in template
+    assert "--platform-run" in template
 
 
 def test_third_party_notices_preserve_all_retained_adaptations() -> None:
