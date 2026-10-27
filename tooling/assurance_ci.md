@@ -80,7 +80,7 @@ to zero, and incomplete evidence does not get a behavioral verdict.
 
 `.github/workflows/assurance-ci.yml` runs on PRs to main or manual dispatch. It
 checks out trusted tooling at the fixed, reviewed commit
-`490b003f388cd6d40dbc2fee0bf6c5ead6936fcb` from `CometWeb-io/agent-skills`
+`762d3b51e19dac2e2af715218ec1104f5b56bc62` from `CometWeb-io/agent-skills`
 and the candidate separately,
 then reads candidate Git objects without importing or executing candidate files.
 Refs reach the shell only through quoted environment variables. Actions are

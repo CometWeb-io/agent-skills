@@ -299,7 +299,7 @@ def test_workflow_trust_boundary_and_permissions():
     steps = job['steps']
     assert steps[0]['with']['path'] == 'trusted'
     assert steps[0]['with']['repository'] == 'CometWeb-io/agent-skills'
-    assert steps[0]['with']['ref'] == '490b003f388cd6d40dbc2fee0bf6c5ead6936fcb'
+    assert steps[0]['with']['ref'] == '762d3b51e19dac2e2af715218ec1104f5b56bc62'
     assert steps[1]['with']['path'] == 'candidate'
     for step in steps[:2]:
         assert step['with']['persist-credentials'] is False and step['with']['fetch-depth'] == 0
