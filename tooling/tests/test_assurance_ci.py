@@ -3,7 +3,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
+import shlex
+import shutil
 import subprocess
 import sys
 
@@ -250,14 +253,64 @@ def test_workflow_trust_boundary_and_permissions():
     assert 'permissions' not in job
     steps = job['steps']
     assert steps[0]['with']['path'] == 'trusted'
-    assert steps[0]['with']['ref'] == '${{ github.event.pull_request.base.sha || github.sha }}'
+    assert steps[0]['with']['repository'] == 'CometWeb-io/agent-skills'
+    assert steps[0]['with']['ref'] == '490b003f388cd6d40dbc2fee0bf6c5ead6936fcb'
     assert steps[1]['with']['path'] == 'candidate'
     for step in steps[:2]:
         assert step['with']['persist-credentials'] is False and step['with']['fetch-depth'] == 0
     scripts = [step['run'] for step in steps if 'run' in step]
     assert len(scripts) == 1 and 'trusted/tooling/assurance_ci.py' in scripts[0]
+    assert scripts[0].startswith('python3 -Es ')
     assert '${{' not in scripts[0] and '--repo candidate' in scripts[0]
     assert 'secrets.' not in json.dumps(workflow) and 'write' not in json.dumps(workflow)
+
+
+@pytest.mark.parametrize('failure', [None, 'package', 'revision', 'checker', 'dependency'])
+def test_bootstrap_runs_only_trusted_tooling_and_preserves_failures(candidate, tmp_path_factory, failure):
+    root, base, _ = candidate
+    assert not (root / 'tooling/assurance_ci.py').exists()
+    workspace = tmp_path_factory.mktemp('assurance-workflow')
+    marker = workspace / 'candidate-executed'
+    malicious = f'from pathlib import Path\nPath({str(marker)!r}).touch()\nraise RuntimeError("candidate executed")\n'
+    for name in ('assurance_ci.py', 'audit_contracts.py', 'review_skill_evals.py', 'sitecustomize.py'):
+        (root / 'tooling' / name).write_text(malicious)
+    (root / 'sitecustomize.py').write_text(malicious)
+    if failure == 'package':
+        (root / 'skills/demo/LICENSE').unlink()
+    head = commit(root)
+    shutil.copytree(root, workspace / 'candidate')
+    trusted = workspace / 'trusted/tooling'
+    trusted.mkdir(parents=True)
+    for name in ('assurance_ci.py', 'audit_contracts.py', 'review_skill_evals.py'):
+        shutil.copyfile(TOOLS / name, trusted / name)
+    shutil.copytree(TOOLS / 'core', trusted / 'core', ignore=shutil.ignore_patterns('__pycache__'))
+    if failure in {'checker', 'dependency'}:
+        (trusted / ('assurance_ci.py' if failure == 'checker' else 'audit_contracts.py')).unlink()
+    workflow = yaml.safe_load((TOOLS.parent / '.github/workflows/assurance-ci.yml').read_text())
+    step = next(step for step in workflow['jobs']['report']['steps'] if 'run' in step)
+    command, redirect = step['run'].split(' > ')
+    assert redirect == '"$REPORT_PATH"'
+    env = {'BASE_SHA': base, 'HEAD_SHA': '0' * 40 if failure == 'revision' else head}
+    args = [env.get(arg[1:], arg) if arg.startswith('$') else arg for arg in shlex.split(command)]
+    args[0] = sys.executable
+    report_path = workspace / 'report.json'
+    with report_path.open('w') as output:
+        result = subprocess.run(args, cwd=workspace, stdout=output, stderr=subprocess.PIPE, text=True,
+                                env={**os.environ, 'PYTHONPATH': str(workspace / 'candidate/tooling')}, timeout=30)
+    assert not marker.exists()
+    if failure in {'checker', 'dependency'}:
+        assert result.returncode != 0 and not report_path.read_text()
+        return
+    report = json.loads(report_path.read_text())
+    assert result.returncode == {None: 0, 'package': 1, 'revision': 2}[failure], result.stderr
+    assert report['task_outcome'] == 'NOT_ASSESSED' and report['native_integration'] == 'NOT_RUN'
+    if failure != 'revision':
+        assert report['candidate']['base_commit'] == base
+        assert report['candidate']['head_commit'] == head
+        assert report['structural_checks']['status'] == ('FAIL' if failure else 'PASS')
+        assert report['comparison_evidence']['status'] == 'NOT_RUN'
+    else:
+        assert report['status'] == 'INVALID'
 
 
 @pytest.mark.parametrize('collision', ['id', 'response_id'])

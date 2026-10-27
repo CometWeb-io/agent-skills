@@ -76,7 +76,9 @@ to zero, and incomplete evidence does not get a behavioral verdict.
 ## Read-only GitHub workflow
 
 `.github/workflows/assurance-ci.yml` runs on PRs to main or manual dispatch. It
-checks out trusted tooling from the PR target base and the candidate separately,
+checks out trusted tooling at the fixed, reviewed commit
+`490b003f388cd6d40dbc2fee0bf6c5ead6936fcb` from `CometWeb-io/agent-skills`
+and the candidate separately,
 then reads candidate Git objects without importing or executing candidate files.
 Refs reach the shell only through quoted environment variables. Actions are
 pinned; checkout credentials are not persisted; repository permissions are
@@ -85,11 +87,21 @@ issues or approval writes. It uploads a JSON artifact even for policy/validation
 failures. Normal PR runs supply no model evidence and must keep task outcome
 `NOT_ASSESSED`.
 
-The first PR introducing this tool cannot execute it from a base where it does
-not exist. Bootstrap requires an independently reviewed integration, not a
-fallback that executes PR code. Changes to the checker itself are likewise
-reviewed through existing repository tests; the reporting job runs the base's
-checker. PR workflow definitions are themselves reviewable code, not an
+The target base can predate this tool: the bootstrap uses the explicitly reviewed
+snapshot above, approved before this workflow pin, rather than a moving PR head
+or an automatic fallback to candidate code. The entire trusted checkout, including
+transitive imports, comes from that commit. Python ignores environment-provided
+module paths and user site packages (`-Es`). Missing trusted objects or tooling
+fail the job; they never select a different checker. The base/head arguments still
+identify the actual comparison, independently of the checker revision.
+
+Checker changes in a PR do not change the checker executing that PR. They are
+tested by Validate and need a separate reviewed pin update to become trusted;
+merging code alone does not advance this pin. A green report means only the
+existing structural policy was satisfied, with missing model evidence still
+`NOT_RUN` and task outcome `NOT_ASSESSED`.
+
+PR workflow definitions are themselves reviewable code, not an
 organization-wide immutable policy boundary. A live PR run (including fork/ref
 availability), organization settings, branch protection and any GitHub App
 installation remain separate native integration gates. No such integration is

@@ -22,10 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      # Execute the target branch's reviewed tooling, never the candidate's code.
+      # Reviewed bootstrap snapshot; changing the checker requires a reviewed pin update.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          repository: CometWeb-io/agent-skills
+          ref: 490b003f388cd6d40dbc2fee0bf6c5ead6936fcb
           path: trusted
           persist-credentials: false
           fetch-depth: 0
@@ -41,7 +42,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || inputs.head }}
           REPORT_PATH: ${{ runner.temp }}/assurance-ci.json
         run: >-
-          python3 trusted/tooling/assurance_ci.py --repo candidate
+          python3 -Es trusted/tooling/assurance_ci.py --repo candidate
           --base "$BASE_SHA" --head "$HEAD_SHA" > "$REPORT_PATH"
       - name: Upload candidate-bound report
         if: always()
