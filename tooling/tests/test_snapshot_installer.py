@@ -53,6 +53,48 @@ def run(root, ref, tmp_path, *args, host="codex"):
                           env=env, capture_output=True, text=True, check=False, timeout=30)
 
 
+def test_alias_dependency_is_in_snapshot_receipt_and_rollback(source, tmp_path):
+    root, _ = source
+    alias = root / "skills/roast"
+    alias.mkdir()
+    (alias / "SKILL.md").write_text("synthetic alias")
+    (alias / "ALIAS_OF").write_text("kept\n")
+    ref = commit(root)
+    first = run(root, ref, tmp_path, "--skill", "roast")
+    assert first.returncode == 0, first.stderr
+    assert sorted(p.name for p in (tmp_path / "target").iterdir()) == ["kept", "roast"]
+    receipts = list((tmp_path / "store").glob("transaction-*/receipt.json"))
+    assert receipts, first.stdout
+    receipt = json.loads(receipts[-1].read_text())
+    assert receipt["skills"] == ["kept", "roast"]
+    (root / "skills/kept/SKILL.md").write_text("new canonical bytes")
+    newer = commit(root)
+    second = run(root, newer, tmp_path, "--skill", "roast", "--replace-conflicts")
+    assert second.returncode == 0, second.stderr
+    assert (tmp_path / "target/kept/SKILL.md").read_text() == "new canonical bytes"
+    rollback = run(root, ref, tmp_path, "--skill", "roast", "--replace-conflicts")
+    assert rollback.returncode == 0, rollback.stderr
+    assert (tmp_path / "target/kept/SKILL.md").read_text() == "reviewed old bytes"
+
+
+def test_failed_alias_install_restores_canonical_dependency(source, tmp_path):
+    root, _ = source
+    alias = root / "skills/roast"
+    alias.mkdir()
+    (alias / "SKILL.md").write_text("synthetic alias")
+    (alias / "ALIAS_OF").write_text("kept\n")
+    script = root / "scripts/install-codex.sh"
+    script.write_text(script.read_text() + '\ncase " $* " in *" --dry-run "*) ;; *) exit 42 ;; esac\n')
+    ref = commit(root)
+    original = tmp_path / "target/kept/SKILL.md"
+    original.parent.mkdir(parents=True)
+    original.write_text("existing user bytes")
+    result = run(root, ref, tmp_path, "--skill", "roast", "--replace-conflicts")
+    assert result.returncode != 0
+    assert original.read_text() == "existing user bytes"
+    assert not (tmp_path / "target/roast").exists()
+
+
 @pytest.mark.parametrize("host", HOSTS)
 def test_selected_snapshot_keeps_committed_bytes_after_dirty_source_and_source_removal(source, tmp_path, host):
     root, ref = source

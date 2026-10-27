@@ -1,6 +1,6 @@
 {
   "schema": "cometweb.package-policy/v1",
-  "revision": 4,
+  "revision": 5,
   "required_files": [
     "SKILL.md",
     "VERSION",
@@ -20,7 +20,8 @@
     "INSTALL.md",
     "RUNTIME.json",
     "VALIDATION.md",
-    "MATURITY.json"
+    "MATURITY.json",
+    "ALIAS_OF"
   ],
   "directories": [
     "scripts",

@@ -251,6 +251,12 @@ def test_full_suite_leaves_the_package_tests_to_their_own_gate() -> None:
     assert not any(t.startswith("--ignore=") for t in check_all.gate_argv(pytest_gate, True, frozenset({"pytest"})))
 
 
+def test_both_pytest_gates_expose_skipped_test_reasons() -> None:
+    for gate in check_all.GATES:
+        if gate.id in {'pytest', 'skill_package_tests'}:
+            assert '-rs' in gate.argv
+
+
 def test_the_runner_passes_the_selection_to_each_gate(monkeypatch, scratch) -> None:
     calls: list[list[str]] = []
 

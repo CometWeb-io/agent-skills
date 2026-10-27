@@ -2,6 +2,11 @@
 
 This repository is the public canonical source: `CometWeb-io/agent-skills`.
 
+Selecting an alias also installs its canonical dependency. For example,
+`--skill content-roaster` includes `content-reviewer`; the retained v6 adapter
+and review/v1 are described in [content compatibility](docs/CONTENT-REVIEW-COMPATIBILITY.md).
+Uninstalling only an alias leaves its canonical package installed.
+
 ```bash
 ./scripts/install-claude.sh --skill evidence-researcher --skill product-operator
 # or every skill in a chosen host:

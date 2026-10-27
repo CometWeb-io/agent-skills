@@ -1,6 +1,6 @@
 # Output contract
 
-Return a constructive review, with the few highest-impact findings first.
+Ordinary prose follows the compact checklist in `SKILL.md`, using the chosen editorial or adversarial profile. The v1 ledger below applies when a caller requires it; profile does not change its fields, statuses or validation. Return the highest-impact findings first. Legacy v6 remains in the content-roaster compatibility package; never pass it through the v1 gate.
 
 ```text
 schema: cometweb.content-review/v1

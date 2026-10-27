@@ -722,20 +722,20 @@
     },
     {
       "id": "content-reviewer",
-      "version": "1.7.6",
+      "version": "1.8.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Review an existing piece of content constructively against its brief, intended reader, factual/evidence requirements, structure, clarity, specificity, usefulness, and internal consistency. Do not use for adversarial roasting, full rewrites, evidence collection, humanization-only editing, or final release acceptance; route those to content-roaster, content-writer/ai-humanize, evidence-researcher, or artifact-acceptance. Use when the user wants editorial QA, actionable findings, a pre-publication review, or a reasoned assessment of what must change.",
+      "description": "Review editorial, marketing and sales content against its brief, reader and evidence, using editorial or adversarial checks. Use for actionable review, pre-publication QA, roasting or red-teaming claims and offers. Do not use for scientific peer review, code critique, primary research, full rewrites or final release acceptance; use the relevant specialist. content-roaster is the compatibility entry for the adversarial profile and legacy v6 tools.",
       "explicit_only": false,
       "owns": [
-        "constructive content review",
-        "evidence-backed editorial findings",
-        "review coverage and repair direction"
+        "editorial and adversarial content review",
+        "evidence and counterevidence checks",
+        "review coverage and repair verification"
       ],
       "does_not_own": [
-        "adversarial roasting",
+        "scientific peer review",
         "full content rewrites",
         "final publication acceptance"
       ],
@@ -744,7 +744,7 @@
         "Give me actionable editorial QA before publication"
       ],
       "negative_trigger_examples": [
-        "Brutally roast this landing page",
+        "Peer-review this scientific manuscript",
         "Rewrite the whole article"
       ],
       "inputs": [
@@ -845,17 +845,16 @@
     },
     {
       "id": "content-roaster",
-      "version": "6.2.0",
+      "version": "7.0.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
-      "alias_of": null,
-      "description": "Run evidence-anchored adversarial reviews of marketing, sales, product, editorial, and long-form content: landing and pricing pages, offers, emails, articles, case studies, ebooks, docs, and sales decks. Do not use for scientific peer review (science-roaster), code critique (repo-roaster), rewrite-only work (ai-humanize), one-off fact checks (evidence-researcher), or SEO/GEO/AEO audits (seo-geo-aeo-maxxing). Use to roast, tear apart, red-team, or brutally critique content, tying each criticism to source evidence and a repair.",
+      "alias_of": "content-reviewer",
+      "description": "Compatibility alias for content-reviewer with the ADVERSARIAL profile and retained cometweb.content-roaster/v6 tools. Use to roast, tear apart, red-team or brutally critique marketing, sales, product, editorial and long-form content with evidence and a repair. Do not use for scientific peer review, code critique, rewrite-only editing, primary fact research or SEO audits. This is one content review, not an extra reviewer or a multiagent mode.",
       "explicit_only": false,
       "owns": [
-        "adversarial content review",
-        "proof-debt and claim-pressure diagnosis",
-        "repair verification contracts"
+        "adversarial profile of content-reviewer",
+        "legacy v6 report adapter"
       ],
       "does_not_own": [
         "scientific peer review",
@@ -876,7 +875,9 @@
       "outputs": [
         "skill-specific artifact"
       ],
-      "dependencies": [],
+      "dependencies": [
+        "content-reviewer"
+      ],
       "compatible_hosts": [
         "chatgpt",
         "openai-codex",
@@ -2347,7 +2348,7 @@
     },
     {
       "id": "repo-roaster",
-      "version": "6.1.7",
+      "version": "6.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
@@ -2794,12 +2795,12 @@
     },
     {
       "id": "science-roaster",
-      "version": "6.1.7",
+      "version": "6.2.0",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "domain",
       "alias_of": null,
-      "description": "Run an adversarial Reviewer #2-style critique of scientific manuscripts, papers, protocols, theses, methods, analyses, reviewer responses, validation studies, and research drafts. Do not use for generic content critique, repository/code review, one-off claim verification, or research-program planning; route the first three to content-roaster, repo-roaster, or evidence-researcher, and leave program planning to the user. Use when the user asks to roast, peer-review, red-team, stress-test, re-review a revision of, or challenge scientific work and wants every material criticism anchored to exact source evidence, inferential type, validity domain, counterevidence search, minimum repair burden, and an observable verification condition.",
+      "description": "Run evidence-anchored critiques of scientific manuscripts, papers, protocols, theses, methods, analyses, reviewer responses, validation studies, and research drafts. Do not use for generic content critique, repository/code review, one-off claim verification, or research-program planning; route those to content-roaster, repo-roaster, evidence-researcher, or research-program-operator. Use when the user asks to roast, peer-review, red-team, stress-test, re-review a revision of, or challenge scientific work and wants criticism anchored to source evidence, inferential validity, counterevidence, minimum repair burden, and an observable verification condition.",
       "explicit_only": false,
       "owns": [
         "adversarial scientific peer review",
@@ -3332,7 +3333,7 @@
     },
     {
       "id": "skill-orchestrator-multiagent",
-      "version": "1.2.4",
+      "version": "1.2.5",
       "lifecycle": "active",
       "visibility": "public_canonical",
       "tier": "foundation",

@@ -833,3 +833,214 @@ def test_plan_rejects_canary_with_joined_token_already_in_instruction(tmp_path):
     data["canary"] = {"token": "JOINED-TOKEN", "instruction": "Print JOINED-TOKEN"}
     with pytest.raises(ValueError, match="invalid canary"):
         rhe.load_plan(make_plan(tmp_path, [data]))
+
+
+# Controlled fixture executables below are local process/adapter evidence, never
+# model effectiveness or a qualification of a real host's permissions.
+@pytest.fixture
+def three_arm_plan(tmp_path, monkeypatch):
+    import host_smoke
+    import shutil
+
+    source = tmp_path / "fixture-source"
+    source.mkdir()
+    files = {
+        "skills/release-readiness/SKILL.md": "Fixture instructions: inspect the local value.",
+        "skills/release-readiness/scripts/value.schema.json": '{"type": "integer", "const": 42}',
+        "skills/release-readiness/scripts/emit.py":
+            'import json\nfrom pathlib import Path\nprint(json.loads(Path(__file__).with_name("value.schema.json").read_text())["const"])\n',
+        ".claude-plugin/plugin.json": '{"name": "cometweb-agent-skills"}',
+    }
+    for name, content in files.items():
+        path = source / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
+
+    def fixture_stage(destination, root=ROOT):
+        shutil.copytree(source, destination)
+        return destination
+
+    monkeypatch.setattr(host_smoke, "stage_payload", fixture_stage)
+    plan = rhe.build_plan(skills=["release-readiness"], per_skill=1, negatives_per_skill=0, design="three-arm")
+    plan["tasks"] = [task("fixture", "PROMPT-FIXTURE", checks=("output",), preserve_literals=["42"])]
+    plan["plan_sha256"] = rhe.plan_digest(plan)
+    return plan
+
+
+def test_three_arm_plan_freezes_harness_and_rejects_legacy_conditions(three_arm_plan, tmp_path):
+    rhe.validate_plan(three_arm_plan)
+    assert three_arm_plan["schema"] == rhe.PLAN_SCHEMA_V3
+    assert three_arm_plan["experiment"]["execution_policy"]["status"] == "NOT_RUN"
+    opts = rhe.RunOptions(host="claude", bin="not-a-host", conditions=rhe.THREE_ARM_CONDITIONS,
+                          repeat=6, max_tasks=20, seed=19)
+    jobs = rhe.schedule(three_arm_plan, opts)
+    assert len(jobs) == 18  # an incomplete final triple is never scheduled
+    orders = [tuple(j["condition"] for j in jobs[i:i + 3]) for i in range(0, 18, 3)]
+    assert len(set(orders)) == 6
+    assert jobs == rhe.schedule(three_arm_plan, opts)
+    assert all(j["experiment"] == three_arm_plan["experiment"] for j in jobs)
+    with pytest.raises(ValueError, match="legacy"):
+        rhe.schedule(three_arm_plan, rhe.RunOptions(host="claude", bin="x", conditions=rhe.CONDITIONS))
+    broken = json.loads(json.dumps(three_arm_plan))
+    broken["experiment"]["harness_sha256"] = "0" * 64
+    broken["plan_sha256"] = rhe.plan_digest(broken)
+    with pytest.raises(ValueError, match="identity changed"):
+        rhe.validate_plan(broken)
+
+
+def test_three_arm_execute_refuses_unenforced_helpers_before_any_host_process(three_arm_plan, tmp_path):
+    binary, log = make_fake(tmp_path, FAKE_CLAUDE, {"PROMPT": {"output": "42"}}, "claude")
+    opts = rhe.RunOptions(host="claude", bin=str(binary), conditions=rhe.THREE_ARM_CONDITIONS, max_tasks=3)
+    out = tmp_path / "blocked"
+    result = rhe.execute(three_arm_plan, opts, out)
+    assert result["execution_status"] == "NOT_RUN"
+    assert result["not_run_jobs"] == 3
+    assert not log.exists()
+    records = [json.loads(p.read_text()) for p in out.glob("runs/*/record.json")]
+    assert len(records) == 3
+    assert all(r["not_run_reason"] == "ENFORCED_HELPER_BOUNDARY_UNAVAILABLE" for r in records)
+    assert all(r["resources"]["input_tokens"] is None and r["task_outcome_status"] == "not_assessed" for r in records)
+    grades = rhe.grade_run(out)
+    report = rhe.build_report([grades])
+    assert grades["counts"] == {"completed": 0, "errors": 0, "not_run": 3}
+    assert len(report["run_results"]) == 3
+    assert all(c["pairs"] == 0 and c["exact_p_two_sided"] is None for c in report["matched_comparisons"])
+    manifest = json.loads((out / "manifest.json").read_text())
+    manifest["experiment"]["harness_sha256"] = "0" * 64
+    (out / "manifest.json").write_text(json.dumps(manifest))
+    with pytest.raises(ValueError, match="manifest differs"):
+        rhe.grade_run(out)
+
+
+def test_three_arm_local_fixture_really_executes_identical_helper_and_reads_only_skill_in_c(
+        three_arm_plan, tmp_path):
+    import host_smoke
+
+    binary = tmp_path / "fixture-host"
+    binary.write_text(f'''#!{sys.executable}
+import json, pathlib, subprocess, sys
+sys.stdin.read()
+root = pathlib.Path.cwd() / "bundled/skills/release-readiness"
+helper = root / "scripts/emit.py"
+instructions = root / "SKILL.md"
+value = subprocess.check_output([sys.executable, str(helper)], text=True).strip() if helper.exists() else None
+result = {{"value": value, "instructions": instructions.read_text() if instructions.exists() else None}}
+print(json.dumps({{"type": "result", "result": json.dumps(result)}}))
+''')
+    binary.chmod(0o700)
+    opts = rhe.RunOptions(host="claude", bin=str(binary), conditions=rhe.THREE_ARM_CONDITIONS, max_tasks=3)
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    stage = host_smoke.stage_payload(scratch / "stage")
+    out = tmp_path / "fixture-results"
+    rhe.prepare_output(out)
+    observations = {}
+    receipts = {}
+    for job in rhe.schedule(three_arm_plan, opts):
+        record = rhe.run_job(job, opts, rhe.HOSTS["claude"], stage, out, scratch, {"release-readiness"})
+        run_dir = out / "runs" / job["run_id"]
+        observations[job["condition"]] = json.loads((run_dir / "output.md").read_text())
+        receipts[job["condition"]] = record
+        assert record["status"] == "executed"
+        assert record["model"] is None and record["resources"]["input_tokens"] is None
+        assert record["metadata_status"]["model"] == "unavailable"
+        assert record["receipt"]["files"]["output.md"]["sha256"] == rhe.sha256((run_dir / "output.md").read_bytes())
+    assert observations["native"] == {"value": None, "instructions": None}
+    assert observations["tools"] == {"value": "42", "instructions": None}
+    assert observations["skill"] == {"value": "42", "instructions": "Fixture instructions: inspect the local value."}
+    assert receipts["tools"]["bundled_tools_sha256"] == receipts["skill"]["bundled_tools_sha256"]
+    commands = [r["argv"] for r in receipts.values()]
+    assert {c[c.index("--tools") + 1] for c in commands} == {"Read,Glob,Grep,Bash,Skill"}
+
+
+def test_three_arm_matches_within_cohort_and_never_overwrites_duplicates():
+    def rows():
+        return [{"run_id": c, "task_id": "case", "repeat": 0, "condition": c, "model": "fixture-model",
+                 "skill": "release-readiness", "run_status": "executed", "checks": {"output": {"status": "pass"}}}
+                for c in rhe.THREE_ARM_CONDITIONS]
+    grades = {"results": rows()}
+    comparisons = rhe.matched_comparisons([grades])
+    assert len(comparisons) == 3 and all(c["pairs"] == 1 for c in comparisons)
+    # Combining separate one-arm cohorts must not invent same-case matches.
+    assert all(c["pairs"] == 0 for c in rhe.matched_comparisons([
+        {"results": [rows()[0]]}, {"results": [rows()[1]]}]))
+    grades["results"].append(dict(grades["results"][0]))
+    native_tools = rhe.matched_comparisons([grades])[0]
+    assert native_tools["pairs"] == 0 and native_tools["ambiguous_cases"] == 1
+    grades = {"results": rows()}
+    grades["results"][1]["model"] = None
+    assert rhe.matched_comparisons([grades])[0]["pairs"] == 0
+
+
+def test_three_arm_partial_failure_and_schedule_stop_keep_every_receipt(three_arm_plan, tmp_path, monkeypatch):
+    # Inject fixture readiness only; this does not qualify or enable a native backend.
+    frozen_policy = rhe.three_arm_execution_policy("all")
+    monkeypatch.setattr(rhe, "three_arm_execution_policy", lambda host:
+                        frozen_policy if host == "all" else {"status": "READY", "scope": "fixture_only"})
+    binary, _ = make_fake(tmp_path, FAKE_CLAUDE,
+                          {"PROMPT": {"output": "partial 42", "exit": 23}}, "claude")
+    opts = rhe.RunOptions(host="claude", bin=str(binary), conditions=rhe.THREE_ARM_CONDITIONS,
+                          max_tasks=3, max_consecutive_errors=1)
+    out = tmp_path / "failure"
+    summary = rhe.execute(three_arm_plan, opts, out)
+    assert summary["error_jobs"] == 1 and summary["not_run_jobs"] == 2 and summary["not_started_jobs"] == 2
+    records = [json.loads(p.read_text()) for p in sorted(out.glob("runs/*/record.json"))]
+    assert len(records) == 3
+    failure = next(r for r in records if r["status"] == "error")
+    assert failure["receipt"]["output_status"] == "partial_or_unavailable"
+    assert "output.md" in failure["receipt"]["files"]
+    assert all(r["resources"]["input_tokens"] is None for r in records if r["status"] == "not_run")
+    assert rhe.grade_run(out)["counts"] == {"completed": 0, "errors": 1, "not_run": 2}
+
+
+def test_three_arm_version_probe_failure_keeps_terminal_records(three_arm_plan, tmp_path, monkeypatch):
+    frozen_policy = rhe.three_arm_execution_policy("all")
+    monkeypatch.setattr(rhe, "three_arm_execution_policy", lambda host:
+                        frozen_policy if host == "all" else {"status": "READY", "scope": "fixture_only"})
+    binary = tmp_path / "failing-version"
+    binary.write_text(f"#!{sys.executable}\nimport sys\nprint('partial version')\nsys.exit(23)\n")
+    binary.chmod(0o700)
+    opts = rhe.RunOptions(host="claude", bin=str(binary), conditions=rhe.THREE_ARM_CONDITIONS, max_tasks=3)
+    out = tmp_path / "version-failure"
+    summary = rhe.execute(three_arm_plan, opts, out)
+    assert summary["error_jobs"] == 3 and summary["host_version"] is None
+    assert (out / "host-version.stdout.txt").read_text() == "partial version\n"
+    records = [json.loads(p.read_text()) for p in out.glob("runs/*/record.json")]
+    assert len(records) == 3 and all(r["error_reason"] == "HOST_VERSION_PROBE_FAILED" for r in records)
+    assert all(r["resources"]["cost_usd"] is None for r in records)
+
+
+def test_three_arm_cli_dry_run_never_invokes_binary(three_arm_plan, tmp_path, capsys):
+    plan_path = tmp_path / "three-arm.json"
+    plan_path.write_text(json.dumps(three_arm_plan))
+    binary, log = make_fake(tmp_path, FAKE_CLAUDE, {"PROMPT": {"output": "42"}}, "claude")
+    assert rhe.main(["run", "--plan", str(plan_path), "--host", "claude", "--bin", str(binary),
+                     "--condition", "three-arm", "--max-tasks", "3"]) == 0
+    printed = capsys.readouterr().out
+    assert "DRY RUN" in printed and "native,tools,skill" in printed and "bytes/4" in printed
+    assert not log.exists()
+
+
+def test_three_arm_process_start_failure_keeps_existing_job_receipt(three_arm_plan, tmp_path, monkeypatch):
+    frozen_policy = rhe.three_arm_execution_policy("all")
+    monkeypatch.setattr(rhe, "three_arm_execution_policy", lambda host:
+                        frozen_policy if host == "all" else {"status": "READY", "scope": "fixture_only"})
+    binary, _ = make_fake(tmp_path, FAKE_CLAUDE, {"PROMPT": {"output": "42"}}, "claude")
+    original = rhe._run_capped
+
+    def fail_task(argv, *args, **kwargs):
+        if argv[-1] != "--version":
+            raise PermissionError("fixture process denied")
+        return original(argv, *args, **kwargs)
+
+    monkeypatch.setattr(rhe, "_run_capped", fail_task)
+    opts = rhe.RunOptions(host="claude", bin=str(binary), conditions=rhe.THREE_ARM_CONDITIONS,
+                          max_tasks=3, max_consecutive_errors=1)
+    out = tmp_path / "start-failure"
+    result = rhe.execute(three_arm_plan, opts, out)
+    assert result["error_jobs"] == 1 and result["not_run_jobs"] == 2
+    records = [json.loads(p.read_text()) for p in out.glob("runs/*/record.json")]
+    failure = next(r for r in records if r["status"] == "setup_error")
+    assert failure["error_type"] == "PermissionError"
+    assert failure["receipt"]["files"]["prompt.txt"]["sha256"]
+    assert failure["resources"]["input_tokens"] is None

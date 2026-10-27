@@ -80,3 +80,60 @@ def preflight(host: str, environment: dict[str, str] | None = None,
         "binary": binary,
         "credential_names": list(profile["credential_env"]),
     }
+
+
+THREE_ARM_CONTRACT = "cometweb.real-host-three-arm/v1"
+THREE_ARM_CONDITIONS = ("native", "tools", "skill")
+# B and C share every non-instruction file. Tests/evals are not runtime tools.
+INSTRUCTION_SUFFIXES = {".md", ".mdc", ".txt", ".rst"}
+EXCLUDED_PARTS = {"agents", "evals", "evaluation", "tests", "__pycache__"}
+
+
+def stage_condition(source: Path, destination: Path, condition: str) -> dict[str, Any]:
+    """Expose different local payloads; this is not filesystem confinement."""
+    import hashlib
+
+    if condition not in THREE_ARM_CONDITIONS:
+        raise ValueError("unknown three-arm condition")
+    destination.mkdir(parents=True, exist_ok=False)
+    files: dict[str, str] = {}
+    tools: dict[str, str] = {}
+    if condition != "native":
+        for path in sorted(source.rglob("*")):
+            relative = path.relative_to(source)
+            if not path.is_file() or any(part in EXCLUDED_PARTS for part in relative.parts):
+                continue
+            # Copy reviewed runtime categories only, never JSON policy packs, evals,
+            # source maps, prompts or contract bindings under a "data" label.
+            runtime_tree = relative.parts[0] in {"skills", "resources"}
+            tool_file = runtime_tree and (
+                ("scripts" in relative.parts and path.suffix.lower() in {".py", ".sh", ".js", ".mjs", ".ts"})
+                or path.name.endswith(".schema.json") or path.name == "requirements.txt")
+            instruction = not tool_file
+            if not tool_file:
+                if runtime_tree and path.suffix.lower() not in {".md", ".mdc", ".rst"}:
+                    continue
+                if condition == "tools":
+                    continue
+            target = destination / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, target)
+            digest = hashlib.sha256(target.read_bytes()).hexdigest()
+            files[relative.as_posix()] = digest
+            if not instruction:
+                tools[relative.as_posix()] = digest
+    return {"contract": THREE_ARM_CONTRACT, "condition": condition, "files": files,
+            "bundled_tools": tools, "instructions_exposed": condition == "skill",
+            "access_boundary": "fresh_profile_and_payload_exposure_not_os_sandbox"}
+
+
+def three_arm_execution_policy(host: str) -> dict[str, Any]:
+    """Helper probes do not yet qualify the profile across every native host tool."""
+    from isolated_exec import helper_backend_policy
+
+    return {"status": "NOT_RUN", "host": host,
+            "reason": "ENFORCED_HELPER_BOUNDARY_UNAVAILABLE",
+            "required_policy": {"filesystem": "owned_job_directory_only",
+                                "network": "deny", "environment": "credential_allowlist"},
+            "boundary_verified": False, "helper_backend": helper_backend_policy(),
+            "native_exec_profile": "CONFIG_SELECTION_NOT_YET_VERIFIED"}

@@ -1,8 +1,10 @@
 # Content Reviewer
 
-Version **1.7.6**.
+Version **1.8.0**.
 
-Review an existing piece of content constructively against its brief, intended reader, factual/evidence requirements, structure, clarity, specificity, usefulness, and internal consistency. Use when the user wants editorial QA, actionable findings, a pre-publication review, or a reasoned assessment of what must change. Do not use for adversarial roasting, full rewrites, evidence collection, humanization-only editing, or final release acceptance; route those to content-roaster, content-writer/ai-humanize, evidence-researcher, or artifact-acceptance.
+Review existing content with one editorial/adversarial checklist. Preserve the brief, source evidence, counterevidence, diagnosis and repair verification. content-roaster is the compatibility entry for the adversarial profile and retained v6 tools. Scientific/code review, primary research, full rewrites and final acceptance remain separate tasks.
+
+This is an optional evidence checklist and contract entry, not a default extra review pass. Start with a direct model review; add this package when its maintained checks or a receiving contract are useful. Comparative task-success advantage remains unestablished.
 
 ## Install
 

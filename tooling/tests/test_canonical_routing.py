@@ -15,6 +15,19 @@ POLICY = json.loads((ROOT/'registry/routing-policy.json').read_text())
 CONTRACT = json.loads((ROOT/'evals/routing/canonical-suite.json').read_text())
 
 
+def test_content_alias_keeps_legacy_entry_and_cannot_bypass_canonical_exclusion():
+    result = route("Use $content-roaster on this offer", REGISTRY, POLICY)
+    assert result["primary_skill"] == "content-roaster"
+    result = route("Without content-reviewer, use $content-roaster on this offer", REGISTRY, POLICY)
+    assert result["blocked"].get("content-roaster") == "explicitly_excluded"
+    assert "content-roaster" not in result["candidates"]
+    unavailable = deepcopy(REGISTRY)
+    next(e for e in unavailable["skills"] if e["id"] == "content-reviewer")["lifecycle"] = "retired"
+    result = route("Use $content-roaster on this offer", unavailable, POLICY)
+    assert result["blocked"].get("content-roaster") == "canonical_skill_unavailable"
+    assert "content-roaster" not in result["candidates"]
+
+
 @pytest.mark.parametrize('case', CONTRACT['cases'], ids=lambda c:c['id'])
 def test_canonical_contract(case):
     result = route(case['prompt'], REGISTRY, POLICY)

@@ -7419,6 +7419,200 @@
         "research-program-operator"
       ],
       "reason": "Pojedynczy claim należy do evidence-researcher."
+    },
+    {
+      "id": "r4b-skill-orchestrator-1",
+      "prompt": "Fact-check the deck, then roast it, then gate the final version.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "The requested steps resolve their local targets independently and require different specialists."
+    },
+    {
+      "id": "r4c-skill-orchestrator-1",
+      "prompt": "Verify the claims in the proposal, then roadmap the work it implies.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "The requested steps resolve their local targets independently and require different specialists."
+    },
+    {
+      "id": "r6-repair-operator-back-reference",
+      "prompt": "Fix the issues from yesterday's repo roast.",
+      "lang": "en",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "A previous roast supplies findings, or is explicitly refused; the live request repairs accepted review input."
+    },
+    {
+      "id": "r6-repair-operator-answered-no",
+      "prompt": "Roast of the codebase? No. Fix the accepted findings.",
+      "lang": "en",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "A previous roast supplies findings, or is explicitly refused; the live request repairs accepted review input."
+    },
+    {
+      "id": "references-local-targets-pl",
+      "prompt": "Zweryfikuj twierdzenia w prezentacji, potem zroastuj ją, następnie odbierz wersję końcową.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-local-targets-code-en",
+      "prompt": "Fact-check the codebase claims, then roast it, then gate the final version.",
+      "lang": "en",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-verb-roadmap-pl",
+      "prompt": "Zweryfikuj twierdzenia w ofercie, potem opracuj roadmapę.",
+      "lang": "pl",
+      "expected_primary_skill": "skill-orchestrator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-review-source-pl",
+      "prompt": "Napraw błędy z wczorajszego roastu repo.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-review-source-reported-en",
+      "prompt": "Address the problems reported by the last repository audit.",
+      "lang": "en",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-refused-question-pl",
+      "prompt": "Roast repozytorium? Nie! Popraw zaakceptowane uwagi.",
+      "lang": "pl",
+      "expected_primary_skill": "repair-operator",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-refused-question-only-en",
+      "prompt": "Roast of the codebase? No.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-refused-question-only-pl",
+      "prompt": "Roast repo? Nie.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repo-roaster"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-local-target-unresolved-en",
+      "prompt": "Roast it, then gate it.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator",
+        "repo-roaster",
+        "artifact-acceptance"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-source-only-en",
+      "prompt": "The issues from yesterday's repo roast are in the attached file.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator",
+        "repo-roaster"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-refused-source-repair-en",
+      "prompt": "Do not fix the issues from yesterday's repo roast.",
+      "lang": "en",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator",
+        "repo-roaster"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-refused-source-repair-pl",
+      "prompt": "Nie naprawiaj uwag po ostatnim audycie repo.",
+      "lang": "pl",
+      "expected_primary_skill": null,
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator",
+        "repo-roaster"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-local-negated-review-pl",
+      "prompt": "Zweryfikuj twierdzenia w prezentacji, potem nie zroastuj jej.",
+      "lang": "pl",
+      "expected_primary_skill": "evidence-researcher",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "skill-orchestrator",
+        "content-roaster"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
+    },
+    {
+      "id": "references-refusal-no-problem-en",
+      "prompt": "Roast of the codebase? No problem. Proceed.",
+      "lang": "en",
+      "expected_primary_skill": "repo-roaster",
+      "allowed_secondary_skills": [],
+      "must_not_trigger": [
+        "repair-operator"
+      ],
+      "reason": "Distinguish live actions, local targets, prior review inputs and refusals; unresolved or absent requests abstain."
     }
   ]
 }

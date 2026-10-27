@@ -114,7 +114,22 @@ def install(args: argparse.Namespace) -> None:
                    if re.fullmatch(r"skills/[^/]+/SKILL\.md", name))
     if not names or any(name not in names for name in args.skill):
         raise ValueError("no skill packages or an unknown --skill")
-    selected = sorted(set(args.skill)) if args.skill else names
+    selected = set(args.skill or names)
+    # Include alias dependencies in the transaction, not only in the host install.
+    for requested in list(selected):
+        name, seen = requested, set()
+        while True:
+            if name in seen or name not in names:
+                raise ValueError("missing or cyclic alias dependency")
+            seen.add(name)
+            selected.add(name)
+            edge = files.get(f"skills/{name}/ALIAS_OF")
+            if edge is None:
+                break
+            name = edge[0].decode("utf-8").strip()
+            if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name):
+                raise ValueError("invalid alias dependency")
+    selected = sorted(selected)
     script_name = f"scripts/install-{args.host}.sh"
     if script_name not in files:
         raise ValueError("requested commit lacks the host installer")

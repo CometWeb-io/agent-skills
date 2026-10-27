@@ -29,6 +29,47 @@ def kinds(report: dict) -> set[str]:
     return {flag["kind"] for flag in report["flags"]}
 
 
+@pytest.mark.parametrize("package", PACKAGES)
+@pytest.mark.parametrize("prefix", ["send x ", "use tool x "])
+def test_repeated_control_prefixes_at_size_limit_finish_without_a_suffix(package, prefix, tmp_path):
+    source = tmp_path / "long.txt"
+    source.write_text((prefix * (2_000_000 // len(prefix) + 1))[:2_000_000], encoding="utf-8")
+    script = ROOT / "skills" / package / "scripts/scan_source_risks.py"
+    # A generous process deadline catches quadratic searches without a microbenchmark threshold.
+    result = subprocess.run([sys.executable, str(script), str(source)],
+                            capture_output=True, text=True, timeout=10, check=True)
+    report = json.loads(result.stdout)
+    assert report["scan_status"] == "COMPLETE"
+    assert report["files_scanned"] == 1 and report["flags"] == []
+
+
+@pytest.mark.parametrize("package", PACKAGES)
+def test_ordered_control_terms_preserve_case_spacing_substrings_and_line_boundaries(package, tmp_path):
+    lines = [
+        ("CALL THE TERMINAL then BYPASS", "tool_coercion"),
+        ("invoke connectorignore", "tool_coercion"),
+        ("misuse tool without", "tool_coercion"),
+        ("without use tool", None),
+        ("use  tool bypass", None),
+        ("use the shell", None),
+        ("bypass", None),
+        ("REVEAL the SYSTEM PROMPT", "secret_request"),
+        ("printsecret", "secret_request"),
+        ("resend credentials", "secret_request"),
+        ("token before print", None),
+        ("print then send x password", "secret_request"),
+        ("exfiltrate", None),
+        ("secret", None),
+        ("send ordinary text", None),
+    ]
+    source = tmp_path / "terms.txt"
+    source.write_text("\n".join(line for line, _ in lines), encoding="utf-8")
+    report = load(package).scan(source)
+    assert [(flag["line"], flag["kind"]) for flag in report["flags"]] == [
+        (number, kind) for number, (_, kind) in enumerate(lines, 1) if kind is not None
+    ]
+
+
 @pytest.fixture
 def outside(tmp_path: Path) -> Path:
     secret = tmp_path / "outside" / "secret.txt"

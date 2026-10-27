@@ -132,6 +132,45 @@ def skill_count() -> int:
     return len(names)
 
 
+@pytest.mark.parametrize("host", ["claude", "codex", "cursor"])
+def test_selected_alias_installs_canonical_dependency(host, tmp_path):
+    root = tmp_path / "source"
+    shutil.copytree(ROOT / "scripts", root / "scripts", ignore=shutil.ignore_patterns("__pycache__"))
+    for name in ("review", "roast", "bridge", "unused"):
+        package = root / "skills" / name
+        package.mkdir(parents=True)
+        (package / "SKILL.md").write_text("synthetic package")
+    (root / "skills/roast/ALIAS_OF").write_text("bridge\n")
+    (root / "skills/bridge/ALIAS_OF").write_text("review\n")
+    target = tmp_path / "target"
+    env = {**os.environ, f"{host.upper()}_SKILLS_DIR": str(target),
+           "CURSOR_RULES_DIR": str(tmp_path / "rules")}
+    result = subprocess.run([str(root / f"scripts/install-{host}.sh"), "--skill", "roast"],
+                            env=env, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    assert sorted(p.name for p in target.iterdir()) == ["bridge", "review", "roast"]
+    result = subprocess.run([str(root / f"scripts/install-{host}.sh"), "--uninstall", "--skill", "roast"],
+                            env=env, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    assert (target / "review/SKILL.md").is_file() and not (target / "roast").exists()
+
+
+@pytest.mark.parametrize("target_value", ["missing", "roast", "../outside", "review\nunused"])
+def test_invalid_alias_dependency_refuses_before_writing(target_value, tmp_path):
+    root = tmp_path / "source"
+    shutil.copytree(ROOT / "scripts", root / "scripts", ignore=shutil.ignore_patterns("__pycache__"))
+    package = root / "skills/roast"
+    package.mkdir(parents=True)
+    (package / "SKILL.md").write_text("synthetic package")
+    (package / "ALIAS_OF").write_text(target_value + "\n")
+    target = tmp_path / "target"
+    result = subprocess.run([str(root / "scripts/install-claude.sh"), "--skill", "roast"],
+                            env={**os.environ, "CLAUDE_SKILLS_DIR": str(target)},
+                            capture_output=True, text=True, check=False)
+    assert result.returncode != 0
+    assert not target.exists()
+
+
 def install(
     host: str, target: Path, backup: Path, *, rules: Path | None = None,
     root: Path = ROOT, replace_conflicts: bool = False,

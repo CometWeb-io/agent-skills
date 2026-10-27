@@ -55,7 +55,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tooling"))
-from real_host_adapters import preflight as runtime_preflight  # noqa: E402
+from real_host_adapters import (preflight as runtime_preflight, stage_condition,
+                                THREE_ARM_CONTRACT, THREE_ARM_CONDITIONS, three_arm_execution_policy)  # noqa: E402
 
 PLAN_SCHEMA = "cometweb.real-host-eval-plan/v1"
 RUN_SCHEMA = "cometweb.real-host-eval-run/v1"
@@ -72,6 +73,7 @@ RUN_SCHEMA_V2 = "cometweb.real-host-eval-run/v2"
 RECORD_SCHEMA_V2 = "cometweb.real-host-eval-record/v2"
 GRADES_SCHEMA_V2 = "cometweb.real-host-eval-grades/v2"
 REPORT_SCHEMA_V2 = "cometweb.real-host-eval-report/v2"
+PLAN_SCHEMA_V3 = "cometweb.real-host-eval-plan/v3"
 PLAN_SCHEMA = PLAN_SCHEMA_V2
 RUN_SCHEMA = RUN_SCHEMA_V2
 RECORD_SCHEMA = RECORD_SCHEMA_V2
@@ -108,7 +110,7 @@ class Host:
     overhead_tokens: int
     # Whether the host enforces a per-run dollar cap itself.
     native_budget: bool
-    # Read-only tools, so a run cannot change anything outside its temp directory.
+    # Legacy host tool profile. This string alone is not filesystem confinement.
     tools: str = ""
 
 
@@ -308,7 +310,9 @@ def _model_cases(root: Path) -> list[tuple[str, dict]]:
 
 def build_plan(root: Path = ROOT, *, skills: list[str] | None = None, per_skill: int = 3,
                negatives_per_skill: int = 1, langs: list[str] | None = None, seed: int = 1,
-               canary: bool = False, rng_hex: Any = None) -> dict[str, Any]:
+               canary: bool = False, rng_hex: Any = None, design: str = "legacy") -> dict[str, Any]:
+    if design not in {"legacy", "three-arm"}:
+        raise ValueError("design must be legacy or three-arm")
     if not 1 <= per_skill <= 50 or not 0 <= negatives_per_skill <= 50:
         raise ValueError("--per-skill must be 1-50 and --negatives-per-skill 0-50")
     known = {s["id"] for s in registry(root)}
@@ -402,8 +406,39 @@ def build_plan(root: Path = ROOT, *, skills: list[str] | None = None, per_skill:
         name: hashes[name] for name in ("candidate_sources", "benchmark_sources", "rubric_sources")
     }
     plan.update(plan["frozen_hashes"])
+    if design == "three-arm":
+        plan["schema"] = PLAN_SCHEMA_V3
+        plan["experiment"] = three_arm_identity(root)
     plan["plan_sha256"] = plan_digest(plan)
     return plan
+
+
+def three_arm_identity(root: Path = ROOT) -> dict[str, Any]:
+    """Freeze the adapter implementation and each exposed condition payload."""
+    from host_smoke import stage_payload
+
+    with tempfile.TemporaryDirectory(prefix="cw-three-arm-freeze-") as tmp:
+        source = stage_payload(Path(tmp) / "source", root)
+        arms = {c: stage_condition(source, Path(tmp) / c, c) for c in THREE_ARM_CONDITIONS}
+    harness, _ = inventory_digest(root, sorted((root / "tooling").glob("*.py"))
+                                  + sorted((root / "protocol").rglob("*.json")))
+    try:
+        revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True,
+                                  text=True, check=False)  # nosec B603 B607 - fixed local read-only command
+        source_commit = revision.stdout.strip() if revision.returncode == 0 else None
+    except OSError:
+        source_commit = None
+    if source_commit and not re.fullmatch(r"[0-9a-f]{40,64}", source_commit):
+        source_commit = None
+    return {"contract": THREE_ARM_CONTRACT, "source_commit": source_commit,
+            "source_commit_status": "observed" if source_commit else "unavailable",
+            "conditions": list(THREE_ARM_CONDITIONS),
+            "harness_sha256": harness,
+            "condition_payload_sha256": {c: sha256(canonical(a["files"])) for c, a in arms.items()},
+            "bundled_tools_sha256": sha256(canonical(arms["tools"]["bundled_tools"])),
+            "order_method": "seeded_shuffled_six_permutation_blocks",
+            "tool_bundle_policy": "scripts_and_formal_schemas_no_policy_packs/v1",
+            "execution_policy": three_arm_execution_policy("all")}
 
 
 def _polish(text: str) -> bool:
@@ -415,7 +450,7 @@ def plan_digest(plan: dict[str, Any]) -> str:
 
 
 def validate_plan(plan: Any, root: Path = ROOT) -> None:
-    if not isinstance(plan, dict) or plan.get("schema") not in (PLAN_SCHEMA_V1, PLAN_SCHEMA_V2):
+    if not isinstance(plan, dict) or plan.get("schema") not in (PLAN_SCHEMA_V1, PLAN_SCHEMA_V2, PLAN_SCHEMA_V3):
         raise ValueError("not a supported real-host eval plan")
     if plan.get("plan_sha256") != plan_digest(plan):
         raise ValueError("plan was edited after it was planned (plan_sha256 does not match); re-run plan")
@@ -467,7 +502,7 @@ def validate_plan(plan: Any, root: Path = ROOT) -> None:
                 raise ValueError(f"task {task_id}: invalid canary")
             if canary["token"] in canary["instruction"]:
                 raise ValueError(f"task {task_id}: invalid canary: joined token already appears in instruction")
-    if plan["schema"] == PLAN_SCHEMA_V2:
+    if plan["schema"] in (PLAN_SCHEMA_V2, PLAN_SCHEMA_V3):
         hashes = plan.get("frozen_hashes")
         names = ("candidate_sha256", "payload_sha256", "benchmark_sha256", "rubric_sha256", "host_config_sha256")
         if plan.get("acceptance_version") != 2 or not isinstance(hashes, dict) or any(
@@ -475,6 +510,8 @@ def validate_plan(plan: Any, root: Path = ROOT) -> None:
                 or plan.get(k) != hashes[k] for k in names):
             raise ValueError("v2 plan needs complete consistent frozen hashes and acceptance_version=2")
         assert_fingerprints_current(plan, root)
+    if plan["schema"] == PLAN_SCHEMA_V3 and plan.get("experiment") != three_arm_identity(root):
+        raise ValueError("three-arm experiment identity changed; re-run plan")
 
 
 def load_plan(path: Path) -> dict[str, Any]:
@@ -492,6 +529,39 @@ def render_prompt(task: dict[str, Any]) -> str:
     if material:
         text += "\n\nMaterial:\n```json\n" + json.dumps(material, indent=2, ensure_ascii=False) + "\n```"
     return text
+
+
+def render_job_prompt(task: dict[str, Any], condition: str) -> str:
+    text = render_prompt(task)
+    if condition in THREE_ARM_CONDITIONS:
+        text += ("\n\nExecution boundary: use only the current working directory and its local files. "
+                 "Do not read parent directories, absolute external paths, other runs, or host profiles. "
+                 "Local bundled helpers, when present, are under ./bundled/skills/*/scripts/; "
+                 "inspect their local interface before executing. Do not use network services. "
+                 "This is an instruction boundary, not an OS sandbox.")
+    return text
+
+
+def observation_receipt(record: dict[str, Any], run_dir: Path) -> dict[str, Any]:
+    """Evidence pointers survive errors; unknown measurements never become zero."""
+    files = {p.name: {"sha256": sha256(p.read_bytes()), "bytes": p.stat().st_size}
+             for p in sorted(run_dir.iterdir()) if p.is_file() and not p.is_symlink()
+             and p.stat().st_nlink == 1 and p.name != "record.json"}
+    record["receipt"] = {"files": files,
+                         "output_status": "complete" if record["status"] == "executed" else "partial_or_unavailable"}
+    record["metadata_status"] = {
+        "model": "host_reported" if record.get("model") else "unavailable",
+        "reasoning_effort": "unavailable", "provider_revision": "unavailable",
+        "hardware": "unavailable", "harness": "source_hashed" if record.get("experiment") else "legacy_unfrozen"}
+    record["resources"] = {
+        "input_tokens": record.get("input_tokens"), "output_tokens": record.get("output_tokens"),
+        "cost_usd": record.get("cost_usd"), "cost_source": record.get("cost_source", "unavailable"),
+        "elapsed_seconds": record.get("elapsed_seconds"), "tool_calls": None,
+        "retries": None, "reasoning_tokens": None,
+        "context_tokens": None, "peak_memory_bytes": None}
+    record["task_outcome_observation"] = None
+    record["task_outcome_status"] = "not_assessed"
+    return record
 
 
 # --------------------------------------------------------------------------- run
@@ -526,8 +596,10 @@ def validate_options(opts: RunOptions) -> None:
         raise ValueError(f"unknown host {opts.host!r}; known: {', '.join(HOSTS)}")
     if opts.reasoning_effort is not None and opts.reasoning_effort not in REASONING_EFFORTS.get(opts.host, set()):
         raise ValueError(f"unsupported reasoning effort for {opts.host}; no cross-host mapping is applied")
-    if not opts.conditions or any(c not in CONDITIONS for c in opts.conditions):
-        raise ValueError("condition must be plugin, baseline or both")
+    if (not opts.conditions or len(set(opts.conditions)) != len(opts.conditions)
+            or not (set(opts.conditions) <= set(CONDITIONS)
+                    or set(opts.conditions) <= set(THREE_ARM_CONDITIONS))):
+        raise ValueError("condition must be legacy baseline/plugin or three-arm native/tools/skill")
     for name in ("repeat", "max_tasks", "timeout", "max_turns", "seed", "max_total_tokens"):
         value = getattr(opts, name)
         if value is not None and type(value) is not int:
@@ -569,22 +641,40 @@ def schedule(plan: dict[str, Any], opts: RunOptions, root: Path = ROOT) -> list[
     """Task x repeat, both conditions of a pair adjacent and in random order, so drift hits them alike."""
     validate_options(opts)
     validate_plan(plan, root)
+    three_arm = bool(set(opts.conditions) & set(THREE_ARM_CONDITIONS))
+    if three_arm != (plan.get("schema") == PLAN_SCHEMA_V3):
+        raise ValueError("three-arm conditions require a v3 three-arm plan; legacy plans use baseline/plugin")
     rng = random.Random(opts.seed)
     tasks = list(plan["tasks"])
     rng.shuffle(tasks)
     jobs = []
+    # Every complete block of six triples covers all positions and carryover pairs.
+    import itertools
+    orders = list(itertools.permutations(opts.conditions)) if three_arm else []
+    if three_arm:
+        rng.shuffle(orders)
+    block = 0
     for task in tasks:
         for rep in range(opts.repeat):
             conds = list(opts.conditions)
-            rng.shuffle(conds)
+            if three_arm:
+                if block and block % len(orders) == 0:
+                    rng.shuffle(orders)
+                conds = list(orders[block % len(orders)])
+                block += 1
+            else:
+                rng.shuffle(conds)
             jobs.extend({"task": task, "condition": c, "repeat": rep} for c in conds)
     limit = opts.max_tasks
-    if len(opts.conditions) == 2:
-        limit -= limit % 2  # never cut a pair in half
+    limit -= limit % len(opts.conditions)  # never cut a matched block in half
     jobs = jobs[:limit]
     for index, job in enumerate(jobs):
         task_hash = sha256(job["task"]["id"].encode("utf-8"))[:16]
         job["run_id"] = f"{index + 1:04d}-{job['condition']}-r{job['repeat']}-{task_hash}"
+        if three_arm:
+            job["experiment"] = plan["experiment"]
+            job["plan_sha256"] = plan["plan_sha256"]
+            job["frozen_hashes"] = frozen_hashes(plan)
     return jobs
 
 
@@ -603,9 +693,9 @@ def skill_body_tokens(skill: str | None, root: Path = ROOT) -> int:
 def estimate_job(job: dict[str, Any], opts: RunOptions, root: Path = ROOT) -> dict[str, Any]:
     host = HOSTS[opts.host]
     overhead = host.overhead_tokens if opts.overhead_tokens is None else opts.overhead_tokens
-    prompt = estimate_tokens(render_prompt(job["task"]))
+    prompt = estimate_tokens(render_job_prompt(job["task"], job["condition"]))
     skill = 0
-    if job["condition"] == "plugin":
+    if job["condition"] in {"plugin", "skill"}:
         skill = always_on_tokens(root) + skill_body_tokens(job["task"].get("expected_primary_skill"), root)
     per_turn = overhead + prompt + skill
     input_tokens = per_turn * opts.assume_turns
@@ -615,7 +705,8 @@ def estimate_job(job: dict[str, Any], opts: RunOptions, root: Path = ROOT) -> di
         usd = (input_tokens * opts.price_in + output_tokens * opts.price_out) / 1_000_000
         if not math.isfinite(usd):
             raise ValueError("estimated cost is not finite")
-    return {"input_tokens": input_tokens, "output_tokens": output_tokens, "usd": usd,
+    return {"method": "bytes/4_plus_assumed_overhead_not_measurement",
+            "input_tokens": input_tokens, "output_tokens": output_tokens, "usd": usd,
             "usd_cap": opts.max_usd_per_task if host.native_budget else None}
 
 
@@ -637,18 +728,21 @@ def build_commands(opts: RunOptions, condition: str, stage: Path, out_file: Path
     if opts.host not in {"claude", "codex"}:
         return [], [opts.host, "NOT_RUN", "runtime adapter unavailable"]
     if opts.host == "claude":
+        tools = HOSTS["claude"].tools
+        if condition in THREE_ARM_CONDITIONS:
+            tools = "Read,Glob,Grep,Bash,Skill"
         argv = [opts.bin, "-p", "--output-format", "stream-json", "--verbose", "--no-session-persistence",
-                "--strict-mcp-config", "--tools", HOSTS["claude"].tools, "--allowedTools", HOSTS["claude"].tools,
+                "--strict-mcp-config", "--tools", tools, "--allowedTools", tools,
                 "--max-turns", str(opts.max_turns), "--max-budget-usd", str(opts.max_usd_per_task)]
         if opts.model:
             argv += ["--model", opts.model]
         if opts.reasoning_effort:
             argv += ["--effort", opts.reasoning_effort]
-        if condition == "plugin":
+        if condition in {"plugin", "skill"}:
             argv += ["--plugin-dir", str(stage)]
         return [], argv
     setup = []
-    if condition == "plugin":
+    if condition in {"plugin", "skill"}:
         setup = [[opts.bin, "plugin", "marketplace", "add", str(stage)],
                  [opts.bin, "plugin", "add", f"{PLUGIN}@{PLUGIN}", "--json"]]
     # JSONL carries the final answer; do not let the host write an uncapped file.
@@ -692,13 +786,19 @@ def materialize_not_run(plan: dict[str, Any], opts: RunOptions, out: Path,
         "repeat": opts.repeat,
         "planned_jobs": len(jobs),
     }
+    if "experiment" in plan:
+        manifest["experiment"] = plan["experiment"]
+        manifest["host_version"] = None
+        manifest["metadata_status"] = {"host_version": "unavailable", "model": "unavailable",
+                                       "provider_revision": "unavailable", "hardware": "unavailable",
+                                       "harness": "source_hashed"}
     manifest.update(frozen_hashes(plan))
     if "frozen_hashes" in plan:
         manifest["frozen_hashes"] = dict(plan["frozen_hashes"])
     write_json(out / "manifest.json", manifest)
     for job in jobs:
         run_dir = job_directory(out, job["run_id"])
-        write_json(run_dir / "record.json", {
+        record = {
             "schema": RECORD_SCHEMA,
             "run_id": job["run_id"],
             "task_id": job["task"]["id"],
@@ -710,7 +810,11 @@ def materialize_not_run(plan: dict[str, Any], opts: RunOptions, out: Path,
             "not_run_reason": reason,
             "activated_skills": [],
             **({"frozen_hashes": dict(plan["frozen_hashes"])} if "frozen_hashes" in plan else {}),
-        })
+        }
+        if "experiment" in plan:
+            record.update(experiment=plan["experiment"], plan_sha256=plan["plan_sha256"])
+            observation_receipt(record, run_dir)
+        write_json(run_dir / "record.json", record)
     summary = {
         **manifest,
         "completed_jobs": 0,
@@ -721,6 +825,9 @@ def materialize_not_run(plan: dict[str, Any], opts: RunOptions, out: Path,
         "spent_usd": 0.0,
         "spent_tokens": 0,
     }
+    if "experiment" in plan:
+        summary.update(spent_usd=None, spent_tokens=None, cost_complete=False,
+                       usage_complete=False)
     write_json(out / "manifest.json", summary)
     return summary
 
@@ -734,6 +841,9 @@ def dry_run(plan: dict[str, Any], opts: RunOptions, out: Path | None, stream: An
     lines = [f"DRY RUN - nothing is started. Add --execute to run {len(jobs)} job(s) on {opts.host}.",
              f"plan {plan['plan_sha256'][:12]}  conditions {','.join(opts.conditions)}  repeat {opts.repeat}  "
              f"timeout {opts.timeout}s  max turns {opts.max_turns}", ""]
+    if plan.get("schema") == PLAN_SCHEMA_V3:
+        lines[0] = (f"DRY RUN - nothing is started. {len(jobs)} planned job(s) on {opts.host}; "
+                    "native execution is NOT_RUN: ENFORCED_HELPER_BOUNDARY_UNAVAILABLE.")
     for job in jobs:
         task = job["task"]
         run_dir = (out or Path("<out>")) / "runs" / job["run_id"]
@@ -750,7 +860,7 @@ def dry_run(plan: dict[str, Any], opts: RunOptions, out: Path | None, stream: An
         lines.append(f"  env:   HOME={{temp}}/home {HOSTS[opts.host].config_env}={{temp}}/config "
                      f"credentials={','.join(HOSTS[opts.host].auth_env)} (only if set) cwd={{temp}}/cwd")
         lines.append("  stdin:")
-        lines.extend("    " + line for line in render_prompt(task).splitlines())
+        lines.extend("    " + line for line in render_job_prompt(task, job["condition"]).splitlines())
         usd = f" ~${est['usd']:.4f}" if est["usd"] is not None else ""
         lines.append(f"  estimate: ~{est['input_tokens']} input + ~{est['output_tokens']} output tokens{usd}")
     cap = (f"; hard cap {len(jobs)} x ${opts.max_usd_per_task:g} = ${len(jobs) * opts.max_usd_per_task:.2f} "
@@ -933,6 +1043,10 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
         raise ValueError(f"{out} is not empty; give each run a new directory")
     if os.name != "posix":
         return materialize_not_run(plan, opts, out, "PROCESS_GROUP_CLEANUP_UNAVAILABLE", root)
+    if plan.get("schema") == PLAN_SCHEMA_V3:
+        policy = three_arm_execution_policy(opts.host)
+        if policy["status"] != "READY":
+            return materialize_not_run(plan, opts, out, policy["reason"], root)
     binary_override = None if opts.bin == opts.host else opts.bin
     capability = runtime_preflight(opts.host, environment=os.environ, root=root,
                                    binary_override=binary_override)
@@ -953,11 +1067,41 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
         stage = stage_payload(Path(tmp) / "stage", root)
         version_base = Path(tmp) / "version"
         version_base.mkdir()
-        probe_code, probe_timeout, probe_limit = _run_capped(
-            [opts.bin, "--version"], build_env(host, version_base), version_base, "", 60,
-            version_base / "stdout", version_base / "stderr")
+        try:
+            probe_code, probe_timeout, probe_limit = _run_capped(
+                [opts.bin, "--version"], build_env(host, version_base), version_base, "", 60,
+                version_base / "stdout", version_base / "stderr")
+        except OSError as exc:
+            if plan.get("schema") != PLAN_SCHEMA_V3:
+                raise
+            probe_code, probe_timeout, probe_limit = None, False, False
+            write_private(version_base / "stdout", "")
+            write_private(version_base / "stderr", type(exc).__name__)
         if probe_code != 0 or probe_timeout or probe_limit:
-            raise ValueError("host version probe failed, timed out or exceeded the capture limit")
+            if plan.get("schema") != PLAN_SCHEMA_V3:
+                raise ValueError("host version probe failed, timed out or exceeded the capture limit")
+            for name in ("stdout", "stderr"):
+                write_private(out / f"host-version.{name}.txt", (version_base / name).read_text(
+                    encoding="utf-8", errors="replace"))
+            for job in jobs:
+                run_dir = job_directory(out, job["run_id"])
+                record = {"schema": RECORD_SCHEMA, "run_id": job["run_id"],
+                          "task_id": job["task"]["id"], "skill": job["task"]["skill"],
+                          "condition": job["condition"], "repeat": job["repeat"],
+                          "status": "setup_error", "execution_status": "ERROR",
+                          "error_reason": "HOST_VERSION_PROBE_FAILED", "exit_code": probe_code,
+                          "activated_skills": [], "experiment": plan["experiment"],
+                          "plan_sha256": plan["plan_sha256"], "frozen_hashes": frozen_hashes(plan)}
+                observation_receipt(record, run_dir)
+                write_json(run_dir / "record.json", record)
+            summary = {"schema": RUN_SCHEMA, "plan_sha256": plan["plan_sha256"], "host": opts.host,
+                       "experiment": plan["experiment"], "frozen_hashes": frozen_hashes(plan),
+                       "execution_status": "ERROR", "host_version": None, "planned_jobs": len(jobs),
+                       "completed_jobs": 0, "error_jobs": len(jobs), "not_run_jobs": 0,
+                       "not_started_jobs": len(jobs), "stop_reason": "HOST_VERSION_PROBE_FAILED",
+                       "spent_usd": None, "spent_tokens": None, "models_reported": []}
+            write_json(out / "manifest.json", summary)
+            return summary
         probe_text = (version_base / "stdout").read_text(encoding="utf-8", errors="replace") or \
             (version_base / "stderr").read_text(encoding="utf-8", errors="replace")
         manifest = {
@@ -981,6 +1125,13 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
             "prices_per_mtok": {"input": opts.price_in, "output": opts.price_out},
             "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "planned_jobs": len(jobs),
         }
+        if "experiment" in plan:
+            manifest["experiment"] = plan["experiment"]
+            manifest["schedule"] = [{"run_id": j["run_id"], "task_id": j["task"]["id"],
+                                     "condition": j["condition"], "repeat": j["repeat"]} for j in jobs]
+            manifest["metadata_status"] = {"model": "requested_not_observed" if opts.model else "unavailable",
+                                            "provider_revision": "unavailable", "hardware": "unavailable",
+                                            "harness": "source_hashed"}
         planned_hashes = frozen_hashes(plan)
         if planned_hashes.get("payload_sha256") and manifest["payload_sha256"] != planned_hashes["payload_sha256"]:
             raise ValueError("staged plugin payload differs from the plan fingerprint")
@@ -1015,7 +1166,26 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
             if consecutive_errors >= opts.max_consecutive_errors:
                 stop_reason = f"{consecutive_errors} consecutive errors; check credentials and host flags"
                 break
-            record = run_job(job, opts, host, stage, out, Path(tmp), known)
+            try:
+                record = run_job(job, opts, host, stage, out, Path(tmp), known)
+            except OSError as exc:
+                if plan.get("schema") != PLAN_SCHEMA_V3:
+                    raise
+                run_dir = out / "runs" / job["run_id"]
+                if not run_dir.exists():
+                    run_dir = job_directory(out, job["run_id"])
+                private_dir(run_dir)
+                record = {"schema": RECORD_SCHEMA, "run_id": job["run_id"],
+                          "task_id": job["task"]["id"], "skill": job["task"]["skill"],
+                          "condition": job["condition"], "repeat": job["repeat"],
+                          "status": "setup_error", "execution_status": "ERROR",
+                          "error_reason": "LOCAL_PROCESS_OR_IO_FAILURE", "error_type": type(exc).__name__,
+                          "activated_skills": [], "model": None, "cost_usd": None,
+                          "input_tokens": None, "output_tokens": None,
+                          "experiment": plan["experiment"], "plan_sha256": plan["plan_sha256"],
+                          "frozen_hashes": frozen_hashes(plan)}
+                observation_receipt(record, run_dir)
+                write_json(run_dir / "record.json", record)
             records.append(record)
             cost = record["cost_usd"]
             if host.native_budget and record.get("cost_source") != "host_reported" and record["status"] != "setup_error":
@@ -1035,15 +1205,36 @@ def execute(plan: dict[str, Any], opts: RunOptions, out: Path, root: Path = ROOT
             if unknown_cost and opts.max_estimated_total_usd is not None:
                 stop_reason = "max_estimated_total_usd: unknown cost; no further jobs admitted"
                 break
+        not_started = len(jobs) - len(records)
+        if "experiment" in plan:
+            for job in jobs[len(records):]:
+                run_dir = job_directory(out, job["run_id"])
+                record = {"schema": RECORD_SCHEMA, "run_id": job["run_id"],
+                          "task_id": job["task"]["id"], "skill": job["task"]["skill"],
+                          "condition": job["condition"], "repeat": job["repeat"],
+                          "status": "not_run", "execution_status": "NOT_RUN",
+                          "not_run_reason": "SCHEDULE_STOP: " + str(stop_reason),
+                          "activated_skills": [], "model": None,
+                          "experiment": plan["experiment"], "plan_sha256": plan["plan_sha256"],
+                          "frozen_hashes": frozen_hashes(plan)}
+                observation_receipt(record, run_dir)
+                write_json(run_dir / "record.json", record)
+                records.append(record)
     summary = {**manifest, "finished_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                "completed_jobs": sum(r["status"] == "executed" for r in records),
                "error_jobs": sum(r["status"] not in {"executed", "not_run"} for r in records),
                "not_run_jobs": sum(r["status"] == "not_run" for r in records),
-               "not_started_jobs": len(jobs) - len(records), "stop_reason": stop_reason,
+               "not_started_jobs": not_started, "stop_reason": stop_reason,
                "spent_usd": None if unknown_cost else round(float(spent_usd), 6),
                "accounted_usd": round(float(spent_usd), 6), "cost_complete": not unknown_cost,
                "spent_tokens": spent_tokens,
                "models_reported": sorted({r["model"] for r in records if r.get("model")})}
+    if "experiment" in plan:
+        observed = [r for r in records if r["status"] != "not_run"]
+        usage_complete = bool(observed) and all(r.get("input_tokens") is not None
+                                               and r.get("output_tokens") is not None for r in observed)
+        summary.update(usage_complete=usage_complete, accounted_reported_tokens=spent_tokens,
+                       spent_tokens=spent_tokens if usage_complete else None)
     write_json(out / "manifest.json", summary)
     return summary
 
@@ -1057,8 +1248,17 @@ def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out:
     cwd = base / "cwd"
     cwd.mkdir()
     out_file = run_dir / "output.md"
+    exposure = None
+    if job["condition"] in THREE_ARM_CONDITIONS:
+        source = stage
+        stage = cwd / "bundled"
+        exposure = stage_condition(source, stage, job["condition"])
+        expected = job["experiment"]["condition_payload_sha256"][job["condition"]]
+        if sha256(canonical(exposure["files"])) != expected:
+            raise ValueError("condition payload changed since planning")
+        write_json(run_dir / "exposure.json", exposure)
     setup, argv = build_commands(opts, job["condition"], stage, out_file)
-    prompt = render_prompt(task)
+    prompt = render_job_prompt(task, job["condition"])
     record: dict[str, Any] = {
         "schema": RECORD_SCHEMA, "acceptance_version": 2, "run_id": job["run_id"],
         "task_id": task["id"], "skill": task["skill"],
@@ -1069,6 +1269,11 @@ def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out:
         "model": None, "num_turns": None, "activated_skills": [],
         "reasoning_effort_requested": opts.reasoning_effort, "reasoning_effort_observed": None,
     }
+    if exposure is not None:
+        record.update(experiment=job["experiment"], plan_sha256=job["plan_sha256"],
+                      frozen_hashes=job["frozen_hashes"], run_config_sha256=sha256(canonical(vars(opts))),
+                      condition_payload_sha256=sha256(canonical(exposure["files"])),
+                      bundled_tools_sha256=sha256(canonical(exposure["bundled_tools"])))
     write_private(run_dir / "prompt.txt", prompt)
     for index, cmd in enumerate(setup):
         setup_err = run_dir / f"setup-{index}.stderr.txt"
@@ -1081,6 +1286,8 @@ def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out:
                                    setup_err.read_text(encoding="utf-8", errors="replace"))
             if retry:
                 record.update(retry)
+            if exposure is not None:
+                observation_receipt(record, run_dir)
             write_json(run_dir / "record.json", record)
             shutil.rmtree(base, ignore_errors=True)
             return record
@@ -1118,6 +1325,8 @@ def run_job(job: dict[str, Any], opts: RunOptions, host: Host, stage: Path, out:
             record.update(retry)
     if output is not None:
         write_private(out_file, output)
+    if exposure is not None:
+        observation_receipt(record, run_dir)
     write_json(run_dir / "record.json", record)
     shutil.rmtree(base, ignore_errors=True)
     return record
@@ -1181,6 +1390,10 @@ def output_check(task: dict[str, Any], text: str, graded: set[str], root: Path =
 def grade_run(run_dir: Path, root: Path = ROOT) -> dict[str, Any]:
     manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
     plan = json.loads((run_dir / "plan.json").read_text(encoding="utf-8"))
+    if plan.get("schema") == PLAN_SCHEMA_V3:
+        validate_plan(plan, root)
+        if manifest.get("experiment") != plan["experiment"]:
+            raise ValueError("run manifest differs from frozen three-arm identity")
     tasks = {t["id"]: t for t in plan["tasks"]}
     graded = graded_skills(root)
     results = []
@@ -1200,14 +1413,17 @@ def grade_run(run_dir: Path, root: Path = ROOT) -> dict[str, Any]:
                     ),
                 }
             elif check == "routing":
-                checks[check] = (routing_check(task, record["activated_skills"]) if record["condition"] == "plugin"
-                                 else {"status": "n/a", "reason": "baseline has no skills to load"})
+                checks[check] = (routing_check(task, record["activated_skills"]) if record["condition"] in {"plugin", "skill"}
+                                 else {"status": "n/a", "reason": "condition has no skill instructions to load"})
             elif check == "output":
                 text = (record_path.parent / "output.md").read_text(encoding="utf-8")
                 checks[check] = output_check(task, text, graded, root)
         results.append({"run_id": record["run_id"], "task_id": record["task_id"], "skill": record["skill"],
                         "role": task["role"], "condition": record["condition"], "repeat": record["repeat"],
-                        "run_status": record["status"], "model": record.get("model"), "checks": checks})
+                        "run_status": record["status"], "model": record.get("model"), "checks": checks,
+                        "receipt": record.get("receipt"), "resources": record.get("resources"),
+                        "metadata_status": record.get("metadata_status"),
+                        "task_outcome_status": record.get("task_outcome_status", "not_assessed")})
     counts = {
         "completed": sum(r["run_status"] == "executed" for r in results),
         "errors": sum(r["run_status"] not in {"executed", "not_run"} for r in results),
@@ -1224,6 +1440,7 @@ def grade_run(run_dir: Path, root: Path = ROOT) -> dict[str, Any]:
               "benchmark_sha256": manifest.get("benchmark_sha256"),
               "rubric_sha256": manifest.get("rubric_sha256"),
               "host_config_sha256": manifest.get("host_config_sha256"),
+              "experiment": manifest.get("experiment"),
               "frozen_hashes": frozen_hashes(manifest), "counts": counts,
               "completed_jobs": counts["completed"], "error_jobs": counts["errors"],
               "not_run_jobs": counts["not_run"], "results": results}
@@ -1265,6 +1482,49 @@ def _rate(rows: list[str], run_statuses: list[str] | None = None) -> dict[str, A
             "errors": sum(1 for status in run_statuses if status not in {"executed", "not_run"})}
 
 
+def matched_comparisons(grade_sets: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Match within one run directory, never overwrite duplicate same-case rows."""
+    comparisons = []
+    for left, right in (("native", "tools"), ("tools", "skill"), ("native", "skill")):
+        pairs = []
+        unmatched = ambiguous = 0
+        for cohort, grades in enumerate(grade_sets):
+            by_case: dict[tuple[str, int], dict[str, list[dict[str, Any]]]] = {}
+            for row in grades["results"]:
+                if row["condition"] in (left, right):
+                    by_case.setdefault((row["task_id"], row["repeat"]), {}).setdefault(row["condition"], []).append(row)
+            for (task_id, repeat), arms in sorted(by_case.items()):
+                if any(len(arms.get(c, [])) > 1 for c in (left, right)):
+                    ambiguous += 1
+                    continue
+                if any(len(arms.get(c, [])) != 1 for c in (left, right)):
+                    unmatched += 1
+                    continue
+                a, b = arms[left][0], arms[right][0]
+                statuses = [r["checks"].get("output", {}).get("status") for r in (a, b)]
+                if any(r["run_status"] != "executed" for r in (a, b)) or any(v not in ("pass", "fail") for v in statuses):
+                    unmatched += 1
+                    continue
+                if not a.get("model") or a.get("model") != b.get("model"):
+                    unmatched += 1
+                    continue
+                pairs.append({"cohort": cohort, "task_id": task_id, "repeat": repeat,
+                              "left_run_id": a["run_id"], "right_run_id": b["run_id"],
+                              "left": statuses[0], "right": statuses[1]})
+        if not pairs and not unmatched and not ambiguous:
+            continue
+        left_only = sum(p["left"] == "pass" and p["right"] == "fail" for p in pairs)
+        right_only = sum(p["right"] == "pass" and p["left"] == "fail" for p in pairs)
+        comparisons.append({"left": left, "right": right, "check": "structural_output_only",
+                            "pairs": len(pairs), "left_only_pass": left_only, "right_only_pass": right_only,
+                            "both_pass": sum(p["left"] == p["right"] == "pass" for p in pairs),
+                            "both_fail": sum(p["left"] == p["right"] == "fail" for p in pairs),
+                            "exact_p_two_sided": round(sign_test(left_only, right_only), 6) if pairs else None,
+                            "unmatched_or_unassessed": unmatched, "ambiguous_cases": ambiguous,
+                            "matched_cases": pairs, "task_effectiveness": "not_assessed"})
+    return comparisons
+
+
 def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
     if not grade_sets:
         raise ValueError("no grades to report")
@@ -1283,6 +1543,9 @@ def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
         warnings.append("more than one model answered: " + ", ".join(models))
     if len({g.get("payload_sha256") for g in grade_sets}) > 1:
         warnings.append("the plugin payload differs between runs")
+    experiments = {json.dumps(g.get("experiment"), sort_keys=True) for g in grade_sets}
+    if len(experiments) > 1:
+        warnings.append("experiment contracts or frozen three-arm identities differ")
     frozen = {json.dumps(frozen_hashes(g), sort_keys=True) for g in grade_sets}
     if len(frozen) > 1:
         warnings.append("grades carry different frozen acceptance hashes")
@@ -1347,7 +1610,8 @@ def build_report(grade_sets: list[dict[str, Any]]) -> dict[str, Any]:
             "run_errors": run_errors, "run_not_run": run_not_run,
             "error_jobs": run_errors, "not_run_jobs": run_not_run,
             "frozen_hashes": [frozen_hashes(g) for g in grade_sets],
-            "warnings": warnings, "effort_comparison_status": effort_status, "results": per, "paired": paired}
+            "warnings": warnings, "effort_comparison_status": effort_status, "results": per, "paired": paired,
+            "run_results": rows, "matched_comparisons": matched_comparisons(grade_sets)}
 
 
 def _pct(cell: dict[str, Any]) -> str:
@@ -1387,6 +1651,10 @@ def render_markdown(report: dict[str, Any]) -> str:
         lines += ["The output rubric checks the skill's contract, which the baseline was never shown, so a "
                   "plugin lead on this check is expected and is not by itself evidence of better answers. "
                   "Use the blind human review in docs/REAL-HOST-EVALS.md for that.", ""]
+    for comparison in report.get("matched_comparisons", []):
+        lines += [f"## {comparison['left']} vs {comparison['right']} (matched structural output)", "",
+                  f"{comparison['pairs']} same-case pairs; {comparison['unmatched_or_unassessed']} unavailable; "
+                  f"{comparison['ambiguous_cases']} ambiguous. Task effectiveness: not assessed.", ""]
     lines += ["A pass means the transcript and the answer met a structural check. It does not mean the answer "
               "is correct.", ""]
     return "\n".join(lines)
@@ -1396,7 +1664,8 @@ def render_markdown(report: dict[str, Any]) -> str:
 
 
 def _options(args: argparse.Namespace) -> RunOptions:
-    conditions = CONDITIONS if args.condition == "both" else (args.condition,)
+    conditions = (CONDITIONS if args.condition == "both" else
+                  THREE_ARM_CONDITIONS if args.condition == "three-arm" else (args.condition,))
     opts = RunOptions(host=args.host, bin=args.bin or args.host, conditions=tuple(conditions), repeat=args.repeat,
                       max_tasks=args.max_tasks, timeout=args.timeout, max_usd_per_task=args.max_usd_per_task,
                       max_total_usd=args.max_total_usd, max_total_tokens=args.max_total_tokens,
@@ -1421,6 +1690,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--negatives-per-skill", type=int, default=1, help="routing cases where the skill must not load")
     p.add_argument("--lang", action="append", default=[], choices=["en", "pl"], help="keep only this language")
     p.add_argument("--seed", type=int, default=1)
+    p.add_argument("--design", choices=["legacy", "three-arm"], default="legacy")
     p.add_argument("--canary", action="store_true", help="plant a fresh canary instruction in each output task")
 
     r = sub.add_parser("run", help="run a plan on a host; a dry run unless --execute")
@@ -1428,7 +1698,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--host", choices=sorted(HOSTS), required=True)
     r.add_argument("--bin", help="host executable (default: the host name on PATH)")
     r.add_argument("--out", type=Path, help="new directory for transcripts and records (required with --execute)")
-    r.add_argument("--condition", choices=["plugin", "baseline", "both"], default="plugin")
+    r.add_argument("--condition", choices=["plugin", "baseline", "both", "native", "tools", "skill", "three-arm"], default="plugin")
     r.add_argument("--repeat", type=int, default=1)
     r.add_argument("--max-tasks", type=int, default=10, help="hard cap on host runs (task x condition x repeat)")
     r.add_argument("--timeout", type=int, default=300, help="seconds per run before it is killed")
@@ -1462,7 +1732,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "plan":
             plan = build_plan(ROOT, skills=args.skill or None, per_skill=args.per_skill,
                               negatives_per_skill=args.negatives_per_skill, langs=args.lang or None,
-                              seed=args.seed, canary=args.canary)
+                              seed=args.seed, canary=args.canary, design=args.design)
             if args.out:
                 write_json(args.out, plan)
                 print(f"{len(plan['tasks'])} task(s) for {len({t['skill'] for t in plan['tasks']})} skill(s) "

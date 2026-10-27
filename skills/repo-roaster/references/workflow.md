@@ -1,6 +1,8 @@
-# Repo Roaster: full workflow
+# Repo Roaster: formal v6 workflow
 
-The detailed procedure behind the step index in `SKILL.md`. Open this file before any non-QUICK review, and whenever a step's detail is needed in QUICK mode. The core contract, admission gates, and hard boundaries in `SKILL.md` still govern every step; nothing here relaxes them.
+Load this file when a caller requires the existing v6 report or a typed pipeline. Ordinary prose uses the checklist in `SKILL.md`; these ledgers and stages do not become mandatory prose sections. The full machine fields and admission rules remain unchanged. Counterevidence checks do not require role-play or separate reviewer contexts.
+
+For calibration or package maintenance, read `references/examples.md` and `references/eval-protocol.md`; fixture validity does not prove model effectiveness.
 
 ## Workflow steps
 
@@ -100,9 +102,9 @@ Severity:
 - `MAJOR`: material correctness, reliability, architecture, testability, migration, supply-chain, operability, or change-safety risk.
 - `MINOR`: bounded maintainability, clarity, or hygiene issue.
 
-### 10. Run Challenger -> Defender -> Arbiter
+### 10. Check counterevidence
 
-Before admitting CRITICAL or MAJOR, open `references/severity-calibration.md`, then open `references/adversarial-protocol.md`. Search guards, wrappers, call-site constraints, tests, feature flags, configuration, generated/runtime conditions, environment assumptions, deployment topology, and contradictory evidence that could neutralize or contain the issue. Emit only the post-arbitration finding.
+Before admitting CRITICAL or MAJOR in a formal report, read `references/severity-calibration.md` and `references/evidence-discipline.md`. Search guards, wrappers, call-site constraints, tests, feature flags, configuration, generated/runtime conditions, environment assumptions, deployment topology, and contradictory evidence that could neutralize or contain the issue. Record the checked counterevidence and resulting disposition in `falsifier_check`; emit only findings that survive. Read `references/adversarial-protocol.md` only when the caller requests its role-based procedure.
 
 ### 11. Compress root causes
 

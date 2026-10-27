@@ -39,3 +39,29 @@ list_skills() {
     printf '%s\n' "$name"
   done | sort
 }
+
+# Resolve generated alias edges before any installation write; no extra runtime dependency.
+resolve_skill_selection() {
+  local requested name canonical chain all=""
+  while IFS= read -r requested; do
+    [[ -n "$requested" ]] || continue
+    name="$requested"; chain=" "
+    while :; do
+      [[ "$name" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ && -f "$ROOT/skills/$name/SKILL.md" ]] || {
+        echo "FAIL: missing or invalid alias dependency" >&2; return 1;
+      }
+      case "$chain" in
+        *" $name "*) echo "FAIL: cyclic alias dependency" >&2; return 1 ;;
+      esac
+      chain="$chain$name "
+      all="$all$name"$'\n'
+      [[ -e "$ROOT/skills/$name/ALIAS_OF" || -L "$ROOT/skills/$name/ALIAS_OF" ]] || break
+      [[ -f "$ROOT/skills/$name/ALIAS_OF" && ! -L "$ROOT/skills/$name/ALIAS_OF" ]] || {
+        echo "FAIL: alias metadata must be a regular file" >&2; return 1;
+      }
+      canonical="$(cat "$ROOT/skills/$name/ALIAS_OF")"
+      name="$canonical"
+    done
+  done <<< "$1"
+  printf '%s' "$all" | sort -u
+}

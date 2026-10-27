@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.2.0] - 2026-10-27
+
+- Replace mandatory role passes, ledgers and prose-report sections with a compact evidence checklist: bounded scope, reachability, counterevidence, severity and fresh repair verification.
+- Keep the full v6 report and handoff contracts optional for callers that require them. Schemas and shared roaster procedures are unchanged; this update does not establish comparative model effectiveness.
+- Replace quadratic scanner control-pattern searches with ordered prefix/suffix searches while preserving detection semantics, redaction and file boundaries.
+
 ## [6.1.7] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

@@ -13,10 +13,10 @@ from pathlib import Path
 
 IGNORE={'.git','node_modules','vendor','dist','build','.venv','venv','__pycache__','.pytest_cache'}
 CONTROL=[
- ('ignore_instructions',re.compile(r'(?i)ignore (all |any )?(previous|prior|system|developer) instructions')),
- ('role_override',re.compile(r'(?i)you are now|act as (the )?(system|developer)|replace your instructions')),
- ('tool_coercion',re.compile(r'(?i)(call|invoke|use) (the )?(tool|connector|shell|terminal).*(without|ignore|bypass)')),
- ('secret_request',re.compile(r'(?i)(reveal|print|exfiltrate|send).*(secret|token|password|system prompt|credentials)')),
+ ('ignore_instructions',re.compile(r'(?i)ignore (all |any )?(previous|prior|system|developer) instructions'),None),
+ ('role_override',re.compile(r'(?i)you are now|act as (the )?(system|developer)|replace your instructions'),None),
+ ('tool_coercion',re.compile(r'(?i)(call|invoke|use) (the )?(tool|connector|shell|terminal)'),re.compile(r'(?i)without|ignore|bypass')),
+ ('secret_request',re.compile(r'(?i)reveal|print|exfiltrate|send'),re.compile(r'(?i)secret|token|password|system prompt|credentials')),
 ]
 ZERO_WIDTH=re.compile('[\u200b\u200c\u200d\u2060\ufeff]')
 SECRET=[
@@ -150,8 +150,11 @@ def scan(path:Path,max_files:int=5000,max_bytes:int=2_000_000)->dict:
         for line_no,line in enumerate(text.splitlines(),1):
             excerpt=redact(line)[:180]
             if ZERO_WIDTH.search(line): flags.append({'path':rel,'line':line_no,'kind':'zero_width_unicode','excerpt':excerpt})
-            for kind,pat in CONTROL:
-                if pat.search(line): flags.append({'path':rel,'line':line_no,'kind':kind,'excerpt':excerpt})
+            # Search each side once; prefix.*suffix retries quadratically on repeated prefixes.
+            for kind,pat,suffix in CONTROL:
+                match=pat.search(line)
+                if match and (suffix is None or suffix.search(line,match.end())):
+                    flags.append({'path':rel,'line':line_no,'kind':kind,'excerpt':excerpt})
             for kind,pat in SECRET:
                 if pat.search(line): flags.append({'path':rel,'line':line_no,'kind':kind,'excerpt':'[credential-like value redacted]'})
     return {'schema':'cometweb.roaster-source-risk-scan/v1','root':redact(str(path)),'files_scanned':scanned,'files_skipped':skipped,'flags':flags,

@@ -1,0 +1,935 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "assurance-original-v1",
+  "base_sha": "cbc5294dbb01d05351d39b0840d81511062691dc",
+  "corpus_file": "cases.json",
+  "corpus_sha256": "59b06516ed99611bc2a26eff85f400f244926b945ddc9bdde9d96b350b2f6cdc",
+  "hash_encoding": "sha256 of UTF-8 canonical JSON: sorted keys, no whitespace, ensure_ascii=false; source hashes use literal UTF-8 content",
+  "frozen_at": "2026-10-27T02:22:39.401009+00:00",
+  "freeze_stage": "before_any_candidate_execution",
+  "authoring": {
+    "author_type": "LLM",
+    "separate_candidate_author_context": true,
+    "candidate_material_read": false,
+    "prior_model_outputs_read": false,
+    "existing_holdouts_read": false,
+    "human_review": "not_run",
+    "independent_validation": "not_established"
+  },
+  "provenance_scope": "all sources and receipts are original synthetic snapshots, not actual external execution evidence",
+  "candidate_executions": "not_run",
+  "human_review": "not_run",
+  "independent_validation": "not_established",
+  "split": {
+    "unit": "cluster_id",
+    "seed": "assurance-v1-original-cohort-2026-10-27",
+    "method": "per workflow, order cluster IDs by sha256(seed:cluster_id); first 6 clusters holdout",
+    "assignments": {
+      "agency-arithmetic": "holdout",
+      "agency-assurance-meaning": "holdout",
+      "agency-causality": "holdout",
+      "agency-commercial-scope": "development",
+      "agency-comparability": "development",
+      "agency-customer-proof": "development",
+      "agency-freshness": "development",
+      "agency-geographic-scope": "development",
+      "agency-instruction-boundary": "development",
+      "agency-measurement": "holdout",
+      "agency-metric-definition": "development",
+      "agency-publication-rights": "development",
+      "agency-quotation": "holdout",
+      "agency-sampling": "development",
+      "agency-selection": "development",
+      "agency-source-independence": "development",
+      "agency-uncertainty": "holdout",
+      "release-artifact-identity": "holdout",
+      "release-authority": "development",
+      "release-compatibility": "development",
+      "release-coverage": "holdout",
+      "release-distribution": "holdout",
+      "release-environment": "holdout",
+      "release-freshness": "development",
+      "release-migration": "development",
+      "release-observability": "development",
+      "release-performance": "development",
+      "release-privacy": "development",
+      "release-receipt-integrity": "development",
+      "release-recovery": "development",
+      "release-regression": "holdout",
+      "release-rollback": "development",
+      "release-rollout": "holdout",
+      "release-supply-chain": "development",
+      "web-accessibility": "development",
+      "web-authorization": "development",
+      "web-browser-api": "development",
+      "web-concurrency": "development",
+      "web-destructive-action": "holdout",
+      "web-error-recovery": "holdout",
+      "web-idempotency": "development",
+      "web-instruction-boundary": "development",
+      "web-layout": "development",
+      "web-localization": "holdout",
+      "web-numeric": "development",
+      "web-offline": "development",
+      "web-pagination": "development",
+      "web-persistence": "holdout",
+      "web-request-boundary": "holdout",
+      "web-time": "development",
+      "web-upload": "holdout"
+    },
+    "holdout_visibility": "public_frozen_not_secret",
+    "access_control": "not_provided",
+    "candidate_use": "holdout must not be used for instruction tuning; exposure invalidates unseen-holdout claims"
+  },
+  "coverage": {
+    "cases": 102,
+    "clusters": 51,
+    "families": 51,
+    "by_workflow": {
+      "agency": 34,
+      "release": 34,
+      "web": 34
+    },
+    "by_type": {
+      "adversarial": 13,
+      "negative": 69,
+      "positive": 20
+    },
+    "by_split": {
+      "development": 66,
+      "holdout": 36
+    }
+  },
+  "independence": {
+    "statistical_independence": "not_established",
+    "correlation": "Two distinct tasks per named cluster/family; related mechanisms and shared LLM author may correlate further across clusters/workflows.",
+    "analysis_unit": "cluster; also report workflow-stratified results; no claim of 102 independent trials",
+    "external_expert_review": "not_run"
+  },
+  "case_index": [
+    {
+      "case_id": "web-optimistic-save",
+      "workflow": "web",
+      "cluster_id": "web-persistence",
+      "family_id": "web-persistence",
+      "split": "holdout",
+      "sha256": "73cdaeec1d71c6d0a45adb1bde51cb42c46a1696bc69e1170e9a01d58ab2c27e"
+    },
+    {
+      "case_id": "web-debounced-unmount",
+      "workflow": "web",
+      "cluster_id": "web-persistence",
+      "family_id": "web-persistence",
+      "split": "holdout",
+      "sha256": "052efc8c856447289c4ec0a917bae13bcb70ef24fff3bdf6976f2273cbb164c6"
+    },
+    {
+      "case_id": "web-cross-tenant-detail",
+      "workflow": "web",
+      "cluster_id": "web-authorization",
+      "family_id": "web-authorization",
+      "split": "development",
+      "sha256": "aa74a28e16e1a12c05c360f826e43bfa3ca2e0e38eb6c7d9c1c4363364b4bbb2"
+    },
+    {
+      "case_id": "web-deleted-membership",
+      "workflow": "web",
+      "cluster_id": "web-authorization",
+      "family_id": "web-authorization",
+      "split": "development",
+      "sha256": "9b956e9c42652c7c9067463f2767c9f508094137ff1529f0a682b6e1acf7cfc6"
+    },
+    {
+      "case_id": "web-double-submit",
+      "workflow": "web",
+      "cluster_id": "web-idempotency",
+      "family_id": "web-idempotency",
+      "split": "development",
+      "sha256": "7b981839934bbe26f7c32e0496cd538baa6b37bb590b172896728fcfdbf59df4"
+    },
+    {
+      "case_id": "web-retry-safe-booking",
+      "workflow": "web",
+      "cluster_id": "web-idempotency",
+      "family_id": "web-idempotency",
+      "split": "development",
+      "sha256": "40041ff184d7ada4867f922875a8e4ff4671f0d2d0f2af485bf5000ba3bba721"
+    },
+    {
+      "case_id": "web-lost-update",
+      "workflow": "web",
+      "cluster_id": "web-concurrency",
+      "family_id": "web-concurrency",
+      "split": "development",
+      "sha256": "527cf3d4a8e1fed004be964722001c762ea06de12b1dca46742096f37d84ee94"
+    },
+    {
+      "case_id": "web-stale-search",
+      "workflow": "web",
+      "cluster_id": "web-concurrency",
+      "family_id": "web-concurrency",
+      "split": "development",
+      "sha256": "0e378b9c0210c5fe4f9da6e94f83a69ad9ee43a030a2d3e35c6644ac4ae64930"
+    },
+    {
+      "case_id": "web-modal-focus",
+      "workflow": "web",
+      "cluster_id": "web-accessibility",
+      "family_id": "web-accessibility",
+      "split": "development",
+      "sha256": "31d41e6a9126dc303a834c041367009989fc9dbcaab012380e4196a7217dfa82"
+    },
+    {
+      "case_id": "web-error-announcement",
+      "workflow": "web",
+      "cluster_id": "web-accessibility",
+      "family_id": "web-accessibility",
+      "split": "development",
+      "sha256": "c1eb28f2bf902b8cea3bd39967c3ef8866eb0a448d97b7ccaf1c8fee1bd6824d"
+    },
+    {
+      "case_id": "web-dst-meeting",
+      "workflow": "web",
+      "cluster_id": "web-time",
+      "family_id": "web-time",
+      "split": "development",
+      "sha256": "868ed159baa603499de2719237f30993e5ecd9b25100080ac3e72fc0a9c13e10"
+    },
+    {
+      "case_id": "web-date-only",
+      "workflow": "web",
+      "cluster_id": "web-time",
+      "family_id": "web-time",
+      "split": "development",
+      "sha256": "5325e170b40fe43097d13180d0087aa07bf394afb4f9503904fe823504458284"
+    },
+    {
+      "case_id": "web-decimal-total",
+      "workflow": "web",
+      "cluster_id": "web-numeric",
+      "family_id": "web-numeric",
+      "split": "development",
+      "sha256": "744cd555facc72ca0e79d8f0ed0d8da526820396ac0d110ab711fbef359370bc"
+    },
+    {
+      "case_id": "web-zero-quantity",
+      "workflow": "web",
+      "cluster_id": "web-numeric",
+      "family_id": "web-numeric",
+      "split": "development",
+      "sha256": "06c615f43789c29d82bbe72e91a6dbc26ceb4d2dfab0d79be8b48ecae95b4e1b"
+    },
+    {
+      "case_id": "web-upload-spoof",
+      "workflow": "web",
+      "cluster_id": "web-upload",
+      "family_id": "web-upload",
+      "split": "holdout",
+      "sha256": "7ba5a2c554d95401bfe9f39d7e71e206d7bd6090a7f4cf6ac8f7e088840b463f"
+    },
+    {
+      "case_id": "web-upload-limit",
+      "workflow": "web",
+      "cluster_id": "web-upload",
+      "family_id": "web-upload",
+      "split": "holdout",
+      "sha256": "457cc3855c0226881fd8f29c054c1394fd1a063981afa3418ae5cfd7b90c68f5"
+    },
+    {
+      "case_id": "web-cursor-skip",
+      "workflow": "web",
+      "cluster_id": "web-pagination",
+      "family_id": "web-pagination",
+      "split": "development",
+      "sha256": "0568b0c154e1d061f00f2ca080c0192d34963486935903d50b1994043311d631"
+    },
+    {
+      "case_id": "web-filter-reset-page",
+      "workflow": "web",
+      "cluster_id": "web-pagination",
+      "family_id": "web-pagination",
+      "split": "development",
+      "sha256": "97a01fb0229e60d6d25b1b071333dfcef910faf5a6d1527bd591ce87a35e809c"
+    },
+    {
+      "case_id": "web-offline-queue",
+      "workflow": "web",
+      "cluster_id": "web-offline",
+      "family_id": "web-offline",
+      "split": "development",
+      "sha256": "a9d487928e96c3f6226c4845270e1959677b4ede7d0be52163c62aa3e41b8e5b"
+    },
+    {
+      "case_id": "web-cache-user-switch",
+      "workflow": "web",
+      "cluster_id": "web-offline",
+      "family_id": "web-offline",
+      "split": "development",
+      "sha256": "3771e47a29b4579fd479fb474819e01f9767bf716aec9a9e2274f546b1dfee34"
+    },
+    {
+      "case_id": "web-locale-amount",
+      "workflow": "web",
+      "cluster_id": "web-localization",
+      "family_id": "web-localization",
+      "split": "holdout",
+      "sha256": "073c76686778ab9a71e72645e1d68443d8682c9a135c2e4aa4e1d5b69c93e3c8"
+    },
+    {
+      "case_id": "web-rtl-navigation",
+      "workflow": "web",
+      "cluster_id": "web-localization",
+      "family_id": "web-localization",
+      "split": "holdout",
+      "sha256": "64319019c3a0ed3372afbb61e69ee602aacac6941a3b754b0fbbd9f5dd4070f5"
+    },
+    {
+      "case_id": "web-csrf-cookie",
+      "workflow": "web",
+      "cluster_id": "web-request-boundary",
+      "family_id": "web-request-boundary",
+      "split": "holdout",
+      "sha256": "697f9b976986027faad2a87447caadda36a0c8290e629811d55130d7ec02a9c4"
+    },
+    {
+      "case_id": "web-redirect-target",
+      "workflow": "web",
+      "cluster_id": "web-request-boundary",
+      "family_id": "web-request-boundary",
+      "split": "holdout",
+      "sha256": "27d8a15983fb8d6a3752473c3084f8222ed2125e6210c5197bc99ea23b90c8c1"
+    },
+    {
+      "case_id": "web-cancel-inflight-delete",
+      "workflow": "web",
+      "cluster_id": "web-destructive-action",
+      "family_id": "web-destructive-action",
+      "split": "holdout",
+      "sha256": "a7b1d69337da180abdb557e5e63ef87896eb8edc42bd64d8aa58242db85fa822"
+    },
+    {
+      "case_id": "web-soft-delete-undo",
+      "workflow": "web",
+      "cluster_id": "web-destructive-action",
+      "family_id": "web-destructive-action",
+      "split": "holdout",
+      "sha256": "282e191f3d6249e418742e826616edbe7723ad9757a48c3b06524a1b7fd08db0"
+    },
+    {
+      "case_id": "web-clipboard-feedback",
+      "workflow": "web",
+      "cluster_id": "web-browser-api",
+      "family_id": "web-browser-api",
+      "split": "development",
+      "sha256": "8ca4790fedbdaec840c3bdf632c380255dfaefa771bb42455bfeb6b83fa8c601"
+    },
+    {
+      "case_id": "web-history-back-draft",
+      "workflow": "web",
+      "cluster_id": "web-browser-api",
+      "family_id": "web-browser-api",
+      "split": "development",
+      "sha256": "0cadf192558a25bd9910153fc520201bf65d3a7268ae6561b44ee7b371ccc41f"
+    },
+    {
+      "case_id": "web-spinner-no-result",
+      "workflow": "web",
+      "cluster_id": "web-error-recovery",
+      "family_id": "web-error-recovery",
+      "split": "holdout",
+      "sha256": "9bb454ba5f6934eb492a03296ba29409addffc7ffc17ca719e72940d69a0bbd7"
+    },
+    {
+      "case_id": "web-partial-bulk",
+      "workflow": "web",
+      "cluster_id": "web-error-recovery",
+      "family_id": "web-error-recovery",
+      "split": "holdout",
+      "sha256": "82aa89a35a3428f5e767defff795b990b684530666b8d635c9f865443b4d042d"
+    },
+    {
+      "case_id": "web-responsive-overflow",
+      "workflow": "web",
+      "cluster_id": "web-layout",
+      "family_id": "web-layout",
+      "split": "development",
+      "sha256": "9b8360d1338875048e0e01cba88f857fd83f6b1a1baed9f8f01513edced13c0f"
+    },
+    {
+      "case_id": "web-sticky-overlay",
+      "workflow": "web",
+      "cluster_id": "web-layout",
+      "family_id": "web-layout",
+      "split": "development",
+      "sha256": "435a620d4f7df04f2420ac109815f6c2b93e2dc4428d7d08f0afa27edd62cc61"
+    },
+    {
+      "case_id": "web-injected-issue-body",
+      "workflow": "web",
+      "cluster_id": "web-instruction-boundary",
+      "family_id": "web-instruction-boundary",
+      "split": "development",
+      "sha256": "03b6484f6bae0d66f0bfa7cb2ba0b68dc7249216cb68e793fabcee2632b8a8f7"
+    },
+    {
+      "case_id": "web-insufficient-repro",
+      "workflow": "web",
+      "cluster_id": "web-instruction-boundary",
+      "family_id": "web-instruction-boundary",
+      "split": "development",
+      "sha256": "5c0b66b9a0ab1b860a191a89b2ca36aac09d345133064790592743f4786087a9"
+    },
+    {
+      "case_id": "release-wrong-build-tests",
+      "workflow": "release",
+      "cluster_id": "release-artifact-identity",
+      "family_id": "release-artifact-identity",
+      "split": "holdout",
+      "sha256": "6a394e5f87f67df6200c06d6fe87daaed7bb59322a5eba62128978eafcd808cb"
+    },
+    {
+      "case_id": "release-digest-bound-suite",
+      "workflow": "release",
+      "cluster_id": "release-artifact-identity",
+      "family_id": "release-artifact-identity",
+      "split": "holdout",
+      "sha256": "338a472bcab51ae17dd607d1f30f0a262477e5746075d4b136bfe79aa28b5f10"
+    },
+    {
+      "case_id": "release-skipped-critical-suite",
+      "workflow": "release",
+      "cluster_id": "release-coverage",
+      "family_id": "release-coverage",
+      "split": "holdout",
+      "sha256": "489547e8adb968e7c7eaca3f753b17caeea38c146f32c74c25a2c2134057976f"
+    },
+    {
+      "case_id": "release-optional-browser-skip",
+      "workflow": "release",
+      "cluster_id": "release-coverage",
+      "family_id": "release-coverage",
+      "split": "holdout",
+      "sha256": "910ac64368eab98f5b311d73f33e90eb1098c62ce1ba88b39e0bde709ab2620c"
+    },
+    {
+      "case_id": "release-rollback-schema-drop",
+      "workflow": "release",
+      "cluster_id": "release-rollback",
+      "family_id": "release-rollback",
+      "split": "development",
+      "sha256": "a7c0d771a4f4bef477048402948b22bac21a133b5ba754332510a22aa5945596"
+    },
+    {
+      "case_id": "release-tested-backout",
+      "workflow": "release",
+      "cluster_id": "release-rollback",
+      "family_id": "release-rollback",
+      "split": "development",
+      "sha256": "78bb6a9e0f7050fd94f0ed6ba7f30deb13dd38db55ed73870a6fefe4ee2225ae"
+    },
+    {
+      "case_id": "release-backup-object-only",
+      "workflow": "release",
+      "cluster_id": "release-recovery",
+      "family_id": "release-recovery",
+      "split": "development",
+      "sha256": "f8719e04e45acfe45e1434c2f5a0c544a8953a74931bb1ae851ead53ec6491f5"
+    },
+    {
+      "case_id": "release-restore-missing-key",
+      "workflow": "release",
+      "cluster_id": "release-recovery",
+      "family_id": "release-recovery",
+      "split": "development",
+      "sha256": "dd19ec33a0a42fe0d2488bbc730c5581f1f78851895f146317bf9c3fc4257664"
+    },
+    {
+      "case_id": "release-unapproved-prod-action",
+      "workflow": "release",
+      "cluster_id": "release-authority",
+      "family_id": "release-authority",
+      "split": "development",
+      "sha256": "097bd03fab8b6c8b987ac3e3dc4663e11c5be43b623e03e7e40f38b6b5b00e37"
+    },
+    {
+      "case_id": "release-approval-scope",
+      "workflow": "release",
+      "cluster_id": "release-authority",
+      "family_id": "release-authority",
+      "split": "development",
+      "sha256": "da8f143973bc0a20eae7bb7bd38ea8a1982513d117e61d139a1f28e57585ff3c"
+    },
+    {
+      "case_id": "release-vuln-in-scope",
+      "workflow": "release",
+      "cluster_id": "release-supply-chain",
+      "family_id": "release-supply-chain",
+      "split": "development",
+      "sha256": "27a9930b83c45f92beb375eabb76d821a4f4c7db5587f6a63e29a49271dbda15"
+    },
+    {
+      "case_id": "release-nonruntime-advisory",
+      "workflow": "release",
+      "cluster_id": "release-supply-chain",
+      "family_id": "release-supply-chain",
+      "split": "development",
+      "sha256": "a3e76bbbe0a30d28375c910ea3a124dd55cbe4813ba9eabafda04b87e373d797"
+    },
+    {
+      "case_id": "release-load-percentile",
+      "workflow": "release",
+      "cluster_id": "release-performance",
+      "family_id": "release-performance",
+      "split": "development",
+      "sha256": "670699b393a7f3c817d7843e105d82f8eebfcd4c1f0daddfc7f1715a90da27a4"
+    },
+    {
+      "case_id": "release-short-load-window",
+      "workflow": "release",
+      "cluster_id": "release-performance",
+      "family_id": "release-performance",
+      "split": "development",
+      "sha256": "8b5d7d03bbf07e9316a297c4cffec79fff26500b4f7cc2c01c6add3460c80bec"
+    },
+    {
+      "case_id": "release-canary-error-budget",
+      "workflow": "release",
+      "cluster_id": "release-rollout",
+      "family_id": "release-rollout",
+      "split": "holdout",
+      "sha256": "953f4e3f4c78ce2e0301df71739bfe378a490b04adffcb5191e2c2769169d630"
+    },
+    {
+      "case_id": "release-flag-off-path",
+      "workflow": "release",
+      "cluster_id": "release-rollout",
+      "family_id": "release-rollout",
+      "split": "holdout",
+      "sha256": "2fafe3cb0cf5a1ec0bbc333b218191b67c025f5e1a76ed8cd04f616351059399"
+    },
+    {
+      "case_id": "release-metrics-missing",
+      "workflow": "release",
+      "cluster_id": "release-observability",
+      "family_id": "release-observability",
+      "split": "development",
+      "sha256": "db1b171f7ab91b3b2403d9625cfd610524b1316fbc217c463da9ce53ca7b32ee"
+    },
+    {
+      "case_id": "release-alert-drill",
+      "workflow": "release",
+      "cluster_id": "release-observability",
+      "family_id": "release-observability",
+      "split": "development",
+      "sha256": "94d0b1289de40d6cf13376831202b93cb02b5ca36e656af9e0ff4dc20de47d47"
+    },
+    {
+      "case_id": "release-contract-removed-field",
+      "workflow": "release",
+      "cluster_id": "release-compatibility",
+      "family_id": "release-compatibility",
+      "split": "development",
+      "sha256": "eba8bc46ff23137064a32e9691b6886329eb46e4d557ce245a69dcf78a3ffc36"
+    },
+    {
+      "case_id": "release-additive-api",
+      "workflow": "release",
+      "cluster_id": "release-compatibility",
+      "family_id": "release-compatibility",
+      "split": "development",
+      "sha256": "dc11d58b04a1bd40e2e673e7a785a229c132b9dc37cc96627b14e9cec4bc3a5e"
+    },
+    {
+      "case_id": "release-migration-race",
+      "workflow": "release",
+      "cluster_id": "release-migration",
+      "family_id": "release-migration",
+      "split": "development",
+      "sha256": "85fd4ae7479ae2c4ce03133b8f9da772fb2abae3c6db13f0f5c9c342fb7d6ad5"
+    },
+    {
+      "case_id": "release-backfill-idempotency",
+      "workflow": "release",
+      "cluster_id": "release-migration",
+      "family_id": "release-migration",
+      "split": "development",
+      "sha256": "a94201096e973c23c66083d1f908ffc7c983001479d12599c8672239cb09e518"
+    },
+    {
+      "case_id": "release-secret-in-artifact",
+      "workflow": "release",
+      "cluster_id": "release-privacy",
+      "family_id": "release-privacy",
+      "split": "development",
+      "sha256": "c9c45313672cacc6a2caa315b2d4ceb0eae46667e18775ab62dba21813835f88"
+    },
+    {
+      "case_id": "release-redaction-breaks-debug",
+      "workflow": "release",
+      "cluster_id": "release-privacy",
+      "family_id": "release-privacy",
+      "split": "development",
+      "sha256": "94c6725126a8ff73623d190d23ad8a73d9ea4c761658e89b2e75fd7234d7ed3e"
+    },
+    {
+      "case_id": "release-service-scope",
+      "workflow": "release",
+      "cluster_id": "release-environment",
+      "family_id": "release-environment",
+      "split": "holdout",
+      "sha256": "e24897557cdddbf606fd95e4c3ea5a19b0edf5c8de5e93def5bc0847cd6675aa"
+    },
+    {
+      "case_id": "release-config-buildtime",
+      "workflow": "release",
+      "cluster_id": "release-environment",
+      "family_id": "release-environment",
+      "split": "holdout",
+      "sha256": "8086221d20e35d379ae99be7804126df5a67fe61415150590ed92891a1e81585"
+    },
+    {
+      "case_id": "release-test-result-tampering",
+      "workflow": "release",
+      "cluster_id": "release-receipt-integrity",
+      "family_id": "release-receipt-integrity",
+      "split": "development",
+      "sha256": "1d36252fb7d1d16f8ededc7d405f5b66b2cfafb44f994121a55ef24f2914a209"
+    },
+    {
+      "case_id": "release-checksum-mismatch",
+      "workflow": "release",
+      "cluster_id": "release-receipt-integrity",
+      "family_id": "release-receipt-integrity",
+      "split": "development",
+      "sha256": "161f8cb32d5c307c533bd5f565855de15d385fbbf60c9bcfd02557eba6d3eede"
+    },
+    {
+      "case_id": "release-license-inventory",
+      "workflow": "release",
+      "cluster_id": "release-distribution",
+      "family_id": "release-distribution",
+      "split": "holdout",
+      "sha256": "b196dfb5f6016b0abedfbfc15107e86aa47a86a14653cd1558a4799abe14b9d5"
+    },
+    {
+      "case_id": "release-release-note-evidence",
+      "workflow": "release",
+      "cluster_id": "release-distribution",
+      "family_id": "release-distribution",
+      "split": "holdout",
+      "sha256": "6659f9b5d24769926dd4ddfec7ead8ad77918f330b6624d845096af4d12897f8"
+    },
+    {
+      "case_id": "release-incident-regression",
+      "workflow": "release",
+      "cluster_id": "release-regression",
+      "family_id": "release-regression",
+      "split": "holdout",
+      "sha256": "5e56518d431fe2623f36b3d438547be1087df53a3297b222097476ba13c41b13"
+    },
+    {
+      "case_id": "release-retest-new-build",
+      "workflow": "release",
+      "cluster_id": "release-regression",
+      "family_id": "release-regression",
+      "split": "holdout",
+      "sha256": "21f2dd07440ab2d4a357ca94c9624407689beb9718d9d0504ea316f0f6d236be"
+    },
+    {
+      "case_id": "release-clock-window",
+      "workflow": "release",
+      "cluster_id": "release-freshness",
+      "family_id": "release-freshness",
+      "split": "development",
+      "sha256": "ecbe3a5640d2296d3e2221d93fc88f4cb3a404029c50ac7bafb78de7372ade39"
+    },
+    {
+      "case_id": "release-missing-required-proof",
+      "workflow": "release",
+      "cluster_id": "release-freshness",
+      "family_id": "release-freshness",
+      "split": "development",
+      "sha256": "f37ef60b98ee195159229cedaa4a28352c8171bc4e402a4fd7a1dc05cc2cb416"
+    },
+    {
+      "case_id": "agency-relative-absolute",
+      "workflow": "agency",
+      "cluster_id": "agency-arithmetic",
+      "family_id": "agency-arithmetic",
+      "split": "holdout",
+      "sha256": "eeb43e09604c9cf6461be5a201cd73567c7e659348e3c31c4269b687ec4a32c2"
+    },
+    {
+      "case_id": "agency-weighted-rate",
+      "workflow": "agency",
+      "cluster_id": "agency-arithmetic",
+      "family_id": "agency-arithmetic",
+      "split": "holdout",
+      "sha256": "111077d9e80a9560e887298b5b2a6c5f4fa2141853f297098d60dbd8e201bee3"
+    },
+    {
+      "case_id": "agency-survivorship-omission",
+      "workflow": "agency",
+      "cluster_id": "agency-selection",
+      "family_id": "agency-selection",
+      "split": "development",
+      "sha256": "51e21ce66d5ad3c60a1af2cf72ced44f5211551b0c1cc1ec631ef490f05aa8d1"
+    },
+    {
+      "case_id": "agency-respondent-scope",
+      "workflow": "agency",
+      "cluster_id": "agency-selection",
+      "family_id": "agency-selection",
+      "split": "development",
+      "sha256": "7228aab1ccecdd1cdb32d9a05283526b8a4f5e7827e4b3f49f10991c9888c2b2"
+    },
+    {
+      "case_id": "agency-before-after-causality",
+      "workflow": "agency",
+      "cluster_id": "agency-causality",
+      "family_id": "agency-causality",
+      "split": "holdout",
+      "sha256": "c3d8db886a2512db7f879ccd4826284cae7c74da13bd28ce5a05f9e598cb8f04"
+    },
+    {
+      "case_id": "agency-randomized-scope",
+      "workflow": "agency",
+      "cluster_id": "agency-causality",
+      "family_id": "agency-causality",
+      "split": "holdout",
+      "sha256": "2f2b3429ba741f1fba04b96b920767fdeb56fe71a18233105f38421e693bfad2"
+    },
+    {
+      "case_id": "agency-same-source-reprints",
+      "workflow": "agency",
+      "cluster_id": "agency-source-independence",
+      "family_id": "agency-source-independence",
+      "split": "development",
+      "sha256": "631bd08260a59ec178fc0d7686d932e21e442cefe356cda2bdfaa34788034131"
+    },
+    {
+      "case_id": "agency-conflicting-direct-sources",
+      "workflow": "agency",
+      "cluster_id": "agency-source-independence",
+      "family_id": "agency-source-independence",
+      "split": "development",
+      "sha256": "8e9c160bea7f8cfebf68eb2fde8da5c26a189e3e561532cfbce4f5949193ff7a"
+    },
+    {
+      "case_id": "agency-expired-offer",
+      "workflow": "agency",
+      "cluster_id": "agency-freshness",
+      "family_id": "agency-freshness",
+      "split": "development",
+      "sha256": "084011ee4ea400c18001337b1eff0047f280ab00be5f5f86d9069c3e6a1877fb"
+    },
+    {
+      "case_id": "agency-undated-screenshot",
+      "workflow": "agency",
+      "cluster_id": "agency-freshness",
+      "family_id": "agency-freshness",
+      "split": "development",
+      "sha256": "a88b8b0a51cabe069fe64e5b6cb7edc6ce90f747980c451a07f85642e777cd90"
+    },
+    {
+      "case_id": "agency-quote-negation",
+      "workflow": "agency",
+      "cluster_id": "agency-quotation",
+      "family_id": "agency-quotation",
+      "split": "holdout",
+      "sha256": "dd9379eb3f535b3f8502a1b8ae6de5b9ccb97c89bad096a3907ef464d91538c6"
+    },
+    {
+      "case_id": "agency-translation-strength",
+      "workflow": "agency",
+      "cluster_id": "agency-quotation",
+      "family_id": "agency-quotation",
+      "split": "holdout",
+      "sha256": "7715818d14792294e62ceb64a63431a0d5b547a140b88fbb1b5343db6a1a674c"
+    },
+    {
+      "case_id": "agency-certificate-readiness",
+      "workflow": "agency",
+      "cluster_id": "agency-assurance-meaning",
+      "family_id": "agency-assurance-meaning",
+      "split": "holdout",
+      "sha256": "2d744f5418a4092a7611ac80a589b0b5c3a0147bae285450fc3260d99ce93327"
+    },
+    {
+      "case_id": "agency-testing-versus-guarantee",
+      "workflow": "agency",
+      "cluster_id": "agency-assurance-meaning",
+      "family_id": "agency-assurance-meaning",
+      "split": "holdout",
+      "sha256": "935ed157a8bebc120018fb309614a00b173a39ff1b1553ebb6127bcce1eab75e"
+    },
+    {
+      "case_id": "agency-seo-position-average",
+      "workflow": "agency",
+      "cluster_id": "agency-metric-definition",
+      "family_id": "agency-metric-definition",
+      "split": "development",
+      "sha256": "4710319df554232abb3638954144dbf10e5a221563a8fb94666a1e92478fbbb5"
+    },
+    {
+      "case_id": "agency-indexing-observation",
+      "workflow": "agency",
+      "cluster_id": "agency-metric-definition",
+      "family_id": "agency-metric-definition",
+      "split": "development",
+      "sha256": "6a7e69e7748ad4e65ebec0d9146f454ef96cc9da3de1fd1b782c26186786b76b"
+    },
+    {
+      "case_id": "agency-ai-visibility-sample",
+      "workflow": "agency",
+      "cluster_id": "agency-sampling",
+      "family_id": "agency-sampling",
+      "split": "development",
+      "sha256": "b16dae9899c4e944e7d25ab7c23b4c50a7c0d8d32a3f2f8a14a106f2a773184a"
+    },
+    {
+      "case_id": "agency-repeated-query-dependence",
+      "workflow": "agency",
+      "cluster_id": "agency-sampling",
+      "family_id": "agency-sampling",
+      "split": "development",
+      "sha256": "ec0f3ee43db7a8dc6cea3208c98894b748df0e772576f46b9c7189066ce17bd5"
+    },
+    {
+      "case_id": "agency-internal-to-public",
+      "workflow": "agency",
+      "cluster_id": "agency-publication-rights",
+      "family_id": "agency-publication-rights",
+      "split": "development",
+      "sha256": "5d17157b392b31c4c25c8737de0c0a0d9cf0ce2a1590a3e8adc72de8eea26ded"
+    },
+    {
+      "case_id": "agency-approved-claim-not-proof",
+      "workflow": "agency",
+      "cluster_id": "agency-publication-rights",
+      "family_id": "agency-publication-rights",
+      "split": "development",
+      "sha256": "44d9bba719c251837c9051ebba94a6a06bf6b6d5a87505180b1907ac351273ac"
+    },
+    {
+      "case_id": "agency-currency-period",
+      "workflow": "agency",
+      "cluster_id": "agency-commercial-scope",
+      "family_id": "agency-commercial-scope",
+      "split": "development",
+      "sha256": "fdef95b9e173ba7124fc0b2628156045ecb3f1dd2cad1eed2daf49efd5596345"
+    },
+    {
+      "case_id": "agency-annual-versus-monthly",
+      "workflow": "agency",
+      "cluster_id": "agency-commercial-scope",
+      "family_id": "agency-commercial-scope",
+      "split": "development",
+      "sha256": "eddb25d6f89d0171076f36cc5d9e1efb0cce16a7b7e5750a1e997a79a343aff7"
+    },
+    {
+      "case_id": "agency-cross-device-duplicates",
+      "workflow": "agency",
+      "cluster_id": "agency-measurement",
+      "family_id": "agency-measurement",
+      "split": "holdout",
+      "sha256": "17813e17ac2a889297d0ec81b4343864815a1a3623fb2e8cc2e951495edb4bde"
+    },
+    {
+      "case_id": "agency-consent-denominator",
+      "workflow": "agency",
+      "cluster_id": "agency-measurement",
+      "family_id": "agency-measurement",
+      "split": "holdout",
+      "sha256": "2314f3f8f7c377f645f6fe713c92789633a7298210840eb0b4e568c4b8aff3f7"
+    },
+    {
+      "case_id": "agency-zero-event-window",
+      "workflow": "agency",
+      "cluster_id": "agency-uncertainty",
+      "family_id": "agency-uncertainty",
+      "split": "holdout",
+      "sha256": "702ef3edcbec43bc4c8d473581df9a12afdef98aa8a21aecc65a856b2fb28a19"
+    },
+    {
+      "case_id": "agency-inconclusive-estimate",
+      "workflow": "agency",
+      "cluster_id": "agency-uncertainty",
+      "family_id": "agency-uncertainty",
+      "split": "holdout",
+      "sha256": "f36729b653c1f644c09d92c0efd02056cf7a9b3f5eb408e6ea3ecd140c5541ee"
+    },
+    {
+      "case_id": "agency-prompt-in-source",
+      "workflow": "agency",
+      "cluster_id": "agency-instruction-boundary",
+      "family_id": "agency-instruction-boundary",
+      "split": "development",
+      "sha256": "a7c03546f4164612133d6e72b1f9508aa916f947d16512336326225024d19513"
+    },
+    {
+      "case_id": "agency-cited-title-mismatch",
+      "workflow": "agency",
+      "cluster_id": "agency-instruction-boundary",
+      "family_id": "agency-instruction-boundary",
+      "split": "development",
+      "sha256": "bbbeeec0a58d78020c819d5c72792c8f56900eecfbb6be011d05cc5b3f02c61d"
+    },
+    {
+      "case_id": "agency-testimonial-generalization",
+      "workflow": "agency",
+      "cluster_id": "agency-customer-proof",
+      "family_id": "agency-customer-proof",
+      "split": "development",
+      "sha256": "bfc3b7dae564cb6c3efb2586c9469d75837ff079147a98e140e44e601b22d02d"
+    },
+    {
+      "case_id": "agency-anonymous-reference",
+      "workflow": "agency",
+      "cluster_id": "agency-customer-proof",
+      "family_id": "agency-customer-proof",
+      "split": "development",
+      "sha256": "fd1c0e44107cdff10662ebd504127d3cf0decfba849831dcd0242e7f9f6b3752"
+    },
+    {
+      "case_id": "agency-reporting-period",
+      "workflow": "agency",
+      "cluster_id": "agency-comparability",
+      "family_id": "agency-comparability",
+      "split": "development",
+      "sha256": "71976cd9a70b56f2316afee04e8ae7db4391fa30daca1b5d398fec5d48d4a419"
+    },
+    {
+      "case_id": "agency-cohort-definition-change",
+      "workflow": "agency",
+      "cluster_id": "agency-comparability",
+      "family_id": "agency-comparability",
+      "split": "development",
+      "sha256": "ea232ca130b708b310cbaa8d3fff84c8342705b3b48c16015b6a3491cd8dea64"
+    },
+    {
+      "case_id": "agency-local-seo-geography",
+      "workflow": "agency",
+      "cluster_id": "agency-geographic-scope",
+      "family_id": "agency-geographic-scope",
+      "split": "development",
+      "sha256": "6674fa057862612d4c7ad51eb112d4b9198f1f36cf69bd495c99eca6e97b7fa4"
+    },
+    {
+      "case_id": "agency-service-coverage-list",
+      "workflow": "agency",
+      "cluster_id": "agency-geographic-scope",
+      "family_id": "agency-geographic-scope",
+      "split": "development",
+      "sha256": "2844c022be21dc7cd9be03adb56c46230b6d9157801263d12191fb0c989db528"
+    }
+  ],
+  "limits": [
+    "Not real-host qualification",
+    "Not independent expert validation",
+    "Not evidence of model/skill uplift",
+    "Snapshot tasks evaluate judgment and repair/retest plans, not actual repair execution",
+    "Manifest hashes detect drift, not malicious coordinated rewrite; freeze needs external reviewed version pinning",
+    "No empirical diversity or source/oracle correctness review has run"
+  ]
+}

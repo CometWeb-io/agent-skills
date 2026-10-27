@@ -12,7 +12,7 @@ Admit only when the central inference cannot remain as stated without reanalysis
 - non-low confidence;
 - explicit central-claim impact;
 - repair level REANALYSIS, NEW_DATA, or REDESIGN;
-- a surviving Challenger -> Defender -> Arbiter pass.
+- addressed counterevidence; for the formal v6 report, a surviving challenge/defense/arbitration record.
 
 A FATAL finding cannot rest solely on `NOT_REPORTED` evidence.
 

@@ -33,6 +33,7 @@ written by a tool and fail CI when edited by hand.
 | [`SKILL-MATURITY.md`](SKILL-MATURITY.md) | Four declared stages, explicit experimental distribution and qualification limits. |
 | [`TOOLING.md`](TOOLING.md) | Every script under `tooling/`: what it does, which gate runs it, what it reads and writes. |
 | [`QUALITY-SUITE-INTEGRATION.md`](QUALITY-SUITE-INTEGRATION.md) | How imported skill bundles join the one skill tree and registry. |
+| [`CONTENT-REVIEW-COMPATIBILITY.md`](CONTENT-REVIEW-COMPATIBILITY.md) | Shared content-review owner, retained v1/v6 gates, alias dependencies and rollback. |
 | [`VOCABULARY.md`](VOCABULARY.md) | Verdicts, severities, confidence, freshness, gate and run statuses and envelope kinds across every skill, and why they differ. |
 | [`../AGENTS.md`](../AGENTS.md) | Standing repository rules for coding agents (in Polish). |
 | [`../CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) | How contributors are expected to behave. |
@@ -45,6 +46,10 @@ written by a tool and fail CI when edited by hand.
 | [`../evals/routing/README.md`](../evals/routing/README.md) | Routing case files, coverage floors, negation and sequence rules, holdout tuning. |
 | [`CONTRACT-TRACE-AND-SKILL-EVALS.md`](CONTRACT-TRACE-AND-SKILL-EVALS.md) | Contract tracing and reviewed skill comparisons with a model. |
 | [`OUTPUT-GRADING.md`](OUTPUT-GRADING.md) | Grading a skill's actual output against its output contract, offline, with golden good and broken cases. |
+| [`TASK-OUTCOME-GRADING.md`](TASK-OUTCOME-GRADING.md) | Source-bound task outcomes, separate from structural formatting; independently pinned observations and their trust boundary. |
+| [`../tooling/assurance_ci.md`](../tooling/assurance_ci.md) | Read-only changed-package reporting from pinned Git objects; supplied comparison evidence and live-integration limits. |
+| [`../evals/assurance/METHODOLOGY.md`](../evals/assurance/METHODOLOGY.md) | Synthetic, author-separated task cohort, frozen family splits, review packets and missing independent validation. |
+| [`RUNTIME-OBSERVABILITY.md`](RUNTIME-OBSERVABILITY.md) | Privacy-filtered receipt metrics, OTLP logs and matched-identity resource drift. |
 | [`REAL-HOST-EVALS.md`](REAL-HOST-EVALS.md) | Running the skills in a real host CLI under budget caps, grading the transcripts, and comparing with and without the plugin. |
 | [`LOCAL-VALIDATION.md`](LOCAL-VALIDATION.md) | A recorded run of every gate without GitHub Actions (in Polish). |
 | [`generated-eval-strength.md`](generated-eval-strength.md) | *Generated* by `tooling/eval_strength.py`. How many guards each harness pins. |

@@ -103,7 +103,7 @@
     {
       "id": 8,
       "prompt": "Roast a 5-line PR changing a shared serializer used by every API response.",
-      "expected_output": "Diff review with change-risk ledger.",
+      "expected_output": "Scoped diff review linking changed surfaces to affected invariants and verification; no full ledger unless a formal v6 report is required.",
       "files": [],
       "assertions": [
         "Small line count does not imply low blast radius.",
@@ -203,7 +203,7 @@
       "files": [],
       "assertions": [
         "Source, log, and deployment config remain distinct evidence sources.",
-        "Feature-flag/runtime evidence is considered by Defender/Arbiter.",
+        "Feature-flag/runtime counterevidence is checked before admitting the finding or assigning severity.",
         "Severity does not exceed demonstrated reachability."
       ],
       "tags": [

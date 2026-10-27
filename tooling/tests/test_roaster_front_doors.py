@@ -3,9 +3,9 @@
 The must-keep rules themselves (front-door and deferred) are inventoried per
 skill in ``skills/<roaster>/tests/front-door-rules.json`` and enforced by
 ``tooling/tests/test_front_door_rules.py``, the same mechanism every slimmed
-front door uses. This file keeps only the roaster-specific structure: the
-21-rule core contract, the workflow step index, reference reachability, and the
-rules the legacy roasters must carry identically. Content uses a compact checklist.
+front door uses. This file keeps reference reachability and shared formal-operation rules.
+All three front doors use compact checklists; fixed rule counts and workflow
+step numbering are not part of their prose contract.
 """
 
 from __future__ import annotations
@@ -30,40 +30,20 @@ def test_roaster_ships_a_rule_inventory(skill: str) -> None:
     assert _inventory(skill)["skill"] == skill
 
 
-def test_common_and_shared_rules_are_identical_across_roasters() -> None:
-    """common-* rules sit in every front door; shared-* in the synced review-operations.md."""
+def test_shared_operations_rules_are_identical_across_roasters() -> None:
+    """Formal operations stay shared; front-door procedures may differ."""
     def carried(skill: str) -> set[tuple[str, str, str]]:
         return {
             (rule["id"], rule["text"], rule["where"])
             for rule in _inventory(skill)["rules"]
-            if rule["id"].startswith(("common-", "shared-"))
+            if rule["id"].startswith("shared-")
         }
 
     first, *rest = (carried(skill) for skill in ("repo-roaster", "science-roaster"))
-    assert first, "no common-/shared- rules inventoried"
+    assert first, "no shared- rules inventoried"
     assert {where for _, _, where in first if where != "SKILL.md"} == {"references/review-operations.md"}
     for other in rest:
         assert other == first, sorted(first ^ other)
-
-
-@pytest.mark.parametrize("skill", ("repo-roaster", "science-roaster"))
-def test_core_contract_keeps_all_21_rules(skill: str) -> None:
-    text = (ROOT / "skills" / skill / "SKILL.md").read_text(encoding="utf-8")
-    section = text.split("## Core contract", 1)[1].split("\n## ", 1)[0]
-    numbers = [int(n) for n in re.findall(r"^(\d+)\. ", section, re.M)]
-    assert numbers == list(range(1, 22)), numbers
-
-
-@pytest.mark.parametrize("skill", ("repo-roaster", "science-roaster"))
-def test_step_index_matches_full_workflow(skill: str) -> None:
-    """Adding a step to references/workflow.md without indexing it in SKILL.md fails."""
-    package = ROOT / "skills" / skill
-    front = (package / "SKILL.md").read_text(encoding="utf-8")
-    index = front.split("\n## Workflow\n", 1)[1].split("\n## ", 1)[0]
-    indexed = {int(n) for n in re.findall(r"^(\d+)\. ", index, re.M)}
-    detailed = (package / "references" / "workflow.md").read_text(encoding="utf-8")
-    steps = {int(n) for n in re.findall(r"^### (\d+)\. ", detailed, re.M)}
-    assert steps and indexed == steps, (sorted(indexed), sorted(steps))
 
 
 @pytest.mark.parametrize("skill", ROASTERS)

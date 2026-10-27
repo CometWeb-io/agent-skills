@@ -1,8 +1,120 @@
 {
   "schema": "cometweb.knowledge-rules/v1",
   "rules": [
-    {"id":"agentskills-description-limit", "state":"active", "kind":"standard", "statement":"Agent Skills descriptions must be non-empty and no longer than 1024 characters.", "scope":"Agent Skills common frontmatter", "verified_at":"2026-09-12", "ttl_days":30, "sources":["https://agentskills.io/specification"], "regression_tests":["tooling/tests/test_quality_tooling.py::test_frontmatter_description_limit"]},
-    {"id":"openai-explicit-invocation", "state":"active", "kind":"platform_requirement", "statement":"The OpenAI skills adapter can disable implicit invocation with policy.allow_implicit_invocation=false; explicit invocation remains possible.", "scope":"OpenAI skills adapter; not a universal host security boundary", "verified_at":"2026-09-12", "ttl_days":30, "sources":["https://developers.openai.com/codex/skills"], "regression_tests":["tooling/tests/test_quality_tooling.py::test_explicit_registry_policy_wins"]},
-    {"id":"skill-baseline-comparison", "state":"active", "kind":"heuristic", "statement":"Compare outputs with a skill against a no-skill baseline under matched task conditions and review outcome quality, not only structure.", "scope":"CometWeb evaluation design; not evidence that a particular skill improves outcomes", "verified_at":"2026-09-12", "ttl_days":90, "sources":["https://agentskills.io/skill-creation/evaluating-skills"], "regression_tests":["tooling/tests/test_model_evals.py"]}
+    {
+      "id": "agentskills-description-limit",
+      "state": "active",
+      "kind": "standard",
+      "statement": "Agent Skills descriptions must be non-empty and no longer than 1024 characters.",
+      "scope": "Agent Skills common frontmatter",
+      "verified_at": "2026-10-27",
+      "ttl_days": 30,
+      "sources": [
+        "https://agentskills.io/specification"
+      ],
+      "regression_tests": [
+        "tooling/tests/test_quality_tooling.py::test_frontmatter_description_limit"
+      ],
+      "dependencies": {
+        "skills": [
+          "*"
+        ],
+        "adapters": [],
+        "tooling": [
+          "tooling/compatibility.py",
+          "tooling/generate_adapters.py"
+        ]
+      },
+      "verification": {
+        "read_at": "2026-10-27",
+        "method": "official_documentation_read",
+        "findings": [
+          {
+            "url": "https://agentskills.io/specification",
+            "locator": "Frontmatter table; description field",
+            "assessment": "supports",
+            "note": "The specification requires a non-empty description and sets its maximum length to 1024 characters."
+          }
+        ]
+      }
+    },
+    {
+      "id": "openai-explicit-invocation",
+      "state": "active",
+      "kind": "platform_requirement",
+      "statement": "The OpenAI skills adapter can disable implicit invocation with policy.allow_implicit_invocation=false; explicit invocation remains possible.",
+      "scope": "OpenAI skills adapter; not a universal host security boundary",
+      "verified_at": "2026-10-27",
+      "ttl_days": 30,
+      "sources": [
+        "https://developers.openai.com/codex/skills",
+        "https://learn.chatgpt.com/docs/build-skills"
+      ],
+      "regression_tests": [
+        "tooling/tests/test_quality_tooling.py::test_explicit_registry_policy_wins"
+      ],
+      "dependencies": {
+        "skills": [
+          "*"
+        ],
+        "adapters": [
+          "skills/*/agents/openai.yaml"
+        ],
+        "tooling": [
+          "tooling/adapter_metadata.py",
+          "tooling/generate_adapters.py"
+        ]
+      },
+      "verification": {
+        "read_at": "2026-10-27",
+        "method": "official_documentation_read",
+        "findings": [
+          {
+            "url": "https://learn.chatgpt.com/docs/build-skills",
+            "locator": "Optional metadata, policy.allow_implicit_invocation",
+            "assessment": "supports",
+            "note": "The previous URL redirects here. The documented false setting prevents implicit Codex invocation while keeping explicit invocation available; no native execution was performed."
+          }
+        ]
+      }
+    },
+    {
+      "id": "skill-baseline-comparison",
+      "state": "active",
+      "kind": "heuristic",
+      "statement": "Compare outputs with a skill against a no-skill baseline under matched task conditions and review outcome quality, not only structure.",
+      "scope": "CometWeb evaluation design; not evidence that a particular skill improves outcomes",
+      "verified_at": "2026-10-27",
+      "ttl_days": 90,
+      "sources": [
+        "https://agentskills.io/skill-creation/evaluating-skills"
+      ],
+      "regression_tests": [
+        "tooling/tests/test_model_evals.py"
+      ],
+      "dependencies": {
+        "skills": [
+          "benchmark-curator",
+          "skill-evaluator"
+        ],
+        "adapters": [],
+        "tooling": [
+          "tooling/run_model_evals.py",
+          "tooling/real_host_eval.py"
+        ]
+      },
+      "verification": {
+        "read_at": "2026-10-27",
+        "method": "official_documentation_read",
+        "findings": [
+          {
+            "url": "https://agentskills.io/skill-creation/evaluating-skills",
+            "locator": "Running evals; Spawning runs; Grading principles; Reviewing results with a human",
+            "assessment": "supports",
+            "note": "The guide recommends the same prompt with and without a skill, fresh contexts, concrete output evidence and human review. This supports an evaluation heuristic, not measured benefit."
+          }
+        ]
+      }
+    }
   ]
 }

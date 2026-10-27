@@ -1,5 +1,6 @@
 """Bounded tests of diagnostics, metadata preservation and freshness semantics."""
 import datetime as dt
+import importlib.util
 import json
 import sys
 import zipfile
@@ -17,6 +18,31 @@ import generate_adapters as adapters
 import package_skill as package
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _tooling_fixtures import root, add  # noqa: F401
+
+
+def test_content_alias_preserves_distinct_v1_and_v6_admission():
+    repository = TOOLS.parent
+    modules = {}
+    for name, rel in {"review": "content-reviewer/scripts/kernel.py",
+                      "roast": "content-roaster/scripts/validate_roast.py"}.items():
+        spec = importlib.util.spec_from_file_location(name, repository / "skills" / rel)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        modules[name] = module
+    v1 = {"candidate_id": "draft-v1", "findings": [{
+        "finding_id": "F1", "severity": "MAJOR", "locator": "p1", "impact": "material",
+        "evidence": [{"kind": "OBSERVATION", "source": "draft", "locator": "p1",
+                      "candidate_id": "draft-v1"}],
+    }]}
+    v6 = json.loads((repository / "skills/content-roaster/tests/report-valid.json").read_text())
+    assert modules["review"].review(v1)["status"] == "CHANGES_REQUIRED"
+    assert modules["roast"].validate(v6) == []
+    assert modules["review"].review(v6)["status"] == "INVALID"
+    assert modules["roast"].validate(v1)
+    v1["findings"][0]["evidence"][0]["candidate_id"] = "other-draft"
+    assert modules["review"].review(v1)["status"] == "INVALID"
+    del v6["diagnosis_ledger"]
+    assert modules["roast"].validate(v6)
 
 
 def test_dependency_and_unknown_metadata_survive_generation():

@@ -25,6 +25,48 @@ def test_generator_declares_compatibility_matrix_output():
     assert gen.OUT_COMPAT == ROOT / "docs" / "generated-compatibility-matrix.md"
 
 
+@pytest.mark.parametrize("render", ["build_cursor", "build_cursor_fallback", "build_agents_snippet"])
+def test_non_execution_alias_does_not_request_subagents(render):
+    gen = load_generator()
+    entry = {"id": "content-roaster", "alias_of": "content-reviewer",
+             "owns": ["adversarial review profile"], "description": "Adversarial review profile."}
+    text = getattr(gen, render)([entry])
+    row = next(line for line in text.splitlines() if line.startswith("|") and "`content-roaster`" in line)
+    assert "content-reviewer" in row
+    assert "adversarial" in row
+    assert "subagent" not in row and "isolated_subagents" not in row
+
+
+@pytest.mark.parametrize("target", ["absent", "alias"])
+def test_generator_refuses_invalid_alias_before_writing(tmp_path, monkeypatch, target):
+    gen = load_generator()
+    monkeypatch.setattr(gen, "SKILLS", tmp_path)
+    skill = tmp_path / "alias"
+    skill.mkdir()
+    (skill / "SKILL.md").write_text("synthetic")
+    (skill / "VERSION").write_text("1.0.0")
+    with pytest.raises(SystemExit, match="alias target"):
+        gen.validate_sources([{"id": "alias", "version": "1.0.0", "alias_of": target}])
+    assert not (skill / "ALIAS_OF").exists()
+
+
+def test_generator_refuses_redirected_alias_metadata(tmp_path, monkeypatch):
+    gen = load_generator()
+    monkeypatch.setattr(gen, "SKILLS", tmp_path)
+    for name in ("alias", "canonical"):
+        skill = tmp_path / name
+        skill.mkdir()
+        (skill / "SKILL.md").write_text("synthetic")
+        (skill / "VERSION").write_text("1.0.0")
+    protected = tmp_path / "protected"
+    protected.write_text("retain these bytes")
+    (tmp_path / "alias/ALIAS_OF").symlink_to(protected)
+    with pytest.raises(SystemExit, match="ALIAS_OF must be a regular file"):
+        gen.validate_sources([{"id": "alias", "version": "1.0.0", "alias_of": "canonical"},
+                              {"id": "canonical", "version": "1.0.0"}])
+    assert protected.read_text() == "retain these bytes"
+
+
 def test_compatibility_matrix_contains_every_target_host():
     gen = load_generator()
     registry = json.loads((ROOT / "registry" / "skills.json").read_text(encoding="utf-8"))

@@ -153,18 +153,19 @@ OVERRIDES: dict[str, dict] = {
     "content-reviewer": {
         "release_status": "ACTIVE",
         "tier": "domain",
-        "owns": ["constructive content review", "evidence-backed editorial findings", "review coverage and repair direction"],
-        "does_not_own": ["adversarial roasting", "full content rewrites", "final publication acceptance"],
+        "owns": ["editorial and adversarial content review", "evidence and counterevidence checks", "review coverage and repair verification"],
+        "does_not_own": ["scientific peer review", "full content rewrites", "final publication acceptance"],
         "trigger_examples": ["Review this draft against its brief", "Give me actionable editorial QA before publication"],
-        "negative_trigger_examples": ["Brutally roast this landing page", "Rewrite the whole article"],
+        "negative_trigger_examples": ["Peer-review this scientific manuscript", "Rewrite the whole article"],
         "routing_signals": [[9, "\\breview\\b.{0,40}\\b(?:page|faq|docs?|documentation|copy|post|article|guide|chapter|draft|section)\\b.{0,40}\\bfor (?:clarity|accuracy|consistency|readability|completeness|structure|gaps|missing)"], [9, "\\bwhere (?:the|my|its|our) (?:argument|logic|structure|flow|reasoning)\\b.{0,20}\\b(?:is |gets |feels )?(?:weak|unclear|confusing|breaks|thin)"], [10, "\\b(?:editorial|constructive) (?:notes|feedback|pass|comments|review)\\b"], [9, "\\b(?:review|feedback on|notes on)\\b.{0,40}\\b(?:draft|chapter|article|guide|whitepaper|white paper|post|section)\\b.{0,80}\\b(?:clarity|structure|flow|gaps?|brief|reader|usefulness|consisten\\w*)\\b"], [10, "\\b(?:ocen|przejrzyj|zrecenzuj|sprawdz)\\w*\\b.{0,40}\\b(?:szkic|artykul|rozdzial|poradnik|wpis|tekst|dokumentacj)\\w*\\b.{0,80}\\b(?:struktur|jasnos|czytelnik|briefem|briefu|niespojn|brakuj|niejasn|uwag)"], [9, "review (this|the|my) (article|blog post|guide|report|white paper|documentation|draft)"], [12, "content reviewer|editorial (review|qa)"], [10, "review this (draft|article|report).*brief"], [9, "pre.publication review|actionable editorial findings"], [8, "content.*(clarity|specificity|internal consistency).*review"], [7, "constructive review.*content"], [10, "\\breview (?:this|the|my) (?:draft|article|report|paragraph|section|text|copy|post|chapter)\\b.{0,40}\\bagainst (?:the|its|our|this) brief\\b"], [9, "\\b(?:przejrzyj|zrecenzuj|ocen|sprawdz)\\w*\\b.{0,40}\\b(?:artykul|tekst|szkic|wpis|poradnik|dokumentacj|raport|draft|rozdzial)\\w*\\b.{0,40}\\b(?:pod katem|wzgledem|wobec|zgodnie z)\\b.{0,15}\\bbrief|\\b(?:redakcyjn|merytoryczn)\\w* (?:korekt|recenzj|przeglad|uwag|qa|ocen)\\w*|\\brecenzj\\w*\\b.{0,30}\\b(?:tekstu|artykulu|wpisu|szkicu|poradnika|dokumentacji|raportu|rozdzialu)\\b|\\bkonstruktywn\\w*\\b.{0,30}\\b(?:ocen|recenzj|przejrz|uwag|feedback)|\\b(?:ocen|przejrz|recenzj)\\w*\\b.{0,30}\\bkonstruktywn|\\b(?:zyczliw|lagodn)\\w*\\b.{0,40}\\b(?:recenzj|ocen|przeglad|uwag)|\\b(?:recenzj|ocen|przeglad)\\w*\\b.{0,40}\\b(?:zyczliw|lagodn)"]],
         "required_capabilities": [],
         "optional_capabilities": ["filesystem", "code_execution", "web", "files"],
     },
     "content-roaster": {
+        "alias_of": "content-reviewer",
         "release_status": "ACTIVE",
         "tier": "domain",
-        "owns": ["adversarial content review", "proof-debt and claim-pressure diagnosis", "repair verification contracts"],
+        "owns": ["adversarial profile of content-reviewer", "legacy v6 report adapter"],
         "does_not_own": ["scientific peer review", "repository/code critique", "rewrite-only editing"],
         "trigger_examples": ["Roast this landing page with evidence", "Red-team the claims and objections in this offer"],
         "negative_trigger_examples": ["Peer-review this scientific manuscript", "Audit the repository code"],
@@ -343,6 +344,9 @@ def desired_registry(current: dict) -> dict:
         entry["compatible_hosts"] = list(HOST_TARGETS)
         entry["required_capabilities"] = list(spec["required_capabilities"])
         entry["optional_capabilities"] = list(spec["optional_capabilities"])
+        if "alias_of" in spec:
+            entry["alias_of"] = spec["alias_of"]
+            entry["dependencies"] = [spec["alias_of"]]
         if skill_id != "product-operator":
             for key in ("tier", "owns", "does_not_own", "trigger_examples", "negative_trigger_examples", "routing_signals"):
                 entry[key] = deepcopy(spec[key])

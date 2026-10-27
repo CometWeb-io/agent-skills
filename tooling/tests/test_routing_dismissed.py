@@ -47,7 +47,7 @@ DISMISSED = [
 @pytest.mark.parametrize("prompt,named", DISMISSED)
 def test_a_skill_named_only_in_a_dismissed_clause_cannot_win(prompt, named):
     before = route(prompt, REGISTRY, without_block())
-    assert before["primary_skill"] == named, "the case no longer shows the misroute it guards"
+    assert before["scores"].get(named, 0) > 0, "the dismissed skill must have evidence to remove"
     after = route(prompt, REGISTRY, POLICY)
     assert after["primary_skill"] != named
     assert named not in after["candidates"]

@@ -4,7 +4,7 @@ Machine-consumable reports use `cometweb.content-roaster/v6`. `scripts/validate_
 
 ## Human output
 
-Ordinary prose follows the compact output in `SKILL.md`: scoped verdict, then material findings with evidence, consequence, repair and verification. No fixed section order, role transcript or separate ledger is required. The v6 fields below apply only when the caller requests the machine contract or an existing integration requires it.
+Ordinary prose follows the canonical content-reviewer checklist loaded by `SKILL.md`: scoped verdict, then material findings with evidence, consequence, repair and verification. No fixed section order, role transcript or separate ledger is required. The v6 fields below apply only when the caller requests the machine contract or an existing integration requires it.
 
 ## v6 control-plane fields
 

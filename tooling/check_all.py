@@ -152,7 +152,7 @@ GATES: tuple[Gate, ...] = (
     # The package-level slice of the test suite: per skill and quick, so a
     # harness a new rule broke, a missing untrusted-content block or a manifest
     # left behind by a version bump fails the inner loop, not only the full run.
-    Gate("skill_package_tests", _python("-m", "pytest", "-q", "--tb=short", "-n", "4", "-p", "no:cacheprovider",
+    Gate("skill_package_tests", _python("-m", "pytest", "-q", "-rs", "--tb=short", "-n", "4", "-p", "no:cacheprovider",
                                         *(f"tooling/tests/{name}" for name in PACKAGE_TESTS)),
          "per-skill package tests: eval harnesses, front-door rules, script CLIs, manifests", cost=5),
     # Leak gates.
@@ -165,7 +165,7 @@ GATES: tuple[Gate, ...] = (
          "synthetic QA example: plan boundaries, annual totals and invalid input", tool="node"),
     # When skill_package_tests runs too, the full suite leaves those modules to
     # it instead of collecting and running them a second time.
-    Gate("pytest", _python("-m", "pytest", "-q", "-n", "auto", "-p", "no:cacheprovider"),
+    Gate("pytest", _python("-m", "pytest", "-q", "-rs", "-n", "auto", "-p", "no:cacheprovider"),
          "full test suite", fast=False, cost=60,
          defer=("skill_package_tests", tuple(f"--ignore=tooling/tests/{name}" for name in PACKAGE_TESTS))),
     Gate("installation_acceptance", _python("tooling/installation_acceptance.py", "--all",

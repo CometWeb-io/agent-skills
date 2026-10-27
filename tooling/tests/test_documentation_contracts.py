@@ -12,7 +12,7 @@ QUALITY_SKILLS = {
     "artifact-acceptance": "1.7.6",
     "benchmark-curator": "1.7.5",
     "brief-architect": "1.9.0",
-    "content-reviewer": "1.7.6",
+    "content-reviewer": "1.8.0",
     "content-writer": "1.7.7",
     "feedback-integrator": "1.8.2",
     "quality-loop-operator": "1.8.0",
