@@ -20,7 +20,8 @@ ROOT = Path(__file__).resolve().parents[2]
 SKILLS = sorted(p for p in (ROOT / "skills").iterdir() if (p / "SKILL.md").is_file())
 # A thin alias whose first instruction is to load its canonical skill inherits
 # that skill's front door; repeating the rules would only add context cost.
-ALIASES = {"skill-orchestrator-multiagent": "skill-orchestrator"}
+ALIASES = {"skill-orchestrator-multiagent": "skill-orchestrator",
+           "content-roaster": "content-reviewer"}
 
 # What each facet's sentence has to say. A facet tag on an unrelated sentence fails.
 FACETS: dict[str, re.Pattern[str]] = {

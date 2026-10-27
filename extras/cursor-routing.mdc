@@ -28,8 +28,8 @@ run its deterministic scripts in `scripts/` when it ships them.
 | artifact brief and execution contract | `brief-architect` |
 | competitor watchlist; delta digest; normalized competitor state | `competitive-intelligence` |
 | initial competitor baseline; evidence-backed competitor dossier | `competitor-profiling` |
-| constructive content review; evidence-backed editorial findings | `content-reviewer` |
-| adversarial content review | `content-roaster` |
+| editorial and adversarial content review | `content-reviewer` |
+| Alias for `content-reviewer`: adversarial profile of content-reviewer | `content-roaster` |
 | evidence-aware content production; claim-discipline ledger | `content-writer` |
 | support triage; incident candidate; eng handoff | `customer-ops` |
 | partner cohort; learning contract; partnerability score | `design-partner-finder` |
@@ -52,5 +52,5 @@ run its deterministic scripts in `scripts/` when it ships them.
 | skill package audits; routing, portability, and contract review | `skill-auditor` |
 | skill experiment design; behavioral lift and resource | `skill-evaluator` |
 | multi-skill plan; execution_mode; CW-AIP handoffs | `skill-orchestrator` |
-| `skill-orchestrator` with one subagent per step | `skill-orchestrator-multiagent` |
+| Alias for `skill-orchestrator`: alias for isolated_subagents execution | `skill-orchestrator-multiagent` |
 | live click-through QA; findings with evidence; audit report | `web-app-auditor` |

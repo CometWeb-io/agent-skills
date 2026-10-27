@@ -1,5 +1,7 @@
 # Content Roaster: formal v6 reports
 
+This is the retained formal v6 procedure, loaded only when a caller requires that contract. Ordinary prose uses the installed content-reviewer checklist through the content-roaster alias; it needs no role transcript or separate ledger. Existing v6 fields and validation remain unchanged.
+
 Load this file only when a caller requires the existing structured contract. For ordinary prose use `SKILL.md`; the fields below do not become mandatory prose sections.
 
 Build the object described in `references/output-contract.md` and `references/report.schema.json`:

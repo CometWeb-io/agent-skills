@@ -1,6 +1,8 @@
 # Science Roaster: full workflow
 
-The detailed procedure behind the step index in `SKILL.md`. Open this file before any non-QUICK review, and whenever a step's detail is needed in QUICK mode. The core contract, admission gates, and hard boundaries in `SKILL.md` still govern every step; nothing here relaxes them.
+Load this file when a caller requires the existing v6 report or a typed pipeline. Ordinary prose uses the checklist in `SKILL.md`; these ledgers and stages do not become mandatory prose sections. The full machine fields and admission rules remain unchanged. Counterevidence checks do not require role-play or separate reviewer contexts.
+
+For calibration or package maintenance, read `references/examples.md` and `references/eval-protocol.md`; fixture validity does not prove model effectiveness.
 
 ## Workflow steps
 
@@ -95,9 +97,9 @@ Severity:
 
 FATAL requires a linked central claim, explicit central-claim impact, non-low confidence, evidence strength above WEAK, scope sensitivity below HIGH, and repair beyond reporting-only. FATAL cannot be based solely on `NOT_REPORTED`.
 
-### 10. Run Challenger -> Defender -> Arbiter
+### 10. Check counterevidence and record the v6 disposition
 
-Before admitting FATAL or MAJOR, open `references/severity-calibration.md`, then open `references/adversarial-protocol.md`. Search methods, supplements, protocol/preregistration, calibration evidence, negative controls, robustness analyses, sensitivity analyses, exclusions, scope qualifications, and alternative analyses that could defeat or narrow the concern. Emit only the post-arbitration finding.
+For v6, record the challenge/defense/arbitration checks without inventing separate reviewers. Before admitting FATAL or MAJOR, open `references/severity-calibration.md`, then open `references/adversarial-protocol.md`. Search methods, supplements, protocol/preregistration, calibration evidence, negative controls, robustness analyses, sensitivity analyses, exclusions, scope qualifications, and alternative analyses that could defeat or narrow the concern. Emit only the post-arbitration finding.
 
 ### 11. Compress root causes
 
@@ -136,6 +138,6 @@ Choose exactly one:
 
 If evidence is insufficient, mark at least one quality gate `BLOCKED`, return no material findings, and identify the evidence needed to continue. This is not a verdict that the study is bad.
 
-### 16. End with one scientific repair
+### 16. Return the requested result
 
-Return exactly one highest-leverage scientific repair sentence, or a bounded no-fix/evidence-needed statement.
+Use the output guidance in `SKILL.md`; the machine contract does not impose prose sections. State the highest-leverage scientific repair, or a bounded no-fix/evidence-needed result.

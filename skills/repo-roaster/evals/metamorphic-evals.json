@@ -35,7 +35,7 @@
       "id": "judgment_vs_artifact_change",
       "base_prompt": "Compare a revision with the prior review.",
       "transformation": "Keep artifact bytes unchanged but correct an earlier reviewer mistake.",
-      "invariant": "Resolution/change ledger must classify the reason as JUDGMENT_CORRECTED, not ARTIFACT_CHANGED."
+      "invariant": "Distinguish correction of reviewer judgment from a change to the artifact. If a formal resolution ledger is requested, classify the reason as JUDGMENT_CORRECTED, not ARTIFACT_CHANGED."
     },
     {
       "id": "instruction_injection_invariance",

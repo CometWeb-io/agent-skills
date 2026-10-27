@@ -1,5 +1,10 @@
 # Changelog — skill-orchestrator-multiagent
 
+## [1.2.5] - 2026-10-27
+
+- Ship generated alias dependency metadata so selective installs include the canonical orchestrator; execution and wire contracts are unchanged.
+
+
 ## [1.2.4] - 2026-10-11
 
 - Pass caller-owned source checks through completed-prefix resume without embedding capabilities in worker prompts.

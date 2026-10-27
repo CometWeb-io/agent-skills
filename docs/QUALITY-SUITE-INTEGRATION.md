@@ -8,11 +8,12 @@ treated as package sources, not as a second repository architecture.
 
 | Canonical skill IDs | Source | Current package version |
 | --- | --- | --- |
-| `content-roaster` | CometWeb Roaster Suite | `6.2.0` |
-| `science-roaster`, `repo-roaster` | CometWeb Roaster Suite | `6.1.7` |
+| `content-roaster` (compatibility alias) | CometWeb Roaster Suite | `7.0.0` |
+| `repo-roaster` | CometWeb Roaster Suite | `6.2.0` |
+| `science-roaster` | CometWeb Roaster Suite | `6.2.0` |
 | `artifact-acceptance` | CometWeb Quality Skills | `1.7.6` |
 | `benchmark-curator` | CometWeb Quality Skills | `1.7.5` |
-| `content-reviewer` | CometWeb Quality Skills | `1.7.6` |
+| `content-reviewer` | CometWeb Quality Skills | `1.8.0` |
 | `content-writer` | CometWeb Quality Skills | `1.7.7` |
 | `quality-loop-operator` | CometWeb Quality Skills | `1.8.0` |
 | `repair-operator` | CometWeb Quality Skills | `1.7.7` |
@@ -27,6 +28,9 @@ second time: the dedicated Roaster Suite packages are the canonical source for
 those IDs in this repository.
 The Roaster Suite was imported at `6.1.4`; the table follows current package
 versions, including later fixes and explicit experimental distribution metadata.
+All three roasters default to compact evidence-backed prose. Their
+full v6 contracts remain available when a receiving workflow requires them;
+routine reviews do not require role transcripts or separate ledgers.
 
 ## Deliberately excluded
 
@@ -40,3 +44,8 @@ The repository's registry, generated adapters, marketplace manifests, local
 validator, public-safety checks, and existing low-cost validation workflow remain
 the publication contract. A passing local test suite proves package invariants;
 it does not prove behavioral improvement on every live model or host.
+
+Content review now has one canonical instruction owner: `content-reviewer`.
+`content-roaster` selects its ADVERSARIAL profile and retains v6 helper paths.
+The review/v1 and roaster/v6 contracts remain distinct; see
+[compatibility and migration](CONTENT-REVIEW-COMPATIBILITY.md).

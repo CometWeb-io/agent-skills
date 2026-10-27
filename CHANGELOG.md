@@ -6,6 +6,27 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+- Consolidate content review under `content-reviewer` 1.8.0; retain
+  `content-roaster` 7.0.0 as its adversarial-profile and legacy-v6 adapter.
+  Preserve both wire contracts and validators; do not auto-convert verdicts.
+  Keep the shared reviewer optional; comparative task-success advantage remains
+  unestablished.
+- Generate alias-specific routing text and dependency edges. Selective and
+  pinned installs include canonical dependencies within their transaction;
+  `skill-orchestrator-multiagent` 1.2.5 gains the same dependency metadata.
+
+- Shorten `science-roaster` 6.2.0 to a methodology/evidence checklist; make
+  reviewer roles, ledgers and v6 reporting conditional. Correct the research-program
+  handoff while preserving scripts, schemas and shared procedures.
+
+- Shorten `repo-roaster` 6.2.0 to evidence, counterevidence and repair checks;
+  make role-based procedures and full v6 reporting conditional. Keep it optional
+  and preserve wire contracts and shared roaster procedures.
+- Fix quadratic control-pattern matching in all three source scanners without
+  changing detection semantics, credential redaction or checked file reads.
+  Add long-input and detection regression tests; retain the fix in
+  `content-roaster` 7.0.0 and the `science-roaster` 6.2.0 update.
+
 ### Catalog, optional workflows and local examples
 
 - Retire `cometweb-context` as a discoverable skill while retaining its source

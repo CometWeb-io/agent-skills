@@ -33,6 +33,7 @@ written by a tool and fail CI when edited by hand.
 | [`SKILL-MATURITY.md`](SKILL-MATURITY.md) | Four declared stages, explicit experimental distribution and qualification limits. |
 | [`TOOLING.md`](TOOLING.md) | Every script under `tooling/`: what it does, which gate runs it, what it reads and writes. |
 | [`QUALITY-SUITE-INTEGRATION.md`](QUALITY-SUITE-INTEGRATION.md) | How imported skill bundles join the one skill tree and registry. |
+| [`CONTENT-REVIEW-COMPATIBILITY.md`](CONTENT-REVIEW-COMPATIBILITY.md) | Shared content-review owner, retained v1/v6 gates, alias dependencies and rollback. |
 | [`VOCABULARY.md`](VOCABULARY.md) | Verdicts, severities, confidence, freshness, gate and run statuses and envelope kinds across every skill, and why they differ. |
 | [`../AGENTS.md`](../AGENTS.md) | Standing repository rules for coding agents (in Polish). |
 | [`../CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) | How contributors are expected to behave. |

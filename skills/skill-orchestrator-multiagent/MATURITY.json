@@ -1,7 +1,7 @@
 {
   "schema": "cometweb.skill-maturity/v1",
   "skill": "skill-orchestrator-multiagent",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "stage": "DEVELOPMENT",
   "publication": "EXPERIMENTAL",
   "task_qualification": "not_established"

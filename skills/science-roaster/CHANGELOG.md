@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.2.0] - 2026-10-27
+
+- Replace mandatory reviewer roles, ledgers and report sections with a compact methodology/evidence checklist; retain the full v6 contract for callers that require it.
+- Correct the research-program handoff and keep downstream execution conditional on task authority. Scripts and schemas are unchanged; comparative model effectiveness remains unestablished.
+
+## [6.1.8] - 2026-10-27
+
+- Synchronize the source scanner's linear ordered control-pattern searches; preserve detection semantics, redaction and checked file reads.
+
 ## [6.1.7] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

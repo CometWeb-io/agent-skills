@@ -23,8 +23,8 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 | artifact brief and execution contract, observable acceptance criteria, evidence policy and handoff fields | `brief-architect` |
 | competitor watchlist, delta digest, normalized competitor state | `competitive-intelligence` |
 | initial competitor baseline, evidence-backed competitor dossier, competitive-intelligence bootstrap handoff | `competitor-profiling` |
-| constructive content review, evidence-backed editorial findings, review coverage and repair direction | `content-reviewer` |
-| adversarial content review, proof-debt and claim-pressure diagnosis, repair verification contracts | `content-roaster` |
+| editorial and adversarial content review, evidence and counterevidence checks, review coverage and repair verification | `content-reviewer` |
+| Alias for `content-reviewer`: adversarial profile of content-reviewer | `content-roaster` |
 | evidence-aware content production, claim-discipline ledger, reader-facing informational artifacts | `content-writer` |
 | support triage, incident candidate, eng handoff | `customer-ops` |
 | partner cohort, learning contract, partnerability score | `design-partner-finder` |
@@ -47,7 +47,7 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 | skill package audits, routing, portability, and contract review, package and supply-chain hygiene | `skill-auditor` |
 | skill experiment design, behavioral lift and resource measurement, host and model comparisons | `skill-evaluator` |
 | multi-skill plan, execution_mode, CW-AIP handoffs, workflow result | `skill-orchestrator` |
-| Alias for `skill-orchestrator` with isolated_subagents | `skill-orchestrator-multiagent` |
+| Alias for `skill-orchestrator`: alias for isolated_subagents execution | `skill-orchestrator-multiagent` |
 | live click-through QA, findings with evidence, audit report | `web-app-auditor` |
 
 ## Collision guardrails
@@ -59,7 +59,7 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 - **brief-architect** — does not own: final artifact production; broad product discovery; consequential strategic decisions.
 - **competitive-intelligence** — does not own: strategic GO/NO_GO; pricing decision.
 - **competitor-profiling** — does not own: recurring competitor monitoring; transferable product mechanism teardown; pricing or strategy decisions.
-- **content-reviewer** — does not own: adversarial roasting; full content rewrites; final publication acceptance.
+- **content-reviewer** — does not own: scientific peer review; full content rewrites; final publication acceptance.
 - **content-roaster** — does not own: scientific peer review; repository/code critique; rewrite-only editing.
 - **content-writer** — does not own: persuasion-first campaign copy; primary evidence research; publication release orchestration.
 - **customer-ops** — does not own: release gate; Council decision.
@@ -132,7 +132,7 @@ unless the user wants a multi-step workflow — then use `skill-orchestrator`
 ### `content-reviewer`
 - trigger: Review this draft against its brief
 - trigger: Give me actionable editorial QA before publication
-- do not trigger: Brutally roast this landing page
+- do not trigger: Peer-review this scientific manuscript
 - do not trigger: Rewrite the whole article
 
 ### `content-roaster`

@@ -88,11 +88,11 @@
         },
         {
           "id": "content-reviewer",
-          "summary": "Constructive editorial QA with evidence-backed, actionable findings."
+          "summary": "Optional editorial and adversarial content review with evidence, counterevidence and repair checks."
         },
         {
           "id": "content-roaster",
-          "summary": "Adversarial content review, proof debt, objections, and repair verification."
+          "summary": "Adversarial profile alias for content-reviewer, with legacy v6 tools."
         },
         {
           "id": "science-roaster",

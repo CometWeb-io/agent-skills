@@ -1,7 +1,7 @@
 interface:
   display_name: "Content Roaster"
-  short_description: "adversarial content review"
-  default_prompt: "Use $content-roaster for adversarial content review, proof debt, objections, and repair verification."
+  short_description: "adversarial profile of content-reviewer"
+  default_prompt: "Use $content-roaster for adversarial profile alias for content-reviewer, with legacy v6 tools."
   icon_small: "./assets/icon.svg"
   icon_large: "./assets/icon.svg"
 policy:

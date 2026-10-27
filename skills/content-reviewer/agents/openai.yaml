@@ -1,7 +1,7 @@
 interface:
   display_name: "Content Reviewer"
-  short_description: "constructive content review; evidence-backed editorial findings"
-  default_prompt: "Use $content-reviewer for constructive editorial QA with evidence-backed, actionable findings."
+  short_description: "editorial and adversarial content review"
+  default_prompt: "Use $content-reviewer for optional editorial and adversarial content review with evidence, counterevidence and repair checks."
   icon_small: "./assets/icon.svg"
   icon_large: "./assets/icon.svg"
 policy:

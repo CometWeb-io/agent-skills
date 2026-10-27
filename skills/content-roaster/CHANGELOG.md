@@ -1,5 +1,14 @@
 # Changelog
 
+## [7.0.0] - 2026-10-27
+
+- Breaking installation change: the package now requires content-reviewer 1.8.0 alongside it; the v6 wire contract is unchanged. See docs/CONTENT-REVIEW-COMPATIBILITY.md in the repository for upgrade and rollback.
+- Become a thin adversarial-profile alias for content-reviewer; retain all v6 contracts, validators and helper paths unchanged. Selective installs include the canonical dependency.
+
+## [6.2.1] - 2026-10-27
+
+- Synchronize the source scanner's linear ordered control-pattern searches; preserve detection semantics, redaction and checked file reads.
+
 ## [6.2.0] - 2026-10-26
 
 - Replace the default multi-stage review with a compact evidence checklist and concise findings.

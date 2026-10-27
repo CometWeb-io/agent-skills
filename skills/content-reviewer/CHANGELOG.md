@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.8.0] - 2026-10-27
+
+- Own the shared editorial/adversarial review checklist. Preserve review/v1 and the legacy v6 adapter as distinct contracts; no model-effectiveness claim.
+- Keep the checklist and contract entry optional, without a default extra review pass.
+
 ## [1.7.6] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

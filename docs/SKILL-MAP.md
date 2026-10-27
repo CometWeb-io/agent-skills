@@ -16,7 +16,7 @@ package exists. Installing the catalog does not mean loading every skill.
    for an ebook build, or `longform-publisher` for manuscript/format/edition
    control. Plain proofreading can be done without a skill.
 4. **Need an audit?** Match the object and purpose: `content-reviewer` for
-   constructive editorial QA, `content-roaster` for adversarial content review,
+   editorial or adversarial content review (`content-roaster` is its compatibility entry),
    `science-roaster` for scientific validity, `repo-roaster` for repository
    failure modes, `web-app-auditor` for observed app behavior, or `skill-auditor`
    for a skill package. These reviews have different contracts.
@@ -56,7 +56,7 @@ workflow selection, not a requirement or evidence of superiority over the model:
 
 | Domain selection | Packages to select |
 | --- | --- |
-| Editorial | `content-writer`, `ai-humanize`, `content-reviewer`, `content-roaster`, `repair-operator`, `artifact-acceptance` |
+| Editorial | `content-writer`, `ai-humanize`, `content-reviewer`, `repair-operator`, `artifact-acceptance` |
 | Publication | `ebook-publisher`, `longform-publisher` |
 | Product and customers | `repo-to-roadmap`, `product-operator`, `product-teardown`, `design-partner-finder`, `customer-ops` |
 | Market monitoring | `competitor-profiling`, `competitive-intelligence`, `seo-geo-aeo-maxxing` |
@@ -81,10 +81,27 @@ policy and finding lifecycle. Installed Council availability does not invoke the
 grant permission for external actions. Standalone [context resources](../resources/context/README.md)
 retain source maps and public/private/project boundaries without adding a skill or preflight.
 
+`repo-roaster` is an optional evidence checklist and tooling package, not a routine
+extra review pass. Use it when that checklist or its inventory/scanner helpers are needed;
+the package does not establish an advantage over a direct model review.
+
+`science-roaster` 6.2.0 is also an optional methodology and evidence checklist.
+Use it for relevant scientific risks; its comparative advantage remains unestablished.
+
+`content-reviewer` 1.8.0 is an optional evidence and repair-verification checklist,
+not a default extra review pass. Its comparative advantage over direct model
+review remains unestablished; use it when the checklist or a receiving contract is useful.
+
+`content-roaster` is an alias for `content-reviewer` with the ADVERSARIAL profile
+and retained v6 tools. Select it when preserving an existing call or v6 consumer;
+ordinary adversarial prose can use the canonical reviewer directly. Review/v1
+and roaster/v6 remain distinct; see [migration and compatibility](CONTENT-REVIEW-COMPATIBILITY.md).
+
 `skill-orchestrator-multiagent` is an alias package for the canonical
 `skill-orchestrator` owner with isolated specialist execution; its packaged
 payload builder is needed for that interface. It is not a second planning owner. Select `skill-orchestrator` together with
-its alias even when omitting other foundation packages.
+its alias even when omitting other foundation packages. Selective installers now
+include canonical alias dependencies automatically.
 
 ## Evidence boundaries
 
@@ -120,7 +137,7 @@ a fictitious skill.
 | [`competitive-intelligence`](../skills/competitive-intelligence/SKILL.md) | [Material delta brief; baseline/snapshot/delta/watch metadata](../skills/competitive-intelligence/references/output-contract.md) | [evidence-researcher → ai-council (explicit request)](../skills/skill-orchestrator/scripts/orchestrate_kernel.py); SnapshotMetadata in competitive_then_council, followed by evidence admission | explicit executable archetype; external facts not proved |
 | [`competitor-profiling`](../skills/competitor-profiling/SKILL.md) | [Competitor profile + competitive_intelligence_handoff](../skills/competitor-profiling/references/output-contract.md) | [competitive-intelligence](../skills/competitive-intelligence/references/integrations.md); normalize factual profile fields into CI snapshot before delta computation | documented receiving mapping; manual normalization |
 | [`content-reviewer`](../skills/content-reviewer/SKILL.md) | [cometweb.content-review/v1 review with stable findings and coverage](../skills/content-reviewer/references/output-contract.md) | [repair-operator](../skills/repair-operator/SKILL.md); accepted findings become repair inputs; review is not final acceptance | documented receiving contract |
-| [`content-roaster`](../skills/content-roaster/SKILL.md) | [cometweb.content-roaster/v6 report; cometweb.roaster-handoff/v2](../skills/content-roaster/references/output-contract.md) | [repair-operator](../skills/repair-operator/SKILL.md); post-arbitration accepted findings only, retain evidence gaps | documented/manual handoff; no roaster handoff validator |
+| [`content-roaster`](../skills/content-roaster/SKILL.md) → `content-reviewer` | [Retained cometweb.content-roaster/v6 report; cometweb.roaster-handoff/v2](../skills/content-roaster/references/output-contract.md) | [repair-operator](../skills/repair-operator/SKILL.md); accepted findings only, retain evidence gaps | compatibility alias; manual handoff, no roaster handoff validator |
 | [`content-writer`](../skills/content-writer/SKILL.md) | [Finished prose + cometweb.content-draft/v1 sidecar](../skills/content-writer/references/output-contract.md) | [content-reviewer](../skills/content-reviewer/SKILL.md); draft + brief/claim/invariant evidence before review | documented receiving contract |
 | [`customer-ops`](../skills/customer-ops/SKILL.md) | [Customer Ops Queue / Case / Incident / Handoff Watch / Account360; case graph](../skills/customer-ops/references/outputs.md) | [portfolio-operator](../skills/portfolio-operator/references/delegation.md); severity, commitments, customer-visible state, next operational action | documented receiving contract; external actions separate |
 | [`design-partner-finder`](../skills/design-partner-finder/SKILL.md) | [Learning Contract; Candidate Dossier; Readiness / Cohort Portfolio / Activation Review](../skills/design-partner-finder/references/output-contract.md) | [portfolio-operator](../skills/portfolio-operator/references/delegation.md); candidate readiness affects allocation; outreach still requires authorization | documented receiving contract |
@@ -134,7 +151,7 @@ a fictitious skill.
 | [`quality-loop-operator`](../skills/quality-loop-operator/SKILL.md) | [Quality Run Brief; quality sidecar stage/lock/conflict/coverage state](../skills/quality-loop-operator/SKILL.md) | [Required specialist stage / user](../skills/quality-loop-operator/references/output-contract.md); select specialist stages and check exact prior rubric/benchmark hashes; software release NOT_OWNED | documented/executable local quality state; human terminal |
 | [`release-readiness`](../skills/release-readiness/SKILL.md) | [Pinned Release Readiness report; GO/GO_WITH_CONTROLS/NO_GO/DEFER; ReleaseEnvelope/DecisionHandoff](../skills/release-readiness/references/output-contract.md) | [portfolio-operator / user](../skills/portfolio-operator/references/delegation.md); candidate/environment-bound verdict, hard gates and controls | documented receiving contract; GO is not permission to publish |
 | [`repair-operator`](../skills/repair-operator/SKILL.md) | [cometweb.repair-ledger/v1; finding dispositions/retest/invariants + repaired artifact](../skills/repair-operator/references/output-contract.md) | [quality-loop-operator → review/acceptance owner](../skills/quality-loop-operator/references/output-contract.md); return to review/acceptance stage; repair does not own final acceptance | documented stage contract |
-| [`repo-roaster`](../skills/repo-roaster/SKILL.md) | [cometweb.repo-roaster/v6 report; cometweb.roaster-handoff/v2](../skills/repo-roaster/references/output-contract.md) | [repair-operator](../skills/repair-operator/SKILL.md); accepted defect findings to repair; roadmap/release consumers retain scope | documented/manual handoff; no roaster handoff validator |
+| [`repo-roaster`](../skills/repo-roaster/SKILL.md) | Scoped findings; [cometweb.repo-roaster/v6 report and cometweb.roaster-handoff/v2 when required](../skills/repo-roaster/references/output-contract.md) | [repair-operator](../skills/repair-operator/SKILL.md); accepted defect findings to repair; roadmap/release consumers retain scope | documented/manual handoff; full contract optional; no roaster handoff validator |
 | [`repo-to-roadmap`](../skills/repo-to-roadmap/SKILL.md) | [Evidence-based Roadmap v2; Target State Contract, evidence ledger, dependency/acceptance proofs](../skills/repo-to-roadmap/references/output-contract.md) | [product-operator](../skills/repo-to-roadmap/references/handoffs.md); compact snapshot/roadmap IDs/dependencies/claims to product-operator; Council result decision_ref | documented producer-side handoff, recipient must preserve baseline |
 | [`research-program-operator`](../skills/research-program-operator/SKILL.md) | [Research program + stage-bound research_handoff](../skills/research-program-operator/references/output-contract.md) | [science-roaster / longform-publisher / next-study owner](../skills/research-program-operator/references/output-contract.md); science-roaster / longform-publisher / next-study target with stage-specific READY requirements | executable producer-side gate; downstream execution not proved |
 | [`rubric-designer`](../skills/rubric-designer/SKILL.md) | [Rubric payload with criterion coverage/blockers/anti-gaming and frozen hash](../skills/rubric-designer/references/output-contract.md) | [skill-evaluator / benchmark-curator](../skills/skill-evaluator/references/output-contract.md); rubric_hash-bound experiment input; benchmark also uses frozen rubric | documented receiving contract + local hash guards |

@@ -118,7 +118,7 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. *(experimental; DEVELOPMENT)* | 1.0.11 |
 | [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. *(experimental; DEVELOPMENT)* | 1.2.5 |
 | [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. *(experimental; DEVELOPMENT)* | 1.5.0 |
-| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. *(experimental; DEVELOPMENT)* | 1.2.4 |
+| [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. *(experimental; DEVELOPMENT)* | 1.2.5 |
 | [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. *(experimental; DEVELOPMENT)* | 1.7.5 |
 | [`feedback-integrator`](skills/feedback-integrator/) | Recurring failure patterns, improvement proposals, and regression tests. *(experimental; DEVELOPMENT)* | 1.8.2 |
 | [`quality-loop-operator`](skills/quality-loop-operator/) | Briefing, review, repair, acceptance, measurement, and quality lifecycle control. *(experimental; DEVELOPMENT)* | 1.8.0 |
@@ -138,10 +138,10 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. *(experimental; DEVELOPMENT)* | 1.1.3 |
 | [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. *(experimental; DEVELOPMENT)* | 1.9.0 |
 | [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. *(experimental; DEVELOPMENT)* | 1.7.7 |
-| [`content-reviewer`](skills/content-reviewer/) | Constructive editorial QA with evidence-backed, actionable findings. *(experimental; DEVELOPMENT)* | 1.7.6 |
-| [`content-roaster`](skills/content-roaster/) | Adversarial content review, proof debt, objections, and repair verification. *(experimental; DEVELOPMENT)* | 6.2.0 |
-| [`science-roaster`](skills/science-roaster/) | Reviewer #2-style critique of methods, inference, validity, and reproducibility. *(experimental; DEVELOPMENT)* | 6.1.7 |
-| [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. *(experimental; DEVELOPMENT)* | 6.1.7 |
+| [`content-reviewer`](skills/content-reviewer/) | Optional editorial and adversarial content review with evidence, counterevidence and repair checks. *(experimental; DEVELOPMENT)* | 1.8.0 |
+| [`content-roaster`](skills/content-roaster/) | Adversarial profile alias for content-reviewer, with legacy v6 tools. *(experimental; DEVELOPMENT)* | 7.0.0 |
+| [`science-roaster`](skills/science-roaster/) | Reviewer #2-style critique of methods, inference, validity, and reproducibility. *(experimental; DEVELOPMENT)* | 6.2.0 |
+| [`repo-roaster`](skills/repo-roaster/) | Adversarial repository review with invariants, reachability, and repair contracts. *(experimental; DEVELOPMENT)* | 6.2.0 |
 | [`repair-operator`](skills/repair-operator/) | Minimal dependency-aware repairs and fresh verification of closed findings. *(experimental; DEVELOPMENT)* | 1.7.7 |
 | [`artifact-acceptance`](skills/artifact-acceptance/) | Final evidence-backed acceptance gates for knowledge artifacts. *(experimental; DEVELOPMENT)* | 1.7.6 |
 | [`competitor-profiling`](skills/competitor-profiling/) | Initial evidence-backed competitor baselines and normalized handoffs to competitive intelligence. *(experimental; DEVELOPMENT)* | 0.2.1 |
@@ -184,7 +184,8 @@ or automatic preflight. Existing CW-AIP consumers keep the same payload contract
 
 ## How skills hand off: CW-AIP
 
-Skills stay standalone, but when one feeds another the handoff is a typed JSON
+Canonical skills stay standalone; alias installs also include their canonical package.
+When one owner feeds another the handoff is a typed JSON
 envelope rather than prose. That is the CometWeb Agent Interchange Protocol.
 
 ```text

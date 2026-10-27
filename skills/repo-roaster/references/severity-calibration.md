@@ -13,7 +13,7 @@ Admit only when a high-impact invariant, critical path, or critical surface is c
 - non-low confidence;
 - known blast-radius class;
 - a link to a critical invariant, declared critical path, or critical surface;
-- a surviving Challenger -> Defender -> Arbiter pass.
+- a counterevidence check that addresses guards, containment and alternative explanations without defeating the claim.
 
 Static presence of dangerous-looking code is not enough.
 

@@ -1,6 +1,6 @@
 # Content Roaster handoffs
 
-Machine handoffs use `references/handoff-contract.md` (`cometweb.roaster-handoff/v2`). Carry only post-arbitration accepted findings; unresolved questions stay in `unresolved_verification` rather than being promoted to defects.
+When a receiver requires the retained v6 handoff, use `references/handoff-contract.md` (`cometweb.roaster-handoff/v2`). Carry only post-arbitration accepted findings; unresolved questions stay in `unresolved_verification` rather than being promoted to defects.
 | Need | Owner | Handoff condition |
 | --- | --- | --- |
 | Scientific methodology or inferential review | `science-roaster` | Central claims depend on study design, measurement, statistics, novelty, validity, or reproducibility |

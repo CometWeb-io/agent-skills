@@ -343,7 +343,7 @@ def build_cursor(skills: list[dict]) -> str:
     ]
     for skill in skills:
         if skill.get("alias_of"):
-            lines.append(f"| Alias for `{skill['alias_of']}` with isolated_subagents | `{skill['id']}` |")
+            lines.append(f"| Alias for `{skill['alias_of']}`: {short_description(skill)} | `{skill['id']}` |")
             continue
         owns = ", ".join(skill.get("owns") or []) or skill["id"]
         lines.append(f"| {owns} | `{skill['id']}` |")
@@ -379,7 +379,7 @@ def _routing_table(skills: list[dict]) -> list[str]:
     rows = ["| Intent | Skill |", "| --- | --- |"]
     for skill in skills:
         if skill.get("alias_of"):
-            intent = f"`{skill['alias_of']}` with one subagent per step"
+            intent = f"Alias for `{skill['alias_of']}`: {short_description(skill)}"
         else:
             intent = short_description(skill)
         notes = []
@@ -531,6 +531,11 @@ def host_artifacts(skills: list[dict]) -> dict[Path, str]:
     return artifacts
 
 
+def alias_artifacts(skills: list[dict]) -> dict[Path, str]:
+    return {SKILLS / skill["id"] / "ALIAS_OF": skill["alias_of"] + "\n"
+            for skill in skills if skill.get("alias_of")}
+
+
 def _support(entry: dict, host: dict, *, format_ok: bool) -> str:
     """Declared host-profile support only — never verified runtime acceptance."""
     from compatibility import compute_support
@@ -643,11 +648,24 @@ def validate_sources(skills: list[dict]) -> None:
         agents = skill_dir / "agents"
         if agents.is_symlink():
             raise SystemExit(f"{skill_id}: agents/ must not be a symlink")
+        edge = skill_dir / "ALIAS_OF"
+        if edge.is_symlink() or (edge.exists() and not edge.is_file()):
+            raise SystemExit(f"{skill_id}: ALIAS_OF must be a regular file")
+        if edge.is_file() and not entry.get("alias_of"):
+            raise SystemExit(f"{skill_id}: stale ALIAS_OF; remove it before retiring the alias")
         on_disk = (skill_dir / "VERSION").read_text(encoding="utf-8").strip()
         if on_disk != entry.get("version"):
             raise SystemExit(
                 f"{skill_id}: registry version {entry.get('version')!r} != VERSION {on_disk!r}"
             )
+    by_id = {entry["id"]: entry for entry in skills}
+    for entry in skills:
+        current, chain = entry["id"], set()
+        while current:
+            if not isinstance(current, str) or current not in by_id or current in chain:
+                raise SystemExit("missing or cyclic alias target")
+            chain.add(current)
+            current = by_id[current].get("alias_of")
 
 
 def expected_artifacts(skills: list[dict]) -> dict[Path, str]:
@@ -655,6 +673,7 @@ def expected_artifacts(skills: list[dict]) -> dict[Path, str]:
         OUT_DOCS: build_docs(skills),
         OUT_CURSOR: build_cursor(skills),
         **host_artifacts(skills),
+        **alias_artifacts(skills),
     }
     # The host matrix needs a host registry. A tree that declares no hosts is a
     # reduced but valid layout, so generate the rest rather than failing.
@@ -693,7 +712,8 @@ def main() -> None:
         if args.skip_openai:
             artifacts = {
                 path: text for path, text in artifacts.items()
-                if path in {OUT_DOCS, OUT_CURSOR, out_compat(), readme_file(), *host_artifacts(skills)}
+                if path in {OUT_DOCS, OUT_CURSOR, out_compat(), readme_file(),
+                            *host_artifacts(skills), *alias_artifacts(skills)}
             }
         changed = []
         for path, expected in artifacts.items():
@@ -712,7 +732,7 @@ def main() -> None:
     OUT_DOCS.write_text(build_docs(skills), encoding="utf-8")
     OUT_CURSOR.write_text(build_cursor(skills), encoding="utf-8")
     written_docs = [OUT_DOCS, OUT_CURSOR]
-    for path, text in host_artifacts(skills).items():
+    for path, text in {**host_artifacts(skills), **alias_artifacts(skills)}.items():
         if not path.is_file() or path.read_text(encoding="utf-8") != text:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(text, encoding="utf-8")

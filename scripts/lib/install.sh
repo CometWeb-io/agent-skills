@@ -282,6 +282,13 @@ run_host_installer() {
   if [[ "${#INSTALL_SKILLS[@]}" -gt 0 ]]; then
     skill_names="$(printf '%s\n' "${INSTALL_SKILLS[@]}" | sort -u)"
   fi
+  skill_names="$(resolve_skill_selection "$skill_names")"
+  if [[ "${#INSTALL_SKILLS[@]}" -gt 0 ]]; then
+    INSTALL_SKILLS=()
+    while IFS= read -r name; do
+      [[ -n "$name" ]] && INSTALL_SKILLS+=("$name")
+    done <<< "$skill_names"
+  fi
   [[ -n "$skill_names" ]] || { echo "FAIL: no skill packages found" >&2; return 1; }
   prepare_install_target "$target" "$source_root"
   preflight_install_conflicts "$target" "$source_root" "$skill_names"
