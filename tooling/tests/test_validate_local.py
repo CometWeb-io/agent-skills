@@ -326,11 +326,13 @@ def test_real_timeout_is_explicit(checkout):
 def test_child_cache_is_report_local_and_credentials_stay_filtered(checkout, monkeypatch):
     monkeypatch.setenv("UV_CACHE_DIR", str(checkout.parent / "global-cache"))
     monkeypatch.setenv("OPENAI_API_KEY", "synthetic-test-value")
+    monkeypatch.setenv("QA_PLAYWRIGHT_MODULE", "reviewed browser modules/playwright/index.mjs")
     log = checkout.parent / "cache-env.log"
-    command = [sys.executable, "-c", "import json, os; print(json.dumps({'cache': os.environ['UV_CACHE_DIR'], 'credential_present': 'OPENAI_API_KEY' in os.environ}))"]
+    command = [sys.executable, "-c", "import json, os; print(json.dumps({'cache': os.environ['UV_CACHE_DIR'], 'credential_present': 'OPENAI_API_KEY' in os.environ, 'browser_module': os.environ.get('QA_PLAYWRIGHT_MODULE')}))"]
     result = local.run_step(checkout, command, log, 10)
     assert result["status"] == "passed"
-    assert json.loads(log.read_text()) == {"cache": str(log.parent / "uv-cache"), "credential_present": False}
+    assert json.loads(log.read_text()) == {"cache": str(log.parent / "uv-cache"), "credential_present": False,
+                                         "browser_module": "reviewed browser modules/playwright/index.mjs"}
     assert not (checkout.parent / "global-cache").exists()
 
 

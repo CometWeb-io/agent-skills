@@ -220,8 +220,10 @@ def run_step(root: Path, command: list[str], log: Path, timeout: int) -> dict:
     # Sanitizing credentials also drops caller cache overrides. Keep child uv
     # operations in this external report directory, never the user's cache.
     environment["UV_CACHE_DIR"] = str(log.parent / "uv-cache")
-    if "VIRTUAL_ENV" in os.environ:
-        environment["VIRTUAL_ENV"] = os.environ["VIRTUAL_ENV"]
+    # Explicit browser opt-in is runtime configuration, not a credential.
+    for name in ("VIRTUAL_ENV", "QA_PLAYWRIGHT_MODULE"):
+        if name in os.environ:
+            environment[name] = os.environ[name]
     # Keep test selection in the command visible; do not inherit PYTEST_ADDOPTS.
     with log.open("xb") as handle:
         try:
