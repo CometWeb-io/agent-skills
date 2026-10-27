@@ -9,6 +9,7 @@ import shutil
 import sys
 from pathlib import Path
 from package_skill import ROOT, MANIFEST, digest, identifier, inspect_archive, safe_path, payload
+from check_knowledge import audit
 
 
 def inspect(root: Path, skill: str, installed_root: Path | None = None, session_inventory: dict | None = None) -> dict:
@@ -20,13 +21,32 @@ def inspect(root: Path, skill: str, installed_root: Path | None = None, session_
               "source":"missing", "package":"missing", "installed":"not_checked",
               "host_discovery":"unknown", "session_visibility":"unknown", "tools":"unknown",
               "runtime_acceptance":"not_assessed", "issues":[]}
+    result["baseline"] = {"registry_sha256": digest((root / "registry/skills.json").read_bytes()),
+                          "catalog_version": (root / "VERSION").read_text().strip() if (root / "VERSION").is_file() else None,
+                          "visibility": entry.get("visibility") if entry else None}
+    result["declared_host_targets"] = (entry.get("host_targets") or entry.get("compatible_hosts") or []) if entry else []
+    result["model_competence"] = "unknown"
+    result["native_execution"] = "not_run"
+    result["knowledge"] = {"status": "not_checked", "rules": []}
+    knowledge_path = root / "registry/knowledge-rules.json"
+    if knowledge_path.is_file():
+        report = audit(json.loads(knowledge_path.read_text()), dt.datetime.now(dt.timezone.utc).date(), registry["skills"])
+        affected = [r for r in report["results"] if skill in {s["id"] for s in r.get("dependencies", {}).get("skills", [])}]
+        affected = [{**r, "dependencies": {**r["dependencies"],
+                     "skills": [s for s in r["dependencies"]["skills"] if s["id"] == skill],
+                     "adapters": [p for p in r["dependencies"]["adapters"] if not p.startswith("skills/") or p.startswith(f"skills/{skill}/")]}}
+                    for r in affected]
+        result["knowledge"] = {"status": "needs_review" if any(r["review_status"] == "needs_review" for r in affected) else "current_record" if affected else "no_recorded_dependencies",
+                               "as_of": report["as_of"], "rules": affected, "external_verification": "not_run"}
     # An unknown or deleted skill must not come back as a clean bill of health.
     if entry is None:
         result["issues"].append("not_in_registry")
     source = safe_path(root, f"skills/{skill}")
+    result["adapters"] = {"agents/openai.yaml": "present_unverified" if (source / "agents/openai.yaml").is_file() else "missing"}
     if (source / "SKILL.md").is_file() and (source / "VERSION").is_file():
         result["source"] = "present"
         result["source_version"] = (source / "VERSION").read_text().strip()
+        result["source_entrypoint_sha256"] = digest((source / "SKILL.md").read_bytes())
         if entry is not None and result["source_version"] != result["registry_version"]:
             result["issues"].append("registry_source_version_mismatch")
     else:

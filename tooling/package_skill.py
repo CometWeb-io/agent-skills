@@ -42,6 +42,42 @@ def identifier(value: str) -> str:
     return value
 
 
+def validate_member_name(name: str) -> None:
+    """Reject paths that extraction can rename or alias on another supported OS."""
+    parts = name.split("/")
+    if (PurePosixPath(name).is_absolute() or any(c in name for c in '\\:<>"|?*')
+            or any(ord(c) < 32 for c in name)
+            or any(p in {"", ".", ".."} or p.endswith((".", " ")) for p in parts)
+            or any(re.fullmatch(r"(?:con|prn|aux|nul|com[1-9¹²³]|lpt[1-9¹²³])",
+                                p.split(".", 1)[0].rstrip(" "), re.IGNORECASE) for p in parts)):
+        raise ValueError("unsafe or nonportable package filename/path")
+
+
+def validate_alias(blob: bytes, skill: str) -> str:
+    target = identifier(blob.decode("utf-8").rstrip("\r\n"))
+    if target == skill:
+        raise ValueError("self-referential alias dependency")
+    return target
+
+
+def alias_dependencies(skills_root: Path, skill: str) -> list[str]:
+    """Follow the installers' ALIAS_OF contract in a source or extracted tree."""
+    current, seen, dependencies = identifier(skill), set(), []
+    while True:
+        if current in seen:
+            raise ValueError("cycle in alias dependencies")
+        seen.add(current)
+        if not safe_path(skills_root, f"{current}/SKILL.md").is_file():
+            raise ValueError(f"missing alias dependency: {current}")
+        edge = safe_path(skills_root, f"{current}/ALIAS_OF")
+        if not edge.exists():
+            return dependencies
+        if not edge.is_file():
+            raise ValueError("alias metadata must be a regular file")
+        current = validate_alias(edge.read_bytes(), current)
+        dependencies.append(current)
+
+
 def safe_path(root: Path, relative: str) -> Path:
     path = root / relative
     if Path(relative).is_absolute() or ".." in PurePosixPath(relative).parts:
@@ -119,9 +155,10 @@ def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
         if index > MAX_PACKAGE_FILES:
             raise ValueError("package file-count budget exceeded")
         rel = path.relative_to(source).as_posix()
+        validate_member_name(rel)
         size = path.stat().st_size
-        if "\\" in rel or any(ord(c) < 32 for c in rel) or size > MAX_FILE_BYTES:
-            raise ValueError("unsafe filename or package input exceeds scan budget")
+        if size > MAX_FILE_BYTES:
+            raise ValueError("package input exceeds scan budget")
         folded = unicodedata.normalize("NFC", rel).casefold()
         if folded in seen_names:
             raise ValueError("case/unicode-insensitive path collision")
@@ -142,6 +179,8 @@ def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
     if not VERSION.fullmatch(version):
         raise ValueError("invalid VERSION")
     validate_frontmatter(entries["SKILL.md"], skill)
+    if "ALIAS_OF" in entries:
+        validate_alias(entries["ALIAS_OF"], skill)
     runtime = None
     if "RUNTIME.json" in entries:
         runtime = validate_runtime_manifest(entries["RUNTIME.json"])
@@ -153,8 +192,9 @@ def payload(root: Path, skill: str) -> tuple[dict[str, bytes], dict]:
             continue
         for path in files(safe_path(root, shared)):
             rel = "references/_shared/" + path.relative_to(root).as_posix()
-            if "\\" in rel or any(ord(c) < 32 for c in rel) or path.stat().st_size > MAX_FILE_BYTES:
-                raise ValueError("unsafe shared filename or resource exceeds scan budget")
+            validate_member_name(rel)
+            if path.stat().st_size > MAX_FILE_BYTES:
+                raise ValueError("shared resource exceeds scan budget")
             data = path.read_bytes()
             if check_blob(rel, data, public=False):
                 raise ValueError(f"unsafe shared resource: {rel}")
@@ -223,7 +263,7 @@ def archive(entries: dict[str, bytes], manifest: dict) -> bytes:
 
 
 def inspect_archive(blob: bytes, *, require_provenance: bool = False) -> dict:
-    """Validate payload identity as well as hashes; metadata cannot certify itself."""
+    """Validate structure and hashes; provenance fields are not authentication."""
     import unicodedata
 
     def unique(items):
@@ -246,12 +286,12 @@ def inspect_archive(blob: bytes, *, require_provenance: bool = False) -> dict:
             folded = [unicodedata.normalize("NFC", n).casefold() for n in names]
             if not names or len(names) > 8192 or len(folded) != len(set(folded)):
                 raise ValueError("empty, oversized or duplicate ZIP inventory")
+            members = set(folded)
+            if any(parent.as_posix() in members for name in folded for parent in PurePosixPath(name).parents):
+                raise ValueError("ZIP inventory uses a file as a parent path")
             for item in infos:
                 name = item.filename
-                if (PurePosixPath(name).is_absolute() or "\\" in name or ":" in name
-                        or any(p in {"", ".", ".."} for p in name.split("/"))
-                        or any(ord(c) < 32 for c in name)):
-                    raise ValueError("unsafe or nonportable ZIP path")
+                validate_member_name(name)
                 kind = (item.external_attr >> 16) & 0o170000
                 if kind not in {0, 0o100000} or item.is_dir() or item.flag_bits & 1:
                     raise ValueError("special, encrypted or non-regular ZIP entry")
@@ -310,6 +350,8 @@ def inspect_archive(blob: bytes, *, require_provenance: bool = False) -> dict:
             elif "runtime_requirements" in manifest:
                 raise ValueError("runtime_requirements without RUNTIME.json")
             validate_frontmatter(entries["SKILL.md"], manifest["skill"])
+            if "ALIAS_OF" in entries:
+                validate_alias(entries["ALIAS_OF"], manifest["skill"])
             if entries["VERSION"].decode("utf-8").strip() != manifest["version"]:
                 raise ValueError("manifest version disagrees with VERSION")
             if "MATURITY.json" in entries:

@@ -69,3 +69,31 @@ def test_registry_rejects_invalid_profiles(tmp_path: Path, mutation) -> None:
     root = registry(tmp_path, {"fake": profile})
     with pytest.raises(ValueError):
         adapters.load_profiles(root)
+
+
+def test_three_arm_exposure_has_equal_tools_and_no_hidden_json_instructions(tmp_path):
+    source = tmp_path / "source"
+    files = {
+        "skills/demo/SKILL.md": "Follow the specialist workflow.",
+        "skills/demo/references/packs/strategy.json": '{"must_inspect": ["secret workflow"]}',
+        "skills/demo/references/contract.json": '{"docs": ["workflow.md"]}',
+        "skills/demo/references/result.schema.json": '{"type": "object"}',
+        "skills/demo/scripts/helper.py": 'print("local helper")',
+        "skills/demo/agents/openai.yaml": 'system_prompt: hidden instruction',
+        "skills/demo/evals/cases.json": '{"answer": "hidden"}',
+        ".claude-plugin/plugin.json": '{"name": "test"}',
+    }
+    for name, content in files.items():
+        path = source / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
+    arms = {c: adapters.stage_condition(source, tmp_path / c, c) for c in adapters.THREE_ARM_CONDITIONS}
+    assert arms["native"]["files"] == {}
+    assert arms["tools"]["bundled_tools"] == arms["skill"]["bundled_tools"]
+    assert set(arms["tools"]["files"]) == {
+        "skills/demo/scripts/helper.py", "skills/demo/references/result.schema.json"}
+    assert "skills/demo/SKILL.md" in arms["skill"]["files"]
+    for arm in arms.values():
+        assert not any("strategy.json" in p or "contract.json" in p or "/evals/" in p or "/agents/" in p
+                       for p in arm["files"])
+    assert adapters.three_arm_execution_policy("claude")["reason"] == "ENFORCED_HELPER_BOUNDARY_UNAVAILABLE"

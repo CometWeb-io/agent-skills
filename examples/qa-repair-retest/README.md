@@ -46,3 +46,63 @@ The repository's `qa_example` gate runs these Node tests through the same
 `check_all.py` runner locally and in CI. Node is installed explicitly in the
 CI workflow. The gate checks the policy logic; browser interactions above
 remain a separate check.
+
+## Controlled write and recovery checks
+
+From the repository root, using its existing Python dev environment:
+
+```bash
+uv run python -m pytest -q tooling/tests/test_qa_runtime.py
+```
+
+The stdlib `controlled_fixture.py` binds an ephemeral port on `127.0.0.1` and
+creates SQLite under a fresh temporary directory. It serves only the three
+allowlisted demo files and a bounded JSON record API. Test bearer tokens are
+random per fixture; no account, CRM, provider or production database is used.
+The original static/localStorage demo still works without this fixture.
+
+The HTTP tests execute writes and reads, restart the server instance with the
+same database, compare the exact record, test another principal's read/write/
+delete denial, and verify cleanup. Separate worker processes exit before save,
+after committed save and after the workflow checkpoint. Tests reuse the stable
+record ID on retry and assert one stored row and one save completion. They use
+the existing orchestrator ledger: an orphaned RUNNING attempt must be explicitly
+failed before retry; completed steps are skipped; cancellation prevents resume
+but requires explicit cleanup of an already committed record. Retry exhaustion
+and changed plans stop dispatch. A conflicting payload returns 409; cleanup
+leaves a test-only tombstone so a delayed retry cannot recreate the record.
+The entire temporary database, including tombstones, is deleted on fixture exit.
+
+For an actual browser reload check, point at an **already installed** Playwright
+module; no browser or dependency is installed by this example:
+
+```bash
+QA_PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs \
+  uv run python -m pytest -q -s tooling/tests/test_qa_runtime.py
+```
+
+That optional test launches a fresh Chromium profile, exercises **Save → reload
+→ Read**, checks a second principal's denial, then **Clear → reload → Read**,
+reruns the original localStorage flow, and asserts a request to a different
+loopback origin is intercepted and aborted. `browser_probe.mjs` receives test
+tokens on stdin. A missing module configuration is an explicit pytest skip;
+a configured module or browser that cannot launch fails. These Python runtime
+checks run in the full pytest gate; the existing `qa_example` Node gate remains
+a policy-logic check. The standalone static archive does not include the
+repository ledger or pytest driver.
+
+These are deterministic fixture checks, not host/model qualification, a skill
+lift experiment, a production release verdict, or pilots on three independent
+apps. Ledger completions are deliberately `RECEIPT_ONLY`; a content hash cannot
+upgrade them into CW-AIP domain acceptance. The tests exercise the existing
+ledger without changing its contracts.
+
+**Isolation limit:** a private directory, bearer checks, loopback binding,
+request-size/socket time limits and browser route filtering are application
+controls. They do not restrict the Python/Node process's filesystem, operating
+system network access, CPU or memory. The test explicitly shows that an owned
+sentinel outside the fixture directory remains readable. Browser routing only
+covers requests intercepted by that context. Server-instance restart is not a
+server-process or machine restart; browser reload is not browser restart. This
+fixture is not a system sandbox and must not be used with untrusted code,
+credentials or user data. It does not complete the runtime sandbox milestone.

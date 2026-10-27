@@ -1,0 +1,53 @@
+name: Skill change assurance report
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      base:
+        description: Full target base commit SHA
+        required: true
+        type: string
+      head:
+        description: Full candidate head commit SHA
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Execute the target branch's reviewed tooling, never the candidate's code.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          path: trusted
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || inputs.head }}
+          path: candidate
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Read pinned Git objects and report structural scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || inputs.head }}
+          REPORT_PATH: ${{ runner.temp }}/assurance-ci.json
+        run: >-
+          python3 trusted/tooling/assurance_ci.py --repo candidate
+          --base "$BASE_SHA" --head "$HEAD_SHA" > "$REPORT_PATH"
+      - name: Upload candidate-bound report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: assurance-ci-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/assurance-ci.json
+          if-no-files-found: error
+          retention-days: 30

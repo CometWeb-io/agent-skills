@@ -284,6 +284,139 @@ helps users. The task set is drawn from the repository's own cases, which were
 written alongside the skills; a high score on them is weaker evidence than a
 score on prompts collected from real use.
 
+## Three-arm experiment contract (v3 plan, execution not qualified)
+
+The optional `--design three-arm` creates a v3 plan carrying
+`cometweb.real-host-three-arm/v1`. Legacy v1/v2 plans and
+`--condition baseline|plugin|both` retain their existing behavior.
+
+```bash
+uv run python tooling/real_host_eval.py plan --design three-arm \
+  --skill release-readiness --per-skill 1 --negatives-per-skill 0 --out three-arm.json
+uv run python tooling/real_host_eval.py run --plan three-arm.json --host claude \
+  --condition three-arm --max-tasks 3 --out runs/three-arm  # dry run only
+```
+
+| Condition | Local helper payload | Skill instructions |
+| --- | --- | --- |
+| A `native` | empty | absent; no plugin registration |
+| B `tools` | local scripts and formal JSON schemas | absent; no plugin registration |
+| C `skill` | byte-identical helper inventory to B | Markdown instructions and plugin registration |
+
+The stager copies actual different file sets into each job's `./bundled` directory.
+The B/C tool inventory includes executable script source (`.py`, `.sh`, `.js`,
+`.mjs`, `.ts`), formal `*.schema.json` interfaces and `requirements.txt`.
+Tests, evals, agent adapters, JSON instruction/policy packs, source registries and
+contract binding files are excluded from both bundles. C adds Markdown/reference
+instructions and native plugin metadata. This is a bounded runtime subset,
+not the entire installed package: helpers requiring omitted policy packs or other
+assets are **not qualified by this experiment**. No dependency installation is
+performed. A source category is not a general guarantee that arbitrary future
+files are instruction-free; review the frozen inventories for each candidate.
+
+The host tool set is identical across A/B/C (`Read,Glob,Grep,Bash,Skill` for
+Claude; the existing generic Codex exec interface for Codex). Tools with no local
+payload have no bundled helper or skill to open. All three receive the same task,
+fixture and neutral local execution-boundary instructions. The C condition's
+plugin instructions are the only additional instruction exposure. Tool scripts
+and formal schemas expose their own interfaces in both B and C, so structural
+contract compliance still does not establish better task outcomes.
+
+**Native host execution remains NOT_RUN.** The runner has not yet qualified the
+required permissions profile across every tool of a model host. The separate
+Python-helper backend below cannot establish that full-host boundary. A v3 `run --execute` therefore writes a
+terminal receipt for every scheduled job with
+`ENFORCED_HELPER_BOUNDARY_UNAVAILABLE`, exits 3 and starts no host process,
+including no version probe or plugin installation. This is an implementation and
+qualification limit of this runner, not a claim that host platforms have no
+sandbox capability. A fresh HOME, working directory, native read-only flag or an
+instruction to stay in the working directory does not establish the required
+boundary. The new Bash-enabled profile cannot silently widen the executable
+legacy profile.
+
+The offline adapter tests use a controlled local fixture executable that actually
+launches a Python helper, reads a schema value and checks instruction-file
+availability. They establish A/B/C exposure and subprocess/receipt behavior. They
+are **not** real-model effectiveness, automatic skill activation, native-host
+permission, network confinement or catalog-wide helper qualification evidence.
+No paid model, API request or real host installation is needed for these tests.
+
+The plan freezes the source commit when locally observable, harness-source hash,
+condition-specific file inventories, shared B/C helper hash, benchmark/rubric and
+legacy candidate/payload hashes. A working-tree implementation is identified by
+its harness and exposed-file hashes as well as its base commit; the commit alone
+does not represent uncommitted code. Changes to that identity require replanning.
+Requested model and effort settings remain distinct from observed metadata.
+Missing model, provider revision, hardware, effort and resource observations are
+explicitly unavailable/null; token and cost estimates retain their estimate label.
+Bytes/4 is not measured context use, and reading additional helper resources is
+not included in that approximation.
+
+Task blocks use seeded shuffled permutations: every complete six-triple block
+covers all six A/B/C orders. Partial final blocks are reproducible but are not
+claimed to be perfectly balanced. `--max-tasks` never cuts a triple. Single-arm
+native/tools/skill runs are allowed only with a v3 plan and cannot independently
+establish a matched comparison.
+
+V3 records retain exposure inventories and hashes, captured prompt/transcript/
+output receipts, unknown resource values and `task_outcome_status: not_assessed`.
+Failures retain partial outputs; schedule stops retain an explicit `not_run`
+record for each unstarted job. Version-probe failures retain their partial stdout/
+stderr and terminal records. JSON reports include every run result and separate
+same-case/repeat comparisons for A–B, B–C and A–C. Matching is within one run
+directory, requires one completed observation per arm and the same reported model,
+and refuses duplicate rows or unknown models. Failures, missing arms and
+unassessed outputs remain visible and do not become passes or zero-valued
+measurements. These comparisons describe the existing structural output check;
+unknown effective effort and the skill-oriented rubric prevent a causal task-
+effectiveness claim. Independent outcome grading needs a reviewed external oracle
+and trusted observation; a model's final answer is not that observation.
+
+## Probed local Python-helper backend (no model calls)
+
+`tooling/isolated_exec.py` uses the installed CLI's `codex sandbox -C WORK -P
+PROFILE -c permissions.PROFILE=...` interface. It does not start `codex exec`,
+Claude, a model session or an API call. Current local CLI help is authoritative:
+the sandbox subcommand on the qualified CLI generation has no `macos` positional
+subcommand. `codex exec` accepts config overrides; selecting and observing the
+same profile through `default_permissions` remains a separate native-host test.
+The absence of an exec `-P` flag is not proof that exec cannot support the policy.
+
+```bash
+uv run python tooling/isolated_exec.py probe --workspace /path/to/owned-work \
+  --out /path/to/private-probe-evidence --codex-bin /path/to/codex
+uv run python tooling/isolated_exec.py run-python --workspace /path/to/owned-work \
+  --out /path/to/private-helper-evidence --proof /path/to/private-probe-evidence/proof.json \
+  --proof-sha256 REVIEWED_PROOF_SHA256 /path/to/owned-work/helper.py
+```
+
+The implemented backend is restricted to macOS and Python under `/opt/homebrew`,
+with read access to the declared OS/runtime roots, owned-workspace writes and
+network disabled by the named profile. Each probe starts with a fresh credential-
+free Codex config outside the helper's readable workspace. Synthetic sibling
+canaries must prove outside read/write denial, unchanged canary contents, TCP
+denial and successful inside read/write. Failed, missing, edited, differently
+pinned or different-workspace proofs refuse execution. The selected Codex/Python
+binary hashes, runner implementation, OS, profile and limit identity must still
+match. The proof scope covers those selected executables and local observations;
+it does not inventory every shared runtime library or attest binary authenticity.
+Use only a reviewed local Codex executable and a trusted proof/pin.
+
+The wrapper applies hard CPU (5 seconds), per-file size (8 MiB) and descriptor
+(64) limits before caller Python code. Wall timeout and bounded stdout/stderr use
+the existing process-group cleanup. Memory, aggregate disk and hostile process-
+tree quotas are not established by these controls. Raw stdout/stderr and the
+result receipt retain failures and timeouts; no unconfined fallback runs. The
+script must resolve inside the owned workspace; its source hash is recorded
+before execution. Trusted evidence is saved outside that workspace. All model,
+token and cost measurements remain null; completing a helper is not task success.
+
+Portable tests use an explicitly unqualified CLI fixture for parsing, receipt and
+resource-limit behavior. An unconfined forwarding fixture really accesses the
+synthetic outside canary and must fail. Only a fresh native canary run establishes
+the installed CLI's selected boundary. Qualifying this helper backend does not
+qualify full-host A/B/C execution or measure model effectiveness.
+
 ## Native local cache migration (no model calls)
 
 `host_smoke.py` can test old→new→rollback in the same temporary HOME/config/cache

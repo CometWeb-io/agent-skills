@@ -152,8 +152,23 @@ def test_dropping_polish_cases_fails_the_check():
 # Known gaps: pinned misroutes, so a routing fix announces itself.
 
 def test_every_known_gap_still_reproduces():
-    assert GAPS["cases"], "known-gaps.json should not be emptied silently"
     assert cov.gap_problems(GAPS, SUITE["cases"], REGISTRY, POLICY) == []
+
+
+def test_fixed_reference_gaps_are_promoted_not_deleted():
+    promoted = {"r4b-skill-orchestrator-1", "r4c-skill-orchestrator-1",
+                "r6-repair-operator-back-reference", "r6-repair-operator-answered-no"}
+    assert promoted <= {c["id"] for c in SUITE["cases"]}
+    for case in SUITE["cases"]:
+        if case["id"] in promoted:
+            assert cov.route(case["prompt"], REGISTRY, POLICY)["primary_skill"] == case["expected_primary_skill"]
+
+
+def _synthetic_gaps():
+    # Validator fixtures must remain usable when every live gap has been fixed.
+    return {"schema": cov.GAPS_SCHEMA, "cases": [dict(
+        _case(expected_primary_skill="evidence-researcher"),
+        observed_primary_skill=None, observed_status="no_skill")]}
 
 
 def test_a_fixed_gap_must_be_promoted():
@@ -166,7 +181,7 @@ def test_a_fixed_gap_must_be_promoted():
 
 
 def test_a_changed_misroute_must_be_rerecorded():
-    gaps = deepcopy(GAPS)
+    gaps = _synthetic_gaps()
     gaps["cases"] = [dict(gaps["cases"][0], observed_primary_skill="repo-roaster")]
     problems = cov.gap_problems(gaps, [], REGISTRY, POLICY)
     assert any("re-record it" in p for p in problems), problems
@@ -180,15 +195,16 @@ def test_a_changed_misroute_must_be_rerecorded():
      "not a gap"),
 ])
 def test_malformed_gaps_are_rejected(mutation, needle):
-    gaps = deepcopy(GAPS)
+    gaps = _synthetic_gaps()
     mutation(gaps)
     problems = cov.gap_problems(gaps, SUITE["cases"], REGISTRY, POLICY)
     assert any(needle in p for p in problems), problems
 
 
 def test_a_gap_cannot_also_live_in_the_suite():
-    suite_cases = [_case(prompt=GAPS["cases"][0]["prompt"])]
-    problems = cov.gap_problems(GAPS, suite_cases, REGISTRY, POLICY)
+    gaps = _synthetic_gaps()
+    suite_cases = [_case(prompt=gaps["cases"][0]["prompt"])]
+    problems = cov.gap_problems(gaps, suite_cases, REGISTRY, POLICY)
     assert any("also in suite.json" in p for p in problems), problems
 
 

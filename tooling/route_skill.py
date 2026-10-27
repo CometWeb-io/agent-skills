@@ -232,6 +232,83 @@ def _blank(text: str, spans: list[tuple[int, int]]) -> str:
     return text
 
 
+# These are grammatical roles, not additional skill scores: the resulting
+# phrases still have to satisfy the registry, exclusions and policy floors.
+_REVIEW = r"(?:roast|review|audit|critique|teardown|qa|przeglad|recenzj|audy[tc]|roasc)\w{0,5}"
+_FINDING = r"(?:findings?|issues?|defects?|problems?|uwag\w{0,3}|znalezisk\w{0,3}|bled\w{0,3}|problem\w{0,3})"
+_REPAIR = r"(?:fix|repair|resolve|address|close|napraw|popraw|zamknij|wdroz)\w{0,3}"
+_SOURCE_REVIEW = re.compile(
+    rf"\b{_FINDING}\b.{{0,35}}?\b(?:from|reported by|raised by|found by|z|po|wskazane przez)\s+"
+    rf"[^.;!?\n]{{0,60}}?\b{_REVIEW}\b"
+)
+_ANSWERED_NO = re.compile(r"(?:^|(?<=[.!?;\n]))\s*([^.!?;\n]{1,240}\?)\s*(?:no|nope|nie)\s*[.!](?=\s|$)")
+
+
+def reference_spans(text: str) -> list[tuple[int, int]]:
+    """Past review sources and an immediately refused question are not requests."""
+    spans = [(m.start(1), m.end()) for m in _ANSWERED_NO.finditer(text)]
+    for m in _SOURCE_REVIEW.finditer(text):
+        # Keep the findings and the requested repair, mask only their source.
+        source = re.search(r"\b(?:from|reported by|raised by|found by|z|po|wskazane przez)\s+", m[0])
+        spans.append((m.start() + source.start(), m.end()))
+    return spans
+
+
+def contextual_requests(text: str, policy: dict, *, source_text: str = "") -> str:
+    """Resolve local action targets in the user's live clauses, in PL and EN.
+
+    An unresolved pronoun is left alone. Context is only the latest named
+    target in this prompt, never an invented previous conversation result.
+    """
+    rules = _sequence_rules(policy)
+    boundaries = list(re.finditer(r"[.!?;\n]", text))
+    if rules:
+        boundaries += list(rules[0].finditer(text))
+    cuts = sorted({0, len(text), *(m.start() for m in boundaries), *(m.end() for m in boundaries)})
+    targets = re.compile(
+        r"\b(?:repo(?:sitory|zytori\w{0,3})?|codebase|monorepo|kod\w{0,2}|branch|"
+        r"deck|presentation|prezentacj\w{0,3}|offer|ofert\w{0,2}|proposal|report|raport\w{0,2}|"
+        r"article|artykul\w{0,2}|copy|landing page|white[ -]?paper|e-?book|case study|"
+        r"manuscript|manuskrypt\w{0,2}|preprint|paper)\b"
+    )
+    pronoun = r"(?:it|them|this|that|go|ja|je|to)\b(?=\s*[,.;!?]|\s+(?:for|with|against|bez|pod|na)\b|\s*$)"
+    lead = r"^([\s,:-]*(?:(?:please|prosze|now|teraz)\s+){0,2})"
+    last_target = ""
+    out = []
+    for start, end in zip(cuts, cuts[1:], strict=False):
+        segment = text[start:end]
+        named = list(targets.finditer(segment))
+        target = named[0][0] if len(named) == 1 else ("" if named else last_target)
+        if target:
+            segment = re.sub(
+                lead + r"((?:roast|red.team|tear apart|zroastuj|upiecz|rozjedz|skrytykuj)\s+)" + pronoun,
+                lambda m, target=target: m[1] + m[2] + target, segment,
+            )
+            artifact = not re.fullmatch(r"repo\w*|codebase|monorepo|kod\w*|branch", target)
+            segment = re.sub(
+                lead + r"(?:gate|accept|odbierz|zaakceptuj)\s+(?:(?:the|this|that|its|a)\s+)?"
+                r"(?:final version|final artifact|final report|wersje koncowa|koncowa wersje|wersje finalna|" + pronoun + r")",
+                lambda m, artifact=artifact: m[1] + ("final artifact gate" if artifact else "release gate"), segment,
+            )
+        segment = re.sub(
+            lead + r"(?:roadmap\s+(?:(?:the|this|that|our|its)\s+)?"
+            r"(?:(?:resulting|implied|remaining)\s+)?(?:work|project|repo|codebase|platform|findings|results|changes|it|them)\b|"
+            r"(?:rozpisz|opracuj|zbuduj|stworz)\s+(?:pelna\s+)?(?:roadmape|mape drogowa)\b)",
+            lambda m: m[1] + "roadmap from scratch", segment,
+        )
+        # Generic coding fixes remain generic. Accepted findings or findings
+        # tied to a review are the repair operator's input contract.
+        if re.search(rf"\b{_REPAIR}\b", segment) and (
+            re.search(r"\b(?:accepted|approved|zaakceptowan\w{0,2}|zatwierdzon\w{0,2})\s+" + _FINDING, segment)
+            or _SOURCE_REVIEW.search(source_text[start:end])
+        ):
+            segment += " repair findings "
+        out.append(segment)
+        if named:
+            last_target = target
+    return "".join(out)
+
+
 def negated_spans(text: str, policy: dict) -> list[tuple[int, int]]:
     """Character ranges of ``text`` that sit inside a negated clause.
 
@@ -550,8 +627,10 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
     own_text = _blank(text, quoted + overridden)
     signal_text = _blank(mask_negated(text, policy), quoted + overridden)
     # Read from the user's own words: pasted text can neither ask for a skill nor wave one off.
-    dismissed = dismissed_spans(own_text, policy)
-    live_text = _blank(signal_text, dismissed)
+    references = reference_spans(own_text)
+    dismissed = dismissed_spans(own_text, policy) + references
+    # Sources identify the repair input without becoming a new review request.
+    live_text = contextual_requests(_blank(signal_text, dismissed), policy, source_text=signal_text)
     if any(sid not in active for sid in invoked):
         raise ValueError("explicit invocation references an unavailable skill")
     explicit, scores, blocked, demoted = set(invoked), {}, {}, {}
@@ -592,7 +671,8 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
             blocked[sid] = "outside_declared_scope"
             continue
         # Explicit invocations and exclusions keep their own rules.
-        total = sum(weight for weight, pattern in entry.get("routing_signals", []) if matches(pattern, signal_text))
+        total = sum(weight for weight, pattern in entry.get("routing_signals", [])
+                    if matches(pattern, signal_text) or matches(pattern, live_text))
         # Every signal sits in a clause saying the activity is done or unwanted:
         # the prompt names the skill without asking for it.
         if total and sid not in explicit and dismissed and not any(
@@ -715,11 +795,13 @@ def route(prompt: str, registry: dict, policy: dict, *, invoked: tuple[str, ...]
         result["explain"] = {
             "explicit": sorted(explicit),
             "signals": {
-                sid: [[w, pat] for w, pat in active[sid].get("routing_signals", []) if matches(pat, signal_text)]
+                sid: [[w, pat] for w, pat in active[sid].get("routing_signals", [])
+                      if matches(pat, signal_text) or matches(pat, live_text)]
                 for sid in sorted(scores)
             },
             "negated_spans": negated_spans(text, policy),
             "dismissed_spans": dismissed,
+            "contextual_text": live_text,
             "lexical_enabled": use_lexical,
             "lexical_abstained_on": abstained or None,
         }

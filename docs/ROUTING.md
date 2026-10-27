@@ -11,8 +11,8 @@ deterministically from two files:
 - `registry/routing-policy.json`: the admission rules below.
 
 Every result carries `"mode": "deterministic_proxy"` and
-`"runtime_acceptance": "not_assessed"`. It is not a model evaluation and not a
-permission boundary. Pass it the user's instruction only, never retrieved
+`"runtime_acceptance": "not_assessed"`. It is a diagnostic proxy, not native
+host discovery, a model evaluation or a permission boundary. Pass it the user's instruction only, never retrieved
 document text.
 
 ```bash
@@ -51,6 +51,10 @@ uv run python tooling/route_skill.py 'Click through the checkout and find UX bug
    scores, from the steps of a sequence and from the lexical ranker, which then
    reads the text without those clauses (`dismissed`). A skill with any signal
    outside such a clause keeps its whole score.
+   A review named as the source of findings ("issues from yesterday's repo
+   roast", "błędy z wczorajszego roastu") is set aside as a reference, while
+   its repair request stays live. An immediately following standalone "No.",
+   "Nope." or "Nie!" dismisses the preceding question; "No problem" does not.
 8. **Choose.** Invoked skills win over scores. Otherwise the top score wins,
    but if a different specialist is within one point of it the result is
    `ambiguous` rather than a silent pick (`ties`). Two or more invoked skills
@@ -58,6 +62,12 @@ uv run python tooling/route_skill.py 'Click through the checkout and find UX bug
 9. **Detect sequences.** A prompt cut at "then", "potem", "->" and similar
    connectors whose steps are won by different specialists routes to the
    workflow skill, with the steps listed in `sequence` (`sequence`).
+   Before scoring, local action targets are resolved in the live text:
+   "fact-check the deck, then roast it" supplies the deck to the second step;
+   "gate the final version" uses an artifact or release gate according to
+   that target. An imperative "roadmap the resulting work" or "opracuj
+   roadmapę" denotes roadmap construction. These canonical phrasings still
+   use registry signals and the existing `min_step_score`, not extra scores.
 10. **Fall back to the lexical ranker.** When no signal scored, or a near-tie
     left the result `ambiguous`, a BM25 ranker reads each skill's description,
     `owns` list, trigger examples and a curated English and Polish lexicon, with
@@ -72,7 +82,7 @@ The result reports `status` (`single_skill`, `workflow`, `ambiguous` or
 `no_skill`), `primary_skill`, `candidates`, `scores`, the reason each skill was
 `blocked`, `demoted` (only when a skill was, with the score it would have had)
 and `override_suspected`. `--explain` adds the signals that matched,
-the negated and dismissed spans and the ranker's per-term contributions for its top skills;
+the negated and dismissed spans, the resolved `contextual_text`, and the ranker's per-term contributions for its top skills;
 `--lexical` and `--no-lexical` override the policy's switch for one call.
 
 ## Policy blocks
@@ -101,10 +111,26 @@ pattern backtrack for minutes.
 - [`evals/routing/known-gaps.json`](../evals/routing/known-gaps.json) lists
   prompts the router misroutes today, with the misroute pinned; a gap that
   starts routing correctly fails the check until it is moved into the suite.
+- The development-label confusion report still contains a label conflict at
+  [`science-roaster` trigger-evals case index 17](../skills/science-roaster/evals/trigger-evals.json):
+  "Decide which journal we should submit to based on fit and acceptance strategy."
+  has `near_miss: research-program-operator`. That skill's
+  [scope](../skills/research-program-operator/SKILL.md) and
+  [output contract](../skills/research-program-operator/references/output-contract.md)
+  cover research-program state, stage gates and next studies, and exclude
+  consequential decisions; they do not provide journal or venue selection.
+  The router abstains (`no_skill`). The source label remains unchanged and the
+  mismatch remains visible in the confusion report. Resolving it requires an
+  explicit label or skill-scope decision, not a routing score adjustment.
 - A bare "not", "without" and "bez" are not negation cues, because they usually
   qualify a request ("ship without regressions") rather than refuse one.
 - Only double and typographic quotes mark quoted text; single quotes do not.
 - Override cues exist for English and Polish only.
+- Local target resolution uses bounded PL/EN action and noun families. A bare
+  "roast it" stays unresolved; two named targets in the same clause do not
+  invent a pronoun owner. There is no conversation-history lookup. A plain
+  code fix is not turned into review remediation. These rules cannot establish
+  general language understanding or host routing quality.
 - A sequence needs a connector word. With "then", the checkout example above
   is a two-step workflow; with "and" it routes to `release-readiness` alone,
   because the release gate outscores the auditor and no step boundary is seen,

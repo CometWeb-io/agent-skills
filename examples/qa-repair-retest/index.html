@@ -13,8 +13,16 @@
 import { quote } from './policy.mjs';
 const $=s=>document.querySelector(s);let current;
 $('#quote').onsubmit=e=>{e.preventDefault();try{current=quote(Number($('#projects').value),Number($('#audits').value),$('#billing').value==='annual');$('#result').textContent=JSON.stringify(current,null,2);}catch(err){current=undefined;$('#result').textContent=err.message;}};
-$('#save').onclick=()=>{if(current!==undefined){try{localStorage.setItem('qa-demo-quote',JSON.stringify(current));$('#saved').textContent='Saved; reload and read to verify.';}catch{$('#saved').textContent='Storage unavailable; not saved.';}}};
-$('#load').onclick=()=>{try{$('#saved').textContent=localStorage.getItem('qa-demo-quote')??'No data';}catch{$('#saved').textContent='Storage unavailable; not read.';}};
-$('#clear').onclick=()=>{try{localStorage.removeItem('qa-demo-quote');$('#saved').textContent='No data';}catch{$('#saved').textContent='Storage unavailable; not cleared.';}};
+// A record query opts into the disposable HTTP fixture; default stays localStorage.
+const record=new URLSearchParams(location.search).get('record');
+async function stored(method){
+  const response=await fetch(`/records/${record}`,{method,headers:{'Authorization':`Bearer ${sessionStorage.getItem('qa-demo-token')??''}`,'Content-Type':'application/json'},...(method==='PUT'?{body:JSON.stringify(current)}:{})});
+  if(response.status===404&&method!=='PUT')return 'No data';
+  if(!response.ok)throw new Error(`Storage request failed (${response.status})`);
+  const data=await response.json();return method==='GET'?JSON.stringify(data.quote):'No data';
+}
+$('#save').onclick=async()=>{if(current!==undefined){try{if(record)await stored('PUT');else localStorage.setItem('qa-demo-quote',JSON.stringify(current));$('#saved').textContent='Saved; reload and read to verify.';}catch(err){$('#saved').textContent=`Not saved: ${err.message}`;}}};
+$('#load').onclick=async()=>{try{$('#saved').textContent=record?await stored('GET'):(localStorage.getItem('qa-demo-quote')??'No data');}catch(err){$('#saved').textContent=`Not read: ${err.message}`;}};
+$('#clear').onclick=async()=>{try{if(record)await stored('DELETE');else localStorage.removeItem('qa-demo-quote');$('#saved').textContent='No data';}catch(err){$('#saved').textContent=`Not cleared: ${err.message}`;}};
 $('#quote').requestSubmit();document.body.append(Object.assign(document.createElement('span'),{id:'ready',textContent:'Demo ready'}));
 </script></html>

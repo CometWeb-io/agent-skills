@@ -3,7 +3,8 @@
 
 Builds each skill that declares RUNTIME.json (or every skill with --all) into a
 temporary clean Git fixture tree, installs the zip into an isolated directory,
-and verifies required identity files plus RUNTIME.json round-trip. Opt-in helper
+and verifies required identity files plus RUNTIME.json round-trip. Alias packages
+also require validated canonical packages extracted alongside them. Opt-in helper
 smokes execute bundled offline checks from the extracted ZIP, outside the repo.
 
 This is NOT verified_runtime_acceptance for Cursor/ChatGPT/Codex sessions.
@@ -131,8 +132,43 @@ def accept_one(root: Path, skill: str, work: Path, *, run_helpers: bool = False)
 
 
 def accept_staged(root: Path, package_root: Path, skill: str, work: Path, *, run_helpers: bool = False) -> dict:
+    """Accept one skill with its ALIAS_OF closure, without claiming host discovery."""
+    from package_skill import alias_dependencies
+
+    required, packages = [], []
+    scope = "package_and_alias_dependency_extraction"
+
+    def failed(detail):
+        return {"skill": skill, "status": "dependency_failed", "installation_acceptance": "failed",
+                "installation_scope": scope, "dependency_acceptance": {
+                    "status": "failed", "required_skills": required, "packages": packages, "detail": detail},
+                "verified_runtime_acceptance": "not_assessed", "host_acceptance": "not_assessed"}
+
+    try:
+        required = alias_dependencies(package_root / "skills", skill)
+    except ValueError as exc:
+        return failed(str(exc))
+    for dependency in reversed(required):
+        result = _accept_package(root, package_root, dependency, work, run_helpers=run_helpers)
+        packages.append(result)
+        if result["status"] != "passed":
+            return failed(f"dependency package failed: {dependency}")
+    result = _accept_package(root, package_root, skill, work, run_helpers=run_helpers)
+    if result.get("installation_acceptance") == "passed":
+        try:
+            if alias_dependencies(work / "install", skill) != required:
+                raise ValueError("extracted alias dependencies disagree with source closure")
+        except ValueError as exc:
+            return failed(str(exc))
+    result.update(installation_scope=scope, dependency_acceptance={
+        "status": "passed" if required else "not_required", "required_skills": required, "packages": packages,
+        "scope": "validated_extracted_package_bytes"})
+    return result
+
+
+def _accept_package(root: Path, package_root: Path, skill: str, work: Path, *, run_helpers: bool = False) -> dict:
     """Package one skill from a staged fixture, install the zip under `work` and check it."""
-    from package_skill import identifier, inspect_archive
+    from package_skill import digest, identifier, inspect_archive, payload, safe_path
 
     identifier(skill)
     proc = subprocess.run(
@@ -145,10 +181,19 @@ def accept_staged(root: Path, package_root: Path, skill: str, work: Path, *, run
         return {"skill": skill, "status": "package_failed", "detail": proc.stderr[-500:]}
 
     report = json.loads(proc.stdout)
-    archive = package_root / report["path"]
+    if not isinstance(report, dict) or not isinstance(report.get("path"), str):
+        raise ValueError("invalid package receipt")
+    archive = safe_path(package_root, report["path"])
     # Extract the bytes that were validated, not the file again: it could change in between.
     blob = archive.read_bytes()
     manifest = inspect_archive(blob)
+    archive_sha256 = digest(blob)
+    _, source_manifest = payload(package_root, skill)
+    if (manifest["skill"] != skill or report.get("status") != "packaged"
+            or any(report.get(key) != manifest[key] for key in ("skill", "version", "payload_sha256"))
+            or report.get("archive_sha256") != archive_sha256
+            or source_manifest["payload_sha256"] != manifest["payload_sha256"]):
+        raise ValueError("package receipt or source disagrees with validated archive bytes")
     install = work / "install" / skill
     install.mkdir(parents=True)
     with zipfile.ZipFile(io.BytesIO(blob)) as zf:
@@ -167,8 +212,9 @@ def accept_staged(root: Path, package_root: Path, skill: str, work: Path, *, run
     return {
         "skill": skill,
         "status": "helper_failed" if smoke["status"] == "failed" else "passed",
-        "version": report["version"],
-        "payload_sha256": report["payload_sha256"],
+        "version": manifest["version"],
+        "payload_sha256": manifest["payload_sha256"],
+        "archive_sha256": archive_sha256,
         "installation_acceptance": "passed",
         "helper_smoke": smoke,
         "verified_runtime_acceptance": "not_assessed",
@@ -208,7 +254,7 @@ def main(argv: list[str] | None = None) -> int:
         "schema": "cometweb.installation-acceptance/v1",
         "status": "passed" if not failed else "failed",
         "skills": rows,
-        "note": "installation_acceptance confirms zip admission, extraction and identity files; helper_smoke separately records offline execution; host/model acceptance remains not_assessed",
+        "note": "installation_acceptance confirms zip admission, extraction, identity files and adjacent ALIAS_OF dependency packages; helper_smoke separately records offline execution; host/model acceptance remains not_assessed",
     }
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if not failed else 1

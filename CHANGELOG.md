@@ -6,6 +6,25 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+- Add opt-in three-arm evaluation plans with distinct native/tools/skill payloads,
+  counterbalanced order and retained partial/error receipts. Preserve legacy
+  two-arm plans; full-host helper execution still requires its own evidence.
+- Add read-only candidate-bound GitHub change reports using trusted base tooling;
+  missing model evidence remains NOT_RUN rather than behavioral PASS.
+- Separate pinned task outcomes from structural grading. Add a synthetic
+  102-case, 51-family cohort with frozen splits and output-free review packets;
+  independent validation and comparative task qualification remain unestablished.
+- Add privacy-filtered OTLP receipt exports, identity-bound resource drift and
+  a canary-probed, bounded macOS Python-helper backend; no automatic promotion.
+- Resolve four diagnostic routing gaps without tuning the frozen holdout;
+  retain native activation as a separate measurement.
+- Record source freshness findings and affected dependencies, with a separate
+  read-only scheduled report rather than blocking unrelated pull requests.
+- Extend the disposable QA example with durable SQLite readback, access checks,
+  browser reload/cleanup and checkpoint/retry/cancellation failure tests.
+- Reject nonportable/colliding archive paths and malformed alias metadata;
+  bind installation acceptance receipts to actual archive bytes and staged source.
+
 - Consolidate content review under `content-reviewer` 1.8.0; retain
   `content-roaster` 7.0.0 as its adversarial-profile and legacy-v6 adapter.
   Preserve both wire contracts and validators; do not auto-convert verdicts.
