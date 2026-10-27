@@ -83,6 +83,51 @@ def test_git_only_structural_report_is_never_behavioral_pass(candidate):
     assert mod.assess(root, base, head, require_evidence=True)['policy']['satisfied'] is False
 
 
+@pytest.mark.parametrize('mode', ['100644', '120000', '160000'])
+def test_bare_package_roots_cannot_disappear_from_structural_review(root, mode):
+    base = git(root, 'rev-parse', 'HEAD')
+    oid = base if mode == '160000' else git(root, 'rev-parse', f'{base}:skills/demo/SKILL.md')
+    git(root, 'update-index', '--add', '--cacheinfo', mode, oid, 'skills/unregistered')
+    git(root, 'commit', '-m', 'synthetic-invalid-package-root')
+    head = git(root, 'rev-parse', 'HEAD')
+    report = mod.assess(root, base, head)
+    assert report['structural_checks']['status'] == 'FAIL'
+    assert report['policy']['satisfied'] is False
+    assert report['packages'][0]['skill'] == 'unregistered'
+
+
+def test_committed_registry_repair_selects_an_unchanged_invalid_package_root(root):
+    base = git(root, 'rev-parse', 'HEAD')
+    git(root, 'update-index', '--add', '--cacheinfo', '160000', base, 'skills/unregistered')
+    git(root, 'commit', '-m', 'synthetic-preexisting-invalid-root')
+    base = git(root, 'rev-parse', 'HEAD')
+    path = root / 'registry/skills.json'
+    data = json.loads(path.read_text())
+    data['skills'].append({'id': 'unregistered', 'version': '1.0.0'})
+    path.write_text(json.dumps(data))
+    git(root, 'add', 'registry/skills.json')
+    git(root, 'commit', '-m', 'synthetic-registry-change')
+    head = git(root, 'rev-parse', 'HEAD')
+    assert mod.assess(root, base, head)['structural_checks']['status'] == 'FAIL'
+
+
+@pytest.mark.parametrize('mode', ['100644', '120000', '160000'])
+def test_retiring_packages_cannot_hide_a_non_directory_skills_root(root, mode, capsys):
+    base = git(root, 'rev-parse', 'HEAD')
+    oid = base if mode == '160000' else git(root, 'rev-parse', f'{base}:skills/demo/SKILL.md')
+    path = root / 'registry/skills.json'
+    data = json.loads(path.read_text())
+    data['skills'] = []
+    path.write_text(json.dumps(data))
+    git(root, 'add', 'registry/skills.json')
+    git(root, 'rm', '-r', '--cached', 'skills')
+    git(root, 'update-index', '--add', '--cacheinfo', mode, oid, 'skills')
+    git(root, 'commit', '-m', 'synthetic-invalid-skills-root')
+    head = git(root, 'rev-parse', 'HEAD')
+    assert mod.main(['--repo', str(root), '--base', base, '--head', head]) == 2
+    assert json.loads(capsys.readouterr().out)['status'] == 'INVALID'
+
+
 def test_reviewed_records_are_not_task_outcome_or_native_evidence(candidate):
     data = evidence(candidate)
     result = mod.assess(*candidate, data, True)

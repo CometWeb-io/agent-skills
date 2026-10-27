@@ -131,10 +131,11 @@ def assess(repo: Path, base: str, head: str, evidence: dict | None = None, requi
                 "head_tree": git(repo, "rev-parse", f"{head}^{{tree}}").decode().strip()}
     identity["candidate_sha256"] = experiment_fingerprint(identity)
     inventories = {"current": tree(repo, base), "candidate": tree(repo, head)}
+    require("skills" not in inventories["candidate"], "skills root must be a directory")
     registries = {key: catalog(repo, inventory) for key, inventory in inventories.items()}
     old = catalog(repo, tree(repo, ancestor))
     paths = [local_path(p.decode()) for p in git(repo, "diff", "--name-only", "--no-renames", "-z", ancestor, head).split(b"\0") if p]
-    changed = {p.split("/")[1] for p in paths if p.startswith("skills/") and len(p.split("/")) >= 3}
+    changed = {p.split("/")[1] for p in paths if p.startswith("skills/")}
     changed.update(s for s in old.keys() | registries["candidate"].keys() if old.get(s) != registries["candidate"].get(s))
     require(all(SLUG.fullmatch(s) for s in changed), "invalid changed package identifier")
     # Alias instructions include their canonical package even if the alias directory did not change.
@@ -149,6 +150,8 @@ def assess(repo: Path, base: str, head: str, evidence: dict | None = None, requi
         present = any(p.startswith(prefix) for p in inventories["candidate"])
         entry = registries["candidate"].get(skill)
         issues = []
+        if prefix.rstrip("/") in inventories["candidate"]:
+            issues.append("package_root_not_directory")
         if present != (entry is not None):
             issues.append("package_registry_membership_mismatch")
         if entry is not None:

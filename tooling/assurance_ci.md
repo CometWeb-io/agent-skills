@@ -24,6 +24,9 @@ The report binds base, head, diff base and the complete head tree in
 Structural PASS covers only registry membership, required regular package files
 and matching package/registry versions. It does not run the broader repository
 gates or check version bump policy; the existing Validate workflow owns those.
+Files, symlinks and gitlinks at `skills/<id>` are invalid package roots and must
+be selected for review even when no registry row was added.
+Replacing `skills` itself with a non-directory Git entry is invalid input.
 A missing evidence bundle yields `comparison_evidence: NOT_RUN`, and task outcome
 is always `NOT_ASSESSED`. No output from this tool is behavioral PASS, native host
 qualification, release authorization or a GitHub approval.
@@ -100,6 +103,14 @@ tested by Validate and need a separate reviewed pin update to become trusted;
 merging code alone does not advance this pin. A green report means only the
 existing structural policy was satisfied, with missing model evidence still
 `NOT_RUN` and task outcome `NOT_ASSESSED`.
+For checker repairs, first retain the reviewed repair commit, then update the
+workflow pin in a separate commit and verify a fresh report. A green run of the
+old snapshot does not verify a repair present only in the candidate checkout.
+
+Both pytest gates print skipped test names and reasons (`-rs`). A successful
+gate can still contain skipped tests. Foreign-platform cases require separate,
+same-revision native evidence; missing CLI or browser opt-ins remain unassessed
+capabilities. A skip count alone cannot establish which tests were skipped.
 
 PR workflow definitions are themselves reviewable code, not an
 organization-wide immutable policy boundary. A live PR run (including fork/ref
