@@ -39,6 +39,8 @@ uv run python tooling/real_host_eval.py run --plan plan.json --host claude \
   --out runs/claude-ab --condition both --max-tasks 20 --model <model-id>
 ```
 
+The documented `--condition both` runner covers A/B, not the optional tool-matched C condition. C requires a separately frozen experiment with equivalent tool access; do not report it as run by this command.
+
 Execution requires the explicit `--execute` flag, host credentials, compatible local tooling and a cost cap. See [REAL-HOST-EVALS.md](REAL-HOST-EVALS.md) before running it. Currently executable adapters cover Claude Code and Codex; do not claim real-host experiments for other hosts until recorded.
 
 ## Public scorecard template
