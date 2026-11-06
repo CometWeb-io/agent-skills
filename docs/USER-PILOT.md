@@ -31,6 +31,8 @@ One change that would make it worth keeping:
 May this feedback be quoted publicly? (default: NO)
 ```
 
+To submit **sanitized public** feedback, [open a GitHub issue](https://github.com/CometWeb-io/agent-skills/issues/new) and describe the task, observed result and friction without attaching private artifacts. Do not open a public issue for sensitive feedback; retain it privately until a mutually agreed private channel exists.
+
 Avoid sending customer records, private source code, credentials or unrestricted tool transcripts. Permission to receive feedback is not permission to publish or quote it.
 
 ## What counts as adoption?
