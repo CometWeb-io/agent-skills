@@ -601,6 +601,7 @@ def build_plan(payload: dict[str, Any]) -> dict[str, Any]:
     next_actions: list[dict[str, Any]] = []
     held_implementation_action_ids: list[str] = []
     held_by_readiness_action_ids: list[str] = []
+    verification_required_action_ids: list[str] = []
     immediate_counts = {key: 0 for key in IMMEDIATE_CAPS}
 
     for row in sequence["execution_order"]:
@@ -613,6 +614,7 @@ def build_plan(payload: dict[str, Any]) -> dict[str, Any]:
         if action_type == "stop" or tier == "STOP":
             continue
         if ranked_row.get("scoring_mode") == "qualitative" and tier == "VERIFY_NOW" and action_type != "verify":
+            verification_required_action_ids.append(action_id)
             if action_type == "implement":
                 held_implementation_action_ids.append(action_id)
             continue
@@ -660,6 +662,7 @@ def build_plan(payload: dict[str, Any]) -> dict[str, Any]:
         "sequence": sequence,
         "held_by_readiness_action_ids": held_by_readiness_action_ids,
         "held_implementation_action_ids": held_implementation_action_ids,
+        "verification_required_action_ids": verification_required_action_ids,
     }
 
 

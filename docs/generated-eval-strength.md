@@ -28,10 +28,10 @@ gate — and those are listed rather than hidden.
 | `portfolio-operator` | 88 | 86 | 0.98 |
 | `feedback-integrator` | 37 | 36 | 0.97 |
 | `quality-loop-operator` | 106 | 103 | 0.97 |
-| `product-operator` | 209 | 195 | 0.93 |
+| `product-operator` | 211 | 197 | 0.93 |
 
 Scripts a package ships that its harness never loads, so nothing above measures them:
 
 - `content-writer`: word_range.py
 
-**16 harnesses.** 1079 of 1103 reachable guards are held (98% if every skill counted equally, which they do not).
+**16 harnesses.** 1081 of 1105 reachable guards are held (98% if every skill counted equally, which they do not).

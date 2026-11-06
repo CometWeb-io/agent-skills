@@ -235,6 +235,7 @@
     "foot": "label key in the brief writer's built-in Polish and English text",
     "held_by_readiness_action_ids": "plan result the kernel builds; the brief reads it back",
     "held_implementation_action_ids": "plan result the kernel builds; the self-check reads it",
+    "verification_required_action_ids": "plan and report field identifying held candidates needing verification",
     "immediate_actions": "plan result the kernel builds; the brief reads it back",
     "input_hash": "plan result hash the kernel computes over its input",
     "issues": "reconciliation result and label key, both built by the writer or kernel",

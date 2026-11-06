@@ -21,7 +21,7 @@ Token counts are estimates at 4 bytes/token, not a tokenizer result.
 | `skill-orchestrator` | 8,076 B | 2,019 | 148,797 B | 37,199 | 20 | 0.95 |
 | `science-roaster` | 6,561 B | 1,640 | 125,218 B | 31,304 | 38 | 0.95 |
 | `content-writer` | 6,305 B | 1,576 | 14,338 B | 3,584 | 8 | 0.69 |
-| `product-operator` | 6,247 B | 1,561 | 61,839 B | 15,459 | 14 | 0.91 |
+| `product-operator` | 6,247 B | 1,561 | 62,336 B | 15,584 | 14 | 0.91 |
 | `evidence-researcher` | 6,176 B | 1,544 | 64,706 B | 16,176 | 16 | 0.91 |
 | `repair-operator` | 6,141 B | 1,535 | 11,639 B | 2,909 | 7 | 0.65 |
 | `skill-evaluator` | 6,126 B | 1,531 | 17,134 B | 4,283 | 11 | 0.74 |

@@ -411,7 +411,9 @@ def qualitative_checks() -> list[dict[str, str]]:
     data["candidates"] = [row]
     result = prepare_brief.assemble(data)
     check("hold-unverified-implementation", not result["report"]["now"] and
-          result["plan"]["held_implementation_action_ids"] == [row["id"]])
+          result["plan"]["held_implementation_action_ids"] == [row["id"]] and
+          result["report"]["verification_required_action_ids"] == [row["id"]] and
+          "Wymaga weryfikacji przed wykonaniem" in prepare_brief.render(result))
     row.update(blocker=False, future_gate=True, blocks_current_goal=False)
     result = prepare_brief.assemble(data)
     check("future-gate-not-immediate", not result["report"]["verify_now"] and not result["report"]["now"])

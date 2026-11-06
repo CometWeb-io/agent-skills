@@ -145,3 +145,20 @@ def test_unscored_unproven_blocker_does_not_promote_implementation():
     result = brief.assemble(data)
     assert not result["report"]["now"]
     assert result["plan"]["held_implementation_action_ids"] == ["A"]
+    assert result["plan"]["verification_required_action_ids"] == ["A"]
+    assert result["report"]["verification_required_action_ids"] == ["A"]
+    text = brief.render(result)
+    assert "Wymaga weryfikacji przed wykonaniem" in text
+    assert "A" in text
+
+
+def test_unscored_decision_with_unresolved_verification_is_not_silenced():
+    data = example()
+    row = data["candidates"][0]
+    qualitative(row)
+    row.update(decision_required=True, verify_first=True, action_type="decision")
+    data["candidates"] = [row]
+    result = brief.assemble(data)
+    assert not result["report"]["decision_now"]
+    assert result["plan"]["verification_required_action_ids"] == [row["id"]]
+    assert "Needs verification before action" in brief.render(result, language="en")

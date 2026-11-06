@@ -89,6 +89,12 @@ If outcome data such as CRM is unavailable, state the gap once and continue with
 
 For `STANDARD`, `DEEP`, `DELTA`, and `RELEASE`, preserve full evidence and state in `operator-report.json` when filesystem/execution support exists. The sidecar can be detailed even when the Human brief is short.
 
+When a qualitative candidate needs verification but its action is implementation
+or a decision, the local bridge keeps that action out of the immediate list and
+records its ID in `verification_required_action_ids` in both the plan and report.
+The brief identifies these held actions for verification; this is not a fabricated
+verification result or authorization to implement them.
+
 Recommended shape:
 
 ```json
