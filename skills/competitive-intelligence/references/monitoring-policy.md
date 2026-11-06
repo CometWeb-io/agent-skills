@@ -161,3 +161,5 @@ Prefer condition-based notification for high-severity events and time-based dige
 - Hiding missing coverage behind confident prose.
 - Turning every competitor move into a roadmap recommendation.
 - Claiming background monitoring when no scheduler exists.
+
+- A single iteration does not claim to run continuously in the background.

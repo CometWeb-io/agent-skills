@@ -195,3 +195,15 @@ Do not present these as verified without appropriate evidence:
 - ad spend inferred from ad-library presence,
 - market share inferred from SEO visibility,
 - roadmap inferred from a single beta page.
+
+- Do not use employee-level personal surveillance as a source strategy.
+
+- Treat SEO/traffic estimates, social chatter, review anecdotes, and scraped summaries as lower-authority evidence unless triangulated.
+
+- Do not label a change `CONFIRMED` from community chatter, SEO estimates, or a single weak secondary source.
+
+- keep the event `LIKELY`, `UNVERIFIED`, or `DISPUTED` and state the crux.
+
+- Do not bypass authentication, access controls, paywalls, CAPTCHAs, rate limits, or tool restrictions.
+
+- Do not attempt to obtain confidential competitor information.

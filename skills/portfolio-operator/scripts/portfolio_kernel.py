@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import sys
 import datetime as dt
@@ -63,6 +64,7 @@ KNOWN_SPECIALISTS = {
 }
 USER_FACING_FIELDS = ('portfolio_outcome', 'action', 'done_when', 'reason', 'condition', 'question', 'return_contract')
 SPECIALIST_DETAIL_KEYS = {'substeps', 'internal_steps', 'implementation_steps', 'component_tasks', 'technical_details'}
+SCORE_DIMENSIONS = ('goal_alignment', 'revenue', 'trust', 'dependency_leverage', 'learning')
 
 
 def _enum_errors(item: dict[str, Any]) -> list[str]:
@@ -71,6 +73,19 @@ def _enum_errors(item: dict[str, Any]) -> list[str]:
         value = item.get(key)
         if value is not None and value not in allowed:
             errors.append(f"{key} {value!r} is not one of {', '.join(allowed)}")
+    for key in SCORE_DIMENSIONS:
+        value = item.get(key)
+        if value is None:
+            continue
+        try:
+            valid = type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 5
+        except OverflowError:
+            valid = False
+        if not valid:
+            errors.append(f'{key} must be a finite number between 0 and 5')
+    days = item.get('days_to_deadline')
+    if days is not None and type(days) is not int:
+        errors.append('days_to_deadline must be an integer')
     return errors
 
 
@@ -83,10 +98,9 @@ def _check_item(item: dict[str, Any]) -> None:
 def _urgency(days_to_deadline: Any) -> float:
     if days_to_deadline is None:
         return 0.0
-    try:
-        days = int(days_to_deadline)
-    except (TypeError, ValueError):
-        return 0.0
+    if type(days_to_deadline) is not int:
+        raise ValueError('days_to_deadline must be an integer')
+    days = days_to_deadline
     if days < 0:
         return 30.0
     if days <= 1:
@@ -260,13 +274,14 @@ def _has_claim_provenance(item: dict[str, Any]) -> bool:
     ref = item.get('evidence_ref')
     if isinstance(ref, str) and ref.strip():
         return True
-    if isinstance(ref, list) and any(str(x).strip() for x in ref):
+    if isinstance(ref, list) and any(isinstance(x, str) and x.strip() for x in ref):
         return True
     return False
 
 
 def _is_real_delegate(item: dict[str, Any]) -> bool:
-    delegate_to = str(item.get('delegate_to') or item.get('delegated_to') or '').strip()
+    delegate_to = next((value.strip() for value in (item.get('delegate_to'), item.get('delegated_to'))
+                        if isinstance(value, str) and value.strip()), '')
     if not delegate_to:
         return False
     if delegate_to in KNOWN_SPECIALISTS:
@@ -276,36 +291,73 @@ def _is_real_delegate(item: dict[str, Any]) -> bool:
     ref = item.get('delegate_evidence_ref')
     if isinstance(ref, str) and ref.strip():
         return True
-    if isinstance(ref, list) and any(str(x).strip() for x in ref):
+    if isinstance(ref, list) and any(isinstance(x, str) and x.strip() for x in ref):
         return True
     return False
 
 
-def validate_report(report: dict[str, Any]) -> list[str]:
+def validate_invariants(report: dict[str, Any]) -> list[str]:
+    """Check supplied lanes only; this does not establish report completeness."""
     if not isinstance(report, dict):
         return ['report must be a JSON object']
     errors: list[str] = []
-    capacity = report.get('capacity', {}) or {}
-    if capacity.get('source') == 'unknown' and capacity.get('hours') is not None:
+    capacity = report.get('capacity', {})
+    if not isinstance(capacity, dict):
+        errors.append('capacity must be an object')
+        capacity = {}
+    capacity_source = capacity.get('source')
+    if isinstance(capacity_source, str) and capacity_source.strip().lower() == 'unknown' and capacity.get('hours') is not None:
         errors.append('capacity.hours must be absent when capacity source is unknown')
+    if isinstance(capacity_source, str) and capacity_source.strip().lower() in ('relative-only', 'relative_only') and capacity.get('hours') is not None:
+        errors.append('capacity.hours must be absent when capacity is relative-only')
+    hours = capacity.get('hours')
+    if hours is not None:
+        try:
+            valid_hours = type(hours) in (int, float) and math.isfinite(hours) and hours >= 0
+        except OverflowError:
+            valid_hours = False
+        if not valid_hours:
+            errors.append('capacity.hours must be a finite non-negative number')
 
     user_lanes = (
         'must_do', 'capacity_conflicts', 'now', 'delegate', 'delegate_candidate',
         'waiting', 'pause_drop', 'next', 'decision_now'
     )
+    safe_lanes: dict[str, list[tuple[int, dict[str, Any]]]] = {}
+    for lane in user_lanes:
+        value = report.get(lane, [])
+        if not isinstance(value, list):
+            errors.append(f'{lane} must be a list')
+            safe_lanes[lane] = []
+            continue
+        safe_lanes[lane] = []
+        for index, item in enumerate(value):
+            if not isinstance(item, dict):
+                errors.append(f'{lane}[{index}] must be an object')
+            else:
+                safe_lanes[lane].append((index, item))
     malformed: set[int] = set()
     for lane in user_lanes:
-        for index, item in enumerate(report.get(lane, []) or []):
+        for index, item in safe_lanes[lane]:
             item_errors = _enum_errors(item)
             if item_errors:
                 malformed.add(id(item))
                 errors.extend(f'{lane}[{index}]: {error}' for error in item_errors)
 
     for lane in ('must_do', 'now'):
-        for index, item in enumerate(report.get(lane, []) or []):
-            if not item.get('done_when'):
+        for index, item in safe_lanes[lane]:
+            done_when = item.get('done_when')
+            if not isinstance(done_when, str) or not done_when.strip():
                 errors.append(f'{lane}[{index}].done_when is required')
-            if not item.get('evidence'):
+            evidence = item.get('evidence')
+            def valid_evidence(entry: Any) -> bool:
+                if isinstance(entry, str):
+                    return bool(entry.strip())
+                if isinstance(entry, dict):
+                    return all(isinstance(entry.get(key), str) and entry[key].strip()
+                               for key in ('source', 'locator'))
+                return False
+            if not isinstance(evidence, list) or not evidence or not all(valid_evidence(entry) for entry in evidence):
                 errors.append(f'{lane}[{index}].evidence is required')
             # route_delegation refuses off-contract values, already reported above.
             specialist = None if id(item) in malformed else route_delegation(item)
@@ -328,12 +380,12 @@ def validate_report(report: dict[str, Any]) -> list[str]:
                     f'{lane}[{index}] violates specialist depth ceiling: specialist-scoped work cannot be rendered as portfolio MUST DO/NOW'
                 )
 
-    for item in report.get('must_do', []) or []:
+    for _, item in safe_lanes['must_do']:
         if item.get('future_gate') and not item.get('blocks_current_goal'):
             errors.append('future gate cannot appear in must_do unless it blocks the current goal')
 
     for lane in user_lanes:
-        for index, item in enumerate(report.get(lane, []) or []):
+        for index, item in safe_lanes[lane]:
             if _has_numeric_claim(item) and not _has_claim_provenance(item):
                 errors.append(
                     f'{lane}[{index}] provenance gate: user-facing numeric/date/target claim requires evidence_ref or user_defined=true'
@@ -343,18 +395,62 @@ def validate_report(report: dict[str, Any]) -> list[str]:
                     f'{lane}[{index}] provenance gate: deadline requires evidence_ref or user_defined=true'
                 )
 
-    for index, item in enumerate(report.get('delegate', []) or []):
-        if not item.get('delegate_to') and not item.get('delegated_to'):
+    for index, item in safe_lanes['delegate']:
+        if not any(isinstance(value, str) and value.strip()
+                   for value in (item.get('delegate_to'), item.get('delegated_to'))):
             errors.append(f'delegate[{index}].delegate_to is required')
-        if not item.get('question'):
-            errors.append(f'delegate[{index}].question is required')
-        if not item.get('return_contract'):
-            errors.append(f'delegate[{index}].return_contract is required')
+        for field in ('question', 'return_contract'):
+            if not isinstance(item.get(field), str) or not item[field].strip():
+                errors.append(f'delegate[{index}].{field} is required')
         if not _is_real_delegate(item):
             errors.append(
                 f'delegate[{index}] violates delegate reality gate: external person/agent/system requires delegate_evidence_ref or user_defined=true; otherwise use delegate_candidate or pause'
             )
 
+    return errors
+
+
+def validate_report(report: dict[str, Any]) -> list[str]:
+    """Validate the report envelope as well as the existing lane invariants."""
+    if not isinstance(report, dict):
+        return ['report must be a JSON object']
+    errors = validate_invariants(report)
+    if report.get('protocol_version') not in ('1.0', '1.1'):
+        errors.append('protocol_version must be 1.0 or 1.1')
+    try:
+        stamp = dt.datetime.fromisoformat(str(report.get('as_of') or '').replace('Z', '+00:00'))
+        if stamp.tzinfo is None or stamp.utcoffset() is None:
+            raise ValueError('timezone required')
+    except (TypeError, ValueError, OverflowError):
+        errors.append('as_of must be an ISO-8601 timestamp with timezone')
+    for field in ('horizon', 'primary_goal'):
+        if not isinstance(report.get(field), str) or not report[field].strip():
+            errors.append(f'{field} must be non-empty text')
+    scope = report.get('portfolio_scope')
+    if not isinstance(scope, list) or any(not isinstance(x, str) or not x.strip() for x in scope):
+        errors.append('portfolio_scope must be a list of non-empty identifiers')
+    capacity = report.get('capacity')
+    if not isinstance(capacity, dict) or not isinstance(capacity.get('source'), str) or not capacity['source'].strip():
+        errors.append('capacity.source must be non-empty text')
+    coverage = report.get('coverage')
+    if not isinstance(coverage, dict) or not coverage:
+        errors.append('coverage must explicitly describe at least one source')
+    elif any(not isinstance(key, str) or not key.strip() or not isinstance(value, str) or not value.strip()
+             for key, value in coverage.items()):
+        errors.append('coverage entries must map non-empty source names to non-empty text states')
+    readiness = report.get('readiness')
+    if not isinstance(readiness, dict):
+        errors.append('readiness must be an object')
+        status = None
+    else:
+        status = readiness.get('status')
+        if status not in ('READY', 'PROVISIONAL', 'BLOCKED'):
+            errors.append('readiness.status must be READY, PROVISIONAL or BLOCKED')
+        if status in ('PROVISIONAL', 'BLOCKED') and (not isinstance(readiness.get('reason'), str) or not readiness['reason'].strip()):
+            errors.append('readiness.reason is required for PROVISIONAL or BLOCKED')
+    goal = report.get('primary_goal')
+    if status != 'BLOCKED' and ((isinstance(goal, str) and goal.strip().upper() == 'UNKNOWN') or scope == []):
+        errors.append('unknown goal or empty scope requires BLOCKED readiness')
     return errors
 
 
@@ -420,6 +516,9 @@ def main() -> None:
     p_validate = sub.add_parser('validate')
     p_validate.add_argument('--report-json', required=True)
 
+    p_partial = sub.add_parser('validate-invariants')
+    p_partial.add_argument('--report-json', required=True)
+
     p_render = sub.add_parser('render')
     p_render.add_argument('--report-json', required=True)
 
@@ -443,6 +542,13 @@ def main() -> None:
     if args.command == 'validate':
         errors = validate_report(report)
         json.dump({'valid': not errors, 'errors': errors}, sys.stdout, ensure_ascii=False, indent=2)
+        sys.stdout.write('\n')
+        raise SystemExit(0 if not errors else 1)
+
+    if args.command == 'validate-invariants':
+        errors = validate_invariants(report)
+        json.dump({'valid': not errors, 'errors': errors, 'validation_scope': 'invariants_only',
+                   'complete_report_validated': False}, sys.stdout, ensure_ascii=False, indent=2)
         sys.stdout.write('\n')
         raise SystemExit(0 if not errors else 1)
 

@@ -49,7 +49,12 @@ Do not print scores, every checked source, full ledger, tool narration, or conne
 
 ## Machine sidecar
 
-Recommended `portfolio-report.json`:
+In the human brief, `NOT_CREATED` means no sidecar was produced;
+`NOT_VALIDATED` means a sidecar exists but complete validation did not succeed
+or did not run. These are disclosure labels, not sidecar readiness values or
+proof of validation. State the reason and next step.
+
+`portfolio-report.json` includes this envelope (empty lanes may be omitted):
 
 ```json
 {
@@ -57,10 +62,10 @@ Recommended `portfolio-report.json`:
   "as_of": "2026-09-10T10:00:00+02:00",
   "horizon": "14d",
   "primary_goal": "...",
-  "portfolio_scope": [],
+  "portfolio_scope": ["project-a"],
   "constraints": [],
   "capacity": {"source": "unknown"},
-  "coverage": {},
+  "coverage": {"calendar": "unavailable"},
   "readiness": {"status": "PROVISIONAL", "reason": "..."},
   "portfolio_items": [],
   "must_do": [],
@@ -78,11 +83,25 @@ Recommended `portfolio-report.json`:
 
 ### Validation invariants
 
+- full `validate` requires protocol version 1.0 or 1.1, `as_of` with timezone,
+  non-empty `horizon` and `primary_goal`, `portfolio_scope` identifiers, an explicit
+  `capacity.source`, non-empty `coverage` source states, and a valid `readiness`;
+- a goal explicitly `UNKNOWN` or an empty scope requires `BLOCKED` readiness;
+- `PROVISIONAL` and `BLOCKED` readiness require an explicit reason;
 - `capacity.source=unknown` -> numeric capacity hours must be absent;
-- `must_do[]` and `now[]` require `done_when` and `evidence[]`;
+- `capacity.source=relative-only` also prohibits numeric capacity hours;
+- supplied capacity hours must be finite non-negative numbers; zero is allowed;
+- `must_do[]` and `now[]` require non-empty text `done_when` and a non-empty
+  `evidence[]`; each entry is a non-empty text reference or an object with
+  non-empty text `source` and `locator`;
 - a future gate that does not block the current goal cannot appear in `must_do[]`;
 - do not fabricate missing external commitments or deadlines;
 - `must_do[]`/`now[]` that need specialist depth stay outcome-level with `scope_level=portfolio` and require `portfolio_outcome`; the renderer uses `portfolio_outcome` instead of deeper internal `action` text;
 - any user-facing exact date, deadline, numeric target, currency amount, count, or time KPI requires `evidence_ref` or `user_defined=true`;
-- `delegate[]` must name a narrow question/return contract and a real executor; known specialist skills are valid, while external people/agents/systems require `delegate_evidence_ref` or explicit user definition;
+- `delegate[]` must name a non-empty text executor, question and return contract; known specialist skills are valid, while external people/agents/systems require `delegate_evidence_ref` or explicit user definition;
 - hypothetical executors belong in `delegate_candidate[]` or `pause_drop[]`, not `delegate[]`.
+
+`valid=true` means these structural checks passed, not that sources, deadlines,
+executor availability, freshness, user authorization, or the business conclusion
+were independently verified. `render` does not validate a report. See
+`references/validation-migration.md` for the legacy partial-input migration.

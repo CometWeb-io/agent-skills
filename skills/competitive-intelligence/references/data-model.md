@@ -252,3 +252,13 @@ The kernel ignores obvious volatile metadata paths such as `captured_at`, `obser
 ## 9. Versioning and migration
 
 Increment `schema_version` only for breaking semantic changes. A migration must never rewrite old snapshot files in place. Create a migrated copy with provenance that points to the original snapshot hash.
+
+- A bootstrap run does not invent a delta.
+
+- Never use raw HTML/text diff as the final truth layer.
+
+- Treat the diff as the starting set, not the final feed.
+
+- Never overwrite a historical snapshot.
+
+- A material correction is appended as a revision instead of rewriting history.

@@ -79,6 +79,7 @@
     "effort": {},
     "confidence": {},
     "evidence_strength": {},
+    "scoring_mode": {},
     "blocker": {},
     "blocks_current_goal": {},
     "blocked_item": {},
@@ -216,6 +217,7 @@
       ]
     },
     "priority_score": {},
+    "score_breakdown": {},
     "code": {},
     "severity": {},
     "item_id": {},

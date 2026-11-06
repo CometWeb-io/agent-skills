@@ -13,12 +13,6 @@
   "candidates": [
     {
       "id": "A",
-      "impact": 5,
-      "goal_alignment": 5,
-      "urgency": 4,
-      "effort": 1,
-      "confidence": 0.9,
-      "evidence_strength": 0.9,
       "action": "Sprawdź ponowny odczyt zapisanych ustawień",
       "why_now": "Dane syntetyczne: dostępna jest implementacja, brakuje obserwacji ponownego odczytu.",
       "done_when": "Zapisz wynik kontrolowanego testu odczytu po ponownym otwarciu widoku.",
@@ -37,16 +31,11 @@
       ],
       "depends_on": [],
       "action_type": "verify",
-      "verify_first": true
+      "verify_first": true,
+      "scoring_mode": "qualitative"
     },
     {
       "id": "B",
-      "impact": 5,
-      "goal_alignment": 5,
-      "urgency": 4,
-      "effort": 1,
-      "confidence": 0.9,
-      "evidence_strength": 0.9,
       "action": "Dostosuj widok do zweryfikowanego kontraktu",
       "why_now": "Dane syntetyczne: dostępna jest implementacja, brakuje obserwacji ponownego odczytu.",
       "done_when": "Zmiana widoku ma wynik testu względem ustalonego kontraktu.",
@@ -67,7 +56,8 @@
         "A"
       ],
       "action_type": "implement",
-      "verify_first": false
+      "verify_first": false,
+      "scoring_mode": "qualitative"
     }
   ]
 }

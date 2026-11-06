@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 EXPECTED = {
     "founder-led-sales-operator": ("1.1.2", "FROZEN"),
     "research-program-operator": ("1.3.4", "FROZEN"),
-    "portfolio-operator": ("1.2.5", "ACTIVE"),
+    "portfolio-operator": ("2.0.0", "ACTIVE"),
     # 1.1.0 moved a frozen baseline. The freeze rationale in
     # docs/acceptance/longform-publisher-1.0.0.md allows a contract change, and
     # validate_report declares "-> list[str]" yet raised TypeError on a list or
@@ -32,7 +32,7 @@ EXPECTED = {
     # observed host cut and gives each reference a load trigger; see the 1.1.4
     # exception.
     "longform-publisher": ("1.1.6", "FROZEN"),
-    "product-operator": ("2.4.4", "ACTIVE"),
+    "product-operator": ("2.5.1", "ACTIVE"),
 }
 
 SUPPORTED_HOSTS = {

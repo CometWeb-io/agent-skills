@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.4] - 2026-11-05
+
+- Shorten the default roadmap workflow; preserve detailed gates, file accounting and handoff contracts in an optional reference.
+
 ## [1.1.3] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

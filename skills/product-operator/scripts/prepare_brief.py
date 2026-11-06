@@ -161,7 +161,7 @@ def render(result: dict, language: str = 'pl') -> str:
             lines += [f"### {plain(row['id'])} — {plain(title or row.get('action','—'))}",'',
                       f"{labels['why']}: {plain(row.get('why_now',row.get('rationale','—')))}",'',
                       f"{labels['done']}: {plain(row['done_when'])}",'',
-                      f"{labels['confidence']}: {plain(row.get('confidence','—'))}",'']
+                      f"{labels['confidence']}: {plain(row.get('confidence') if row.get('confidence') is not None else '—')}",'']
             if kernel.candidate_action_type(row)=='decision':
                 lines += [f"{labels['options']}: {plain('; '.join(str(x) for x in row.get('options',[])))}",'',
                           f"{labels['delegate']}: {plain(row.get('delegated_to','—'))}",'']

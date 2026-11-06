@@ -15,8 +15,10 @@ python3 scripts/self_check.py
 
 The shipped example is deliberately synthetic. Replace it with a sourced plan input:
 `target`, `goal`, `horizon`, timezone-aware `as_of`, `coverage`, `state_items`, and
-`candidates`. Candidates contain action/why_now/done_when/confidence/evidence,
-action_type, scoring dimensions and depends_on. Unknown coverage stays unavailable.
+`candidates`. Candidates contain action/why_now/done_when/evidence, action_type
+and depends_on. Default to `scoring_mode: qualitative` when a numeric assessment
+is not justified; omit scoring dimensions (or use null), including confidence and
+evidence_strength. Unknown is not zero. Unknown coverage stays unavailable.
 Explicit critical_gap_open and material_current_evidence_block are binding signals.
 Do not use a fabricated high evidence_strength to overcome missing source proof.
 
@@ -79,11 +81,12 @@ readiness input: coverage, goal_known (default true), and the flags above
 reconcile input: items[] or a bare list of state items
 
 candidates[]:
-  id, action, rationale?, why_now, done_when, confidence, evidence[]
+  id, action, rationale?, why_now, done_when, evidence[]
+  scoring_mode?: qualitative | numeric (omitted means legacy numeric behavior)
   action_type?: verify | implement | decision | stop; any other value is an input error
-  impact, goal_alignment, urgency, dependency_leverage, risk_reduction, learning_value: 0-5
-  effort: 0.5-5
-  evidence_strength: 0-1
+  Numeric mode only: confidence, evidence_strength: 0-1; impact, goal_alignment,
+  urgency, dependency_leverage, risk_reduction, learning_value: 0-5; effort: 0.5-5.
+  Qualitative mode: omit these inputs; priority_score and score_breakdown are null.
   blocker?, blocks_current_goal?, blocked_item?, future_gate?, trust_critical?
   verify_first?, stop?, decision_required?, decision_domain?
   question?, options[]?, delegated_to?: decision framing
@@ -122,3 +125,9 @@ Outputs: `validate` prints `{status: PASS | WARN | FAIL, errors[], warnings[]}`.
 `rank` adds `priority_tier` (BLOCKER, VERIFY_NOW, DECISION_NOW, NOW, NEXT, LATER, STOP)
 and `priority_score` to each row. `reconcile` issues carry `item_id`, `code`, `severity`,
 message and stage; `EVIDENCE_STAGE_UNKNOWN` marks evidence whose stage is not one of the six.
+
+Numerical inputs and derived scores produce a validation warning even if a basis is
+declared: the validator cannot authenticate it. Legacy numeric ranking remains
+available but a warning is not a factual verdict. With any qualitative candidate,
+within-tier ordering is by stable ID, not numeric score; dependencies remain binding.
+An unscored claimed blocker is VERIFY_NOW pending a supported assessment.

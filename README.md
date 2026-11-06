@@ -116,7 +116,7 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | --- | --- | ---: |
 | [`ai-council`](skills/ai-council/) | Evidence-governed decisions, risk gates, forecasts, and GO / TEST / DEFER verdicts. *(experimental; DEVELOPMENT; runs only when named)* | 5.3.2 |
 | [`evidence-researcher`](skills/evidence-researcher/) | Claim decomposition, source verification, falsifiers, contradictions, and Evidence Packs. *(experimental; DEVELOPMENT)* | 1.0.11 |
-| [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. *(experimental; DEVELOPMENT)* | 1.2.5 |
+| [`portfolio-operator`](skills/portfolio-operator/) | Cross-project focus, capacity conflicts, and pause / delegate decisions. *(experimental; DEVELOPMENT)* | 2.0.0 |
 | [`skill-orchestrator`](skills/skill-orchestrator/) | Multi-skill workflows with ordered steps and CW-AIP handoffs. *(experimental; DEVELOPMENT)* | 1.5.0 |
 | [`skill-orchestrator-multiagent`](skills/skill-orchestrator-multiagent/) | Isolated subagent execution for multi-skill workflows. *(experimental; DEVELOPMENT)* | 1.2.5 |
 | [`benchmark-curator`](skills/benchmark-curator/) | Benchmark corpora, holdouts, contamination controls, and revision hashes. *(experimental; DEVELOPMENT)* | 1.7.5 |
@@ -131,11 +131,11 @@ For isolated specialist runs, use [skill-orchestrator-multiagent](skills/skill-o
 | Skill | Use it for | Version |
 | --- | --- | ---: |
 | [`ai-humanize`](skills/ai-humanize/) | Natural English and Polish rewrites that preserve meaning and voice. *(experimental; DEVELOPMENT)* | 2.7.0 |
-| [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. *(experimental; DEVELOPMENT)* | 1.1.5 |
+| [`competitive-intelligence`](skills/competitive-intelligence/) | Competitor watchlists, change detection, and recurring delta digests. *(experimental; DEVELOPMENT)* | 1.1.6 |
 | [`design-partner-finder`](skills/design-partner-finder/) | Finding, qualifying, and managing design partners and early adopters. *(experimental; DEVELOPMENT)* | 1.2.5 |
-| [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. *(experimental; DEVELOPMENT)* | 2.4.4 |
+| [`product-operator`](skills/product-operator/) | Weekly product control loops, roadmap drift, and now / next / later / stop actions. *(experimental; DEVELOPMENT)* | 2.5.1 |
 | [`product-teardown`](skills/product-teardown/) | Evidence-backed product, UX, architecture, and implementation pattern analysis. *(experimental; DEVELOPMENT)* | 1.3.2 |
-| [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. *(experimental; DEVELOPMENT)* | 1.1.3 |
+| [`repo-to-roadmap`](skills/repo-to-roadmap/) | Whole-project baselines, gap inventories, dependencies, and target-state roadmaps. *(experimental; DEVELOPMENT)* | 1.1.4 |
 | [`brief-architect`](skills/brief-architect/) | Explicit artifact contracts, evidence policies, risks, and acceptance criteria. *(experimental; DEVELOPMENT)* | 1.9.0 |
 | [`content-writer`](skills/content-writer/) | Evidence-aware reader-facing articles, guides, reports, and documentation. *(experimental; DEVELOPMENT)* | 1.7.7 |
 | [`content-reviewer`](skills/content-reviewer/) | Optional editorial and adversarial content review with evidence, counterevidence and repair checks. *(experimental; DEVELOPMENT)* | 1.8.0 |

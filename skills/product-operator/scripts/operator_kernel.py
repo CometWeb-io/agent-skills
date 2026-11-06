@@ -236,7 +236,27 @@ def evidence_authority_ok(ev: dict[str, Any], stage: str) -> bool:
     return authority in allowed
 
 
+SCORE_FIELDS = ("impact", "goal_alignment", "urgency", "dependency_leverage", "risk_reduction", "learning_value", "effort", "confidence", "evidence_strength")
+
+
 def rank_candidate(row: dict[str, Any]) -> dict[str, Any]:
+    if row.get("scoring_mode") not in (None, "numeric", "qualitative"):
+        raise InputError("scoring_mode must be numeric or qualitative")
+    if row.get("scoring_mode") == "qualitative":
+        if any(row.get(key) is not None for key in SCORE_FIELDS):
+            raise InputError("qualitative scoring must not include numeric scoring inputs")
+        if boolish(row.get("stop")):
+            tier = "STOP"
+        elif boolish(row.get("future_gate")) and not boolish(row.get("blocks_current_goal")):
+            tier = "LATER"
+        elif boolish(row.get("verify_first")) or boolish(row.get("blocker")) or boolish(row.get("trust_critical")):
+            # Unscored evidence cannot establish the confidence threshold for a blocker.
+            tier = "VERIFY_NOW"
+        elif boolish(row.get("decision_required")):
+            tier = "DECISION_NOW"
+        else:
+            tier = "NEXT"
+        return {**row, "priority_tier": tier, "priority_score": None, "score_breakdown": None}
     impact = clamp(row.get("impact"), 0, 5, 0)
     goal_alignment = clamp(row.get("goal_alignment"), 0, 5, 0)
     urgency = clamp(row.get("urgency"), 0, 5, 0)
@@ -312,9 +332,15 @@ def rank_candidate(row: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def rank_sort_key(row: dict[str, Any], use_scores: bool = True) -> tuple[int, float, str]:
+    score = row.get("priority_score")
+    return (TIER_ORDER.get(row["priority_tier"], 9), -score if use_scores and score is not None else 0, str(row.get("id", "")))
+
+
 def rank_candidates(rows: list[dict[str, Any]]) -> dict[str, Any]:
     ranked = [rank_candidate(row) for row in rows]
-    ranked.sort(key=lambda r: (TIER_ORDER.get(r["priority_tier"], 9), -r["priority_score"], str(r.get("id", ""))))
+    use_scores = all(row["priority_score"] is not None for row in ranked)
+    ranked.sort(key=lambda row: rank_sort_key(row, use_scores))
     groups: dict[str, list[dict[str, Any]]] = {k: [] for k in TIER_ORDER}
     for row in ranked:
         groups[row["priority_tier"]].append(row)
@@ -429,6 +455,7 @@ def sequence_candidates(rows: list[dict[str, Any]]) -> dict[str, Any]:
         if isinstance(row, dict) and row.get("depends_on") is not None:
             list_value(row["depends_on"], f"candidates[{idx}].depends_on")
     ranked_rows = rank_candidates(rows)["ranked"]
+    use_scores = all(row["priority_score"] is not None for row in ranked_rows)
     by_id = {str(row.get("id")): row for row in ranked_rows if str(row.get("id") or "").strip()}
     missing_dependencies: list[dict[str, str]] = []
     indegree: dict[str, int] = {key: 0 for key in by_id}
@@ -444,7 +471,7 @@ def sequence_candidates(rows: list[dict[str, Any]]) -> dict[str, Any]:
             outgoing[dep].append(key)
 
     ready = [key for key, degree in indegree.items() if degree == 0]
-    ready.sort(key=lambda key: (TIER_ORDER.get(by_id[key]["priority_tier"], 9), -by_id[key]["priority_score"], key))
+    ready.sort(key=lambda key: rank_sort_key(by_id[key], use_scores))
     order: list[str] = []
     while ready:
         current = ready.pop(0)
@@ -453,7 +480,7 @@ def sequence_candidates(rows: list[dict[str, Any]]) -> dict[str, Any]:
             indegree[nxt] -= 1
             if indegree[nxt] == 0:
                 ready.append(nxt)
-        ready.sort(key=lambda key: (TIER_ORDER.get(by_id[key]["priority_tier"], 9), -by_id[key]["priority_score"], key))
+        ready.sort(key=lambda key: rank_sort_key(by_id[key], use_scores))
 
     cycles = sorted([key for key, degree in indegree.items() if degree > 0])
     blocked: dict[str, list[str]] = {}
@@ -584,6 +611,12 @@ def build_plan(payload: dict[str, Any]) -> dict[str, Any]:
         action_type = candidate_action_type(ranked_row)
         tier = ranked_row.get("priority_tier")
         if action_type == "stop" or tier == "STOP":
+            continue
+        if ranked_row.get("scoring_mode") == "qualitative" and tier == "VERIFY_NOW" and action_type != "verify":
+            if action_type == "implement":
+                held_implementation_action_ids.append(action_id)
+            continue
+        if ranked_row.get("scoring_mode") == "qualitative" and tier == "LATER":
             continue
         if tier == "LATER" and action_type == "implement":
             continue
@@ -853,7 +886,10 @@ def validate_action(action: Any, path: str, errors: list[str], warnings: list[st
     # clamp() pulls 1.5 down to 1 and -0.5 up to 0, so testing its result for < 0
     # only ever caught non-numbers. Compare the unclamped value with the range.
     number = clamp(confidence, -math.inf, math.inf, math.nan)
-    if confidence is None or not 0 <= number <= 1:
+    qualitative = action.get("scoring_mode") == "qualitative"
+    if qualitative and any(action.get(key) is not None for key in SCORE_FIELDS):
+        errors.append(f"{path} qualitative scoring must not include numeric scoring inputs")
+    elif not qualitative and (confidence is None or not 0 <= number <= 1):
         errors.append(f"{path}.confidence must be between 0 and 1")
     evidence = action.get("evidence")
     if not isinstance(evidence, list) or not evidence:
@@ -953,6 +989,18 @@ def validate_report(report: Any) -> dict[str, Any]:
         if not isinstance(value, list):
             errors.append(f"{key} must be a list")
             continue
+        for idx, item in enumerate(value):
+            if not isinstance(item, dict):
+                continue
+            path = f"{key}[{idx}]"
+            scoring_mode = item.get("scoring_mode")
+            if scoring_mode not in (None, "numeric", "qualitative"):
+                errors.append(f"{path}.scoring_mode must be numeric or qualitative")
+            if scoring_mode == "qualitative":
+                if any(item.get(name) is not None for name in (*SCORE_FIELDS, "priority_score", "score_breakdown")):
+                    errors.append(f"{path} qualitative scoring must not include numeric scoring inputs or results")
+            elif any(item.get(name) is not None for name in (*SCORE_FIELDS, "priority_score", "score_breakdown")):
+                warnings.append(f"{path} numeric scoring inputs and results are self-reported or derived and unverified")
         if cap is not None and len(value) > cap:
             if key in {"now", "verify_now"} and all(isinstance(x, dict) and boolish(x.get("critical_blocker")) for x in value[cap:]):
                 pass
