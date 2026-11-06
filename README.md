@@ -1,6 +1,10 @@
 # CometWeb Agent Skills
 
-Agent Skills with executable package and contract tests for research, product decisions, QA and release gates, installable in Cursor, Claude Code, Codex and other hosts that read `SKILL.md` packages.
+**Start with one bounded workflow:** reproduce an app defect, make a scoped repair, rerun the checks, and state clearly what remains untested. These skills provide repeatable instructions, structured handoffs and local validation resources; they do **not** guarantee a correct agent response.
+
+**[Try the QA → repair → retest walkthrough](docs/START-HERE.md)** · **[Compare with the native model](docs/PROVE-IT.md)** · **[Join a bounded pilot](docs/USER-PILOT.md)**
+
+The repository also includes research, product-decision and release-review packages for Cursor, Claude Code, Codex and other hosts that read `SKILL.md`.
 
 **Experimental distribution:** task qualification is unestablished for the
 published packages. Each installed folder and ZIP carries its declared stage and
@@ -42,7 +46,7 @@ blind review, cost and missing execution. A passing CI run grants no release aut
 
 ## Quickstart
 
-For a small local job with a known result, start with the
+For your first attempt, follow the [one-workflow start guide](docs/START-HERE.md), which begins with the
 [QA → repair → retest example](examples/qa-repair-retest/README.md).
 It uses synthetic data and requires no account, model API or new package manager.
 
