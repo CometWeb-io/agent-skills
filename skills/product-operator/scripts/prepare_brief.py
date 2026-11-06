@@ -82,6 +82,7 @@ def assemble(payload: dict, *, previous: dict | None = None) -> dict:
         'plan_input_hash':plan['input_hash'],
         'assessment_scope':'supplied_records_only', 'evidence_authentication':'not_performed',
         'authorization':'not_provided',
+        'verification_required_action_ids':copy.deepcopy(plan['verification_required_action_ids']),
     }
     for key in ('environment','revision','config_fingerprint','coverage_exclusions',
                 'outcome_required','unresolved_gate','critical_gap_open','material_unknowns_open','material_current_evidence_block','blocker_resolutions'):
@@ -152,6 +153,12 @@ def render(result: dict, language: str = 'pl') -> str:
         lines += ['- '+plain(reason)]
     lines += ['',f"## {labels['summary']}",'',plain(report['decision'] if report.get('decision_origin')!='derived' or language=='en' else f"{report['readiness']['status']}: liczba działań do podjęcia od razu: {len(plan['immediate_actions'])}. Pozostała praca podlega zależnościom i warunkom dowodowym."),'',f"## {labels['sources']}",'', ('| Źródło | Stan |' if language=='pl' else '| Lane | State |'),'| --- | --- |']
     lines += [f'| {plain(k)} | {plain(v)} |' for k,v in sorted(report['coverage'].items())]
+    verification_ids = set(plan.get('verification_required_action_ids', []))
+    if verification_ids:
+        lines += ['', '## ' + ('Wymaga weryfikacji przed wykonaniem' if language == 'pl' else 'Needs verification before action'), '']
+        for row in report['later']:
+            if row['id'] in verification_ids:
+                lines.append(f"- {plain(row['id'])}: {plain(row.get('action') or row.get('question') or '—')}")
     for field,label in [('verify_now','verify'),('decision_now','decision'),('now','now'),('next','next'),('later','later'),('stop','stop')]:
         rows=report[field];lines+=['',f"## {labels[label]}",'']
         if not rows:
@@ -161,7 +168,7 @@ def render(result: dict, language: str = 'pl') -> str:
             lines += [f"### {plain(row['id'])} — {plain(title or row.get('action','—'))}",'',
                       f"{labels['why']}: {plain(row.get('why_now',row.get('rationale','—')))}",'',
                       f"{labels['done']}: {plain(row['done_when'])}",'',
-                      f"{labels['confidence']}: {plain(row.get('confidence','—'))}",'']
+                      f"{labels['confidence']}: {plain(row.get('confidence') if row.get('confidence') is not None else '—')}",'']
             if kernel.candidate_action_type(row)=='decision':
                 lines += [f"{labels['options']}: {plain('; '.join(str(x) for x in row.get('options',[])))}",'',
                           f"{labels['delegate']}: {plain(row.get('delegated_to','—'))}",'']

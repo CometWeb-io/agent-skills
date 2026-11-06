@@ -20,18 +20,18 @@ gate — and those are listed rather than hidden.
 | `research-program-operator` | 38 | 38 | 1.00 |
 | `rubric-designer` | 29 | 29 | 1.00 |
 | `skill-auditor` | 55 | 55 | 1.00 |
-| `skill-evaluator` | 57 | 57 | 1.00 |
-| `quality-loop-operator` | 96 | 95 | 0.99 |
+| `skill-evaluator` | 59 | 59 | 1.00 |
 | `longform-publisher` | 75 | 74 | 0.99 |
 | `repair-operator` | 55 | 54 | 0.98 |
 | `content-writer` | 54 | 53 | 0.98 |
 | `content-reviewer` | 45 | 44 | 0.98 |
+| `portfolio-operator` | 88 | 86 | 0.98 |
 | `feedback-integrator` | 37 | 36 | 0.97 |
-| `portfolio-operator` | 67 | 64 | 0.95 |
-| `product-operator` | 193 | 180 | 0.93 |
+| `quality-loop-operator` | 106 | 103 | 0.97 |
+| `product-operator` | 211 | 197 | 0.93 |
 
 Scripts a package ships that its harness never loads, so nothing above measures them:
 
 - `content-writer`: word_range.py
 
-**16 harnesses.** 1032 of 1054 reachable guards are held (98% if every skill counted equally, which they do not).
+**16 harnesses.** 1081 of 1105 reachable guards are held (98% if every skill counted equally, which they do not).

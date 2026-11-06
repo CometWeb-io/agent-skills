@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.5.1] - 2026-11-06
+
+- Require explicit disclosure of a missing or unvalidated sidecar and its reason; a readiness result does not validate the sidecar.
+- Preserve visibility of qualitative implementation or decision candidates held for verification in the plan, sidecar and human brief.
+
+## [2.5.0] - 2026-11-05
+
+- Add qualitative planning with unknown scores, retain legacy numeric ranking, and warn when supplied or derived numerical assessments are unverified.
+
+## [2.4.5] - 2026-11-05
+
+- Reduce mandatory reference loading and streamline the front door while preserving protocol 2.2, evidence rules and the detailed workflow.
+
 ## [2.4.4] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

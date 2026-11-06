@@ -35,307 +35,307 @@
     {
       "id": "read-only-default",
       "text": "Do not create issues, edit repositories/docs, merge code, or trigger deployments unless the user separately asks for those side effects.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "kernel-not-manual",
       "text": "Do not recreate those calculations manually when code execution is available.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "one-mode",
       "text": "Choose exactly one mode and state it",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "standard-not-every-file",
       "text": "Do not imply every file was read.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "exhaustive-or-not-proven",
       "text": "Account for the complete in-scope file set at a pinned ref or disclose `EXHAUSTIVE_NOT_PROVEN`.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "exhaustive-file-accounting-pointer",
       "text": "Before claiming exhaustive coverage, read `references/file-accounting.md` and run `scripts/coverage_inventory.py`.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "focused-not-whole",
       "text": "Do not label it whole-project.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-silent-downgrade",
       "text": "Never silently downgrade an explicit exhaustive request into sampling.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-unneeded-questions",
       "text": "Resolve from existing context when possible; do not ask unnecessary questions.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "target-profiles-pointer",
       "text": "Read `references/target-profiles.md` when recording the Assessment Contract fields or when \"done\", \"client-ready\", \"production-ready\", beta, or scaling readiness must be defined.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "ambiguous-target-alternatives",
       "text": "If the target state is genuinely ambiguous and materially changes the roadmap, represent alternatives instead of inventing one.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-generic-mandatory",
       "text": "Do not turn generic best practice into a mandatory target requirement without an applicability path.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "tool-routing-pointer",
       "text": "Read `references/tool-routing.md` when sources or connectors are mixed, and for the truth lanes.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "truth-lanes-separate",
       "text": "Keep implementation presence, behavior, release, intent, outcome, operational truth and external current truth separate: docs do not prove shipped implementation, code presence does not prove behavior, a merged PR does not prove release, an issue title does not prove a defect, and implementation quality does not prove adoption or revenue.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "inventory-pointer",
       "text": "Read `references/discovery-and-coverage.md` and `references/project-truth-model.md` before making roadmap claims.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hotspots-not-defects",
       "text": "Use history hotspots/change coupling only to choose where to inspect deeper; never treat them as defects by themselves.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "journey-not-components",
       "text": "A journey is not verified because all components exist independently.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "coverage-statuses",
       "text": "`COMPLETE | PARTIAL | SAMPLED | UNAVAILABLE | NOT_APPLICABLE`",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "coverage-not-correctness",
       "text": "Treat coverage score/grade as disclosure support, not proof of correctness.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-keyword-coverage",
       "text": "If tree/file enumeration is unavailable, do not claim complete repo coverage from keyword search.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "evidence-pointer",
       "text": "Read `references/evidence-model.md` before recording claims",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "confidence-heuristic",
       "text": "Use the kernel confidence as a heuristic band, not calibrated probability.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "current-sensitive-binding",
       "text": "A current-sensitive claim cannot be binding when its material support is `STALE`, `SUPERSEDED`, or `UNKNOWN`.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "historical-not-current",
       "text": "Keep historical evidence for context, but do not let it make a current claim pass.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "negative-evidence-protocol",
       "text": "Before asserting a material `MISSING` capability, run the negative-evidence protocol from `references/evidence-model.md`.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "search-miss-unknown",
       "text": "A search miss means `UNKNOWN` or `NOT_FOUND_IN_SEARCH`, not `MISSING`.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "capabilities-not-smells",
       "text": "Do not collapse it into a list of code smells.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "gap-impact-path",
       "text": "a gap needs a credible impact path to a target requirement, user/business outcome, release/reliability/security risk, or enabling dependency.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-smell-roadmap",
       "text": "Do not convert every code smell into roadmap work.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "council-contested-only",
       "text": "Invoke AI Council only for contested material choices not settled by project evidence alone.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "council-not-proof",
       "text": "Import Council output as a decision input, never as proof that implementation exists.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "acceptance-proof",
       "text": "acceptance criteria with `criterion`, `verify_with`, and `proof`",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-calendar-from-size",
       "text": "Do not invent calendar estimates from repo size.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "block-to-blocker",
       "text": "`BLOCK` -> `BLOCKER`; a material `UNVERIFIED` gate -> `VERIFY_NOW`.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "score-not-gate",
       "text": "score cannot create/clear a gate.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "gate-basis",
       "text": "resolved `CLEAR | CLEAR_WITH_CONTROLS | BLOCK` gates must record `gate_basis`.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "suspected-risk-unverified",
       "text": "suspected security/privacy/legal risk from a general pass remains unverified until appropriate authority/specialist evidence exists.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "non-gate-blocker",
       "text": "A non-gate item becomes `BLOCKER` only when a mandatory target requirement cannot be met without it and the blocking path is strongly evidenced.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "score-tie-breaker",
       "text": "Use scores only as tie-breakers inside a lane.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "fragile-disclose",
       "text": "If sensitivity is `FRAGILE`, disclose what assumption/evidence could change ordering.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "score-not-economic",
       "text": "Do not present a point score as measured economic value.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "elegance-not-blocker",
       "text": "Do not let architectural elegance outrank a proven target blocker.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "waves-after-validity",
       "text": "Build waves only after evidence/gates/dependencies are valid",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "validate-before-present",
       "text": "Fix errors before presenting.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "validation-scope",
       "text": "Validation must check cross-references, acceptance proof, gates, coverage, hard graph, `XL` decomposition, claim admissibility, and unsupported blocker semantics.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "snapshot-pointer",
       "text": "When the roadmap will be reused, saved, handed to another skill, or updated later, read `references/living-roadmap.md`",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "snapshot-immutable",
       "text": "Preserve the snapshot as immutable once treated as final.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "delta-new-snapshot",
       "text": "create a new snapshot; never overwrite the old one.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "handoff-structured",
       "text": "A downstream operator must receive stable IDs, dependencies, acceptance proof, claim refs, unresolved verification, watch triggers, and snapshot hash - not only prose.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "evaluation-pointer",
       "text": "Before presenting, check the result against the fail conditions in `references/evaluation.md`.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-inventory-first",
       "text": "Inventory before search-driven conclusions.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-stale",
       "text": "Do not turn stale/current-sensitive evidence into a current fact.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-absence",
       "text": "Do not assert absence from a search miss.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-behavior",
       "text": "Do not claim behavior from code presence.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-release",
       "text": "Do not claim release from merged code.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-outcome",
       "text": "Do not claim outcome from code intuition.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-score-gate",
       "text": "Do not let a numeric score create/clear a binding gate.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-fabricate",
       "text": "Do not fabricate dates, capacity, ROI, or calibrated confidence.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-sampled",
       "text": "Do not call a sampled/unavailable project fully verified.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-backlog",
       "text": "Do not make a huge unordered backlog and call it a roadmap.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "nn-operator-downstream",
       "text": "Keep daily execution selection downstream in `product-operator`.",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "assessment-record",
@@ -406,6 +406,36 @@
       "id": "journey-examples",
       "text": "checkout -> entitlement -> invoice",
       "where": "references/project-truth-model.md"
+    },
+    {
+      "id": "concise-contract-1",
+      "text": "Default to read-only; do not create issues, edit repositories, merge or deploy unless requested.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "concise-contract-2",
+      "text": "Do not describe focused or sampled coverage as whole-project verification.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "concise-contract-3",
+      "text": "A score cannot create or clear a gate; unverified material gates require verification, not a release verdict.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "concise-contract-4",
+      "text": "Do not invent dates, ROI or calibrated confidence.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "concise-contract-5",
+      "text": "For an explicit `EXHAUSTIVE` request, account for the complete in-scope file set at a pinned ref or report `EXHAUSTIVE_NOT_PROVEN`; do not silently substitute sampling.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "concise-contract-6",
+      "text": "Do not equate an inventory or self-declared review record with actual review quality or runtime proof.",
+      "where": "SKILL.md"
     }
   ]
 }

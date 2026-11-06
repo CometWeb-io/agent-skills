@@ -356,7 +356,9 @@
           "errors": [
             "decision_now[0] must not select or recommend an option; delegate the unresolved material decision"
           ],
-          "warnings": []
+          "warnings": [
+            "verify_now[0] numeric scoring inputs and results are self-reported or derived and unverified"
+          ]
         }
       }
     },
