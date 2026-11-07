@@ -4,21 +4,11 @@ Everything here was produced on 7 November 2026 from commit `c40de2e` of this
 repository (plugin version 3.0.0 on `main`), on macOS with Node.js 22.23.1 and
 the locked `uv` environment. Nothing is a mockup.
 
-- `qa-demo.mp4`: screen recording of `examples/qa-repair-retest`, made with
-  Playwright in headless Chromium at 960×640 and encoded to H.264 with
-  `ffmpeg -movflags +faststart`. It plays in real time with no speed-up or cuts.
-  The example folder was copied twice into a scratch directory. For the first
-  five seconds the page is served from the copy in which
-  `if (!plan) return null;` was replaced as the example README instructs, and
-  26 sites with one run each return the `portfolio` plan. After that the page is
-  served from the unchanged copy: the same input returns `null`, then 3 sites,
-  4 runs and annual billing are calculated, saved, read back after a reload and
-  cleared.
-- `qa-demo-poster.jpg`: a frame from that recording at 4.2 s.
-- `qa-broken.jpg` and `qa-readback.jpg`: full-page screenshots of the same two
-  copies at device scale factor 2, cropped to the result and to the saved-result
-  panel. After the reload the form returns to its defaults (monthly billing),
-  which is why the live result and the saved annual result differ.
+- The "Real answers" section quotes three real Claude Code runs with these
+  skills installed (content-roaster, release-readiness, evidence-researcher).
+  `skill-runs.md` has the full prompts, answers, timings and how each run was
+  made. The page shows a few sentences of each answer, verbatim, plus a short
+  version of each prompt.
 - `transcripts.txt`: the command output quoted on the page (router answers,
   envelope validation, installer runs into a throwaway home directory, the
   example's Node tests and the test count). The throwaway home directory is
@@ -26,7 +16,17 @@ the locked `uv` environment. Nothing is a mockup.
   `<scratch>`; nothing else is edited. No installer touched a real host
   directory.
 
-The animated panel at the top of the page is a replay of the router and
-validator output in `transcripts.txt`; the two envelopes it shows are the
-conformance fixtures `finding-open.json` and `release-no-go-with-blockers.json`
-from `fixtures/cwaip-v2/conformance/valid/`.
+## Hero and logos (added 7 Nov 2026)
+
+- The hero is a diagram, not a recording. The four requests and what they map
+  to (web-app-auditor, release-readiness, evidence-researcher and no skill) are
+  the real `tooling/route_skill.py` results in `transcripts.txt`. The one-line
+  descriptions on the card paraphrase each skill's `SKILL.md` description. Which
+  host tile is highlighted only rotates; the router does not depend on the host.
+- Host logos for Claude, Cursor and Qwen are from Simple Icons 16.36.0 and
+  belong to their owners. Simple Icons has no OpenAI, Qoder or Lingma mark, so
+  Codex uses a generic terminal glyph and the other two are named in text. The
+  six hosts are the ones with an installer in `scripts/`.
+- Strip under the hero: 9,345 is the count `pytest` collected (see
+  `transcripts.txt`); 35 is the number of gates `tooling/check_all.py` ran, all
+  passing, on 7 Nov 2026.

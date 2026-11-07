@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Agent Skills — specialist skills with checkable hand-offs</title>
+    <title>Agent Skills — skills that make your agent an expert</title>
     <meta
       name="description"
       content="33 open-source SKILL.md packages for Claude Code, Cursor, Codex and other hosts, with a deterministic router, typed JSON hand-offs and tests for every package."
@@ -11,7 +11,7 @@
     <link rel="canonical" href="https://cometweb-io.github.io/agent-skills/" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Agent Skills — specialist skills with checkable hand-offs" />
+    <meta property="og:title" content="Agent Skills — skills that make your agent an expert" />
     <meta
       property="og:description"
       content="33 SKILL.md packages with a testable router, hashed JSON hand-offs and contract tests. MIT, experimental."
@@ -982,10 +982,6 @@
         width: 100%;
         height: auto;
       }
-      .demo-frame {
-        max-width: 1080px;
-        margin: 0 auto;
-      }
       .caption {
         margin: 18px auto 0;
         max-width: 760px;
@@ -996,42 +992,6 @@
       .caption b {
         color: var(--soft);
         font-weight: 600;
-      }
-      .duo {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 56px;
-        max-width: 1080px;
-        margin: 80px auto 0;
-      }
-      .duo figure {
-        display: grid;
-        grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
-        gap: 32px;
-        align-items: start;
-      }
-      .duo figcaption {
-        order: -1;
-        margin-top: 0 !important;
-        padding-top: 52px;
-      }
-      .duo figure {
-        margin: 0;
-      }
-      .duo figcaption {
-        margin-top: 16px;
-        font-size: 15px;
-        color: var(--muted);
-      }
-      .duo figcaption b {
-        display: block;
-        color: var(--fg);
-        font-size: 18px;
-        font-weight: 700;
-        margin-bottom: 4px;
-      }
-      .duo {
-        align-items: start;
       }
 
       /* ---------- trust ---------- */
@@ -1109,17 +1069,6 @@
         color: var(--accent);
       }
       @media (max-width: 960px) {
-        .duo {
-          margin-top: 48px;
-        }
-        .duo figure {
-          grid-template-columns: minmax(0, 1fr);
-          gap: 16px;
-        }
-        .duo figcaption {
-          order: 0;
-          padding-top: 0;
-        }
         .timeline {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -1263,450 +1212,42 @@
         }
       }
 
-      /* ---------- hero stage: routing and hand-off ---------- */
-      .stage-wrap {
-        position: relative;
-        padding: 40px 0;
-      }
-      .stage-wrap::before {
-        content: "";
-        position: absolute;
-        left: 8%;
-        right: 8%;
-        bottom: 6%;
-        height: 40%;
-        border-radius: 50%;
-        background: radial-gradient(ellipse at center, rgba(5, 242, 155, 0.12), transparent 68%);
-        filter: blur(10px);
-        pointer-events: none;
-      }
-      .stage {
-        position: relative;
-        border-radius: var(--r-panel);
-        border: 1px solid #2f2f33;
-        background: linear-gradient(180deg, #17171a, #121214);
-        box-shadow:
-          0 40px 90px -36px rgba(0, 0, 0, 0.95),
-          0 0 0 1px rgba(255, 255, 255, 0.02) inset;
-        overflow: hidden;
-        font-size: 13px;
-      }
-      .stage-bar {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        height: 40px;
-        padding: 0 14px;
-        border-bottom: 1px solid #26262a;
-        background: #1a1a1d;
-        font-family: var(--mono);
-        font-size: 11.5px;
-        color: var(--muted);
-      }
-      .stage-bar .dots {
-        display: flex;
-        gap: 6px;
-      }
-      .stage-bar .dots i {
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-        background: #3a3a3e;
-      }
-      .stage-bar .ttl {
-        flex: 1;
-        min-width: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .stage-bar .live {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        color: var(--accent);
-      }
-      .stage-bar .live::before {
-        content: "";
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: var(--accent);
-        animation: livepulse 1.4s ease-in-out infinite;
-      }
-      @keyframes livepulse {
-        50% {
-          opacity: 0.25;
-        }
-      }
-      .st-sec {
-        padding: 16px 18px;
-      }
-      .st-sec + .st-sec {
-        border-top: 1px solid #222225;
-      }
-      .st-label {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 10px;
-        font-size: 10.5px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-      .st-label code {
-        font-family: var(--mono);
-        font-size: 11px;
-        font-weight: 400;
-        letter-spacing: 0;
-        text-transform: none;
-        color: var(--dim);
-      }
-      .req {
-        display: flex;
-        gap: 10px;
-        align-items: flex-start;
-        min-height: 44px;
-        padding: 11px 13px;
-        border-radius: 10px;
-        border: 1px solid #2a2a2e;
-        background: #0e0e0f;
-        font-size: 14px;
-        line-height: 1.5;
-        color: var(--fg);
-      }
-      .req .who {
-        flex: none;
-        font-family: var(--mono);
-        font-size: 11px;
-        line-height: 21px;
-        color: var(--accent);
-      }
-      .req .caret {
-        display: inline-block;
-        width: 2px;
-        height: 16px;
-        margin-left: 1px;
-        vertical-align: -3px;
-        background: var(--accent);
-        animation: blink 1s steps(1) infinite;
-      }
-      @keyframes blink {
-        50% {
-          opacity: 0;
-        }
-      }
-      .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 5px;
-      }
-      .sk-chip {
-        position: relative;
-        font-family: var(--mono);
-        font-size: 10.5px;
-        line-height: 1;
-        padding: 5px 7px;
-        border-radius: var(--r-chip);
-        color: #8a8a90;
-        background: rgba(255, 255, 255, 0.025);
-        border: 1px solid #29292d;
-        transition:
-          color 0.3s,
-          background 0.3s,
-          border-color 0.3s,
-          box-shadow 0.3s,
-          opacity 0.3s;
-      }
-      .sk-chip.scan {
-        color: #d8fff0;
-        border-color: rgba(5, 242, 155, 0.45);
-        background: rgba(5, 242, 155, 0.08);
-      }
-      .chips.done .sk-chip {
-        opacity: 0.42;
-      }
-      .chips.done .sk-chip.hit,
-      .chips.done .sk-chip.blocked {
-        opacity: 1;
-      }
-      .sk-chip.blocked {
-        color: var(--err);
-        border-color: rgba(255, 176, 32, 0.45);
-        background: rgba(255, 176, 32, 0.07);
-        text-decoration: line-through;
-        text-decoration-color: rgba(255, 176, 32, 0.7);
-      }
-      .sk-chip.hit {
-        color: #04140d;
-        background: var(--accent);
-        border-color: var(--accent);
-        box-shadow:
-          0 0 0 4px rgba(5, 242, 155, 0.16),
-          0 0 22px rgba(5, 242, 155, 0.55);
-      }
-      .route-out {
-        display: grid;
-        gap: 6px;
-        margin-top: 12px;
-        font-family: var(--mono);
-        font-size: 11.5px;
-        color: var(--soft);
-      }
-      .route-out div {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px 8px;
-        align-items: baseline;
-        opacity: 0;
-        transform: translateY(4px);
-        transition:
-          opacity 0.35s var(--ease),
-          transform 0.35s var(--ease);
-      }
-      .route-out div.on {
-        opacity: 1;
-        transform: none;
-      }
-      .route-out .k {
-        color: var(--dim);
-        min-width: 64px;
-      }
-      .route-out b {
-        font-weight: 400;
-        color: var(--accent);
-      }
-      .route-out i {
-        font-style: normal;
-        color: var(--err);
-      }
-      .flow {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr);
-        align-items: stretch;
-      }
-      .node {
-        position: relative;
-        padding: 10px 11px;
-        border-radius: 10px;
-        border: 1px solid #2a2a2e;
-        background: #0f0f10;
-        min-width: 0;
-        transition:
-          border-color 0.4s,
-          box-shadow 0.4s;
-      }
-      .node .nm {
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        font-family: var(--mono);
-        font-size: 11.5px;
-        color: var(--soft);
-        margin-bottom: 8px;
-      }
-      .node .nm::before {
-        content: "";
-        width: 7px;
-        height: 7px;
-        border-radius: 2px;
-        background: #3a3a3f;
-        transition: background 0.4s;
-      }
-      .node.on {
-        border-color: rgba(5, 242, 155, 0.5);
-        box-shadow: 0 0 0 3px rgba(5, 242, 155, 0.08);
-      }
-      .node.on .nm::before {
-        background: var(--accent);
-      }
-      .env {
-        border-radius: 8px;
-        border: 1px solid #2c2c31;
-        background: #151517;
-        padding: 8px 9px;
-        font-family: var(--mono);
-        font-size: 10.5px;
-        line-height: 1.6;
-        color: var(--muted);
-        opacity: 0;
-        transform: translateY(6px);
-        transition:
-          opacity 0.4s var(--ease),
-          transform 0.4s var(--ease),
-          border-color 0.3s,
-          box-shadow 0.3s;
-      }
-      .env.on {
-        opacity: 1;
-        transform: none;
-      }
-      .env .t {
-        color: var(--fg);
-      }
-      .env .row {
-        display: block;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .env .v {
-        color: var(--soft);
-        transition:
-          color 0.3s,
-          background 0.3s;
-      }
-      .env .v.edited {
-        color: #1a1200;
-        background: var(--err);
-        border-radius: 3px;
-        padding: 0 3px;
-      }
-      .env .h {
-        color: var(--dim);
-      }
-      .env.bad {
-        border-color: rgba(255, 99, 99, 0.7);
-        box-shadow: 0 0 0 3px rgba(255, 99, 99, 0.12);
-      }
-      .env .vd {
-        display: inline-block;
-        padding: 0 5px;
-        border-radius: 3px;
-        color: #1a0505;
-        background: #ff6b6b;
-        font-weight: 700;
-      }
-      .pipe-line {
-        position: relative;
-        align-self: center;
-        height: 2px;
-        margin: 0 6px;
-        background: #26262a;
-        border-radius: 2px;
-      }
-      .pipe-line span {
-        position: absolute;
-        inset: 0 auto 0 0;
-        width: 0;
-        border-radius: 2px;
-        background: linear-gradient(90deg, #04c27c, #05f29b);
-        box-shadow: 0 0 10px rgba(5, 242, 155, 0.55);
-        transition: width 0.9s cubic-bezier(0.65, 0, 0.35, 1);
-      }
-      .pipe-line::after {
-        content: "";
-        position: absolute;
-        right: -2px;
-        top: -4px;
-        border: 5px solid transparent;
-        border-left-color: #3a3a3f;
-        border-right: 0;
-      }
-      .pipe-line.cut span {
-        background: #ff6b6b;
-        box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
-      }
-      .vlog {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        gap: 5px;
-        min-height: 78px;
-        font-family: var(--mono);
-        font-size: 11px;
-        line-height: 1.5;
-      }
-      .vlog li {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
-        gap: 8px;
-        color: var(--soft);
-        animation: logIn 0.45s var(--ease);
-      }
-      .vlog li span:last-child {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .vlog .ok {
-        color: var(--ok);
-      }
-      .vlog .fail {
-        color: #ff6b6b;
-      }
-      @keyframes logIn {
-        from {
-          opacity: 0;
-          transform: translateY(-6px);
-        }
-      }
-      .stage-note {
-        margin: 14px 2px 0;
-        font-size: 12.5px;
-        line-height: 1.5;
-        color: var(--dim);
-      }
-      .stage-note code {
-        font-family: var(--mono);
-        font-size: 11.5px;
-        color: var(--muted);
-      }
-      @media (max-width: 960px) {
-        .stage-wrap {
-          padding: 32px 0 8px;
-        }
-      }
-      @media (max-width: 560px) {
-        .st-sec {
-          padding: 14px 13px;
-        }
-        .chips .sk-chip:not(.key) {
-          display: none;
-        }
-        .chips .sk-chip:not(.key):nth-child(-n + 9) {
-          display: inline-block;
-        }
-        .chips .more {
-          display: inline-block !important;
-        }
-        .flow {
-          grid-template-columns: minmax(0, 1fr);
-          gap: 10px;
-        }
-        .pipe-line {
-          width: 2px;
-          height: 18px;
-          margin: 0 auto;
-        }
-        .pipe-line span {
-          width: 100% !important;
-          height: 0;
-          transition: height 0.9s cubic-bezier(0.65, 0, 0.35, 1);
-        }
-        .pipe-line.go span {
-          height: 100%;
-        }
-        .pipe-line::after {
-          right: auto;
-          left: -4px;
-          top: auto;
-          bottom: -3px;
-          border: 5px solid transparent;
-          border-top-color: #3a3a3f;
-          border-bottom: 0;
-        }
-      }
-      .chips .more {
-        display: none;
-        font-family: var(--mono);
-        font-size: 10.5px;
-        line-height: 1;
-        padding: 5px 7px;
-        color: var(--dim);
+      /* ---------- hero: hosts -> skills -> the skill for the job ---------- */
+      .hv { margin: 0; }
+      .hv-svg { display: block; width: 100%; height: auto; overflow: visible; font-family: var(--sans); }
+      .hv-agent rect { fill: var(--panel); stroke: var(--line-2); stroke-width: 1; transition: stroke 0.35s, fill 0.35s; }
+      .hv-agent text { fill: var(--fg); font-size: 16px; font-weight: 700; }
+      .hv-agent.any rect { fill: none; stroke-dasharray: 5 5; }
+      .hv-agent.any text { fill: var(--muted); font-weight: 600; font-size: 15px; }
+      .hv-agent.on rect { stroke: var(--accent); fill: #13201b; }
+      .hv-wire { fill: none; stroke: #34343a; stroke-width: 1.5; transition: stroke 0.35s; }
+      .hv-wire.on { stroke: var(--accent); }
+      .hv-core rect { fill: #121214; stroke: #3a3a3f; stroke-width: 1.5; }
+      .hv-name { fill: var(--fg); font-size: 17px; font-weight: 800; }
+      .hv-sub { fill: var(--muted); font-size: 12px; }
+      .hv-card rect { fill: var(--panel); stroke: var(--line-2); transition: stroke 0.35s; }
+      .hv-card.on rect { stroke: var(--accent); }
+      .hv-card.none.on rect { stroke: #5a5a60; }
+      .hv-card line { stroke: var(--line-2); }
+      .hv-card text { transition: opacity 0.25s; }
+      .hv-card .fade { opacity: 0; }
+      .hv-k { fill: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+      .hv-id { fill: var(--accent); font-family: var(--mono); font-size: 15px; font-weight: 700; }
+      .hv-card.none .hv-id { fill: var(--soft); }
+      .hv-d { fill: var(--soft); font-size: 13.5px; }
+      .hv-q { opacity: 0; transition: opacity 0.3s; }
+      .hv-q.on { opacity: 1; }
+      .hv-q rect { fill: var(--accent); }
+      .hv-q text { fill: var(--accent-ink); font-size: 13px; font-weight: 800; }
+      .hv-dot { fill: var(--accent); }
+      .hv-note { margin: 12px 0 0; font-size: 13px; line-height: 1.55; color: var(--dim); text-align: center; }
+      .hv-note code { font-size: 12px; color: var(--muted); }
+      .fact .d { margin: -10px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--dim); }
+      .fact .logos { margin-top: -8px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; color: var(--soft); }
+      .fact .logos svg { width: 18px; height: 18px; fill: currentColor; }
+      .fact .logos span { font-size: 12.5px; color: var(--dim); white-space: nowrap; }
+      @media (prefers-reduced-motion: reduce) {
+        .hv-agent rect, .hv-wire, .hv-card rect, .hv-q, .hv-card text { transition: none !important; }
       }
 
       /* ---------- package anatomy ---------- */
@@ -2036,9 +1577,6 @@
         white-space: pre-wrap;
         overflow-wrap: anywhere;
       }
-      .demo-frame {
-        max-width: 960px;
-      }
       @media (max-width: 560px) {
         .announce {
           height: auto;
@@ -2067,6 +1605,408 @@
         .st-label code {
           display: none;
         }
+      }
+
+      /* ---------- QA, repair, retest stepper ---------- */
+      .loop {
+        border: 1px solid var(--line-2);
+        border-radius: var(--r-panel);
+        background: var(--panel);
+        overflow: hidden;
+      }
+      .lp-steps {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .lp-steps button {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 20px;
+        border: 0;
+        border-right: 1px solid var(--line);
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+      .lp-steps button:last-child {
+        border-right: 0;
+      }
+      .lp-n {
+        flex: none;
+        display: grid;
+        place-items: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid var(--line-2);
+        font-weight: 800;
+        font-size: 14px;
+        transition: background 0.3s, color 0.3s, border-color 0.3s;
+      }
+      .lp-t {
+        display: flex;
+        flex-direction: column;
+        font-weight: 800;
+        font-size: 16px;
+        color: var(--soft);
+      }
+      .lp-t small {
+        font-family: var(--mono);
+        font-weight: 500;
+        font-size: 11.5px;
+        color: var(--dim);
+      }
+      .lp-steps button[aria-selected="true"] .lp-n {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: var(--accent-ink);
+      }
+      .lp-steps button[aria-selected="true"] .lp-t {
+        color: var(--fg);
+      }
+      .lp-steps button.done .lp-n {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .lp-rail {
+        height: 2px;
+        background: var(--line);
+      }
+      .lp-rail i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--accent);
+      }
+      .lp-stage {
+        position: relative;
+        min-height: 300px;
+      }
+      .lp-p {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 40px;
+        align-items: center;
+        padding: 36px 40px;
+        opacity: 0;
+        visibility: hidden;
+        transition: none;
+      }
+      .lp-p.on {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.45s var(--ease);
+      }
+      .lp-say {
+        margin: 0;
+        font-size: 22px;
+        line-height: 1.4;
+        font-weight: 600;
+        color: var(--soft);
+        letter-spacing: -0.01em;
+      }
+      .lp-say b {
+        color: var(--fg);
+        font-weight: 800;
+      }
+      .lp-vis {
+        border: 1px solid var(--line-2);
+        border-radius: var(--r-panel);
+        background: #101012;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .lp-vis > * {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+      }
+      .lp-p.on .lp-vis > * {
+        opacity: 1;
+        transform: none;
+      }
+      .lp-p.on .lp-vis > *:nth-child(2) { transition-delay: 0.25s; }
+      .lp-p.on .lp-vis > *:nth-child(3) { transition-delay: 0.5s; }
+      .lp-p.on .lp-vis > *:nth-child(4) { transition-delay: 0.85s; }
+      .lp-p.on .lp-vis > *:nth-child(5) { transition-delay: 1.15s; }
+      .app-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border: 1px solid var(--line-2);
+        border-radius: var(--r-tag);
+        color: var(--muted);
+      }
+      .app-row b {
+        color: var(--fg);
+        font-family: var(--mono);
+      }
+      .app-btn {
+        align-self: flex-start;
+        padding: 8px 16px;
+        border-radius: var(--r-btn);
+        background: #26262b;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .app-out {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: var(--r-tag);
+        border: 1px solid rgba(255, 107, 107, 0.6);
+        background: rgba(255, 107, 107, 0.08);
+      }
+      .app-out code {
+        color: var(--fg);
+        font-size: 14px;
+      }
+      .flag {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--bad, #ff6b6b);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .t-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14.5px;
+        color: var(--soft);
+      }
+      .t-row i {
+        flex: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--accent);
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11'/%3E%3C/svg%3E");
+      }
+      .t-row.ok i {
+        background: var(--accent);
+        box-shadow: inset 0 0 0 5px #101012;
+      }
+      .t-row.bad {
+        color: var(--fg);
+      }
+      .t-row.bad i {
+        background: #ff6b6b;
+        box-shadow: inset 0 0 0 5px #101012;
+      }
+      .t-row code {
+        font-size: 13px;
+        color: var(--fg);
+      }
+      .t-sum {
+        display: flex;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .t-sum span {
+        padding: 4px 10px;
+        border-radius: var(--r-tag);
+        font-size: 13px;
+        font-weight: 800;
+      }
+      .t-sum .p {
+        color: var(--accent);
+        background: rgba(5, 242, 155, 0.1);
+      }
+      .t-sum .f {
+        color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.1);
+      }
+      .t-sum .z {
+        color: var(--muted);
+        background: #1c1c1f;
+      }
+      .d-file {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--dim);
+      }
+      .d-row {
+        font-family: var(--mono);
+        font-size: 13.5px;
+        padding: 10px 12px;
+        border-radius: var(--r-tag);
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .d-row.del {
+        color: #ffb4b4;
+        background: rgba(255, 107, 107, 0.1);
+        text-decoration: line-through;
+        text-decoration-color: rgba(255, 107, 107, 0.6);
+      }
+      .d-row.add {
+        color: #b9ffe3;
+        background: rgba(5, 242, 155, 0.1);
+      }
+      @media (max-width: 860px) {
+        .lp-steps {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .lp-steps button:nth-child(2) {
+          border-right: 0;
+        }
+        .lp-steps button:nth-child(-n + 2) {
+          border-bottom: 1px solid var(--line);
+        }
+        .lp-stage {
+          min-height: 470px;
+        }
+        .lp-p {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 20px;
+          align-content: start;
+          padding: 24px 20px;
+        }
+        .lp-say {
+          font-size: 18px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .lp-p,
+        .lp-vis > * {
+          transition: none !important;
+        }
+      }
+
+      /* ---------- real answers ---------- */
+      .loop.out .lp-steps {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .loop.out .lp-steps button {
+        padding: 18px 22px;
+      }
+      .loop.out .lp-t {
+        font-size: 17px;
+      }
+      .loop.out .lp-steps button[aria-selected="true"] {
+        background: #19191c;
+      }
+      .loop.out .lp-stage {
+        min-height: 330px;
+      }
+      .ask {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-self: start;
+      }
+      .ask-who {
+        align-self: flex-start;
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--accent-ink);
+        background: var(--accent);
+        border-radius: var(--r-chip);
+        padding: 1px 7px;
+      }
+      .ask p {
+        margin: 0;
+        font-size: 19px;
+        line-height: 1.45;
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .ask-meta {
+        font-size: 13px;
+        color: var(--dim);
+      }
+      .ask-meta .sk {
+        font-family: var(--mono);
+        color: var(--accent);
+        background: rgba(5, 242, 155, 0.08);
+        padding: 2px 7px;
+        border-radius: var(--r-tag);
+        margin-right: 4px;
+      }
+      .doc {
+        border: 1px solid var(--line-2);
+        border-radius: var(--r-panel);
+        background: #f6f6f4;
+        color: #16161a;
+        padding: 26px 28px;
+        box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.9);
+        transform: translateY(10px);
+        opacity: 0;
+        transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+      }
+      .lp-p.on .doc {
+        transform: none;
+        opacity: 1;
+        transition-delay: 0.15s;
+      }
+      .doc-verdict {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: var(--r-tag);
+        font-weight: 800;
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .doc-verdict.bad { background: #ffe1e1; color: #b42318; }
+      .doc-verdict.warn { background: #fff1d6; color: #9a5b00; }
+      .doc-verdict.ok { background: #d9fbe9; color: #05603a; }
+      .doc h4 {
+        margin: 14px 0 12px;
+        font-size: 19px;
+        line-height: 1.35;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+      .doc ol,
+      .doc ul {
+        margin: 0;
+        padding-left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 15px;
+        line-height: 1.5;
+        color: #3a3a40;
+      }
+      .doc li {
+        opacity: 0;
+        transition: opacity 0.4s var(--ease);
+      }
+      .lp-p.on .doc li { opacity: 1; }
+      .lp-p.on .doc li:nth-child(1) { transition-delay: 0.6s; }
+      .lp-p.on .doc li:nth-child(2) { transition-delay: 1s; }
+      .lp-p.on .doc li:nth-child(3) { transition-delay: 1.4s; }
+      @media (max-width: 860px) {
+        .loop.out .lp-steps {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .loop.out .lp-steps button {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+        .loop.out .lp-stage {
+          min-height: 620px;
+        }
+        .ask p {
+          font-size: 17px;
+        }
+        .doc {
+          padding: 20px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .doc, .doc li { transition: none !important; opacity: 1; transform: none; }
       }
     </style>
   </head>
@@ -2677,10 +2617,10 @@
           ><svg aria-hidden="true"><use href="#i-logo" /></svg>Agent Skills</a
         >
         <nav class="links" aria-label="Sections">
-          <a href="#package">Packages</a>
+          <a href="#demo">Demo</a>
+          <a href="#package">Skills</a>
           <a href="#routing">Routing</a>
           <a href="#handoffs">Hand-offs</a>
-          <a href="#demo">Demo</a>
           <a href="#trust">Trust</a>
           <a href="https://github.com/CometWeb-io/agent-skills/blob/main/docs/README.md">Docs ↗</a>
         </nav>
@@ -2704,11 +2644,10 @@
         <div class="wrap">
           <div class="hero-copy">
             <div class="eyebrow hero-eyebrow">Open source · MIT · 33 skills</div>
-            <h1>Agent skills with checkable hand&#8209;offs</h1>
+            <h1>Skills that make your agent an expert</h1>
             <p class="sub">
-              <b>33 SKILL.md packages</b> for Claude Code, Cursor, Codex and three more hosts. A
-              deterministic router picks the owner of a request, and when one skill feeds another,
-              the result travels as a hashed JSON envelope that a validator can reject.
+              <b>33 ready-made skills</b> for QA, research, release checks and more. Install them in Claude Code,
+              Codex, Cursor and three more hosts, then ask as usual: your agent loads the right skill for the job.
             </p>
             <div class="ctas">
               <a class="btn btn-accent" href="#install">Install a skill</a>
@@ -2730,71 +2669,64 @@
             </div>
           </div>
 
-          <div class="stage-wrap">
-            <div class="stage" id="stage" aria-hidden="true">
-              <div class="stage-bar">
-                <span class="dots"><i></i><i></i><i></i></span>
-                <span class="ttl">route_skill.py · validate_envelope.py</span>
-                <span class="live">replay</span>
-              </div>
-              <div class="st-sec">
-                <div class="req">
-                  <span class="who">you&gt;</span><span><span id="req-text"></span><span class="caret"></span></span>
-                </div>
-              </div>
-              <div class="st-sec">
-                <div class="st-label">
-                  <span>Registry</span><code>registry/skills.json · 33</code>
-                </div>
-                <div class="chips" id="chips"></div>
-                <div class="route-out" id="route-out">
-                  <div>
-                    <span class="k">status</span><b>single_skill</b><span>→</span><b>web-app-auditor</b
-                    ><span>score 10</span>
-                  </div>
-                  <div>
-                    <span class="k">blocked</span><i>ai-council</i
-                    ><span>requires_explicit_invocation</span>
-                  </div>
-                  <div>
-                    <span class="k">blocked</span><i>content-roaster</i
-                    ><span>outside_declared_scope</span>
-                  </div>
-                </div>
-              </div>
-              <div class="st-sec">
-                <div class="st-label">
-                  <span>Hand-off</span><code>CW-AIP v2 · tooling/validate_envelope.py</code>
-                </div>
-                <div class="flow">
-                  <div class="node" id="node-a">
-                    <div class="nm">web-app-auditor</div>
-                    <div class="env" id="env-a">
-                      <span class="row t">FindingEnvelope · F-001</span>
-                      <span class="row">severity <span class="v" id="sev">"medium"</span></span>
-                      <span class="row">Checkout button has no accessible name</span>
-                      <span class="row h">sha256:94ae440a…fdd200cec</span>
-                    </div>
-                  </div>
-                  <div class="pipe-line" id="pipe"><span></span></div>
-                  <div class="node" id="node-b">
-                    <div class="nm">release-readiness</div>
-                    <div class="env" id="env-b">
-                      <span class="row t">ReleaseEnvelope · v1.4.0-rc.2</span>
-                      <span class="row">verdict <span class="vd">NO_GO</span></span>
-                      <span class="row">gate qa: BLOCK</span>
-                      <span class="row">checkout returns 500 for EUR</span>
-                    </div>
-                  </div>
-                </div>
-                <ul class="vlog" id="vlog"></ul>
-              </div>
-            </div>
-            <p class="stage-note">
-              A replay of real output from <code>route_skill.py</code> and
-              <code>validate_envelope.py</code>, run on 7 Nov 2026. The two envelopes are the
-              repository's conformance fixtures, placed in the flow the README describes. The skills'
-              own work happens in your host.
+          <div class="hv-wrap">
+            <figure class="hv" id="hv">
+              <svg class="hv-svg" viewBox="0 0 600 360" role="img" aria-labelledby="hv-t">
+                <title id="hv-t">A request from Claude Code, Codex, Cursor, Qwen Code or another host goes to the skill library, which picks the skill for the job, or none.</title>
+                <path class="hv-wire" data-wire="claude" d="M192 60 C 216 60, 216 190, 240 190" />
+                <path class="hv-wire" data-wire="codex" d="M192 124 C 216 124, 216 190, 240 190" />
+                <path class="hv-wire" data-wire="cursor" d="M192 188 C 216 188, 216 190, 240 190" />
+                <path class="hv-wire" data-wire="qwen" d="M192 252 C 216 252, 216 190, 240 190" />
+                <path class="hv-wire" d="M192 316 C 216 316, 216 190, 240 190" stroke-dasharray="4 5" />
+                <path class="hv-wire" data-wire="out" d="M360 190 L 392 190" />
+                <g class="hv-agent" data-agent="claude">
+                  <rect x="16" y="34" width="176" height="52" rx="14" />
+                  <svg x="34" y="49" width="22" height="22" viewBox="0 0 24 24"><path fill="#D97757" d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg>
+                  <text x="68" y="65">Claude Code</text>
+                </g>
+                <g class="hv-agent" data-agent="codex">
+                  <rect x="16" y="98" width="176" height="52" rx="14" />
+                  <svg x="34" y="113" width="22" height="22" viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 7l5 5-5 5M12 18h7"/></svg>
+                  <text x="68" y="129">Codex</text>
+                </g>
+                <g class="hv-agent" data-agent="cursor">
+                  <rect x="16" y="162" width="176" height="52" rx="14" />
+                  <svg x="34" y="177" width="22" height="22" viewBox="0 0 24 24"><path fill="#fff" d="M11.503.131 1.891 5.678a.84.84 0 0 0-.42.726v11.188c0 .3.162.575.42.724l9.609 5.55a1 1 0 0 0 .998 0l9.61-5.55a.84.84 0 0 0 .42-.724V6.404a.84.84 0 0 0-.42-.726L12.497.131a1.01 1.01 0 0 0-.996 0M2.657 6.338h18.55c.263 0 .43.287.297.515L12.23 22.918c-.062.107-.229.064-.229-.06V12.335a.59.59 0 0 0-.295-.51l-9.11-5.257c-.109-.063-.064-.23.061-.23"/></svg>
+                  <text x="68" y="193">Cursor</text>
+                </g>
+                <g class="hv-agent" data-agent="qwen">
+                  <rect x="16" y="226" width="176" height="52" rx="14" />
+                  <svg x="34" y="241" width="22" height="22" viewBox="0 0 24 24"><path fill="#fff" d="M23.919 14.545 20.817 9.17l1.47-2.544a.56.56 0 0 0 0-.566l-1.633-2.83a.57.57 0 0 0-.49-.283h-6.207L12.487.402a.57.57 0 0 0-.49-.284H8.732a.56.56 0 0 0-.49.284L5.139 5.775h-2.94a.56.56 0 0 0-.49.284L.077 8.887a.56.56 0 0 0 0 .567L3.18 14.83l-1.47 2.545a.56.56 0 0 0 0 .566l1.634 2.83a.57.57 0 0 0 .49.283h6.205l1.47 2.545a.57.57 0 0 0 .49.284h3.266a.57.57 0 0 0 .49-.284l3.104-5.375h2.94a.57.57 0 0 0 .49-.283l1.634-2.828a.55.55 0 0 0-.004-.568M8.733.686l1.634 2.828-1.634 2.828H21.8L20.164 9.17H7.425L5.63 6.06Zm1.306 19.801-6.205-.002 1.634-2.83h3.265L2.201 6.344h3.267q3.182 5.517 6.367 11.032zm10.124-5.66L18.53 12l-6.532 11.315-1.634-2.83c2.129-3.673 4.25-7.351 6.373-11.028h3.592l3.102 5.374z"/></svg>
+                  <text x="68" y="257">Qwen Code</text>
+                </g>
+                <g class="hv-agent any">
+                  <rect x="16" y="292" width="176" height="48" rx="14" />
+                  <text x="34" y="321">+ Qoder, Lingma</text>
+                </g>
+                <g class="hv-core">
+                  <rect x="240" y="130" width="120" height="120" rx="20" />
+                  <use href="#i-logo" x="284" y="150" width="32" height="32" />
+                  <text x="300" y="208" text-anchor="middle" class="hv-name">33 skills</text>
+                  <text x="300" y="228" text-anchor="middle" class="hv-sub">pick one, or none</text>
+                </g>
+                <g class="hv-card" id="hv-card">
+                  <rect x="392" y="120" width="196" height="140" rx="14" />
+                  <text x="410" y="150" class="hv-k" id="hv-k">skill loaded</text>
+                  <text x="410" y="178" class="hv-id" id="hv-id">web-app-auditor</text>
+                  <line x1="410" y1="196" x2="570" y2="196" />
+                  <text x="410" y="220" class="hv-d" id="hv-d1">Clicks through the app and</text>
+                  <text x="410" y="240" class="hv-d" id="hv-d2">reports what breaks</text>
+                </g>
+                <g class="hv-q" id="hv-q">
+                  <rect x="290" y="6" width="200" height="30" rx="15" />
+                  <text x="390" y="26" text-anchor="middle" id="hv-qt">Find what's broken on my checkout</text>
+                </g>
+                <circle class="hv-dot" id="hv-dot" r="4" cx="0" cy="0" style="opacity: 0" />
+              </svg>
+            </figure>
+            <p class="hv-note">
+              Requests and picks are real output of the repository's router, <code>tooling/route_skill.py</code>,
+              run on 7 Nov 2026. In your agent, the host itself reads the skill descriptions and decides.
             </p>
           </div>
         </div>
@@ -2803,47 +2735,117 @@
       <div class="facts">
         <div class="wrap">
           <div class="fact">
-            <div class="fico">
-              <svg aria-hidden="true"><use href="#i-package" /></svg>
-            </div>
+            <div class="fico"><svg aria-hidden="true"><use href="#i-package" /></svg></div>
             <div class="n" data-count="33">33</div>
-            <div class="k">Skill packages</div>
+            <div class="k">Ready-made skills</div>
+            <p class="d">QA, research, content, product and release work, each with its own tests.</p>
           </div>
           <div class="fact">
-            <div class="fico">
-              <svg aria-hidden="true"><use href="#i-monitor" /></svg>
-            </div>
+            <div class="fico"><svg aria-hidden="true"><use href="#i-monitor" /></svg></div>
             <div class="n" data-count="6">6</div>
-            <div class="k">Hosts with an installer</div>
+            <div class="k">Hosts, one installer each</div>
+            <div class="logos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 7l5 5-5 5M12 18h7"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11.503.131 1.891 5.678a.84.84 0 0 0-.42.726v11.188c0 .3.162.575.42.724l9.609 5.55a1 1 0 0 0 .998 0l9.61-5.55a.84.84 0 0 0 .42-.724V6.404a.84.84 0 0 0-.42-.726L12.497.131a1.01 1.01 0 0 0-.996 0M2.657 6.338h18.55c.263 0 .43.287.297.515L12.23 22.918c-.062.107-.229.064-.229-.06V12.335a.59.59 0 0 0-.295-.51l-9.11-5.257c-.109-.063-.064-.23.061-.23"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.919 14.545 20.817 9.17l1.47-2.544a.56.56 0 0 0 0-.566l-1.633-2.83a.57.57 0 0 0-.49-.283h-6.207L12.487.402a.57.57 0 0 0-.49-.284H8.732a.56.56 0 0 0-.49.284L5.139 5.775h-2.94a.56.56 0 0 0-.49.284L.077 8.887a.56.56 0 0 0 0 .567L3.18 14.83l-1.47 2.545a.56.56 0 0 0 0 .566l1.634 2.83a.57.57 0 0 0 .49.283h6.205l1.47 2.545a.57.57 0 0 0 .49.284h3.266a.57.57 0 0 0 .49-.284l3.104-5.375h2.94a.57.57 0 0 0 .49-.283l1.634-2.828a.55.55 0 0 0-.004-.568M8.733.686l1.634 2.828-1.634 2.828H21.8L20.164 9.17H7.425L5.63 6.06Zm1.306 19.801-6.205-.002 1.634-2.83h3.265L2.201 6.344h3.267q3.182 5.517 6.367 11.032zm10.124-5.66L18.53 12l-6.532 11.315-1.634-2.83c2.129-3.673 4.25-7.351 6.373-11.028h3.592l3.102 5.374z"/></svg><span>+ Qoder, Lingma</span></div>
           </div>
           <div class="fact">
-            <div class="fico">
-              <svg aria-hidden="true"><use href="#i-check-circle" /></svg>
-            </div>
+            <div class="fico"><svg aria-hidden="true"><use href="#i-check-circle" /></svg></div>
             <div class="n" data-count="9345">9,345</div>
-            <div class="k">Tests in the suite</div>
+            <div class="k">Tests behind the skills</div>
+            <p class="d">The whole suite runs on every pull request, on Linux, macOS and Windows.</p>
           </div>
           <div class="fact">
-            <div class="fico">
-              <svg aria-hidden="true"><use href="#i-list-ordered" /></svg>
-            </div>
+            <div class="fico"><svg aria-hidden="true"><use href="#i-shield-check" /></svg></div>
             <div class="n" data-count="35">35</div>
-            <div class="k">Repository gates in CI</div>
+            <div class="k">Checks on every pull request</div>
+            <p class="d">Security scans, routing tests, skill contracts and the full test suite, run as one script.</p>
           </div>
         </div>
       </div>
+
+      <section class="sec" id="demo">
+        <div class="wrap">
+          <div class="sec-head center reveal">
+            <div>
+              <div class="eyebrow">Real answers</div>
+              <h2>Ask as usual. Get a finished answer.</h2>
+            </div>
+            <p>
+              Each skill turns a plain request into the thing you actually need: a verdict, the reasons behind it and what to do next.
+            </p>
+          </div>
+          <div class="loop out reveal" id="loop">
+            <div class="lp-steps" role="tablist" aria-label="Example requests">
+              <button type="button" role="tab" data-step="0" aria-selected="true"><span class="lp-t">“Roast our homepage”<small>content-roaster</small></span></button>
+              <button type="button" role="tab" data-step="1" aria-selected="false"><span class="lp-t">“Can we ship v2.3.0?”<small>release-readiness</small></span></button>
+              <button type="button" role="tab" data-step="2" aria-selected="false"><span class="lp-t">“Is this claim true?”<small>evidence-researcher</small></span></button>
+            </div>
+            <div class="lp-rail" aria-hidden="true"><i id="lp-bar"></i></div>
+            <div class="lp-stage">
+              <div class="lp-p on" data-p="0">
+                <div class="ask">
+                  <span class="ask-who">You</span>
+                  <p>Here is the hero of our homepage. Roast it and tell me the three fixes that matter most.</p>
+                  <div class="ask-meta"><span class="sk">content-roaster</span> answered in 39 s</div>
+                </div>
+                <div class="doc">
+                  <div class="doc-verdict warn">3 fixes</div>
+                  <h4>The hero fails on all three lines. Nothing in it is specific to your product, your buyer, or your proof.</h4>
+                  <ol>
+                    <li>Rewrite the headline around the outcome and the pain, not the category.</li>
+                    <li>Replace the subheadline with one mechanism and one proof point.</li>
+                    <li>Lower the ask and pair it with a second path.</li>
+                  </ol>
+                </div>
+              </div>
+              <div class="lp-p" data-p="1">
+                <div class="ask">
+                  <span class="ask-who">You</span>
+                  <p>Is v2.3.0 ready to ship today? Unit tests pass, QA saw checkout fail for EUR payments 3 of 3 times, rollback is rehearsed.</p>
+                  <div class="ask-meta"><span class="sk">release-readiness</span> answered in 104 s</div>
+                </div>
+                <div class="doc">
+                  <div class="doc-verdict bad">NO_GO</div>
+                  <h4>Do not ship v2.3.0 build 1187 to production today.</h4>
+                  <ul>
+                    <li>EUR checkout returns HTTP 500, reproduced 3 of 3 times.</li>
+                    <li>A rollback plan reduces blast radius, it does not justify shipping a known-broken checkout.</li>
+                    <li>Next: fix the EUR checkout defect and produce a new build.</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="lp-p" data-p="2">
+                <div class="ask">
+                  <span class="ask-who">You</span>
+                  <p>Verify against primary sources before it goes in a client report: “The European Accessibility Act applies from 28 June 2025.”</p>
+                  <div class="ask-meta"><span class="sk">evidence-researcher</span> answered in 236 s</div>
+                </div>
+                <div class="doc">
+                  <div class="doc-verdict ok">Accurate</div>
+                  <h4>The claim is accurate and safe for the client report, with two wording precisions.</h4>
+                  <ul>
+                    <li>Article 31(2): “They shall apply those measures from 28 June 2025.”</li>
+                    <li>Services may keep using products lawfully in use before 28 June 2025 until 28 June 2030.</li>
+                    <li>A web search for any postponement of the EU-level date found none.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="caption reveal">
+            Real answers from Claude Code with these skills installed, on 7 Nov 2026, shortened to a few verbatim
+            sentences. <a href="https://github.com/CometWeb-io/agent-skills/blob/main/site/media/skill-runs.md">Full prompts and answers</a>.
+          </p>
+        </div>
+      </section>
 
       <section class="sec" id="package">
         <div class="wrap">
           <div class="sec-head reveal">
             <div>
               <div class="eyebrow">Inside a package</div>
-              <h2>A folder your agent reads, with tests next to it</h2>
+              <h2>A skill is just a folder</h2>
             </div>
             <p>
-              A skill is a <b>SKILL.md</b> entry point plus the references, scripts and eval cases it
-              needs. This is the real tree of <b>web-app-auditor</b> 1.6.0. Pick a part to see what
-              it does.
+              A <b>SKILL.md</b> file tells your agent when and how to use the skill. Next to it sit the references, scripts and tests it needs. This is the real <b>web-app-auditor</b> folder; pick a part to see what it does.
             </p>
           </div>
           <div class="pkg reveal">
@@ -2893,10 +2895,7 @@
               <h2>One request, one owner</h2>
             </div>
             <p>
-              <b>tooling/route_skill.py</b> scores a request against the routing signals in the
-              registry. It is deterministic and runs offline, so routing can be tested before any
-              model sees the prompt. It answers single_skill, workflow, ambiguous or no_skill; these
-              are its real answers.
+              Each request goes to one skill, or to none. The repository’s router checks this offline, so a skill that grabs the wrong job fails a test before any model sees it. These are its real answers.
             </p>
           </div>
           <div class="vtable rtable reveal" role="table" aria-label="Real router results">
@@ -2966,12 +2965,10 @@
           <div class="sec-head reveal">
             <div>
               <div class="eyebrow">CW-AIP v2</div>
-              <h2>Hand-offs are data, not prose</h2>
+              <h2>Skills pass results as data, not prose</h2>
             </div>
             <p>
-              When one skill feeds another, the result is a typed JSON envelope: twelve required
-              core fields, a payload with its own schema and a SHA-256 of that payload. Pick a field
-              to find it in a real fixture.
+              When one skill hands work to another, the result is a structured file with a fingerprint. If anything in it is changed or missing, the check rejects it. Pick a field to find it in a real example.
             </p>
           </div>
           <div class="anatomy reveal">
@@ -3060,98 +3057,6 @@ expected sha256:401d5ae4…12ee508bd9</em></pre>
         </div>
       </section>
 
-      <section class="sec" id="demo">
-        <div class="wrap">
-          <div class="sec-head center reveal">
-            <div>
-              <div class="eyebrow">A real run, recorded</div>
-              <h2>QA, repair, retest</h2>
-            </div>
-            <p>
-              The quickstart example is a tiny synthetic plan calculator. You inject one regression,
-              reproduce it, repair it and verify the fix in a browser. No account or model API is
-              needed.
-            </p>
-          </div>
-          <div class="frame demo-frame reveal">
-            <div class="frame-bar">
-              <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-              <span class="url">127.0.0.1 · examples/qa-repair-retest</span>
-            </div>
-            <video
-              id="demo-video"
-              src="media/qa-demo.mp4"
-              poster="media/qa-demo-poster.jpg"
-              width="960"
-              height="640"
-              muted
-              loop
-              playsinline
-              preload="metadata"
-              aria-label="Screen recording: the injected regression recommends a plan for 26 sites, the repaired copy returns null, then an annual result is saved, read back after reload and cleared"
-            ></video>
-          </div>
-          <p class="caption reveal">
-            <b>Recorded on 7 Nov 2026</b> in headless Chromium, in real time. For the first five
-            seconds the page is served from a copy with the injected regression; after that, from
-            the unchanged example.
-          </p>
-          <div class="duo">
-            <figure class="reveal">
-              <div class="frame">
-                <div class="frame-bar">
-                  <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-                </div>
-                <img
-                  src="media/qa-broken.jpg"
-                  alt="With the injected regression, 26 sites and one run per site return the portfolio plan, which only covers 25 sites"
-                  width="1520"
-                  height="900"
-                  loading="lazy"
-                />
-              </div>
-              <figcaption>
-                <b>Reproduce</b>26 sites get the portfolio plan, which covers 25. The policy test
-                fails with the same object, so the defect is confirmed twice.
-              </figcaption>
-            </figure>
-            <figure class="reveal">
-              <pre class="term" style="margin: 0">
-<b>$</b> node --test policy.test.mjs   <i># injected copy</i>
-<em>not ok 2 - never recommends a plan below the requested sites or runs</em>
-    + { plan: 'portfolio', runs: 26, sites: 26 }
-    - null
-<i># tests 4 · pass 3 ·</i> <em>fail 1</em>
-
-<b>$</b> node --test policy.test.mjs   <i># repaired copy</i>
-<u>ok 1 … ok 4</u>
-<i># tests 4 · pass 4 · fail 0</i></pre>
-              <figcaption>
-                <b>Repair and retest</b>Restoring the guard makes all four policy tests pass. The
-                repository runs the same tests in CI as its <code>qa_example</code> gate.
-              </figcaption>
-            </figure>
-            <figure class="reveal">
-              <div class="frame">
-                <div class="frame-bar">
-                  <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-                </div>
-                <img
-                  src="media/qa-readback.jpg"
-                  alt="After a reload, Read returns the saved annual result: team plan, 3 sites, 12 runs, 46 monthly equivalent and 550 annual total"
-                  width="1520"
-                  height="420"
-                  loading="lazy"
-                />
-              </div>
-              <figcaption>
-                <b>Verify persistence</b>The saved result is read back after a reload, then cleared.
-                A save message alone does not prove anything was stored.
-              </figcaption>
-            </figure>
-          </div>
-        </div>
-      </section>
 
       <section class="sec" id="install">
         <div class="wrap">
@@ -3161,8 +3066,7 @@ expected sha256:401d5ae4…12ee508bd9</em></pre>
               <h2>Preview first, then link what you need</h2>
             </div>
             <p>
-              Installers symlink packages from your clone into each host's skills folder. They stop
-              before changing anything when a path is taken, and <b>--dry-run</b> writes nothing.
+              The installer links skills from your copy into your agent’s skills folder. It stops instead of overwriting anything, and <code>--dry-run</code> shows what it would do first.
             </p>
           </div>
           <div class="cells grid-3 reveal" style="grid-template-columns: repeat(3, minmax(0, 1fr))">
@@ -3280,8 +3184,7 @@ unlinked web-app-auditor
               <h2>Read it, run the gates, verify the bytes</h2>
             </div>
             <p>
-              The checks that guard main are one script you can run locally. Passing them shows a
-              package keeps its contract; it does not show a model answers well.
+              All the checks that guard the main branch are one script you can run yourself. Passing them shows a skill keeps its contract, not that a model gets better at the task.
             </p>
           </div>
           <div class="cells grid-3 reveal" style="grid-template-columns: repeat(3, minmax(0, 1fr))">
@@ -3503,184 +3406,92 @@ unlinked web-app-auditor
           }
         });
 
-        /* ---------- hero: routing and hand-off replay ----------
-           Every value shown is real output of tooling/route_skill.py and
-           tooling/validate_envelope.py (see media/transcripts.txt). */
-        var SKILLS = [
-          "ai-council", "ai-humanize", "artifact-acceptance", "benchmark-curator",
-          "brief-architect", "competitive-intelligence", "competitor-profiling",
-          "content-reviewer", "content-roaster", "content-writer", "customer-ops",
-          "design-partner-finder", "ebook-publisher", "evidence-researcher",
-          "feedback-integrator", "longform-publisher", "portfolio-operator", "product-operator",
-          "product-teardown", "quality-loop-operator", "release-readiness", "repair-operator",
-          "repo-roaster", "repo-to-roadmap", "research-program-operator", "rubric-designer",
-          "science-roaster", "seo-geo-aeo-maxxing", "skill-auditor", "skill-evaluator",
-          "skill-orchestrator", "skill-orchestrator-multiagent", "web-app-auditor",
+        /* ---------- hero: a request, the skill library, the skill for the job ----------
+           Requests and results are real output of tooling/route_skill.py
+           (media/transcripts.txt). Host order only rotates the highlight. */
+        var hv = document.getElementById("hv");
+        var hvQ = document.getElementById("hv-q");
+        var hvDot = document.getElementById("hv-dot");
+        var hvCard = document.getElementById("hv-card");
+        var HOSTS = ["claude", "codex", "cursor", "qwen"];
+        var ASKS = [
+          { q: "Find what's broken on my checkout", id: "web-app-auditor", d: ["Clicks through the app and", "reports what breaks"] },
+          { q: "Is build 4.2.0 ready to ship?", id: "release-readiness", d: ["A GO or NO-GO verdict,", "with the evidence"] },
+          { q: "Verify: the EAA applies from June 2025", id: "evidence-researcher", d: ["Checks the claim against", "primary sources"] },
+          { q: "Write a haiku about autumn", id: "no skill", d: ["Not a job for a skill.", "Your agent just answers."], none: true },
         ];
-        var HIT = "web-app-auditor";
-        var BLOCKED = { "ai-council": 1, "content-roaster": 1 };
-        var KEY = { "web-app-auditor": 1, "ai-council": 1, "content-roaster": 1, "release-readiness": 1 };
-        var REQ = "Click through my checkout page and find what is broken before release";
-        var chipsEl = document.getElementById("chips");
-        var chipEls = SKILLS.map(function (id) {
-          var el = document.createElement("span");
-          el.className = "sk-chip" + (KEY[id] ? " key" : "");
-          el.textContent = id;
-          chipsEl.appendChild(el);
-          return el;
-        });
-        var more = document.createElement("span");
-        more.className = "more";
-        more.textContent = "+ 22 more";
-        chipsEl.appendChild(more);
-        var reqEl = document.getElementById("req-text");
-        var routeRows = Array.prototype.slice.call(document.querySelectorAll("#route-out div"));
-        var nodeA = document.getElementById("node-a");
-        var nodeB = document.getElementById("node-b");
-        var envA = document.getElementById("env-a");
-        var envB = document.getElementById("env-b");
-        var pipe = document.getElementById("pipe");
-        var sev = document.getElementById("sev");
-        var vlog = document.getElementById("vlog");
-        var VLINES = {
-          finding: ["ok", "OK:", "CW-AIP v2 envelope (FindingEnvelope)"],
-          release: ["ok", "OK:", "CW-AIP v2 envelope (ReleaseEnvelope)"],
-          edited: ["fail", "FAIL:", "payload_hash mismatch: got sha256:94ae440a…, expected sha256:401d5ae4…"],
-        };
-        function logLine(key) {
-          var v = VLINES[key];
-          var li = document.createElement("li");
-          li.innerHTML = '<span class="' + v[0] + '">' + v[1] + "</span><span>" + v[2] + "</span>";
-          vlog.appendChild(li);
+        function hvSet(id, t) {
+          document.getElementById(id).textContent = t;
         }
-        function setPipe(frac, cut) {
-          pipe.classList.toggle("cut", !!cut);
-          pipe.classList.toggle("go", frac > 0);
-          pipe.firstElementChild.style.width = frac * 100 + "%";
-        }
-        function resetStage() {
-          reqEl.textContent = "";
-          chipsEl.classList.remove("done");
-          chipEls.forEach(function (c) {
-            c.classList.remove("scan", "hit", "blocked");
-          });
-          routeRows.forEach(function (r) {
-            r.classList.remove("on");
-          });
-          [nodeA, nodeB].forEach(function (n) {
-            n.classList.remove("on");
-          });
-          [envA, envB].forEach(function (e) {
-            e.classList.remove("on", "bad");
-          });
-          sev.classList.remove("edited");
-          sev.textContent = '"medium"';
-          setPipe(0);
-          vlog.innerHTML = "";
-        }
-        function finalStage() {
-          reqEl.textContent = REQ;
-          chipsEl.classList.add("done");
-          chipEls.forEach(function (c, i) {
-            if (SKILLS[i] === HIT) c.classList.add("hit");
-            if (BLOCKED[SKILLS[i]]) c.classList.add("blocked");
-          });
-          routeRows.forEach(function (r) {
-            r.classList.add("on");
-          });
-          nodeA.classList.add("on");
-          nodeB.classList.add("on");
-          envA.classList.add("on");
-          envB.classList.add("on");
-          setPipe(1);
-          logLine("finding");
-          logLine("release");
-        }
-        var timers = [];
-        function at(ms, fn) {
-          timers.push(setTimeout(fn, ms));
-        }
-        function play() {
-          resetStage();
-          var t = 300;
-          for (var i = 1; i <= REQ.length; i++) {
-            (function (n) {
-              at(t + n * 26, function () {
-                reqEl.textContent = REQ.slice(0, n);
-              });
-            })(i);
+        function hvMove(path, ms, done) {
+          var len = path.getTotalLength();
+          var t0 = performance.now();
+          function step(now) {
+            var k = Math.min(1, (now - t0) / ms);
+            var e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+            var pt = path.getPointAtLength(len * e);
+            hvDot.style.opacity = 1;
+            hvDot.setAttribute("cx", pt.x);
+            hvDot.setAttribute("cy", pt.y);
+            if (k < 1) requestAnimationFrame(step);
+            else if (done) done();
           }
-          t += REQ.length * 26 + 450;
-          chipEls.forEach(function (c, i) {
-            at(t + i * 28, function () {
-              c.classList.add("scan");
-            });
-            at(t + i * 28 + 240, function () {
-              c.classList.remove("scan");
-            });
-          });
-          t += chipEls.length * 28 + 380;
-          at(t, function () {
-            chipEls.forEach(function (c, i) {
-              if (BLOCKED[SKILLS[i]]) c.classList.add("blocked");
-            });
-          });
-          at(t + 450, function () {
-            chipsEl.classList.add("done");
-            chipEls[SKILLS.indexOf(HIT)].classList.add("hit");
-          });
-          routeRows.forEach(function (r, i) {
-            at(t + 700 + i * 260, function () {
-              r.classList.add("on");
-            });
-          });
-          t += 700 + routeRows.length * 260 + 500;
-          at(t, function () {
-            nodeA.classList.add("on");
-            envA.classList.add("on");
-          });
-          at(t + 900, function () {
-            logLine("finding");
-            setPipe(1);
-          });
-          at(t + 1900, function () {
-            nodeB.classList.add("on");
-            envB.classList.add("on");
-          });
-          at(t + 2600, function () {
-            logLine("release");
-          });
-          t += 4300;
-          at(t, function () {
-            nodeB.classList.remove("on");
-            envB.classList.remove("on");
-            setPipe(0);
-            sev.textContent = '"low"';
-            sev.classList.add("edited");
-          });
-          at(t + 1100, function () {
-            envA.classList.add("bad");
-            setPipe(0.5, true);
-            logLine("edited");
-          });
-          at(t + 5200, function () {
-            play();
+          requestAnimationFrame(step);
+        }
+        function hvAnswer(a) {
+          hvSet("hv-k", a.none ? "router" : "skill loaded");
+          hvSet("hv-id", a.id);
+          hvSet("hv-d1", a.d[0]);
+          hvSet("hv-d2", a.d[1]);
+          hvCard.classList.toggle("none", !!a.none);
+          Array.prototype.forEach.call(hvCard.querySelectorAll("text"), function (t) {
+            t.classList.remove("fade");
           });
         }
-        var stage = document.getElementById("stage");
+        function hvShow(i, animate) {
+          var a = ASKS[i];
+          var host = HOSTS[i % HOSTS.length];
+          Array.prototype.forEach.call(hv.querySelectorAll(".on"), function (e) {
+            e.classList.remove("on");
+          });
+          hv.querySelector('[data-agent="' + host + '"]').classList.add("on");
+          var wire = hv.querySelector('[data-wire="' + host + '"]');
+          var out = hv.querySelector('[data-wire="out"]');
+          wire.classList.add("on");
+          hvSet("hv-qt", a.q);
+          var qt = document.getElementById("hv-qt");
+          var w = Math.ceil(qt.getComputedTextLength()) + 32;
+          var r = hvQ.querySelector("rect");
+          r.setAttribute("width", w);
+          r.setAttribute("x", 390 - w / 2);
+          hvQ.classList.add("on");
+          if (!animate) {
+            hvAnswer(a);
+            out.classList.add("on");
+            hvCard.classList.add("on");
+            return;
+          }
+          Array.prototype.forEach.call(hvCard.querySelectorAll("text"), function (t) {
+            t.classList.add("fade");
+          });
+          hvMove(wire, 900, function () {
+            out.classList.add("on");
+            hvMove(out, 350, function () {
+              hvAnswer(a);
+              hvCard.classList.add("on");
+              hvDot.style.opacity = 0;
+            });
+          });
+        }
         if (reduce) {
-          finalStage();
-        } else if ("IntersectionObserver" in window) {
-          var started = false;
-          new IntersectionObserver(function (entries, obs) {
-            if (entries[0].isIntersecting && !started) {
-              started = true;
-              obs.disconnect();
-              play();
-            }
-          }).observe(stage);
+          hvShow(0, false);
         } else {
-          play();
+          var hvI = 0;
+          hvShow(0, true);
+          setInterval(function () {
+            hvI = (hvI + 1) % ASKS.length;
+            hvShow(hvI, true);
+          }, 3600);
         }
 
         /* ---------- package anatomy (skills/web-app-auditor) ---------- */
@@ -3821,24 +3632,64 @@ unlinked web-app-auditor
           });
         }
 
-        /* ---------- demo video plays only while visible ---------- */
-        var vid = document.getElementById("demo-video");
-        if (vid && !reduce && "IntersectionObserver" in window) {
+        /* ---------- real skill answers (media/skill-runs.md) ---------- */
+        var loop = document.getElementById("loop");
+        var lpBtns = loop.querySelectorAll(".lp-steps button");
+        var lpPanels = loop.querySelectorAll(".lp-p");
+        var lpBar = document.getElementById("lp-bar");
+        var lpI = 0;
+        var lpTimer = null;
+        var LP_MS = 6500;
+        function lpShow(i) {
+          lpI = i;
+          Array.prototype.forEach.call(lpBtns, function (b, k) {
+            b.setAttribute("aria-selected", k === i ? "true" : "false");
+            b.classList.toggle("done", k < i);
+          });
+          Array.prototype.forEach.call(lpPanels, function (p, k) {
+            p.classList.toggle("on", k === i);
+          });
+          lpBar.style.transition = "none";
+          lpBar.style.width = (i / lpPanels.length) * 100 + "%";
+          if (!reduce) {
+            requestAnimationFrame(function () {
+              requestAnimationFrame(function () {
+                lpBar.style.transition = "width " + LP_MS + "ms linear";
+                lpBar.style.width = ((i + 1) / lpPanels.length) * 100 + "%";
+              });
+            });
+          } else {
+            lpBar.style.width = ((i + 1) / lpPanels.length) * 100 + "%";
+          }
+        }
+        function lpRun() {
+          clearInterval(lpTimer);
+          if (reduce) return;
+          lpTimer = setInterval(function () {
+            lpShow((lpI + 1) % lpPanels.length);
+          }, LP_MS);
+        }
+        Array.prototype.forEach.call(lpBtns, function (b, k) {
+          b.addEventListener("click", function () {
+            lpShow(k);
+            lpRun();
+          });
+        });
+        lpShow(0);
+        if ("IntersectionObserver" in window && !reduce) {
           new IntersectionObserver(
             function (entries) {
               entries.forEach(function (en) {
                 if (en.isIntersecting) {
-                  var p = vid.play();
-                  if (p && p.catch) p.catch(function () {});
+                  lpShow(lpI);
+                  lpRun();
                 } else {
-                  vid.pause();
+                  clearInterval(lpTimer);
                 }
               });
             },
-            { threshold: 0.35 },
-          ).observe(vid);
-        } else if (vid) {
-          vid.setAttribute("controls", "");
+            { threshold: 0.3 },
+          ).observe(loop);
         }
 
         /* ---------- count-up numbers ---------- */
