@@ -65,12 +65,21 @@ try {
   await page.locator('#load').click();
   await page.waitForFunction(() => document.querySelector('#saved').textContent.startsWith('{'));
   assert.deepEqual(JSON.parse(await page.locator('#saved').textContent()), quote(3, 4));
+  // The saved record is compact JSON with no spaces; it must wrap, not widen the page.
+  const overflow = [];
+  for (const width of [320, 760]) {
+    await page.setViewportSize({ width, height: 800 });
+    const { scroll, client } = await page.evaluate(() => ({
+      scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+    if (scroll > client) overflow.push({ width, scroll, client });
+  }
+  assert.deepEqual(overflow, []);
   await page.locator('#clear').click();
   await page.locator('#load').click();
   assert.equal(await page.locator('#saved').textContent(), 'No data');
   assert.deepEqual(errors, []);
   console.log(JSON.stringify({ browser: browser.version(), save_reload_read: true,
-    other_principal_read_delete: denied, cleanup_reload_read: true, local_storage_control: true, blocked_context_requests: blocked.length, page_errors: errors }));
+    other_principal_read_delete: denied, cleanup_reload_read: true, local_storage_control: true, no_horizontal_overflow: true, blocked_context_requests: blocked.length, page_errors: errors }));
 } finally {
   await browser.close();
 }

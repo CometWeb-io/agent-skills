@@ -202,6 +202,15 @@ def test_fixture_directory_is_not_a_system_sandbox(tmp_path):
         assert fixture.server.server_address[0] == "127.0.0.1"
 
 
+def test_example_page_wraps_saved_record_on_narrow_viewports():
+    # The saved record is one unbroken JSON line; without these rules it widened
+    # the page below about 760px and phones rendered a 980px desktop layout.
+    html = (EXAMPLE / "index.html").read_text(encoding="utf-8")
+    assert '<meta name="viewport" content="width=device-width, initial-scale=1">' in html
+    assert "pre{white-space:pre-wrap;overflow-wrap:anywhere}" in html
+    assert "*{box-sizing:border-box}" in html
+
+
 @pytest.mark.skipif(not os.environ.get("QA_PLAYWRIGHT_MODULE"), reason="Optional existing Playwright module required; no browser evidence without execution")
 def test_browser_save_reload_read_access_boundary_cleanup():
     with fixture_module.disposable_fixture() as fixture:
@@ -217,5 +226,6 @@ def test_browser_save_reload_read_access_boundary_cleanup():
         assert receipt["other_principal_read_delete"] == [404, 404]
         assert receipt["blocked_context_requests"] == 1
         assert receipt["local_storage_control"] is True
+        assert receipt["no_horizontal_overflow"] is True
         assert rows(fixture) == (1, 0)
         print(json.dumps(receipt, sort_keys=True))
