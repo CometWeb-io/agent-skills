@@ -3,7 +3,7 @@
   "name": "cometweb-agent-skills",
   "description": "Agent skills for Claude Code: research, product operations, QA, release gates and strategic decisions — each covered by tests.",
   "owner": {
-    "name": "CometWeb Labs",
+    "name": "Maciej Zmitrukiewicz",
     "url": "https://cometweb.io"
   },
   "plugins": [
