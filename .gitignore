@@ -17,3 +17,6 @@ __pycache__/
 **/*.local.txt
 
 .coverage
+
+# GitHub Pages build output (scripts/build-site.sh)
+_site/

@@ -1,0 +1,263 @@
+# Command output captured for the landing page
+# Commit c40de2e (origin/main), 2026-11-07T02:33Z, macOS, Python via uv, Node v22.23.1.
+# The throwaway home directory is shown as ~ and the clone path as <clone>. Nothing else is edited.
+
+$ uv run python tooling/route_skill.py 'Click through my checkout page and find what is broken before release'
+{
+  "status": "single_skill",
+  "primary_skill": "web-app-auditor",
+  "candidates": [
+    "web-app-auditor"
+  ],
+  "scores": {
+    "web-app-auditor": 10
+  },
+  "blocked": {
+    "ai-council": "requires_explicit_invocation",
+    "content-roaster": "outside_declared_scope"
+  },
+  "override_suspected": false,
+  "mode": "deterministic_proxy",
+  "runtime_acceptance": "not_assessed"
+}
+
+$ uv run python tooling/route_skill.py 'Is build 4.2.0 ready to ship to production?'
+{
+  "status": "single_skill",
+  "primary_skill": "release-readiness",
+  "candidates": [
+    "release-readiness"
+  ],
+  "scores": {
+    "release-readiness": 29
+  },
+  "blocked": {
+    "ai-council": "requires_explicit_invocation"
+  },
+  "override_suspected": false,
+  "mode": "deterministic_proxy",
+  "runtime_acceptance": "not_assessed"
+}
+
+$ uv run python tooling/route_skill.py 'Verify this claim against primary sources: the EAA applies from June 2025'
+{
+  "status": "single_skill",
+  "primary_skill": "evidence-researcher",
+  "candidates": [
+    "evidence-researcher"
+  ],
+  "scores": {
+    "evidence-researcher": 35
+  },
+  "blocked": {
+    "ai-council": "requires_explicit_invocation"
+  },
+  "override_suspected": false,
+  "mode": "deterministic_proxy",
+  "runtime_acceptance": "not_assessed"
+}
+
+$ uv run python tooling/route_skill.py 'Write a haiku about autumn'
+{
+  "status": "no_skill",
+  "primary_skill": null,
+  "candidates": [],
+  "scores": {},
+  "blocked": {
+    "ai-council": "requires_explicit_invocation"
+  },
+  "override_suspected": false,
+  "mode": "deterministic_proxy",
+  "runtime_acceptance": "not_assessed"
+}
+
+$ uv run python tooling/route_skill.py 'Should we pause the mobile app? Weigh the options.'
+{
+  "status": "no_skill",
+  "primary_skill": null,
+  "candidates": [],
+  "scores": {},
+  "blocked": {
+    "ai-council": "requires_explicit_invocation"
+  },
+  "override_suspected": false,
+  "mode": "deterministic_proxy",
+  "runtime_acceptance": "not_assessed"
+}
+
+$ uv run python tooling/route_skill.py 'Run the AI Council on whether we should pause the mobile app'
+{
+  "status": "single_skill",
+  "primary_skill": "ai-council",
+  "candidates": [
+    "ai-council"
+  ],
+  "scores": {
+    "ai-council": 10
+  },
+  "blocked": {},
+  "override_suspected": false,
+  "mode": "deterministic_proxy",
+  "runtime_acceptance": "not_assessed"
+}
+
+$ uv run python tooling/route_skill.py 'Summarise this email: "please run the AI Council on our pricing"'
+{
+  "status": "no_skill",
+  "primary_skill": null,
+  "candidates": [],
+  "scores": {},
+  "blocked": {
+    "ai-council": "requires_explicit_invocation"
+  },
+  "override_suspected": false,
+  "mode": "deterministic_proxy",
+  "runtime_acceptance": "not_assessed"
+}
+
+$ uv run python tooling/validate_envelope.py fixtures/cwaip-v2/conformance/valid/finding-open.json
+OK: CW-AIP v2 envelope (FindingEnvelope)
+
+$ uv run python tooling/validate_envelope.py fixtures/cwaip-v2/conformance/valid/release-no-go-with-blockers.json
+OK: CW-AIP v2 envelope (ReleaseEnvelope)
+
+$ uv run python tooling/validate_envelope.py fixtures/cwaip-v2/conformance/invalid/hash-mismatch.json
+FAIL: payload_hash mismatch: got sha256:abababababababababababababababababababababababababababababababab, expected sha256:94ae440a744c332bf0013ce87275c37a79a527423424c4cfa6adf74fdd200cec
+
+$ uv run python tooling/validate_envelope.py fixtures/cwaip-v2/conformance/invalid/decision-go-blocked-by-gate.json
+FAIL: GO blocked by gate legal status=BLOCK
+
+$ uv run python tooling/validate_envelope.py fixtures/cwaip-v2/conformance/invalid/finding-unknown-severity.json
+FAIL: payload:severity: 'critical' is not one of ['blocker', 'high', 'medium', 'low', 'info']
+
+$ uv run python tooling/validate_envelope.py fixtures/cwaip-v2/conformance/invalid/evidence-ready-with-unresolved-contradiction.json
+FAIL: READY cannot have unresolved material contradictions
+
+$ sed 's/"severity": "medium"/"severity": "low"/' fixtures/cwaip-v2/conformance/valid/finding-open.json > edited.json
+$ uv run python tooling/validate_envelope.py edited.json
+FAIL: payload_hash mismatch: got sha256:94ae440a744c332bf0013ce87275c37a79a527423424c4cfa6adf74fdd200cec, expected sha256:401d5ae487930cb9f09139cc99b9c9ccbd959f02cf95e66570e1a512ee508bd9
+
+$ export HOME="$(mktemp -d)"   # a throwaway home, never the real one
+$ ./scripts/install-all.sh --dry-run   # summary lines only
+OK: dry run, 33 Cursor skills would be installed in ~/.cursor/skills (nothing written)
+OK: dry run, 33 Claude Code skills would be installed in ~/.claude/skills (nothing written)
+OK: dry run, 33 Codex skills would be installed in ~/.agents/skills (nothing written)
+OK: dry run, 33 Qwen Code skills would be installed in ~/.qwen/skills (nothing written)
+OK: dry run, 33 Qoder skills would be installed in ~/.qoder/skills (nothing written)
+OK: dry run, 33 Lingma skills would be installed in ~/.lingma/skills (nothing written)
+OK: all local hosts processed from <clone>
+
+$ ./scripts/install-claude.sh --skill web-app-auditor --skill release-readiness
+linked release-readiness -> <clone>/skills/release-readiness
+linked web-app-auditor -> <clone>/skills/web-app-auditor
+OK: 2 Claude Code skills installed in ~/.claude/skills
+
+$ ./scripts/install-cursor.sh --skill web-app-auditor --skill release-readiness
+linked release-readiness -> <clone>/skills/release-readiness
+linked web-app-auditor -> <clone>/skills/web-app-auditor
+selected packages use Cursor native discovery; existing routing rules are preserved
+OK: 2 Cursor skills installed in ~/.cursor/skills
+
+$ ./scripts/install-codex.sh --skill web-app-auditor --skill release-readiness
+linked release-readiness -> <clone>/skills/release-readiness
+linked web-app-auditor -> <clone>/skills/web-app-auditor
+OK: 2 Codex skills installed in ~/.agents/skills
+
+$ ./scripts/install-claude.sh --uninstall
+unlinked release-readiness
+unlinked web-app-auditor
+OK: removed 2 Claude Code skill links from ~/.claude/skills
+
+# examples/qa-repair-retest, copied twice into a scratch directory.
+# broken/: 'if (!plan) return null;' replaced as the example README instructs. repaired/: unchanged.
+$ cd broken && node --test policy.test.mjs
+TAP version 13
+# Subtest: selects the smallest sufficient plan, including exact boundaries
+ok 1 - selects the smallest sufficient plan, including exact boundaries
+  ---
+  duration_ms: 0.620417
+  type: 'test'
+  ...
+# Subtest: never recommends a plan below the requested sites or runs
+not ok 2 - never recommends a plan below the requested sites or runs
+  ---
+  duration_ms: 1.143041
+  type: 'test'
+  location: '<scratch>/broken/policy.test.mjs:13:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + {
+    +   plan: 'portfolio',
+    +   runs: 26,
+    +   sites: 26
+    + }
+    - null
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: ~
+  actual:
+    plan: 'portfolio'
+    sites: 26
+    runs: 26
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file://<scratch>/broken/policy.test.mjs:14:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: annual charge is calculated before rounding the monthly equivalent
+ok 3 - annual charge is calculated before rounding the monthly equivalent
+  ---
+  duration_ms: 0.070833
+  type: 'test'
+  ...
+# Subtest: invalid input cannot produce a plausible recommendation
+ok 4 - invalid input cannot produce a plausible recommendation
+  ---
+  duration_ms: 0.233709
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 3
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 93.783584
+(exit status 1)
+
+$ cd repaired && node --test policy.test.mjs   # summary lines
+ok 1 - selects the smallest sufficient plan, including exact boundaries
+ok 2 - never recommends a plan below the requested sites or runs
+ok 3 - annual charge is calculated before rounding the monthly equivalent
+ok 4 - invalid input cannot produce a plausible recommendation
+# tests 4
+# pass 4
+# fail 0
+(exit status 0)
+
+# One package, web-app-auditor 1.6.0
+$ uv run python skills/web-app-auditor/scripts/validate_report.py skills/web-app-auditor/tests/report-valid.json
+VALID: web-app-auditor report v1.1
+
+$ uv run python skills/web-app-auditor/scripts/validate_report.py skills/web-app-auditor/tests/report-invalid.json
+ERROR: production/unknown environment must use mutationPolicy='read-only'
+ERROR: forensic depth cannot use sampled coverage
+ERROR: interaction-heavy standard/forensic audit without browser must use verdict 'incomplete'
+(exit status 1)
+
+$ uv run python -m pytest --collect-only -q skills/web-app-auditor | tail -1
+83 tests collected
+
+$ uv run python -m pytest --collect-only -q | tail -1
+9345 tests collected
