@@ -12,7 +12,7 @@ the boundary between package checks and task evidence.
 [![Validate](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/CometWeb-io/agent-skills/actions/workflows/validate.yml)
 [![MIT](https://img.shields.io/badge/license-MIT-034C32)](LICENSE)
 ![Skills](https://img.shields.io/badge/skills-33-informational.svg)
-[![Website](https://github.com/CometWeb-io/agent-skills/actions/workflows/pages.yml/badge.svg)](https://cometweb-io.github.io/agent-skills/)
+[![Website](https://github.com/CometWeb-io/agent-skills/actions/workflows/pages.yml/badge.svg)](https://agent-skills.cometweb.io/)
 
 This repository contains 33 reusable skill packages. Each one is a `SKILL.md`
 entry point plus the references, scripts and eval cases it needs, and every
