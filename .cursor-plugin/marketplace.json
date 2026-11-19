@@ -1,7 +1,7 @@
 {
   "name": "cometweb-agent-skills",
   "owner": {
-    "name": "CometWeb Labs"
+    "name": "Maciej Zmitrukiewicz"
   },
   "metadata": {
     "description": "CometWeb Labs specialist agent skills for research, product operations, QA, release readiness, and evidence-based decisions."

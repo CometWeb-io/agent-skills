@@ -14,7 +14,11 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS = sorted((ROOT / ".github" / "workflows").glob("*.y*ml"))
 PINNED = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+@[0-9a-f]{40}$")
 # Rights a job may request, and the step that justifies each one.
-WRITE_JUSTIFIED_BY = {"id-token": "actions/attest@", "attestations": "actions/attest@"}
+WRITE_JUSTIFIED_BY = {
+    "id-token": ("actions/attest@", "actions/deploy-pages@"),
+    "attestations": ("actions/attest@",),
+    "pages": ("actions/deploy-pages@",),
+}
 
 
 def load(path):
