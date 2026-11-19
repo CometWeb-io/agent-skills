@@ -88,6 +88,26 @@ the package does not establish an advantage over a direct model review.
 `science-roaster` 6.2.0 is also an optional methodology and evidence checklist.
 Use it for relevant scientific risks; its comparative advantage remains unestablished.
 
+`web-app-auditor` 1.6.0 is an optional evidence checklist and QA tooling package.
+Use it when the checklist or a receiving contract is useful; it is not a default
+extra audit stage. Its comparative advantage over a model with the same tools
+remains unestablished. These guidelines do not change host invocation policy.
+
+`competitive-intelligence` 1.1.6 is an optional adapter to snapshot and event
+tools. Use it when its monitoring workflow or state contracts are useful; the
+evidence does not establish a general advantage over a model using the same tools.
+This guidance does not change host invocation policy.
+
+`repo-to-roadmap` 1.1.4 is an optional roadmap and evidence-accounting workflow.
+Use its inventory, dependency checks and contracts when useful; its comparative
+advantage over a model with the same tools remains unestablished. This guidance
+does not change host invocation policy.
+
+`product-operator` is an optional product-state and planning workflow. Its
+comparative advantage over a model with the same tools remains unestablished;
+use the sidecar and kernel when their contracts help. This guidance does not
+change host invocation policy.
+
 `content-reviewer` 1.8.0 is an optional evidence and repair-verification checklist,
 not a default extra review pass. Its comparative advantage over direct model
 review remains unestablished; use it when the checklist or a receiving contract is useful.

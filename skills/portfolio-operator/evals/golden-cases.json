@@ -92,7 +92,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -121,7 +133,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": true
   },
@@ -151,7 +175,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -179,7 +215,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -674,7 +722,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -701,7 +761,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -733,7 +805,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -765,7 +849,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -802,7 +898,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -835,7 +943,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": true
   },
@@ -866,7 +986,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -897,7 +1029,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -929,7 +1073,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": true
   },
@@ -960,7 +1116,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -992,7 +1160,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": true
   },
@@ -1023,7 +1203,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": true
   },
@@ -1049,7 +1241,19 @@
       ],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -1076,7 +1280,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -1103,7 +1319,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -1131,7 +1359,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": true
   },
@@ -1160,7 +1400,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": true
   },
@@ -1307,7 +1559,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": true
   },
@@ -1340,7 +1604,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false
   },
@@ -1371,7 +1647,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": true
   },
@@ -1400,7 +1688,19 @@
       "waiting": [],
       "pause_drop": [],
       "next": [],
-      "capacity_conflicts": []
+      "capacity_conflicts": [],
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": true
   },
@@ -1623,7 +1923,21 @@
             "crm:deal-1"
           ]
         }
-      ]
+      ],
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false,
     "expected_errors": [
@@ -1688,7 +2002,21 @@
             "crm:deal-1"
           ]
         }
-      ]
+      ],
+      "as_of": "2026-09-10T10:00:00+02:00",
+      "horizon": "14d",
+      "primary_goal": "Assess portfolio commitments",
+      "portfolio_scope": [
+        "fixture-client",
+        "fixture-product"
+      ],
+      "coverage": {
+        "calendar": "unavailable"
+      },
+      "readiness": {
+        "status": "PROVISIONAL",
+        "reason": "Fixture coverage is partial"
+      }
     },
     "expected_valid": false,
     "expected_errors": [

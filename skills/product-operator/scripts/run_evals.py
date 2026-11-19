@@ -44,7 +44,7 @@ VALID_REPORT: dict[str, Any] = {
     "readiness": {"status": "READY", "reasons": []},
     "blockers": [], "verify_now": [], "decision_now": [],
     "now": [{"id": "A", "action": "Ship A", "done_when": "A deployed", "why_now": "on the path",
-             "confidence": 0.8, "evidence": [_EVIDENCE]}],
+             "scoring_mode": "qualitative", "evidence": [_EVIDENCE]}],
     "next": [], "later": [], "stop": [], "watch": [],
 }
 
@@ -363,6 +363,66 @@ def run_case(case: dict[str, Any]) -> tuple[bool, Any]:
     raise ValueError(f"unknown case kind: {kind}")
 
 
+def qualitative_checks() -> list[dict[str, str]]:
+    """Keep the unscored path and sidecar claims covered by the bundled harness."""
+    failures: list[dict[str, str]] = []
+
+    def check(name: str, condition: bool) -> None:
+        if not condition:
+            failures.append({"id": name, "expected": "condition holds", "actual": "condition failed"})
+
+    for row, tier in [
+        ({"stop": True}, "STOP"), ({"future_gate": True}, "LATER"),
+        ({"blocker": True}, "VERIFY_NOW"), ({"decision_required": True}, "DECISION_NOW"),
+    ]:
+        result = kernel.rank_candidate({"id": "q", "scoring_mode": "qualitative", **row})
+        check("qualitative-tier-" + tier, result["priority_tier"] == tier and result["priority_score"] is None)
+    for row in ({"scoring_mode": "invalid"}, {"scoring_mode": "qualitative", "impact": 3}):
+        try:
+            kernel.rank_candidate(row)
+        except kernel.InputError:
+            pass
+        else:
+            check("reject-invalid-scoring-input", False)
+
+    for overrides, expected in [
+        ({"scoring_mode": "qualitative", "priority_score": 17}, "FAIL"),
+        ({"scoring_mode": "bad"}, "FAIL"),
+        ({"scoring_mode": "qualitative", "confidence": 0.9}, "FAIL"),
+        ({"scoring_mode": "numeric", "confidence": 0.9}, "WARN"),
+    ]:
+        report = _override(VALID_REPORT, {})
+        report["now"][0].update(overrides)
+        check("sidecar-" + str(overrides), kernel.validate_report(report)["status"] == expected)
+
+    report = _override(VALID_REPORT, {"later": [{"id": "L", "scoring_mode": "bad"}]})
+    check("later-rejects-unknown-scoring-mode", kernel.validate_report(report)["status"] == "FAIL")
+    errors: list[str] = []
+    warnings: list[str] = []
+    kernel.validate_action({**VALID_REPORT["now"][0], "confidence": 0.9}, "action", errors, warnings)
+    check("action-rejects-qualitative-numeric-input", any("qualitative" in error for error in errors))
+
+    data = prepare_brief.read(EXAMPLE_BRIEF)
+    row = data["candidates"][0]
+    for field in kernel.SCORE_FIELDS:
+        row.pop(field, None)
+    row.update(scoring_mode="qualitative", blocker=True, blocks_current_goal=True,
+               action_type="implement", verify_first=False)
+    data["candidates"] = [row]
+    result = prepare_brief.assemble(data)
+    check("hold-unverified-implementation", not result["report"]["now"] and
+          result["plan"]["held_implementation_action_ids"] == [row["id"]] and
+          result["report"]["verification_required_action_ids"] == [row["id"]] and
+          "Wymaga weryfikacji przed wykonaniem" in prepare_brief.render(result))
+    row.update(blocker=False, future_gate=True, blocks_current_goal=False)
+    result = prepare_brief.assemble(data)
+    check("future-gate-not-immediate", not result["report"]["verify_now"] and not result["report"]["now"])
+    row.update(action_type="verify")
+    result = prepare_brief.assemble(data)
+    check("future-verification-not-immediate", not result["plan"]["immediate_actions"])
+    return failures
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run Product Operator golden evals")
     parser.add_argument("--cases", default=str(ROOT / "evals" / "golden-cases.json"))
@@ -373,7 +433,9 @@ def main() -> int:
         ok, actual = run_case(case)
         if not ok:
             failures.append({"id": case.get("id"), "expected": case.get("expect"), "actual": actual})
-    result = {"status": "PASS" if not failures else "FAIL", "total": len(cases), "passed": len(cases) - len(failures), "failures": failures}
+    golden_failures = len(failures)
+    failures.extend(qualitative_checks())
+    result = {"status": "PASS" if not failures else "FAIL", "total": len(cases), "passed": len(cases) - golden_failures, "failures": failures}
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0 if not failures else 1
 

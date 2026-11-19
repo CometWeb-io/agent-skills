@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.0] - 2026-11-06
+
+- Require a complete, well-formed report envelope in `validate`; the return shape and protocol 1.0/1.1 remain supported. Existing partial inputs must migrate or use explicitly scoped `validate-invariants`. See `references/validation-migration.md`.
+- Reject non-text references as date or delegation provenance, unsupported exact hours for unknown/relative capacity, invalid hours/scoring dimensions and malformed deadline distances.
+- Reject empty or malformed required action evidence and delegation fields instead of accepting truthy placeholders.
+- Streamline the entry point while preserving evidence, commitment, delegation and sidecar boundaries in the detailed references.
+
 ## [1.2.5] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

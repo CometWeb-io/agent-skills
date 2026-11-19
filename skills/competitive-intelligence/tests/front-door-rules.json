@@ -3,139 +3,114 @@
   "note": "Normative rules the skill must keep. Front-door rules live in SKILL.md; the rest sit in a reference SKILL.md points to with a load trigger. Removing or moving a rule means editing this inventory deliberately.",
   "rules": [
     {
-      "id": "four-layers",
-      "text": "Always separate four layers",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "implication-not-fact",
-      "text": "Never collapse an implication into a fact",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "no-cosmetic-inference",
-      "text": "Never infer a strategic move from a cosmetic page edit without corroboration",
-      "where": "SKILL.md"
-    },
-    {
       "id": "not-a-daemon",
-      "text": "it does not claim to run continuously in the background",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "ask-only-blocking",
-      "text": "Only ask for missing information that blocks execution",
-      "where": "SKILL.md"
-    },
-    {
-      "id": "one-mode",
-      "text": "Select exactly one primary mode per run",
-      "where": "SKILL.md"
+      "text": "A single iteration does not claim to run continuously in the background",
+      "where": "references/monitoring-policy.md"
     },
     {
       "id": "no-surveillance",
       "text": "Do not use employee-level personal surveillance as a source strategy",
-      "where": "SKILL.md"
+      "where": "references/source-policy.md"
     },
     {
       "id": "bootstrap-no-delta",
       "text": "A bootstrap run does not invent a delta",
-      "where": "SKILL.md"
+      "where": "references/data-model.md"
     },
     {
       "id": "low-authority",
       "text": "Treat SEO/traffic estimates, social chatter, review anecdotes, and scraped summaries as lower-authority evidence unless triangulated",
-      "where": "SKILL.md"
+      "where": "references/source-policy.md"
     },
     {
       "id": "no-raw-diff",
       "text": "Never use raw HTML/text diff as the final truth layer",
-      "where": "SKILL.md"
+      "where": "references/data-model.md"
     },
     {
       "id": "diff-is-start",
       "text": "Treat the diff as the starting set, not the final feed",
-      "where": "SKILL.md"
+      "where": "references/data-model.md"
     },
     {
       "id": "no-weak-confirmed",
       "text": "Do not label a change `CONFIRMED` from community chatter, SEO estimates, or a single weak secondary source",
-      "where": "SKILL.md"
+      "where": "references/source-policy.md"
     },
     {
       "id": "score-triage",
       "text": "Treat the score as a triage aid, not truth",
-      "where": "SKILL.md"
+      "where": "references/event-taxonomy.md"
     },
     {
       "id": "override-rationale",
       "text": "Override only with an explicit rationale",
-      "where": "SKILL.md"
+      "where": "references/event-taxonomy.md"
     },
     {
       "id": "noise",
       "text": "`NOISE` is never promoted to an event",
-      "where": "SKILL.md"
+      "where": "references/event-taxonomy.md"
     },
     {
       "id": "ambiguity-state",
       "text": "keep the event `LIKELY`, `UNVERIFIED`, or `DISPUTED` and state the crux",
-      "where": "SKILL.md"
+      "where": "references/source-policy.md"
     },
     {
       "id": "pattern-independent",
       "text": "only when multiple independent observations support a coherent theme",
-      "where": "SKILL.md"
+      "where": "references/event-taxonomy.md"
     },
     {
       "id": "no-copy-default",
       "text": "Do not recommend copying a competitor by default",
-      "where": "SKILL.md"
+      "where": "references/output-contract.md"
     },
     {
       "id": "no-action-option",
       "text": "Include a no-action option",
-      "where": "SKILL.md"
+      "where": "references/output-contract.md"
     },
     {
       "id": "immutable-history",
       "text": "Never overwrite a historical snapshot",
-      "where": "SKILL.md"
+      "where": "references/data-model.md"
     },
     {
       "id": "revision-append",
       "text": "is appended as a revision instead of rewriting history",
-      "where": "SKILL.md"
+      "where": "references/data-model.md"
     },
     {
       "id": "as-of-coverage",
       "text": "Always include `as_of`, coverage, and known blind spots",
-      "where": "SKILL.md"
+      "where": "references/output-contract.md"
     },
     {
       "id": "authorized-only",
       "text": "Use only public or explicitly authorized sources and connector access",
-      "where": "SKILL.md"
+      "where": "references/source-policy.md"
     },
     {
       "id": "no-bypass",
       "text": "Do not bypass authentication, access controls, paywalls, CAPTCHAs, rate limits, or tool restrictions",
-      "where": "SKILL.md"
+      "where": "references/source-policy.md"
     },
     {
       "id": "no-confidential",
       "text": "Do not attempt to obtain confidential competitor information",
-      "where": "SKILL.md"
+      "where": "references/source-policy.md"
     },
     {
       "id": "minimize-pii",
       "text": "Minimize personal data",
-      "where": "SKILL.md"
+      "where": "references/source-policy.md"
     },
     {
       "id": "handoff-facts-only",
       "text": "Pass only accepted facts, timestamps, source references, and clearly labeled hypotheses",
-      "where": "SKILL.md"
+      "where": "references/output-contract.md"
     },
     {
       "id": "contradiction-distinguish",
@@ -221,6 +196,26 @@
       "text": "Confirm with the user before you send, post, publish, delete, buy, or change permissions or production state.",
       "where": "SKILL.md",
       "facet": "confirm-side-effects"
+    },
+    {
+      "id": "snapshot-admission",
+      "text": "Before `accept-snapshot`, check the new and current capture times and scope, and verify evidence for each material field; do not replace current with an older observation unless an intentional rollback/rebaseline is clearly recorded.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "evidence-required",
+      "text": "Missing evidence cannot support a confirmed current claim.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "manual-admission",
+      "text": "Check those conditions yourself; retain uncertainty and do not promote a disputed claim.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "privacy-access",
+      "text": "Do not bypass access controls, seek confidential competitor data or conduct employee-level surveillance; minimize personal data and keep private material out of public searches.",
+      "where": "SKILL.md"
     }
   ]
 }
