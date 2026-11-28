@@ -5,32 +5,32 @@
     {
       "id": "stages-separate",
       "text": "Never collapse stages",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "merge-not-deploy",
       "text": "Merge is not verification or deployment",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "deploy-not-outcome",
       "text": "Deployment is\nnot outcome evidence",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "decision-boundaries-pointer",
       "text": "what Product Operator must not decide",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "connector-pointer",
       "text": "when GitHub/Notion retrieval must be planned",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "script-honesty",
       "text": "Never claim either script ran if it did not",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-fabricated-state",
@@ -40,122 +40,122 @@
     {
       "id": "ask-last",
       "text": "Do not ask for information that a connected source can resolve",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "snapshot-index-only",
       "text": "only as a retrieval index and comparison baseline",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "claim-lanes",
       "text": "never one global source precedence",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "admissibility",
       "text": "it is not admissible for a\n   confident current conclusion",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "blocked-not-idle",
       "text": "`BLOCKED` does\n   not mean \"do nothing\"",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-generic-actions",
       "text": "Do not create\n   generic \"best practice\" actions",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "blocker-goal-relative",
       "text": "set `blocks_current_goal=true` only when\n   current evidence shows the condition prevents the stated goal",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "future-gate",
       "text": "A condition that blocks only a later motion is `future_gate=true`",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "unproven-blocker",
       "text": "An unproven blocker is `VERIFY NOW`",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-option-selection",
       "text": "**do not select the option** inside Product Operator",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-copy-specialists",
       "text": "Never copy\n   their audit frameworks into this skill",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "dependency-order",
       "text": "Do not allow a\n   high score to jump over an unresolved prerequisite",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "cycle-is-problem",
       "text": "A dependency cycle is itself a planning problem",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-priority-inertia",
       "text": "Do not preserve a previous priority merely\n    because it existed",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "thrash",
       "text": "`PRIORITY_THRASH` and must be explained or fixed",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "sidecar-errors",
       "text": "fix every `ERROR` before claiming\n    the brief is complete",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "stop-retrieval",
       "text": "Stop retrieval once more evidence cannot change",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-choosing",
       "text": "it must\nnot choose an unresolved material option",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "gate-over-arithmetic",
       "text": "Priority arithmetic cannot override a binding gate",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "brief-not-ledger",
       "text": "evidence depth must not become user-facing verbosity",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "brief-scan",
       "text": "The\nuser should understand within seconds",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "brief-budgets",
       "text": "PULSE <=180 words, STANDARD/DELTA <=350, DEEP/RELEASE <=500",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "brief-caps",
       "text": "show at most 3 each",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "no-noise",
       "text": "Do not print the full operating contract, coverage matrix, evidence ledger,\nconfidence fields, or tool-limit noise by default",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "read-only",
@@ -165,62 +165,62 @@
     {
       "id": "no-execution",
       "text": "Do not implement code, create issues, edit Notion, deploy, publish, spend money, or message customers",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-runtime",
       "text": "Do not infer runtime behavior solely from source",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-roadmap",
       "text": "Do not infer implementation from roadmap status",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-merge",
       "text": "Do not infer deployment from merge",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-success",
       "text": "Do not infer success from deployment",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-snapshot",
       "text": "Do not treat a prior snapshot as current evidence",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-stale",
       "text": "Do not use stale/superseded evidence for a required-current material claim",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-average",
       "text": "Do not silently average contradictory authoritative sources",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-invent",
       "text": "Do not invent owner, deadline, capacity, score, metric, or customer requirement",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-duplicate",
       "text": "Do not duplicate specialist audits simply to appear comprehensive",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-majority",
       "text": "Do not let a majority priority score override a legal/security/privacy/financial/reputation blocker that actually gates the current goal",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "hb-no-writeback",
       "text": "Never write snapshot state back into GitHub/Notion as if it were authoritative product truth",
-      "where": "SKILL.md"
+      "where": "references/full-workflow.md"
     },
     {
       "id": "contract-block",
@@ -336,6 +336,71 @@
       "text": "Confirm with the user before you send, post, publish, delete, buy, or change permissions or production state.",
       "where": "SKILL.md",
       "facet": "confirm-side-effects"
+    },
+    {
+      "id": "lean-front-2",
+      "text": "Do not silently average contradictions.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "lean-front-3",
+      "text": "Required-current evidence that is stale, superseded or unknown cannot support a confident current claim.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "lean-front-4",
+      "text": "An unknown or unproven blocker calls for VERIFY NOW; a confirmed BLOCKER must actually prevent the current goal or critical-path action and name what it blocks.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "lean-front-5",
+      "text": "Connect actions to evidence or gaps; do not invent metrics, owners, dates, capacity or requirements.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "lean-front-6",
+      "text": "Do not choose an unresolved consequential option; frame the decision for its owner.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "lean-front-7",
+      "text": "A score cannot override a binding gate or unresolved prerequisite, and a dependency cycle is a planning problem.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "lean-front-8",
+      "text": "Its checks operate on supplied evidence and metadata; they do not authenticate sources or prove deployment.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "lean-front-9",
+      "text": "Never claim a script ran if it did not.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "lean-front-10",
+      "text": "Read `references/control-loop.md` when making a snapshot or comparing runs; keep snapshots immutable, create them after complete supported runs, and treat previous snapshots only as retrieval indexes and baselines, never current evidence.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "lean-front-11",
+      "text": "Do not implement code, create issues, edit Notion, deploy, publish, spend money or message customers as part of this workflow.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "lean-front-12",
+      "text": "Do not write snapshot state back as authoritative GitHub/Notion truth, or duplicate specialist audits.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "score-provenance-front-9",
+      "text": "Do not invent confidence or scores; numeric inputs are self-reported and validation cannot authenticate them.",
+      "where": "SKILL.md"
+    },
+    {
+      "id": "sidecar-disclosure-11",
+      "text": "Do not claim the full workflow is complete or that a readiness check validated the sidecar.",
+      "where": "SKILL.md"
     }
   ]
 }

@@ -51,6 +51,13 @@ Use only when evidence supports duplicate/superseded work, work tied to a supers
 
 ## Mechanical ranking
 
+Use `scoring_mode: qualitative` when scores lack a justified basis; omit numeric
+inputs instead of fabricating them. The kernel reports null for `priority_score`
+and `score_breakdown`; qualitative blockers require verification. If qualitative
+and numeric candidates are mixed, order within the same tier by stable ID, not by
+the numeric score. Dependencies and gates continue to apply. Numeric inputs and
+their computed results remain self-reported or derived, not authenticated facts.
+
 For ordinary non-decision candidates the kernel computes:
 
 `base = 2*impact + 1.5*goal_alignment + 1.25*dependency_leverage + urgency + risk_reduction + learning_value`
@@ -97,6 +104,7 @@ Candidate contract:
 
 ```text
 id, action, rationale, done_when,
+scoring_mode: qualitative | numeric (omitted preserves legacy numeric behavior),
 impact 0-5, goal_alignment 0-5, urgency 0-5,
 dependency_leverage 0-5, risk_reduction 0-5, learning_value 0-5,
 effort 0.5-5, confidence 0-1, evidence_strength 0-1,

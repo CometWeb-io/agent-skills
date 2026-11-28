@@ -60,24 +60,24 @@
       "unexercised": []
     },
     {
-      "guards": 67,
-      "held": 64,
+      "guards": 88,
+      "held": 86,
       "id": "portfolio-operator",
-      "strength": 0.955,
+      "strength": 0.977,
       "unexercised": []
     },
     {
-      "guards": 193,
-      "held": 180,
+      "guards": 211,
+      "held": 197,
       "id": "product-operator",
-      "strength": 0.933,
+      "strength": 0.934,
       "unexercised": []
     },
     {
-      "guards": 96,
-      "held": 95,
+      "guards": 106,
+      "held": 103,
       "id": "quality-loop-operator",
-      "strength": 0.99,
+      "strength": 0.972,
       "unexercised": []
     },
     {
@@ -109,8 +109,8 @@
       "unexercised": []
     },
     {
-      "guards": 57,
-      "held": 57,
+      "guards": 59,
+      "held": 59,
       "id": "skill-evaluator",
       "strength": 1.0,
       "unexercised": []
