@@ -3,7 +3,7 @@
   "python": ">=3.10",
   "dependencies": {
     "release": [
-      "pypdf>=4,<7"
+      "pypdf>=4,<8"
     ]
   },
   "notes": "Earlier ebook stages use the standard library only; release-stage PDF page checks import pypdf."
