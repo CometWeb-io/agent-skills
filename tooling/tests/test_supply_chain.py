@@ -187,6 +187,20 @@ def test_every_audited_group_is_a_locked_dependency_group() -> None:
     assert set(audit.GROUPS) == set(project["dependency-groups"])
 
 
+def test_accepted_advisories_are_scoped_reasoned_and_expire() -> None:
+    import datetime
+    for entry in audit.ACCEPTED_VULNS:
+        assert set(entry) == {"id", "group", "package", "expires", "reason"}
+        assert entry["group"] in audit.GROUPS
+        assert len(entry["reason"]) > 40, "say why the advisory cannot be fixed yet"
+        expires = datetime.date.fromisoformat(entry["expires"])
+        assert expires - datetime.date(2026, 11, 28) <= datetime.timedelta(days=120), "keep exceptions short"
+        assert entry["id"] in audit.accepted_for(entry["group"], today=expires)
+        assert entry["id"] not in audit.accepted_for(entry["group"], today=expires + datetime.timedelta(days=1))
+        other = next(g for g in audit.GROUPS if g != entry["group"])
+        assert entry["id"] not in audit.accepted_for(other, today=expires)
+
+
 def test_lock_carries_a_hash_for_every_registry_artifact() -> None:
     """`--require-hashes` relies on this: a hashless entry would fail the audit, not skip it."""
     lock = tomllib.loads((ROOT / "uv.lock").read_text(encoding="utf-8"))

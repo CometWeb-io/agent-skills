@@ -22,6 +22,7 @@ Python. A runtime dependency missing from the lock fails the gate.
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 from pathlib import Path
 import subprocess  # nosec B404 - fixed argv, no shell
@@ -35,6 +36,37 @@ from packaging.version import Version
 
 ROOT = Path(__file__).resolve().parents[1]
 GROUPS = ("dev", "sast")
+
+# Known advisories that cannot be fixed yet, each scoped to one group and one
+# package, with the reason it is accepted and a hard expiry. After the expiry
+# date the advisory is audited again and the gate fails, so an exception can
+# never become permanent by being forgotten.
+ACCEPTED_VULNS: tuple[dict[str, str], ...] = (
+    {
+        "id": "GHSA-53pm-wgxf-c6qf",  # CVE-2026-132276, ReDoS in wcmatch < 11.2
+        "group": "sast",
+        "package": "wcmatch",
+        "expires": "2027-01-31",
+        "reason": "semgrep (every release up to 1.186.0) requires wcmatch~=8.3, so the fix in 11.2 "
+                  "cannot be installed. wcmatch is only used by semgrep in CI to match this "
+                  "repository's own file names; the advisory needs an attacker-chosen file name.",
+    },
+)
+
+
+def accepted_for(group: str, today: datetime.date | None = None) -> list[str]:
+    """Advisory IDs to ignore for `group` today; expired entries are not ignored."""
+    today = today or datetime.datetime.now(tz=datetime.UTC).date()
+    ids = []
+    for entry in ACCEPTED_VULNS:
+        if entry["group"] != group:
+            continue
+        if datetime.date.fromisoformat(entry["expires"]) < today:
+            print(f"NOTE: accepted advisory {entry['id']} ({entry['package']}) expired on "
+                  f"{entry['expires']} and is audited again", flush=True)
+            continue
+        ids.append(entry["id"])
+    return ids
 
 
 def locked_versions(root: Path) -> dict[str, set[Version]]:
@@ -116,6 +148,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"pip-audit: {group} group ({hashes} hashes)", flush=True)
             command = [sys.executable, "-m", "pip_audit", "--require-hashes", "--disable-pip", "--strict",
                        "--progress-spinner", "off", "--cache-dir", str(Path(tmp) / "cache"), "-r", str(path)]
+            for vuln_id in accepted_for(group):
+                print(f"pip-audit: {group} group accepts {vuln_id} until its expiry", flush=True)
+                command += ["--ignore-vuln", vuln_id]
             if subprocess.run(command, cwd=root, check=False).returncode != 0:  # nosec B603
                 failed.append(group)
     if failed:
