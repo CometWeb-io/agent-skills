@@ -2,7 +2,9 @@
 
 **Start with one bounded workflow:** reproduce an app defect, make a scoped repair, rerun the checks, and state clearly what remains untested. These skills provide repeatable instructions, structured handoffs and local validation resources; they do **not** guarantee a correct agent response.
 
-**[Try the QA → repair → retest walkthrough](docs/START-HERE.md)** · **[Compare with the native model](docs/PROVE-IT.md)** · **[Use the pilot feedback checklist](docs/USER-PILOT.md)**
+- **[Try the QA → repair → retest walkthrough](docs/START-HERE.md)**
+- **[Compare with the native model](docs/PROVE-IT.md)**
+- **[Use the pilot feedback checklist](docs/USER-PILOT.md)**
 
 The repository also includes research, product-decision and release-review packages for Cursor, Claude Code, Codex and other hosts that read `SKILL.md`.
 
@@ -249,7 +251,7 @@ and [SECURITY.md](SECURITY.md) for reporting a vulnerability. The
 [documentation index](docs/README.md) lists everything else, from how routing
 works to evaluating and releasing.
 
-[MIT license](LICENSE) · [Changelog](CHANGELOG.md)
+[MIT license](LICENSE), [Changelog](CHANGELOG.md)
 
 ## Experimental opt-in product profiles
 

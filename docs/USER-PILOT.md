@@ -1,6 +1,6 @@
 # Bounded user pilot: one workflow
 
-This is an invitation and feedback contract for testing an **experimental** package, not a claim of qualification. First audience: developers and small product teams already using an AI coding agent for web-app QA.
+This is a feedback contract for testing an **experimental** package, not a claim of qualification. It suits developers and small product teams who already use an AI coding agent for web-app QA.
 
 ## What to test
 
@@ -34,22 +34,3 @@ May this feedback be quoted publicly? (default: NO)
 To submit **sanitized public** feedback, [open a GitHub issue](https://github.com/CometWeb-io/agent-skills/issues/new) and describe the task, observed result and friction without attaching private artifacts. Do not open a public issue for sensitive feedback; retain it privately until a mutually agreed private channel exists.
 
 Avoid sending customer records, private source code, credentials or unrestricted tool transcripts. Permission to receive feedback is not permission to publish or quote it.
-
-## What counts as adoption?
-
-- **Visit:** a person opens the project page; only use this if measured by a permitted source.
-- **Install:** a package gets installed; CLI telemetry is an imperfect proxy, not an individual identity.
-- **Activation:** a distinct developer completes the first demo/task and can show the expected result.
-- **Retained use:** the same consenting developer voluntarily uses it again on another task.
-- **Qualified evidence:** an independently reviewed comparison with matched conditions and documented outcome.
-
-Do not call install count, GitHub stars or a passing test an activation. Do not infer retention from one interview. Never manufacture testimonials.
-
-## Pilot decision after an initial cohort
-
-Record the full denominator: invited, accepted, attempted, activated, returned and explicitly declined. Separate setup failure from task failure. Log objections and the task context behind them.
-
-- If people cannot finish the first task, repair onboarding before distributing more broadly.
-- If they finish but do not prefer the skill, compare it against the native control and investigate unnecessary overhead.
-- If they return for a second task and describe a specific improvement, expand only that validated use case.
-- If the benefit is unproven, retain the experimental label and do not publish improvement percentages.

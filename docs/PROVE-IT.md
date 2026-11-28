@@ -10,9 +10,11 @@ A skill should not get credit for having more tools, access or attempts than its
 
 ## Frozen comparison
 
-1. **A — Native host/model:** same task, no CometWeb skills, same available tools and permissions.
-2. **B — Same tools plus skill:** same host/model/configuration, plus the pinned skill package.
-3. **C — Tool-matched control (when scripts affect the outcome):** native instructions with equivalent permitted deterministic tools, without the workflow instructions. This separates the value of a script from the value of prose instructions.
+1. **A — `native`:** same host, model, tools and permissions; no CometWeb skill and no bundled helpers.
+2. **B — `tools`:** the same, plus the skill's local scripts and formal JSON schemas, without its Markdown instructions. This separates the value of a script from the value of the written workflow.
+3. **C — `skill`:** the same helper inventory as B, plus the skill's instructions and plugin registration.
+
+If the skill ships no scripts that affect the outcome, A against C is enough. These labels match the runner's three-arm design in [REAL-HOST-EVALS.md](REAL-HOST-EVALS.md#three-arm-experiment-contract-v3-plan-execution-not-qualified).
 
 Before the first model call, record: a clean commit SHA for each payload, host and model IDs, date, permissions, available tools, task fixtures, scoring rubric, resource caps, retries, exclusion rules and any held-out tasks. Do not tune skills against the held-out set.
 
@@ -31,7 +33,9 @@ Use a blinded review of raw outputs against a frozen rubric and independently ch
 
 ## Minimal feasible run
 
-Start with a small, disclosed diagnostic set. For a promotion decision, increase coverage across distinct tasks, host/model revisions and repetitions; **do not claim statistical certainty from ten similar prompts**. The following documented commands plan and preview a host comparison without spending money:
+Start with a small, disclosed diagnostic set. For a promotion decision, increase coverage across distinct tasks, host/model revisions and repetitions; **do not claim statistical certainty from ten similar prompts**. The following documented commands plan and preview a comparison without spending money.
+
+Two arms (native against skill, the legacy `baseline`/`plugin` pair):
 
 ```bash
 uv run python tooling/real_host_eval.py plan --out plan.json
@@ -39,7 +43,16 @@ uv run python tooling/real_host_eval.py run --plan plan.json --host claude \
   --out runs/claude-ab --condition both --max-tasks 20 --model <model-id>
 ```
 
-The documented `--condition both` runner covers A/B, not the optional tool-matched C condition. C requires a separately frozen experiment with equivalent tool access; do not report it as run by this command.
+All three arms (`native`, `tools`, `skill`) need a separate v3 plan:
+
+```bash
+uv run python tooling/real_host_eval.py plan --design three-arm \
+  --skill web-app-auditor --per-skill 1 --negatives-per-skill 0 --out three-arm.json
+uv run python tooling/real_host_eval.py run --plan three-arm.json --host claude \
+  --out runs/three-arm --condition three-arm --max-tasks 3 --model <model-id>
+```
+
+The three-arm bundle is a bounded runtime subset of the package, not the whole installed skill, and that design is not yet qualified; read its contract before reporting a result from it.
 
 Execution requires the explicit `--execute` flag, host credentials, compatible local tooling and a cost cap. See [REAL-HOST-EVALS.md](REAL-HOST-EVALS.md) before running it. Currently executable adapters cover Claude Code and Codex; do not claim real-host experiments for other hosts until recorded.
 
