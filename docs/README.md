@@ -9,6 +9,9 @@ written by a tool and fail CI when edited by hand.
 | Document | What it covers |
 | --- | --- |
 | [`../README.md`](../README.md) | What the skills are, the quickstart and the skill catalog. |
+| [`START-HERE.md`](START-HERE.md) | One bounded QA → repair → retest walkthrough, selective installation and clear evidence limits. |
+| [`PROVE-IT.md`](PROVE-IT.md) | Matched native, tools-only and skill comparisons, and the public scorecard contract. |
+| [`USER-PILOT.md`](USER-PILOT.md) | Steps for testing one workflow yourself and a private feedback form. |
 | [`TARGET.md`](TARGET.md) | What this repository is, and what it is not. |
 | [`SKILL-MAP.md`](SKILL-MAP.md) | Decision tree, small installation selections, and each owner's result and next consumer. |
 | [`../examples/qa-repair-retest/README.md`](../examples/qa-repair-retest/README.md) | Synthetic local example: reproduce a defect, repair it and collect fresh test/browser evidence. |
