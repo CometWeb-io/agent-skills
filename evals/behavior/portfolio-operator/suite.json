@@ -252,7 +252,14 @@
           "waiting": [],
           "pause_drop": [],
           "next": [],
-          "decision_now": []
+          "decision_now": [],
+          "portfolio_scope": [
+            "fixture-client",
+            "fixture-product"
+          ],
+          "coverage": {
+            "calendar": "unavailable"
+          }
         }
       },
       "expect": {
@@ -335,7 +342,14 @@
           "waiting": [],
           "pause_drop": [],
           "next": [],
-          "decision_now": []
+          "decision_now": [],
+          "portfolio_scope": [
+            "fixture-client",
+            "fixture-product"
+          ],
+          "coverage": {
+            "calendar": "unavailable"
+          }
         }
       },
       "expect": {
@@ -402,7 +416,14 @@
           "waiting": [],
           "pause_drop": [],
           "next": [],
-          "decision_now": []
+          "decision_now": [],
+          "portfolio_scope": [
+            "fixture-client",
+            "fixture-product"
+          ],
+          "coverage": {
+            "calendar": "unavailable"
+          }
         }
       },
       "expect": {
@@ -466,7 +487,14 @@
           "waiting": [],
           "pause_drop": [],
           "next": [],
-          "decision_now": []
+          "decision_now": [],
+          "portfolio_scope": [
+            "fixture-client",
+            "fixture-product"
+          ],
+          "coverage": {
+            "calendar": "unavailable"
+          }
         }
       },
       "expect": {
@@ -527,7 +555,14 @@
           "waiting": [],
           "pause_drop": [],
           "next": [],
-          "decision_now": []
+          "decision_now": [],
+          "portfolio_scope": [
+            "fixture-client",
+            "fixture-product"
+          ],
+          "coverage": {
+            "calendar": "unavailable"
+          }
         }
       },
       "expect": {

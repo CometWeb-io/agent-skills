@@ -2,7 +2,8 @@
   "schema": "cometweb.skill-contract/v1",
   "docs": [
     "references/portfolio-model.md",
-    "references/output-contract.md"
+    "references/output-contract.md",
+    "references/validation-migration.md"
   ],
   "scripts": {
     "scripts/portfolio_kernel.py": {
@@ -133,27 +134,15 @@
     "blocked_by": {
       "unread": true
     },
-    "protocol_version": {
-      "unread": true
-    },
-    "as_of": {
-      "unread": true
-    },
-    "horizon": {
-      "unread": true
-    },
-    "primary_goal": {
-      "unread": true
-    },
-    "portfolio_scope": {
-      "unread": true
-    },
+    "protocol_version": {},
+    "as_of": {},
+    "horizon": {},
+    "primary_goal": {},
+    "portfolio_scope": {},
     "constraints": {
       "unread": true
     },
-    "coverage": {
-      "unread": true
-    },
+    "coverage": {},
     "portfolio_items": {
       "unread": true
     },
@@ -164,7 +153,10 @@
     "internal_steps": {},
     "implementation_steps": {},
     "component_tasks": {},
-    "technical_details": {}
+    "technical_details": {},
+    "calendar": {
+      "unread": true
+    }
   },
   "outputs": {
     "priority_score": {},
@@ -178,7 +170,9 @@
     "item_ids": {},
     "valid": {},
     "errors": {},
-    "error": {}
+    "error": {},
+    "validation_scope": {},
+    "complete_report_validated": {}
   },
   "internal": [],
   "doc_terms": [],

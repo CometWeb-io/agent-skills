@@ -1,6 +1,6 @@
 [project]
 name = "cometweb-agent-skills"
-version = "3.0.0"
+version = "4.0.0"
 description = "CometWeb Labs specialist skills for research, product operations, quality workflows, QA, release readiness, and evidence-based decisions."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -37,10 +37,10 @@ package = false
 # and move its tracing stack together. Remove when upstream accepts these pins.
 override-dependencies = [
     "mcp==1.30.0",
-    "opentelemetry-api==1.45.1",
-    "opentelemetry-sdk==1.45.1",
-    "opentelemetry-exporter-otlp-proto-http==1.45.1",
-    "opentelemetry-instrumentation-requests==0.66b1",
-    "opentelemetry-instrumentation-threading==0.66b1",
+    "opentelemetry-api==1.45.2",
+    "opentelemetry-sdk==1.45.2",
+    "opentelemetry-exporter-otlp-proto-http==1.45.2",
+    "opentelemetry-instrumentation-requests==0.66b2",
+    "opentelemetry-instrumentation-threading==0.66b2",
 ]
 conflicts = [[{ group = "dev" }, { group = "sast" }]]

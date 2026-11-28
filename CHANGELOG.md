@@ -6,6 +6,12 @@ tags use `vMAJOR.MINOR.PATCH`.
 
 ## [Unreleased]
 
+- Fix horizontal overflow in the QA repair/retest example page: the saved
+  record wraps instead of widening the page, and the page declares a mobile
+  viewport. The browser probe now checks 320px and 760px widths.
+- Name Maciej Zmitrukiewicz as the copyright holder in the root, context and
+  per-skill MIT `LICENSE` files, `NOTICE`, and plugin author/owner metadata.
+  CometWeb remains the product name; the license itself is unchanged.
 - Add opt-in three-arm evaluation plans with distinct native/tools/skill payloads,
   counterbalanced order and retained partial/error receipts. Preserve legacy
   two-arm plans; full-host helper execution still requires its own evidence.

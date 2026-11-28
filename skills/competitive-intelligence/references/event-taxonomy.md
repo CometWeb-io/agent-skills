@@ -120,3 +120,11 @@ For every pattern record:
 - affected strategic assumptions.
 
 Patterns never upgrade the verification state of weak underlying facts by themselves.
+
+- Treat the score as a triage aid, not truth.
+
+- Override only with an explicit rationale.
+
+- `NOISE` is never promoted to an event.
+
+- Promote a pattern only when multiple independent observations support a coherent theme.

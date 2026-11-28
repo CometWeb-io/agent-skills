@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.6] - 2026-11-05
+
+- Shorten the workflow and clarify operator checks for source evidence, snapshot ordering and event admission.
+
 ## [1.1.5] - 2026-10-11
 
 - Include explicit experimental distribution metadata; task qualification remains unestablished.

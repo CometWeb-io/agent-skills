@@ -153,9 +153,20 @@ delegated must_do or now item.
 The report passed to `validate` and `render` is the machine sidecar in `output-contract.md`.
 The kernel reads `capacity` (`source`, `hours`), `readiness` (`status`, `reason`) and the
 lanes `must_do`, `capacity_conflicts`, `now`, `delegate`, `delegate_candidate`,
-`waiting`, `pause_drop`, `next` and `decision_now`; it does not read `protocol_version`,
-`as_of`, `horizon`, `primary_goal`, `portfolio_scope`, `constraints`, `coverage`,
-`portfolio_items` or `unknowns`. `readiness.status` is printed as is (READY, PROVISIONAL,
-BLOCKED; default PROVISIONAL) and not checked. `rank` adds `priority_score` and `gate_rank`;
+`waiting`, `pause_drop`, `next` and `decision_now`. Full `validate` additionally checks
+`protocol_version`, `as_of`, `horizon`, `primary_goal`, `portfolio_scope`, and `coverage`.
+It does not establish whether the supplied claims are authentic or current; `constraints`,
+`portfolio_items` and `unknowns` are carried as data. `render` is not validation.
+`rank` adds `priority_score` and `gate_rank`;
 `conflicts` returns rows with `type` (HARD_COMMITMENT_OVERLAP, PORTFOLIO_HARD_LOAD) and
 `item_ids`; `validate` returns `valid` and `errors`.
+
+Ranking substitutes zero for missing scoring dimensions and applies default weights;
+the resulting number is not evidence that the inputs were observed or calibrated.
+When supplied, the five scoring dimensions must be finite numbers between 0 and 5;
+invalid values are rejected instead of producing a rank. Missing is not evidence of zero.
+`days_to_deadline` must be an integer when provided; invalid or fractional values
+are rejected rather than silently treated as a non-urgent item.
+`HARD_COMMITMENT_OVERLAP` groups matching deadlines without checking `current_horizon`
+or `future_gate`; an overlap outside the active horizon is not by itself a current
+blocker. `PORTFOLIO_HARD_LOAD` applies the current-horizon and future-gate filters.

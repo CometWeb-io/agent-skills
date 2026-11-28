@@ -1,7 +1,7 @@
 {
   "schema": "cometweb.skill-maturity/v1",
   "skill": "portfolio-operator",
-  "version": "1.2.5",
+  "version": "2.0.0",
   "stage": "DEVELOPMENT",
   "publication": "EXPERIMENTAL",
   "task_qualification": "not_established"

@@ -10,7 +10,49 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 
 from portfolio_kernel import (classify_lane, detect_capacity_conflicts, rank_items,
-                              render_human_brief, route_delegation, validate_report)
+                              render_human_brief, route_delegation, validate_report,
+                              validate_invariants, _urgency)
+
+
+def completeness_checks() -> list[str]:
+    """Exercise complete and partial validation with independent bad inputs."""
+    base = {'protocol_version': '1.0', 'as_of': '2026-11-06T10:00:00+01:00',
+            'horizon': '14d', 'primary_goal': 'Focus', 'portfolio_scope': ['product'],
+            'capacity': {'source': 'unknown'}, 'coverage': {'calendar': 'unavailable'},
+            'readiness': {'status': 'PROVISIONAL', 'reason': 'Capacity unknown'}}
+    invalid = [
+        ('protocol_version', '0', 'protocol_version'), ('as_of', '2026-11-06T10:00:00', 'as_of'),
+        ('horizon', '', 'horizon'), ('primary_goal', '', 'primary_goal'),
+        ('portfolio_scope', [''], 'portfolio_scope'), ('capacity', {}, 'capacity.source'),
+        ('coverage', {}, 'coverage'), ('readiness', [], 'readiness'),
+        ('readiness', {'status': 'BAD'}, 'readiness.status'),
+        ('readiness', {'status': 'PROVISIONAL'}, 'readiness.reason'),
+        ('primary_goal', 'UNKNOWN', 'unknown goal'),
+        ('capacity', {'source': 'relative-only', 'hours': 2}, 'relative-only'),
+        ('capacity', {'source': 'provided', 'hours': -1}, 'capacity.hours'),
+        ('now', 'invalid', 'now must be a list'), ('now', [None], 'now[0] must be an object'),
+        ('now', [{'done_when': 'done', 'evidence': ['ref'], 'goal_alignment': 6}], 'goal_alignment'),
+        ('now', [{'done_when': 'done', 'evidence': ['ref'], 'days_to_deadline': '3'}], 'days_to_deadline'),
+    ]
+    failures = []
+    for field, value, expected in invalid:
+        errors = validate_report({**base, field: value})
+        if not any(expected in error for error in errors):
+            failures.append(f'completeness: {field}={value!r} did not report {expected}')
+    if validate_invariants(None) != ['report must be a JSON object']:
+        failures.append('partial validation must reject a non-object')
+    if not any('capacity' in error for error in validate_invariants({'capacity': []})):
+        failures.append('partial validation must reject non-object capacity')
+    valid_action = {'done_when': 'done', 'evidence': [{'source': 'email', 'locator': 'thread'}]}
+    if validate_report({**base, 'now': [valid_action]}):
+        failures.append('documented object evidence should be accepted')
+    try:
+        _urgency('3')
+    except ValueError:
+        pass
+    else:
+        failures.append('urgency must reject non-integer input')
+    return failures
 
 
 def main() -> int:
@@ -77,8 +119,11 @@ def main() -> int:
         except Exception as exc:
             failures.append(f"{name}: raised {type(exc).__name__}: {exc}")
 
+    golden_failures = len(failures)
+    failures.extend(completeness_checks())
+
     if failures:
-        print(f"{len(cases) - len(failures)}/{len(cases)} passed")
+        print(f"{len(cases) - golden_failures}/{len(cases)} golden cases passed; failures below")
         for failure in failures:
             print(f"FAIL: {failure}")
         return 1

@@ -180,3 +180,11 @@ A report is ready only when:
 - coverage gaps are disclosed,
 - recommended action is proportional to evidence strength,
 - persisted snapshots validate successfully when files are being maintained.
+
+- Do not recommend copying a competitor by default.
+
+- Include a no-action option.
+
+- Always include `as_of`, coverage, and known blind spots.
+
+- Pass only accepted facts, timestamps, source references, and clearly labeled hypotheses.
