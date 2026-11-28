@@ -24,7 +24,7 @@ jobs:
         python: ["3.10", "3.11", "3.12", "3.13", "3.14", "3.15.0"]
         package:
           - skill: ebook-publisher
-            deps: "pypdf>=4,<7"
+            deps: "pypdf>=4,<8"
             test: skills/ebook-publisher/tests
           - skill: web-app-auditor
             deps: "jsonschema>=4.18,<5"

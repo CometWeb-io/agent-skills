@@ -69,7 +69,7 @@ def test_sbom_runtime_libraries_come_from_runtime_json() -> None:
         assert lib["scope"] == "optional" and lib["purl"] == f"pkg:pypi/{lib['name']}"
     edges = {d["ref"]: d["dependsOn"] for d in bom["dependencies"]}
     assert edges["skill:ebook-publisher@" + (ROOT / "skills/ebook-publisher/VERSION").read_text().strip()] == [
-        "pypi:pypdf#vers:pypi/>=4|<7"]
+        "pypi:pypdf#vers:pypi/>=4|<8"]
 
 
 def test_sbom_is_deterministic(monkeypatch: pytest.MonkeyPatch) -> None:
